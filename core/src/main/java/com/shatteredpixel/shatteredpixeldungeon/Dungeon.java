@@ -92,6 +92,11 @@ import java.util.TimeZone;
 
 public class Dungeon {
 
+	static{
+		System.out.println("Test");
+	}
+
+
 	//enum of items which have limited spawns, records how many have spawned
 	//could all be their own separate numbers, but this allows iterating, much nicer for bundling/initializing.
 	public static enum LimitedDrops {
