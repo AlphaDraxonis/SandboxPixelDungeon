@@ -1,0 +1,69 @@
+From 842d76240733a2d5c6b2b9f81b3cf3d10b0fd532 Mon Sep 17 00:00:00 2001
+From: Ich <jokist1901@gmail.com>
+Date: Mon, 17 Apr 2023 19:07:35 +0200
+Subject: [PATCH] Set to default configuration
+
+---
+ build.gradle                                              | 8 ++++----
+ .../com/shatteredpixel/shatteredpixeldungeon/Dungeon.java | 5 +++++
+ desktop/build.gradle                                      | 2 +-
+ 3 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/build.gradle b/build.gradle
+index 9c95d5362..1c451137c 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -4,17 +4,17 @@ buildscript {
+         mavenCentral()
+     }
+     dependencies {
+-        classpath 'com.android.tools.build:gradle:7.4.2'
++        classpath 'com.android.tools.build:gradle:7.3.1'
+     }
+ }
+ 
+ allprojects {
+ 
+     ext {
+-        appName = 'Shattered Pixel Dungeon'
+-        appPackageName = 'com.shatteredpixel.shatteredpixeldungeon'
++        appName = 'Sandbox Pixel Dungeon'
++        appPackageName = 'com.shatteredpixel.sandbox'
+ 
+-        appVersionCode = 700
++        appVersionCode = 701
+         appVersionName = '2.0.2'
+ 
+         appJavaCompatibility = JavaVersion.VERSION_1_8
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java
+index ba7b4db54..0c262db2c 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java
+@@ -92,6 +92,11 @@ import java.util.TimeZone;
+ 
+ public class Dungeon {
+ 
++	static{
++		System.out.println("Test");
++	}
++
++
+ 	//enum of items which have limited spawns, records how many have spawned
+ 	//could all be their own separate numbers, but this allows iterating, much nicer for bundling/initializing.
+ 	public static enum LimitedDrops {
+diff --git a/desktop/build.gradle b/desktop/build.gradle
+index 97f35f7ac..48d86b0ad 100644
+--- a/desktop/build.gradle
++++ b/desktop/build.gradle
+@@ -121,6 +121,6 @@ dependencies {
+     implementation "org.lwjgl:lwjgl-tinyfd:3.3.1:natives-linux"
+     implementation "org.lwjgl:lwjgl-tinyfd:3.3.1:natives-linux-arm64"
+ 
+-    implementation project(':services:updates:githubUpdates')
++    implementation project(':services:updates:debugUpdates')
+     implementation project(':services:news:shatteredNews')
+ }
+\ No newline at end of file
+-- 
+2.37.1.windows.1
+

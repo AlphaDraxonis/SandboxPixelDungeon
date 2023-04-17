@@ -224,6 +224,8 @@ public class Game implements ApplicationListener {
 		instance.sceneClass = c;
 		instance.requestedReset = true;
 		instance.onChange = callback;
+		String s = sceneClass.getName();
+		s.length();
 	}
 	
 	public static Scene scene() {

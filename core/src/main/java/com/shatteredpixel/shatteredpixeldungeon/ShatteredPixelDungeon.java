@@ -43,7 +43,7 @@ public class ShatteredPixelDungeon extends Game {
 	public static final int v2_0_0  = 684;
 	
 	public ShatteredPixelDungeon( PlatformSupport platform ) {
-		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
+		super( sceneClass == null ? TitleScene.class : sceneClass, platform );
 
 		//pre-v1.3.0
 		com.watabou.utils.Bundle.addAlias(
@@ -95,6 +95,7 @@ public class ShatteredPixelDungeon extends Game {
 	}
 
 	public static void switchNoFade(Class<? extends PixelScene> c, SceneChangeCallback callback) {
+		System.out.println(c.getSimpleName());
 		PixelScene.noFade = true;
 		switchScene( c, callback );
 	}
