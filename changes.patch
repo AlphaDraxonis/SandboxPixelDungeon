@@ -1,7 +1,7 @@
 From 842d76240733a2d5c6b2b9f81b3cf3d10b0fd532 Mon Sep 17 00:00:00 2001
 From: Ich <jokist1901@gmail.com>
 Date: Mon, 17 Apr 2023 19:07:35 +0200
-Subject: [PATCH] Set to default configuration
+Subject: [PATCH 1/2] Set to default configuration
 
 ---
  build.gradle                                              | 8 ++++----
@@ -64,6 +64,147 @@ index 97f35f7ac..48d86b0ad 100644
      implementation project(':services:news:shatteredNews')
  }
 \ No newline at end of file
+-- 
+2.37.1.windows.1
+
+
+From f0c872e3296b6de7bc2afcb29752ed30454b4cb0 Mon Sep 17 00:00:00 2001
+From: Ich <jokist1901@gmail.com>
+Date: Mon, 17 Apr 2023 19:44:49 +0200
+Subject: [PATCH 2/2] Changed start scene
+
+---
+ .../src/main/java/com/watabou/noosa/Game.java |  2 +
+ changes.patch                                 | 69 +++++++++++++++++++
+ .../shatteredpixeldungeon/Dungeon.java        |  4 --
+ .../ShatteredPixelDungeon.java                |  3 +-
+ 4 files changed, 73 insertions(+), 5 deletions(-)
+ create mode 100644 changes.patch
+
+diff --git a/SPD-classes/src/main/java/com/watabou/noosa/Game.java b/SPD-classes/src/main/java/com/watabou/noosa/Game.java
+index 23194ace6..9d978f961 100644
+--- a/SPD-classes/src/main/java/com/watabou/noosa/Game.java
++++ b/SPD-classes/src/main/java/com/watabou/noosa/Game.java
+@@ -224,6 +224,8 @@ public class Game implements ApplicationListener {
+ 		instance.sceneClass = c;
+ 		instance.requestedReset = true;
+ 		instance.onChange = callback;
++		String s = sceneClass.getName();
++		s.length();
+ 	}
+ 	
+ 	public static Scene scene() {
+diff --git a/changes.patch b/changes.patch
+new file mode 100644
+index 000000000..88ee3e38d
+--- /dev/null
++++ b/changes.patch
+@@ -0,0 +1,69 @@
++From 842d76240733a2d5c6b2b9f81b3cf3d10b0fd532 Mon Sep 17 00:00:00 2001
++From: Ich <jokist1901@gmail.com>
++Date: Mon, 17 Apr 2023 19:07:35 +0200
++Subject: [PATCH] Set to default configuration
++
++---
++ build.gradle                                              | 8 ++++----
++ .../com/shatteredpixel/shatteredpixeldungeon/Dungeon.java | 5 +++++
++ desktop/build.gradle                                      | 2 +-
++ 3 files changed, 10 insertions(+), 5 deletions(-)
++
++diff --git a/build.gradle b/build.gradle
++index 9c95d5362..1c451137c 100644
++--- a/build.gradle
+++++ b/build.gradle
++@@ -4,17 +4,17 @@ buildscript {
++         mavenCentral()
++     }
++     dependencies {
++-        classpath 'com.android.tools.build:gradle:7.4.2'
+++        classpath 'com.android.tools.build:gradle:7.3.1'
++     }
++ }
++ 
++ allprojects {
++ 
++     ext {
++-        appName = 'Shattered Pixel Dungeon'
++-        appPackageName = 'com.shatteredpixel.shatteredpixeldungeon'
+++        appName = 'Sandbox Pixel Dungeon'
+++        appPackageName = 'com.shatteredpixel.sandbox'
++ 
++-        appVersionCode = 700
+++        appVersionCode = 701
++         appVersionName = '2.0.2'
++ 
++         appJavaCompatibility = JavaVersion.VERSION_1_8
++diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java
++index ba7b4db54..0c262db2c 100644
++--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java
+++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java
++@@ -92,6 +92,11 @@ import java.util.TimeZone;
++ 
++ public class Dungeon {
++ 
+++	static{
+++		System.out.println("Test");
+++	}
+++
+++
++ 	//enum of items which have limited spawns, records how many have spawned
++ 	//could all be their own separate numbers, but this allows iterating, much nicer for bundling/initializing.
++ 	public static enum LimitedDrops {
++diff --git a/desktop/build.gradle b/desktop/build.gradle
++index 97f35f7ac..48d86b0ad 100644
++--- a/desktop/build.gradle
+++++ b/desktop/build.gradle
++@@ -121,6 +121,6 @@ dependencies {
++     implementation "org.lwjgl:lwjgl-tinyfd:3.3.1:natives-linux"
++     implementation "org.lwjgl:lwjgl-tinyfd:3.3.1:natives-linux-arm64"
++ 
++-    implementation project(':services:updates:githubUpdates')
+++    implementation project(':services:updates:debugUpdates')
++     implementation project(':services:news:shatteredNews')
++ }
++\ No newline at end of file
++-- 
++2.37.1.windows.1
++
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java
+index 0c262db2c..41a1230e6 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java
+@@ -92,10 +92,6 @@ import java.util.TimeZone;
+ 
+ public class Dungeon {
+ 
+-	static{
+-		System.out.println("Test");
+-	}
+-
+ 
+ 	//enum of items which have limited spawns, records how many have spawned
+ 	//could all be their own separate numbers, but this allows iterating, much nicer for bundling/initializing.
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
+index 9fd96986c..6b43a7728 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
+@@ -43,7 +43,7 @@ public class ShatteredPixelDungeon extends Game {
+ 	public static final int v2_0_0  = 684;
+ 	
+ 	public ShatteredPixelDungeon( PlatformSupport platform ) {
+-		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
++		super( sceneClass == null ? TitleScene.class : sceneClass, platform );
+ 
+ 		//pre-v1.3.0
+ 		com.watabou.utils.Bundle.addAlias(
+@@ -95,6 +95,7 @@ public class ShatteredPixelDungeon extends Game {
+ 	}
+ 
+ 	public static void switchNoFade(Class<? extends PixelScene> c, SceneChangeCallback callback) {
++		System.out.println(c.getSimpleName());
+ 		PixelScene.noFade = true;
+ 		switchScene( c, callback );
+ 	}
 -- 
 2.37.1.windows.1
 
