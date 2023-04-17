@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.editor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
@@ -22,17 +23,18 @@ import com.watabou.utils.Point;
 public class CustomTestLevel extends Level {
 
     private final int width = 10, height = 10;
-    private  final  int[] terrains = {
+
+    private final int[] terrains = {
             WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL,
             WALL, WALL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WALL,
             WALL, WALL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WALL,
-            WALL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WALL,
+            WALL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EXIT, EMPTY, WALL,
             WALL, WATER, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WATER, EMPTY, WALL,
             WALL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, ENTRANCE, EMPTY, WALL,
             WALL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WALL,
-            WALL, WALL, WALL, WALL, WALL, EMPTY, EMPTY, EMPTY, EMPTY, WALL,
+            WALL, WALL, WALL, WALL, WALL, EMPTY, EMPTY, EMPTY, EXIT, WALL,
             WALL, EXIT, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WALL,
-            WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL
+            WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL,
     };
 
 
@@ -55,6 +57,7 @@ public class CustomTestLevel extends Level {
     protected boolean build() {
 
         setSize(width, height);
+        terrains[54] = Dungeon.depth;
 
 
         for (int i = 0; i < terrains.length; i++) {
@@ -65,10 +68,21 @@ public class CustomTestLevel extends Level {
 
         return true;
     }
-    protected  void  addTransitios(){
+
+    protected void addTransitios() {
+        int curBranch = Dungeon.branch;
         for (int i = 0; i < terrains.length; i++) {
-            if (terrains[i] == ENTRANCE) transitions.add(new LevelTransition(this, i,LevelTransition.Type.SURFACE));
-            else if (terrains[i] == EXIT) transitions.add(new LevelTransition(this, i,LevelTransition.Type.REGULAR_EXIT));
+            if (terrains[i] == ENTRANCE){
+                LevelTransition transition = new LevelTransition(this, i, Dungeon.depth == 1 ? LevelTransition.Type.SURFACE : LevelTransition.Type.REGULAR_ENTRANCE);
+//                transition.destBranch = parentBranch;
+                transitions.add(transition);
+            }
+            else if (terrains[i] == EXIT) {
+                LevelTransition transition = new LevelTransition(this, i, LevelTransition.Type.REGULAR_EXIT);
+                transition.destBranch = curBranch;
+                transitions.add(transition);
+                curBranch++;
+            }
         }
     }
 
@@ -79,21 +93,24 @@ public class CustomTestLevel extends Level {
 
     @Override
     protected void createMobs() {
-       Mob m1 = new Rat();
-       m1.pos=25;
-       mobs.add(m1);
+        Mob m1 = new Rat();
+        m1.pos = 25;
+        mobs.add(m1);
 
         Mob m2 = new Imp();
-        m2.pos=45;
+        m2.pos = 45;
         mobs.add(m2);
+        Mob m4 = new Imp();
+        m4.pos = 46;
+        mobs.add(m4);
+
         Mob m3 = new Scorpio();
-        m3.pos=83;
+        m3.pos = 83;
 
-        m3.paralysed=5000;
-        m3.invisible=10;
-        m3.damage(50,null);
+        m3.paralysed = 5000;
+        m3.invisible = 10;
 
-        mobs.add(m3);
+//        mobs.add(m3);
     }
 
 
@@ -104,8 +121,7 @@ public class CustomTestLevel extends Level {
     @Override
     protected void createItems() {
 
-        drop(new Torch(),21);
-
+        drop(new Torch(), 21);
 
     }
 

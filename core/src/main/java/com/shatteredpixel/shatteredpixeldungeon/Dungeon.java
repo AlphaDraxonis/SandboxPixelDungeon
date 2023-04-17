@@ -94,6 +94,8 @@ import java.util.TimeZone;
 public class Dungeon {
 
 
+	public  static  final  int MAX_DEPTH=50;
+
 	//enum of items which have limited spawns, records how many have spawned
 	//could all be their own separate numbers, but this allows iterating, much nicer for bundling/initializing.
 	public static enum LimitedDrops {
@@ -183,6 +185,7 @@ public class Dungeon {
 	// 0 is the default path
 	// Other numbers are currently unused
 	public static int branch;
+	public  static  int prevBranch;
 
 	public static int gold;
 	public static int energy;
@@ -344,7 +347,7 @@ public class Dungeon {
 					Statistics.deepestFloor--;
 			}
 		} else {
-			level = new DeadEndLevel();
+			level = new CustomTestLevel();
 			Statistics.deepestFloor--;
 		}
 		
@@ -716,7 +719,7 @@ public class Dungeon {
 		Generator.restoreFromBundle( bundle );
 
 		droppedItems = new SparseArray<>();
-		for (int i=1; i <= 26; i++) {
+		for (int i=1; i <= MAX_DEPTH; i++) {
 			
 			//dropped items
 			ArrayList<Item> items = new ArrayList<>();
