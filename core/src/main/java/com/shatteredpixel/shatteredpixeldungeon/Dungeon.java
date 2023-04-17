@@ -63,6 +63,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomTestLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
@@ -290,56 +291,56 @@ public class Dungeon {
 		Level level;
 		if (branch == 0) {
 			switch (depth) {
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-					level = new SewerLevel();
-					break;
-				case 5:
-					level = new SewerBossLevel();
-					break;
-				case 6:
-				case 7:
-				case 8:
-				case 9:
-					level = new PrisonLevel();
-					break;
-				case 10:
-					level = new PrisonBossLevel();
-					break;
-				case 11:
-				case 12:
-				case 13:
-				case 14:
-					level = new CavesLevel();
-					break;
-				case 15:
-					level = new CavesBossLevel();
-					break;
-				case 16:
-				case 17:
-				case 18:
-				case 19:
-					level = new CityLevel();
-					break;
-				case 20:
-					level = new CityBossLevel();
-					break;
-				case 21:
-				case 22:
-				case 23:
-				case 24:
-					level = new HallsLevel();
-					break;
-				case 25:
-					level = new HallsBossLevel();
-					break;
-				case 26:
-					level = new LastLevel();
-					break;
+//				case 1:
+//				case 2:
+//				case 3:
+//				case 4:
+//					level = new SewerLevel();
+//					break;
+//				case 5:
+//					level = new SewerBossLevel();
+//					break;
+//				case 6:
+//				case 7:
+//				case 8:
+//				case 9:
+//					level = new PrisonLevel();
+//					break;
+//				case 10:
+//					level = new PrisonBossLevel();
+//					break;
+//				case 11:
+//				case 12:
+//				case 13:
+//				case 14:
+//					level = new CavesLevel();
+//					break;
+//				case 15:
+//					level = new CavesBossLevel();
+//					break;
+//				case 16:
+//				case 17:
+//				case 18:
+//				case 19:
+//					level = new CityLevel();
+//					break;
+//				case 20:
+//					level = new CityBossLevel();
+//					break;
+//				case 21:
+//				case 22:
+//				case 23:
+//				case 24:
+//					level = new HallsLevel();
+//					break;
+//				case 25:
+//					level = new HallsBossLevel();
+//					break;
+//				case 26:
+//					level = new LastLevel();
+//					break;
 				default:
-					level = new DeadEndLevel();
+					level = new CustomTestLevel();
 					Statistics.deepestFloor--;
 			}
 		} else {
