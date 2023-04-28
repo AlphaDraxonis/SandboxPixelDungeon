@@ -25,7 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.input.GameAction;
 
 public class LootIndicator extends Tag {
@@ -44,8 +43,8 @@ public class LootIndicator extends Tag {
 	}
 
 	@Override
-	protected void createChildren() {
-		super.createChildren();
+	protected void createChildren(Object... params) {
+		super.createChildren(params);
 
 		slot = new ItemSlot() {
 			protected void onClick() {

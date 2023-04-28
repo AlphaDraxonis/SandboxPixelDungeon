@@ -69,7 +69,7 @@ public class BossHealthBar extends Component {
 	}
 
 	@Override
-	protected void createChildren() {
+	protected void createChildren(Object... params) {
 		bar = new Image(asset, 0, 0, 64, 16);
 		add(bar);
 

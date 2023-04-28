@@ -21,49 +21,155 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
 public class WndTitledMessage extends Window {
 
-	protected static final int WIDTH_MIN    = 120;
-	protected static final int WIDTH_MAX    = 220;
-	protected static final int GAP	= 2;
+    protected static final int WIDTH_MIN = 120;
+    protected static final int WIDTH_MAX = 220;
+    public static final int GAP = 2;
 
-	public WndTitledMessage( Image icon, String title, String message ) {
-		
-		this( new IconTitle( icon, title ), message );
+    protected final Component titlebar;
+    private final Body body;
+    private final ScrollPane sp;
+    private boolean needsScrollPane;
 
-	}
-	
-	public WndTitledMessage( Component titlebar, String message ) {
+    public WndTitledMessage(Image icon, String title, String message) {
+        this(new IconTitle(icon, title), message);
+    }
 
-		super();
+    public WndTitledMessage(Image icon, Image subIcon, String title, String message) {
+        this(new IconTitleWithSubIcon(icon, subIcon, title), message);
+    }
 
-		int width = WIDTH_MIN;
+    public WndTitledMessage(Image icon, String title, Component body) {
+        this(new IconTitle(icon, title), body);
+    }
 
-		titlebar.setRect( 0, 0, width, 0 );
-		add(titlebar);
+    public WndTitledMessage(Image icon, Image subIcon, String title, Component body) {
+        this(new IconTitleWithSubIcon(icon, subIcon, title), body);
+    }
 
-		RenderedTextBlock text = PixelScene.renderTextBlock( 6 );
-		text.text( message, width );
-		text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
-		add( text );
+    public WndTitledMessage(Component titlebar, String message) {
+        this(titlebar, PixelScene.renderTextBlock(message, 6));
+    }
 
-		while (PixelScene.landscape()
-				&& text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
-				&& width < WIDTH_MAX){
-			width += 20;
-			titlebar.setRect(0, 0, width, 0);
-			text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
-			text.maxWidth(width);
-		}
+    public WndTitledMessage(Component titlebar, Component body) {
+        this(titlebar, () -> new Body(body));
+    }
 
-		bringToFront(titlebar);
+    public WndTitledMessage(Component titlebar, BodyFactory createBody) {
+        super();
 
-		resize( width, (int)text.bottom() + 2 );
-	}
+        this.titlebar = titlebar;
+        this.body = createBody.create();
+
+        int width = WIDTH_MIN;
+        body.setMaxWith(width);
+
+        titlebar.setRect(0, 0, width, 0);
+        add(titlebar);
+
+        sp = new ScrollPane(body) {
+            @Override
+            protected void layout() {
+                super.layout();
+                thumb.visible = false;
+            }
+        };
+        add(sp);
+
+        layout();
+    }
+
+    public void layout() {
+
+        int width = WIDTH_MIN;
+        body.setSize(width, -1);
+
+        while (PixelScene.landscape()
+                && body.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
+                && width < WIDTH_MAX) {
+            width += 20;
+            titlebar.setRect(0, 0, width, 0);
+            body.setMaxWith(width);
+            body.layout();
+        }
+        titlebar.setRect(0, 0, width, 0);
+
+        body.setSize(width, -1);
+
+        int height = (int) (body.bottom() + titlebar.bottom());
+        int maxHeight = (int) (PixelScene.uiCamera.height * 0.9);
+
+        needsScrollPane = height > maxHeight;
+        if (needsScrollPane) {
+            height = maxHeight;
+            resize(width, height);
+        } else resize(width, height + 3 * GAP);
+        body.setPos(0, 0);
+        setPosAfterTitleBar(sp);
+        if (needsScrollPane) sp.setSize(width, height - titlebar.bottom() - 2.5f * GAP);
+        else sp.setSize(width, body.height() + GAP);
+        sp.scrollTo(sp.content().camera.scroll.x, sp.content().camera.scroll.y);
+
+        bringToFront(titlebar);
+    }
+
+    private void setPosAfterTitleBar(Component comp) {
+        comp.setPos(titlebar.left(), titlebar.bottom() + 2 * GAP);
+    }
+
+    //Body factory seems messy, but is the only way for custom bodies to receive input events
+    public interface BodyFactory {
+        Body create();
+    }
+
+    protected Component body() {
+        return body;
+    }
+
+    public boolean needsScrollPane() {
+        return needsScrollPane;
+    }
+
+
+    public static class Body extends Component {
+
+        private final Component c;
+
+        public Body() {
+            this(null);
+        }
+
+        public Body(Component txt) {
+            c = txt;
+            if (c != null) add(c);
+        }
+
+        public void setMaxWith(int width) {
+            if (c != null && c instanceof RenderedTextBlock)
+                ((RenderedTextBlock) c).maxWidth(width);
+        }
+
+        protected void layout() {
+            if (c != null) {
+                c.setRect(0, y, width, c.height() > 0 ? c.height() : WndMenuEditor.BTN_HEIGHT);
+                height = c.bottom() - y;
+            }
+        }
+
+
+    }
+
 }
+
+

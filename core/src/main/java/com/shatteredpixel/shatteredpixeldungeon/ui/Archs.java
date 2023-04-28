@@ -45,7 +45,7 @@ public class Archs extends Component {
 	public boolean reversed = false;
 
 	@Override
-	protected void createChildren() {
+	protected void createChildren(Object... params) {
 		arcsBg = new SkinnedBlock( 1, 1, Assets.Interfaces.ARCS_BG ){
 			@Override
 			protected NoosaScript script() {

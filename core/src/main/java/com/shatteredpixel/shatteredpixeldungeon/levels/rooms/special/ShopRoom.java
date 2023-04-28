@@ -265,7 +265,7 @@ public class ShopRoom extends SpecialRoom {
 				rare = new Stylus();
 		}
 		rare.cursed = false;
-		rare.cursedKnown = true;
+		rare.setCursedKnown(true);
 		itemsToSpawn.add( rare );
 
 		//hard limit is 63 items + 1 shopkeeper, as shops can't be bigger than 8x8=64 internally

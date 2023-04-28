@@ -221,4 +221,8 @@ public class TextInput extends Component {
 			if (!DeviceCompat.isDesktop()) Game.platform.updateSystemUI();
 		}
 	}
+
+	protected TextField getTextField() {
+		return textField;
+	}
 }

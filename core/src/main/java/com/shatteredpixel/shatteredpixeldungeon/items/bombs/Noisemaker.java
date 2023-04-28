@@ -58,7 +58,7 @@ public class Noisemaker extends Bomb {
 
 	@Override
 	public ItemSprite.Glowing glowing() {
-		if (fuse == null){
+		if (fuse == null && Dungeon.hero!=null){
 			for (Trigger trigger : Dungeon.hero.buffs(Trigger.class)){
 				Heap heap = Dungeon.level.heaps.get(trigger.cell);
 				if (heap != null && heap.items.contains(this)) {

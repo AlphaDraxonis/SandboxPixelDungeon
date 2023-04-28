@@ -228,8 +228,8 @@ public class WndHero extends WndTabbed {
 		TalentsPane pane;
 
 		@Override
-		protected void createChildren() {
-			super.createChildren();
+		protected void createChildren(Object... params) {
+			super.createChildren(params);
 			pane = new TalentsPane(TalentButton.Mode.UPGRADE);
 			add(pane);
 		}
@@ -251,9 +251,9 @@ public class WndHero extends WndTabbed {
 		private ArrayList<BuffSlot> slots = new ArrayList<>();
 
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 
-			super.createChildren();
+			super.createChildren(params);
 
 			buffList = new ScrollPane( new Component() ){
 				@Override

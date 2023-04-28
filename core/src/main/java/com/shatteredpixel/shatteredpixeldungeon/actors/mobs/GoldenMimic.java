@@ -88,7 +88,7 @@ public class GoldenMimic extends Mimic {
 		for (Item i : items){
 			if (i instanceof EquipableItem || i instanceof Wand){
 				i.cursed = false;
-				i.cursedKnown = true;
+				i.setCursedKnown(true);
 				if (i instanceof Weapon && ((Weapon) i).hasCurseEnchant()){
 					((Weapon) i).enchant(null);
 				}

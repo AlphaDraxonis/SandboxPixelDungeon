@@ -469,7 +469,7 @@ public class WndRanking extends WndTabbed {
 			this.item = item;
 			
 			slot.item( item );
-			if (item.cursed && item.cursedKnown) {
+			if (item.cursed && item.cursedKnown()) {
 				bg.ra = +0.2f;
 				bg.ga = -0.1f;
 			} else if (!item.isIdentified()) {
@@ -479,7 +479,7 @@ public class WndRanking extends WndTabbed {
 		}
 		
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			
 			bg = new ColorBlock( 28, HEIGHT, 0x9953564D );
 			add( bg );
@@ -537,7 +537,7 @@ public class WndRanking extends WndTabbed {
 			super(item);
 			this.item = item;
 
-			if (item.cursed && item.cursedKnown) {
+			if (item.cursed && item.cursedKnown()) {
 				bg.ra = +0.2f;
 				bg.ga = -0.1f;
 			} else if (!item.isIdentified()) {
@@ -547,7 +547,7 @@ public class WndRanking extends WndTabbed {
 		}
 
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			bg = new ColorBlock( 1, 1, 0x9953564D );
 			add( bg );
 

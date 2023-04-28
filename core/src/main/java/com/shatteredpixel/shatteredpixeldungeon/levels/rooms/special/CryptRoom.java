@@ -88,7 +88,8 @@ public class CryptRoom extends SpecialRoom {
 				prize.inscribe(Armor.Glyph.randomCurse());
 			}
 		}
-		prize.cursed = prize.cursedKnown = true;
+		prize.setCursedKnown(true);
+		prize.cursed = true;
 		
 		return prize;
 	}

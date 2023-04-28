@@ -98,7 +98,8 @@ public class SacrificeRoom extends SpecialRoom {
 				prize.enchant(Weapon.Enchantment.randomCurse());
 			}
 		}
-		prize.cursed = prize.cursedKnown = true;
+		prize.setCursedKnown(true);
+		prize.cursed = true;
 
 		return prize;
 	}

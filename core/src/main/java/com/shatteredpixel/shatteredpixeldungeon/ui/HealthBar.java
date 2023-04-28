@@ -41,7 +41,7 @@ public class HealthBar extends Component {
 	private float shield;
 	
 	@Override
-	protected void createChildren() {
+	protected void createChildren(Object... params) {
 		Bg = new ColorBlock( 1, 1, COLOR_BG );
 		add( Bg );
 

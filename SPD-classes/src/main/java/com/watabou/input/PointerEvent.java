@@ -154,6 +154,8 @@ public class PointerEvent {
 				PointerEvent existing = activePointers.get(p.id);
 				existing.current = p.current;
 				if (existing.type == p.type){
+//					activePointers.remove(existing.id);
+//					pointerSignal.dispatch(existing.up());
 					pointerSignal.dispatch( null );
 				} else if (p.type == Type.DOWN) {
 					pointerSignal.dispatch( existing );

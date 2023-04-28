@@ -47,7 +47,7 @@ public class Tag extends Button {
 	}
 	
 	@Override
-	protected void createChildren() {
+	protected void createChildren(Object... params) {
 		
 		super.createChildren();
 		

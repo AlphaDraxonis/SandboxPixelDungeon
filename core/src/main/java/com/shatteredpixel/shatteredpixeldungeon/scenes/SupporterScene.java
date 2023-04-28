@@ -35,7 +35,6 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.DeviceCompat;
 
 public class SupporterScene extends PixelScene {
 
@@ -116,7 +115,7 @@ public class SupporterScene extends PixelScene {
 		Image icon;
 
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			bg = Chrome.get(Chrome.Type.GREY_BUTTON_TR);
 			add(bg);
 

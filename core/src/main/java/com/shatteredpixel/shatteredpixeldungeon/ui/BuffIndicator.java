@@ -25,17 +25,14 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoBuff;
-import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.noosa.ui.Component;
@@ -127,7 +124,7 @@ public class BuffIndicator extends Component {
 	private static BuffIndicator heroInstance;
 	private static BuffIndicator bossInstance;
 	
-	private LinkedHashMap<Buff, BuffButton> buffButtons = new LinkedHashMap<>();
+	protected LinkedHashMap<Buff, BuffButton> buffButtons = new LinkedHashMap<>();
 	private boolean needsRefresh;
 	private Char ch;
 
@@ -204,7 +201,7 @@ public class BuffIndicator extends Component {
 		//add new icons
 		for (Buff buff : newBuffs) {
 			if (!buffButtons.containsKey(buff)) {
-				BuffButton icon = new BuffButton(buff, large);
+				BuffButton icon = createBuffButton(buff,large);
 				add(icon);
 				buffButtons.put( buff, icon );
 			}
@@ -248,13 +245,18 @@ public class BuffIndicator extends Component {
 		}
 	}
 
+	//Factory method
+	protected  BuffButton createBuffButton(Buff buff,boolean large){
+		return  new BuffButton(buff,large);
+	}
+
 	public boolean allBuffsVisible(){
 		return !buffsHidden;
 	}
 
-	private static class BuffButton extends IconButton {
+	protected static class BuffButton extends IconButton {
 
-		private Buff buff;
+		protected Buff buff;
 
 		private boolean large;
 
@@ -271,8 +273,8 @@ public class BuffIndicator extends Component {
 		}
 
 		@Override
-		protected void createChildren() {
-			super.createChildren();
+		protected void createChildren(Object... params) {
+			super.createChildren(params);
 			grey = new Image( TextureCache.createSolid(0xCC666666));
 			add( grey );
 

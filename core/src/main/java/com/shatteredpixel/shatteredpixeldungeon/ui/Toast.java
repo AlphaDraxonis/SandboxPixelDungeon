@@ -45,8 +45,8 @@ public class Toast extends Component {
 	}
 
 	@Override
-	protected void createChildren() {
-		super.createChildren();
+	protected void createChildren(Object... params) {
+		super.createChildren(params);
 
 		bg = Chrome.get( Chrome.Type.TOAST_TR );
 		add( bg );

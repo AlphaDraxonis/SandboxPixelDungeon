@@ -95,7 +95,7 @@ public class Toolbar extends Component {
 	}
 
 	@Override
-	protected void createChildren() {
+	protected void createChildren(Object... params) {
 
 		add(btnSwap = new SlotSwapTool(128, 0, 21, 23));
 
@@ -355,7 +355,7 @@ public class Toolbar extends Component {
 			}
 
 			@Override
-			protected void createChildren() {
+			protected void createChildren(Object... params) {
 				super.createChildren();
 				arrow = Icons.get(Icons.COMPASS);
 				arrow.originToCenter();
@@ -697,7 +697,7 @@ public class Toolbar extends Component {
 		}
 		
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			super.createChildren();
 			
 			base = new Image( Assets.Interfaces.TOOLBAR );

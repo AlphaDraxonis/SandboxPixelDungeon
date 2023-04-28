@@ -64,7 +64,7 @@ public class ItemSlot extends Button {
 	private static final String TXT_STRENGTH	= ":%d";
 	private static final String TXT_TYPICAL_STR	= "%d?";
 
-	private static final String TXT_LEVEL	= "%+d";
+	public static final String TXT_LEVEL	= "%+d";
 
 	// Special "virtual items"
 	public static final Item CHEST = new Item() {
@@ -104,9 +104,9 @@ public class ItemSlot extends Button {
 	}
 		
 	@Override
-	protected void createChildren() {
+	protected void createChildren(Object... params) {
 		
-		super.createChildren();
+		super.createChildren(params);
 		
 		sprite = new ItemSprite();
 		add(sprite);
@@ -246,7 +246,7 @@ public class ItemSlot extends Button {
 
 		} else if (item instanceof Weapon || item instanceof Armor) {
 
-			if (item.levelKnown){
+			if (item.levelKnown()){
 				int str = item instanceof Weapon ? ((Weapon)item).STRReq() : ((Armor)item).STRReq();
 				extra.text( Messages.format( TXT_STRENGTH, str ) );
 				if (str > Dungeon.hero.STR()) {

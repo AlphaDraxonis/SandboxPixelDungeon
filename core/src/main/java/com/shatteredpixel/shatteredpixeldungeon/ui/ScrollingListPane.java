@@ -21,184 +21,203 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
+import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.MovieClip;
+import com.watabou.noosa.Scene;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 
 public class ScrollingListPane extends ScrollPane {
 
-	private ArrayList<Component> items = new ArrayList<>();
+    private ArrayList<Component> items = new ArrayList<>();
 
-	private static final int ITEM_HEIGHT	= 18;
+    private static final int ITEM_HEIGHT = 18;
 
-	public ScrollingListPane(){
-		super(new Component());
-	}
+    public ScrollingListPane() {
+        super(new Component());
+    }
 
-	@Override
-	public void onClick(float x, float y) {
-		for (Component item : items) {
-			if ((item instanceof ListItem) && ((ListItem) item).onClick( x, y )) {
-				break;
-			}
-		}
-	}
 
-	public void addItem( Image icon, String iconText, String text ){
-		addItem( new ListItem(icon, iconText, text) );
-	}
+    @Override
+    public void onClick(float x, float y) {
+        Group p = parent;
+        while (p != null && !(p instanceof Window)) {
+            p = p.parent;
+        }
+        Scene s = ShatteredPixelDungeon.scene();
+        if (!(s instanceof PixelScene) || p == null) completeClick(x, y);
+        else if (((PixelScene) s).isAtFront((Window) p)) completeClick(x, y);
+    }
 
-	public void addItem( ListItem item ){
-		content.add(item);
-		items.add(item);
-		layout();
-	}
+    private void completeClick(float x, float y) {
+        for (Component item : items) {
+            if ((item instanceof ListItem) && ((ListItem) item).onClick(x, y)) {
+                break;
+            }
+        }
+    }
 
-	public void addTitle( String text ){
-		ListTitle title = new ListTitle(text);
-		content.add(title);
-		items.add(title);
-		layout();
-	}
+    public void addItem(Image icon, String iconText, String text) {
+        addItem(new ListItem(icon, iconText, text));
+    }
 
-	@Override
-	public synchronized void clear() {
-		content.clear();
-		items.clear();
-	}
+    public void addItem(ListItem item) {
+        content.add(item);
+        items.add(item);
+        layout();
+    }
 
-	@Override
-	protected void layout() {
-		super.layout();
+    public void addTitle(String text) {
+        ListTitle title = new ListTitle(text);
+        content.add(title);
+        items.add(title);
+        layout();
+    }
 
-		float pos = 0;
-		for (Component item : items){
-			item.setRect(0, pos, width, ITEM_HEIGHT);
-			pos += item.height();
-		}
+    @Override
+    public synchronized void clear() {
+        content.clear();
+        items.clear();
+    }
 
-		content.setSize(width, pos);
-	}
+    @Override
+    protected void layout() {
+        super.layout();
 
-	public static class ListItem extends Component {
+        float pos = 0;
+        for (Component item : items) {
+            item.setRect(0, pos, width, ITEM_HEIGHT);
+            pos += item.height();
+        }
 
-		protected Image icon;
-		protected BitmapText iconLabel;
-		protected RenderedTextBlock label;
-		protected ColorBlock line;
+        content.setSize(width, pos);
+    }
 
-		public ListItem( Image icon, String text ) {
-			this(icon, null, text);
-		}
+    public static class ListItem extends Component {
 
-		public ListItem( Image icon, String iconText, String text ) {
-			super();
+        protected static final int ICON_WIDTH = 16;
 
-			if (icon != null) {
-				this.icon.copy(icon);
-			} else {
-				remove(label);
-				label = PixelScene.renderTextBlock(9);
-				add(label);
-			}
+        protected Image icon;
+        protected BitmapText iconLabel;
+        protected RenderedTextBlock label;
+        protected ColorBlock line;
 
-			label.text( text );
+        public ListItem(Image icon, String text) {
+            this(icon, null, text);
+        }
 
-			if (iconText != null) {
-				iconLabel.text(iconText);
-				iconLabel.measure();
-			}
-		}
+        public ListItem(Image icon, String iconText, String text) {
+            super(icon);
 
-		public boolean onClick( float x, float y ){
-			return false;
-		}
+            if (icon == null) {
+                remove(label);
+                label = PixelScene.renderTextBlock(9);
+                add(label);
+            }
 
-		public void hardlight( int color ){
-			iconLabel.hardlight(color);
-			label.hardlight(color);
-		}
+            label.text(text);
 
-		public void hardlightIcon( int color ){
-			icon.hardlight(color);
-		}
+            if (iconText != null) {
+                iconLabel.text(iconText);
+                iconLabel.measure();
+            }
+        }
 
-		@Override
-		protected void createChildren() {
-			icon = new Image();
-			add( icon );
+        public boolean onClick(float x, float y) {
+            return false;
+        }
 
-			iconLabel = new BitmapText( PixelScene.pixelFont);
-			add( iconLabel );
+        public void hardlight(int color) {
+            iconLabel.hardlight(color);
+            label.hardlight(color);
+        }
 
-			label = PixelScene.renderTextBlock( 7 );
-			add( label );
+        public void hardlightIcon(int color) {
+            icon.hardlight(color);
+        }
 
-			line = new ColorBlock( 1, 1, 0xFF222222);
-			add(line);
+        @Override
+        protected void createChildren(Object... params) {
+            if (params != null && params.length > 0) icon = (Image) params[0];
+            else icon = new Image();
+            add(icon);
 
-		}
+            iconLabel = new BitmapText(PixelScene.pixelFont);
+            add(iconLabel);
 
-		@Override
-		protected void layout() {
+            label = PixelScene.renderTextBlock(7);
+            add(label);
 
-			icon.y = y + 1 + (height() - 1 - icon.height()) / 2f;
-			icon.x = x + (16 - icon.width())/2f;
-			PixelScene.align(icon);
+            line = new ColorBlock(1, 1, 0xFF222222);
+            add(line);
 
-			iconLabel.x = icon.x + (icon.width - iconLabel.width()) / 2f;
-			iconLabel.y = icon.y + (icon.height - iconLabel.height()) / 2f + 0.5f;
-			PixelScene.align(iconLabel);
+        }
 
-			line.size(width, 1);
-			line.x = x;
-			line.y = y;
+        @Override
+        protected void layout() {
 
-			label.maxWidth((int)(width - 16 - 1));
-			label.setPos(x + 17, y + (height() - label.height()) / 2f);
-			PixelScene.align(label);
-		}
-	}
+            icon.y = y + 1 + (height() - 1 - icon.height()) / 2f;
+            icon.x = x + (ICON_WIDTH - icon.width()) / 2f;
+            PixelScene.align(icon);
 
-	public static class ListTitle extends Component {
+            iconLabel.x = icon.x + (icon.width - iconLabel.width()) / 2f;
+            iconLabel.y = icon.y + (icon.height - iconLabel.height()) / 2f + 0.5f;
+            PixelScene.align(iconLabel);
 
-		protected RenderedTextBlock label;
-		protected ColorBlock line;
+            line.size(width, 1);
+            line.x = x;
+            line.y = y;
 
-		public ListTitle (String title){
-			super();
-			label.text(title);
-		}
+            label.maxWidth((int) (width - ICON_WIDTH - 1));
+            float plus;
+            if (icon instanceof MovieClip) plus = 2.5f;//Animations need more space!
+            else plus = 1;//1 is gap
+            label.setPos(x + ICON_WIDTH + plus, y + (height() - label.height()) / 2f);
+            PixelScene.align(label);
+        }
+    }
 
-		@Override
-		protected void createChildren() {
-			label = PixelScene.renderTextBlock( 9 );
-			label.hardlight(Window.TITLE_COLOR);
-			add( label );
+    public static class ListTitle extends Component {
 
-			line = new ColorBlock( 1, 1, 0xFF222222);
-			add(line);
+        protected RenderedTextBlock label;
+        protected ColorBlock line;
 
-		}
+        public ListTitle(String title) {
+            super();
+            label.text(title);
+        }
 
-		@Override
-		protected void layout() {
+        @Override
+        protected void createChildren(Object... params) {
+            label = PixelScene.renderTextBlock(9);
+            label.hardlight(Window.TITLE_COLOR);
+            add(label);
 
-			line.size(width, 1);
-			line.x = x;
-			line.y = y;
+            line = new ColorBlock(1, 1, 0xFF222222);
+            add(line);
 
-			label.maxWidth((int)(width - 1));
-			label.setPos((width-label.width())/2f,
-					y + (height() - label.height()) / 2f);
-			PixelScene.align(label);
-		}
+        }
 
-	}
+        @Override
+        protected void layout() {
+
+            line.size(width, 1);
+            line.x = x;
+            line.y = y;
+
+            label.maxWidth((int) (width - 1));
+            label.setPos((width - label.width()) / 2f,
+                    y + (height() - label.height()) / 2f);
+            PixelScene.align(label);
+        }
+
+    }
 
 
 }

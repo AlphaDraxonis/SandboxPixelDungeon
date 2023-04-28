@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -171,7 +172,7 @@ public class WndSettings extends WndTabbed {
 			}
 
 			@Override
-			protected void createChildren() {
+			protected void createChildren(Object... params) {
 				super.createChildren();
 				switch(Messages.lang().status()){
 					case UNFINISHED:
@@ -229,7 +230,7 @@ public class WndSettings extends WndTabbed {
 		OptionSlider optFollowIntensity;
 
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);
@@ -281,7 +282,7 @@ public class WndSettings extends WndTabbed {
 				add( chkSaver );
 			}
 
-			if (DeviceCompat.isAndroid()) {
+			if (DeviceCompat.isAndroid()&&!(ShatteredPixelDungeon.scene() instanceof  EditorScene)) {//TODO fixen?
 				Boolean landscape = SPDSettings.landscape();
 				if (landscape == null){
 					landscape = Game.width > Game.height;
@@ -400,7 +401,7 @@ public class WndSettings extends WndTabbed {
 		CheckBox chkFont;
 
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);
@@ -672,7 +673,7 @@ public class WndSettings extends WndTabbed {
 		OptionSlider optHoldMoveSens;
 
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);
@@ -790,7 +791,7 @@ public class WndSettings extends WndTabbed {
 		CheckBox chkWifi;
 
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);
@@ -897,7 +898,7 @@ public class WndSettings extends WndTabbed {
 		CheckBox chkMusicBG;
 
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);
@@ -1052,7 +1053,7 @@ public class WndSettings extends WndTabbed {
 		RedButton btnCredits;
 
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			title = PixelScene.renderTextBlock(Messages.get(this, "title"), 9);
 			title.hardlight(TITLE_COLOR);
 			add(title);

@@ -41,7 +41,7 @@ public class CurrencyIndicator extends Component {
 	private float energyTime;
 	
 	@Override
-	protected void createChildren() {
+	protected void createChildren(Object... params) {
 		gold = new BitmapText( PixelScene.pixelFont);
 		add( gold );
 

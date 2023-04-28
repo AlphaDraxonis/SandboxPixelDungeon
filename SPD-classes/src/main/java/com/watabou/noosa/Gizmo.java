@@ -21,8 +21,9 @@
 
 package com.watabou.noosa;
 
+
 public class Gizmo {
-	
+
 	public boolean exists;
 	public boolean alive;
 	public boolean active;

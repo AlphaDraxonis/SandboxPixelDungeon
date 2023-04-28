@@ -1,0 +1,59 @@
+Klasse com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary
+
+Änderungen in com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane.Item an ImageIcon beachten!! und auch extraGAP
+
+Achtung bei WndInfo...!!! und Button und ScrollPane und PointerArea
+WndTabbed animieres Bild
+
+Methoden geändert für Einbindung des Generators (Auch Aufruf in Dungeon init ändern!):
+Scroll.initLabels();
+Potion.initColors();
+Ring.initGems();
+
+
+ItemStatusHandler: assignLabels
+
+MeleeWeapon#info(), Armor#info() und Wand#info() und ClassArmor#desc() und    MeleeWeapon#buffedLvl() und Weapon#buffedLvl() und Armor#*() und Item#*()  if(Dungeon.hero != null)
+WandOfTransmution#statsDes()  int selfDMG =Dungeon.hero == null?999:  Math.round(Dungeon.hero.HT * 0.05f);
+auch in SpiritBow#info() und in RingOfForce#statsInfo() und RingOfForce#info() und Ring#buffedLvl()
+
+ItemStatusHandler:  public boolean isKnown(T item) {
+        return known.contains(item.getClass())|| CustomDungeon.isEditing();
+    }
+und in Scroll, ExoticScroll, Potion, ExoticPotion und Ring  bei isKnown auch noch mal || CustomDungeon.isEditing()
+
+In Ring, Poition, Scroll bei #isKnown():   || CustomDungeon.isEditing();
+ und Weapon#*()  (jew. nach glyph null check)
+
+neue Methoden in Item: cursedKnown(): zusätlich ||CustomDungeon.isEditing() ALLE Verwendungen durch diese Getter ersetzen
+
+Übersetzungsfehler in items.potions.potionoftoxicgas.desc (dieses statt diese)
+
+
+in PixelScene:
+public boolean isAtFront(Window window) {
+        int i = members.size() - 1;
+        Gizmo g = null;
+        while (g == null && i >= 0) {
+            g = members.get(i);
+            i--;
+        }
+        return g == window;
+    }
+und in ScrollingListPane
+public void onClick(float x, float y) {
+        Group p = parent;
+        while (p != null && !(p instanceof Window)) {
+            p = p.parent;
+        }
+        Scene s = ShatteredPixelDungeon.scene();
+        if (!(s instanceof PixelScene) || p == null) completeClick(x, y);
+        else if (((PixelScene) s).isAtFront((Window) p)) completeClick(x, y);
+    }
+    private void completeClick(float x, float y) {
+        for (Component item : items) {
+            if ((item instanceof ListItem) && ((ListItem) item).onClick(x, y)) {
+                break;
+            }
+        }
+    }

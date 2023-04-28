@@ -29,10 +29,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.ColorBlock;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 
 public class InventorySlot extends ItemSlot {
@@ -48,11 +46,11 @@ public class InventorySlot extends ItemSlot {
 	}
 
 	@Override
-	protected void createChildren() {
+	protected void createChildren(Object... params) {
 		bg = new ColorBlock( 1, 1, NORMAL );
 		add( bg );
 
-		super.createChildren();
+		super.createChildren(params);
 	}
 
 	@Override
@@ -89,11 +87,11 @@ public class InventorySlot extends ItemSlot {
 
 			bg.texture( TextureCache.createSolid( equipped ? EQUIPPED : NORMAL ) );
 			bg.resetColor();
-			if (item.cursed && item.cursedKnown) {
+			if (item.cursed && item.cursedKnown()) {
 				bg.ra = +0.3f;
 				bg.ga = -0.15f;
 			} else if (!item.isIdentified()) {
-				if ((item instanceof EquipableItem || item instanceof Wand) && item.cursedKnown){
+				if ((item instanceof EquipableItem || item instanceof Wand) && item.cursedKnown()){
 					bg.ba = 0.3f;
 				} else {
 					bg.ra = 0.3f;

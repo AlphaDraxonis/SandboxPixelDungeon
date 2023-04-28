@@ -86,7 +86,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	}
 	private int stunStates = 0;
 	
-	protected Animation idle;
+	public Animation idle;
 	protected Animation run;
 	protected Animation attack;
 	protected Animation operate;
@@ -130,7 +130,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		super();
 		listener = this;
 	}
-	
+
 	@Override
 	public void play(Animation anim) {
 		//Shouldn't interrupt the dieing animation

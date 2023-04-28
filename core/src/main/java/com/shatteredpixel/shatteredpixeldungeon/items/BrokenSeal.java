@@ -53,7 +53,7 @@ public class BrokenSeal extends Item {
 	{
 		image = ItemSpriteSheet.SEAL;
 
-		cursedKnown = levelKnown = true;
+		setCursedKnown(levelKnown = true);
 		unique = true;
 		bones = false;
 
@@ -127,7 +127,7 @@ public class BrokenSeal extends Item {
 			BrokenSeal seal = (BrokenSeal) curItem;
 			if (item != null && item instanceof Armor) {
 				Armor armor = (Armor)item;
-				if (!armor.levelKnown){
+				if (!armor.levelKnown()){
 					GLog.w(Messages.get(BrokenSeal.class, "unknown_armor"));
 
 				} else if (armor.cursed && (seal.getGlyph() == null || !seal.getGlyph().curse())){

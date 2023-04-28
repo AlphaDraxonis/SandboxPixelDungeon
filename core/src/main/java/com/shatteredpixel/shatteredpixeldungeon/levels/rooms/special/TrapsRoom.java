@@ -131,7 +131,7 @@ public class TrapsRoom extends SpecialRoom {
 				prize = Generator.randomArmor((Dungeon.depth / 5) + 1);
 			}
 		} while (prize.cursed || Challenges.isItemBlocked(prize));
-		prize.cursedKnown = true;
+		prize.setCursedKnown(true);
 
 		//33% chance for an extra update.
 		if (Random.Int(3) == 0){

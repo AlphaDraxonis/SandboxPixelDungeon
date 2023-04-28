@@ -515,7 +515,7 @@ public class Badges {
 		// 3) When an item is identified
 
 		// Note that artifacts should never trigger this badge as they are alternatively upgraded
-		if (!item.levelKnown || item instanceof Artifact) {
+		if (!item.levelKnown()|| item instanceof Artifact) {
 			return;
 		}
 

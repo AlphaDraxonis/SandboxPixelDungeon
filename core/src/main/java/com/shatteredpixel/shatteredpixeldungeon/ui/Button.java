@@ -32,193 +32,248 @@ import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Signal;
 
-import java.util.ArrayList;
-
 public class Button extends Component {
 
-	public static float longClick = 0.5f;
-	
-	protected PointerArea hotArea;
-	protected Tooltip hoverTip;
+    public static float longClick = 0.5f;
 
-	//only one button should be pressed at a time
-	protected static Button pressedButton;
-	protected float pressTime;
-	protected boolean clickReady;
+    protected PointerArea hotArea;
+    protected Tooltip hoverTip;
 
-	@Override
-	protected void createChildren() {
-		hotArea = new PointerArea( 0, 0, 0, 0 ) {
-			@Override
-			protected void onPointerDown( PointerEvent event ) {
-				pressedButton = Button.this;
-				pressTime = 0;
-				clickReady = true;
-				Button.this.onPointerDown();
-			}
-			@Override
-			protected void onPointerUp( PointerEvent event ) {
-				if (pressedButton == Button.this){
-					pressedButton = null;
-				} else {
-					//cancel any potential click, only one button can be activated at a time
-					clickReady = false;
-				}
-				Button.this.onPointerUp();
-			}
-			@Override
-			protected void onClick( PointerEvent event ) {
-				if (clickReady) {
-					killTooltip();
-					switch (event.button){
-						case PointerEvent.LEFT: default:
-							Button.this.onClick();
-							break;
-						case PointerEvent.RIGHT:
-							Button.this.onRightClick();
-							break;
-						case PointerEvent.MIDDLE:
-							Button.this.onMiddleClick();
-							break;
-					}
+    //only one button should be pressed at a time
+    protected static Button pressedButton;
+    protected float pressTime;
+    protected boolean clickReady;
 
-				}
-			}
 
-			@Override
-			protected void onHoverStart(PointerEvent event) {
-				String text = hoverText();
-				if (text != null){
-					int key = 0;
-					if (keyAction() != null){
-						key = KeyBindings.getFirstKeyForAction(keyAction(), ControllerHandler.controllerActive);
-					}
+    public  Button(Object... params){
+        super(params);
+    }
 
-					if (key == 0 && secondaryTooltipAction() != null){
-						key = KeyBindings.getFirstKeyForAction(secondaryTooltipAction(), ControllerHandler.controllerActive);
-					}
+    @Override
+    protected void createChildren(Object... params) {
+        hotArea = new PointerArea(0, 0, 0, 0) {
+            @Override
+            protected void onPointerDown(PointerEvent event) {
+                pressedButton = Button.this;
+                pressTime = 0;
+                clickReady = true;
+                Button.this.onPointerDown();
+            }
 
-					if (key != 0){
-						text += " _(" + KeyBindings.getKeyName(key) + ")_";
-					}
-					hoverTip = new Tooltip(Button.this, text, 80);
-					Button.this.parent.addToFront(hoverTip);
-					hoverTip.camera = camera();
-					alignTooltip(hoverTip);
-				}
-			}
+            @Override
+            protected void onPointerUp(PointerEvent event) {
+                if (pressedButton == Button.this) {
+                    pressedButton = null;
+                } else {
+                    //cancel any potential click, only one button can be activated at a time
+                    clickReady = false;
+                }
+                isclickHolding = false;
+                Button.this.onPointerUp();
+            }
 
-			@Override
-			protected void onHoverEnd(PointerEvent event) {
-				killTooltip();
-			}
-		};
-		add( hotArea );
-		
-		KeyEvent.addKeyListener( keyListener = new Signal.Listener<KeyEvent>() {
-			@Override
-			public boolean onSignal ( KeyEvent event ) {
-				if ( active && KeyBindings.getActionForKey( event ) == keyAction()){
-					if (event.pressed){
-						pressedButton = Button.this;
-						pressTime = 0;
-						clickReady = true;
-						Button.this.onPointerDown();
-					} else {
-						Button.this.onPointerUp();
-						if (pressedButton == Button.this) {
-							pressedButton = null;
-							if (clickReady) onClick();
-						}
-					}
-					return true;
-				}
-				return false;
-			}
-		});
-	}
-	
-	private Signal.Listener<KeyEvent> keyListener;
-	
-	public GameAction keyAction(){
-		return null;
-	}
+            @Override
+            protected void onClick(PointerEvent event) {
+                if (clickReady) {
+                    killTooltip();
+                    switch (event.button) {
+                        case PointerEvent.LEFT:
+                        default:
+                            Button.this.onClick();
+                            break;
+                        case PointerEvent.RIGHT:
+                            Button.this.onRightClick();
+                            break;
+                        case PointerEvent.MIDDLE:
+                            Button.this.onMiddleClick();
+                            break;
+                    }
 
-	//used in cases where the main key action isn't bound, but a secondary action can be used for the tooltip
-	public GameAction secondaryTooltipAction(){
-		return null;
-	}
+                }
+            }
 
-	@Override
-	public void update() {
-		super.update();
-		
-		hotArea.active = visible;
-		
-		if (pressedButton == this && (pressTime += Game.elapsed) >= longClick) {
-			pressedButton = null;
-			if (onLongClick()) {
+            @Override
+            protected void onHoverStart(PointerEvent event) {
+                String text = hoverText();
+                if (text != null) {
+                    int key = 0;
+                    if (keyAction() != null) {
+                        key = KeyBindings.getFirstKeyForAction(keyAction(), ControllerHandler.controllerActive);
+                    }
 
-				hotArea.reset();
-				clickReady = false; //did a long click, can't do a regular one
-				onPointerUp();
+                    if (key == 0 && secondaryTooltipAction() != null) {
+                        key = KeyBindings.getFirstKeyForAction(secondaryTooltipAction(), ControllerHandler.controllerActive);
+                    }
 
-				Game.vibrate( 50 );
-			}
-		}
-	}
-	
-	protected void onPointerDown() {}
-	protected void onPointerUp() {}
-	protected void onClick() {} //left click, default key type
-	protected void onRightClick() {}
-	protected void onMiddleClick() {}
-	protected boolean onLongClick() {
-		return false;
-	}
+                    if (key != 0) {
+                        text += " _(" + KeyBindings.getKeyName(key) + ")_";
+                    }
+                    hoverTip = new Tooltip(Button.this, text, 80);
+                    Button.this.parent.addToFront(hoverTip);
+                    hoverTip.camera = camera();
+                    alignTooltip(hoverTip);
+                }
+            }
 
-	protected String hoverText() {
-		return null;
-	}
+            @Override
+            protected void onHoverEnd(PointerEvent event) {
+                killTooltip();
+            }
+        };
+        add(hotArea);
 
-	//TODO might be nice for more flexibility here
-	private void alignTooltip( Tooltip tip ){
-		tip.setPos(x, y-tip.height()-1);
-		Camera cam = camera();
-		//shift left if there's no room on the right
-		if (tip.right() > (cam.width+cam.scroll.x)){
-			tip.setPos(tip.left() - (tip.right() - (cam.width+cam.scroll.x)), tip.top());
-		}
-		//move to the bottom if there's no room on top
-		if (tip.top() < 0){
-			tip.setPos(tip.left(), bottom()+1);
-		}
-	}
+        KeyEvent.addKeyListener(keyListener = event -> {
+            if (active && KeyBindings.getActionForKey(event) == keyAction()) {
+                if (event.pressed) {
+                    pressedButton = Button.this;
+                    pressTime = 0;
+                    clickReady = true;
+                    Button.this.onPointerDown();
+                } else {
+                    //moved Button.this.onPointerUp() from here a few lines down so onClick() is called first
+                    if (pressedButton == Button.this) {
+                        pressedButton = null;
+                        if (clickReady) onClick();
+                    }
+                    Button.this.onPointerUp();
+                }
+                return true;
+            }
+            return false;
+        });
+    }
 
-	public void killTooltip(){
-		if (hoverTip != null){
-			hoverTip.killAndErase();
-			hoverTip = null;
-		}
-	}
-	
-	@Override
-	protected void layout() {
-		hotArea.x = x;
-		hotArea.y = y;
-		hotArea.width = width;
-		hotArea.height = height;
-	}
-	
-	@Override
-	public synchronized void destroy () {
-		super.destroy();
-		KeyEvent.removeKeyListener( keyListener );
-		killTooltip();
-	}
+    private Signal.Listener<KeyEvent> keyListener;
 
-	public void givePointerPriority(){
-		hotArea.givePointerPriority();
-	}
-	
+    public GameAction keyAction() {
+        return null;
+    }
+
+    //used in cases where the main key action isn't bound, but a secondary action can be used for the tooltip
+    public GameAction secondaryTooltipAction() {
+        return null;
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        hotArea.active = visible;
+        pressTime += Game.elapsed;
+
+        if (isclickHolding) {
+            clicksToToWhileHolding += Game.elapsed * getClicksPerSecondWhenHolding();
+            int clicks = (int) clicksToToWhileHolding;
+            clicksToToWhileHolding -= clicks;
+            for (int i = 0; i < clicks; i++) onClick();
+            return;
+        }
+
+        if (pressedButton == this && pressTime >= longClick) {
+            if (getClicksPerSecondWhenHolding() > 0) {
+                Game.vibrate(50);
+                isclickHolding = true;
+                clickReady = false;//don't click when onPointerUp()
+            } else {
+                pressedButton = null;
+                if (onLongClick()) {
+
+                    hotArea.reset();
+                    clickReady = false; //did a long click, can't do a regular one
+                    onPointerUp();
+
+                    Game.vibrate(50);
+                }
+            }
+        }
+    }
+
+    @Override
+    public final void cancelClick() {
+        super.cancelClick();
+        clickReady = false;
+        isclickHolding = false;
+        onPointerUp();
+        hotArea.reset();
+        if (pressedButton == this) pressedButton = null;
+    }
+
+    @Override
+    public final void redirectPointerEvent(PointerEvent event) {
+        super.redirectPointerEvent(event);
+        hotArea.onSignal(event);
+    }
+
+
+    private boolean isclickHolding = false;
+    private float clicksToToWhileHolding;
+
+    //only supports left click (calls onClick()) (maybe save a event (hotArea.pointerDown) as instance variable for middle/right click), onLongClick will never be called if return>0
+    protected int getClicksPerSecondWhenHolding() {
+        return 0;
+    }
+
+    protected void onPointerDown() {
+    }
+
+    protected void onPointerUp() {
+    }
+
+    protected void onClick() {
+    } //left click, default key type
+
+    protected void onRightClick() {
+    }
+
+    protected void onMiddleClick() {
+    }
+
+    protected boolean onLongClick() {
+        return false;
+    }
+
+    protected String hoverText() {
+        return null;
+    }
+
+    //TODO might be nice for more flexibility here
+    private void alignTooltip(Tooltip tip) {
+        tip.setPos(x, y - tip.height() - 1);
+        Camera cam = camera();
+        //shift left if there's no room on the right
+        if (tip.right() > (cam.width + cam.scroll.x)) {
+            tip.setPos(tip.left() - (tip.right() - (cam.width + cam.scroll.x)), tip.top());
+        }
+        //move to the bottom if there's no room on top
+        if (tip.top() < 0) {
+            tip.setPos(tip.left(), bottom() + 1);
+        }
+    }
+
+    public void killTooltip() {
+        if (hoverTip != null) {
+            hoverTip.killAndErase();
+            hoverTip = null;
+        }
+    }
+
+    @Override
+    protected void layout() {
+        hotArea.x = x;
+        hotArea.y = y;
+        hotArea.width = width;
+        hotArea.height = height;
+    }
+
+    @Override
+    public synchronized void destroy() {
+        super.destroy();
+        KeyEvent.removeKeyListener(keyListener);
+        killTooltip();
+    }
+
+    public void givePointerPriority() {
+        hotArea.givePointerPriority();
+    }
+
 }

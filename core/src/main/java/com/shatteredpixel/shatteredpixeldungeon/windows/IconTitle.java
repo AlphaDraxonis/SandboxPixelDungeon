@@ -34,102 +34,103 @@ import com.watabou.noosa.ui.Component;
 
 public class IconTitle extends Component {
 
-	private static final float FONT_SIZE = 9;
+    private static final float FONT_SIZE = 9;
 
-	private static final float GAP = 2;
+    private static final float GAP = 2;
 
-	protected Image imIcon;
-	protected RenderedTextBlock tfLabel;
-	protected HealthBar health;
+    protected Image imIcon;
+    protected RenderedTextBlock tfLabel;
+    protected HealthBar health;
 
-	private float healthLvl = Float.NaN;
+    private float healthLvl = Float.NaN;
 
-	public IconTitle() {
-		super();
-	}
+    public IconTitle() {
+        super();
+    }
 
-	public IconTitle( Item item ) {
-		ItemSprite icon = new ItemSprite();
-		icon( icon );
-		label( Messages.titleCase( item.title() ) );
-		icon.view( item );
-	}
-	
-	public IconTitle( Heap heap ){
-		ItemSprite icon = new ItemSprite();
-		icon( icon );
-		label( Messages.titleCase( heap.title() ) );
-		icon.view( heap );
-	}
+    public IconTitle(Item item) {
+        ItemSprite icon = new ItemSprite();
+        icon(icon);
+        label(Messages.titleCase(item.title()));
+        icon.view(item);
+    }
 
-	public IconTitle( Image icon, String label ) {
-		super();
+    public IconTitle(Heap heap) {
+        ItemSprite icon = new ItemSprite();
+        icon(icon);
+        label(Messages.titleCase(heap.title()));
+        icon.view(heap);
+    }
 
-		icon( icon );
-		label( label );
-	}
+    public IconTitle(Image icon, String label) {
+        super();
 
-	@Override
-	protected void createChildren() {
-		imIcon = new Image();
-		add( imIcon );
+        icon(icon);
+        label(label);
+    }
 
-		tfLabel = PixelScene.renderTextBlock( (int)FONT_SIZE );
-		tfLabel.hardlight( Window.TITLE_COLOR );
-		tfLabel.setHightlighting(false);
-		add( tfLabel );
+    @Override
+    protected void createChildren(Object... params) {
+        imIcon = new Image();
+        add(imIcon);
 
-		health = new HealthBar();
-		add( health );
-	}
+        tfLabel = PixelScene.renderTextBlock((int) FONT_SIZE);
+        tfLabel.hardlight(Window.TITLE_COLOR);
+        tfLabel.setHightlighting(false);
+        add(tfLabel);
 
-	@Override
-	protected void layout() {
+        health = new HealthBar();
+        add(health);
+    }
 
-		health.visible = !Float.isNaN( healthLvl );
+    @Override
+    protected void layout() {
 
-		imIcon.x = x + (Math.max(0, 8 - imIcon.width()/2));
-		imIcon.y = y + (Math.max(0, 8 - imIcon.height()/2));
-		PixelScene.align(imIcon);
+        health.visible = !Float.isNaN(healthLvl);
 
-		int imWidth = (int)Math.max(imIcon.width(), 16);
-		int imHeight = (int)Math.max(imIcon.height(), 16);
+        imIcon.x = x + (Math.max(0, 8 - imIcon.width() / 2));
+        imIcon.y = y + (Math.max(0, 8 - imIcon.height() / 2));
+        PixelScene.align(imIcon);
 
-		tfLabel.maxWidth((int)(width - (imWidth + GAP)));
-		tfLabel.setPos(x + imWidth + GAP,
-						imHeight > tfLabel.height() ? y +(imHeight - tfLabel.height()) / 2 : y);
-		PixelScene.align(tfLabel);
+        int imWidth = (int) Math.max(imIcon.width(), 16);
+        int imHeight = (int) Math.max(imIcon.height(), 16);
 
-		if (health.visible) {
-			health.setRect( tfLabel.left(), tfLabel.bottom(), tfLabel.maxWidth(), 0 );
-			height = Math.max( imHeight, health.bottom() );
-		} else {
-			height = Math.max( imHeight, tfLabel.height() );
-		}
-	}
+        tfLabel.maxWidth((int) (width - (imWidth + GAP)));
+        tfLabel.setPos(x + imWidth + GAP,
+                imHeight > tfLabel.height() ? y + (imHeight - tfLabel.height()) / 2 : y);
+        PixelScene.align(tfLabel);
 
-	public void icon( Image icon ) {
-		if (icon != null) {
-			remove(imIcon);
-			add(imIcon = icon);
-		}
-	}
+        if (health.visible) {
+            health.setRect(tfLabel.left(), tfLabel.bottom(), tfLabel.maxWidth(), 0);
+            height = Math.max(imHeight, health.bottom());
+        } else {
+            height = Math.max(imHeight, tfLabel.height());
+        }
+    }
 
-	public void label( String label ) {
-		tfLabel.text( label );
-	}
+    public void icon(Image icon) {
+        if (icon != null) {
+            remove(imIcon);
+            add(imIcon = icon);
+        }
+    }
 
-	public void label( String label, int color ) {
-		tfLabel.text( label );
-		tfLabel.hardlight( color );
-	}
+    public void label(String label) {
+        tfLabel.text(label);
+    }
 
-	public void color( int color ) {
-		tfLabel.hardlight( color );
-	}
+    public void label(String label, int color) {
+        tfLabel.text(label);
+        tfLabel.hardlight(color);
+    }
 
-	public void health( float value ) {
-		health.level( healthLvl = value );
-		layout();
-	}
+    public void color(int color) {
+        tfLabel.hardlight(color);
+    }
+
+    public void health(float value) {
+        health.level(healthLvl = value);
+        layout();
+    }
+
 }

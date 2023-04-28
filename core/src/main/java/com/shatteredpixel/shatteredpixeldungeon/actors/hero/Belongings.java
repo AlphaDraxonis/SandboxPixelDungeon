@@ -342,7 +342,7 @@ public class Belongings implements Iterable<Item> {
 		}
 		for (Item item : backpack) {
 			if (item instanceof EquipableItem || item instanceof Wand) {
-				item.cursedKnown = true;
+				item.setCursedKnown(true);
 			}
 		}
 		Item.updateQuickslot();

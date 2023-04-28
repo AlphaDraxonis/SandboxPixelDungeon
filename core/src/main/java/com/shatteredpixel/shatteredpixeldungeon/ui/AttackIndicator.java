@@ -70,8 +70,8 @@ public class AttackIndicator extends Tag {
 	}
 	
 	@Override
-	protected void createChildren() {
-		super.createChildren();
+	protected void createChildren(Object... params) {
+		super.createChildren(params);
 	}
 	
 	@Override

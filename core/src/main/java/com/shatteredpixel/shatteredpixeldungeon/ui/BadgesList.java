@@ -96,7 +96,7 @@ public class BadgesList extends ScrollPane {
 		}
 		
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			icon = new Image();
 			add( icon );
 			

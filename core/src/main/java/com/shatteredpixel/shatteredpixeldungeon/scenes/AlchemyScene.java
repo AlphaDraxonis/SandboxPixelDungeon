@@ -34,7 +34,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LiquidMetal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -54,7 +53,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.Camera;
-import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
@@ -562,7 +560,7 @@ public class AlchemyScene extends PixelScene {
 		private Item item = null;
 		
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			super.createChildren();
 			
 			bg = Chrome.get( Chrome.Type.RED_BUTTON);
@@ -645,8 +643,8 @@ public class AlchemyScene extends PixelScene {
 		}
 
 		@Override
-		protected void createChildren() {
-			super.createChildren();
+		protected void createChildren(Object... params) {
+			super.createChildren(params);
 
 			button = new RedButton(""){
 				@Override
@@ -708,7 +706,7 @@ public class AlchemyScene extends PixelScene {
 		protected ItemSlot slot;
 
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 
 			bg = Chrome.get(Chrome.Type.TOAST_TR);
 			add(bg);

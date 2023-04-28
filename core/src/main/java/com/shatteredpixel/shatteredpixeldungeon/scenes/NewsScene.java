@@ -42,7 +42,6 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.DeviceCompat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -181,7 +180,7 @@ public class NewsScene extends PixelScene {
 		RedButton button;
 
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			bg = Chrome.get(Chrome.Type.GREY_BUTTON_TR);
 			add(bg);
 			

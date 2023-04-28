@@ -88,9 +88,9 @@ public class WndInfoItem extends Window {
 	private void fillFields( Item item ) {
 		
 		int color = TITLE_COLOR;
-		if (item.levelKnown && item.level() > 0) {
+		if (item.levelKnown() && item.level() > 0) {
 			color = ItemSlot.UPGRADED;
-		} else if (item.levelKnown && item.level() < 0) {
+		} else if (item.levelKnown() && item.level() < 0) {
 			color = ItemSlot.DEGRADED;
 		}
 

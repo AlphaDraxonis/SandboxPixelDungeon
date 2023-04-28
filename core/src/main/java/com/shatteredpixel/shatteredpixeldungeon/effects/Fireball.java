@@ -49,7 +49,7 @@ public class Fireball extends Component {
 	private Group sparks;
 	
 	@Override
-	protected void createChildren() {
+	protected void createChildren(Object... params) {
 		
 		sparks = new Group();
 		add( sparks );

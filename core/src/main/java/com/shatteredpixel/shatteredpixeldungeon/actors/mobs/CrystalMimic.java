@@ -179,7 +179,7 @@ public class CrystalMimic extends Mimic {
 		//Crystal mimic already contains a prize item. Just guarantee it isn't cursed.
 		for (Item i : items){
 			i.cursed = false;
-			i.cursedKnown = true;
+			i.setCursedKnown(true);
 		}
 	}
 

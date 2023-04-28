@@ -429,7 +429,8 @@ public class CursedWand {
 							Generator.Category.RING, Generator.Category.ARTIFACT));
 				} while (result.cursed);
 				if (result.isUpgradable()) result.upgrade();
-				result.cursed = result.cursedKnown = true;
+				result.setCursedKnown(true);
+				result.cursed = true;
 				if (origin instanceof Wand){
 					GLog.w( Messages.get(CursedWand.class, "transmogrify_wand") );
 				} else {

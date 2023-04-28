@@ -104,7 +104,8 @@ public class CursingTrap extends Trap {
 	}
 
 	private static void curse(Item item){
-		item.cursed = item.cursedKnown = true;
+		item.setCursedKnown(true);
+		item.cursed = true;
 
 		if (item instanceof Weapon){
 			Weapon w = (Weapon) item;

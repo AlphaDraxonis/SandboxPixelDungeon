@@ -77,8 +77,8 @@ public class TalentButton extends Button {
 	}
 
 	@Override
-	protected void createChildren() {
-		super.createChildren();
+	protected void createChildren(Object... params) {
+		super.createChildren(params);
 
 		fill = new ColorBlock(0, 4, 0xFFFFFF44);
 		add(fill);

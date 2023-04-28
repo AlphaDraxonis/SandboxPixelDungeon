@@ -120,8 +120,7 @@ public class Messages {
 		if (c != null){
 			key = c.getName().replace("com.shatteredpixel.shatteredpixeldungeon.", "");
 			key += "." + k;
-		} else
-			key = k;
+		} else 	key = k;
 
 		String value = getFromBundle(key.toLowerCase(Locale.ENGLISH));
 		if (value != null){

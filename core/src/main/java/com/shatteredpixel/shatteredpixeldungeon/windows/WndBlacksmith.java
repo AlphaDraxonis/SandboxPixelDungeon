@@ -145,7 +145,7 @@ public class WndBlacksmith extends Window {
 		public Item item = null;
 		
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			super.createChildren();
 			
 			bg = Chrome.get( Chrome.Type.RED_BUTTON);

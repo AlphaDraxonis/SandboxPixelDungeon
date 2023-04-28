@@ -25,6 +25,7 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Bestiary {
 	
@@ -32,6 +33,14 @@ public class Bestiary {
 		ArrayList<Class<? extends Mob>> mobs = standardMobRotation( depth );
 		addRareMobs(depth, mobs);
 		swapMobAlts(mobs);
+		Random.shuffle(mobs);
+		return mobs;
+	}
+
+	//For custom levels
+	public static ArrayList<Class<? extends Mob>> getMobRotation(List<Class<? extends Mob>> mobRotation, boolean swapToMutation ){
+		ArrayList<Class<? extends Mob>> mobs =new ArrayList<>(mobRotation);
+		if(swapToMutation)swapMobAlts(mobs);
 		Random.shuffle(mobs);
 		return mobs;
 	}

@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public abstract class ExoticScroll extends Scroll {
 	
 	@Override
 	public boolean isKnown() {
-		return anonymous || (handler != null && handler.isKnown( exoToReg.get(this.getClass()) ));
+		return anonymous || (handler != null && handler.isKnown( exoToReg.get(this.getClass()) ))|| CustomDungeon.isEditing();
 	}
 	
 	@Override

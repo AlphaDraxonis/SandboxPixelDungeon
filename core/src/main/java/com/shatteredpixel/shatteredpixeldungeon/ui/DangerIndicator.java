@@ -59,8 +59,8 @@ public class DangerIndicator extends Tag {
 	}
 	
 	@Override
-	protected void createChildren() {
-		super.createChildren();
+	protected void createChildren(Object... params) {
+		super.createChildren(params);
 		
 		number = new BitmapText( PixelScene.pixelFont);
 		add( number );

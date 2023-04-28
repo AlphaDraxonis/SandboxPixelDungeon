@@ -207,7 +207,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		n.curseInfusionBonus = w.curseInfusionBonus;
 		n.masteryPotionBonus = w.masteryPotionBonus;
 		n.levelKnown = w.levelKnown;
-		n.cursedKnown = w.cursedKnown;
+		n.setCursedKnown(w.cursedKnown());
 		n.cursed = w.cursed;
 		n.augment = w.augment;
 		
@@ -231,7 +231,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		}
 		
 		n.levelKnown = r.levelKnown;
-		n.cursedKnown = r.cursedKnown;
+		n.setCursedKnown(r.cursedKnown());
 		n.cursed = r.cursed;
 		
 		return n;
@@ -254,7 +254,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 				}
 			}
 
-			n.cursedKnown = a.cursedKnown;
+			n.setCursedKnown(a.cursedKnown());
 			n.cursed = a.cursed;
 			n.levelKnown = a.levelKnown;
 			n.transferUpgrade(a.visiblyUpgraded());
@@ -277,7 +277,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 
 		n.levelKnown = w.levelKnown;
 		n.curChargeKnown = w.curChargeKnown;
-		n.cursedKnown = w.cursedKnown;
+		n.setCursedKnown(w.cursedKnown());
 		n.cursed = w.cursed;
 		n.curseInfusionBonus = w.curseInfusionBonus;
 		n.resinBonus = w.resinBonus;

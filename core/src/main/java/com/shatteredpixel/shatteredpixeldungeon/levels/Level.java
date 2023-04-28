@@ -99,10 +99,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public abstract class Level implements Bundlable {
 
-    public static enum Feeling {
+    public enum Feeling {
         NONE,
         CHASM,
         WATER,
@@ -187,36 +188,36 @@ public abstract class Level implements Bundlable {
 
         Random.pushGenerator(Dungeon.seedCurDepth());
 
-        if (!(Dungeon.bossLevel())) {
-
-            addItemToSpawn(Generator.random(Generator.Category.FOOD));
-
-            if (Dungeon.isChallenged(Challenges.DARKNESS)) {
-                addItemToSpawn(new Torch());
-            }
-
-            if (Dungeon.posNeeded()) {
-                addItemToSpawn(new PotionOfStrength());
-                Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
-            }
-            if (Dungeon.souNeeded()) {
-                addItemToSpawn(new ScrollOfUpgrade());
-                Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
-            }
-            if (Dungeon.asNeeded()) {
-                addItemToSpawn(new Stylus());
-                Dungeon.LimitedDrops.ARCANE_STYLI.count++;
-            }
-            //one scroll of transmutation is guaranteed to spawn somewhere on chapter 2-4
-            int enchChapter = (int) ((Dungeon.seed / 10) % 3) + 1;
-            if (Dungeon.depth / 5 == enchChapter &&
-                    Dungeon.seed % 4 + 1 == Dungeon.depth % 5) {
-                addItemToSpawn(new StoneOfEnchantment());
-            }
-
-            if (Dungeon.depth == ((Dungeon.seed % 3) + 1)) {
-                addItemToSpawn(new StoneOfIntuition());
-            }
+//        if (!(Dungeon.bossLevel())) {
+//
+//            addItemToSpawn(Generator.random(Generator.Category.FOOD));
+//
+//            if (Dungeon.isChallenged(Challenges.DARKNESS)) {
+//                addItemToSpawn(new Torch());
+//            }
+//
+//            if (Dungeon.posNeeded()) {
+//                addItemToSpawn(new PotionOfStrength());
+//                Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
+//            }
+//            if (Dungeon.souNeeded()) {
+//                addItemToSpawn(new ScrollOfUpgrade());
+//                Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
+//            }
+//            if (Dungeon.asNeeded()) {
+//                addItemToSpawn(new Stylus());
+//                Dungeon.LimitedDrops.ARCANE_STYLI.count++;
+//            }
+//            //one scroll of transmutation is guaranteed to spawn somewhere on chapter 2-4
+//            int enchChapter = (int) ((Dungeon.seed / 10) % 3) + 1;
+//            if (Dungeon.depth / 5 == enchChapter &&
+//                    Dungeon.seed % 4 + 1 == Dungeon.depth % 5) {
+//                addItemToSpawn(new StoneOfEnchantment());
+//            }
+//
+//            if (Dungeon.depth == ((Dungeon.seed % 3) + 1)) {
+//                addItemToSpawn(new StoneOfIntuition());
+//            }
 
 //			if (Dungeon.depth > 1) {
 //				//50% chance of getting a level feeling
@@ -252,7 +253,7 @@ public abstract class Level implements Bundlable {
 //						break;
 //				}
 //			}
-        }
+//        }
 
         do {
             width = height = length = 0;
@@ -481,12 +482,16 @@ public abstract class Level implements Bundlable {
 
     public Mob createMob() {
         if (mobsToSpawn == null || mobsToSpawn.isEmpty()) {
-            mobsToSpawn = Bestiary.getMobRotation(Dungeon.depth);
+            mobsToSpawn = getMobRotation();
         }
 
         Mob m = Reflection.newInstance(mobsToSpawn.remove(0));
         ChampionEnemy.rollForChampion(m);
         return m;
+    }
+
+    protected ArrayList<Class<? extends Mob>> getMobRotation() {
+        return Bestiary.getMobRotation(Dungeon.depth);
     }
 
     abstract protected void createMobs();
@@ -649,7 +654,6 @@ public abstract class Level implements Bundlable {
                     //try again in 1 turn
                     spend(TICK);
                 }
-
             } else {
                 spend(Dungeon.level.respawnCooldown());
             }
@@ -687,6 +691,7 @@ public abstract class Level implements Bundlable {
         int tries = 30;
         do {
             mob.pos = randomRespawnCell(mob);
+            if (mob.pos > -1) System.out.println(PathFinder.distance[mob.pos]);
             tries--;
         } while ((mob.pos == -1 || PathFinder.distance[mob.pos] < disLimit) && tries > 0);
 

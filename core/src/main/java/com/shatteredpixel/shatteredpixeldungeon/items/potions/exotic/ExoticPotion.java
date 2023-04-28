@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfParalyticG
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfToxicGas;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ public class ExoticPotion extends Potion {
 	
 	@Override
 	public boolean isKnown() {
-		return anonymous || (handler != null && handler.isKnown( exoToReg.get(this.getClass()) ));
+		return anonymous || (handler != null && handler.isKnown( exoToReg.get(this.getClass()) ))|| CustomDungeon.isEditing();
 	}
 	
 	@Override

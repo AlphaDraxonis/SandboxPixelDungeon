@@ -273,9 +273,9 @@ public class RankingsScene extends PixelScene {
 		}
 		
 		@Override
-		protected void createChildren() {
+		protected void createChildren(Object... params) {
 			
-			super.createChildren();
+			super.createChildren(params);
 			
 			shield = new Image(new ItemSprite( ItemSpriteSheet.TOMB, null ));
 			add( shield );

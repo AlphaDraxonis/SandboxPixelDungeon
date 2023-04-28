@@ -21,41 +21,26 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.watabou.gltextures.SmartTexture;
-import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.ui.Component;
 
-public class WndInfoBuff extends Window {
+public class WndInfoBuff extends WndTitledMessage {
 
-	private static final float GAP	= 2;
+    protected static final float GAP = 2;
 
-	private static final int WIDTH = 120;
+    protected static final int WIDTH = 120;
+    public WndInfoBuff(Buff buff) {
+        super(createIconTitle(buff),buff.desc());
+    }
 
-	public WndInfoBuff(Buff buff){
-		super();
+    public  static  IconTitle createIconTitle(Buff buff){
+        return new IconTitle( new BuffIcon(buff, true),Messages.titleCase(buff.name()));
+    }
 
-		IconTitle titlebar = new IconTitle();
-
-		Image buffIcon = new BuffIcon( buff, true );
-
-		titlebar.icon( buffIcon );
-		titlebar.label( Messages.titleCase(buff.name()), Window.TITLE_COLOR );
-		titlebar.setRect( 0, 0, WIDTH, 0 );
-		add( titlebar );
-
-		RenderedTextBlock txtInfo = PixelScene.renderTextBlock(buff.desc(), 6);
-		txtInfo.maxWidth(WIDTH);
-		txtInfo.setPos(titlebar.left(), titlebar.bottom() + 2*GAP);
-		add( txtInfo );
-
-		resize( WIDTH, (int)txtInfo.bottom() + 2 );
-	}
 }

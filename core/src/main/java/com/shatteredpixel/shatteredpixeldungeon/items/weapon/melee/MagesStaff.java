@@ -337,7 +337,7 @@ public class MagesStaff extends MeleeWeapon {
 			return super.name();
 		} else {
 			String name = Messages.get(wand, "staff_name");
-			return enchantment != null && (cursedKnown || !enchantment.curse()) ? enchantment.name( name ) : name;
+			return enchantment != null && (cursedKnown() || !enchantment.curse()) ? enchantment.name( name ) : name;
 		}
 	}
 
@@ -347,7 +347,7 @@ public class MagesStaff extends MeleeWeapon {
 
 		if (wand != null){
 			info += "\n\n" + Messages.get(this, "has_wand", Messages.get(wand, "name"));
-			if ((!cursed && !hasCurseEnchant()) || !cursedKnown)    info += " " + wand.statsDesc();
+			if ((!cursed && !hasCurseEnchant()) || !cursedKnown())    info += " " + wand.statsDesc();
 			else                                                    info += " " + Messages.get(this, "cursed_wand");
 
 			if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){

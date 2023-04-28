@@ -254,13 +254,13 @@ public abstract class Wand extends Item {
 			desc += "\n\n" + Messages.get(Wand.class, "resin_many", resinBonus);
 		}
 
-		if (cursed && cursedKnown) {
+		if (cursed && cursedKnown()) {
 			desc += "\n\n" + Messages.get(Wand.class, "cursed");
-		} else if (!isIdentified() && cursedKnown){
+		} else if (!isIdentified() && cursedKnown()){
 			desc += "\n\n" + Messages.get(Wand.class, "not_cursed");
 		}
 
-		if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){
+		if (Dungeon.hero!=null&&Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){
 			desc += "\n\n" + Messages.get(this, "bmage_desc");
 		}
 
@@ -278,7 +278,7 @@ public abstract class Wand extends Item {
 	
 	@Override
 	public String status() {
-		if (levelKnown) {
+		if (levelKnown()) {
 			return (curChargeKnown ? curCharges : "?") + "/" + maxCharges;
 		} else {
 			return null;
@@ -468,10 +468,10 @@ public abstract class Wand extends Item {
 	@Override
 	public int value() {
 		int price = 75;
-		if (cursed && cursedKnown) {
+		if (cursed && cursedKnown()) {
 			price /= 2;
 		}
-		if (levelKnown) {
+		if (levelKnown()) {
 			if (level() > 0) {
 				price *= (level() + 1);
 			} else if (level() < 0) {
@@ -633,7 +633,7 @@ public abstract class Wand extends Item {
 					}
 					
 					if (curWand.cursed){
-						if (!curWand.cursedKnown){
+						if (!curWand.cursedKnown()){
 							GLog.n(Messages.get(Wand.class, "curse_discover", curWand.name()));
 						}
 						CursedWand.cursedZap(curWand,
@@ -653,7 +653,7 @@ public abstract class Wand extends Item {
 							}
 						});
 					}
-					curWand.cursedKnown = true;
+					curWand.setCursedKnown(true);
 					
 				}
 				

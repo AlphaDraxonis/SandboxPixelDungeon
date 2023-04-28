@@ -116,7 +116,7 @@ public class Artifact extends KindofMisc {
 
 	@Override
 	public int visiblyUpgraded() {
-		return levelKnown ? Math.round((level()*10)/(float)levelCap): 0;
+		return levelKnown() ? Math.round((level()*10)/(float)levelCap): 0;
 	}
 
 	@Override
@@ -137,10 +137,10 @@ public class Artifact extends KindofMisc {
 
 	@Override
 	public String info() {
-		if (cursed && cursedKnown && !isEquipped( Dungeon.hero )) {
+		if (cursed && cursedKnown() && !isEquipped( Dungeon.hero )) {
 			return desc() + "\n\n" + Messages.get(Artifact.class, "curse_known");
 			
-		} else if (!isIdentified() && cursedKnown && !isEquipped( Dungeon.hero)) {
+		} else if (!isIdentified() && cursedKnown() && !isEquipped( Dungeon.hero)) {
 			return desc()+ "\n\n" + Messages.get(Artifact.class, "not_cursed");
 			
 		} else {
@@ -194,7 +194,7 @@ public class Artifact extends KindofMisc {
 		int price = 100;
 		if (level() > 0)
 			price += 20*visiblyUpgraded();
-		if (cursed && cursedKnown) {
+		if (cursed && cursedKnown()) {
 			price /= 2;
 		}
 		if (price < 1) {

@@ -134,7 +134,6 @@ public class Pickaxe extends MeleeWeapon {
 			}
 			
 			GLog.w( Messages.get(this, "no_vein") );
-			
 		}
 	}
 	
