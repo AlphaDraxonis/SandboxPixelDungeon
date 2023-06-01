@@ -118,7 +118,8 @@ public class HallsBossLevel extends Level {
 
 			if (i == 2) {
 				int entrance = (6 + i * 5) + (bottom - 1) * width();
-				transitions.add(new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+				LevelTransition t = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
+				if (Dungeon.customDungeon.getFloor(t.destLevel) != null) transitions.put(entrance, t);
 			}
 
 		}
@@ -160,7 +161,7 @@ public class HallsBossLevel extends Level {
 		exit.top--;
 		exit.left--;
 		exit.right++;
-		transitions.add(exit);
+		if (Dungeon.customDungeon.getFloor(exit.destLevel) != null) transitions.put(exitCell,exit);
 
 		CustomTilemap vis = new CenterPieceVisuals();
 		vis.pos(ROOM_LEFT, ROOM_TOP+1);

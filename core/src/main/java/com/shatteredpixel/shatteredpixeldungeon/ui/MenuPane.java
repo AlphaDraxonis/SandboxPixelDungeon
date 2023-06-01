@@ -76,7 +76,7 @@ public class MenuPane extends Component {
 		depthIcon = Icons.get(Dungeon.level.feeling);
 		add(depthIcon);
 
-		depthText = new BitmapText( Integer.toString( Dungeon.depth ), PixelScene.pixelFont);
+		depthText = new BitmapText(   Dungeon.levelName+" - "+Dungeon.depth, PixelScene.pixelFont);
 		depthText.hardlight( 0xCACFC2 );
 		depthText.measure();
 		add( depthText );
@@ -161,7 +161,7 @@ public class MenuPane extends Component {
 		PixelScene.align(depthIcon);
 
 		depthText.scale.set(PixelScene.align(0.67f));
-		depthText.x = depthIcon.x + (depthIcon.width() - depthText.width())/2f;
+		depthText.x = depthIcon.x + depthIcon.width() - depthText.width();
 		depthText.y = depthIcon.y + depthIcon.height();
 		PixelScene.align(depthText);
 

@@ -49,265 +49,275 @@ import java.util.Collection;
 import java.util.List;
 
 public class Mimic extends Mob {
-	
-	private int level;
-	
-	{
-		spriteClass = MimicSprite.class;
 
-		properties.add(Property.DEMONIC);
+    private int level;
 
-		EXP = 0;
-		
-		//mimics are neutral when hidden
-		alignment = Alignment.NEUTRAL;
-		state = PASSIVE;
-	}
-	
-	public ArrayList<Item> items;
-	
-	private static final String LEVEL	= "level";
-	private static final String ITEMS	= "items";
-	
-	@Override
-	public void storeInBundle( Bundle bundle ) {
-		super.storeInBundle( bundle );
-		if (items != null) bundle.put( ITEMS, items );
-		bundle.put( LEVEL, level );
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public void restoreFromBundle( Bundle bundle ) {
-		if (bundle.contains( ITEMS )) {
-			items = new ArrayList<>((Collection<Item>) ((Collection<?>) bundle.getCollection(ITEMS)));
-		}
-		level = bundle.getInt( LEVEL );
-		adjustStats(level);
-		super.restoreFromBundle(bundle);
-		if (state != PASSIVE && alignment == Alignment.NEUTRAL){
-			alignment = Alignment.ENEMY;
-		}
-	}
+    {
+        spriteClass = MimicSprite.class;
 
-	@Override
-	public boolean add(Buff buff) {
-		if (super.add(buff)) {
-			if (buff.type == Buff.buffType.NEGATIVE && alignment == Alignment.NEUTRAL) {
-				alignment = Alignment.ENEMY;
-				stopHiding();
-				if (sprite != null) sprite.idle();
-			}
-			return true;
-		}
-		return false;
-	}
+        properties.add(Property.DEMONIC);
 
-	@Override
-	public String name() {
-		if (alignment == Alignment.NEUTRAL){
-			return Messages.get(Heap.class, "chest");
-		} else {
-			return super.name();
-		}
-	}
+        EXP = 0;
 
-	@Override
-	public String description() {
-		if (alignment == Alignment.NEUTRAL){
-			return Messages.get(Heap.class, "chest_desc") + "\n\n" + Messages.get(this, "hidden_hint");
-		} else {
-			return super.description();
-		}
-	}
+        //mimics are neutral when hidden
+        alignment = Alignment.NEUTRAL;
+        state = PASSIVE;
+    }
 
-	@Override
-	protected boolean act() {
-		if (alignment == Alignment.NEUTRAL && state != PASSIVE){
-			alignment = Alignment.ENEMY;
-			GLog.w(Messages.get(this, "reveal") );
-			CellEmitter.get(pos).burst(Speck.factory(Speck.STAR), 10);
-			Sample.INSTANCE.play(Assets.Sounds.MIMIC);
-		}
-		return super.act();
-	}
+    public ArrayList<Item> items;
 
-	@Override
-	public CharSprite sprite() {
-		MimicSprite sprite = (MimicSprite) super.sprite();
-		if (alignment == Alignment.NEUTRAL) sprite.hideMimic();
-		return sprite;
-	}
+    private static final String LEVEL = "level";
+    private static final String ITEMS = "items";
 
-	@Override
-	public boolean interact(Char c) {
-		if (alignment != Alignment.NEUTRAL || c != Dungeon.hero){
-			return super.interact(c);
-		}
-		stopHiding();
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        if (items != null) bundle.put(ITEMS, items);
+        bundle.put(LEVEL, level);
+    }
 
-		Dungeon.hero.busy();
-		Dungeon.hero.sprite.operate(pos);
-		if (Dungeon.hero.invisible <= 0
-				&& Dungeon.hero.buff(Swiftthistle.TimeBubble.class) == null
-				&& Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class) == null){
-			return doAttack(Dungeon.hero);
-		} else {
-			sprite.idle();
-			alignment = Alignment.ENEMY;
-			Dungeon.hero.spendAndNext(1f);
-			return true;
-		}
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        if (bundle.contains(ITEMS)) {
+            items = new ArrayList<>((Collection<Item>) ((Collection<?>) bundle.getCollection(ITEMS)));
+        }
+        level = bundle.getInt(LEVEL);
+        adjustStats(level);
+        super.restoreFromBundle(bundle);
+        if (state != PASSIVE && alignment == Alignment.NEUTRAL) {
+            alignment = Alignment.ENEMY;
+        }
+    }
 
-	@Override
-	public void onAttackComplete() {
-		super.onAttackComplete();
-		if (alignment == Alignment.NEUTRAL){
-			alignment = Alignment.ENEMY;
-			Dungeon.hero.spendAndNext(1f);
-		}
-	}
+    @Override
+    public Actor clone() throws CloneNotSupportedException {
+        Mimic m = (Mimic) super.clone();
+        if (items != null){
+            m.items = new ArrayList<>();
+            for (Item i : items) m.items.add(i.clone());
+        }
+        return m;
+    }
 
-	@Override
-	public void damage(int dmg, Object src) {
-		if (state == PASSIVE){
-			alignment = Alignment.ENEMY;
-			stopHiding();
-		}
-		super.damage(dmg, src);
-	}
+    @Override
+    public boolean add(Buff buff) {
+        if (super.add(buff)) {
+            if (buff.type == Buff.buffType.NEGATIVE && alignment == Alignment.NEUTRAL) {
+                alignment = Alignment.ENEMY;
+                stopHiding();
+                if (sprite != null) sprite.idle();
+            }
+            return true;
+        }
+        return false;
+    }
 
-	public void stopHiding(){
-		state = HUNTING;
-		if (sprite != null) sprite.idle();
-		if (Actor.chars().contains(this) && Dungeon.level.heroFOV[pos]) {
-			enemy = Dungeon.hero;
-			target = Dungeon.hero.pos;
-			GLog.w(Messages.get(this, "reveal") );
-			CellEmitter.get(pos).burst(Speck.factory(Speck.STAR), 10);
-			Sample.INSTANCE.play(Assets.Sounds.MIMIC);
-		}
-	}
+    @Override
+    public String name() {
+        if (alignment == Alignment.NEUTRAL) {
+            return Messages.get(Heap.class, "chest");
+        } else {
+            return super.name();
+        }
+    }
 
-	@Override
-	public int damageRoll() {
-		if (alignment == Alignment.NEUTRAL){
-			return Random.NormalIntRange( 2 + 2*level, 2 + 2*level);
-		} else {
-			return Random.NormalIntRange( 1 + level, 2 + 2*level);
-		}
-	}
+    @Override
+    public String description() {
+        if (alignment == Alignment.NEUTRAL) {
+            return Messages.get(Heap.class, "chest_desc") + "\n\n" + Messages.get(this, "hidden_hint");
+        } else {
+            return super.description();
+        }
+    }
 
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 1 + level/2);
-	}
+    @Override
+    protected boolean act() {
+        if (alignment == Alignment.NEUTRAL && state != PASSIVE) {
+            alignment = Alignment.ENEMY;
+            GLog.w(Messages.get(this, "reveal"));
+            CellEmitter.get(pos).burst(Speck.factory(Speck.STAR), 10);
+            Sample.INSTANCE.play(Assets.Sounds.MIMIC);
+        }
+        return super.act();
+    }
 
-	@Override
-	public void beckon( int cell ) {
-		// Do nothing
-	}
+    @Override
+    public CharSprite sprite() {
+        MimicSprite sprite = (MimicSprite) super.sprite();
+        if (alignment == Alignment.NEUTRAL) sprite.hideMimic();
+        return sprite;
+    }
 
-	@Override
-	public int attackSkill( Char target ) {
-		if (target != null && alignment == Alignment.NEUTRAL && target.invisible <= 0){
-			return INFINITE_ACCURACY;
-		} else {
-			return 6 + level;
-		}
-	}
+    @Override
+    public boolean interact(Char c) {
+        if (alignment != Alignment.NEUTRAL || c != Dungeon.hero) {
+            return super.interact(c);
+        }
+        stopHiding();
 
-	public void setLevel( int level ){
-		this.level = level;
-		adjustStats(level);
-	}
-	
-	public void adjustStats( int level ) {
-		HP = HT = (1 + level) * 6;
-		defenseSkill = 2 + level/2;
-		
-		enemySeen = true;
-	}
-	
-	@Override
-	public void rollToDropLoot(){
-		
-		if (items != null) {
-			for (Item item : items) {
-				Dungeon.level.drop( item, pos ).sprite.drop();
-			}
-			items = null;
-		}
-		super.rollToDropLoot();
-	}
+        Dungeon.hero.busy();
+        Dungeon.hero.sprite.operate(pos);
+        if (Dungeon.hero.invisible <= 0
+                && Dungeon.hero.buff(Swiftthistle.TimeBubble.class) == null
+                && Dungeon.hero.buff(TimekeepersHourglass.timeFreeze.class) == null) {
+            return doAttack(Dungeon.hero);
+        } else {
+            sprite.idle();
+            alignment = Alignment.ENEMY;
+            Dungeon.hero.spendAndNext(1f);
+            return true;
+        }
+    }
 
-	@Override
-	public float spawningWeight() {
-		return 0f;
-	}
+    @Override
+    public void onAttackComplete() {
+        super.onAttackComplete();
+        if (alignment == Alignment.NEUTRAL) {
+            alignment = Alignment.ENEMY;
+            Dungeon.hero.spendAndNext(1f);
+        }
+    }
 
-	@Override
-	public boolean reset() {
-		if (state != PASSIVE) state = WANDERING;
-		return true;
-	}
+    @Override
+    public void damage(int dmg, Object src) {
+        if (state == PASSIVE) {
+            alignment = Alignment.ENEMY;
+            stopHiding();
+        }
+        super.damage(dmg, src);
+    }
 
-	public static Mimic spawnAt( int pos, Item item ){
-		return spawnAt( pos, Arrays.asList(item), Mimic.class);
-	}
+    public void stopHiding() {
+        state = HUNTING;
+        if (sprite != null) sprite.idle();
+        if (Actor.chars().contains(this) && Dungeon.level.heroFOV[pos]) {
+            enemy = Dungeon.hero;
+            target = Dungeon.hero.pos;
+            GLog.w(Messages.get(this, "reveal"));
+            CellEmitter.get(pos).burst(Speck.factory(Speck.STAR), 10);
+            Sample.INSTANCE.play(Assets.Sounds.MIMIC);
+        }
+    }
 
-	public static Mimic spawnAt( int pos, Item item, Class mimicType ){
-		return spawnAt( pos, Arrays.asList(item), mimicType);
-	}
+    @Override
+    public int damageRoll() {
+        if (alignment == Alignment.NEUTRAL) {
+            return Random.NormalIntRange(2 + 2 * level, 2 + 2 * level);
+        } else {
+            return Random.NormalIntRange(1 + level, 2 + 2 * level);
+        }
+    }
 
-	public static Mimic spawnAt( int pos, List<Item> items ) {
-		return spawnAt( pos, items, Mimic.class);
-	}
+    @Override
+    public int drRoll() {
+        return super.drRoll() + Random.NormalIntRange(0, 1 + level / 2);
+    }
 
-	public static Mimic spawnAt( int pos, List<Item> items, Class mimicType ) {
+    @Override
+    public void beckon(int cell) {
+        // Do nothing
+    }
 
-		Mimic m;
-		if (mimicType == GoldenMimic.class){
-			m = new GoldenMimic();
-		} else if (mimicType == CrystalMimic.class) {
-			m = new CrystalMimic();
-		} else {
-			m = new Mimic();
-		}
+    @Override
+    public int attackSkill(Char target) {
+        if (target != null && alignment == Alignment.NEUTRAL && target.invisible <= 0) {
+            return INFINITE_ACCURACY;
+        } else {
+            return 6 + level;
+        }
+    }
 
-		m.items = new ArrayList<>( items );
-		m.setLevel( Dungeon.depth );
-		m.pos = pos;
+    public void setLevel(int level) {
+        this.level = level;
+        adjustStats(level);
+    }
 
-		//generate an extra reward for killing the mimic
-		m.generatePrize();
-		
-		return m;
-	}
+    public void adjustStats(int level) {
+        HP = HT = (1 + level) * 6;
+        defenseSkill = 2 + level / 2;
 
-	protected void generatePrize(){
-		Item reward = null;
-		do {
-			switch (Random.Int(5)) {
-				case 0:
-					reward = new Gold().random();
-					break;
-				case 1:
-					reward = Generator.randomMissile();
-					break;
-				case 2:
-					reward = Generator.randomArmor();
-					break;
-				case 3:
-					reward = Generator.randomWeapon();
-					break;
-				case 4:
-					reward = Generator.random(Generator.Category.RING);
-					break;
-			}
-		} while (reward == null || Challenges.isItemBlocked(reward));
-		items.add(reward);
-	}
+        enemySeen = true;
+    }
+
+    @Override
+    public void rollToDropLoot() {
+
+        if (items != null) {
+            for (Item item : items) {
+                Dungeon.level.drop(item, pos).sprite.drop();
+            }
+            items = null;
+        }
+        super.rollToDropLoot();
+    }
+
+    @Override
+    public float spawningWeight() {
+        return 0f;
+    }
+
+    @Override
+    public boolean reset() {
+        if (state != PASSIVE) state = WANDERING;
+        return true;
+    }
+
+    public static Mimic spawnAt(int pos, Item item) {
+        return spawnAt(pos, Arrays.asList(item), Mimic.class);
+    }
+
+    public static Mimic spawnAt(int pos, Item item, Class mimicType) {
+        return spawnAt(pos, Arrays.asList(item), mimicType);
+    }
+
+    public static Mimic spawnAt(int pos, List<Item> items) {
+        return spawnAt(pos, items, Mimic.class);
+    }
+
+    public static Mimic spawnAt(int pos, List<Item> items, Class mimicType) {
+
+        Mimic m;
+        if (mimicType == GoldenMimic.class) {
+            m = new GoldenMimic();
+        } else if (mimicType == CrystalMimic.class) {
+            m = new CrystalMimic();
+        } else {
+            m = new Mimic();
+        }
+
+        m.items = new ArrayList<>(items);
+        m.setLevel(Dungeon.depth);
+        m.pos = pos;
+
+        //generate an extra reward for killing the mimic
+        m.generatePrize();
+
+        return m;
+    }
+
+    protected void generatePrize() {
+        Item reward = null;
+        do {
+            switch (Random.Int(5)) {
+                case 0:
+                    reward = new Gold().random();
+                    break;
+                case 1:
+                    reward = Generator.randomMissile();
+                    break;
+                case 2:
+                    reward = Generator.randomArmor();
+                    break;
+                case 3:
+                    reward = Generator.randomWeapon();
+                    break;
+                case 4:
+                    reward = Generator.random(Generator.Category.RING);
+                    break;
+            }
+        } while (reward == null || Challenges.isItemBlocked(reward));
+        items.add(reward);
+    }
 
 }

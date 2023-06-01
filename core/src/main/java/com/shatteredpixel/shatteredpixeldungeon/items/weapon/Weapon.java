@@ -36,8 +36,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfArcana;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfFuror;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Annoying;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Displacing;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Dazzling;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Displacing;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Explosive;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Friendly;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Polarized;
@@ -58,7 +58,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Unstab
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Vampiric;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RunicBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Scimitar;
-import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -165,6 +164,13 @@ abstract public class Weapon extends KindOfWeapon {
 		masteryPotionBonus = bundle.getBoolean( MASTERY_POTION_BONUS );
 
 		augment = bundle.getEnum(AUGMENT, Augment.class);
+	}
+
+	@Override
+	public Item clone() {
+		Weapon w = (Weapon) super.clone();
+		if(enchantment!=null)w.enchantment=enchantment.clone();
+		return w;
 	}
 	
 	@Override
@@ -358,7 +364,7 @@ abstract public class Weapon extends KindOfWeapon {
 		return enchantment != null && (cursedKnown() || !enchantment.curse()) ? enchantment.glowing() : null;
 	}
 
-	public static abstract class Enchantment implements Bundlable {
+	public static abstract class Enchantment implements Bundlable,Cloneable {
 		
 		public static final Class<?>[] common = new Class<?>[]{
 				Blazing.class, Chilling.class, Kinetic.class, Shocking.class};
@@ -446,6 +452,14 @@ abstract public class Weapon extends KindOfWeapon {
 
 		@Override
 		public void storeInBundle( Bundle bundle ) {
+		}
+		@Override
+		public Enchantment clone()  {
+			try {
+				return (Enchantment) super.clone();
+			} catch (CloneNotSupportedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		
 		public abstract ItemSprite.Glowing glowing();

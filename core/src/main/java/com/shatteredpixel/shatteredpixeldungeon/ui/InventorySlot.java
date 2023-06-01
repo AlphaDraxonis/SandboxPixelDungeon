@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -35,94 +36,108 @@ import com.watabou.noosa.audio.Sample;
 
 public class InventorySlot extends ItemSlot {
 
-	private static final int NORMAL		= 0x9953564D;
-	private static final int EQUIPPED	= 0x9991938C;
+    protected static final int NORMAL = 0x9953564D;
+    private static final int EQUIPPED = 0x9991938C;
 
-	private ColorBlock bg;
+    protected ColorBlock bg;
 
-	public InventorySlot( Item item ) {
+    public InventorySlot(TileItem item) {
+        super(item);
+    }
 
-		super( item );
-	}
+    public InventorySlot(Item item) {
 
-	@Override
-	protected void createChildren(Object... params) {
-		bg = new ColorBlock( 1, 1, NORMAL );
-		add( bg );
+        super(item);
+    }
 
-		super.createChildren(params);
-	}
+    @Override
+    protected void createChildren(Object... params) {
+        bg = new ColorBlock(1, 1, NORMAL);
+        add(bg);
 
-	@Override
-	protected void layout() {
-		bg.size(width, height);
-		bg.x = x;
-		bg.y = y;
+        super.createChildren(params);
+    }
 
-		super.layout();
-	}
+    @Override
+    protected void layout() {
+        bg.size(width, height);
+        bg.x = x;
+        bg.y = y;
 
-	@Override
-	public void alpha(float value) {
-		super.alpha(value);
-		bg.alpha(value);
-	}
+        super.layout();
+    }
 
-	@Override
-	public void item( Item item ) {
+    @Override
+    public void alpha(float value) {
+        super.alpha(value);
+        bg.alpha(value);
+    }
 
-		super.item( item );
+    @Override
+    public void item(Item item) {
 
-		bg.visible = !(item instanceof Gold || item instanceof Bag);
+        super.item(item);
 
-		if (item != null) {
+        if (item instanceof TileItem) {
+            bg.visible = true;
+            bg.texture(TextureCache.createSolid(NORMAL));
+            bg.resetColor();
+            if (item.name() == null) enable(false);
+            return;
+        }
 
-			boolean equipped = item.isEquipped(Dungeon.hero) ||
-					item == Dungeon.hero.belongings.weapon ||
-					item == Dungeon.hero.belongings.armor ||
-					item == Dungeon.hero.belongings.artifact ||
-					item == Dungeon.hero.belongings.misc ||
-					item == Dungeon.hero.belongings.ring ||
-					item == Dungeon.hero.belongings.secondWep;
 
-			bg.texture( TextureCache.createSolid( equipped ? EQUIPPED : NORMAL ) );
-			bg.resetColor();
-			if (item.cursed && item.cursedKnown()) {
-				bg.ra = +0.3f;
-				bg.ga = -0.15f;
-			} else if (!item.isIdentified()) {
-				if ((item instanceof EquipableItem || item instanceof Wand) && item.cursedKnown()){
-					bg.ba = 0.3f;
-				} else {
-					bg.ra = 0.3f;
-					bg.ba = 0.3f;
-				}
-			}
+        bg.visible = !(item instanceof Gold || item instanceof Bag);
 
-			if (item.name() == null) {
-				enable( false );
-			} else if (Dungeon.hero.buff(LostInventory.class) != null
-					&& !item.keptThoughLostInvent){
-				enable(false);
-			}
-		} else {
-			bg.texture( TextureCache.createSolid( NORMAL ) );
-			bg.resetColor();
-		}
-	}
+        if (item != null && Dungeon.hero != null) {
 
-	public Item item(){
-		return item;
-	}
+            boolean equipped = item.isEquipped(Dungeon.hero) ||
+                    item == Dungeon.hero.belongings.weapon ||
+                    item == Dungeon.hero.belongings.armor ||
+                    item == Dungeon.hero.belongings.artifact ||
+                    item == Dungeon.hero.belongings.misc ||
+                    item == Dungeon.hero.belongings.ring ||
+                    item == Dungeon.hero.belongings.secondWep;
 
-	@Override
-	protected void onPointerDown() {
-		bg.brightness( 1.5f );
-		Sample.INSTANCE.play( Assets.Sounds.CLICK, 0.7f, 0.7f, 1.2f );
-	}
+            bg.texture(TextureCache.createSolid(equipped ? EQUIPPED : NORMAL));
+            bg.resetColor();
+            if (item.cursed && item.cursedKnown()) {
+                bg.ra = +0.3f;
+                bg.ga = -0.15f;
+            } else if (!item.isIdentified()) {
+                if ((item instanceof EquipableItem || item instanceof Wand) && item.cursedKnown()) {
+                    bg.ba = 0.3f;
+                } else {
+                    bg.ra = 0.3f;
+                    bg.ba = 0.3f;
+                }
+            }
 
-	protected void onPointerUp() {
-		bg.brightness( 1.0f );
-	}
+            if (item.name() == null) {
+                enable(false);
+            } else if (Dungeon.hero.buff(LostInventory.class) != null
+                    && !item.keptThoughLostInvent) {
+                enable(false);
+            }
+        } else {
+            bg.texture(TextureCache.createSolid(NORMAL));
+            bg.resetColor();
+        }
+
+    }
+
+    public Item item() {
+        return item;
+    }
+
+    @Override
+    protected void onPointerDown() {
+        bg.brightness(1.5f);
+        Sample.INSTANCE.play(Assets.Sounds.CLICK, 0.7f, 0.7f, 1.2f);
+    }
+
+    protected void onPointerUp() {
+        bg.brightness(1.0f);
+    }
 
 }

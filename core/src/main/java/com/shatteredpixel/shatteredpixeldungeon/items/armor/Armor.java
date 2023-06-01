@@ -121,6 +121,14 @@ public class Armor extends EquipableItem {
         this.tier = tier;
     }
 
+    @Override
+    public Item clone()  {
+        Armor armor = (Armor) super.clone();
+        if (glyph != null) armor.glyph = glyph.clone();
+        if (seal != null) armor.seal = (BrokenSeal) seal.clone();
+        return armor;
+    }
+
     private static final String USES_LEFT_TO_ID = "uses_left_to_id";
     private static final String AVAILABLE_USES = "available_uses";
     private static final String GLYPH = "glyph";
@@ -634,7 +642,7 @@ public class Armor extends EquipableItem {
         return glyph != null && (cursedKnown() || !glyph.curse()) ? glyph.glowing() : null;
     }
 
-    public static abstract class Glyph implements Bundlable {
+    public static abstract class Glyph implements Bundlable, Cloneable {
 
         public static final Class<?>[] common = new Class<?>[]{
                 Obfuscation.class, Swiftness.class, Viscosity.class, Potential.class};
@@ -753,5 +761,13 @@ public class Armor extends EquipableItem {
             }
         }
 
+        @Override
+        public Glyph clone()  {
+            try {
+                return (Glyph) super.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

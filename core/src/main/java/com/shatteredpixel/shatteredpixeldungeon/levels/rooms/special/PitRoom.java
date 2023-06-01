@@ -89,7 +89,7 @@ public class PitRoom extends SpecialRoom {
 			level.drop( prize( level ), remains ).setHauntedIfCursed();
 		}
 
-		level.drop( new CrystalKey( Dungeon.depth ), remains );
+		level.drop( new CrystalKey( Dungeon.levelName ), remains );
 	}
 	
 	private static Item prize( Level level ) {

@@ -561,16 +561,11 @@ public class DM300 extends Mob {
 			Dungeon.level.drop( new MetalShard(), pos + ofs ).sprite.drop( pos );
 		}
 
-		Badges.validateBossSlain();
+		Badges.validateBossSlain(DM300.class);
 		if (Statistics.qualifiedForBossChallengeBadge){
-			Badges.validateBossChallengeCompleted();
+			Badges.validateBossChallengeCompleted(DM300.class);
 		}
 		Statistics.bossScores[2] += 3000;
-
-		LloydsBeacon beacon = Dungeon.hero.belongings.getItem(LloydsBeacon.class);
-		if (beacon != null) {
-			beacon.upgrade();
-		}
 
 		yell( Messages.get(this, "defeated") );
 	}

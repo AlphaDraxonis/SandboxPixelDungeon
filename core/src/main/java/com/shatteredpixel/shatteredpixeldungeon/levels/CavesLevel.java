@@ -66,11 +66,6 @@ public class CavesLevel extends RegularLevel {
 				new float[]{1, 1, 0.5f},
 				false);
 	}
-
-	@Override
-	protected ArrayList<Room> initRooms() {
-		return Blacksmith.Quest.spawn(super.initRooms());
-	}
 	
 	@Override
 	protected int standardRooms(boolean forceMax) {

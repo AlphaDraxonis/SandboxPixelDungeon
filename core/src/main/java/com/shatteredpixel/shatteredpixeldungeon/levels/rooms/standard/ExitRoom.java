@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -29,40 +30,46 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.watabou.utils.Point;
 
 public class ExitRoom extends StandardRoom {
-	
-	@Override
-	public int minWidth() {
-		return Math.max(super.minWidth(), 5);
-	}
-	
-	@Override
-	public int minHeight() {
-		return Math.max(super.minHeight(), 5);
-	}
-	
-	public void paint(Level level) {
 
-		Painter.fill( level, this, Terrain.WALL );
-		Painter.fill( level, this, 1, Terrain.EMPTY );
-		
-		for (Room.Door door : connected.values()) {
-			door.set( Room.Door.Type.REGULAR );
-		}
-		
-		int exit = level.pointToCell(random( 2 ));
-		Painter.set( level, exit, Terrain.EXIT );
-		level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
-	}
-	
-	@Override
-	public boolean canPlaceCharacter(Point p, Level l) {
-		return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
-	}
+    @Override
+    public int minWidth() {
+        return Math.max(super.minWidth(), 5);
+    }
 
-	@Override
-	public boolean connect(Room room) {
-		//cannot connect to entrance, otherwise works normally
-		if (room instanceof EntranceRoom)   return false;
-		else                            return super.connect(room);
-	}
+    @Override
+    public int minHeight() {
+        return Math.max(super.minHeight(), 5);
+    }
+
+    public void paint(Level level) {
+
+        Painter.fill(level, this, Terrain.WALL);
+        Painter.fill(level, this, 1, Terrain.EMPTY);
+
+        for (Room.Door door : connected.values()) {
+            door.set(Room.Door.Type.REGULAR);
+        }
+
+        int exit = level.pointToCell(random(2));
+        Painter.set(level, exit, Terrain.EXIT);
+        String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultBelow();
+        if ( Level.SURFACE.equals(dest)) {
+            level.transitions.put(exit,new LevelTransition(level, exit, LevelTransition.Type.SURFACE));
+        } else {
+            if (Dungeon.customDungeon.getFloor(dest) != null)
+                level.transitions.put(exit, new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
+        }
+    }
+
+    @Override
+    public boolean canPlaceCharacter(Point p, Level l) {
+        return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
+    }
+
+    @Override
+    public boolean connect(Room room) {
+        //cannot connect to entrance, otherwise works normally
+        if (room instanceof EntranceRoom) return false;
+        else return super.connect(room);
+    }
 }

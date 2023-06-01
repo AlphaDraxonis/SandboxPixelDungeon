@@ -46,7 +46,7 @@ public class Bestiary {
 	}
 	
 	//returns a rotation of standard mobs, unshuffled.
-	private static ArrayList<Class<? extends Mob>> standardMobRotation( int depth ){
+	public static ArrayList<Class<? extends Mob>> standardMobRotation( int depth ){
 		switch(depth){
 			
 			// Sewers

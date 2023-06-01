@@ -86,7 +86,7 @@ public class WarpBeacon extends ArmorAbility {
 			GameScene.show( new WndOptions(
 					new Image(hero.sprite),
 					Messages.titleCase(name()),
-					Messages.get(WarpBeacon.class, "window_desc", tracker.depth),
+					Messages.get(WarpBeacon.class, "window_desc", tracker.level),
 					Messages.get(WarpBeacon.class, "window_tele"),
 					Messages.get(WarpBeacon.class, "window_clear"),
 					Messages.get(WarpBeacon.class, "window_cancel")){
@@ -95,14 +95,14 @@ public class WarpBeacon extends ArmorAbility {
 				protected void onSelect(int index) {
 					if (index == 0){
 
-						if (tracker.depth != Dungeon.depth && !hero.hasTalent(Talent.LONGRANGE_WARP)){
+						if (!tracker.level.equals(Dungeon.levelName) && !hero.hasTalent(Talent.LONGRANGE_WARP)){
 							GLog.w( Messages.get(WarpBeacon.class, "depths") );
 							return;
 						}
 
 						float chargeNeeded = chargeUse(hero);
 
-						if (tracker.depth != Dungeon.depth){
+						if (!tracker.level.equals(Dungeon.levelName)){
 							chargeNeeded *= 1.833f - 0.333f*Dungeon.hero.pointsInTalent(Talent.LONGRANGE_WARP);
 						}
 
@@ -114,7 +114,7 @@ public class WarpBeacon extends ArmorAbility {
 						armor.charge -= chargeNeeded;
 						armor.updateQuickslot();
 
-						if (tracker.depth == Dungeon.depth && tracker.branch == Dungeon.branch){
+						if (tracker.level.equals(Dungeon.levelName)){
 							Char existing = Actor.findChar(tracker.pos);
 
 							if (existing != null && existing != hero){
@@ -179,8 +179,7 @@ public class WarpBeacon extends ArmorAbility {
 							Level.beforeTransition();
 							Invisibility.dispel();
 							InterlevelScene.mode = InterlevelScene.Mode.RETURN;
-							InterlevelScene.returnDepth = tracker.depth;
-							InterlevelScene.returnBranch = tracker.branch;
+							InterlevelScene.returnLevel = tracker.level;
 							InterlevelScene.returnPos = tracker.pos;
 							Game.switchScene( InterlevelScene.class );
 						}
@@ -212,8 +211,7 @@ public class WarpBeacon extends ArmorAbility {
 
 			WarpBeaconTracker tracker = new WarpBeaconTracker();
 			tracker.pos = target;
-			tracker.depth = Dungeon.depth;
-			tracker.branch = Dungeon.branch;
+			tracker.level = Dungeon.levelName;
 			tracker.attachTo(hero);
 
 			hero.sprite.operate(target);
@@ -230,14 +228,13 @@ public class WarpBeacon extends ArmorAbility {
 		}
 
 		int pos;
-		int depth;
-		int branch;
+		String level;
 
 		Emitter e;
 
 		@Override
 		public void fx(boolean on) {
-			if (on && depth == Dungeon.depth) {
+			if (on && level.equals(Dungeon.levelName)) {
 				e = CellEmitter.center(pos);
 				e.pour(MagicMissile.WardParticle.UP, 0.05f);
 			}
@@ -245,23 +242,20 @@ public class WarpBeacon extends ArmorAbility {
 		}
 
 		public static final String POS = "pos";
-		public static final String DEPTH = "depth";
-		public static final String BRANCH = "branch";
+		public static final String LEVEL = "level";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put(POS, pos);
-			bundle.put(DEPTH, depth);
-			bundle.put(BRANCH, branch);
+			bundle.put(LEVEL, level);
 		}
 
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			pos = bundle.getInt(POS);
-			depth = bundle.getInt(DEPTH);
-			branch = bundle.getInt(BRANCH);
+			level = bundle.getString(LEVEL);
 		}
 	}
 

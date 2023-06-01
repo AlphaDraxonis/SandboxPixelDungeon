@@ -44,12 +44,14 @@ public class Tag extends Button {
 		this.r = (color >> 16) / 255f;
 		this.g = ((color >> 8) & 0xFF) / 255f;
 		this.b = (color & 0xFF) / 255f;
+
+		bg.hardlight( r, g, b );
 	}
 	
 	@Override
 	protected void createChildren(Object... params) {
 		
-		super.createChildren();
+		super.createChildren(params);
 		
 		bg = Chrome.get( Chrome.Type.TAG );
 		bg.hardlight( r, g, b );

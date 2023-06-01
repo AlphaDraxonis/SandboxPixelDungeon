@@ -45,7 +45,7 @@ public class WndInfoMob extends WndTitledMessage {
 
         private static final int GAP = 2;
 
-        private CharSprite image;
+        public CharSprite image;
         private RenderedTextBlock name;
         private HealthBar health;
         private BuffIndicator buffs;

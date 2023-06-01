@@ -25,6 +25,7 @@ import com.badlogic.gdx.Input;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -197,7 +198,13 @@ public class PixelScene extends Scene {
             });
         }
 
-        super.update();
+
+        try {
+            super.update();
+        } catch (Exception e) {
+            ShatteredPixelDungeon.reportException(e);
+        }
+
         //20% deadzone
         if (!Cursor.isCursorCaptured()) {
             if (Math.abs(ControllerHandler.rightStickPosition.x) >= 0.2f

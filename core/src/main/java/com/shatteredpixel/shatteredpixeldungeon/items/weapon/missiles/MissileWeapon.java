@@ -216,7 +216,7 @@ abstract public class MissileWeapon extends Weapon {
                     && curUser.buff(Talent.SeerShotCooldown.class) == null) {
                 if (Actor.findChar(cell) == null) {
                     RevealedArea a = Buff.affect(curUser, RevealedArea.class, 5 * curUser.pointsInTalent(Talent.SEER_SHOT));
-                    a.depth = Dungeon.depth;
+                    a.level = Dungeon.levelName;
                     a.pos = cell;
                     Buff.affect(curUser, Talent.SeerShotCooldown.class, 20f);
                 }
@@ -310,7 +310,7 @@ abstract public class MissileWeapon extends Weapon {
         float usages = baseUses * (float) (Math.pow(3, level()));
 
         //+50%/75% durability
-        if (Dungeon.hero.hasTalent(Talent.DURABLE_PROJECTILES)) {
+        if (Dungeon.hero!=null&& Dungeon.hero.hasTalent(Talent.DURABLE_PROJECTILES)) {
             usages *= 1.25f + (0.25f * Dungeon.hero.pointsInTalent(Talent.DURABLE_PROJECTILES));
         }
         if (holster) {

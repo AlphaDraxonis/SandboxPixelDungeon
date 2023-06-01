@@ -23,6 +23,8 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
@@ -31,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
@@ -38,8 +41,10 @@ import com.watabou.glwrap.Matrix;
 import com.watabou.glwrap.Vertexbuffer;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.NoosaScript;
+import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.PointF;
@@ -49,354 +54,387 @@ import java.nio.Buffer;
 
 public class ItemSprite extends MovieClip {
 
-	public static final int SIZE	= 16;
-	
-	private static final float DROP_INTERVAL = 0.4f;
-	
-	public Heap heap;
-	
-	private Glowing glowing;
-	//FIXME: a lot of this emitter functionality isn't very well implemented.
-	//right now I want to ship 0.3.0, but should refactor in the future.
-	protected Emitter emitter;
-	private float phase;
-	private boolean glowUp;
-	
-	private float dropInterval;
+    public static final int SIZE = 16;
 
-	//the amount the sprite is raised from flat when viewed in a raised perspective
-	protected float perspectiveRaise    = 5 / 16f; //5 pixels
+    private static final float DROP_INTERVAL = 0.4f;
 
-	//the width and height of the shadow are a percentage of sprite size
-	//offset is the number of pixels the shadow is moved down or up (handy for some animations)
-	protected boolean renderShadow  = false;
-	protected float shadowWidth     = 1f;
-	protected float shadowHeight    = 0.25f;
-	protected float shadowOffset    = 0.5f;
-	
-	public ItemSprite() {
-		this( ItemSpriteSheet.SOMETHING, null );
-	}
-	
-	public ItemSprite( Heap heap ){
-		super(Assets.Sprites.ITEMS);
-		view( heap );
-	}
-	
-	public ItemSprite( Item item ) {
-		super(Assets.Sprites.ITEMS);
-		view( item );
-	}
-	
-	public ItemSprite( int image ){
-		this( image, null );
-	}
-	
-	public ItemSprite( int image, Glowing glowing ) {
-		super( Assets.Sprites.ITEMS );
-		
-		view(image, glowing);
-	}
-	
-	public void link() {
-		link(heap);
-	}
-	
-	public void link( Heap heap ) {
-		this.heap = heap;
-		view(heap);
-		renderShadow = true;
-		place(heap.pos);
-	}
-	
-	@Override
-	public void revive() {
-		super.revive();
-		
-		speed.set( 0 );
-		acc.set( 0 );
-		dropInterval = 0;
-		
-		heap = null;
-		if (emitter != null) {
-			emitter.killAndErase();
-			emitter = null;
-		}
-	}
+    public Heap heap;
 
-	public void visible(boolean value){
-		this.visible = value;
-		if (emitter != null && !visible){
-			emitter.killAndErase();
-			emitter = null;
-		}
-	}
-	
-	public PointF worldToCamera( int cell ) {
-		final int csize = DungeonTilemap.SIZE;
-		
-		return new PointF(
-				PixelScene.align(Camera.main, ((cell % Dungeon.level.width()) + 0.5f) * csize - width() * 0.5f),
-				PixelScene.align(Camera.main, ((cell / Dungeon.level.width()) + 1.0f) * csize - height() - csize * perspectiveRaise)
-		);
-	}
-	
-	public void place( int p ) {
-		if (Dungeon.level != null) {
-			point(worldToCamera(p));
-			shadowOffset = 0.5f;
-		}
-	}
-	
-	public void drop() {
+    private Glowing glowing;
+    //FIXME: a lot of this emitter functionality isn't very well implemented.
+    //right now I want to ship 0.3.0, but should refactor in the future.
+    protected Emitter emitter;
+    private float phase;
+    private boolean glowUp;
 
-		if (heap.isEmpty()) {
-			return;
-		} else if (heap.size() == 1){
-			// normally this would happen for any heap, however this is not applied to heaps greater than 1 in size
-			// in order to preserve an amusing visual bug/feature that used to trigger for heaps with size > 1
-			// where as long as the player continually taps, the heap sails up into the air.
-			place(heap.pos);
-		}
-			
-		dropInterval = DROP_INTERVAL;
-		
-		speed.set( 0, -100 );
-		acc.set(0, -speed.y / DROP_INTERVAL * 2);
-		
-		if (heap != null && heap.seen && heap.peek() instanceof Gold) {
-			CellEmitter.center( heap.pos ).burst( Speck.factory( Speck.COIN ), 5 );
-			Sample.INSTANCE.play( Assets.Sounds.GOLD, 1, 1, Random.Float( 0.9f, 1.1f ) );
-		}
-	}
-	
-	public void drop( int from ) {
+    private float dropInterval;
 
-		if (heap.pos == from) {
-			drop();
-		} else {
-			
-			float px = x;
-			float py = y;
-			drop();
-			
-			place(from);
-	
-			speed.offset((px - x) / DROP_INTERVAL, (py - y) / DROP_INTERVAL);
-		}
-	}
+    //the amount the sprite is raised from flat when viewed in a raised perspective
+    protected float perspectiveRaise = 5 / 16f; //5 pixels
 
-	public ItemSprite view( Item item ){
-		view(item.image(), item.glowing());
-		Emitter emitter = item.emitter();
-		if (emitter != null && parent != null) {
-			emitter.pos( this );
-			parent.add( emitter );
-			this.emitter = emitter;
-		}
-		return this;
-	}
-	
-	public ItemSprite view( Heap heap ){
-		if (heap.size() <= 0 || heap.items == null){
-			return view( 0, null );
-		}
-		
-		switch (heap.type) {
-			case HEAP: case FOR_SALE:
-				return view( heap.peek() );
-			case CHEST:
-				return view( ItemSpriteSheet.CHEST, null );
-			case LOCKED_CHEST:
-				return view( ItemSpriteSheet.LOCKED_CHEST, null );
-			case CRYSTAL_CHEST:
-				return view( ItemSpriteSheet.CRYSTAL_CHEST, null );
-			case TOMB:
-				return view( ItemSpriteSheet.TOMB, null );
-			case SKELETON:
-				return view( ItemSpriteSheet.BONES, null );
-			case REMAINS:
-				return view( ItemSpriteSheet.REMAINS, null );
-			default:
-				return view( 0, null );
-		}
-	}
-	
-	public ItemSprite view( int image, Glowing glowing ) {
-		if (this.emitter != null) this.emitter.killAndErase();
-		emitter = null;
-		frame( image );
-		glow( glowing );
-		return this;
-	}
+    //the width and height of the shadow are a percentage of sprite size
+    //offset is the number of pixels the shadow is moved down or up (handy for some animations)
+    protected boolean renderShadow = false;
+    private boolean dontRenderShadow = false;
+    protected float shadowWidth = 1f;
+    protected float shadowHeight = 0.25f;
+    protected float shadowOffset = 0.5f;
 
-	public void frame( int image ){
-		frame( ItemSpriteSheet.film.get( image ));
+    protected boolean isTile = false, usesWater = false;
 
-		float height = ItemSpriteSheet.film.height( image );
-		//adds extra raise to very short items, so they are visible
-		if (height < 8f){
-			perspectiveRaise =  (5 + 8 - height) / 16f;
-		}
-	}
-	
-	public synchronized void glow( Glowing glowing ){
-		this.glowing = glowing;
-		if (glowing == null) resetColor();
-	}
+    public ItemSprite() {
+        this(ItemSpriteSheet.SOMETHING, null);
+    }
 
-	@Override
-	public void kill() {
-		super.kill();
-		if (emitter != null) {
-			emitter.on = false;
-			emitter.autoKill = true;
-		}
-		emitter = null;
-	}
+    //Dont use (If you have a tileItem as an Item, you also have to cast it to use this constructor!!)
+    public ItemSprite(TileItem tileItem) {
+        super(EditorScene.floor().tilesTex());
+        isTile = true;
+        if (tileItem != null && tileItem.image() >= 0) view(tileItem);
+        else visible = false;
+    }
 
-	private float[] shadowMatrix = new float[16];
+    public ItemSprite(Heap heap) {
+        super(Assets.Sprites.ITEMS);
+        view(heap);
+    }
 
-	@Override
-	protected void updateMatrix() {
-		super.updateMatrix();
-		Matrix.copy(matrix, shadowMatrix);
-		Matrix.translate(shadowMatrix,
-				(width() * (1f - shadowWidth)) / 2f,
-				(height() * (1f - shadowHeight)) + shadowOffset);
-		Matrix.scale(shadowMatrix, shadowWidth, shadowHeight);
-	}
+    public ItemSprite(Item item) {
+        super(Assets.Sprites.ITEMS);
+        view(item);
+    }
 
-	@Override
-	public void draw() {
-		if (texture == null || (!dirty && buffer == null))
-			return;
+    public ItemSprite(int image) {
+        this(image, null);
+    }
 
-		if (renderShadow) {
-			if (dirty) {
-				((Buffer)verticesBuffer).position(0);
-				verticesBuffer.put(vertices);
-				if (buffer == null)
-					buffer = new Vertexbuffer(verticesBuffer);
-				else
-					buffer.updateVertices(verticesBuffer);
-				dirty = false;
-			}
+    public ItemSprite(int image, Glowing glowing) {
+        super(Assets.Sprites.ITEMS);
+        view(image, glowing);
+    }
 
-			NoosaScript script = script();
+    public void link() {
+        link(heap);
+    }
 
-			texture.bind();
+    public void link(Heap heap) {
+        this.heap = heap;
+        view(heap);
+        renderShadow = true;
+        place(heap.pos);
+    }
 
-			script.camera(camera());
+    @Override
+    public void revive() {
+        super.revive();
 
-			updateMatrix();
+        speed.set(0);
+        acc.set(0);
+        dropInterval = 0;
 
-			script.uModel.valueM4(shadowMatrix);
-			script.lighting(
-					0, 0, 0, am * .6f,
-					0, 0, 0, aa * .6f);
+        heap = null;
+        if (emitter != null) {
+            emitter.killAndErase();
+            emitter = null;
+        }
+    }
 
-			script.drawQuad(buffer);
-		}
+    public void visible(boolean value) {
+        this.visible = value;
+        if (emitter != null && !visible) {
+            emitter.killAndErase();
+            emitter = null;
+        }
+    }
 
-		super.draw();
+    public PointF worldToCamera(int cell) {
+        final int csize = DungeonTilemap.SIZE;
 
-	}
+        return new PointF(
+                PixelScene.align(Camera.main, ((cell % Dungeon.level.width()) + 0.5f) * csize - width() * 0.5f),
+                PixelScene.align(Camera.main, ((cell / Dungeon.level.width()) + 1.0f) * csize - height() - csize * perspectiveRaise)
+        );
+    }
 
-	@Override
-	public synchronized void update() {
-		super.update();
+    public void place(int p) {
+        if (Dungeon.level != null) {
+            point(worldToCamera(p));
+            shadowOffset = 0.5f;
+        }
+    }
 
-		visible = (heap == null || heap.seen);
+    public void drop() {
 
-		if (emitter != null){
-			emitter.visible = visible;
-		}
+        if (heap.isEmpty()) {
+            return;
+        } else if (heap.size() == 1) {
+            // normally this would happen for any heap, however this is not applied to heaps greater than 1 in size
+            // in order to preserve an amusing visual bug/feature that used to trigger for heaps with size > 1
+            // where as long as the player continually taps, the heap sails up into the air.
+            place(heap.pos);
+        }
 
-		if (dropInterval > 0){
-			shadowOffset -= speed.y * Game.elapsed * 0.8f;
+        dropInterval = DROP_INTERVAL;
 
-			if ((dropInterval -= Game.elapsed) <= 0){
+        speed.set(0, -100);
+        acc.set(0, -speed.y / DROP_INTERVAL * 2);
 
-				speed.set(0);
-				acc.set(0);
-				shadowOffset = 0.25f;
-				place(heap.pos);
+        if (heap != null && heap.seen && heap.peek() instanceof Gold) {
+            CellEmitter.center(heap.pos).burst(Speck.factory(Speck.COIN), 5);
+            Sample.INSTANCE.play(Assets.Sounds.GOLD, 1, 1, Random.Float(0.9f, 1.1f));
+        }
+    }
 
-				if (visible) {
+    public void drop(int from) {
 
-					if (Dungeon.level.water[heap.pos]) {
-						GameScene.ripple(heap.pos);
-					}
+        if (heap.pos == from) {
+            drop();
+        } else {
 
-					if (Dungeon.level.water[heap.pos]) {
-						Sample.INSTANCE.play( Assets.Sounds.WATER, 0.8f, Random.Float( 1f, 1.45f ) );
-					} else if (Dungeon.level.map[heap.pos] == Terrain.EMPTY_SP) {
-						Sample.INSTANCE.play( Assets.Sounds.STURDY, 0.8f, Random.Float( 1.16f, 1.25f ) );
-					} else if (Dungeon.level.map[heap.pos] == Terrain.GRASS
-							|| Dungeon.level.map[heap.pos] == Terrain.EMBERS
-							|| Dungeon.level.map[heap.pos] == Terrain.FURROWED_GRASS){
-						Sample.INSTANCE.play( Assets.Sounds.GRASS, 0.8f, Random.Float( 1.16f, 1.25f ) );
-					} else if (Dungeon.level.map[heap.pos] == Terrain.HIGH_GRASS) {
-						Sample.INSTANCE.play( Assets.Sounds.STEP, 0.8f, Random.Float( 1.16f, 1.25f ) );
-					} else {
-						Sample.INSTANCE.play( Assets.Sounds.STEP, 0.8f, Random.Float( 1.16f, 1.25f ));
-					}
-				}
-			}
-		}
+            float px = x;
+            float py = y;
+            drop();
 
-		if (visible && glowing != null) {
-			if (glowUp && (phase += Game.elapsed) > glowing.period) {
-				
-				glowUp = false;
-				phase = glowing.period;
-				
-			} else if (!glowUp && (phase -= Game.elapsed) < 0) {
-				
-				glowUp = true;
-				phase = 0;
-				
-			}
-			
-			float value = phase / glowing.period * 0.6f;
-			
-			rm = gm = bm = 1 - value;
-			ra = glowing.red * value;
-			ga = glowing.green * value;
-			ba = glowing.blue * value;
-		}
-	}
+            place(from);
 
-	public static int pick( int index, int x, int y ) {
-		SmartTexture tx = TextureCache.get( Assets.Sprites.ITEMS );
-		int rows = tx.width / SIZE;
-		int row = index / rows;
-		int col = index % rows;
-		return tx.getPixel( col * SIZE + x, row * SIZE + y );
-	}
-	
-	public static class Glowing {
-		
-		public int color;
-		public float red;
-		public float green;
-		public float blue;
-		public float period;
-		
-		public Glowing( int color ) {
-			this( color, 1f );
-		}
-		
-		public Glowing( int color, float period ) {
+            speed.offset((px - x) / DROP_INTERVAL, (py - y) / DROP_INTERVAL);
+        }
+    }
 
-			this.color = color;
+    public ItemSprite view(Item item) {
+        isTile = item instanceof TileItem;
+        if (isTile) {
+            boolean newVal = ((TileItem) item).terrainType() == Terrain.WATER;
+            if (newVal != usesWater) {
+                if (newVal) texture(EditorScene.floor().waterTex());
+                else texture(EditorScene.floor().tilesTex());
+                usesWater = newVal;
+            }
+        }
+        view(item.image(), item.glowing());
+        Emitter emitter = item.emitter();
+        if (emitter != null && parent != null) {
+            emitter.pos(this);
+            parent.add(emitter);
+            this.emitter = emitter;
+        }
+        return this;
+    }
 
-			red = (color >> 16) / 255f;
-			green = ((color >> 8) & 0xFF) / 255f;
-			blue = (color & 0xFF) / 255f;
-			
-			this.period = period;
-		}
-	}
+    public ItemSprite view(Heap heap) {
+
+        if (heap.size() <= 0 || heap.items == null) {
+            return view(0, null);
+        }
+
+        dontRenderShadow = heap.type != Heap.Type.HEAP && heap.type != Heap.Type.FOR_SALE;
+        switch (heap.type) {
+            case HEAP:
+            case FOR_SALE:
+                Item item = heap.peek();
+                int img = item.image();
+                dontRenderShadow = img >= ItemSpriteSheet.SOMETHING && img < ItemSpriteSheet.SOMETHING + 16;
+                return view(heap.peek());
+            case CHEST:
+                return view(ItemSpriteSheet.CHEST, null);
+            case LOCKED_CHEST:
+                return view(ItemSpriteSheet.LOCKED_CHEST, null);
+            case CRYSTAL_CHEST:
+                return view(ItemSpriteSheet.CRYSTAL_CHEST, null);
+            case TOMB:
+                return view(ItemSpriteSheet.TOMB, null);
+            case SKELETON:
+                return view(ItemSpriteSheet.BONES, null);
+            case REMAINS:
+                return view(ItemSpriteSheet.REMAINS, null);
+            default:
+                return view(0, null);
+        }
+    }
+
+    public ItemSprite view(int image, Glowing glowing) {
+        if (this.emitter != null) this.emitter.killAndErase();
+        emitter = null;
+        frame(image);
+        glow(glowing);
+        return this;
+    }
+
+    public void frame(int image) {
+
+        if(usesWater){
+            frame(0, 0, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
+            return;
+        }
+
+        TextureFilm tf = isTile ? EditorScene.floor().getTextureFilm() : ItemSpriteSheet.film;
+
+        frame(tf.get(image));
+
+        float height = tf.height(image);
+        //adds extra raise to very short items, so they are visible
+        if (height < 8f) {
+            perspectiveRaise = (5 + 8 - height) / 16f;
+        }
+    }
+
+    public synchronized void glow(Glowing glowing) {
+        this.glowing = glowing;
+        if (glowing == null) resetColor();
+    }
+
+    @Override
+    public void kill() {
+        super.kill();
+        if (emitter != null) {
+            emitter.on = false;
+            emitter.autoKill = true;
+        }
+        emitter = null;
+    }
+
+    private float[] shadowMatrix = new float[16];
+
+    @Override
+    protected void updateMatrix() {
+        super.updateMatrix();
+        Matrix.copy(matrix, shadowMatrix);
+        Matrix.translate(shadowMatrix,
+                (width() * (1f - shadowWidth)) / 2f,
+                (height() * (1f - shadowHeight)) + shadowOffset);
+        Matrix.scale(shadowMatrix, shadowWidth, shadowHeight);
+    }
+
+    @Override
+    public void draw() {
+        if (texture == null || (!dirty && buffer == null))
+            return;
+
+        if (renderShadow && !dontRenderShadow) {
+            if (dirty) {
+                ((Buffer) verticesBuffer).position(0);
+                verticesBuffer.put(vertices);
+                if (buffer == null)
+                    buffer = new Vertexbuffer(verticesBuffer);
+                else
+                    buffer.updateVertices(verticesBuffer);
+                dirty = false;
+            }
+
+            NoosaScript script = script();
+
+            texture.bind();
+
+            script.camera(camera());
+
+            updateMatrix();
+
+            script.uModel.valueM4(shadowMatrix);
+            script.lighting(
+                    0, 0, 0, am * .6f,
+                    0, 0, 0, aa * .6f);
+
+            script.drawQuad(buffer);
+        }
+
+        super.draw();
+
+    }
+
+    @Override
+    public synchronized void update() {
+        super.update();
+
+        visible = (heap == null || heap.seen);
+
+        if (emitter != null) {
+            emitter.visible = visible;
+        }
+
+        if (dropInterval > 0) {
+            shadowOffset -= speed.y * Game.elapsed * 0.8f;
+
+            if ((dropInterval -= Game.elapsed) <= 0) {
+
+                speed.set(0);
+                acc.set(0);
+                shadowOffset = 0.25f;
+                place(heap.pos);
+
+                if (visible) {
+
+                    if (Dungeon.level.water[heap.pos]) {
+                        GameScene.ripple(heap.pos);
+                    }
+
+                    if (Dungeon.level.water[heap.pos]) {
+                        Sample.INSTANCE.play(Assets.Sounds.WATER, 0.8f, Random.Float(1f, 1.45f));
+                    } else if (Dungeon.level.map[heap.pos] == Terrain.EMPTY_SP) {
+                        Sample.INSTANCE.play(Assets.Sounds.STURDY, 0.8f, Random.Float(1.16f, 1.25f));
+                    } else if (Dungeon.level.map[heap.pos] == Terrain.GRASS
+                            || Dungeon.level.map[heap.pos] == Terrain.EMBERS
+                            || Dungeon.level.map[heap.pos] == Terrain.FURROWED_GRASS) {
+                        Sample.INSTANCE.play(Assets.Sounds.GRASS, 0.8f, Random.Float(1.16f, 1.25f));
+                    } else if (Dungeon.level.map[heap.pos] == Terrain.HIGH_GRASS) {
+                        Sample.INSTANCE.play(Assets.Sounds.STEP, 0.8f, Random.Float(1.16f, 1.25f));
+                    } else {
+                        Sample.INSTANCE.play(Assets.Sounds.STEP, 0.8f, Random.Float(1.16f, 1.25f));
+                    }
+                }
+            }
+        }
+
+        if (visible && glowing != null) {
+            if (glowUp && (phase += Game.elapsed) > glowing.period) {
+
+                glowUp = false;
+                phase = glowing.period;
+
+            } else if (!glowUp && (phase -= Game.elapsed) < 0) {
+
+                glowUp = true;
+                phase = 0;
+
+            }
+
+            float value = phase / glowing.period * 0.6f;
+
+            rm = gm = bm = 1 - value;
+            ra = glowing.red * value;
+            ga = glowing.green * value;
+            ba = glowing.blue * value;
+        }
+    }
+
+    public static int pick(int index, int x, int y) {
+        SmartTexture tx = TextureCache.get(Assets.Sprites.ITEMS);
+        int rows = tx.width / SIZE;
+        int row = index / rows;
+        int col = index % rows;
+        return tx.getPixel(col * SIZE + x, row * SIZE + y);
+    }
+
+    public static class Glowing {
+
+        public int color;
+        public float red;
+        public float green;
+        public float blue;
+        public float period;
+
+        public Glowing(int color) {
+            this(color, 1f);
+        }
+
+        public Glowing(int color, float period) {
+
+            this.color = color;
+
+            red = (color >> 16) / 255f;
+            green = ((color >> 8) & 0xFF) / 255f;
+            blue = (color & 0xFF) / 255f;
+
+            this.period = period;
+        }
+    }
 }

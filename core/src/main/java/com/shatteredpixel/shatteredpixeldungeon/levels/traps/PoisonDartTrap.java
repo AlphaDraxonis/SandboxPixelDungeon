@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.PoisonDart;
+import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.watabou.noosa.audio.Sample;
@@ -97,7 +98,7 @@ public class PoisonDartTrap extends Trap {
 									finalTarget.damage(dmg, trap);
 									if (finalTarget == Dungeon.hero){
 										//for the poison dart traps in the Tengu fight
-										if (Dungeon.depth == 10) {
+										if (Dungeon.level instanceof PrisonBossLevel) {
 											Statistics.qualifiedForBossChallengeBadge = false;
 											Statistics.bossScores[1] -= 100;
 										}

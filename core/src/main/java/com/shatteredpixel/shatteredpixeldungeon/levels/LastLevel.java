@@ -116,7 +116,7 @@ public class LastLevel extends Level {
 		entry.left--;
 		entry.right++;
 		entry.bottom += 2;
-		transitions.add(entry);
+		transitions.put(entrance,entry);
 		Painter.fill(this, 0, height - ROOM_TOP + 2, width, 8, Terrain.EMPTY);
 		Painter.fill(this, MID-1, height - ROOM_TOP + 2, 3, 1, Terrain.ENTRANCE);
 
@@ -225,8 +225,6 @@ public class LastLevel extends Level {
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
-		//pre-1.3.0 saves, deletes unneeded exit
-		if (bundle.contains("exit")) bundle.remove("exit");
 
 		super.restoreFromBundle(bundle);
 		for (int i=0; i < length(); i++) {

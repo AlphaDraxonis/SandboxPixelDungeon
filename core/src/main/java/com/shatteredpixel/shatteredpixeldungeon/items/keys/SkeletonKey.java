@@ -25,6 +25,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSupportPrompt;
 import com.watabou.noosa.Game;
@@ -39,12 +41,13 @@ public class SkeletonKey extends Key {
 	}
 	
 	public SkeletonKey() {
-		this( 0 );
+		this( Dungeon.levelName);
 	}
-	
-	public SkeletonKey( int depth ) {
+
+	public SkeletonKey( String levelName ) {
 		super();
-		this.depth = depth;
+		if (Level.NONE.equals(levelName)) this.levelName = CustomLevel.tempDungeonNameForKey;
+		else this.levelName = levelName;
 	}
 
 	@Override

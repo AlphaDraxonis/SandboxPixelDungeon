@@ -3,11 +3,13 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.watabou.noosa.ui.Component;
 
+import java.util.Objects;
+
 public class SpinnerTextModel extends AbstractSpinnerModel {
 
     private boolean cycle;
     private int index;
-    private final Object[] data;
+    private Object[] data;
     private Object value;
 
     public SpinnerTextModel(Object... data) {
@@ -25,6 +27,11 @@ public class SpinnerTextModel extends AbstractSpinnerModel {
         updateValue();
     }
 
+    public void setData(Object[] data) {
+        this.data = data;
+        index = 0;
+        if (data.length > 0) setValue(data[0]);
+    }
 
     private void updateValue() {
         if (data.length - 1 >= index) {
@@ -40,9 +47,9 @@ public class SpinnerTextModel extends AbstractSpinnerModel {
 
     @Override
     public void setValue(Object value) {
-        this.value = value;
+        changeValue(this.value, value);
         for (int i = 0; i < data.length; i++) {
-            if (data[i] == value) {
+            if (Objects.equals(data[i], value)) {
                 index = i;
                 showValue();
                 return;
@@ -54,7 +61,8 @@ public class SpinnerTextModel extends AbstractSpinnerModel {
         }
     }
 
-    private void showValue() {
+    protected void showValue() {
+        if (inputField == null) return;
         if (inputField instanceof Spinner.SpinnerTextBlock) {
             Spinner.SpinnerTextBlock casted = (Spinner.SpinnerTextBlock) inputField;
             casted.setText(getAsString(value));
@@ -63,20 +71,25 @@ public class SpinnerTextModel extends AbstractSpinnerModel {
             System.out.println("failed show the value because the input field is not a Spinner.SpinnerTextBlock");
         fireStateChanged();
     }
-    protected String getAsString(Object value){
-        return  value.toString();
+
+    public void changeValue(Object oldValue, Object newValue) {
+        this.value = newValue;
+    }
+
+    protected String getAsString(Object value) {
+        return value.toString();
     }
 
     @Override
     public Object getNextValue() {
-        if (index >= data.length - 1) return isCycle() ? 0 : null;
-        return data[index+1];
+        if (index >= data.length - 1) return isCycle() ? data[0] : null;
+        return data[index + 1];
     }
 
     @Override
     public Object getPreviousValue() {
-        if (index <= 0) return isCycle() ? data.length - 1 : null;
-        return data[index-1];
+        if (index <= 0) return isCycle() ? data[data.length - 1] : null;
+        return data[index - 1];
     }
 
     @Override
@@ -86,7 +99,7 @@ public class SpinnerTextModel extends AbstractSpinnerModel {
 
     @Override
     public Component createInputField(int fontSize) {
-        inputField = new Spinner.SpinnerTextBlock(Chrome.get(Chrome.Type.TOAST_WHITE), 10);
+        inputField = new Spinner.SpinnerTextBlock(Chrome.get(getChromeType()), 10);
         return inputField;
     }
 
@@ -96,5 +109,15 @@ public class SpinnerTextModel extends AbstractSpinnerModel {
 
     public void setCycle(boolean cycle) {
         this.cycle = cycle;
+    }
+
+    protected Chrome.Type getChromeType() {
+        return Chrome.Type.TOAST_WHITE;
+    }
+
+    @Override
+    public void enable(boolean value) {
+        if (inputField instanceof Spinner.SpinnerTextBlock)
+            ((Spinner.SpinnerTextBlock) inputField).enable(value);
     }
 }

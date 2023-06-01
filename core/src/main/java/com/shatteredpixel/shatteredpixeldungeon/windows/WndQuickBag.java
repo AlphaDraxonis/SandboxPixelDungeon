@@ -70,22 +70,7 @@ public class WndQuickBag extends Window {
 		int left = 0;
 		int top = 10;
 
-		ArrayList<Item> items = new ArrayList<>();
-
-		for (Item i : bag == null ? Dungeon.hero.belongings : bag){
-			if (i.defaultAction() == null){
-				continue;
-			}
-			if (i instanceof Bag) {
-				continue;
-			}
-			if (i instanceof Artifact
-					&& !i.isEquipped(Dungeon.hero)
-					&& (!(i instanceof CloakOfShadows) || !Dungeon.hero.hasTalent(Talent.LIGHT_CLOAK))){
-				continue;
-			}
-			items.add(i);
-		}
+		ArrayList<Item> items = getItemsFromBag(bag);
 
 		Collections.sort(items, quickBagComparator);
 
@@ -185,6 +170,26 @@ public class WndQuickBag extends Window {
 		if (WndBag.INSTANCE == this){
 			WndBag.INSTANCE = null;
 		}
+	}
+
+	protected ArrayList<Item> getItemsFromBag(Bag bag){
+		ArrayList<Item> items = new ArrayList<>();
+
+		for (Item i : bag == null ? Dungeon.hero.belongings : bag){
+			if (i.defaultAction() == null){
+				continue;
+			}
+			if (i instanceof Bag) {
+				continue;
+			}
+			if (i instanceof Artifact
+					&& !i.isEquipped(Dungeon.hero)
+					&& (!(i instanceof CloakOfShadows) || !Dungeon.hero.hasTalent(Talent.LIGHT_CLOAK))){
+				continue;
+			}
+			items.add(i);
+		}
+		return items;
 	}
 
 }

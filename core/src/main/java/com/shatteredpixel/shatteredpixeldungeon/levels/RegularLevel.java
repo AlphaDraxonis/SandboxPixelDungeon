@@ -34,7 +34,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GoldenMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -47,7 +49,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.journal.RegionLorePage;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
-import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.FigureEightBuilder;
@@ -81,22 +82,22 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public abstract class RegularLevel extends Level {
-	
+
 	protected ArrayList<Room> rooms;
-	
+
 	protected Builder builder;
-	
+
 	protected Room roomEntrance;
 	protected Room roomExit;
-	
+
 	@Override
 	protected boolean build() {
-		
+
 		builder = builder();
-		
+
 		ArrayList<Room> initRooms = initRooms();
 		Random.shuffle(initRooms);
-		
+
 		do {
 			for (Room r : initRooms){
 				r.neigbours.clear();
@@ -104,11 +105,11 @@ public abstract class RegularLevel extends Level {
 			}
 			rooms = builder.build((ArrayList<Room>)initRooms.clone());
 		} while (rooms == null);
-		
+
 		return painter().paint(this, rooms);
-		
+
 	}
-	
+
 	protected ArrayList<Room> initRooms() {
 		ArrayList<Room> initRooms = new ArrayList<>();
 		initRooms.add ( roomEntrance = new EntranceRoom());
@@ -127,7 +128,7 @@ public abstract class RegularLevel extends Level {
 			i += s.sizeCat.roomValue-1;
 			initRooms.add(s);
 		}
-		
+
 		if (Dungeon.shopOnLevel())
 			initRooms.add(new ShopRoom());
 
@@ -142,25 +143,33 @@ public abstract class RegularLevel extends Level {
 			if (s instanceof PitRoom) specials++;
 			initRooms.add(s);
 		}
-		
-		int secrets = SecretRoom.secretsForFloor(Dungeon.depth);
+
+		int secrets = SecretRoom.secretsForFloor(Dungeon.levelName);
 		//one additional secret for secret levels
 		if (feeling == Feeling.SECRETS) secrets++;
 		for (int i = 0; i < secrets; i++) {
 			initRooms.add(SecretRoom.createRoom());
 		}
-		
+
+		if (Dungeon.customDungeon.isBlacksmithLevel(Dungeon.levelName)) {
+			Blacksmith.Quest.spawn(initRooms);
+		}
+
+		if (Dungeon.customDungeon.isWandmakerLevel(Dungeon.levelName)) {
+			Wandmaker.Quest.spawnRoom(initRooms);
+		}
+
 		return initRooms;
 	}
-	
+
 	protected int standardRooms(boolean forceMax){
 		return 0;
 	}
-	
+
 	protected int specialRooms(boolean forceMax){
 		return 0;
 	}
-	
+
 	protected Builder builder(){
 		if (Random.Int(2) == 0){
 			return new LoopBuilder()
@@ -175,13 +184,13 @@ public abstract class RegularLevel extends Level {
 		}
 
 	}
-	
+
 	protected abstract Painter painter();
-	
+
 	protected int nTraps() {
-		return Random.NormalIntRange( 2, 3 + (Dungeon.depth/5) );
+		return Random.NormalIntRange( 2, 3 + Dungeon.customDungeon.getFloor(Dungeon.levelName).getRegion()-1 );
 	}
-	
+
 	protected Class<?>[] trapClasses(){
 		return new Class<?>[]{WornDartTrap.class};
 	}
@@ -189,7 +198,7 @@ public abstract class RegularLevel extends Level {
 	protected float[] trapChances() {
 		return new float[]{1};
 	}
-	
+
 	@Override
 	public int mobLimit() {
 		if (Dungeon.depth <= 1){
@@ -197,13 +206,13 @@ public abstract class RegularLevel extends Level {
 			else                            return 10;
 		}
 
-		int mobs = 3 + Dungeon.depth % 5 + Random.Int(3);
+		int mobs = 3 + Dungeon.level.levelScheme.getNumInRegion()+ Random.Int(3);
 		if (feeling == Feeling.LARGE){
 			mobs = (int)Math.ceil(mobs * 1.33f);
 		}
 		return mobs;
 	}
-	
+
 	@Override
 	protected void createMobs() {
 		//on floor 1, 8 pre-set mobs are created so the player can get level 2.
@@ -223,7 +232,7 @@ public abstract class RegularLevel extends Level {
 		while (mobsToSpawn > 0) {
 			Mob mob = createMob();
 			Room roomToSpawn;
-			
+
 			if (!stdRoomIter.hasNext()) {
 				stdRoomIter = stdRooms.iterator();
 			}
@@ -245,7 +254,7 @@ public abstract class RegularLevel extends Level {
 				mobs.add(mob);
 
 				//chance to add a second mob to this room, except on floor 1
-				if (Dungeon.depth > 1 && mobsToSpawn > 0 && Random.Int(4) == 0){
+				if (Dungeon.getSimulatedDepth(levelScheme) > 1 && mobsToSpawn > 0 && Random.Int(4) == 0){
 					mob = createMob();
 
 					tries = 30;
@@ -302,19 +311,19 @@ public abstract class RegularLevel extends Level {
 
 		}
 	}
-	
+
 	@Override
 	public int randomDestination( Char ch ) {
-		
+
 		int count = 0;
 		int cell = -1;
-		
+
 		while (true) {
-			
+
 			if (++count > 30) {
 				return -1;
 			}
-			
+
 			Room room = Random.element( rooms );
 			if (room == null) {
 				continue;
@@ -327,20 +336,24 @@ public abstract class RegularLevel extends Level {
 					return cell;
 				}
 			}
-			
+
 		}
 	}
-	
+
 	@Override
 	protected void createItems() {
-		
+
+		super.createItems();
+
+		final int simulatedDepth = Dungeon.getSimulatedDepth(levelScheme);
+
 		// drops 3/4/5 items 60%/30%/10% of the time
 		int nItems = 3 + Random.chances(new float[]{6, 3, 1});
 
 		if (feeling == Feeling.LARGE){
 			nItems += 2;
 		}
-		
+
 		for (int i=0; i < nItems; i++) {
 
 			Item toDrop = Generator.random();
@@ -364,7 +377,7 @@ public abstract class RegularLevel extends Level {
 				type = Heap.Type.CHEST;
 				break;
 			case 5:
-				if (Dungeon.depth > 1 && findMob(cell) == null){
+				if (simulatedDepth > 1 && findMob(cell) == null){
 					mobs.add(Mimic.spawnAt(cell, toDrop));
 					continue;
 				}
@@ -378,13 +391,13 @@ public abstract class RegularLevel extends Level {
 			if ((toDrop instanceof Artifact && Random.Int(2) == 0) ||
 					(toDrop.isUpgradable() && Random.Int(4 - toDrop.level()) == 0)){
 
-				if (Dungeon.depth > 1 && Random.Int(10) == 0 && findMob(cell) == null){
+				if (simulatedDepth > 1 && Random.Int(10) == 0 && findMob(cell) == null){
 					mobs.add(Mimic.spawnAt(cell, toDrop, GoldenMimic.class));
 				} else {
 					Heap dropped = drop(toDrop, cell);
 					if (heaps.get(cell) == dropped) {
 						dropped.type = Heap.Type.LOCKED_CHEST;
-						addItemToSpawn(new GoldenKey(Dungeon.depth));
+						addItemToSpawn(new GoldenKey(Dungeon.levelName));
 					}
 				}
 			} else {
@@ -394,7 +407,7 @@ public abstract class RegularLevel extends Level {
 					dropped.setHauntedIfCursed();
 				}
 			}
-			
+
 		}
 
 		for (Item item : itemsToSpawn) {
@@ -479,7 +492,7 @@ public abstract class RegularLevel extends Level {
 		missingPages.remove(Document.GUIDE_SEARCHING);
 
 		//chance to find a page is 0/25/50/75/100% for floors 1/2/3/4/5+
-		float dropChance = 0.25f*(Dungeon.depth-1);
+		float dropChance = 0.25f*(simulatedDepth-1);
 		if (!missingPages.isEmpty() && Random.Float() < dropChance){
 			GuidePage p = new GuidePage();
 			p.page(missingPages.get(0));
@@ -495,7 +508,7 @@ public abstract class RegularLevel extends Level {
 		//TODO a fair bit going on here, I might want to refactor/externalize this in the future
 		if (Document.ADVENTURERS_GUIDE.allPagesFound()){
 
-			int region = 1+(Dungeon.depth-1)/5;
+			int region = levelScheme.getRegion();
 
 			Document regionDoc;
 			switch( region ){
@@ -563,11 +576,11 @@ public abstract class RegularLevel extends Level {
 		limitedDocs.put(Document.CITY_WARLOCK, Dungeon.LimitedDrops.LORE_CITY);
 		limitedDocs.put(Document.HALLS_KING, Dungeon.LimitedDrops.LORE_HALLS);
 	}
-	
+
 	public ArrayList<Room> rooms() {
 		return new ArrayList<>(rooms);
 	}
-	
+
 	protected Room randomRoom( Class<?extends Room> type ) {
 		Random.shuffle( rooms );
 		for (Room r : rooms) {
@@ -577,21 +590,21 @@ public abstract class RegularLevel extends Level {
 		}
 		return null;
 	}
-	
+
 	public Room room( int pos ) {
 		for (Room room : rooms) {
 			if (room.inside( cellToPoint(pos) )) {
 				return room;
 			}
 		}
-		
+
 		return null;
 	}
 
 	protected int randomDropCell(){
 		return randomDropCell(StandardRoom.class);
 	}
-	
+
 	protected int randomDropCell( Class<?extends Room> roomType ) {
 		int tries = 100;
 		while (tries-- > 0) {
@@ -606,16 +619,16 @@ public abstract class RegularLevel extends Level {
 						&& heaps.get(pos) == null
 						&& room.canPlaceItem(cellToPoint(pos), this)
 						&& findMob(pos) == null) {
-					
+
 					Trap t = traps.get(pos);
-					
+
 					//items cannot spawn on traps which destroy items
 					if (t == null ||
 							! (t instanceof BurningTrap || t instanceof BlazingTrap
 							|| t instanceof ChillingTrap || t instanceof FrostTrap
 							|| t instanceof ExplosiveTrap || t instanceof DisintegrationTrap
 							|| t instanceof PitfallTrap)) {
-						
+
 						return pos;
 					}
 				}
@@ -623,7 +636,7 @@ public abstract class RegularLevel extends Level {
 		}
 		return -1;
 	}
-	
+
 	@Override
 	public int fallCell( boolean fallIntoPit ) {
 		if (fallIntoPit) {
@@ -644,12 +657,12 @@ public abstract class RegularLevel extends Level {
 				}
 			}
 		}
-		
+
 		return super.fallCell( fallIntoPit );
 	}
 
 	@Override
-	public boolean isLevelExplored( int depth ) {
+	public boolean isLevelExplored( String levelName ) {
 		//A level is considered fully explored if:
 
 		//There are no levelgen heaps which are undiscovered, in an openable container, or which contain keys
@@ -693,7 +706,7 @@ public abstract class RegularLevel extends Level {
 
 		//There are no unused keys for this depth in the journal
 		for (Notes.KeyRecord rec : Notes.getRecords(Notes.KeyRecord.class)){
-			if (rec.depth() == depth){
+			if (rec.levelName().equals(levelName)){
 				return false;
 			}
 		}
@@ -707,12 +720,12 @@ public abstract class RegularLevel extends Level {
 		super.storeInBundle( bundle );
 		bundle.put( "rooms", rooms );
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
-		
+
 		rooms = new ArrayList<>( (Collection<Room>) ((Collection<?>) bundle.getCollection( "rooms" )) );
 		for (Room r : rooms) {
 			r.onLevelLoad( this );
@@ -723,5 +736,5 @@ public abstract class RegularLevel extends Level {
 			}
 		}
 	}
-	
+
 }

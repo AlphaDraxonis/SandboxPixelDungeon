@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
@@ -47,9 +48,9 @@ import java.io.IOException;
 //from WndGame
 public class WndMenuEditor extends Window {
 
-    private static final int WIDTH		= 120;
-    public static final int BTN_HEIGHT	= 20;
-    private static final int GAP		= 2;
+    private static final int WIDTH = 120;
+    public static final int BTN_HEIGHT = 20;
+    private static final int GAP = 2;
 
     private int pos;
 
@@ -59,7 +60,7 @@ public class WndMenuEditor extends Window {
 
         //settings
         RedButton curBtn;
-        addButton( curBtn = new RedButton( Messages.get(WndGame.class, "settings") ) {
+        addButton(curBtn = new RedButton(Messages.get(WndGame.class, "settings")) {
             @Override
             protected void onClick() {
                 hide();
@@ -69,13 +70,13 @@ public class WndMenuEditor extends Window {
         curBtn.icon(Icons.get(Icons.PREFS));
 
         //install prompt
-        if (Updates.isInstallable()){
-            addButton( curBtn = new RedButton( Messages.get(WndGame.class, "install") ) {
+        if (Updates.isInstallable()) {
+            addButton(curBtn = new RedButton(Messages.get(WndGame.class, "install")) {
                 @Override
                 protected void onClick() {
                     Updates.launchInstall();
                 }
-            } );
+            });
             curBtn.textColor(Window.SHPX_COLOR);
             curBtn.icon(Icons.get(Icons.CHANGES));
         }
@@ -84,31 +85,32 @@ public class WndMenuEditor extends Window {
         addButton(curBtn = new RedButton(Messages.get(WndGame.class, "menu")) {
             @Override
             protected void onClick() {
-//                try {
-//                    Dungeon.saveAll();
-//                } catch (IOException e) {
-//                    ShatteredPixelDungeon.reportException(e);
-//                }
+                try {
+                    CustomDungeonSaves.saveLevel(EditorScene.floor());
+                    CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
+                } catch (IOException e) {
+                    ShatteredPixelDungeon.reportException(e);
+                }
                 Game.switchScene(TitleScene.class);
             }
         });
         curBtn.icon(Icons.get(Icons.DISPLAY));
         if (SPDSettings.intro()) curBtn.enable(false);
 
-        resize( WIDTH, pos );
+        resize(WIDTH, pos);
     }
 
-    private void addButton( RedButton btn ) {
-        add( btn );
-        btn.setRect( 0, pos > 0 ? pos += GAP : 0, WIDTH, BTN_HEIGHT );
+    private void addButton(RedButton btn) {
+        add(btn);
+        btn.setRect(0, pos > 0 ? pos += GAP : 0, WIDTH, BTN_HEIGHT);
         pos += BTN_HEIGHT;
     }
 
-    private void addButtons( RedButton btn1, RedButton btn2 ) {
-        add( btn1 );
-        btn1.setRect( 0, pos > 0 ? pos += GAP : 0, (WIDTH - GAP) / 2, BTN_HEIGHT );
-        add( btn2 );
-        btn2.setRect( btn1.right() + GAP, btn1.top(), WIDTH - btn1.right() - GAP, BTN_HEIGHT );
+    private void addButtons(RedButton btn1, RedButton btn2) {
+        add(btn1);
+        btn1.setRect(0, pos > 0 ? pos += GAP : 0, (WIDTH - GAP) / 2, BTN_HEIGHT);
+        add(btn2);
+        btn2.setRect(btn1.right() + GAP, btn1.top(), WIDTH - btn1.right() - GAP, BTN_HEIGHT);
         pos += BTN_HEIGHT;
     }
 }

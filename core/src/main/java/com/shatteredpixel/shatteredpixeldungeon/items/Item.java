@@ -56,7 +56,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class Item implements Bundlable {
+public class Item implements Bundlable, Cloneable {
 
     protected static final String TXT_TO_STRING_LVL = "%s %+d";
     protected static final String TXT_TO_STRING_X = "%s x%d";
@@ -436,6 +436,9 @@ public class Item implements Bundlable {
     public void setCursedKnown(boolean cursedKnown) {
         this.cursedKnown = cursedKnown;
     }
+    public boolean getCursedKnownVar(){
+        return cursedKnown;
+    }
 
     public boolean isEquipped(Hero hero) {
         return false;
@@ -547,6 +550,16 @@ public class Item implements Bundlable {
 
     public static void updateQuickslot() {
         GameScene.updateItemDisplays = true;
+    }
+
+
+    @Override
+    public Item clone(){
+        try {
+            return (Item) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static final String QUANTITY = "quantity";

@@ -44,21 +44,44 @@ public class ScrollingListPane extends ScrollPane {
     }
 
 
-    @Override
-    public void onClick(float x, float y) {
+    private boolean validClick() {
         Group p = parent;
         while (p != null && !(p instanceof Window)) {
             p = p.parent;
         }
         Scene s = ShatteredPixelDungeon.scene();
-        if (!(s instanceof PixelScene) || p == null) completeClick(x, y);
-        else if (((PixelScene) s).isAtFront((Window) p)) completeClick(x, y);
+        return !(s instanceof PixelScene) || p == null||((PixelScene) s).isAtFront((Window) p);
     }
 
-    private void completeClick(float x, float y) {
-        for (Component item : items) {
-            if ((item instanceof ListItem) && ((ListItem) item).onClick(x, y)) {
-                break;
+    @Override
+    public void onClick(float x, float y) {
+        if (validClick()) {
+            for (Component item : items) {
+                if ((item instanceof ListItem) && ((ListItem) item).onClick(x, y)) {
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onMiddleClick(float x, float y) {
+        if (validClick()) {
+            for (Component item : items) {
+                if ((item instanceof ListItem) && ((ListItem) item).onMiddleClick(x, y)) {
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onRightClick(float x, float y) {
+        if (validClick()) {
+            for (Component item : items) {
+                if ((item instanceof ListItem) && ((ListItem) item).onRightClick(x, y)) {
+                    break;
+                }
             }
         }
     }
@@ -71,6 +94,11 @@ public class ScrollingListPane extends ScrollPane {
         content.add(item);
         items.add(item);
         layout();
+        givePointerPriority();
+    }
+
+    public Component[] getItems() {
+        return items.toArray(new Component[0]);
     }
 
     public void addTitle(String text) {
@@ -82,6 +110,7 @@ public class ScrollingListPane extends ScrollPane {
 
     @Override
     public synchronized void clear() {
+        for (Component c : items) c.destroy();
         content.clear();
         items.clear();
     }
@@ -99,7 +128,7 @@ public class ScrollingListPane extends ScrollPane {
         content.setSize(width, pos);
     }
 
-    public static class ListItem extends Component {
+    public static class ListItem extends Button {
 
         protected static final int ICON_WIDTH = 16;
 
@@ -133,6 +162,14 @@ public class ScrollingListPane extends ScrollPane {
             return false;
         }
 
+        public boolean onRightClick(float x, float y) {
+            return false;
+        }
+
+        public boolean onMiddleClick(float x, float y) {
+            return false;
+        }
+
         public void hardlight(int color) {
             iconLabel.hardlight(color);
             label.hardlight(color);
@@ -144,6 +181,9 @@ public class ScrollingListPane extends ScrollPane {
 
         @Override
         protected void createChildren(Object... params) {
+
+            super.createChildren(params);
+
             if (params != null && params.length > 0) icon = (Image) params[0];
             else icon = new Image();
             add(icon);
@@ -162,6 +202,8 @@ public class ScrollingListPane extends ScrollPane {
         @Override
         protected void layout() {
 
+            super.layout();
+
             icon.y = y + 1 + (height() - 1 - icon.height()) / 2f;
             icon.x = x + (ICON_WIDTH - icon.width()) / 2f;
             PixelScene.align(icon);
@@ -174,13 +216,18 @@ public class ScrollingListPane extends ScrollPane {
             line.x = x;
             line.y = y;
 
-            label.maxWidth((int) (width - ICON_WIDTH - 1));
+            label.maxWidth(getLabelMaxWidth());
             float plus;
             if (icon instanceof MovieClip) plus = 2.5f;//Animations need more space!
             else plus = 1;//1 is gap
             label.setPos(x + ICON_WIDTH + plus, y + (height() - label.height()) / 2f);
             PixelScene.align(label);
         }
+
+        protected int getLabelMaxWidth() {
+            return (int) (width - ICON_WIDTH - 1);
+        }
+
     }
 
     public static class ListTitle extends Component {

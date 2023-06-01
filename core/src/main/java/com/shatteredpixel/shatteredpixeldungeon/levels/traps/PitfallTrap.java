@@ -48,13 +48,13 @@ public class PitfallTrap extends Trap {
 	@Override
 	public void activate() {
 		
-		if( Dungeon.bossLevel() || Dungeon.depth > 25){
+		if( Dungeon.bossLevel() || Dungeon.curLvlScheme().getChasm()==null){
 			GLog.w(Messages.get(this, "no_pit"));
 			return;
 		}
 
 		DelayedPit p = Buff.affect(Dungeon.hero, DelayedPit.class, 1);
-		p.depth = Dungeon.depth;
+		p.activatedOn = Dungeon.levelName;
 		p.pos = pos;
 
 		for (int i : PathFinder.NEIGHBOURS9){
@@ -78,13 +78,13 @@ public class PitfallTrap extends Trap {
 		}
 
 		int pos;
-		int depth;
+		String activatedOn;
 
 		@Override
 		public boolean act() {
 
 			boolean herofell = false;
-			if (depth == Dungeon.depth) {
+			if (activatedOn.equals(Dungeon.levelName) ) {
 				for (int i : PathFinder.NEIGHBOURS9) {
 
 					int cell = pos + i;
@@ -129,20 +129,20 @@ public class PitfallTrap extends Trap {
 		}
 
 		private static final String POS = "pos";
-		private static final String DEPTH = "depth";
+		private static final String ACTIVATED_ON = "activated_on";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put(POS, pos);
-			bundle.put(DEPTH, depth);
+			bundle.put(ACTIVATED_ON, activatedOn);
 		}
 
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			pos = bundle.getInt(POS);
-			depth = bundle.getInt(DEPTH);
+			activatedOn = bundle.getString(ACTIVATED_ON);
 		}
 
 	}

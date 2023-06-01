@@ -84,7 +84,7 @@ public class SacrificeRoom extends SpecialRoom {
 	public static Item prize( Level level ) {
 
 		//1 floor set higher than normal
-		Weapon prize = Generator.randomWeapon( (Dungeon.depth / 5) + 1);
+		Weapon prize = Generator.randomWeapon( Dungeon.level.levelScheme.getRegion());
 
 		if (Challenges.isItemBlocked(prize)){
 			return new Gold().random();

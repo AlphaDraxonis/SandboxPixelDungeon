@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -43,10 +44,12 @@ public class MenuPane extends Component {
         bg = new Image(Assets.Interfaces.MENU);
         add(bg);
 
-        depthIcon = Icons.get(EditorScene.floor.feeling);
-        add(depthIcon);
+        if (EditorScene.floor().feeling != null) {
+            depthIcon = Icons.get(EditorScene.floor().feeling);
+            add(depthIcon);
+        }
 
-        depthText = new BitmapText("?", PixelScene.pixelFont);
+        depthText = new BitmapText(EditorScene.floor().name, PixelScene.pixelFont);
         depthText.hardlight(0xCACFC2);
         depthText.measure();
         add(depthText);
@@ -54,7 +57,7 @@ public class MenuPane extends Component {
         depthButton = new Button() {
             @Override
             protected String hoverText() {
-                switch (EditorScene.floor.feeling) {
+                switch (EditorScene.floor().feeling) {
                     case CHASM:
                         return Messages.get(GameScene.class, "chasm");
                     case WATER:
@@ -76,7 +79,6 @@ public class MenuPane extends Component {
             @Override
             protected void onClick() {
                 super.onClick();
-                //TODO change depth here!
 
 //                //just open journal for now, maybe have it open landmarks after expanding that page?
 //                GameScene.show( new WndJournal() );
@@ -112,7 +114,7 @@ public class MenuPane extends Component {
         PixelScene.align(depthIcon);
 
         depthText.scale.set(PixelScene.align(0.67f));
-        depthText.x = depthIcon.x + (depthIcon.width() - depthText.width()) / 2f;
+        depthText.x = depthIcon.x + depthIcon.width() - depthText.width();
         depthText.y = depthIcon.y + depthIcon.height();
         PixelScene.align(depthText);
 
@@ -123,6 +125,14 @@ public class MenuPane extends Component {
         version.x = x + WIDTH - version.width();
         version.y = y + bg.height() + (3 - version.baseLine());
         PixelScene.align(version);
+    }
+
+    public void updateDepthIcon(){
+        remove(depthIcon);
+        depthIcon.destroy();
+        depthIcon = Icons.get(EditorScene.floor().feeling);
+        add(depthIcon);
+        layout();
     }
 
     private static class JournalButton extends Button {

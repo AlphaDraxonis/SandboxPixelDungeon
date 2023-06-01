@@ -116,13 +116,6 @@ public class CityLevel extends RegularLevel {
 	}
 	
 	@Override
-	protected void createMobs() {
-		Imp.Quest.spawn( this );
-		
-		super.createMobs();
-	}
-	
-	@Override
 	public String tileName( int tile ) {
 		switch (tile) {
 			case Terrain.WATER:

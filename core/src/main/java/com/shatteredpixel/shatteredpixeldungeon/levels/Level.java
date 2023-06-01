@@ -50,6 +50,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
@@ -67,6 +69,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.HighGrass;
@@ -78,12 +83,15 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -99,9 +107,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 
 public abstract class Level implements Bundlable {
+
+    public static final String SURFACE = "surface", NONE = "none";
 
     public enum Feeling {
         NONE,
@@ -111,12 +121,45 @@ public abstract class Level implements Bundlable {
         DARK,
         LARGE,
         TRAPS,
-        SECRETS
+        SECRETS;
+
+        @Override
+        public String toString() {
+            switch (this) {
+                case NONE:
+                    return "None";
+                case CHASM:
+                    return "Chasm";
+                case WATER:
+                    return "Water";
+                case GRASS:
+                    return "Grass";
+                case DARK:
+                    return "Dark";
+                case LARGE:
+                    return "Large";
+                case TRAPS:
+                    return "Traps";
+                case SECRETS:
+                    return "Secret";
+            }
+            return super.toString();
+        }
+
+        public Image icon() {
+            return Icons.get(this);
+        }
+
+        public String desc() {
+            return "Description unavailable";
+        }
     }
 
     protected int width;
     protected int height;
     protected int length;
+
+    public String name;
 
     protected static final float TIME_TO_RESPAWN = 50;
 
@@ -144,10 +187,7 @@ public abstract class Level implements Bundlable {
 
     public Feeling feeling = Feeling.NONE;
 
-    public int entrance;
-    public int exit;
-
-    public ArrayList<LevelTransition> transitions;
+    public Map<Integer, LevelTransition> transitions;
 
     //when a boss level has become locked.
     public boolean locked = false;
@@ -167,9 +207,12 @@ public abstract class Level implements Bundlable {
     public int color1 = 0x004400;
     public int color2 = 0x88CC44;
 
+    public LevelScheme levelScheme;
+
     private static final String VERSION = "version";
     private static final String WIDTH = "width";
     private static final String HEIGHT = "height";
+    private static final String NAME = "name";
     private static final String MAP = "map";
     private static final String VISITED = "visited";
     private static final String MAPPED = "mapped";
@@ -183,82 +226,93 @@ public abstract class Level implements Bundlable {
     private static final String MOBS = "mobs";
     private static final String BLOBS = "blobs";
     private static final String FEELING = "feeling";
+    private static final String VIEW_DISTANCE = "view_distance";
 
     public void create() {
 
-        Random.pushGenerator(Dungeon.seedCurDepth());
+        Random.pushGenerator(Dungeon.seedForLevel(name));
 
-//        if (!(Dungeon.bossLevel())) {
-//
-//            addItemToSpawn(Generator.random(Generator.Category.FOOD));
-//
-//            if (Dungeon.isChallenged(Challenges.DARKNESS)) {
-//                addItemToSpawn(new Torch());
-//            }
-//
-//            if (Dungeon.posNeeded()) {
-//                addItemToSpawn(new PotionOfStrength());
-//                Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
-//            }
-//            if (Dungeon.souNeeded()) {
-//                addItemToSpawn(new ScrollOfUpgrade());
-//                Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
-//            }
-//            if (Dungeon.asNeeded()) {
-//                addItemToSpawn(new Stylus());
-//                Dungeon.LimitedDrops.ARCANE_STYLI.count++;
-//            }
-//            //one scroll of transmutation is guaranteed to spawn somewhere on chapter 2-4
-//            int enchChapter = (int) ((Dungeon.seed / 10) % 3) + 1;
-//            if (Dungeon.depth / 5 == enchChapter &&
-//                    Dungeon.seed % 4 + 1 == Dungeon.depth % 5) {
-//                addItemToSpawn(new StoneOfEnchantment());
-//            }
-//
-//            if (Dungeon.depth == ((Dungeon.seed % 3) + 1)) {
-//                addItemToSpawn(new StoneOfIntuition());
-//            }
+        if (!(Dungeon.bossLevel())) {
 
-//			if (Dungeon.depth > 1) {
-//				//50% chance of getting a level feeling
-//				//~7.15% chance for each feeling
-//				switch (Random.Int( 14 )) {
-//					case 0:
-//						feeling = Feeling.CHASM;
-//						break;
-//					case 1:
-//						feeling = Feeling.WATER;
-//						break;
-//					case 2:
-//						feeling = Feeling.GRASS;
-//						break;
-//					case 3:
-//						feeling = Feeling.DARK;
-//						addItemToSpawn(new Torch());
-//						viewDistance = Math.round(viewDistance/2f);
-//						break;
-//					case 4:
-//						feeling = Feeling.LARGE;
-//						addItemToSpawn(Generator.random(Generator.Category.FOOD));
-//						//add a second torch to help with the larger floor
-//						if (Dungeon.isChallenged(Challenges.DARKNESS)){
-//							addItemToSpawn( new Torch() );
-//						}
-//						break;
-//					case 5:
-//						feeling = Feeling.TRAPS;
-//						break;
-//					case 6:
-//						feeling = Feeling.SECRETS;
-//						break;
-//				}
-//			}
-//        }
+            addItemToSpawn(Generator.random(Generator.Category.FOOD));
+
+            if (Dungeon.isChallenged(Challenges.DARKNESS)) {
+                addItemToSpawn(new Torch());
+            }
+
+            if (Dungeon.posNeeded()) {
+                addItemToSpawn(new PotionOfStrength());
+                Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
+            }
+            if (Dungeon.souNeeded()) {
+                addItemToSpawn(new ScrollOfUpgrade());
+                Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
+            }
+            if (Dungeon.asNeeded()) {
+                addItemToSpawn(new Stylus());
+                Dungeon.LimitedDrops.ARCANE_STYLI.count++;
+            }
+            //one scroll of transmutation is guaranteed to spawn somewhere on chapter 2-4
+            int enchChapter = (int) ((Dungeon.seed / 10) % 3) + 1;
+            if (Dungeon.depth / 5 == enchChapter &&
+                    Dungeon.seed % 4 + 1 == Dungeon.depth % 5) {
+                addItemToSpawn(new StoneOfEnchantment());
+            }
+
+            if (Dungeon.depth == ((Dungeon.seed % 3) + 1)) {
+                addItemToSpawn(new StoneOfIntuition());
+            }
+
+            if (Dungeon.depth > 1 && feeling == null) {
+                //50% chance of getting a level feeling
+                //~7.15% chance for each feeling
+                switch (Random.Int(14)) {
+                    case 0:
+                        feeling = Feeling.CHASM;
+                        break;
+                    case 1:
+                        feeling = Feeling.WATER;
+                        break;
+                    case 2:
+                        feeling = Feeling.GRASS;
+                        break;
+                    case 3:
+                        feeling = Feeling.DARK;
+                        break;
+                    case 4:
+                        feeling = Feeling.LARGE;
+                        break;
+                    case 5:
+                        feeling = Feeling.TRAPS;
+                        break;
+                    case 6:
+                        feeling = Feeling.SECRETS;
+                        break;
+                }
+            }
+
+            if (feeling == Feeling.DARK) {
+                if (!(this instanceof CustomLevel)) {
+                    addItemToSpawn(new Torch());
+                }
+//              viewDistance = Math.round(viewDistance / 2f);
+            } else if (feeling == Feeling.LARGE) {
+                if (!(this instanceof CustomLevel)) {
+                    addItemToSpawn(Generator.random(Generator.Category.FOOD));
+                    //add a second torch to help with the larger floor
+                    if (Dungeon.isChallenged(Challenges.DARKNESS)) {
+                        addItemToSpawn(new Torch());
+                    }
+                }
+            }
+        }
+
+        if (feeling == null) feeling = Feeling.NONE;//this also includes default case
 
         do {
             width = height = length = 0;
 
-            transitions = new ArrayList<>();
+            transitions = new HashMap<>();
 
             mobs = new HashSet<>();
             heaps = new SparseArray<>();
@@ -326,11 +380,6 @@ public abstract class Level implements Bundlable {
 
         version = bundle.getInt(VERSION);
 
-        //saves from before v1.2.3 are not supported
-        if (version < ShatteredPixelDungeon.v1_2_3) {
-            throw new RuntimeException("old save");
-        }
-
         setSize(bundle.getInt(WIDTH), bundle.getInt(HEIGHT));
 
         mobs = new HashSet<>();
@@ -345,23 +394,14 @@ public abstract class Level implements Bundlable {
 
         visited = bundle.getBooleanArray(VISITED);
         mapped = bundle.getBooleanArray(MAPPED);
+        name = bundle.getString(NAME);
+        viewDistance = bundle.getInt(VIEW_DISTANCE);
 
-        transitions = new ArrayList<>();
-        if (bundle.contains(TRANSITIONS)) {
-            for (Bundlable b : bundle.getCollection(TRANSITIONS)) {
-                transitions.add((LevelTransition) b);
-            }
-            //pre-1.3.0 saves, converts old entrance/exit to new transitions
-        } else {
-            if (bundle.contains("entrance")) {
-                transitions.add(new LevelTransition(
-                        this,
-                        bundle.getInt("entrance"),
-                        Dungeon.depth == 1 ? LevelTransition.Type.SURFACE : LevelTransition.Type.REGULAR_ENTRANCE));
-            }
-            if (bundle.contains("exit")) {
-                transitions.add(new LevelTransition(this, bundle.getInt("exit"), LevelTransition.Type.REGULAR_EXIT));
-            }
+        Dungeon.customDungeon.getFloor(name).setLevel(this);
+
+        transitions = new HashMap<>();
+        for (Bundlable b : bundle.getCollection(TRANSITIONS)) {
+            transitions.put(((LevelTransition) b).departCell, (LevelTransition) b);
         }
 
         locked = bundle.getBoolean(LOCKED);
@@ -436,9 +476,10 @@ public abstract class Level implements Bundlable {
         bundle.put(WIDTH, width);
         bundle.put(HEIGHT, height);
         bundle.put(MAP, map);
+        bundle.put(NAME, name);
         bundle.put(VISITED, visited);
         bundle.put(MAPPED, mapped);
-        bundle.put(TRANSITIONS, transitions);
+        bundle.put(TRANSITIONS, transitions.values());
         bundle.put(LOCKED, locked);
         bundle.put(HEAPS, heaps.valueList());
         bundle.put(PLANTS, plants.valueList());
@@ -450,6 +491,7 @@ public abstract class Level implements Bundlable {
         bundle.put(FEELING, feeling);
         bundle.put("mobs_to_spawn", mobsToSpawn.toArray(new Class[0]));
         bundle.put("respawner", respawner);
+        bundle.put(VIEW_DISTANCE, viewDistance);
     }
 
     public int tunnelTile() {
@@ -490,13 +532,16 @@ public abstract class Level implements Bundlable {
         return m;
     }
 
-    protected ArrayList<Class<? extends Mob>> getMobRotation() {
-        return Bestiary.getMobRotation(Dungeon.depth);
+    public ArrayList<Class<? extends Mob>> getMobRotation() {
+        return Bestiary.getMobRotation(Dungeon.getSimulatedDepth());
     }
 
     abstract protected void createMobs();
 
-    abstract protected void createItems();
+    protected void createItems() {
+        if (Dungeon.customDungeon.isGhostLevel(Dungeon.levelName)) Ghost.Quest.spawn(this);
+        if (Dungeon.customDungeon.isImpLevel(Dungeon.levelName)) Imp.Quest.spawn(this);
+    }
 
     public int entrance() {
         LevelTransition l = getTransition(null);
@@ -514,8 +559,26 @@ public abstract class Level implements Bundlable {
         return 0;
     }
 
+    public LevelTransition getTransition(int destCell) {
+        LevelTransition t = transitions.get(destCell);
+        if (t == null && Dungeon.level != null) {
+            for (LevelTransition transition : transitions.values()) {
+                if (transition != null && transition.inside(destCell)) {
+                    t = transition;
+                    break;
+                }
+            }
+        }
+        if (t == null && InterlevelScene.curTransition != null)
+            t = getTransition(InterlevelScene.curTransition.destType);
+        return t;
+//        return (type == null && !transitions.isEmpty() ? transitions.get(0) : null);
+    }
+
+    //
     public LevelTransition getTransition(LevelTransition.Type type) {
-        for (LevelTransition transition : transitions) {
+        for (LevelTransition transition : transitions.values()) {
+//            if (!destination.equals(transition.destLevel)) continue;
             //if we don't specify a type, prefer to return any entrance
             if (type == null &&
                     (transition.type == LevelTransition.Type.REGULAR_ENTRANCE || transition.type == LevelTransition.Type.SURFACE)) {
@@ -524,17 +587,20 @@ public abstract class Level implements Bundlable {
                 return transition;
             }
         }
-        return (type == null && !transitions.isEmpty() ? transitions.get(0) : null);
-    }
-
-    public LevelTransition getTransition(int cell) {
-        for (LevelTransition transition : transitions) {
-            if (transition.inside(cell)) {
-                return transition;
-            }
+        for (LevelTransition transition : transitions.values()) {
+            return transition;
         }
         return null;
     }
+//
+//    public LevelTransition getTransition(int cell) {
+//        for (LevelTransition transition : transitions) {
+//            if (transition.inside(cell)) {
+//                return transition;
+//            }
+//        }
+//        return null;
+//    }
 
     //some buff effects have special logic or are cancelled from the hero before transitioning levels
     public static void beforeTransition() {
@@ -577,7 +643,7 @@ public abstract class Level implements Bundlable {
             }
         }
         for (HeavyBoomerang.CircleBack b : Dungeon.hero.buffs(HeavyBoomerang.CircleBack.class)) {
-            if (b.activeDepth() == Dungeon.depth) items.add(b.cancel());
+            if (b.activeLevel().equals(Dungeon.levelName)) items.add(b.cancel());
         }
         return items;
     }
@@ -669,7 +735,7 @@ public abstract class Level implements Bundlable {
 
     public float respawnCooldown() {
         if (Statistics.amuletObtained) {
-            if (Dungeon.depth == 1) {
+            if (Dungeon.getSimulatedDepth() == 1) {
                 //very fast spawns on floor 1! 0/2/4/6/8/10/12, etc.
                 return (Dungeon.level.mobCount()) * (TIME_TO_RESPAWN / 25f);
             } else {
@@ -691,7 +757,6 @@ public abstract class Level implements Bundlable {
         int tries = 30;
         do {
             mob.pos = randomRespawnCell(mob);
-            if (mob.pos > -1) System.out.println(PathFinder.distance[mob.pos]);
             tries--;
         } while ((mob.pos == -1 || PathFinder.distance[mob.pos] < disLimit) && tries > 0);
 
@@ -711,7 +776,7 @@ public abstract class Level implements Bundlable {
         int count = 0;
         do {
 
-            if (++count > 30) {
+            if (++count > 300) {
                 return -1;
             }
 
@@ -797,7 +862,8 @@ public abstract class Level implements Bundlable {
 
         //an open space is large enough to fit large mobs. A space is open when it is not solid
         // and there is an open corner with both adjacent cells opens
-        for (int i = 0; i < length(); i++) {
+        int l = length();
+        for (int i = 0; i < l; i++) {
             if (solid[i]) {
                 openSpace[i] = false;
             } else {
@@ -905,7 +971,7 @@ public abstract class Level implements Bundlable {
         if (heap == null) {
 
             heap = new Heap();
-            heap.seen = Dungeon.level == this && heroFOV[cell];
+            heap.seen = Dungeon.level == this && heroFOV[cell] || (this instanceof CustomLevel && ((CustomLevel) this).isEditing);
             heap.pos = cell;
             heap.drop(item);
             if (map[cell] == Terrain.CHASM || (Dungeon.level != null && pit[cell])) {
@@ -928,7 +994,7 @@ public abstract class Level implements Bundlable {
             heap.drop(item);
         }
 
-        if (Dungeon.level != null && ShatteredPixelDungeon.scene() instanceof GameScene) {
+        if (ShatteredPixelDungeon.scene() instanceof GameScene) {
             pressCell(cell);
         }
 
@@ -1080,7 +1146,8 @@ public abstract class Level implements Bundlable {
             }
 
             //characters which are not the hero or a sheep 'soft' press cells
-            pressCell(ch.pos, ch instanceof Hero || ch instanceof Sheep);
+            if (!CustomDungeon.isEditing())
+                pressCell(ch.pos, ch instanceof Hero || ch instanceof Sheep);
         } else {
             if (map[ch.pos] == Terrain.DOOR) {
                 Door.enter(ch.pos);
@@ -1330,7 +1397,7 @@ public abstract class Level implements Bundlable {
             }
 
             for (TalismanOfForesight.HeapAwareness h : c.buffs(TalismanOfForesight.HeapAwareness.class)) {
-                if (Dungeon.depth != h.depth) continue;
+                if (!Dungeon.levelName.equals(h.level)) continue;
                 for (int i : PathFinder.NEIGHBOURS9) heroMindFov[h.pos + i] = true;
             }
 
@@ -1347,7 +1414,7 @@ public abstract class Level implements Bundlable {
             }
 
             for (RevealedArea a : c.buffs(RevealedArea.class)) {
-                if (Dungeon.depth != a.depth) continue;
+                if (!Dungeon.levelName.equals(a.level)) continue;
                 for (int i : PathFinder.NEIGHBOURS9) heroMindFov[a.pos + i] = true;
             }
 
@@ -1370,7 +1437,7 @@ public abstract class Level implements Bundlable {
 
     }
 
-    public boolean isLevelExplored(int depth) {
+    public boolean isLevelExplored(String levelName) {
         return false;
     }
 

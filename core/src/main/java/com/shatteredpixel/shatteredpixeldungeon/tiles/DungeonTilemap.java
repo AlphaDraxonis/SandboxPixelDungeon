@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Tilemap;
@@ -51,7 +52,7 @@ public abstract class DungeonTilemap extends Tilemap {
 	@Override
 	public synchronized void updateMap() {
 		for (int i = 0; i < data.length; i++)
-			data[i] = getTileVisual(i ,map[i], false);
+			data[i] = getTileVisual(i ,map[i], CustomDungeon.isEditing());
 		super.updateMap();
 	}
 
@@ -60,14 +61,14 @@ public abstract class DungeonTilemap extends Tilemap {
 		//update in a 3x3 grid to account for neighbours which might also be affected
 		if (Dungeon.level.insideMap(cell)) {
 			for (int i : PathFinder.NEIGHBOURS9) {
-				data[cell + i] = getTileVisual(cell + i, map[cell + i], false);
+				data[cell + i] = getTileVisual(cell + i, map[cell + i], CustomDungeon.isEditing());
 			}
 			super.updateMapCell(cell - mapWidth - 1);
 			super.updateMapCell(cell + mapWidth + 1);
 
 		//unless we're at the level's edge, then just do the one tile.
 		} else {
-			data[cell] = getTileVisual(cell, map[cell], false);
+			data[cell] = getTileVisual(cell, map[cell], CustomDungeon.isEditing());
 			super.updateMapCell(cell);
 		}
 	}

@@ -535,9 +535,9 @@ public class DwarfKing extends Mob {
 			Dungeon.level.drop(new KingsCrown(), pos).sprite.drop();
 		}
 
-		Badges.validateBossSlain();
+		Badges.validateBossSlain(DwarfKing.class);
 		if (Statistics.qualifiedForBossChallengeBadge){
-			Badges.validateBossChallengeCompleted();
+			Badges.validateBossChallengeCompleted(DwarfKing.class);
 		}
 		Statistics.bossScores[3] += 4000;
 
@@ -545,11 +545,6 @@ public class DwarfKing extends Mob {
 
 		for (Mob m : getSubjects()){
 			m.die(null);
-		}
-
-		LloydsBeacon beacon = Dungeon.hero.belongings.getItem(LloydsBeacon.class);
-		if (beacon != null) {
-			beacon.upgrade();
 		}
 
 		yell( Messages.get(this, "defeated") );

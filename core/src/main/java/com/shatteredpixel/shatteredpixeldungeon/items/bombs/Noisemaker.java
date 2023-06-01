@@ -86,11 +86,11 @@ public class Noisemaker extends Bomb {
 		}
 
 		int cell;
-		int floor;
+		String floor;
 		int left;
 		
 		public void set(int cell){
-			floor = Dungeon.depth;
+			floor = Dungeon.levelName;
 			this.cell = cell;
 			left = 6;
 		}
@@ -98,7 +98,7 @@ public class Noisemaker extends Bomb {
 		@Override
 		public boolean act() {
 
-			if (Dungeon.depth != floor){
+			if (!Dungeon.levelName.equals(floor)){
 				spend(TICK);
 				return true;
 			}
@@ -164,7 +164,7 @@ public class Noisemaker extends Bomb {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			cell = bundle.getInt(CELL);
-			floor = bundle.getInt(FLOOR);
+			floor = bundle.getString(FLOOR);
 			left = bundle.getInt(LEFT);
 		}
 	}

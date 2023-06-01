@@ -184,9 +184,9 @@ public class SentryRoom extends SpecialRoom {
 		//1 floor set higher in probability, never cursed
 		do {
 			if (Random.Int(2) == 0) {
-				prize = Generator.randomWeapon((Dungeon.depth / 5) + 1);
+				prize = Generator.randomWeapon(Dungeon.level.levelScheme.getRegion());
 			} else {
-				prize = Generator.randomArmor((Dungeon.depth / 5) + 1);
+				prize = Generator.randomArmor(Dungeon.level.levelScheme.getRegion());
 			}
 		} while (prize.cursed || Challenges.isItemBlocked(prize));
 		prize.setCursedKnown(true);

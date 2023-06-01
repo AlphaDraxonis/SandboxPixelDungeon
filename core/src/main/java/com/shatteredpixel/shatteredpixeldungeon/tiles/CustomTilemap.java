@@ -35,7 +35,7 @@ public abstract class CustomTilemap implements Bundlable {
 
 	public int tileX, tileY;   //x and y coords for texture within a level
 	public int tileW = 1, tileH = 1; //width and height in tiles
-	
+
 	protected Object texture;
 	protected Tilemap vis = null;
 
@@ -62,7 +62,7 @@ public abstract class CustomTilemap implements Bundlable {
 		this.tileW = tileW;
 		this.tileH = tileH;
 	}
-	
+
 	//utility method for getting data for a simple image
 	//assumes tileW and tileH have already been set
 	protected int[] mapSimpleImage(int txX, int txY, int texW){
@@ -71,7 +71,7 @@ public abstract class CustomTilemap implements Bundlable {
 		int x = txX, y = txY;
 		for (int i = 0; i < data.length; i++){
 			data[i] = x + (texTileWidth*y);
-			
+
 			x++;
 			if ((x - txX) == tileW){
 				x = txX;
@@ -80,7 +80,7 @@ public abstract class CustomTilemap implements Bundlable {
 		}
 		return data;
 	}
-	
+
 	public Tilemap create(){
 		if (vis != null && vis.alive) vis.killAndErase();
 		vis = new Tilemap(texture, new TextureFilm( texture, SIZE, SIZE )){

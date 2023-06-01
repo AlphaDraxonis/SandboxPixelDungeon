@@ -23,132 +23,165 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.features;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 import com.watabou.utils.Rect;
 
-public class LevelTransition extends Rect implements Bundlable {
+public class LevelTransition extends Rect implements Bundlable, Cloneable {
 
-	public enum Type {
-		SURFACE,
-		REGULAR_ENTRANCE,
-		REGULAR_EXIT;
-	}
+    public enum Type {
+        SURFACE,
+        REGULAR_ENTRANCE,
+        REGULAR_EXIT;
+    }
 
-	public Type type;
-	public int destDepth;
-	public int destBranch;
-	public Type destType;
+    public Type type;
+    public String departLevel;
+    public int departCell;
+    public int destCell;
+    public String destLevel;
+    public Type destType;
 
-	public int centerCell;
+    public int centerCell;
 
-	//for bundling
-	public LevelTransition(){
-		super();
-	}
+    //for bundling
+    public LevelTransition() {
+        super();
+    }
 
-	public LevelTransition(Level level, int cell, Type type, int destDepth, int destBranch, Type destType){
-		centerCell = cell;
-		Point p = level.cellToPoint(cell);
-		set(p.x, p.y, p.x, p.y);
-		this.type = type;
-		this.destDepth = destDepth;
-		this.destBranch = destBranch;
-		this.destType = destType;
-	}
+    public LevelTransition(Level level, int cell, Type type) {
+        this(level, cell, type, -1);
+    }
 
-	//gives default values for common transition types
-	public LevelTransition(Level level, int cell, Type type){
-		centerCell = cell;
-		Point p = level.cellToPoint(cell);
-		set(p.x, p.y, p.x, p.y);
-		this.type = type;
-		switch (type){
-			case REGULAR_ENTRANCE: default:
-				destDepth = Dungeon.depth-1;
-				destBranch = Dungeon.branch;
-				destType = Type.REGULAR_EXIT;
-				break;
-			case REGULAR_EXIT:
-				destDepth = Dungeon.depth+1;
-				destBranch = Dungeon.branch;
-				destType = Type.REGULAR_ENTRANCE;
-				break;
-			case SURFACE:
-				destDepth = 0;
-				destBranch = 0;
-				destType = null;
-				break;
-		}
-	}
+    //gives default values for common transition types
+    public LevelTransition(Level level, int cell, Type type, int destCell) {
+        centerCell = cell;
+        departCell = cell;
+        Point p = level.cellToPoint(cell);
+        set(p.x, p.y, p.x, p.y);
+        this.type = type;
+        this.destCell = destCell;
+        departLevel = CustomLevel.tempDungeonNameForKey == null ? Dungeon.levelName : CustomLevel.tempDungeonNameForKey;
+        LevelScheme levelScheme = Dungeon.customDungeon.getFloor(Dungeon.levelName);
+        switch (type) {
+            default:
+                destLevel = levelScheme.getDefaultAbove();
+                destType = Type.REGULAR_EXIT;
+                if (destCell == -1 && levelScheme.getEntranceTransitionRegular() != null)
+                    this.destCell = levelScheme.getEntranceTransitionRegular().destCell;
+                break;
+            case REGULAR_EXIT:
+                destLevel = levelScheme.getDefaultBelow();
+                destType = Type.REGULAR_ENTRANCE;
+                if (destCell == -1 && levelScheme.getExitTransitionRegular() != null)
+                    this.destCell = levelScheme.getExitTransitionRegular().destCell;
+                break;
+            case SURFACE:
+                destLevel = Level.SURFACE;
+                destType = null;
+        }
+    }
 
-	//note that the center cell isn't always the actual center.
-	// It is important when game logic needs to pick a specific cell for some action
-	// e.g. where to place the hero
-	public int cell(){
-		return centerCell;
-	}
+    public LevelTransition(Level level, int cell, int destCell, String destLevel) {
+        centerCell = cell;
+        departCell = cell;
+        Point p = level.cellToPoint(cell);
+        set(p.x, p.y, p.x, p.y);
+        this.destCell = destCell;
+        departLevel = level.name;
+        this.destLevel = destLevel;
+    }
 
-	//Transitions are inclusive to their right and bottom sides
-	@Override
-	public int width() {
-		return super.width()+1;
-	}
+    public LevelTransition(String destLevel, int destCell) {//As a wrapper for generated levels that are no templates
+        this.destLevel = destLevel;
+        this.destCell = destCell;
+    }
 
-	@Override
-	public int height() {
-		return super.height()+1;
-	}
+    //note that the center cell isn't always the actual center.
+    // It is important when game logic needs to pick a specific cell for some action
+    // e.g. where to place the hero
+    public int cell() {
+        return centerCell;
+    }
 
-	@Override
-	public boolean inside(Point p) {
-		return p.x >= left && p.x <= right && p.y >= top && p.y <= bottom;
-	}
+    //Transitions are inclusive to their right and bottom sides
+    @Override
+    public int width() {
+        return super.width() + 1;
+    }
 
-	public boolean inside(int cell){
-		return inside(new Point(Dungeon.level.cellToPoint(cell)));
-	}
+    @Override
+    public int height() {
+        return super.height() + 1;
+    }
 
-	public Point center() {
-		return new Point(
-				(left + right) / 2 + (((right - left) % 2) == 1 ? Random.Int( 2 ) : 0),
-				(top + bottom) / 2 + (((bottom - top) % 2) == 1 ? Random.Int( 2 ) : 0) );
-	}
+    @Override
+    public boolean inside(Point p) {
+        return p.x >= left && p.x <= right && p.y >= top && p.y <= bottom;
+    }
 
-	public static final String TYPE = "type";
-	public static final String DEST_DEPTH = "dest_depth";
-	public static final String DEST_BRANCH = "dest_branch";
-	public static final String DEST_TYPE = "dest_type";
+    public boolean inside(int cell) {
+        return inside(new Point(Dungeon.level.cellToPoint(cell)));
+    }
 
-	@Override
-	public void storeInBundle(Bundle bundle) {
-		bundle.put( "left", left );
-		bundle.put( "top", top );
-		bundle.put( "right", right );
-		bundle.put( "bottom", bottom );
+    public Point center() {
+        return new Point(
+                (left + right) / 2 + (((right - left) % 2) == 1 ? Random.Int(2) : 0),
+                (top + bottom) / 2 + (((bottom - top) % 2) == 1 ? Random.Int(2) : 0));
+    }
 
-		bundle.put( "center", centerCell );
+    public static final String TYPE = "type";
+    public static final String DEPART_LEVEL = "depart_level";
+    public static final String DEST_LEVEL = "dest_level";
+    public static final String DEST_TYPE = "dest_type";
+    public static final String DEST_CELL = "dest_cell";
+    public static final String DEPART_CELL = "depart_cell";
 
-		bundle.put(TYPE, type);
-		bundle.put(DEST_DEPTH, destDepth);
-		bundle.put(DEST_BRANCH, destBranch);
-		bundle.put(DEST_TYPE, destType);
-	}
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        bundle.put("left", left);
+        bundle.put("top", top);
+        bundle.put("right", right);
+        bundle.put("bottom", bottom);
 
-	@Override
-	public void restoreFromBundle(Bundle bundle) {
-		left = bundle.getInt( "left" );
-		top = bundle.getInt( "top" );
-		right = bundle.getInt( "right" );
-		bottom = bundle.getInt( "bottom" );
+        bundle.put("center", centerCell);
 
-		centerCell = bundle.getInt( "center" );
+        bundle.put(TYPE, type);
+        bundle.put(DEPART_LEVEL, departLevel);
+        bundle.put(DEST_LEVEL, destLevel);
+        bundle.put(DEST_TYPE, destType);
+        bundle.put(DEPART_CELL, departCell);
+        bundle.put(DEST_CELL, destCell);
+    }
 
-		type = bundle.getEnum(TYPE, Type.class);
-		destDepth = bundle.getInt(DEST_DEPTH);
-		destBranch = bundle.getInt(DEST_BRANCH);
-		if (bundle.contains(DEST_TYPE)) destType = bundle.getEnum(DEST_TYPE, Type.class);
-	}
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        left = bundle.getInt("left");
+        top = bundle.getInt("top");
+        right = bundle.getInt("right");
+        bottom = bundle.getInt("bottom");
+
+        centerCell = bundle.getInt("center");
+
+        if (bundle.contains(TYPE)) type = bundle.getEnum(TYPE, Type.class);
+        departLevel = bundle.getString(DEPART_LEVEL);
+        destLevel = bundle.getString(DEST_LEVEL);
+        if (bundle.contains(DEST_TYPE)) destType = bundle.getEnum(DEST_TYPE, Type.class);
+        destCell = bundle.getInt(DEST_CELL);
+        departCell = bundle.getInt(DEPART_CELL);
+    }
+
+    @Override
+    public LevelTransition clone() {
+        try {
+            LevelTransition transition = (LevelTransition) super.clone();
+            return transition;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

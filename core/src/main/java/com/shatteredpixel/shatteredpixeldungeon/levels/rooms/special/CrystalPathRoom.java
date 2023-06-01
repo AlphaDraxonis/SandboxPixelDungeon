@@ -157,12 +157,12 @@ public class CrystalPathRoom extends SpecialRoom {
 			}
 		}
 
-		level.addItemToSpawn( new CrystalKey( Dungeon.depth ) );
-		level.addItemToSpawn( new CrystalKey( Dungeon.depth ) );
-		level.addItemToSpawn( new CrystalKey( Dungeon.depth ) );
+		level.addItemToSpawn( new CrystalKey( Dungeon.levelName ) );
+		level.addItemToSpawn( new CrystalKey( Dungeon.levelName ) );
+		level.addItemToSpawn( new CrystalKey( Dungeon.levelName) );
 
 		entrance().set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey( Dungeon.depth ) );
+		level.addItemToSpawn( new IronKey( Dungeon.levelName ) );
 
 	}
 

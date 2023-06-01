@@ -293,25 +293,26 @@ public class CursedWand {
 
 			//inter-level teleportation
 			case 2:
-				if (Dungeon.depth > 1 && Dungeon.interfloorTeleportAllowed() && user == Dungeon.hero) {
-
-					//each depth has 1 more weight than the previous depth.
-					float[] depths = new float[Dungeon.depth-1];
-					for (int i = 1; i < Dungeon.depth; i++) depths[i-1] = i;
-					int depth = 1+Random.chances(depths);
-
-					Level.beforeTransition();
-					InterlevelScene.mode = InterlevelScene.Mode.RETURN;
-					InterlevelScene.returnDepth = depth;
-					InterlevelScene.returnBranch = 0;
-					InterlevelScene.returnPos = -1;
-					Game.switchScene(InterlevelScene.class);
-
-				} else {
-					ScrollOfTeleportation.teleportChar(user);
-
-				}
-				return true;
+//				if (Dungeon.curLvlScheme().getDefaultAbove()!=null&&!Dungeon.curLvlScheme().getDefaultAbove().equals(Level.SURFACE)
+//						&& Dungeon.interfloorTeleportAllowed() && user == Dungeon.hero) {
+//
+//					//each depth has 1 more weight than the previous depth.
+//					float[] depths = new float[Dungeon.depth-1];
+//					for (int i = 1; i < Dungeon.depth; i++) depths[i-1] = i;
+//					int depth = 1+Random.chances(depths);
+//
+//					Level.beforeTransition();
+//					InterlevelScene.mode = InterlevelScene.Mode.RETURN;
+//					InterlevelScene.returnDepth = depth;
+//					InterlevelScene.returnBranch = 0;
+//					InterlevelScene.returnPos = -1;
+//					Game.switchScene(InterlevelScene.class);
+//
+//				} else {
+//					ScrollOfTeleportation.teleportChar(user);
+//
+//				}
+//				return true;
 
 			//summon monsters
 			case 3:

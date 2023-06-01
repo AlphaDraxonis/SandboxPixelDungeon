@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -65,7 +66,7 @@ public class SewerBossExitRoom extends ExitRoom {
 		exit.top--;
 		exit.left--;
 		exit.right++;
-		level.transitions.add(exit);
+		if (Dungeon.customDungeon.getFloor(exit.destLevel) != null) level.transitions.put(exitCell,exit);
 		
 		CustomTilemap vis = new SewerExit();
 		vis.pos(c.x-1, c.y);

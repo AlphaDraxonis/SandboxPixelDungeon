@@ -410,9 +410,9 @@ public class WndJournal extends WndTabbed {
 
 				for(Notes.Record rec : keys){
 					ScrollingListPane.ListItem item = new ScrollingListPane.ListItem( Icons.get(Icons.STAIRS),
-							Integer.toString(rec.depth()),
+							rec.levelName(),
 							Messages.titleCase(rec.desc()));
-					if (Dungeon.depth == rec.depth()) item.hardlight(TITLE_COLOR);
+					if (Dungeon.levelName.equals(rec.levelName())) item.hardlight(TITLE_COLOR);
 					list.addItem(item);
 				}
 			}
@@ -425,9 +425,9 @@ public class WndJournal extends WndTabbed {
 
 				for (Notes.Record rec : landmarks) {
 					ScrollingListPane.ListItem item = new ScrollingListPane.ListItem( Icons.get(Icons.STAIRS),
-							Integer.toString(rec.depth()),
+							rec.levelName(),
 							Messages.titleCase(rec.desc()));
-					if (Dungeon.depth == rec.depth()) item.hardlight(TITLE_COLOR);
+					if (Dungeon.levelName.equals(rec.levelName())) item.hardlight(TITLE_COLOR);
 					list.addItem(item);
 				}
 

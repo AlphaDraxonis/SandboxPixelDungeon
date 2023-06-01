@@ -31,7 +31,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
-public abstract class Trap implements Bundlable {
+public abstract class Trap implements Bundlable,Cloneable {
 
 	//trap colors
 	public static final int RED     = 0;
@@ -132,5 +132,14 @@ public abstract class Trap implements Bundlable {
 		bundle.put( POS, pos );
 		bundle.put( VISIBLE, visible );
 		bundle.put( ACTIVE, active );
+	}
+
+	@Override
+	public Trap clone() {
+		try {
+			return (Trap) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

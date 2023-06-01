@@ -13,7 +13,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     private Integer minimum, maximum, value;
     private int stepSize;
     private boolean cycle;
-    private boolean includeNull;
+    private String showWhenNull;
 
 
     public SpinnerIntegerModel() {
@@ -21,24 +21,24 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     }
 
     public SpinnerIntegerModel(Integer value) {
-        this(Integer.MIN_VALUE, Integer.MAX_VALUE, value, 1, true,true);
+        this(Integer.MIN_VALUE, Integer.MAX_VALUE, value, 1, true, INFINITY);
     }
 
     public SpinnerIntegerModel(Integer minimum, Integer maximum, Integer value, int stepSize) {
-        this(minimum, maximum, value, stepSize, true,true);
+        this(minimum, maximum, value, stepSize, true, INFINITY);
     }
 
     public SpinnerIntegerModel(Integer value, int stepSize, boolean cycle) {
-        this(Integer.MIN_VALUE, Integer.MAX_VALUE, value, stepSize, cycle,true);
+        this(Integer.MIN_VALUE, Integer.MAX_VALUE, value, stepSize, cycle, INFINITY);
     }
 
-    public SpinnerIntegerModel(Integer minimum, Integer maximum, Integer value, int stepSize, boolean cycle, boolean includeNull) {
+    public SpinnerIntegerModel(Integer minimum, Integer maximum, Integer value, int stepSize, boolean cycle, String showWhenNull) {
         this.maximum = maximum;
         this.minimum = minimum;
         this.value = value;
         this.stepSize = stepSize;
         this.cycle = cycle;
-        this.includeNull = includeNull;
+        this.showWhenNull = showWhenNull;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
 
     @Override
     public Component createInputField(int fontSize) {
-        inputField = new Spinner.SpinnerTextBlock(Chrome.get(Chrome.Type.TOAST_WHITE), 10);
+        inputField = new Spinner.SpinnerTextBlock(Chrome.get(Chrome.Type.TOAST_WHITE), fontSize);
         return inputField;
     }
 
@@ -58,14 +58,15 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     }
 
     public String getDisplayString() {
-        return value == null ? INFINITY : value.toString();
+        return value == null ? showWhenNull : value.toString();
     }
 
     @Override
     public void setValue(Object value) {
         if (value == null || value instanceof Integer) {
             boolean oneWasNull = value == null || this.value == null;
-            this.value = (Integer) value;
+            boolean changed = (this.value == null && value != null) || this.value != null && !this.value.equals(value);
+            changeValue(this.value, value);
             if (inputField instanceof Spinner.SpinnerTextBlock) {
                 Spinner.SpinnerTextBlock casted = (Spinner.SpinnerTextBlock) inputField;
                 casted.setText(getDisplayString());
@@ -75,11 +76,14 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
                 casted.layout();
             } else
                 System.out.println("failed show the value because the input field is not a Spinner.SpinnerTextBlock");
-//            if ((this.value == null && value != null) || this.value != null && !this.value.equals(value))
-            fireStateChanged();
+            if (changed) fireStateChanged();
         } else {
             throw new IllegalArgumentException("illegal value");
         }
+    }
+
+    public void changeValue(Object oldValue, Object newValue) {
+        this.value = (Integer) newValue;
     }
 
     protected void changeOffsetOfTextWhenValueIsNull(Spinner.SpinnerTextBlock inputField, boolean nowNull) {
@@ -88,8 +92,8 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
 
     @Override
     public Object getNextValue() {
-        if (value == null) return cycle ? minimum : goToNull();
-        if (value.equals(maximum)) return goToNull();
+        if (value == null) return cycle ? minimum : goToNull(minimum);
+        if (value.equals(maximum)) return cycle ? goToNull(minimum) : value;
         long newValue = value + stepSize;
         if (newValue > (long) maximum) return maximum;
         return (int) newValue;
@@ -97,15 +101,15 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
 
     @Override
     public Object getPreviousValue() {
-        if (value == null) return cycle ? maximum : goToNull();
-        if (value.equals(minimum)) return goToNull();
+        if (value == null) return cycle ? maximum : goToNull(maximum);
+        if (value.equals(minimum)) return goToNull(cycle ? maximum : value);
         long newValue = value - stepSize;
         if (newValue < (long) minimum) return minimum;
         return (int) newValue;
     }
 
-    private Object goToNull(){
-      return  includeNull? null : value;
+    private Object goToNull(Object alternative) {
+        return showWhenNull != null ? null : alternative;
     }
 
     public void setStepSize(int stepSize) {
@@ -140,8 +144,8 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         }
     }
 
-    public void setIncludeNull(boolean includeNull) {
-        this.includeNull = includeNull;
+    public void setShowWhenNull(String showWhenNull) {
+        this.showWhenNull = showWhenNull;
     }
 
     public final Integer getMaximum() {
@@ -160,8 +164,8 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         return cycle;
     }
 
-    public boolean isIncludeNull() {
-        return includeNull;
+    public String getShowWhenNull() {
+        return showWhenNull;
     }
 
     @Override
@@ -169,4 +173,9 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         return 60;
     }
 
+    @Override
+    public void enable(boolean value) {
+        if (inputField instanceof Spinner.SpinnerTextBlock)
+            ((Spinner.SpinnerTextBlock) inputField).enable(value);
+    }
 }

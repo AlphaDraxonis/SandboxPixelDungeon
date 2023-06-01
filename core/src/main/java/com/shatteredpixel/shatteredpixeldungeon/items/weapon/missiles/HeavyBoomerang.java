@@ -28,6 +28,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.watabou.noosa.tweeners.AlphaTweener;
@@ -66,14 +68,14 @@ public class HeavyBoomerang extends MissileWeapon {
 	protected void rangedHit(Char enemy, int cell) {
 		decrementDurability();
 		if (durability > 0){
-			Buff.append(Dungeon.hero, CircleBack.class).setup(this, cell, Dungeon.hero.pos, Dungeon.depth);
+			Buff.append(Dungeon.hero, CircleBack.class).setup(this, cell, Dungeon.hero.pos, Dungeon.levelName);
 		}
 	}
 	
 	@Override
 	protected void rangedMiss(int cell) {
 		parent = null;
-		Buff.append(Dungeon.hero, CircleBack.class).setup(this, cell, Dungeon.hero.pos, Dungeon.depth);
+		Buff.append(Dungeon.hero, CircleBack.class).setup(this, cell, Dungeon.hero.pos, Dungeon.levelName);
 	}
 	
 	public static class CircleBack extends Buff {
@@ -85,15 +87,15 @@ public class HeavyBoomerang extends MissileWeapon {
 		private HeavyBoomerang boomerang;
 		private int thrownPos;
 		private int returnPos;
-		private int returnDepth;
+		private String returnLevel;
 		
 		private int left;
 		
-		public void setup( HeavyBoomerang boomerang, int thrownPos, int returnPos, int returnDepth){
+		public void setup( HeavyBoomerang boomerang, int thrownPos, int returnPos, String returnLevel){
 			this.boomerang = boomerang;
 			this.thrownPos = thrownPos;
 			this.returnPos = returnPos;
-			this.returnDepth = returnDepth;
+			this.returnLevel = returnLevel;
 			left = 3;
 		}
 		
@@ -106,13 +108,13 @@ public class HeavyBoomerang extends MissileWeapon {
 			return boomerang;
 		}
 
-		public int activeDepth(){
-			return returnDepth;
+		public String activeLevel(){
+			return returnLevel;
 		}
 		
 		@Override
 		public boolean act() {
-			if (returnDepth == Dungeon.depth){
+			if (returnLevel.equals(Dungeon.levelName)){
 				left--;
 				if (left <= 0){
 					final Char returnTarget = Actor.findChar(returnPos);
@@ -161,7 +163,7 @@ public class HeavyBoomerang extends MissileWeapon {
 		private static final String BOOMERANG = "boomerang";
 		private static final String THROWN_POS = "thrown_pos";
 		private static final String RETURN_POS = "return_pos";
-		private static final String RETURN_DEPTH = "return_depth";
+		private static final String RETURN_LEVEL = "return_level";
 		
 		@Override
 		public void storeInBundle(Bundle bundle) {
@@ -169,7 +171,7 @@ public class HeavyBoomerang extends MissileWeapon {
 			bundle.put(BOOMERANG, boomerang);
 			bundle.put(THROWN_POS, thrownPos);
 			bundle.put(RETURN_POS, returnPos);
-			bundle.put(RETURN_DEPTH, returnDepth);
+			bundle.put(RETURN_LEVEL, returnLevel);
 		}
 		
 		@Override
@@ -178,7 +180,7 @@ public class HeavyBoomerang extends MissileWeapon {
 			boomerang = (HeavyBoomerang) bundle.get(BOOMERANG);
 			thrownPos = bundle.getInt(THROWN_POS);
 			returnPos = bundle.getInt(RETURN_POS);
-			returnDepth = bundle.getInt(RETURN_DEPTH);
+			returnLevel = bundle.getString(RETURN_LEVEL);
 		}
 	}
 	

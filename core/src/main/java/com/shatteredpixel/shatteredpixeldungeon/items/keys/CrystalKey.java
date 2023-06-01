@@ -21,21 +21,25 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.keys;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class CrystalKey extends Key {
-	
-	{
-		image = ItemSpriteSheet.CRYSTAL_KEY;
-	}
-	
-	public CrystalKey() {
-		this( 0 );
-	}
-	
-	public CrystalKey( int depth ) {
-		super();
-		this.depth = depth;
-	}
-	
+
+    {
+        image = ItemSpriteSheet.CRYSTAL_KEY;
+    }
+
+    public CrystalKey() {
+        this(Dungeon.levelName);
+    }
+
+    public CrystalKey(String levelName) {
+        super();
+        if (Level.NONE.equals(levelName)) this.levelName = CustomLevel.tempDungeonNameForKey;
+        else this.levelName = levelName;
+    }
+
 }

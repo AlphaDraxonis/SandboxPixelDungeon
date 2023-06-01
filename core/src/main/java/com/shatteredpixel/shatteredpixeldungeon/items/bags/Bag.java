@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuickBag;
 import com.watabou.utils.Bundlable;
@@ -153,6 +154,13 @@ public class Bag extends Item implements Iterable<Item> {
 			if (item != null) ((Item)item).collect( this );
 		}
 		loading = false;
+	}
+	@Override
+	public Item clone() {
+		Bag b = (Bag) super.clone();
+		b.items=new ArrayList<>();
+		for(Item i:items)b.items.add(i.clone());
+		return b;
 	}
 	
 	public boolean contains( Item item ) {

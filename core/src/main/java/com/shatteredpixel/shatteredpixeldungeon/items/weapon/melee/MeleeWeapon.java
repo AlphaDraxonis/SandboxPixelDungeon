@@ -296,7 +296,7 @@ public class MeleeWeapon extends Weapon {
 
     @Override
     public int buffedLvl() {
-        if (Dungeon.hero!=null&& !evaluatingTwinUpgrades && isEquipped(Dungeon.hero) && Dungeon.hero.hasTalent(Talent.TWIN_UPGRADES)) {
+        if (Dungeon.hero != null && !evaluatingTwinUpgrades && isEquipped(Dungeon.hero) && Dungeon.hero.hasTalent(Talent.TWIN_UPGRADES)) {
             KindOfWeapon other = null;
             if (Dungeon.hero.belongings.weapon() != this) other = Dungeon.hero.belongings.weapon();
             if (Dungeon.hero.belongings.secondWep() != this)
@@ -337,7 +337,7 @@ public class MeleeWeapon extends Weapon {
 
         String info = desc();
 
-        if (levelKnown() ) {
+        if (levelKnown()) {
             info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_known", tier, augment.damageFactor(min()), augment.damageFactor(max()), STRReq());
             if (Dungeon.hero != null) {
                 if (STRReq() > Dungeon.hero.STR()) {
@@ -397,7 +397,7 @@ public class MeleeWeapon extends Weapon {
 
     @Override
     public String status() {
-        if (isEquipped(Dungeon.hero)
+        if (Dungeon.hero != null && isEquipped(Dungeon.hero)
                 && Dungeon.hero.buff(Charger.class) != null) {
             Charger buff = Dungeon.hero.buff(Charger.class);
             if (Dungeon.hero.belongings.weapon == this) {

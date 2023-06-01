@@ -23,6 +23,12 @@ package com.shatteredpixel.shatteredpixeldungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
@@ -730,21 +736,16 @@ public class Badges {
 		thirdBossSubclassBadges.put(HeroSubClass.MONK, Badge.BOSS_SLAIN_3_MONK);
 	}
 	
-	public static void validateBossSlain() {
+	public static void validateBossSlain(Class<? extends Mob>boss) {
 		Badge badge = null;
-		switch (Dungeon.depth) {
-		case 5:
+		if (boss.equals(Goo.class)) {
 			badge = Badge.BOSS_SLAIN_1;
-			break;
-		case 10:
+		} else if (boss.equals(Tengu.class)) {
 			badge = Badge.BOSS_SLAIN_2;
-			break;
-		case 15:
+		} else if (boss.equals(DM300.class)) {
 			badge = Badge.BOSS_SLAIN_3;
-			break;
-		case 20:
+		} else if (boss.equals(DwarfKing.class)) {
 			badge = Badge.BOSS_SLAIN_4;
-			break;
 		}
 		
 		if (badge != null) {
@@ -795,24 +796,18 @@ public class Badges {
 		}
 	}
 
-	public static void validateBossChallengeCompleted(){
+	public static void validateBossChallengeCompleted(Class<?extends Mob>boss){
 		Badge badge = null;
-		switch (Dungeon.depth) {
-			case 5:
-				badge = Badge.BOSS_CHALLENGE_1;
-				break;
-			case 10:
-				badge = Badge.BOSS_CHALLENGE_2;
-				break;
-			case 15:
-				badge = Badge.BOSS_CHALLENGE_3;
-				break;
-			case 20:
-				badge = Badge.BOSS_CHALLENGE_4;
-				break;
-			case 25:
-				badge = Badge.BOSS_CHALLENGE_5;
-				break;
+		if (boss.equals(Goo.class)) {
+			badge = Badge.BOSS_CHALLENGE_1;
+		} else if (boss.equals(Tengu.class)) {
+			badge = Badge.BOSS_CHALLENGE_2;
+		} else if (boss.equals(DM300.class)) {
+			badge = Badge.BOSS_CHALLENGE_3;
+		} else if (boss.equals(DwarfKing.class)) {
+			badge = Badge.BOSS_CHALLENGE_4;
+		} else if (boss.equals(YogDzewa.class)) {
+			badge = Badge.BOSS_CHALLENGE_5;
 		}
 
 		if (badge != null) {

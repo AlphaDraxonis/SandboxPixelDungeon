@@ -183,7 +183,7 @@ public class FileUtils {
 		}
 	}
 	
-	private static Bundle bundleFromStream( InputStream input ) throws IOException{
+	public static Bundle bundleFromStream(InputStream input) throws IOException{
 		Bundle bundle = Bundle.read( input );
 		input.close();
 		return bundle;
@@ -213,7 +213,7 @@ public class FileUtils {
 		}
 	}
 	
-	private static void bundleToStream( OutputStream output, Bundle bundle ) throws IOException{
+	public static void bundleToStream(OutputStream output, Bundle bundle) throws IOException{
 		Bundle.write( bundle, output );
 		output.close();
 	}

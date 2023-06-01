@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -25,12 +26,11 @@ public class IconTitleWithSubIcon extends IconTitle {
     }
 
     public IconTitleWithSubIcon(Item item) {
-        ItemSprite icon = new ItemSprite();
+        Image icon = CustomDungeon.getDungeon().getItemImage(item);
+        icon(icon);
         subIcon = createSubIcon(item);
         if (subIcon != null) add(subIcon);
-        icon(icon);
         label(Messages.titleCase(item.title()));
-        icon.view(item);
     }
 
     public IconTitleWithSubIcon(Heap heap) {
@@ -63,6 +63,11 @@ public class IconTitleWithSubIcon extends IconTitle {
 
     }
 
+    @Override
+    public void icon(Image icon) {
+        super.icon(icon);
+        if (subIcon != null) bringToFront(subIcon);
+    }
 
     public static Image createSubIcon(Item item) {
         RectF r = ItemSpriteSheet.Icons.film.get(item.icon);

@@ -189,8 +189,17 @@ public class Buff extends Actor {
 
 
     public static <T extends Buff> T affectAnyBuffAndSetDuration(Char target, Class<T> buffclass, float duration) {
-        T buff  = Buff.affect( target, buffclass );
-        buff.spend( duration  );// duration times  * m.resist(Burning.class)  ??
-        return  buff;
+        T buff = Buff.affect(target, buffclass);
+        buff.spend(duration);// duration times  * m.resist(Burning.class)  ??
+        return buff;
+    }
+
+    @Override
+    public Actor clone() throws CloneNotSupportedException {
+        Buff b = (Buff) super.clone();
+        b.target = null;//Need to add later!
+        b.resistances=new HashSet<>(resistances);
+        b.immunities=new HashSet<>(immunities);
+        return b;
     }
 }

@@ -28,6 +28,8 @@ import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Gizmo;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Signal;
@@ -45,7 +47,7 @@ public class Button extends Component {
     protected boolean clickReady;
 
 
-    public  Button(Object... params){
+    public Button(Object... params) {
         super(params);
     }
 
@@ -118,6 +120,15 @@ public class Button extends Component {
             @Override
             protected void onHoverEnd(PointerEvent event) {
                 killTooltip();
+            }
+
+            @Override
+            protected void onConsumCancelingClick() {
+                Group w = Button.this.parent;
+                while (w != null && !(w instanceof Window)) {
+                    w = w.parent;
+                }
+                if (w != null) w.cancelClick();
             }
         };
         add(hotArea);

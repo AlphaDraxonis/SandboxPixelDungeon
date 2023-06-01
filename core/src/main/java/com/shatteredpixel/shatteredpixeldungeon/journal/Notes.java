@@ -28,38 +28,34 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Notes {
 	
-	public static abstract class Record implements Comparable<Record>, Bundlable {
+	public static abstract class Record implements /*Comparable<Record>,*/ Bundlable {
 		
-		protected int depth;
+		protected String levelName;
 
-		public int depth(){
-			return depth;
+		public String levelName(){
+			return levelName;
 		}
 		
 		public abstract String desc();
 		
 		@Override
 		public abstract boolean equals(Object obj);
-		
-		@Override
-		public int compareTo( Record another ) {
-			return another.depth() - depth();
-		}
-		
-		private static final String DEPTH	= "depth";
-		
+
+		private static final String LEVEL_NAME = "levelName";
+
+
+
 		@Override
 		public void restoreFromBundle( Bundle bundle ) {
-			depth = bundle.getInt( DEPTH );
+			levelName = bundle.getString(LEVEL_NAME);
 		}
 
 		@Override
 		public void storeInBundle( Bundle bundle ) {
-			bundle.put( DEPTH, depth );
+			bundle.put(LEVEL_NAME, levelName );
 		}
 	}
 	
@@ -90,9 +86,9 @@ public class Notes {
 		
 		public LandmarkRecord() {}
 		
-		public LandmarkRecord(Landmark landmark, int depth ) {
+		public LandmarkRecord(Landmark landmark, String levelName ) {
 			this.landmark = landmark;
-			this.depth = depth;
+			this.levelName = levelName;
 		}
 		
 		@Override
@@ -104,7 +100,7 @@ public class Notes {
 		public boolean equals(Object obj) {
 			return (obj instanceof LandmarkRecord)
 					&& landmark == ((LandmarkRecord) obj).landmark
-					&& depth() == ((LandmarkRecord) obj).depth();
+					&& levelName().equals(((LandmarkRecord) obj).levelName());
 		}
 		
 		private static final String LANDMARK	= "landmark";
@@ -133,10 +129,11 @@ public class Notes {
 		}
 		
 		@Override
-		public int depth() {
-			return key.depth;
+		public String levelName() {
+			return key.levelName;
 		}
-		
+
+
 		@Override
 		public String desc() {
 			return key.title();
@@ -195,24 +192,24 @@ public class Notes {
 	}
 	
 	public static boolean add( Landmark landmark ) {
-		LandmarkRecord l = new LandmarkRecord( landmark, Dungeon.depth );
+		LandmarkRecord l = new LandmarkRecord( landmark, Dungeon.levelName );
 		if (!records.contains(l)) {
-			boolean result = records.add(new LandmarkRecord(landmark, Dungeon.depth));
-			Collections.sort(records);
+			boolean result = records.add(new LandmarkRecord(landmark, Dungeon.levelName));
+//			Collections.sort(records);
 			return result;
 		}
 		return false;
 	}
 	
 	public static boolean remove( Landmark landmark ) {
-		return records.remove( new LandmarkRecord(landmark, Dungeon.depth) );
+		return records.remove( new LandmarkRecord(landmark, Dungeon.levelName) );
 	}
 	
 	public static boolean add( Key key ){
 		KeyRecord k = new KeyRecord(key);
 		if (!records.contains(k)){
 			boolean result = records.add(k);
-			Collections.sort(records);
+//			Collections.sort(records);
 			return result;
 		} else {
 			k = (KeyRecord) records.get(records.indexOf(k));
@@ -222,6 +219,7 @@ public class Notes {
 	}
 	
 	public static boolean remove( Key key ){
+		if(Dungeon.customDungeon.opMode)return true;
 		KeyRecord k = new KeyRecord( key );
 		if (records.contains(k)){
 			k = (KeyRecord) records.get(records.indexOf(k));
@@ -235,6 +233,7 @@ public class Notes {
 	}
 	
 	public static int keyCount( Key key ){
+		if(Dungeon.customDungeon.opMode)return 1;
 		KeyRecord k = new KeyRecord( key );
 		if (records.contains(k)){
 			k = (KeyRecord) records.get(records.indexOf(k));

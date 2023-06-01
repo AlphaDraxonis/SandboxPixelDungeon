@@ -23,10 +23,15 @@ package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndNewDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
@@ -34,13 +39,19 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class StartScene extends PixelScene {
 	
@@ -267,16 +278,56 @@ public class StartScene extends PixelScene {
 			
 			
 		}
-		
+
 		@Override
 		protected void onClick() {
 			if (newGame) {
-				GamesInProgress.selectedClass = null;
-				GamesInProgress.curSlot = slot;
-				ShatteredPixelDungeon.switchScene(HeroSelectScene.class);
+				showWndSelectDungeon(slot);
 			} else {
 				ShatteredPixelDungeon.scene().add( new WndGameInProgress(slot));
 			}
+		}
+	}
+
+	private static final Set<String> EMPTY_HASHSET = new HashSet<>(0);
+	public static void showWndSelectDungeon(int slot){
+		List<CustomDungeonSaves.Info> allInfos = CustomDungeonSaves.getAllInfos();
+		if (allInfos.isEmpty()) {
+			ShatteredPixelDungeon.scene().add(new WndOptions(Icons.get(Icons.WARNING),
+					"No dungeons available",
+					"You don't have any dungeons available to play. Please create one first or play the default dungeon",
+					"Create new dungeon", "Play default dungeon", "Cancel") {
+				@Override
+				protected void onSelect(int index) {
+					if (index == 0) {
+						Game.scene().addToFront(new WndNewDungeon(EMPTY_HASHSET));
+					}else if(index == 1){
+						Dungeon.customDungeon = new CustomDungeon("Default-Dungeon");//no check if name exists bc we don't save this
+						Dungeon.customDungeon.initDefault();
+
+						GamesInProgress.selectedClass = null;
+						GamesInProgress.curSlot = slot;
+						ShatteredPixelDungeon.switchScene(HeroSelectScene.class);
+					}
+				}
+			});
+		}else {
+			ShatteredPixelDungeon.scene().addToFront(new WndSelectDungeon(allInfos,false){
+				@Override
+				protected void select(String customDungeonName) {
+					try {
+						Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(customDungeonName);
+
+						GamesInProgress.selectedClass = null;
+						GamesInProgress.curSlot = slot;
+						ShatteredPixelDungeon.switchScene(HeroSelectScene.class);
+
+					} catch (IOException e) {
+						e.printStackTrace();
+						ShatteredPixelDungeon.reportException(e);
+					}
+				}
+			});
 		}
 	}
 }

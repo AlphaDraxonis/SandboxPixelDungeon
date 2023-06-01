@@ -34,7 +34,7 @@ import com.watabou.utils.DeviceCompat;
 
 public class WndTextInput extends Window {
 
-	private static final int WIDTH = 135;
+	private static final int WIDTH = 120;
 	private static final int W_LAND_EXTRA = 220; //extra width is sometimes used in landscape
 	private static final int MARGIN = 1;
 	private static final int BUTTON_HEIGHT = 16;

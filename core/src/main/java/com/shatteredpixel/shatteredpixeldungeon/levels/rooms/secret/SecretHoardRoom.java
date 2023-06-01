@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PoisonDartTrap;
@@ -45,7 +46,7 @@ public class SecretHoardRoom extends SecretRoom {
 		Class<? extends Trap> trapClass;
 		if (Random.Int(2) == 0){
 			trapClass = RockfallTrap.class;
-		} else if (Dungeon.depth >= 10){
+		} else if (Dungeon.level.levelScheme.getRegion() >= LevelScheme.REGION_CAVES){
 			trapClass = DisintegrationTrap.class;
 		} else {
 			trapClass = PoisonDartTrap.class;

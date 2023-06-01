@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 
-//inspired by javax.swing.JSpi/**
 
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -8,77 +7,16 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.NinePatch;
+import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
-
-/**
- * A single line input field that lets the user select a
- * number or an object value from an ordered sequence. Spinners typically
- * provide a pair of tiny arrow buttons for stepping through the elements
- * of the sequence. The keyboard up/down arrow keys also cycle through the
- * elements. The user may also be allowed to type a (legal) value directly
- * into the spinner. Although combo boxes provide similar functionality,
- * spinners are sometimes preferred because they don't require a drop down list
- * that can obscure important data.
- * <p>
- * A <code>JSpinner</code>'s sequence value is defined by its
- * <code>SpinnerModel</code>.
- * The <code>model</code> can be specified as a constructor argument and
- * changed with the <code>model</code> property.  <code>SpinnerModel</code>
- * classes for some common types are provided: <code>SpinnerListModel</code>,
- * <code>SpinnerNumberModel</code>, and <code>SpinnerDateModel</code>.
- * <p>
- * A <code>JSpinner</code> has a single child component that's
- * responsible for displaying
- * and potentially changing the current element or <i>value</i> of
- * the model, which is called the <code>editor</code>.  The editor is created
- * by the <code>JSpinner</code>'s constructor and can be changed with the
- * <code>editor</code> property.  The <code>JSpinner</code>'s editor stays
- * in sync with the model by listening for <code>ChangeEvent</code>s. If the
- * user has changed the value displayed by the <code>editor</code> it is
- * possible for the <code>model</code>'s value to differ from that of
- * the <code>editor</code>. To make sure the <code>model</code> has the same
- * value as the editor use the <code>commitEdit</code> method, eg:
- * <pre>
- *   try {
- *       spinner.commitEdit();
- *   }
- *   catch (ParseException pe) {
- *       // Edited value is invalid, spinner.getValue() will return
- *       // the last valid value, you could revert the spinner to show that:
- *       JComponent editor = spinner.getEditor();
- *       if (editor instanceof DefaultEditor) {
- *           ((DefaultEditor)editor).getTextField().setValue(spinner.getValue());
- *       }
- *       // reset the value to some known value:
- *       spinner.setValue(fallbackValue);
- *       // or treat the last valid value as the current, in which
- *       // case you don't need to do anything.
- *   }
- *   return spinner.getValue();
- * </pre>
- * <p>
- * For information and examples of using spinner see
- * <a href="https://docs.oracle.com/javase/tutorial/uiswing/components/spinner.html">How to Use Spinners</a>,
- * a section in <em>The Java Tutorial.</em>
- * <p>
- * <strong>Warning:</strong> Swing is not thread safe. For more
- * information see <a
- * href="package-summary.html#threading">Swing's Threading
- * Policy</a>.
- *
- * @author Hans Muller
- * @see SpinnerModel
- * @see AbstractSpinnerModel
- * @see SpinnerListModel
- * @see SpinnerNumberModel
- * @since 1.4
- */
 
 
 public class Spinner extends Component {
 
-    public static final int GAP = 6;
+    public static final int GAP = 5;
     public static final int FILL = -1;//Constant for SpinnerModel#getWidth(int height)
+    public static final int SQUARE = -2;//Constant for buttonWidth to always have width = height
+    public static final float ALIGNMENT_LEFT = 0, ALIGNMENT_CENTER = 0.5f, ALIGNMENT_RIGHT = 1;
 
     private RedButton rightButton, leftButton;
     private Component inputField;
@@ -87,9 +25,12 @@ public class Spinner extends Component {
     private SpinnerModel model;//Determitesinput size
     private Runnable modelListener;
 
+    private float alignmentSpinnerX = ALIGNMENT_RIGHT;
+    private float buttonWidth = SQUARE;
 
-    public Spinner(SpinnerModel model, String name, int nameSize) {
-        super(model, name, nameSize);
+
+    public Spinner(SpinnerModel model, String name, int textSize) {
+        super(model, name, textSize);
     }
 
     @Override
@@ -144,130 +85,82 @@ public class Spinner extends Component {
     @Override
     protected void layout() {
 
+        int gap = title.text().isEmpty() ? 0 : GAP;
+
         height = Math.max(Math.max(title.height(), 10), height);
 
+        float bw = getButtonWidth();
+        if (bw == SQUARE) bw = height;
+        else bw = Math.max(bw, 6);
+
         float txtWidth = model.getInputFieldWith(height);
-        if (txtWidth == FILL) txtWidth = width - height * 2 + 2 - title.width() - GAP;
+        if (txtWidth == FILL) txtWidth = width - bw * 2 - 1 - title.width() - gap;
 
-
-        //Allignment tilte left
         title.setRect(x, y + (height - title.height()) / 2, title.width(), height);
+        PixelScene.align(title);
 
-        //Alignment spinner center (alsomove buttons to midle by 1)
-//        float startX = Math.max(width - title.width() - height * 2 - txtWidth + 2, 0) / 2 + x + title.width();
+        float conW = bw * 2 + txtWidth - 1;
+        float startX = Math.max(width - title.width() - conW - gap, 0) * getAlignmentSpinnerX() + gap + title.right();
 
-        //Alignment spinner right
-        float startX = Math.max(width - height * 2 - txtWidth + 2, 0) + x;
-        if (startX + GAP < title.width()+x) startX = GAP + title.width()+x;
-
-        leftButton.setRect(startX + 0, y, height, height);
+        leftButton.setRect(startX, y, bw, height);
+        PixelScene.align(leftButton);
         inputField.setRect(leftButton.right() - 1, y, txtWidth, height);
-        rightButton.setRect(inputField.right() - 1, y, height, height);
+        PixelScene.align(inputField);
+        rightButton.setRect(inputField.right() - 1, y, bw, height);
+        PixelScene.align(rightButton);
 
-        width = Math.max(width, height * 2 + txtWidth - 2 + title.width() + GAP);
+        width = Math.max(width, conW + title.width() + gap);
+    }
+
+    public void enable( boolean value ) {
+        active = value;
+        rightButton.enable(value);
+        leftButton.enable(value);
+        getModel().enable(value);
+        title.alpha( value ? 1.0f : 0.3f );
     }
 
     protected void onPointerUp() {
     }
 
+    public float getAlignmentSpinnerX() {
+        return alignmentSpinnerX;
+    }
 
-    //------------------- Swing methods -----------------------
+    public void setAlignmentSpinnerX(float alignmentSpinnerX) {
+        if (alignmentSpinnerX > 1 || alignmentSpinnerX < 0)
+            throw new IllegalArgumentException("invalid alignment: " + alignmentSpinnerX);
+        this.alignmentSpinnerX = alignmentSpinnerX;
+        layout();
+    }
+
+    public float getButtonWidth() {
+        return buttonWidth;
+    }
+
+    public void setButtonWidth(float buttonWidth) {
+        this.buttonWidth = buttonWidth;
+        layout();
+    }
 
 
-    /**
-     * Returns the <code>SpinnerModel</code> that defines
-     * this spinners sequence of values.
-     *
-     * @return the value of the model property
-     */
     public SpinnerModel getModel() {
         return model;
     }
 
-    /**
-     * Returns the current value of the model, typically
-     * this value is displayed by the <code>editor</code>. If the
-     * user has changed the value displayed by the <code>editor</code> it is
-     * possible for the <code>model</code>'s value to differ from that of
-     * the <code>editor</code>, refer to the class level javadoc for examples
-     * of how to deal with this.
-     * <p>
-     * This method simply delegates to the <code>model</code>.
-     * It is equivalent to:
-     * <pre>
-     * getModel().getValue()
-     * </pre>
-     *
-     * @return the current value of the model
-     * @see #setValue
-     * @see SpinnerModel#getValue
-     */
     public Object getValue() {
         return getModel().getValue();
     }
 
-    /**
-     * Changes current value of the model, typically
-     * this value is displayed by the <code>editor</code>.
-     * If the <code>SpinnerModel</code> implementation
-     * doesn't support the specified value then an
-     * <code>IllegalArgumentException</code> is thrown.
-     * <p>
-     * This method simply delegates to the <code>model</code>.
-     * It is equivalent to:
-     * <pre>
-     * getModel().setValue(value)
-     * </pre>
-     *
-     * @param value new value for the spinner
-     * @throws IllegalArgumentException if <code>value</code> isn't allowed
-     * @see #getValue
-     * @see SpinnerModel#setValue
-     */
     public void setValue(Object value) {
         getModel().setValue(value);
     }
 
-    /**
-     * Returns the object in the sequence that comes after the object returned
-     * by <code>getValue()</code>. If the end of the sequence has been reached
-     * then return <code>null</code>.
-     * Calling this method does not effect <code>value</code>.
-     * <p>
-     * This method simply delegates to the <code>model</code>.
-     * It is equivalent to:
-     * <pre>
-     * getModel().getNextValue()
-     * </pre>
-     *
-     * @return the next legal value or <code>null</code> if one doesn't exist
-     * @see #getValue
-     * @see #getPreviousValue
-     * @see SpinnerModel#getNextValue
-     */
+
     public Object getNextValue() {
         return getModel().getNextValue();
     }
 
-    /**
-     * Returns the object in the sequence that comes
-     * before the object returned by <code>getValue()</code>.
-     * If the end of the sequence has been reached then
-     * return <code>null</code>. Calling this method does
-     * not effect <code>value</code>.
-     * <p>
-     * This method simply delegates to the <code>model</code>.
-     * It is equivalent to:
-     * <pre>
-     * getModel().getPreviousValue()
-     * </pre>
-     *
-     * @return the previous legal value or <code>null</code>
-     * if one doesn't exist
-     * @see #getValue
-     * @see #getNextValue
-     * @see SpinnerModel#getPreviousValue
-     */
     public Object getPreviousValue() {
         return getModel().getPreviousValue();
     }
@@ -287,10 +180,10 @@ public class Spinner extends Component {
 
     public static class SpinnerTextBlock extends Component {
 
-        private RenderedTextBlock textBlock;
-        private NinePatch bg;
+        protected RenderedTextBlock textBlock;
+        protected NinePatch bg;
 
-        private float textOffsetX, textOffsetY;
+        protected float textOffsetX, textOffsetY;
 
         public SpinnerTextBlock(NinePatch bg, int fontSize) {
             super();
@@ -299,7 +192,6 @@ public class Spinner extends Component {
 
             textBlock = PixelScene.renderTextBlock(fontSize);
             addToFront(textBlock);
-            //TODO von group direkt referenz auf buttons von scrollpane uas?
         }
 
         public void setText(String text) {
@@ -342,6 +234,13 @@ public class Spinner extends Component {
         public void setTextOffsetY(float textOffsetY) {
             this.textOffsetY = textOffsetY;
         }
+
+        public  void enable(boolean value){
+            textBlock.alpha( value ? 1.0f : 0.3f );
+            textBlock.visible=value;
+            bg.alpha(value ? 1.0f : 0.3f);
+        }
+
     }
 
 

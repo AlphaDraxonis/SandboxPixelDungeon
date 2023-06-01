@@ -135,20 +135,6 @@ public class PrisonBossLevel extends Level {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 		state = bundle.getEnum( STATE, State.class );
-
-		//pre-1.3.0 saves, recreates custom exit and entrance transitions
-		if (bundle.contains("entrance")){
-			transitions.clear();
-			if (state == State.START || state == State.WON){
-				transitions.add(new LevelTransition(this, ENTRANCE_POS, LevelTransition.Type.REGULAR_ENTRANCE));
-			}
-			if (state == State.WON){
-				LevelTransition exit = new LevelTransition(this, pointToCell(levelExit), LevelTransition.Type.REGULAR_EXIT);
-				exit.right+=2;
-				exit.bottom+=3;
-				transitions.add(exit);
-			}
-		}
 		
 		//in some states tengu won't be in the world, in others he will be.
 		if (state == State.START || state == State.FIGHT_PAUSE) {
@@ -194,7 +180,8 @@ public class PrisonBossLevel extends Level {
 	                                       new Point(8, 23), new Point(12, 23)};
 	
 	private void setMapStart(){
-		transitions.add(new LevelTransition(this, ENTRANCE_POS, LevelTransition.Type.REGULAR_ENTRANCE));
+		LevelTransition t = new LevelTransition(this, ENTRANCE_POS, LevelTransition.Type.REGULAR_ENTRANCE);
+		if (Dungeon.customDungeon.getFloor(t.destLevel) != null) transitions.put(ENTRANCE_POS, t);
 		
 		Painter.fill(this, 0, 0, 32, 32, Terrain.WALL);
 		
@@ -327,7 +314,7 @@ public class PrisonBossLevel extends Level {
 		LevelTransition exit = new LevelTransition(this, pointToCell(levelExit), LevelTransition.Type.REGULAR_EXIT);
 		exit.right+=2;
 		exit.bottom+=3;
-		transitions.add(exit);
+		if (Dungeon.customDungeon.getFloor(exit.destLevel) != null) transitions.put(exit.departCell, exit);
 	}
 	
 	//keep track of removed items as the level is changed. Dump them back into the level at the end.
@@ -346,7 +333,7 @@ public class PrisonBossLevel extends Level {
 		}
 		
 		for (HeavyBoomerang.CircleBack b : Dungeon.hero.buffs(HeavyBoomerang.CircleBack.class)){
-			if (b.activeDepth() == Dungeon.depth
+			if (b.activeLevel().equals(Dungeon.levelName)
 					&& (safeArea == null || !safeArea.inside(cellToPoint(b.returnPos())))){
 				storedItems.add(b.cancel());
 			}
@@ -581,7 +568,7 @@ public class PrisonBossLevel extends Level {
 		if (item != null) {
 			drop( item, randomRespawnCell( null ) ).setHauntedIfCursed().type = Heap.Type.REMAINS;
 		}
-		drop(new IronKey(10), randomPrisonCellPos());
+		drop(new IronKey(Dungeon.levelName), randomPrisonCellPos());
 	}
 
 	@Override
@@ -658,7 +645,6 @@ public class PrisonBossLevel extends Level {
 			//so distance to tengu starts at 3-6 tiles and scales up to 7-8 as fill increases
 		} while (((PathFinder.distance[heroPos] < Math.ceil(7*fill))
 				|| (PathFinder.distance[heroPos] > Math.ceil(4 + 4*fill))));
-		System.out.println(tries);
 
 		PathFinder.setMapSize(width(), height());
 		

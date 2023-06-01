@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.TileBar;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -473,6 +474,7 @@ public class WndSettings extends WndTabbed {
 										btnCentered.textColor(WHITE);
 										SPDSettings.toolbarMode(Toolbar.Mode.SPLIT.name());
 										Toolbar.updateLayout();
+										TileBar.updateLayout();
 									}
 								};
 								if (SPDSettings.toolbarMode().equals(Toolbar.Mode.SPLIT.name())) {
@@ -488,6 +490,7 @@ public class WndSettings extends WndTabbed {
 										btnCentered.textColor(WHITE);
 										SPDSettings.toolbarMode(Toolbar.Mode.GROUP.name());
 										Toolbar.updateLayout();
+										TileBar.updateLayout();
 									}
 								};
 								if (SPDSettings.toolbarMode().equals(Toolbar.Mode.GROUP.name())) {
@@ -503,6 +506,7 @@ public class WndSettings extends WndTabbed {
 										textColor(TITLE_COLOR);
 										SPDSettings.toolbarMode(Toolbar.Mode.CENTER.name());
 										Toolbar.updateLayout();
+										TileBar.updateLayout();
 									}
 								};
 								if (SPDSettings.toolbarMode().equals(Toolbar.Mode.CENTER.name())) {
@@ -516,6 +520,7 @@ public class WndSettings extends WndTabbed {
 										super.onClick();
 										SPDSettings.quickSwapper(checked());
 										Toolbar.updateLayout();
+										TileBar.updateLayout();
 									}
 								};
 								chkQuickSwapper.checked(SPDSettings.quickSwapper());
@@ -531,6 +536,7 @@ public class WndSettings extends WndTabbed {
 										super.onClick();
 										SPDSettings.flipToolbar(checked());
 										Toolbar.updateLayout();
+										TileBar.updateLayout();
 									}
 								};
 								chkFlipToolbar.checked(SPDSettings.flipToolbar());

@@ -288,6 +288,12 @@ public class UnstableSpellbook extends Artifact {
             Collections.addAll(scrolls, bundle.getClassArray(SCROLLS));
         }
     }
+//    @Override
+//    public Item clone() throws CloneNotSupportedException {
+//        UnstableSpellbook i = (UnstableSpellbook) super.clone();
+//        i.scrolls.clear();
+//        return i;
+//    }
 
     public class bookRecharge extends ArtifactBuff {
         @Override

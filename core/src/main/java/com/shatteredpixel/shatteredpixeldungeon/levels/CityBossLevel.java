@@ -121,12 +121,6 @@ public class CityBossLevel extends Level {
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
-		//pre-1.3.0 saves, modifies exit transition with custom size
-		if (bundle.contains("exit")){
-			LevelTransition exit = getTransition(LevelTransition.Type.REGULAR_EXIT);
-			exit.set(end.left+4, end.top+4, end.left+4+6, end.top+4+4);
-			transitions.add(exit);
-		}
 		impShop = (ImpShopRoom) bundle.get( IMP_SHOP );
 		if (map[topDoor] != Terrain.LOCKED_DOOR && Imp.Quest.isCompleted() && !impShop.shopSpawned()){
 			spawnShop();
@@ -157,7 +151,8 @@ public class CityBossLevel extends Level {
 
 		int entrance = c.x + (c.y+2)*width();
 		Painter.set(this, entrance, Terrain.ENTRANCE);
-		transitions.add(new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+		LevelTransition t = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
+		if (Dungeon.customDungeon.getFloor(t.destLevel) != null) transitions.put(entrance, t);
 
 		//DK's throne room
 		Painter.fillDiamond(this, arena, 1, Terrain.EMPTY);
@@ -186,7 +181,7 @@ public class CityBossLevel extends Level {
 		int exitCell = end.left+7 + (end.top+8)*width();
 		LevelTransition exit = new LevelTransition(this, exitCell, LevelTransition.Type.REGULAR_EXIT);
 		exit.set(end.left+4, end.top+4, end.left+4+6, end.top+4+4);
-		transitions.add(exit);
+		if (Dungeon.customDungeon.getFloor(exit.destLevel) != null) transitions.put(exitCell,exit);
 
 		impShop = new ImpShopRoom();
 		impShop.set(end.left+3, end.top+12, end.left+11, end.top+20);

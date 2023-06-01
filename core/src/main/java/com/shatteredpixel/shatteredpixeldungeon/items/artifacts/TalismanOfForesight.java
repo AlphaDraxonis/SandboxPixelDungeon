@@ -383,10 +383,10 @@ public class TalismanOfForesight extends Artifact {
 	public static class HeapAwareness extends FlavourBuff {
 
 		public int pos;
-		public int depth = Dungeon.depth;
+		public String level = Dungeon.levelName;
 
 		private static final String POS = "pos";
-		private static final String DEPTH = "depth";
+		private static final String LEVEL = "level";
 
 		@Override
 		public void detach() {
@@ -399,14 +399,14 @@ public class TalismanOfForesight extends Artifact {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			pos = bundle.getInt(POS);
-			depth = bundle.getInt(DEPTH);
+			level = bundle.getString(LEVEL);
 		}
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put(POS, pos);
-			bundle.put(DEPTH, depth);
+			bundle.put(LEVEL, level);
 		}
 	}
 

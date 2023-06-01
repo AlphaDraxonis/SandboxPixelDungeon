@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -18,17 +19,17 @@ import com.watabou.noosa.Image;
 
 public class WndInfoEq extends WndTitledMessage {
 
-    private final WndEditorSettings.ItemTab.CatalogItem catalogItem;
+    private final ItemTab.CatalogItem catalogItem;
 
-    public WndInfoEq(Item item, WndEditorSettings.ItemTab.CatalogItem catalogItem, BodyFactory bodyFactory) {
+    public WndInfoEq(Item item, ItemTab.CatalogItem catalogItem, BodyFactory bodyFactory) {
         this(new IconTitle(item), catalogItem, bodyFactory);
     }
 
-    public WndInfoEq(Image icon, Image subIcon, String title, WndEditorSettings.ItemTab.CatalogItem catalogItem, BodyFactory bodyFactory) {
+    public WndInfoEq(Image icon, Image subIcon, String title, ItemTab.CatalogItem catalogItem, BodyFactory bodyFactory) {
         this(new IconTitleWithSubIcon(icon, subIcon, title), catalogItem, bodyFactory);
     }
 
-    public WndInfoEq(IconTitle title, WndEditorSettings.ItemTab.CatalogItem catalogItem, BodyFactory bodyFactory) {
+    public WndInfoEq(IconTitle title, ItemTab.CatalogItem catalogItem, BodyFactory bodyFactory) {
         super(title, bodyFactory);
         this.catalogItem = catalogItem;
         ((WndInfoEq.Body) body()).wnd = this;
@@ -48,12 +49,16 @@ public class WndInfoEq extends WndTitledMessage {
             super();
             this.item = item;
             text = PixelScene.renderTextBlock(createText(), 6);
-            curseBtn = new CurseButton(item) {
-                @Override
-                protected void onChange() {
-                    updateItem();
-                }
-            };
+
+            if (!(item instanceof MissileWeapon)) {
+                curseBtn = new CurseButton(item) {
+                    @Override
+                    protected void onChange() {
+                        updateItem();
+                    }
+                };
+                add(curseBtn);
+            } else curseBtn = null;
 
             if (item.isUpgradable()) {
                 levelSpinner = new LevelSpinner(item) {
@@ -69,14 +74,13 @@ public class WndInfoEq extends WndTitledMessage {
                 enchantBtn = new RedButton("Enchant") {
                     @Override
                     protected void onClick() {
-                        if (item instanceof Weapon || item instanceof Armor)
-                            EditorScene.show(new WndChooseEnchant(item) {
-                                @Override
-                                protected void finish() {
-                                    super.finish();
-                                    updateItem();
-                                }
-                            });
+                        EditorScene.show(new WndChooseEnchant(item) {
+                            @Override
+                            protected void finish() {
+                                super.finish();
+                                updateItem();
+                            }
+                        });
                     }
                 };
                 add(enchantBtn);
@@ -93,7 +97,6 @@ public class WndInfoEq extends WndTitledMessage {
             } else augumentationSpinner = null;
 
             add(text);
-            add(curseBtn);
         }
 
         @Override
@@ -118,23 +121,25 @@ public class WndInfoEq extends WndTitledMessage {
                 posY = augumentationSpinner.bottom() + GAP;
             }
 
-            curseBtn.setRect(text.left(), posY, width, WndMenuEditor.BTN_HEIGHT);
-            posY = curseBtn.bottom() + GAP;
+            if (curseBtn != null) {
+                curseBtn.setRect(text.left(), posY, width, WndMenuEditor.BTN_HEIGHT);
+                posY = curseBtn.bottom() + GAP;
+            }
 
             if (enchantBtn != null) {
                 enchantBtn.setRect(text.left(), posY, width, WndMenuEditor.BTN_HEIGHT);
-                posY = enchantBtn.bottom();
+                posY = enchantBtn.bottom() + GAP;
             }
 
-            height = posY - y;
+            height = posY - y - GAP * 1.5f;
         }
 
         private void updateItem() {
             text.text(createText());
             ((IconTitle) (wnd.titlebar)).label(item.title());
             ((IconTitle) (wnd.titlebar)).icon(CustomDungeon.getDungeon().getItemImage(item));
-            if (wnd.catalogItem != null) wnd.catalogItem.updateItem();
-            wnd.layout();
+            if (wnd.catalogItem != null) wnd.catalogItem.onUpdate();
+            wnd.layout(wnd.width);
 //            wnd.resize(wnd.width,wnd.height);
         }
 

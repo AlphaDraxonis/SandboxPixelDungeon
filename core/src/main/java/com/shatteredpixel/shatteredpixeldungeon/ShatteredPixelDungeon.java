@@ -95,7 +95,6 @@ public class ShatteredPixelDungeon extends Game {
 	}
 
 	public static void switchNoFade(Class<? extends PixelScene> c, SceneChangeCallback callback) {
-		System.out.println(c.getSimpleName());
 		PixelScene.noFade = true;
 		switchScene( c, callback );
 	}

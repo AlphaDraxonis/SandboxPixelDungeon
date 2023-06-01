@@ -21,6 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.keys;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class GoldenKey extends Key {
@@ -30,12 +33,14 @@ public class GoldenKey extends Key {
 	}
 
 	public GoldenKey() {
-		this( 0 );
+		this( Dungeon.levelName );
 	}
-	
-	public GoldenKey( int depth ) {
+
+
+	public GoldenKey( String levelName ) {
 		super();
-		this.depth = depth;
+		if (Level.NONE.equals(levelName)) this.levelName = CustomLevel.tempDungeonNameForKey;
+		else this.levelName = levelName;
 	}
 
 }

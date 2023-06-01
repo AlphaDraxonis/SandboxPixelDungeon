@@ -67,11 +67,6 @@ public class PrisonLevel extends RegularLevel {
 				new float[]{1, 1, 0.5f},
 				false);
 	}
-
-	@Override
-	protected ArrayList<Room> initRooms() {
-		return Wandmaker.Quest.spawnRoom(super.initRooms());
-	}
 	
 	@Override
 	protected int standardRooms(boolean forceMax) {

@@ -52,8 +52,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
@@ -152,32 +154,35 @@ public class ShopRoom extends SpecialRoom {
 		ArrayList<Item> itemsToSpawn = new ArrayList<>();
 
 		MeleeWeapon w;
-		switch (Dungeon.depth) {
-		case 6: default:
+		switch (Dungeon.level.levelScheme.getRegion()) {
+			case LevelScheme.REGION_PRISON: default:
 			w = (MeleeWeapon) Generator.random(Generator.wepTiers[1]);
 			itemsToSpawn.add( Generator.random(Generator.misTiers[1]).quantity(2).identify(false) );
 			itemsToSpawn.add( new LeatherArmor().identify(false) );
 			break;
 			
-		case 11:
+		case LevelScheme.REGION_CAVES:
 			w = (MeleeWeapon) Generator.random(Generator.wepTiers[2]);
 			itemsToSpawn.add( Generator.random(Generator.misTiers[2]).quantity(2).identify(false) );
 			itemsToSpawn.add( new MailArmor().identify(false) );
 			break;
 			
-		case 16:
-			w = (MeleeWeapon) Generator.random(Generator.wepTiers[3]);
-			itemsToSpawn.add( Generator.random(Generator.misTiers[3]).quantity(2).identify(false) );
-			itemsToSpawn.add( new ScaleArmor().identify(false) );
-			break;
+		case LevelScheme.REGION_CITY:
 
-		case 20: case 21:
-			w = (MeleeWeapon) Generator.random(Generator.wepTiers[4]);
-			itemsToSpawn.add( Generator.random(Generator.misTiers[4]).quantity(2).identify(false) );
-			itemsToSpawn.add( new PlateArmor().identify(false) );
-			itemsToSpawn.add( new Torch() );
-			itemsToSpawn.add( new Torch() );
-			itemsToSpawn.add( new Torch() );
+			if(!(Dungeon.level instanceof CityBossLevel)){
+				w = (MeleeWeapon) Generator.random(Generator.wepTiers[3]);
+				itemsToSpawn.add( Generator.random(Generator.misTiers[3]).quantity(2).identify(false) );
+				itemsToSpawn.add( new ScaleArmor().identify(false) );
+				break;
+			}
+
+		case LevelScheme.REGION_HALLS:
+				w = (MeleeWeapon) Generator.random(Generator.wepTiers[4]);
+				itemsToSpawn.add( Generator.random(Generator.misTiers[4]).quantity(2).identify(false) );
+				itemsToSpawn.add( new PlateArmor().identify(false) );
+				itemsToSpawn.add( new Torch() );
+				itemsToSpawn.add( new Torch() );
+				itemsToSpawn.add( new Torch() );
 			break;
 		}
 		w.enchant(null);
@@ -231,14 +236,14 @@ public class ShopRoom extends SpecialRoom {
 			int bags = 0;
 			//creates the given float percent of the remaining bags to be dropped.
 			//this way players who get the hourglass late can still max it, usually.
-			switch (Dungeon.depth) {
-				case 6:
+			switch (Dungeon.level.levelScheme.getRegion()) {
+				case LevelScheme.REGION_PRISON:
 					bags = (int)Math.ceil(( 5-hourglass.sandBags) * 0.20f ); break;
-				case 11:
+				case LevelScheme.REGION_CAVES:
 					bags = (int)Math.ceil(( 5-hourglass.sandBags) * 0.25f ); break;
-				case 16:
-					bags = (int)Math.ceil(( 5-hourglass.sandBags) * 0.50f ); break;
-				case 20: case 21:
+				case LevelScheme.REGION_CITY:
+					if(!(Dungeon.level instanceof  CityBossLevel))bags = (int)Math.ceil(( 5-hourglass.sandBags) * 0.50f ); break;
+				case LevelScheme.REGION_HALLS:
 					bags = (int)Math.ceil(( 5-hourglass.sandBags) * 0.80f ); break;
 			}
 

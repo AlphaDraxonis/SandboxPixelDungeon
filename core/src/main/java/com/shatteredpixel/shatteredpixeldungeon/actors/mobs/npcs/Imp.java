@@ -34,6 +34,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ImpSprite;
@@ -201,50 +203,36 @@ public class Imp extends NPC {
 				reward = (Ring)node.get( REWARD );
 			}
 		}
-		
-		public static void spawn( CityLevel level ) {
-			if (!spawned && Dungeon.depth > 16 && Random.Int( 20 - Dungeon.depth ) == 0) {
-				
-				Imp npc = new Imp();
-				do {
-					npc.pos = level.randomRespawnCell( npc );
-				} while (
-						npc.pos == -1 ||
-						level.heaps.get( npc.pos ) != null ||
-						level.traps.get( npc.pos) != null ||
-						level.findMob( npc.pos ) != null ||
-						//The imp doesn't move, so he cannot obstruct a passageway
-						!(level.passable[npc.pos + PathFinder.CIRCLE4[0]] && level.passable[npc.pos + PathFinder.CIRCLE4[2]]) ||
-						!(level.passable[npc.pos + PathFinder.CIRCLE4[1]] && level.passable[npc.pos + PathFinder.CIRCLE4[3]]));
-				level.mobs.add( npc );
-				
-				spawned = true;
 
-				//always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
-				switch (Dungeon.depth){
-					case 17: default:
-						alternative = true;
-						break;
-					case 18:
-						alternative = Random.Int(2) == 0;
-						break;
-					case 19:
-						alternative = false;
-						break;
-				}
-				
-				given = false;
-				
-				do {
-					reward = (Ring)Generator.random( Generator.Category.RING );
-				} while (reward.cursed);
-				reward.upgrade( 2 );
-				reward.cursed = true;
-			}
+		public static void spawn( Level level ) {
+			Imp npc = new Imp();
+			do {
+				npc.pos = level.randomRespawnCell( npc );
+			} while (
+					npc.pos == -1 ||
+							level.heaps.get( npc.pos ) != null ||
+							level.traps.get( npc.pos) != null ||
+							level.findMob( npc.pos ) != null ||
+							//The imp doesn't move, so he cannot obstruct a passageway
+							!(level.passable[npc.pos + PathFinder.CIRCLE4[0]] && level.passable[npc.pos + PathFinder.CIRCLE4[2]]) ||
+							!(level.passable[npc.pos + PathFinder.CIRCLE4[1]] && level.passable[npc.pos + PathFinder.CIRCLE4[3]]));
+			level.mobs.add( npc );
+			spawned = true;
+
+			//always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
+			alternative= CustomDungeon.getDungeon().getImpQuest();
+
+			given = false;
+
+			do {
+				reward = (Ring)Generator.random( Generator.Category.RING );
+			} while (reward.cursed);
+			reward.upgrade( 2 );
+			reward.cursed = true;
 		}
 		
 		public static void process( Mob mob ) {
-			if (spawned && given && !completed && Dungeon.depth != 20) {
+			if (spawned && given && !completed && !Dungeon.bossLevel()) {
 				if ((alternative && mob instanceof Monk) ||
 					(!alternative && mob instanceof Golem)) {
 					

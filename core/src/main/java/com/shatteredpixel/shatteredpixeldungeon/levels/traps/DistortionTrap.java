@@ -102,7 +102,7 @@ public class DistortionTrap extends Trap{
 			Mob mob;
 			switch (summoned){
 				case 1:
-					if (Dungeon.depth != 5 && Random.Int(100) == 0){
+					if (!Dungeon.customDungeon.isRatKingLevel(Dungeon.levelName) && Random.Int(100) == 0){
 						mob = new RatKing();
 						break;
 					}
@@ -110,7 +110,7 @@ public class DistortionTrap extends Trap{
 					int floor;
 					do {
 						floor = Random.Int(25);
-					} while( Dungeon.bossLevel(floor));
+					} while( Dungeon.bossLevel(String.valueOf(floor)));
 					mob = Reflection.newInstance(Bestiary.getMobRotation(floor).get(0));
 					break;
 				case 2:

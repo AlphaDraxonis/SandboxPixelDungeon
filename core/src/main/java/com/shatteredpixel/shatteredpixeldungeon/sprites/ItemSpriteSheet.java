@@ -602,6 +602,8 @@ public class ItemSpriteSheet {
 	public static final int AQUA_BLAST      = SPELLS+7;
 	public static final int FEATHER_FALL    = SPELLS+8;
 	public static final int RECLAIM_TRAP    = SPELLS+9;
+
+	public static final int SANBOX_EDITOR_ICON = SPELLS+10;//TODO move to icons.png (only used for Map editor button in TitleScene)
 	
 	public static final int CURSE_INFUSE    = SPELLS+11;
 	public static final int MAGIC_INFUSE    = SPELLS+12;
@@ -618,6 +620,8 @@ public class ItemSpriteSheet {
 		assignItemRect(AQUA_BLAST,      11, 11);
 		assignItemRect(FEATHER_FALL,    11, 11);
 		assignItemRect(RECLAIM_TRAP,    11, 11);
+
+		assignItemRect(SANBOX_EDITOR_ICON,    16, 14);
 		
 		assignItemRect(CURSE_INFUSE,    10, 15);
 		assignItemRect(MAGIC_INFUSE,    10, 15);

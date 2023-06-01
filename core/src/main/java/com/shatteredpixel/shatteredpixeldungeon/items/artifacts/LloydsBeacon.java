@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -58,7 +59,7 @@ public class LloydsBeacon extends Artifact {
 	public static final String AC_SET		= "SET";
 	public static final String AC_RETURN	= "RETURN";
 	
-	public int returnDepth	= -1;
+	public String returnLevel	= Level.SURFACE;
 	public int returnPos;
 	
 	{
@@ -73,14 +74,14 @@ public class LloydsBeacon extends Artifact {
 		usesTargeting = true;
 	}
 	
-	private static final String DEPTH	= "depth";
+	private static final String LEVEL	= "level";
 	private static final String POS		= "pos";
 	
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
-		bundle.put( DEPTH, returnDepth );
-		if (returnDepth != -1) {
+		bundle.put( LEVEL, returnLevel );
+		if (!returnLevel.equals(Level.SURFACE)) {
 			bundle.put( POS, returnPos );
 		}
 	}
@@ -88,7 +89,7 @@ public class LloydsBeacon extends Artifact {
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle(bundle);
-		returnDepth	= bundle.getInt( DEPTH );
+		returnLevel	= bundle.getString( LEVEL );
 		returnPos	= bundle.getInt( POS );
 	}
 	
@@ -97,7 +98,7 @@ public class LloydsBeacon extends Artifact {
 		ArrayList<String> actions = super.actions( hero );
 		actions.add( AC_ZAP );
 		actions.add( AC_SET );
-		if (returnDepth != -1) {
+		if (!returnLevel.equals(Level.SURFACE)) {
 			actions.add( AC_RETURN );
 		}
 		return actions;
@@ -128,7 +129,7 @@ public class LloydsBeacon extends Artifact {
 		if (action == AC_ZAP ){
 
 			curUser = hero;
-			int chargesToUse = Dungeon.depth > 20 ? 2 : 1;
+			int chargesToUse = Dungeon.level.levelScheme.getRegion() >= LevelScheme.REGION_HALLS ? 2 : 1;
 
 			if (!isEquipped( hero )) {
 				GLog.i( Messages.get(Artifact.class, "need_to_equip") );
@@ -144,7 +145,7 @@ public class LloydsBeacon extends Artifact {
 
 		} else if (action == AC_SET) {
 			
-			returnDepth = Dungeon.depth;
+			returnLevel=Dungeon.levelName;
 			returnPos = hero.pos;
 			
 			hero.spend( LloydsBeacon.TIME_TO_USE );
@@ -157,7 +158,7 @@ public class LloydsBeacon extends Artifact {
 			
 		} else if (action == AC_RETURN) {
 			
-			if (returnDepth == Dungeon.depth) {
+			if (returnLevel.equals(Dungeon.levelName)) {
 				ScrollOfTeleportation.appear( hero, returnPos );
 				for(Mob m : Dungeon.level.mobs){
 					if (m.pos == hero.pos){
@@ -178,7 +179,7 @@ public class LloydsBeacon extends Artifact {
 
 				Level.beforeTransition();
 				InterlevelScene.mode = InterlevelScene.Mode.RETURN;
-				InterlevelScene.returnDepth = returnDepth;
+				InterlevelScene.returnLevel = returnLevel;
 				InterlevelScene.returnPos = returnPos;
 				Game.switchScene( InterlevelScene.class );
 			}
@@ -295,8 +296,8 @@ public class LloydsBeacon extends Artifact {
 	@Override
 	public String desc() {
 		String desc = super.desc();
-		if (returnDepth != -1){
-			desc += "\n\n" + Messages.get(this, "desc_set", returnDepth);
+		if (!returnLevel.equals(Level.SURFACE)) {
+			desc += "\n\n" + Messages.get(this, "desc_set", returnLevel);
 		}
 		return desc;
 	}
@@ -305,7 +306,7 @@ public class LloydsBeacon extends Artifact {
 	
 	@Override
 	public Glowing glowing() {
-		return returnDepth != -1 ? WHITE : null;
+		return !returnLevel.equals(Level.SURFACE) ? WHITE : null;
 	}
 
 	public class beaconRecharge extends ArtifactBuff{

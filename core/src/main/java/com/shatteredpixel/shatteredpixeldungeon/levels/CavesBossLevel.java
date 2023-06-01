@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.CavesPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -155,7 +156,7 @@ public class CavesBossLevel extends Level {
 		int exitCell = 16 + 2*width();
 		LevelTransition exit = new LevelTransition(this, exitCell, LevelTransition.Type.REGULAR_EXIT);
 		exit.set(14, 0, 18, 2);
-		transitions.add(exit);
+		if (Dungeon.customDungeon.getFloor(exit.destLevel) != null) transitions.put(exitCell, exit);
 
 		CustomTilemap customVisuals = new CityEntrance();
 		customVisuals.setRect(0, 0, width(), 11);
@@ -176,13 +177,6 @@ public class CavesBossLevel extends Level {
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
-
-		//pre-1.3.0 saves, modifies exit transition with custom size
-		if (bundle.contains("exit")){
-			LevelTransition exit = getTransition(LevelTransition.Type.REGULAR_EXIT);
-			exit.set(14, 0, 18, 2);
-			transitions.add(exit);
-		}
 
 		for (CustomTilemap c : customTiles){
 			if (c instanceof ArenaVisuals){
@@ -520,7 +514,9 @@ public class CavesBossLevel extends Level {
 		}
 
 		Painter.set(this, entrance, Terrain.ENTRANCE);
-		transitions.add(new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+
+		LevelTransition t = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
+		if(Dungeon.customDungeon.getFloor(t.destLevel)!=null)transitions.put(entrance,t);
 	}
 
 	private static short[] corner1 = {

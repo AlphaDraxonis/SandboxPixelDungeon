@@ -11,6 +11,10 @@ public interface SpinnerModel {
 
     int getClicksPerSecondWhileHolding();
 
+    void enable(boolean value);
+
+     void changeValue(Object oldValue, Object newValue);
+
     /**
      * The <i>current element</i> of the sequence.  This element is usually
      * displayed by the <code>editor</code> part of a <code>JSpinner</code>.

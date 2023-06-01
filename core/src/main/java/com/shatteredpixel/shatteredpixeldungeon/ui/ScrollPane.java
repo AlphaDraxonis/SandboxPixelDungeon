@@ -31,6 +31,7 @@ import com.watabou.input.ScrollEvent;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ScrollArea;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.GameMath;
@@ -161,6 +162,26 @@ public class ScrollPane extends Component {
     public void onClick(float x, float y) {
     }
 
+    public void onMiddleClick(float x, float y) {
+    }
+
+    public void onRightClick(float x, float y) {
+    }
+
+    @Override
+    public void cancelClick() {
+        super.cancelClick();
+
+        controller.dragging = false;//from controller.onPointerUp()
+        thumb.am = THUMB_ALPHA;
+
+        controller.resetCurrentEvent();
+    }
+
+    public void givePointerPriority(){//call this after new content members were added (like revalidate() in Swing)
+        controller.givePointerPriority();
+    }
+
     public class PointerController extends ScrollArea {
 
         private float dragThreshold;
@@ -197,7 +218,20 @@ public class ScrollPane extends Component {
             } else {
 
                 PointF p = content.camera.screenToCamera((int) event.current.x, (int) event.current.y);
-                ScrollPane.this.onClick(p.x, p.y);
+
+                switch (event.button) {
+                    case PointerEvent.LEFT:
+                    default:
+                        ScrollPane.this.onClick(p.x, p.y);
+                        break;
+                    case PointerEvent.RIGHT:
+                        ScrollPane.this.onRightClick(p.x, p.y);
+                        break;
+                    case PointerEvent.MIDDLE:
+                        ScrollPane.this.onMiddleClick(p.x, p.y);
+                        break;
+                }
+
                 content.redirectPointerEvent(event);
             }
         }
@@ -244,6 +278,10 @@ public class ScrollPane extends Component {
 
             lastPos.set(current);
 
+        }
+
+        private void resetCurrentEvent() {
+            controller.curEvent = null;
         }
 
     }

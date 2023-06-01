@@ -113,7 +113,7 @@ public class YogDzewa extends Mob {
 	private ArrayList<Class> challengeSummons = new ArrayList<>();
 	{
 		//offset seed slightly to avoid output patterns
-		Random.pushGenerator(Dungeon.seedCurDepth()+1);
+		Random.pushGenerator(Dungeon.seedCurLevel()+1);
 			fistSummons.add(Random.Int(2) == 0 ? YogFist.BurningFist.class : YogFist.SoiledFist.class);
 			fistSummons.add(Random.Int(2) == 0 ? YogFist.RottingFist.class : YogFist.RustedFist.class);
 			fistSummons.add(Random.Int(2) == 0 ? YogFist.BrightFist.class : YogFist.DarkFist.class);
@@ -512,7 +512,7 @@ public class YogDzewa extends Mob {
 		GameScene.bossSlain();
 
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) && Statistics.spawnersAlive == 4){
-			Badges.validateBossChallengeCompleted();
+			Badges.validateBossChallengeCompleted(YogDzewa.class);
 		} else {
 			Statistics.qualifiedForBossChallengeBadge = false;
 		}

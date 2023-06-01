@@ -308,7 +308,7 @@ public class Ring extends KindofMisc {
     }
 
     public static int getBonus(Char target, Class<? extends RingBuff> type) {
-        if (target.buff(MagicImmune.class) != null) return 0;
+        if (target == null || target.buff(MagicImmune.class) != null) return 0;
         int bonus = 0;
         for (RingBuff buff : target.buffs(type)) {
             bonus += buff.level();
@@ -317,7 +317,7 @@ public class Ring extends KindofMisc {
     }
 
     public static int getBuffedBonus(Char target, Class<? extends RingBuff> type) {
-        if (target==null|| target.buff(MagicImmune.class) != null) return 0;
+        if (target == null || target.buff(MagicImmune.class) != null) return 0;
         int bonus = 0;
         for (RingBuff buff : target.buffs(type)) {
             bonus += buff.buffedLvl();

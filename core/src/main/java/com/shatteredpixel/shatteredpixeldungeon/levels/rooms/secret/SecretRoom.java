@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.watabou.utils.Bundle;
@@ -63,11 +64,11 @@ public abstract class SecretRoom extends SpecialRoom {
 		
 	}
 	
-	public static int secretsForFloor(int depth){
-		if (depth == 1) return 0;
+	public static int secretsForFloor(String levelName){
+		if (Dungeon.getSimulatedDepth() == 1) return 0;
 		
-		int region = depth/5;
-		int floor = depth%5;
+		int region = Dungeon.customDungeon.getFloor(levelName).getRegion()-1;
+		int floor = Dungeon.customDungeon.getFloor(levelName).getNumInRegion()-1;
 		
 		int floorsLeft = 5 - floor;
 		

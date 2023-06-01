@@ -197,6 +197,8 @@ public class WndHero extends WndTabbed {
 				statSlot( Messages.get(this, "dungeon_seed"), DungeonSeed.convertToCode(Dungeon.seed) );
 			}
 
+			statSlot("Dungeon",Dungeon.customDungeon.getName());
+
 			pos += GAP;
 		}
 

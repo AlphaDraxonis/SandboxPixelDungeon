@@ -126,7 +126,7 @@ public class Ankh extends Item {
 		super.restoreFromBundle( bundle );
 		blessed	= bundle.getBoolean( BLESSED );
 	}
-	
+
 	@Override
 	public int value() {
 		return 50 * quantity;

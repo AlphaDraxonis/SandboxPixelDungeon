@@ -59,7 +59,11 @@ public class PointerArea extends Visual implements Signal.Listener<PointerEvent>
         boolean hit = event != null && target.overlapsScreenPoint((int) event.current.x, (int) event.current.y);
 
         if (!isActive()) {
-            return (hit && blockLevel == ALWAYS_BLOCK);
+            if (hit && blockLevel == ALWAYS_BLOCK) {
+                if (event.type == PointerEvent.Type.UP) onConsumCancelingClick();
+                return true;
+            }
+            return false;
         }
 
         if (hit) {
@@ -75,15 +79,16 @@ public class PointerArea extends Visual implements Signal.Listener<PointerEvent>
 
             } else if (event.type == PointerEvent.Type.UP) {
 
-//				onPointerUp( event );
-//				if (curEvent == event) {
-//					curEvent = null;
-//					onClick( event );
-//				}
-
-                if (curEvent == event) onClick(event);
                 onPointerUp(event);
-                if (curEvent == event) curEvent = null;
+                if (curEvent == event) {
+                    curEvent = null;
+                    onClick(event);
+                }
+
+                //Changed order for sth else, but idk what and this causes glitches all over the place...
+//                if (curEvent == event) onClick(event);
+//                onPointerUp(event);
+//                if (curEvent == event) curEvent = null;
 
             } else if (event.type == PointerEvent.Type.HOVER) {
                 if (event.handled && hovered) {
@@ -115,6 +120,9 @@ public class PointerArea extends Visual implements Signal.Listener<PointerEvent>
             return false;
 
         }
+    }
+
+    protected void onConsumCancelingClick() {//Cancel all buttons that might have been clicked!!
     }
 
     protected void onPointerDown(PointerEvent event) {

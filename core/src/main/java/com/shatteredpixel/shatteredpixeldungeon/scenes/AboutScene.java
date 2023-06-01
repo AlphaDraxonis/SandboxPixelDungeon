@@ -63,6 +63,22 @@ public class AboutScene extends PixelScene {
 		Component content = list.content();
 		content.clear();
 
+
+		//*** Sandbox Pixel Dungeon ***
+		CreditsBlock sandbox = new CreditsBlock(true, Window.TITLE_COLOR,
+				"Sandbox Pixel Dungeon",
+				new Image(),//FIXME SANDBOX icon Easy to fix
+				"Developed by: _Me_",//FIXME username System.err.println(FIXME)
+				"","");
+		if (landscape()){
+			sandbox.setRect((w - fullWidth)/2f - 6, 10, colWidth, 0);
+		} else {
+			sandbox.setRect((w - fullWidth)/2f , 6, colWidth, 0);
+		}
+		content.add(sandbox);
+
+
+
 		//*** Shattered Pixel Dungeon Credits ***
 
 		String shpxLink = "https://ShatteredPixel.com";
@@ -78,9 +94,9 @@ public class AboutScene extends PixelScene {
 				"ShatteredPixel.com",
 				shpxLink);
 		if (landscape()){
-			shpx.setRect((w - fullWidth)/2f - 6, 10, 120, 0);
+			shpx.setRect((w - fullWidth)/2f - 6, sandbox.bottom()+8, 120, 0);
 		} else {
-			shpx.setRect((w - fullWidth)/2f, 6, 120, 0);
+			shpx.setRect((w - fullWidth)/2f, sandbox.bottom()+6, 120, 0);
 		}
 		content.add(shpx);
 
@@ -115,6 +131,8 @@ public class AboutScene extends PixelScene {
 				"https://www.youtube.com/channel/UCL1e7SgzSWbD_DQxB_5YcLA");
 		kristjan.setRect(alex.right() - colWidth/4f, alex.bottom() + 5, colWidth/2f, 0);
 		content.add(kristjan);
+
+		addLine(shpx.top() - 4, content);
 
 		//*** Pixel Dungeon Credits ***
 

@@ -233,17 +233,17 @@ public class Game implements ApplicationListener {
 	}
 	
 	protected void step() {
-		
+
 		if (requestedReset) {
 			requestedReset = false;
-			
+
 			requestedScene = Reflection.newInstance(sceneClass);
-			if (requestedScene != null){
+			if (requestedScene != null) {
 				switchScene();
 			}
 
 		}
-		
+
 		update();
 	}
 	

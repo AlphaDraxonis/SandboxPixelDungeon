@@ -85,28 +85,28 @@ public class SecretChestChasmRoom extends SecretRoom {
 		p = new Point(left+1, top+1);
 		Painter.set(level, p, Terrain.EMPTY_SP);
 		if (chests > 0) {
-			level.drop(new GoldenKey(Dungeon.depth), level.pointToCell(p));
+			level.drop(new GoldenKey(Dungeon.levelName), level.pointToCell(p));
 			chests--;
 		}
 		
 		p.x = right-1;
 		Painter.set(level, p, Terrain.EMPTY_SP);
 		if (chests > 0) {
-			level.drop(new GoldenKey(Dungeon.depth), level.pointToCell(p));
+			level.drop(new GoldenKey(Dungeon.levelName), level.pointToCell(p));
 			chests--;
 		}
 		
 		p.y = bottom-1;
 		Painter.set(level, p, Terrain.EMPTY_SP);
 		if (chests > 0) {
-			level.drop(new GoldenKey(Dungeon.depth), level.pointToCell(p));
+			level.drop(new GoldenKey(Dungeon.levelName), level.pointToCell(p));
 			chests--;
 		}
 		
 		p.x = left+1;
 		Painter.set(level, p, Terrain.EMPTY_SP);
 		if (chests > 0) {
-			level.drop(new GoldenKey(Dungeon.depth), level.pointToCell(p));
+			level.drop(new GoldenKey(Dungeon.levelName), level.pointToCell(p));
 			chests--;
 		}
 		

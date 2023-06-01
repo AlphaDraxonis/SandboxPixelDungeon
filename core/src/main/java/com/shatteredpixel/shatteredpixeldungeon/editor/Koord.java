@@ -1,6 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor;
 
-import java.util.Objects;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 
 /**
  * WARNING! need to call update() AFTER changing the mapsize of floor in EditorScene<br>
@@ -11,8 +11,13 @@ public class Koord {
     private int x;
     private int y;
     private int cell;
+    private Level level;
 
-    public Koord(int cell) {
+    public Koord(int cell){
+        this(cell,EditorScene.floor());
+    }
+    public Koord(int cell,Level level) {
+        this.level=level;
         setCell(cell);
     }
 
@@ -39,24 +44,24 @@ public class Koord {
     }
 
     public void setX(int x) {
-        if (x < 0 || x >= EditorScene.floor.width())
-            throw new IllegalArgumentException("Invalid x value: " + x + " (should be x>=0 and x<mapWidth (width=" + EditorScene.floor.width() + "))");
+        if (x < 0 || x >= level.width())
+            throw new IllegalArgumentException("Invalid x value: " + x + " (should be x>=0 and x<mapWidth (width=" + level.width() + "))");
         this.x = x;
         cell += x;
     }
 
     public void setY(int y) {
-        if (y < 0 || y >= EditorScene.floor.height())
-            throw new IllegalArgumentException("Invalid y value: " + y + " (should be y>=0 and y<mapHeigth (height=" + EditorScene.floor.height() + "))");
+        if (y < 0 || y >=level.height())
+            throw new IllegalArgumentException("Invalid y value: " + y + " (should be y>=0 and y<mapHeigth (height=" + level.height() + "))");
         this.y = y;
-        cell += y * EditorScene.floor.width();
+        cell += y * level.width();
     }
 
     public void setCell(int cell) {
         this.cell = cell;
-        x = cell % EditorScene.floor.width();
-        y = cell / EditorScene.floor.width();
-        if (y >= EditorScene.floor.height())
+        x = cell % level.width();
+        y = cell / level.width();
+        if (y >= level.height())
             throw new IllegalArgumentException("y has been set to a value outside of the map: " + y);
     }
 
@@ -64,14 +69,15 @@ public class Koord {
      * X and Y don't change, but cell is set to fit according to EditorScene.floor size
      */
     public void update() {
-        cell = y * EditorScene.floor.width() + x;
-        if (y >= EditorScene.floor.height())
+        cell = y * level.width() + x;
+        if (y >= level.height())
             throw new IllegalArgumentException("y has been set to a value outside of the map: " + y);
     }
 
     @Override
     public String toString() {
-        return "X: " + x() + ", Y: " + y();
+        return "( "+(x()+1) +" | "+(y()+1)+" )";//Add 1 to each because they start at 0, but the first pos should be (1|1)
+//        return "X: " + (x()+1) + ", Y: " + (y()+1);
     }
 
     /**

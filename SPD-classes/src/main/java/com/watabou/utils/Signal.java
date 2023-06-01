@@ -21,6 +21,8 @@
 
 package com.watabou.utils;
 
+import com.watabou.input.PointerEvent;
+
 import java.util.LinkedList;
 
 public class Signal<T> {

@@ -62,17 +62,17 @@ public class WndSadGhost extends Window {
 		IconTitle titlebar = new IconTitle();
 		RenderedTextBlock message;
 		switch (type){
-			case 1:default:
+			case 0:default:
 				titlebar.icon( new FetidRatSprite() );
 				titlebar.label( Messages.get(this, "rat_title") );
 				message = PixelScene.renderTextBlock( Messages.get(this, "rat")+"\n\n"+Messages.get(this, "give_item"), 6 );
 				break;
-			case 2:
+			case 1:
 				titlebar.icon( new GnollTricksterSprite() );
 				titlebar.label( Messages.get(this, "gnoll_title") );
 				message = PixelScene.renderTextBlock( Messages.get(this, "gnoll")+"\n\n"+Messages.get(this, "give_item"), 6 );
 				break;
-			case 3:
+			case 2:
 				titlebar.icon( new GreatCrabSprite());
 				titlebar.label( Messages.get(this, "crab_title") );
 				message = PixelScene.renderTextBlock( Messages.get(this, "crab")+"\n\n"+Messages.get(this, "give_item"), 6 );

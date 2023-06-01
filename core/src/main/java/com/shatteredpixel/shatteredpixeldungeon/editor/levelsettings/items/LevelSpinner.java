@@ -24,7 +24,7 @@ public class LevelSpinner extends Spinner {
         private Item item;
 
         public LevelSpinnerModel(Item item) {
-            super(0, 100, item.level(), 1, false, false);
+            super(0, 100, item.level(), 1, false, null);
 
         }
 

@@ -38,12 +38,12 @@ public abstract class Key extends Item {
 		stackable = true;
 		unique = true;
 	}
-	
-	public int depth;
+
+	public String levelName;
 	
 	@Override
 	public boolean isSimilar( Item item ) {
-		return super.isSimilar(item) && ((Key)item).depth == depth;
+		return super.isSimilar(item) && ((Key)item).levelName.equals(levelName);
 	}
 
 	@Override
@@ -57,18 +57,18 @@ public abstract class Key extends Item {
 		return true;
 	}
 
-	private static final String DEPTH = "depth";
+	private static final String LEVEL_NAME = "levelName";
 	
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
-		bundle.put( DEPTH, depth );
+		bundle.put(LEVEL_NAME, levelName );
 	}
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
-		depth = bundle.getInt( DEPTH );
+		levelName = bundle.getString(LEVEL_NAME);
 	}
 	
 	@Override

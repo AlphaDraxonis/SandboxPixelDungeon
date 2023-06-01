@@ -226,7 +226,7 @@ public abstract class Scroll extends Item {
 
     @Override
     public String name() {
-        return isKnown() ? super.name() : Messages.get(this, rune)+"eeeeeee";
+        return isKnown() ? super.name() : Messages.get(this, rune);
     }
 
     @Override
