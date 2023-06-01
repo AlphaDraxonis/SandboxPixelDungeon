@@ -151,11 +151,6 @@ public class WndSetPotionScrollRingType extends Window {
         return new WndSetPotionScrollRingType(Generator.Category.RING.classes, "Change Gems");
     }
 
-    @Override
-    public void onBackPressed() {
-        //Do nothing
-    }
-
     protected void save() {
         CustomDungeon d = CustomDungeon.getDungeon();
         for (int i = 0; i < spinners.length; i++) {

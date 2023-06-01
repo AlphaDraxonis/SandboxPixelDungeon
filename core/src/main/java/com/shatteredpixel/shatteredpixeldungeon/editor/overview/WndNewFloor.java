@@ -52,7 +52,7 @@ public class WndNewFloor extends Window {
 
     public WndNewFloor(CustomDungeon owner) {
 
-        super(PixelScene.landscape() ? 215 : 115, 200);
+        super(PixelScene.landscape() ? 215 : PixelScene.uiCamera.width - 5, 200);
 
         //need to offset to give space for the soft keyboard
         if (PixelScene.landscape()) {
@@ -69,13 +69,13 @@ public class WndNewFloor extends Window {
 
         float pos = txtTitle.bottom() + 4 * MARGIN;
 
-        final RenderedTextBlock txtBody = PixelScene.renderTextBlock(
-                "Note that the Shattered Pixel Dungeon TextInput and its input event system is really bugged...", 3);
-        txtBody.maxWidth(width);
-        txtBody.setPos(0, pos);
-        add(txtBody);
-
-        pos = txtBody.bottom() + 2 * MARGIN;
+//        final RenderedTextBlock txtBody = PixelScene.renderTextBlock(
+//                "Note that the Shattered Pixel Dungeon TextInput and its input event system is really bugged...", 3);
+//        txtBody.maxWidth(width);
+//        txtBody.setPos(0, pos);
+//        add(txtBody);
+//
+//        pos = txtBody.bottom() + 2 * MARGIN;
 
         int textSize = (int) PixelScene.uiCamera.zoom * 9;
         textBox = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, textSize) {
@@ -258,7 +258,7 @@ public class WndNewFloor extends Window {
         numInRegion = new Spinner(new SpinnerIntegerModel(1, 5, 1, 1, true, null) {
             @Override
             public float getInputFieldWith(float height) {
-                return height * 1.4f;
+                return height * 1.2f;// Should align with depth spinner!
             }
 
             @Override
@@ -276,7 +276,7 @@ public class WndNewFloor extends Window {
             @Override
             protected void onClick() {
                 Window window = new WndTitledMessage(Icons.get(Icons.INFO), "Depth",
-                        "The depth is used for the level difficulty." +
+                        "The depth is used for the level difficulty. " +
                                 "It does not change the level layout or other generated things, but is used for scaling mobs like piranhas.\n" +
                                 "Note that in Custom PD by QuasiStellar, it does affect item generation.");
                 if (Game.scene() instanceof EditorScene) EditorScene.show(window);
@@ -287,7 +287,7 @@ public class WndNewFloor extends Window {
         infoDepth.setRect(width - MARGIN - BUTTON_HEIGHT, pos, BUTTON_HEIGHT, BUTTON_HEIGHT);
         PixelScene.align(infoDepth);
 
-        depth = new DepthSpinner(2, 8) {
+        depth = new DepthSpinner(1, 8) {
             @Override
             protected void onChange(int newDepth) {
             }

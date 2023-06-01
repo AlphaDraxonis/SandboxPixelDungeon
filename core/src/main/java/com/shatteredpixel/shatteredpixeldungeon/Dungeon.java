@@ -266,11 +266,11 @@ public class Dungeon {
         SpecialRoom.initForRun();
         SecretRoom.initForRun();
 
+        Generator.fullReset();
+
         Scroll.initLabels();
         Potion.initColors();
         Ring.initGems();
-
-        Generator.fullReset();
 
         Random.resetGenerators();
 

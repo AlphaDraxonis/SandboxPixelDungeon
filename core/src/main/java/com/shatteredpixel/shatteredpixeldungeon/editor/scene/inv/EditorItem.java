@@ -109,7 +109,7 @@ public abstract class EditorItem extends Item {
 
         @Override
         public void place(int cell) {
-            CustomLevel level = EditorScene.floor();
+            CustomLevel level = EditorScene.customLevel();
             Mob mob = level.getMobAtCell(cell);
             if (mob != null) MobItem.removeMob(mob);
             else {

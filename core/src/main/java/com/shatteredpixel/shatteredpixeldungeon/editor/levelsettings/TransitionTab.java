@@ -70,7 +70,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
-                EditorScene.floor().levelScheme.setPassage((String) object);
+                EditorScene.customLevel().levelScheme.setPassage((String) object);
             }
 
             @Override
@@ -84,7 +84,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
-                EditorScene.floor().levelScheme.setChasm((String) object);
+                EditorScene.customLevel().levelScheme.setChasm((String) object);
             }
 
             @Override
@@ -95,13 +95,13 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             @Override
             protected List<LevelScheme> filterLevels(Collection<LevelScheme> levels) {
                 List<LevelScheme> ret = super.filterLevels(levels);
-                ret.remove(EditorScene.floor().levelScheme);//Cant choose same level
+                ret.remove(EditorScene.customLevel().levelScheme);//Cant choose same level
                 return ret;
             }
         };
         content.add(chasm);
 
-        LevelScheme levelScheme = EditorScene.floor().levelScheme;
+        LevelScheme levelScheme = EditorScene.customLevel().levelScheme;
         if (Dungeon.customDungeon.getStart() != null)
             startfloor.selectObject(Dungeon.customDungeon.getStart());
         if (levelScheme.getPassage() != null && !levelScheme.getPassage().equals(Dungeon.customDungeon.getStart()))
@@ -149,8 +149,8 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         titleLevelTransitons.setPos(x + (width - titleLevelTransitons.width()) * 0.5f, pos + (WndEditorSettings.ITEM_HEIGHT - 3 - titleLevelTransitons.height()) * 0.5f);
         pos += WndEditorSettings.ITEM_HEIGHT - 3;
 
-        pos = layoutTransitionComps(EditorScene.floor().levelScheme.entranceCells, pos);
-        pos = layoutTransitionComps(EditorScene.floor().levelScheme.exitCells, pos);
+        pos = layoutTransitionComps(EditorScene.customLevel().levelScheme.entranceCells, pos);
+        pos = layoutTransitionComps(EditorScene.customLevel().levelScheme.exitCells, pos);
 
         content.setSize(width, pos - 1);
         sp.setPos(sp.left(), sp.top());
@@ -162,7 +162,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         for (int cell : cells) {
             TransitionComp comp = transitionCompMap.get(cell);
             if (comp == null) {
-                comp = new TransitionComp(cell, EditorScene.floor().levelScheme) {
+                comp = new TransitionComp(cell, EditorScene.customLevel().levelScheme) {
                     @Override
                     protected void layoutParent() {
                         TransitionTab.this.layout();
@@ -296,7 +296,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
                     t.destCell = -1;
                 } else {
                     levelScheme.getLevel().transitions.remove(transition.cell());
-                    if (levelScheme.getLevel() == EditorScene.floor())
+                    if (levelScheme.getLevel() == EditorScene.customLevel())
                         EditorScene.remove(transition);
                 }
             });
@@ -305,7 +305,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             remover.visible = true;
             if (updateOthers) {
                 layoutParent();
-                if (levelScheme.getLevel() == EditorScene.floor()) EditorScene.add(transition);
+                if (levelScheme.getLevel() == EditorScene.customLevel()) EditorScene.add(transition);
             }
         }
 

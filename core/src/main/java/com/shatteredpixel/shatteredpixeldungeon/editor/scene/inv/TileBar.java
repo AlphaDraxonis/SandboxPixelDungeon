@@ -157,7 +157,7 @@ public class TileBar extends Component {
             @Override
             protected void onClick() {
                 try {
-                    CustomDungeonSaves.saveLevel(EditorScene.floor());
+                    CustomDungeonSaves.saveLevel(EditorScene.customLevel());
                     EditorScene.show(new WndSwitchFloor());
                 } catch (IOException e) {
                     ShatteredPixelDungeon.reportException(e);

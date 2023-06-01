@@ -25,8 +25,6 @@ public class ItemItem extends EditorItem {
     public ItemItem(Item item) {
         this.item = item;
         icon = item.icon;
-        if (item instanceof Weapon) ((Weapon) item).enchant(Weapon.Enchantment.random());
-        if (item instanceof Armor) item.cursed = true;
     }
 
     @Override
@@ -82,7 +80,7 @@ public class ItemItem extends EditorItem {
     @Override
     public void place(int cell) {
 
-        CustomLevel level = EditorScene.floor();
+        CustomLevel level = EditorScene.customLevel();
 
         if (!level.passable[cell]) return;
 

@@ -42,7 +42,7 @@ class WndMobSpawn extends WndTitledMessage {
         private final CheckBox enableMutations, disableSpawning;
 
         public Body() {
-            CustomLevel f = EditorScene.floor();
+            CustomLevel f = EditorScene.customLevel();
 
             enableMutations = new CheckBox("Enable natural mutations") {
                 @Override
@@ -155,7 +155,7 @@ class WndChangeMobRotation extends Window {
                     @Override
                     protected void onSelect(Mob mob) {
                         Class<? extends Mob> cl = mob.getClass();
-                        EditorScene.floor().getMobRotationVar().add(cl);
+                        EditorScene.customLevel().getMobRotationVar().add(cl);
                         addRotItem(cl);
                         sum++;
 
@@ -203,7 +203,7 @@ class WndChangeMobRotation extends Window {
     }
 
     private void initComps() {
-        List<Class<? extends Mob>> curRot = EditorScene.floor().getMobRotationVar();
+        List<Class<? extends Mob>> curRot = EditorScene.customLevel().getMobRotationVar();
         Map<Class<? extends Mob>, Integer> mobCounterMap = new HashMap<>();
         for (Class<? extends Mob> cl : curRot) {
             Integer prev = mobCounterMap.get(cl);
@@ -296,12 +296,12 @@ class WndChangeMobRotation extends Window {
                     if (diff > 0) {
                         diff = Math.abs(diff);
                         for (int i = 0; i < diff; i++) {
-                            EditorScene.floor().getMobRotationVar().add(mob.getClass());
+                            EditorScene.customLevel().getMobRotationVar().add(mob.getClass());
                         }
                     } else {
                         diff = Math.abs(diff);
                         for (int i = 0; i < diff; i++) {
-                            EditorScene.floor().getMobRotationVar().remove(mob.getClass());
+                            EditorScene.customLevel().getMobRotationVar().remove(mob.getClass());
                         }
                     }
                 }
@@ -322,7 +322,7 @@ class WndChangeMobRotation extends Window {
         public void removeMob() {
             int count = (int) countSpinner.getValue();
             for (int i = 0; i < count; i++) {
-                EditorScene.floor().getMobRotationVar().remove(mob.getClass());
+                EditorScene.customLevel().getMobRotationVar().remove(mob.getClass());
             }
             sum -= count;
             wrapper.remove(this);

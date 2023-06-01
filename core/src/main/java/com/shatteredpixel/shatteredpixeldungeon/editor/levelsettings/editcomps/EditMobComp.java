@@ -182,28 +182,34 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (statueWeapon != null) {
             statueWeapon.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(statueWeapon);
             posY = statueWeapon.bottom() + WndTitledMessage.GAP;
         }
         if (statueArmor != null) {
             statueArmor.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(statueArmor);
             posY = statueArmor.bottom() + WndTitledMessage.GAP;
         }
         if (thiefItem != null) {
             thiefItem.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(thiefItem);
             posY = thiefItem.bottom() + WndTitledMessage.GAP;
         }
 
         if (mimicItems != null) {
             mimicItems.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(mimicItems);
             posY = mimicItems.bottom() + WndTitledMessage.GAP;
         }
 
         if (mobStateSpinner != null) {
             mobStateSpinner.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(mobStateSpinner);
             posY = mobStateSpinner.bottom() + WndTitledMessage.GAP;
         }
         if (addBuffs != null) {
             addBuffs.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(addBuffs);
             posY = addBuffs.bottom() + WndTitledMessage.GAP;
         }
 

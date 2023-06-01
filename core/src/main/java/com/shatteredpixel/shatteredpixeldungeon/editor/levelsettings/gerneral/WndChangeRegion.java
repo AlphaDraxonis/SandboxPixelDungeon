@@ -59,7 +59,7 @@ public class WndChangeRegion extends Window {
         add(title);
 
 
-        CustomLevel f = EditorScene.floor();
+        CustomLevel f = EditorScene.customLevel();
 
         int[] oldValues = {
                 f.getRegionValue(),

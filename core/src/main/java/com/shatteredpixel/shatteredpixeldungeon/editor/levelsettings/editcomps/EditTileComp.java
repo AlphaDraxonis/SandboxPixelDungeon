@@ -40,23 +40,23 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             };
             add(addTransition);
 
-            if (EditorScene.floor().transitions.get(item.cell()) != null) {
-                addTransition(EditorScene.floor().transitions.get(item.cell()));
+            if (EditorScene.customLevel().transitions.get(item.cell()) != null) {
+                addTransition(EditorScene.customLevel().transitions.get(item.cell()));
             }
 
         }
     }
 
     public static LevelTransition createNewTransition(int cell) {
-        LevelTransition transition = new LevelTransition(EditorScene.floor(), cell, TransitionEditPart.DEFAULT, null);
-        EditorScene.floor().transitions.put(cell, transition);
+        LevelTransition transition = new LevelTransition(EditorScene.customLevel(), cell, TransitionEditPart.DEFAULT, null);
+        EditorScene.customLevel().transitions.put(cell, transition);
         EditorScene.add(transition);
         return transition;
     }
 
     private void addTransition(LevelTransition transition) {
-        transitionEdit = addTransition(item.terrainType(), transition, EditorScene.floor().levelScheme, t -> {
-            EditorScene.floor().transitions.remove(transition.cell());
+        transitionEdit = addTransition(item.terrainType(), transition, EditorScene.customLevel().levelScheme, t -> {
+            EditorScene.customLevel().transitions.remove(transition.cell());
             EditorScene.remove(transition);
         });
         add(transitionEdit);
@@ -110,19 +110,19 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         String posString;
         if (item.cell() == -1) posString = "";
         else posString = " " + new Koord(item.cell());
-        return Messages.titleCase(EditorScene.floor().tileName(item.terrainType())) + posString;
+        return Messages.titleCase(EditorScene.customLevel().tileName(item.terrainType())) + posString;
     }
 
     @Override
     protected String createDescription() {
-        CustomLevel level = EditorScene.floor();
+        CustomLevel level = EditorScene.customLevel();
         String desc = level.tileDesc(item.terrainType());
         return desc.length() == 0 ? Messages.get(WndInfoCell.class, "nothing") : desc;
     }
 
     @Override
     public Image getIcon() {
-        return createImage(item.terrainType(), EditorScene.floor(), item.image());
+        return createImage(item.terrainType(), EditorScene.customLevel(), item.image());
     }
 
     @Override
@@ -143,7 +143,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             return water;
         } else {
             Image img = new Image(TextureCache.get(level.tilesTex()));
-            img.frame(EditorScene.floor().getTextureFilm().get(image));
+            img.frame(EditorScene.customLevel().getTextureFilm().get(image));
             return img;
         }
     }

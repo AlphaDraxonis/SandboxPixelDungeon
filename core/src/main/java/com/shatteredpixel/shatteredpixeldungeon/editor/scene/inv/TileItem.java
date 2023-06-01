@@ -35,7 +35,7 @@ public class TileItem extends EditorItem {
 
     @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        Level level = EditorScene.floor();
+        Level level = EditorScene.customLevel();
         return new DefaultListItem(this, window, level.tileName(terrainType()), getSprite());
     }
 //    @Override
@@ -59,7 +59,7 @@ public class TileItem extends EditorItem {
 
     @Override
     public void place(int cell) {
-        EditorScene.floor().setCell(cell,terrainType());
+        EditorScene.customLevel().setCell(cell,terrainType());
     }
 
     public int terrainType() {

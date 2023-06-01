@@ -33,7 +33,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
@@ -41,7 +40,6 @@ import com.watabou.glwrap.Matrix;
 import com.watabou.glwrap.Vertexbuffer;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
-import com.watabou.noosa.Image;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.TextureFilm;
@@ -88,7 +86,7 @@ public class ItemSprite extends MovieClip {
 
     //Dont use (If you have a tileItem as an Item, you also have to cast it to use this constructor!!)
     public ItemSprite(TileItem tileItem) {
-        super(EditorScene.floor().tilesTex());
+        super(EditorScene.customLevel().tilesTex());
         isTile = true;
         if (tileItem != null && tileItem.image() >= 0) view(tileItem);
         else visible = false;
@@ -206,8 +204,8 @@ public class ItemSprite extends MovieClip {
         if (isTile) {
             boolean newVal = ((TileItem) item).terrainType() == Terrain.WATER;
             if (newVal != usesWater) {
-                if (newVal) texture(EditorScene.floor().waterTex());
-                else texture(EditorScene.floor().tilesTex());
+                if (newVal) texture(EditorScene.customLevel().waterTex());
+                else texture(EditorScene.customLevel().tilesTex());
                 usesWater = newVal;
             }
         }
@@ -267,7 +265,7 @@ public class ItemSprite extends MovieClip {
             return;
         }
 
-        TextureFilm tf = isTile ? EditorScene.floor().getTextureFilm() : ItemSpriteSheet.film;
+        TextureFilm tf = isTile ? EditorScene.customLevel().getTextureFilm() : ItemSpriteSheet.film;
 
         frame(tf.get(image));
 

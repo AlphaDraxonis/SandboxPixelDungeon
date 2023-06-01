@@ -52,7 +52,7 @@ public class MobItem extends EditorItem {
     @Override
     public void place(int cell) {
 
-        CustomLevel level = EditorScene.floor();
+        CustomLevel level = EditorScene.customLevel();
         Mob mob;
         try {
             mob = (Mob) mob().clone();

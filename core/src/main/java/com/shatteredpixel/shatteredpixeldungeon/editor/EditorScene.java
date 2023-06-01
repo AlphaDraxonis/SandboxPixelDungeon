@@ -158,11 +158,11 @@ public class EditorScene extends PixelScene {
     @Override
     public void create() {
 
-        Dungeon.level = floor();//so changes aren't required everywhere
+        Dungeon.level = customLevel();//so changes aren't required everywhere
         Dungeon.levelName = Dungeon.level.name;
-        DungeonTileSheet.setupVariance(floor().length(), 1234567);
+        DungeonTileSheet.setupVariance(customLevel().length(), 1234567);
 
-        for (Heap heap : floor().heaps.valueList()) {
+        for (Heap heap : customLevel().heaps.valueList()) {
             for (Item item : heap.items) {
                 item.image = Dungeon.customDungeon.getItemSpriteOnSheet(item);
             }
@@ -179,9 +179,9 @@ public class EditorScene extends PixelScene {
         add(terrain);
 
         water = new SkinnedBlock(
-                floor().width() * DungeonTilemap.SIZE,
-                floor().height() * DungeonTilemap.SIZE,
-                floor().waterTex()) {
+                customLevel().width() * DungeonTilemap.SIZE,
+                customLevel().height() * DungeonTilemap.SIZE,
+                customLevel().waterTex()) {
 
             @Override
             protected NoosaScript script() {
@@ -205,7 +205,7 @@ public class EditorScene extends PixelScene {
         visualGrid = new GridTileMap();
         terrain.add(visualGrid);
 
-        terrainFeatures = new TerrainFeaturesTilemapEditor(floor());
+        terrainFeatures = new TerrainFeaturesTilemapEditor(customLevel());
         terrain.add(terrainFeatures);
 
         transitionIndicators = new Group();
@@ -216,7 +216,7 @@ public class EditorScene extends PixelScene {
         heaps = new Group();
         add(heaps);
 
-        for (Heap heap : floor().heaps.valueList()) {
+        for (Heap heap : customLevel().heaps.valueList()) {
             heap.destroySubicons();
             heap.initSubicons();
             heap.seen = true;
@@ -228,7 +228,7 @@ public class EditorScene extends PixelScene {
         mobs = new Group();
         add(mobs);
 
-        for (Mob mob : floor().mobs) {
+        for (Mob mob : customLevel().mobs) {
             addMobSprite(mob);
         }
 
@@ -369,14 +369,14 @@ public class EditorScene extends PixelScene {
         if (scene == null) return;
         scene.transitionIndicators.clear();
         scene.transitionIndicatorsMap.clear();
-        for (LevelTransition transition : floor().transitions.values()) {
+        for (LevelTransition transition : customLevel().transitions.values()) {
             scene.addTransitionSprite(transition);
         }
     }
 
     public static void updateHeapImages() {
         if (scene == null) return;
-        for (Heap heap : floor().heaps.valueList()) {
+        for (Heap heap : customLevel().heaps.valueList()) {
             updateHeapImage(heap);
         }
     }
@@ -395,7 +395,7 @@ public class EditorScene extends PixelScene {
     }
 
     public static void add(Mob mob) {
-        floor().mobs.add(mob);
+        customLevel().mobs.add(mob);
         if (scene != null) {
             scene.addMobSprite(mob);
             Actor.add(mob);
@@ -468,7 +468,7 @@ public class EditorScene extends PixelScene {
     public static void showEditCellWindow(int cell) {
         if (scene == null) return;
 
-        CustomLevel f = floor();
+        CustomLevel f = customLevel();
         int terrainType = f.map[cell];
         if (terrainType == Terrain.TRAP || terrainType == Terrain.SECRET_TRAP || terrainType == Terrain.INACTIVE_TRAP)
             terrainType = Terrain.EMPTY;
@@ -621,7 +621,7 @@ public class EditorScene extends PixelScene {
     @Override
     public synchronized void onPause() {
         try {
-            CustomDungeonSaves.saveLevel(EditorScene.floor());
+            CustomDungeonSaves.saveLevel(EditorScene.customLevel());
             CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
         } catch (IOException e) {
             ShatteredPixelDungeon.reportException(e);
@@ -653,7 +653,7 @@ public class EditorScene extends PixelScene {
         super.destroy();
     }
 
-    public static CustomLevel floor() {
+    public static CustomLevel customLevel() {
         return customLevel;
     }
 

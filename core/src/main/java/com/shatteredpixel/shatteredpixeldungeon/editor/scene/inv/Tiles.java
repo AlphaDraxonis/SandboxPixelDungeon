@@ -97,7 +97,7 @@ public enum Tiles {
 
             @Override
             public String name() {
-                return EditorScene.floor().tileName(terrains[0]);
+                return EditorScene.customLevel().tileName(terrains[0]);
             }
 
             @Override

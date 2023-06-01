@@ -82,7 +82,7 @@ public class TrapItem extends EditorItem {
     @Override
     public void place(int cell) {
 
-        CustomLevel level = EditorScene.floor();
+        CustomLevel level = EditorScene.customLevel();
 
         Trap t = trap().clone();
         level.map[cell] = t.visible ? (t.active ? Terrain.TRAP : Terrain.INACTIVE_TRAP) : Terrain.SECRET_TRAP;

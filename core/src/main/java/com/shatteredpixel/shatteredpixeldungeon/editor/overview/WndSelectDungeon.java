@@ -99,7 +99,7 @@ public class WndSelectDungeon extends Window {
 
             public WndInfoDungeon(CustomDungeonSaves.Info info) {
 
-                resize(PixelScene.landscape() ? 215 : 115, 100);
+                resize(PixelScene.landscape() ? 215 : PixelScene.uiCamera.width - 5, 100);
 
                 RenderedTextBlock title = PixelScene.renderTextBlock(info.name, 10);
                 title.hardlight(Window.TITLE_COLOR);
@@ -140,9 +140,9 @@ public class WndSelectDungeon extends Window {
                 RedButton export = new RedButton("Export as Json") {
                     @Override
                     protected void onClick() {
-                        Window w = new WndOptions(//FIXME FIXME add package name WICHTIG
+                        Window w = new WndOptions(
                                 "Export \""+info.name+"\" as a Json file?",
-                                "It will be exported to Android/data/*/files/exports/"+info.name+".json\n"+//TODO add platform differences!
+                                "It will be exported to Android/data/com.alphadraxonis.sandboxpd/files/exports/"+info.name+".json\n"+//TODO add platform differences!
                                 "If the file already exists, it will be overriden.\n"+
                                 "The Json file can be used for \"Custom Pixel Dungeon\" by QuasiStellar, but not all features are supported.",
                                 "Export", "Cancel") {

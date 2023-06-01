@@ -1,14 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
-import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoCell;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.gltextures.TextureCache;
@@ -34,7 +30,7 @@ public class WndInfoTile extends WndTitledMessage {
             return water;
         } else {
             Image img = new Image(TextureCache.get(level.tilesTex()));
-            img.frame( EditorScene.floor().getTextureFilm().get( image ) );
+            img.frame( EditorScene.customLevel().getTextureFilm().get( image ) );
             return img;
         }
     }

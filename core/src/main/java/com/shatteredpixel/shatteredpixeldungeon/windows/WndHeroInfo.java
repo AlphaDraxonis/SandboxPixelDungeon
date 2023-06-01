@@ -104,7 +104,7 @@ public class WndHeroInfo extends WndTabbed {
 			}
 		});
 
-		if (Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_2) || DeviceCompat.isDebug()) {
+		if (Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_2) || DeviceCompat.isDebug() || true) {
 			subclassInfo = new SubclassInfoTab(cl);
 			add(subclassInfo);
 			subclassInfo.setSize(WIDTH, MIN_HEIGHT);
@@ -119,7 +119,7 @@ public class WndHeroInfo extends WndTabbed {
 			});
 		}
 
-		if (Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_4) || DeviceCompat.isDebug()) {
+		if (Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_4) || DeviceCompat.isDebug() ||true) {
 			abilityInfo = new ArmorAbilityInfoTab(cl);
 			add(abilityInfo);
 			abilityInfo.setSize(WIDTH, MIN_HEIGHT);

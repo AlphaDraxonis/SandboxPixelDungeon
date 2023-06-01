@@ -43,7 +43,7 @@ import java.util.Set;
 
 public class CustomDungeon implements Bundlable {
 
-    public boolean opMode = true;//TODO settings what to enable exactly (dont release for now)
+    public boolean opMode = false;//TODO settings what to enable exactly (dont release for now)
     //Perks:
     // - permainvisiblility
     // - permamindvision
@@ -61,9 +61,6 @@ public class CustomDungeon implements Bundlable {
     //mehr Funktionen, die das Bauen erleichtern
     //settings for generatED floors (not template): viewDistance, shopMultiplier, feeling, seed
 
-    //Change button unterstütze das spiel FIXME
-
-    //TODO icons von KI generieren für: logo, map editor btn
     //TODO discord server erstellen
 
     //upload System.err.println() FIXME remove!!  (github, description, apk, releasebuild, discord, credits)
@@ -533,7 +530,7 @@ public class CustomDungeon implements Bundlable {
                 ShatteredPixelDungeon.switchNoFade(FloorOverviewScene.class);
             } else startFloor = fs.get(0).getName();
         }
-        if (EditorScene.floor() != null && EditorScene.floor().levelScheme == levelScheme) {
+        if (EditorScene.customLevel() != null && EditorScene.customLevel().levelScheme == levelScheme) {
             LevelScheme openS = null;
             if (startFloor != null && getFloor(startFloor).getType() == CustomLevel.class)
                 openS = getFloor(startFloor);
@@ -566,7 +563,7 @@ public class CustomDungeon implements Bundlable {
                 for (LevelTransition transition : level.transitions.values()) {
                     if (transition != null && Objects.equals(transition.destLevel, n)) {
                         toRemoveKeys.add(transition.cell());
-                        if (level == EditorScene.floor()) EditorScene.remove(transition);
+                        if (level == EditorScene.customLevel()) EditorScene.remove(transition);
                     }
                 }
                 boolean save = !toRemoveKeys.isEmpty();

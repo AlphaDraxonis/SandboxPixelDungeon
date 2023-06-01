@@ -6,7 +6,6 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -44,12 +43,12 @@ public class MenuPane extends Component {
         bg = new Image(Assets.Interfaces.MENU);
         add(bg);
 
-        if (EditorScene.floor().feeling != null) {
-            depthIcon = Icons.get(EditorScene.floor().feeling);
+        if (EditorScene.customLevel().feeling != null) {
+            depthIcon = Icons.get(EditorScene.customLevel().feeling);
             add(depthIcon);
         }
 
-        depthText = new BitmapText(EditorScene.floor().name, PixelScene.pixelFont);
+        depthText = new BitmapText(EditorScene.customLevel().name, PixelScene.pixelFont);
         depthText.hardlight(0xCACFC2);
         depthText.measure();
         add(depthText);
@@ -57,7 +56,7 @@ public class MenuPane extends Component {
         depthButton = new Button() {
             @Override
             protected String hoverText() {
-                switch (EditorScene.floor().feeling) {
+                switch (EditorScene.customLevel().feeling) {
                     case CHASM:
                         return Messages.get(GameScene.class, "chasm");
                     case WATER:
@@ -130,7 +129,7 @@ public class MenuPane extends Component {
     public void updateDepthIcon(){
         remove(depthIcon);
         depthIcon.destroy();
-        depthIcon = Icons.get(EditorScene.floor().feeling);
+        depthIcon = Icons.get(EditorScene.customLevel().feeling);
         add(depthIcon);
         layout();
     }

@@ -23,7 +23,7 @@ public class WndSwitchFloor extends Window {
 
     public WndSwitchFloor() {
         instance = this;
-        resize(PixelScene.landscape() ? 215 : 115, (int) (PixelScene.uiCamera.height * 0.8f));
+        resize(PixelScene.landscape() ? 215 : PixelScene.uiCamera.width - 5, (int) (PixelScene.uiCamera.height * 0.8f));
 
         listPane = new LevelListPane(){
 

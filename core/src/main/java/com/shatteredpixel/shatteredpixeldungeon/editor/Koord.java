@@ -14,7 +14,7 @@ public class Koord {
     private Level level;
 
     public Koord(int cell){
-        this(cell,EditorScene.floor());
+        this(cell,EditorScene.customLevel());
     }
     public Koord(int cell,Level level) {
         this.level=level;

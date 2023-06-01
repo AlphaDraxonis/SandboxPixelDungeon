@@ -22,26 +22,19 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.RankingsScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndChallenges;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGame;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSettings;
 import com.watabou.noosa.Game;
-import com.watabou.utils.Point;
 
 import java.io.IOException;
 
@@ -86,7 +79,7 @@ public class WndMenuEditor extends Window {
             @Override
             protected void onClick() {
                 try {
-                    CustomDungeonSaves.saveLevel(EditorScene.floor());
+                    CustomDungeonSaves.saveLevel(EditorScene.customLevel());
                     CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
                 } catch (IOException e) {
                     ShatteredPixelDungeon.reportException(e);

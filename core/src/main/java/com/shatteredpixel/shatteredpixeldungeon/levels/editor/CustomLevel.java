@@ -107,24 +107,6 @@ public class CustomLevel extends Level {
     private Painter decorationPainter;//used for decoration and placing water and grass, not for painting rooms; usually one of the 5 default painters, or null
 
 
-    {
-
-//        mobRotation.add(Rat.class);
-////        Mob m1 = new Rat();
-////        m1.pos = 27;
-////        mobs.add(m1);
-//        startItems.add(new ItemWithPos(new Torch(), 22));
-//
-//        Heap heap = new Heap();
-//        heap.seen = true;
-//        heap.pos = 22;
-//        heap.drop(new Torch());
-////        startHeaps.put(heap.pos, heap);
-//
-//        setSize(getWidth(), getHeight());
-    }
-
-
     public static class ItemWithPos {
         private Item item;
         private int pos;
@@ -747,6 +729,14 @@ public class CustomLevel extends Level {
         for (int i : PathFinder.NEIGHBOURS9) {
             Mob m = getMobAtCell(i + cell);
             if (m != null && !MobItem.validPlacement(m, this, m.pos)) MobItem.removeMob(m);
+        }
+
+        if (!passable[cell]) {
+            Heap h = heaps.get(cell);
+            if (h != null) {
+                h.destroy();
+                heaps.remove(cell);
+            }
         }
 
     }

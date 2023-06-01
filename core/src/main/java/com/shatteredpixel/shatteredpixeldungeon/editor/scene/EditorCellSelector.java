@@ -2,7 +2,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.scene;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
@@ -62,7 +61,7 @@ public class EditorCellSelector extends CellSelector {
     @Override
     public void select(int cell, int button) {
 
-        if (enabled && !EditorScene.interfaceBlockingHero() && listener != null && cell != -1 && !EditorScene.floor().isBorder(cell)) {
+        if (enabled && !EditorScene.interfaceBlockingHero() && listener != null && cell != -1 && !EditorScene.customLevel().isBorder(cell)) {
 
             switch (button) {
                 default:

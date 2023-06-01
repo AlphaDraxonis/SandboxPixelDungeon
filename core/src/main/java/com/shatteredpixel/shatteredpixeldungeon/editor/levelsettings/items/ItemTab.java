@@ -61,7 +61,7 @@ public class ItemTab extends WndEditorSettings.TabComp {
     }
 
     private List<CustomLevel.ItemWithPos> getItemsOnFl() {
-        return EditorScene.floor().getItems();
+        return EditorScene.customLevel().getItems();
     }
 
     @Override

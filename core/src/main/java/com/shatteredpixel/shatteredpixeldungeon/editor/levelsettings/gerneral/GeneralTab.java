@@ -1,7 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.gerneral;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.DungeonToJsonConverter;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
@@ -43,9 +41,9 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         content = new Component();
         sp = new ScrollPane(content);
 
-        feeling = new FeelingSpinner(EditorScene.floor().feeling,false);
+        feeling = new FeelingSpinner(EditorScene.customLevel().feeling,false);
         feeling.addChangeListener(() -> {
-            EditorScene.floor().feeling = (Level.Feeling) feeling.getValue();
+            EditorScene.customLevel().feeling = (Level.Feeling) feeling.getValue();
             EditorScene.updateDepthIcon();
         });
         content.add(feeling);
@@ -91,7 +89,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         };
         content.add(mobSpawn);
 
-        viewDistance = new Spinner(new SpinnerIntegerModel(1, 30, EditorScene.floor().viewDistance, 1, false, null) {
+        viewDistance = new Spinner(new SpinnerIntegerModel(1, 30, EditorScene.customLevel().viewDistance, 1, false, null) {
             @Override
             public float getInputFieldWith(float height) {
                 return height * 1.2f;
@@ -102,18 +100,18 @@ public class GeneralTab extends WndEditorSettings.TabComp {
                 return 13;
             }
         }, " View distance:", 9);
-        viewDistance.addChangeListener(() -> EditorScene.floor().viewDistance = (int) viewDistance.getValue());
+        viewDistance.addChangeListener(() -> EditorScene.customLevel().viewDistance = (int) viewDistance.getValue());
         content.add(viewDistance);
 
-        depth = new DepthSpinner(EditorScene.floor().levelScheme.getDepth(), 9) {
+        depth = new DepthSpinner(EditorScene.customLevel().levelScheme.getDepth(), 9) {
             @Override
             protected void onChange(int newDepth) {
-                EditorScene.floor().levelScheme.setDepth(newDepth);
+                EditorScene.customLevel().levelScheme.setDepth(newDepth);
             }
         };
         content.add(depth);
 
-        shopPrice = new Spinner(new SpinnerIntegerModel(1, 10, EditorScene.floor().levelScheme.getPriceMultiplier(), 1, false, null) {
+        shopPrice = new Spinner(new SpinnerIntegerModel(1, 10, EditorScene.customLevel().levelScheme.getPriceMultiplier(), 1, false, null) {
             @Override
             public float getInputFieldWith(float height) {
                 return height * 1.2f;
@@ -125,7 +123,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
             }
         }, " ShopPrice:", 9);
         shopPrice.addChangeListener(() -> {
-            EditorScene.floor().levelScheme.setShopPriceMultiplier((int) shopPrice.getValue());
+            EditorScene.customLevel().levelScheme.setShopPriceMultiplier((int) shopPrice.getValue());
         });
         content.add(shopPrice);
 

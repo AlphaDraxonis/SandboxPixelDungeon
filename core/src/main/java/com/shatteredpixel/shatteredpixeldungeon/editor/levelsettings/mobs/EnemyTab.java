@@ -1,12 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollTrickster;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Scorpio;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Koord;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
@@ -14,22 +9,13 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.editcomps.E
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class EnemyTab extends WndEditorSettings.TabComp {
 
@@ -55,7 +41,7 @@ public class EnemyTab extends WndEditorSettings.TabComp {
 
         list.addTitle("Mob overview");
 
-        List<Mob> mobsOnFloor = new ArrayList<>(EditorScene.floor().mobs);
+        List<Mob> mobsOnFloor = new ArrayList<>(EditorScene.customLevel().mobs);
 
 //        for (Mob m : testMobs) {
 //            m.pos = Random.Int(EditorScene.floor().length());
