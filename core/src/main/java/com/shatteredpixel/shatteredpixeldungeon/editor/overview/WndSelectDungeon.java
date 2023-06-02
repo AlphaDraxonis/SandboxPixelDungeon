@@ -35,7 +35,7 @@ public class WndSelectDungeon extends Window {
     public WndSelectDungeon(List<CustomDungeonSaves.Info> allInfos, boolean showAddButton) {
         this.allInfos = allInfos;
 
-        resize(PixelScene.landscape() ? 220 : 120, (int) (PixelScene.uiCamera.height * 0.8f));
+        resize(PixelScene.landscape() ? 220 : Math.min(160, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
 
         listPane = new ScrollingListPane();
         add(listPane);
