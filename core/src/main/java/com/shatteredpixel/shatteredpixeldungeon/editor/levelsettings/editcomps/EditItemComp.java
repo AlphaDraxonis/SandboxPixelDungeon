@@ -6,7 +6,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.Augum
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.CurseButton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.LevelSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.WndChooseEnchant;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;

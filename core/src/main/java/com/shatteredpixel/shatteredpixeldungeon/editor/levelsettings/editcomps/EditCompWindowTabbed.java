@@ -2,12 +2,9 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.TileItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.WndEditorItemsBag;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Sword;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -15,15 +12,9 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.watabou.input.KeyEvent;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import sun.tools.jconsole.Tab;
 
 public class EditCompWindowTabbed extends WndTabbed {
 

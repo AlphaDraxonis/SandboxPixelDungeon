@@ -52,4 +52,3 @@ public class RingOfTenacity extends Ring {
 	public class Tenacity extends RingBuff {
 	}
 }
-

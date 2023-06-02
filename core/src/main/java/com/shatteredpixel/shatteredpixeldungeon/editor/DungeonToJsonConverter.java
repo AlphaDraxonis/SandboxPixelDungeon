@@ -22,7 +22,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
-import com.watabou.noosa.audio.Music;
 
 import java.util.ArrayList;
 import java.util.Collection;

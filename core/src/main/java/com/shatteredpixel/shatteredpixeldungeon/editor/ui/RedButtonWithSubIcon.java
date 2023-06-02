@@ -1,7 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.watabou.noosa.Image;
 

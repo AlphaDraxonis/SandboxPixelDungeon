@@ -261,5 +261,3 @@ public abstract class Recipe {
 		}
 	}
 }
-
-

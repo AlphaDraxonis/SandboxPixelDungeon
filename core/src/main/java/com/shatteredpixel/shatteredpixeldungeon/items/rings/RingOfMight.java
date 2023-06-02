@@ -97,4 +97,3 @@ public class RingOfMight extends Ring {
 	public class Might extends RingBuff {
 	}
 }
-

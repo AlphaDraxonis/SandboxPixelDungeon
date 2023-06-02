@@ -1,9 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
-import com.watabou.noosa.NinePatch;
-import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 
 public class SpinnerIntegerModel extends AbstractSpinnerModel {

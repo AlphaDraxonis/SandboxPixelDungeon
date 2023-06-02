@@ -4,10 +4,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
-import com.watabou.input.PointerEvent;
 import com.watabou.noosa.NinePatch;
-import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 
 

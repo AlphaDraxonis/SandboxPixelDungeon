@@ -31,7 +31,6 @@ import com.watabou.input.ScrollEvent;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
-import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ScrollArea;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.GameMath;

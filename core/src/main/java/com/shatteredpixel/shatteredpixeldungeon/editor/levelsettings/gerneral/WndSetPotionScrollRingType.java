@@ -3,7 +3,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.gerneral;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.ItemTab;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.TileBar;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerModel;

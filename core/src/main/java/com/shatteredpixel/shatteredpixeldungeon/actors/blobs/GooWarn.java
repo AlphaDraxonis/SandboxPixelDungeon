@@ -68,4 +68,3 @@ public class GooWarn extends Blob {
 		return Messages.get(this, "desc");
 	}
 }
-

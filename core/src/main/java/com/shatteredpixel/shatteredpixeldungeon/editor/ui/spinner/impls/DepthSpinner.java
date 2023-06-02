@@ -2,7 +2,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.impls;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerModel;
 
 public abstract class DepthSpinner extends Spinner {
 

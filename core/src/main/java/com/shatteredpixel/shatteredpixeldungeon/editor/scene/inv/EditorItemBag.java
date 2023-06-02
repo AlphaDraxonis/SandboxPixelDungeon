@@ -1,13 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.Image;
 
 import java.util.ArrayList;

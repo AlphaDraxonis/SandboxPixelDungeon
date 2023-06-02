@@ -2,7 +2,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;

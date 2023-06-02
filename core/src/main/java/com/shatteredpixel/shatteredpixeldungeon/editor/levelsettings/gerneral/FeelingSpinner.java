@@ -1,15 +1,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.gerneral;
 
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.AbstractSpinnerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Image;
 
 public class FeelingSpinner extends Spinner {

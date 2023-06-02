@@ -1,14 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        release {
-            storeFile file('C:\\Users\\jokis\\ZZDaten\\Freizeit\\Programmieren\\Android keys\\keystore.jks')
-            storePassword 'Gaq3QZ5s#pg:4AbB3E3G'
-            keyAlias 'Sandbox Pixel Dungeon'
-            keyPassword 'spdKdH5p2vlX27]gGD'
-        }
-    }
     namespace 'com.shatteredpixel.shatteredpixeldungeon.android'
     compileSdkVersion appAndroidCompileSDK
     compileOptions.sourceCompatibility = compileOptions.targetCompatibility = appJavaCompatibility

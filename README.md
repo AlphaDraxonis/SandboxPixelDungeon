@@ -19,7 +19,7 @@ Download Sandbox Pixel Dungeon now and embark on an adventure where you're not o
 
 
 
-Sandbox Pixel Dungeon is based on the open-source traditional roguelike dungeon crawler and based on [Shattered Pixel Dungeon](https://shatteredpixel.com/shatteredpd/) which is based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://www.watabou.ru).
+Sandbox Pixel Dungeon is based on the open-source traditional roguelike dungeon crawler [Shattered Pixel Dungeon](https://shatteredpixel.com/shatteredpd/) which is based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://www.watabou.ru).
 
 Download links will follow.
 
