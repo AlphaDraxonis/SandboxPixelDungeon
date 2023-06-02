@@ -12,9 +12,9 @@ allprojects {
 
     ext {
         appName = 'Sandbox Pixel Dungeon'
-        appPackageName = 'com.shatteredpixel.sandbox'
+        appPackageName = 'com.alphadraxonis.sandboxpd'
 
-        appVersionCode = 701
+        appVersionCode = 702
         appVersionName = '2.0.2-0.1'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8

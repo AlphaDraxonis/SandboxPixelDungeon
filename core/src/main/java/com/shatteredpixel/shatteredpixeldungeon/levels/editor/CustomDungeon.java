@@ -63,7 +63,7 @@ public class CustomDungeon implements Bundlable {
 
     //TODO discord server erstellen
 
-    //upload System.err.println() FIXME remove!!  (github, description, apk, releasebuild, discord, credits)
+    //upload System.err.println() FIXME remove!!  (github, description, apk, releasebuild, discord)
     //debug
 
     private String name;
