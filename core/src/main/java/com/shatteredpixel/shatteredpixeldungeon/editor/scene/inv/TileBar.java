@@ -205,12 +205,8 @@ public class TileBar extends Component {
 
             @Override
             protected void onClick() {
-                if (SPDSettings.interfaceSize() == 2) {
-                    EditorScene.toggleInvPane();
-                } else {
-                    if (!EditorScene.cancel()) {
-                        EditorScene.show(new WndEditorItemsBag(EditorItemBag.getLastBag()));
-                    }
+                if (!EditorScene.cancel()) {
+                    EditorScene.show(new WndEditorItemsBag(EditorItemBag.getLastBag()));
                 }
             }
 

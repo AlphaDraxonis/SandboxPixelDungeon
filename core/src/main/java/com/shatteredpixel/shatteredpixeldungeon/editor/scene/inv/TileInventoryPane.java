@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.ui.InventoryPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot;
@@ -10,7 +9,7 @@ public class TileInventoryPane extends InventoryPane {
 
     @Override
     protected void centerNextWndOnInvPane() {
-        EditorScene.centerNextWndOnInvPane();
+//        EditorScene.centerNextWndOnInvPane();
     }
 
     @Override
