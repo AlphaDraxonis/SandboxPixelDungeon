@@ -111,8 +111,6 @@ public class EditorScene extends PixelScene {
 
     private ArrayList<Gizmo> toDestroy = new ArrayList<>();
     private static Point lastOffset = null;
-
-    private TileInventoryPane inventory;
     private static boolean invVisible = true;
 
 
@@ -252,17 +250,7 @@ public class EditorScene extends PixelScene {
         tileBar.camera = uiCamera;
         add(tileBar);
 
-        if (uiSize == 2) {
-            inventory = new TileInventoryPane();
-            inventory.camera = uiCamera;
-            inventory.setPos(uiCamera.width - inventory.width(), uiCamera.height - inventory.height());
-            add(inventory);
-            inventory.visible = false;
-
-            tileBar.setRect(0, uiCamera.height - tileBar.height() - inventory.height(), uiCamera.width, tileBar.height());
-        } else {
-            tileBar.setRect(0, uiCamera.height - tileBar.height(), uiCamera.width, tileBar.height());
-        }
+        tileBar.setRect(0, uiCamera.height - tileBar.height(), uiCamera.width, tileBar.height());
 
 //        switchLevelIndicator = new SwitchLevelIndicator();
 //        switchLevelIndicator.camera = uiCamera;
@@ -271,7 +259,6 @@ public class EditorScene extends PixelScene {
         layoutTags();
 
 
-        if (!invVisible) toggleInvPane();
         fadeIn();
 
         cellSelector.listener = defaultCellListener;
@@ -296,10 +283,6 @@ public class EditorScene extends PixelScene {
             };
             prompt.camera = uiCamera;
             prompt.setPos((uiCamera.width - prompt.width()) / 2, uiCamera.height - 60);
-
-            if (inventory != null && inventory.visible && prompt.right() > inventory.left() - 10) {
-                prompt.setPos(inventory.left() - prompt.width() - 10, prompt.top());
-            }
 
             add(prompt);
         }
@@ -484,15 +467,9 @@ public class EditorScene extends PixelScene {
         cancel();
 
         if (scene != null) {
-            //TODO can the inventory pane work in these cases? bad to fallback to mobile window
-            if (scene.inventory != null && scene.inventory.visible && !showingWindow()) {
-                scene.inventory.setSelector(listener);
-                return null;
-            } else {
-                WndEditorItemsBag wnd = WndEditorItemsBag.getBag(listener);
-                show(wnd);
-                return wnd;
-            }
+            WndEditorItemsBag wnd = WndEditorItemsBag.getBag(listener);
+            show(wnd);
+            return wnd;
         }
 
         return null;
@@ -543,12 +520,7 @@ public class EditorScene extends PixelScene {
         if (scene == null) return;
 
         //move the camera center up a bit if we're on full UI and it is taking up lots of space
-        if (scene.inventory != null && scene.inventory.visible
-                && (uiCamera.width < 460 && uiCamera.height < 300)) {
-            Camera.main.setCenterOffset(0, Math.min(300 - uiCamera.height, 460 - uiCamera.width) / Camera.main.zoom);
-        } else {
-            Camera.main.setCenterOffset(0, 0);
-        }
+        Camera.main.setCenterOffset(0, 0);
         //Camera.main.panTo(Dungeon.hero.sprite.center(), 5f);
 
         //primarily for phones displays with notches
@@ -599,11 +571,7 @@ public class EditorScene extends PixelScene {
 
     public static boolean interfaceBlockingHero() {
         if (scene == null) return false;
-        if (showingWindow()) return true;
-        if (scene.inventory != null && scene.inventory.isSelecting()) {
-            return true;
-        }
-        return false;
+        return showingWindow();
     }
 
     public static boolean cancel() {
@@ -663,26 +631,6 @@ public class EditorScene extends PixelScene {
 
     public static String formatTitle(CustomLevel.ItemWithPos item) {
         return formatTitle(item.item().title(), new Koord(item.pos()));
-    }
-
-    public static void toggleInvPane() {
-        if (scene != null && scene.inventory != null) {
-            if (scene.inventory.visible) {
-                scene.inventory.visible = scene.inventory.active = invVisible = false;
-                scene.tileBar.setPos(scene.tileBar.left(), uiCamera.height - scene.tileBar.height());
-            } else {
-                scene.inventory.visible = scene.inventory.active = invVisible = true;
-                scene.tileBar.setPos(scene.tileBar.left(), scene.inventory.top() - scene.tiles.height());
-            }
-            layoutTags();
-        }
-    }
-
-    public static void centerNextWndOnInvPane() {
-        if (scene != null && scene.inventory != null && scene.inventory.visible) {
-            lastOffset = new Point((int) scene.inventory.centerX() - uiCamera.width / 2,
-                    (int) scene.inventory.centerY() - uiCamera.height / 2);
-        }
     }
 
 
