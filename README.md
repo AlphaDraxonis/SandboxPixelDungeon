@@ -1,25 +1,28 @@
-# Shattered Pixel Dungeon
+# Sandbox Pixel Dungeon
+Introducing Sandbox Pixel Dungeon, a groundbreaking mod that empowers you to shape your own dungeon experience within the world of Shattered Pixel Dungeon! Take control and unleash your creativity like never before!
 
-[Shattered Pixel Dungeon](https://shatteredpixel.com/shatteredpd/) is an open-source traditional roguelike dungeon crawler with randomized levels and enemies, and hundreds of items to collect and use. Its based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://www.watabou.ru).
+With Sandbox Pixel Dungeon, you can design your very own dungeon layouts effortlessly. Use randomly generated levels as templates, providing a starting point for your grand designs. No need to start from scratch when you have the foundations of exciting and challenging levels at your fingertips!
 
-Shattered Pixel Dungeon currently compiles for Android, iOS, and Desktop platforms. You can find official releases of the game on:
+Craft a meticulously detailed dungeon by placing tiles wherever you desire. Create a labyrinth of corridors, rooms filled with treasures, or devious traps lying in wait. The choice is yours, limited only by your imagination!
 
-[![Get it on Google Play](https://shatteredpixel.com/assets/images/gplay-badge.png)](https://play.google.com/store/apps/details?id=com.shatteredpixel.shatteredpixeldungeon)
-[![Download on the App Store](https://shatteredpixel.com/assets/images/appstore-badge.png)](https://apps.apple.com/app/shattered-pixel-dungeon/id1563121109)
-[![Steam](https://shatteredpixel.com/assets/images/steam-badge.png)](https://store.steampowered.com/app/1769170/Shattered_Pixel_Dungeon/)
-[![Github Releases](https://shatteredpixel.com/assets/images/github-badge.png)](https://github.com/AlphaDraxonis/SandboxPixelDungeon/releases)
+Challenge players to think strategically, adapt, and emerge victorious against the cunning foes lurking in your carefully crafted dungeon. With Sandbox Pixel Dungeon, unleash your creativity and bring your dungeon to life with creatures that will test the limits of even the most seasoned adventurers.
 
-If you like this game, please consider [supporting me on Patreon](https://www.patreon.com/ShatteredPixel)!
+Tailor the item placement to create unique challenges for brave adventurers. Experiment with weapons, adjusting their upgrades, curses, enchantments, or glyphs to create the perfect balance of risk and reward. Although customizing armor sets is not currently supported, you can still shape the loot and rewards found within your dungeon, ensuring players are tested to their limits.
 
-There is an official blog for this project at [ShatteredPixel.com](https://www.shatteredpixel.com/blog/).
+When you're ready to share your creation, you can export your dungeon as JSON, capturing the most important dungeon settings. However, for a more immersive experience with your mod, players can utilize the raw files that you share to truly delve into the world you've built.
 
-The game also has a translation project hosted on [Transifex](https://www.transifex.com/shattered-pixel/shattered-pixel-dungeon/).
+It's remarkable to consider that this mod was developed in just 1.5 months by a dedicated single developer and many more future updates with additional features will come to this incredible project.
+
+Download Sandbox Pixel Dungeon now and embark on an adventure where you're not only the player but the architect of your own dungeon. Leave your mark on the realm of roguelike gaming, defy the limits of what's possible, and forge a unique experience that will captivate players around the world.
+
+(Thanks to ChatGPT for their invaluable contribution in crafting this description. Their assistance has truly elevated the summary to new heights, and I couldn't have asked for a better result.)
+
+
+
+Sandbox Pixel Dungeon is based on the open-source traditional roguelike dungeon crawler and based on [Shattered Pixel Dungeon](https://shatteredpixel.com/shatteredpd/) which is based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://www.watabou.ru).
+
+Download links will follow.
 
 Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome.
 
-If you'd like to work with the code, you can find the following guides in `/docs`:
-- [Compiling for Android.](docs/getting-started-android.md)
-    - **[If you plan to distribute on Google Play please read the end of this guide.](docs/getting-started-android.md#distributing-your-apk)**
-- [Compiling for desktop platforms.](docs/getting-started-desktop.md)
-- [Compiling for iOS.](docs/getting-started-ios.md)
-- [Recommended changes for making your own version.](docs/recommended-changes.md)
+Please visit the [Shattered Pixel Dungeon github page](https://github.com/00-Evan/shattered-pixel-dungeon) for more information about that game.
