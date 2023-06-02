@@ -13,7 +13,7 @@ public abstract class WndSelectFloor extends Window {
     protected LevelListPane listPane;
 
     public WndSelectFloor() {
-        resize(PixelScene.landscape() ? 215 : PixelScene.uiCamera.width - 5, (int) (PixelScene.uiCamera.height * 0.8f));
+        resize(PixelScene.landscape() ? 215 : Math.min(160, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
 
         listPane = new LevelListPane() {
 

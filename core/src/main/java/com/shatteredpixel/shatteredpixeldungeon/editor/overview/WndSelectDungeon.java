@@ -99,7 +99,7 @@ public class WndSelectDungeon extends Window {
 
             public WndInfoDungeon(CustomDungeonSaves.Info info) {
 
-                resize(PixelScene.landscape() ? 215 : PixelScene.uiCamera.width - 5, 100);
+                resize(PixelScene.landscape() ? 215 : Math.min(160, (int) (PixelScene.uiCamera.width * 0.9)), 100);
 
                 RenderedTextBlock title = PixelScene.renderTextBlock(info.name, 10);
                 title.hardlight(Window.TITLE_COLOR);

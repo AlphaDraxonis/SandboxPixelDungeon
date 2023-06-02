@@ -52,7 +52,7 @@ public class WndNewFloor extends Window {
 
     public WndNewFloor(CustomDungeon owner) {
 
-        super(PixelScene.landscape() ? 215 : PixelScene.uiCamera.width - 5, 200);
+        super(PixelScene.landscape() ? 215 : Math.min(160, (int) (PixelScene.uiCamera.width * 0.9)), 200);
 
         //need to offset to give space for the soft keyboard
         if (PixelScene.landscape()) {

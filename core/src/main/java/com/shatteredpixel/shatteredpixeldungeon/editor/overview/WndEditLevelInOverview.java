@@ -49,7 +49,7 @@ public class WndEditLevelInOverview extends Window {
         if (levelScheme.getType() == CustomLevel.class && levelScheme.getLevel() == null)
             levelScheme.loadLevel();
 
-        resize(PixelScene.landscape() ? 215 : PixelScene.uiCamera.width - 5, 200);
+        resize(PixelScene.landscape() ? 215 : Math.min(160, (int) (PixelScene.uiCamera.width * 0.9)), 200);
 
         content = new Component();
 
