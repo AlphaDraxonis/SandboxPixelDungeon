@@ -263,7 +263,7 @@ public enum Icons {
             case SNAKE:
 				icon.frame( icon.texture.uvRectBySize( 160, 48,  9, 13 ) );
 				break;
-			caseBUFFS:
+			case BUFFS:
                 icon.frame(icon.texture.uvRectBySize(176, 48, 16, 15));
                 break;
             case ENERGY:

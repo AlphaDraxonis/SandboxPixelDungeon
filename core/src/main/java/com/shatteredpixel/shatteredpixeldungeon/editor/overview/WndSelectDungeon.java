@@ -137,14 +137,14 @@ public class WndSelectDungeon extends Window {
                     }
                 };
 
-                RedButton export = new RedButton("Export as Json") {
+                RedButton export = new RedButton("Export as JSON") {
                     @Override
                     protected void onClick() {
                         Window w = new WndOptions(
-                                "Export \""+info.name+"\" as a Json file?",
+                                "Export \""+info.name+"\" as a JSON file?",
                                 "It will be exported to Android/data/com.alphadraxonis.sandboxpd/files/exports/"+info.name+".json\n"+//TODO add platform differences!
                                 "If the file already exists, it will be overriden.\n"+
-                                "The Json file can be used for \"Custom Pixel Dungeon\" by QuasiStellar, but not all features are supported.",
+                                "The JSON file can be used for \"Custom Pixel Dungeon\" by QuasiStellar, but not all features are supported.",
                                 "Export", "Cancel") {
                             @Override
                             protected void onSelect(int index) {
@@ -155,7 +155,7 @@ public class WndSelectDungeon extends Window {
                                                 DungeonToJsonConverter.getAsJson(CustomDungeonSaves.loadDungeon(info.name)));
 
                                         Window win = new WndOptions(
-                                                "Successfully exported \""+info.name+"\" as a Json file",
+                                                "Successfully exported \""+info.name+"\" as a JSON file",
                                                 "\""+info.name+"\" was successfully exported!\nCheck it out to see which settings were not exported."+
                                                         (info.name.equals("dungeon")?"":"\nDon't forget to rename it to dungeon.json if you want to use it in Custom PD."),
                                                 "Close");

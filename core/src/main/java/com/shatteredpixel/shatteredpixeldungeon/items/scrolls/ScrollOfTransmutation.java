@@ -153,7 +153,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 				Item result = Generator.randomUsingDefaults(Generator.Category.RING);
 				result.levelKnown = item.levelKnown;
 				result.cursed = item.cursed;
-				result.cursedKnown = item.cursedKnown;
+				result.setCursedKnown(item.getCursedKnownVar());
 				result.level(0);
 				return result;
 			} else {

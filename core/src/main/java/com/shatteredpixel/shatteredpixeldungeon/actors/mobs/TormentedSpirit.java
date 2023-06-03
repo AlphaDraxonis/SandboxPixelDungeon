@@ -71,7 +71,7 @@ public class TormentedSpirit extends Wraith {
 			}
 		}
 		prize.cursed = false;
-		prize.cursedKnown = true;
+		prize.setCursedKnown(true);
 
 		Dungeon.level.drop(prize, pos).sprite.drop();
 
