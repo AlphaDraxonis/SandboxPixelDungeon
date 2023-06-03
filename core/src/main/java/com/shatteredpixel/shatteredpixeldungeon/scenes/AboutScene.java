@@ -70,9 +70,9 @@ public class AboutScene extends PixelScene {
 				"Developed by: _AlphaDraxonis_",
 				"","");
 		if (landscape()){
-			sandbox.setRect((w - fullWidth)/2f - 6, 10, colWidth, 0);
+			sandbox.setRect((Camera.main.width - colWidth)/2f, 10, colWidth, 0);
 		} else {
-			sandbox.setRect((w - fullWidth)/2f , 6, colWidth, 0);
+			sandbox.setRect((Camera.main.width - colWidth)/2f , 6, colWidth, 0);
 		}
 		content.add(sandbox);
 
@@ -93,9 +93,9 @@ public class AboutScene extends PixelScene {
 				"ShatteredPixel.com",
 				shpxLink);
 		if (landscape()){
-			shpx.setRect((w - fullWidth)/2f - 6, sandbox.bottom()+8, 120, 0);
+			shpx.setRect((w - fullWidth)/2f - 6, sandbox.bottom() + 8, 120, 0);
 		} else {
-			shpx.setRect((w - fullWidth)/2f, sandbox.bottom()+6, 120, 0);
+			shpx.setRect((w - fullWidth)/2f, sandbox.bottom() + 6, 120, 0);
 		}
 		content.add(shpx);
 
@@ -131,7 +131,7 @@ public class AboutScene extends PixelScene {
 		kristjan.setRect(alex.right() - colWidth/4f, alex.bottom() + 5, colWidth/2f, 0);
 		content.add(kristjan);
 
-		addLine(shpx.top() - 4, content);
+		addLine(Math.min(shpx.top(),alex.top()) - 4, content);
 
 		//*** Pixel Dungeon Credits ***
 
