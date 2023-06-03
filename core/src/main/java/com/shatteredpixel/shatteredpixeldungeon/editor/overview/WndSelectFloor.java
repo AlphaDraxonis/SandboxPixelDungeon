@@ -1,6 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.overview;
 
-import com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 

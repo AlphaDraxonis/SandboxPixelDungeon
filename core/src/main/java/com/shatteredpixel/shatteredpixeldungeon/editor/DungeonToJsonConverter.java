@@ -1,10 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor;
 
-import static com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme.REGION_CAVES;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme.REGION_CITY;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme.REGION_HALLS;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme.REGION_PRISON;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme.REGION_SEWERS;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CAVES;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CITY;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_HALLS;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_PRISON;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_SEWERS;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -18,9 +18,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.shatteredpixel.shatteredpixeldungeon.levels.editor;
+package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;

@@ -1,6 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene;
 
-import com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
 

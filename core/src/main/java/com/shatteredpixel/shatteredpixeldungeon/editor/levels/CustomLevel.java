@@ -1,15 +1,15 @@
-package com.shatteredpixel.shatteredpixeldungeon.levels.editor;
+package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ENTRANCE;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EXIT;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme.REGION_CAVES;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme.REGION_CITY;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme.REGION_HALLS;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme.REGION_NONE;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme.REGION_PRISON;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme.REGION_SEWERS;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CAVES;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CITY;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_HALLS;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_NONE;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_PRISON;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_SEWERS;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;

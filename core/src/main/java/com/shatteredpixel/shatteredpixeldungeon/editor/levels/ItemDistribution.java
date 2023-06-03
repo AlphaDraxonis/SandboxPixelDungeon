@@ -1,4 +1,4 @@
-package com.shatteredpixel.shatteredpixeldungeon.levels.editor;
+package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
 import java.util.ArrayList;
 import java.util.List;
