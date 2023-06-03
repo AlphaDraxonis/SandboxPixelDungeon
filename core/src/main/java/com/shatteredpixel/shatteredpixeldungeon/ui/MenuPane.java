@@ -175,7 +175,12 @@ public class MenuPane extends Component {
 
 			challengeText.scale.set(PixelScene.align(0.67f));
 			challengeText.x = challengeIcon.x + (challengeIcon.width() - challengeText.width())/2f;
-			challengeText.y = challengeIcon.y + challengeIcon.height();
+			if(challengeText.x > depthText.x - 3){
+				challengeText.y = challengeIcon.y + 1.5f;
+				challengeText.x = challengeIcon.x - challengeText.width()+0.5f;
+			}else{
+				challengeText.y = challengeIcon.y + challengeIcon.height();
+			}
 			PixelScene.align(challengeText);
 
 			challengeButton.setRect(challengeIcon.x, challengeIcon.y, challengeIcon.width(), challengeIcon.height() + challengeText.height());
