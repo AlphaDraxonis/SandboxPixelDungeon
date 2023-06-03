@@ -1,5 +1,22 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings;
 
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.ARMOR_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.ARTIFACT_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.BOMB_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.CATA_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.FOOD_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.IRON_KEY;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.MISSILE_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.POTION_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.RING_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.SCROLL_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.SEED_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.SOMETHING;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.SPELL_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.STONE_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.WAND_HOLDER;
+import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.WEAPON_HOLDER;
+
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
@@ -39,6 +56,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.FrozenCarpaccio;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Pasty;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.PhantomMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.StewedMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
@@ -147,6 +165,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Greataxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Greatshield;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Greatsword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.HandAxe;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Katana;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Longsword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Mace;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
@@ -157,9 +176,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RunicBlade;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Sai;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Scimitar;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Shortsword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Sickle;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Spear;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Sword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WarHammer;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WarScythe;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Whip;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Bolas;
@@ -203,8 +224,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.*;
 
 public enum Items {
 
@@ -441,6 +460,7 @@ public enum Items {
                 Spear.class,
                 Quarterstaff.class,
                 Dirk.class,
+                Sickle.class,
                 Pickaxe.class,
                 Sword.class,
                 Mace.class,
@@ -454,12 +474,14 @@ public enum Items {
                 RunicBlade.class,
                 AssassinsBlade.class,
                 Crossbow.class,
+                Katana.class,
                 Greatsword.class,
                 WarHammer.class,
                 Glaive.class,
                 Greataxe.class,
                 Greatshield.class,
-                Gauntlet.class
+                Gauntlet.class,
+                WarScythe.class
         };
 
         MISSLE_WEAPON.classes = new Class[]{
@@ -552,6 +574,7 @@ public enum Items {
                 ChargrilledMeat.class,
                 StewedMeat.class,
                 FrozenCarpaccio.class,
+                PhantomMeat.class,
                 SmallRation.class,
                 MeatPie.class,
                 Berry.class,
