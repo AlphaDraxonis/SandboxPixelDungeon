@@ -158,7 +158,7 @@ public class ItemSelector extends Component {
         public void onSelect(Item item) {
             if (item == EditorItem.NULL_ITEM) setSelectedItem(null);
             else
-                setSelectedItem(item instanceof ItemItem ? ((ItemItem) item).item().clone() : item.clone());
+                setSelectedItem(item instanceof ItemItem ? ((ItemItem) item).item().getCopy() : item.getCopy());
         }
 
         @Override

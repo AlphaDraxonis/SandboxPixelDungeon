@@ -195,11 +195,9 @@ public class Buff extends Actor {
     }
 
     @Override
-    public Actor clone() throws CloneNotSupportedException {
-        Buff b = (Buff) super.clone();
+    public Actor getCopy() {
+        Buff b = (Buff) super.getCopy();
         b.target = null;//Need to add later!
-        b.resistances=new HashSet<>(resistances);
-        b.immunities=new HashSet<>(immunities);
         return b;
     }
 }

@@ -22,16 +22,16 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.features;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 import com.watabou.utils.Rect;
 
-public class LevelTransition extends Rect implements Bundlable, Cloneable {
+public class LevelTransition extends Rect implements Bundlable {
 
     public enum Type {
         SURFACE,
@@ -175,13 +175,9 @@ public class LevelTransition extends Rect implements Bundlable, Cloneable {
         departCell = bundle.getInt(DEPART_CELL);
     }
 
-    @Override
-    public LevelTransition clone() {
-        try {
-            LevelTransition transition = (LevelTransition) super.clone();
-            return transition;
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
+    public LevelTransition getCopy(){
+        Bundle bundle = new Bundle();
+        bundle.put("TRANSITION",this);
+        return  (LevelTransition) bundle.get("TRANSITION");
     }
 }

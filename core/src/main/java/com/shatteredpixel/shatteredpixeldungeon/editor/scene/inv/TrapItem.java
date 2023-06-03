@@ -84,7 +84,7 @@ public class TrapItem extends EditorItem {
 
         CustomLevel level = EditorScene.customLevel();
 
-        Trap t = trap().clone();
+        Trap t = trap().getCopy();
         level.map[cell] = t.visible ? (t.active ? Terrain.TRAP : Terrain.INACTIVE_TRAP) : Terrain.SECRET_TRAP;
         level.setTrap(t, cell);
         EditorScene.updateMap(cell);

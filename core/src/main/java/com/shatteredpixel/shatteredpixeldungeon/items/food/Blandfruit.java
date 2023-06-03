@@ -236,13 +236,6 @@ public class Blandfruit extends Food {
     }
 
     @Override
-    public Item clone() {
-        Blandfruit i = (Blandfruit) super.clone();
-        if (potionAttrib != null) i.potionAttrib = (Potion) potionAttrib.clone();
-        return i;
-    }
-
-    @Override
     public ItemSprite.Glowing glowing() {
         return potionGlow;
     }

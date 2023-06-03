@@ -178,13 +178,6 @@ public class BrokenSeal extends Item {
         glyph = (Armor.Glyph) bundle.get(GLYPH);
     }
 
-    @Override
-    public Item clone()  {
-        BrokenSeal s = (BrokenSeal) super.clone();
-        if (glyph != null) s.glyph = glyph.clone();
-        return s;
-    }
-
     public static class WarriorShield extends ShieldBuff {
 
         private Armor armor;

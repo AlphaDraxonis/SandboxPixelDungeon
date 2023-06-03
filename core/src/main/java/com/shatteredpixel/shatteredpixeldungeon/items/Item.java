@@ -31,13 +31,13 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -56,7 +56,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class Item implements Bundlable, Cloneable {
+public class Item implements Bundlable {
 
     protected static final String TXT_TO_STRING_LVL = "%s %+d";
     protected static final String TXT_TO_STRING_X = "%s x%d";
@@ -553,15 +553,6 @@ public class Item implements Bundlable, Cloneable {
     }
 
 
-    @Override
-    public Item clone(){
-        try {
-            return (Item) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private static final String QUANTITY = "quantity";
     private static final String LEVEL = "level";
     private static final String LEVEL_KNOWN = "levelKnown";
@@ -606,6 +597,12 @@ public class Item implements Bundlable, Cloneable {
         }
 
         keptThoughLostInvent = bundle.getBoolean(KEPT_LOST);
+    }
+
+    public Item getCopy(){
+        Bundle bundle = new Bundle();
+        bundle.put("ITEM",this);
+        return  (Item) bundle.get("ITEM");
     }
 
     public int targetingPos(Hero user, int dst) {

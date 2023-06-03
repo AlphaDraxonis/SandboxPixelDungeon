@@ -385,16 +385,6 @@ public class MagesStaff extends MeleeWeapon {
     }
 
     @Override
-    public Item clone()  {
-        MagesStaff i = (MagesStaff) super.clone();
-        if (wand != null) {
-            i.wand = (Wand) wand.clone();
-            i.wand.maxCharges = Math.min(i.wand.maxCharges + 1, 10);
-        }
-        return i;
-    }
-
-    @Override
     public int value() {
         return 0;
     }

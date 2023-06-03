@@ -91,16 +91,6 @@ public class Mimic extends Mob {
     }
 
     @Override
-    public Actor clone() throws CloneNotSupportedException {
-        Mimic m = (Mimic) super.clone();
-        if (items != null){
-            m.items = new ArrayList<>();
-            for (Item i : items) m.items.add(i.clone());
-        }
-        return m;
-    }
-
-    @Override
     public boolean add(Buff buff) {
         if (super.add(buff)) {
             if (buff.type == Buff.buffType.NEGATIVE && alignment == Alignment.NEUTRAL) {

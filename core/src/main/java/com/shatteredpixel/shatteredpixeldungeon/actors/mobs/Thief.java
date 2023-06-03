@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
@@ -75,13 +74,6 @@ public class Thief extends Mob {
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         item = (Item) bundle.get(ITEM);
-    }
-
-    @Override
-    public Actor clone() throws CloneNotSupportedException {
-        Thief m = (Thief) super.clone();
-        if (item != null) m.item = item.clone();
-        return m;
     }
 
     @Override

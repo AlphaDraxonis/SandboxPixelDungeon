@@ -164,13 +164,6 @@ abstract public class Weapon extends KindOfWeapon {
 
 		augment = bundle.getEnum(AUGMENT, Augment.class);
 	}
-
-	@Override
-	public Item clone() {
-		Weapon w = (Weapon) super.clone();
-		if(enchantment!=null)w.enchantment=enchantment.clone();
-		return w;
-	}
 	
 	@Override
 	public void reset() {
@@ -363,7 +356,7 @@ abstract public class Weapon extends KindOfWeapon {
 		return enchantment != null && (cursedKnown() || !enchantment.curse()) ? enchantment.glowing() : null;
 	}
 
-	public static abstract class Enchantment implements Bundlable,Cloneable {
+	public static abstract class Enchantment implements Bundlable {
 		
 		public static final Class<?>[] common = new Class<?>[]{
 				Blazing.class, Chilling.class, Kinetic.class, Shocking.class};
@@ -448,13 +441,10 @@ abstract public class Weapon extends KindOfWeapon {
 		@Override
 		public void storeInBundle( Bundle bundle ) {
 		}
-		@Override
-		public Enchantment clone()  {
-			try {
-				return (Enchantment) super.clone();
-			} catch (CloneNotSupportedException e) {
-				throw new RuntimeException(e);
-			}
+		public Enchantment getCopy(){
+			Bundle bundle = new Bundle();
+			bundle.put("ENCHANTMENT",this);
+			return  (Enchantment) bundle.get("ENCHANTMENT");
 		}
 		
 		public abstract ItemSprite.Glowing glowing();

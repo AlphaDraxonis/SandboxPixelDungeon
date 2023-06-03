@@ -248,13 +248,6 @@ public class SandalsOfNature extends Artifact {
         else if (level() >= 3) image = ItemSpriteSheet.ARTIFACT_GREAVES;
     }
 
-    @Override
-    public Item clone()  {
-        SandalsOfNature i = (SandalsOfNature) super.clone();
-        i.seeds = new ArrayList<>(seeds);
-        return i;
-    }
-
     public class Naturalism extends ArtifactBuff {
         public void charge(float amount) {
             if (cursed || target.buff(MagicImmune.class) != null) return;

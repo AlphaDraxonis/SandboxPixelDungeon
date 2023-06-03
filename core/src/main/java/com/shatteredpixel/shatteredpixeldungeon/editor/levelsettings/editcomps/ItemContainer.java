@@ -76,7 +76,7 @@ public class ItemContainer extends Component {
                     @Override
                     public void onSelect(Item item) {
                         if (item instanceof ItemItem) item = ((ItemItem) item).item();
-                        item = item.clone();
+                        item = item.getCopy();
                         int sizePrev = itemList.size();
                         addItem(item);
                         if (itemList.size() > sizePrev)

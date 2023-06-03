@@ -1,15 +1,15 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ENTRANCE;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EXIT;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CAVES;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CITY;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_HALLS;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_NONE;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_PRISON;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_SEWERS;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ENTRANCE;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EXIT;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -249,29 +249,21 @@ public class CustomLevel extends Level {
 
         transitions = new HashMap<>();
         for (LevelTransition trans : customLevel.transitions.values()) {
-            transitions.put(trans.departCell, trans.clone());
+            transitions.put(trans.departCell, trans.getCopy());
         }
 
         mobs = new HashSet<>();
         for (Mob m : customLevel.mobs) {
-            try {
-                Mob clone = (Mob) m.clone();
+                Mob clone = (Mob) m.getCopy();
                 if (clone instanceof Mimic) ((Mimic) clone).adjustStats(Dungeon.depth);
                 mobs.add(clone);
-            } catch (CloneNotSupportedException e) {
-                System.err.println("Could not clone a mob: " + m.name() + " (" + e.getMessage() + ")");
-            }
         }
 
         heaps = new SparseArray<>();
         for (Heap h : customLevel.heaps.valueList()) {
-            try {
-                Heap nh = h.clone();
+                Heap nh = h.getCopy();
                 heaps.put(h.pos, nh);
                 for (Item item : nh.items) item.reset();//important for scroll runes being inited
-            } catch (CloneNotSupportedException e) {
-                System.err.println("Could not clone a heap: " + e.getMessage());
-            }
         }
 
         blobs = new HashMap<>();
@@ -279,7 +271,7 @@ public class CustomLevel extends Level {
 
         traps = new SparseArray<>();
         for (Trap trap : customLevel.traps.valueList()) {
-            traps.put(trap.pos, trap.clone());
+            traps.put(trap.pos, trap.getCopy());
         }
 
         customTiles = new HashSet<>();

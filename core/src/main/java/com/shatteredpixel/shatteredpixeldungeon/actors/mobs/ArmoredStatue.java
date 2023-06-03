@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -68,13 +67,6 @@ public class ArmoredStatue extends Statue {
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         armor = (Armor) bundle.get(ARMOR);
-    }
-
-    @Override
-    public Actor clone() throws CloneNotSupportedException {
-        ArmoredStatue m = (ArmoredStatue) super.clone();
-       if(armor!=null) m.armor = (Armor) armor.clone();
-        return m;
     }
 
     @Override

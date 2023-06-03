@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -48,7 +49,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -66,7 +66,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
-public class Heap implements Bundlable, Cloneable {
+public class Heap implements Bundlable {
 
     public enum Type {
         HEAP,
@@ -460,12 +460,10 @@ public class Heap implements Bundlable, Cloneable {
         bundle.put(AUTO_EXPLORED, autoExplored);
     }
 
-    @Override
-    public Heap clone() throws CloneNotSupportedException {
-        Heap h = (Heap) super.clone();
-        h.items = new LinkedList<>();
-        for (Item i : this.items) h.items.add(i.clone());
-        return h;
+    public Heap getCopy(){
+        Bundle bundle = new Bundle();
+        bundle.put("HEAP",this);
+        return  (Heap) bundle.get("HEAP");
     }
 
 

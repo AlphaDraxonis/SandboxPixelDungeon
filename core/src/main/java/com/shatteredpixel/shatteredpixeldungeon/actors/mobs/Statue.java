@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -78,13 +77,6 @@ public class Statue extends Mob {
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         weapon = (Weapon) bundle.get(WEAPON);
-    }
-
-    @Override
-    public Actor clone() throws CloneNotSupportedException {
-        Statue m = (Statue) super.clone();
-        if (weapon != null) m.weapon = (Weapon) weapon.clone();
-        return m;
     }
 
     @Override

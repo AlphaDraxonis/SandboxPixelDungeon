@@ -1,6 +1,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
@@ -9,8 +11,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
@@ -84,16 +84,11 @@ public class ItemItem extends EditorItem {
 
         if (!level.passable[cell]) return;
 
-        Item i = item().clone();
+        Item i = item().getCopy();
 
         i.image = CustomDungeon.getDungeon().getItemSpriteOnSheet(i);
 
         level.drop(i, cell);
-//
-//        Mob m = level.getMobAtCell(cell);
-//        if (m != null) {
-//            MobItem.removeMob(m);
-//        }
 
         //TODO remove highGrass?
     }

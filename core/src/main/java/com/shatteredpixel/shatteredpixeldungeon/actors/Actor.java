@@ -32,7 +32,7 @@ import com.watabou.utils.SparseArray;
 
 import java.util.HashSet;
 
-public abstract class Actor implements Bundlable, Cloneable {
+public abstract class Actor implements Bundlable {
 
     public static final float TICK = 1f;
 
@@ -131,11 +131,12 @@ public abstract class Actor implements Bundlable, Cloneable {
         }
     }
 
-    @Override
-    protected Actor clone() throws CloneNotSupportedException {
-        Actor a = (Actor) super.clone();
-        a.id = -1;//id has to be unique
-        return a;
+    public Actor getCopy(){
+        Bundle bundle = new Bundle();
+        bundle.put("ACTOR",this);
+        Actor a = (Actor) bundle.get("ACTOR");
+        a.id = -1;
+        return  a;
     }
 
     public int id() {

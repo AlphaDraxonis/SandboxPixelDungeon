@@ -154,13 +154,6 @@ public class Bag extends Item implements Iterable<Item> {
 		}
 		loading = false;
 	}
-	@Override
-	public Item clone() {
-		Bag b = (Bag) super.clone();
-		b.items=new ArrayList<>();
-		for(Item i:items)b.items.add(i.clone());
-		return b;
-	}
 	
 	public boolean contains( Item item ) {
 		for (Item i : items) {

@@ -52,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Feint;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
@@ -70,7 +71,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Lucky;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
@@ -197,24 +197,6 @@ public abstract class Mob extends Char {
 		firstAdded = false;
 	}
 
-    @Override
-    public Actor clone() throws CloneNotSupportedException {
-        Mob m = (Mob) super.clone();
-
-        m.SLEEPING = m.new Sleeping();
-        m.HUNTING = m.new Hunting();
-        m.WANDERING = m.new Wandering();
-        m.FLEEING = m.new Fleeing();
-        m.PASSIVE = m.new Passive();
-
-        if (state == SLEEPING) m.state = m.SLEEPING;
-        else if (state == WANDERING) m.state = m.WANDERING;
-        else if (state == HUNTING) m.state = m.HUNTING;
-        else if (state == FLEEING) m.state = m.FLEEING;
-        else if (state == PASSIVE) m.state = m.PASSIVE;
-
-        return m;
-    }
 
     //mobs need to remember their targets after every actor is added
     public void restoreEnemy() {
