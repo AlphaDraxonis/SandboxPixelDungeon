@@ -38,8 +38,6 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.AvailableUpdateData;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -366,7 +364,7 @@ public class TitleScene extends PixelScene {
 
         public SupportButton(Chrome.Type type, String label) {
             super(type, label);
-            icon(new ItemSprite(ItemSpriteSheet.SANBOX_EDITOR_ICON));
+            icon(Icons.get(Icons.EDITOR));
 //            icon(Icons.get(Icons.GOLD));
             textColor(Window.TITLE_COLOR);
         }

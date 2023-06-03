@@ -198,8 +198,8 @@ public class TileBar extends Component {
                 return Messages.titleCase(Messages.get(WndKeyBindings.class, "examine"));
             }
 
-
         });
+        btnSearch.copyFromImage(new Image(Assets.Interfaces.TILEBAR));
 
         add(btnInventory = new Toolbar.Tool(0, 0, 24, 26) {
 
@@ -242,6 +242,7 @@ public class TileBar extends Component {
 //                return true;
             }
         });
+        btnInventory.copyFromImage(new Image(Assets.Interfaces.TILEBAR));
 
         //hidden button for inventory selector keybind
         add(new Button() {

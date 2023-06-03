@@ -23,8 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -68,7 +66,7 @@ public class AboutScene extends PixelScene {
 		//*** Sandbox Pixel Dungeon ***
 		CreditsBlock sandbox = new CreditsBlock(true, Window.TITLE_COLOR,
 				"Sandbox Pixel Dungeon",
-				new ItemSprite(ItemSpriteSheet.SANBOX_EDITOR_ICON),
+				Icons.get(Icons.EDITOR),
 				"Developed by: _AlphaDraxonis_",
 				"","");
 		if (landscape()){
