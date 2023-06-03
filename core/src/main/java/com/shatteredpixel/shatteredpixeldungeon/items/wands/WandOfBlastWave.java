@@ -88,7 +88,7 @@ public class WandOfBlastWave extends DamageWand {
 				if (ch.pos == bolt.collisionPos + i) {
 					Ballistica trajectory = new Ballistica(ch.pos, ch.pos + i, Ballistica.MAGIC_BOLT);
 					int strength = 1 + Math.round(buffedLvl() / 2f);
-					throwChar(ch, trajectory, strength, false, true, getClass());
+					throwChar(ch, trajectory, strength, false, true, this);
 				}
 
 			}
@@ -103,14 +103,14 @@ public class WandOfBlastWave extends DamageWand {
 			if (bolt.path.size() > bolt.dist+1 && ch.pos == bolt.collisionPos) {
 				Ballistica trajectory = new Ballistica(ch.pos, bolt.path.get(bolt.dist + 1), Ballistica.MAGIC_BOLT);
 				int strength = buffedLvl() + 3;
-				throwChar(ch, trajectory, strength, false, true, getClass());
+				throwChar(ch, trajectory, strength, false, true, this);
 			}
 		}
 		
 	}
 
 	public static void throwChar(final Char ch, final Ballistica trajectory, int power,
-	                             boolean closeDoors, boolean collideDmg, Class cause){
+	                             boolean closeDoors, boolean collideDmg, Object cause){
 		if (ch.properties().contains(Char.Property.BOSS)) {
 			power = (power+1)/2;
 		}
@@ -163,7 +163,7 @@ public class WandOfBlastWave extends DamageWand {
 					if (ch.isActive()) {
 						Paralysis.prolong(ch, Paralysis.class, 1 + finalDist/2f);
 					} else if (ch == Dungeon.hero){
-						if (cause == WandOfBlastWave.class || cause == AquaBlast.class){
+						if (cause instanceof WandOfBlastWave || cause instanceof AquaBlast){
 							Badges.validateDeathFromFriendlyMagic();
 						}
 						Dungeon.fail(cause);

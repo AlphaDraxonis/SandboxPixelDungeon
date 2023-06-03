@@ -211,6 +211,9 @@ public class Ratmogrify extends ArmorAbility {
 		}
 
 		public Mob getOriginal(){
+			original.HP = HP;
+			original.pos = pos;
+			original.clearTime();
 			return original;
 		}
 

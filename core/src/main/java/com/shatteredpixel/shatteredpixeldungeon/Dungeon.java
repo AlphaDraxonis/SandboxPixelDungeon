@@ -805,7 +805,7 @@ public class Dungeon {
         Statistics.preview(info, bundle);
     }
 
-    public static void fail(Class cause) {
+    public static void fail(Object cause) {
         if (WndResurrect.instance == null) {
             updateLevelExplored();
             Statistics.gameWon = false;
@@ -813,7 +813,7 @@ public class Dungeon {
         }
     }
 
-    public static void win(Class cause) {
+    public static void win(Object cause) {
 
         updateLevelExplored();
         Statistics.gameWon = true;

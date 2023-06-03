@@ -66,13 +66,13 @@ public class Dirk extends MeleeWeapon {
 	}
 
 	@Override
-	public float abilityChargeUse( Hero hero ) {
-		return 2*super.abilityChargeUse(hero);
+	public float abilityChargeUse(Hero hero, Char target) {
+		return 2*super.abilityChargeUse(hero, target);
 	}
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		Dagger.sneakAbility(hero, 6, this);
+		Dagger.sneakAbility(hero, 8, this);
 	}
 
 }

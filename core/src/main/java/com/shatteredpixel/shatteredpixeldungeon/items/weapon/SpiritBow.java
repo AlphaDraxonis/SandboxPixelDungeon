@@ -395,12 +395,12 @@ public class SpiritBow extends Weapon {
                 }
                 QuickSlotButton.target(enemy);
 
-                final boolean last = flurryCount == 1;
+
 
                 user.busy();
 
                 throwSound();
-
+user.sprite.zap(cell);
                 ((MissileSprite) user.sprite.parent.recycle(MissileSprite.class)).
                         reset(user.sprite,
                                 cell,
@@ -413,27 +413,9 @@ public class SpiritBow extends Weapon {
                                             onThrow(cell);
                                         }
 
-                                        if (last) {
-                                            if (user.buff(Talent.LethalMomentumTracker.class) != null) {
-                                                user.buff(Talent.LethalMomentumTracker.class).detach();
-                                                user.next();
-                                            } else {
-                                                user.spendAndNext(castDelay(user, dst));
-                                            }
-                                            sniperSpecial = false;
-                                            flurryCount = -1;
-                                        }
 
-                                        if (flurryActor != null) {
-                                            flurryActor.next();
-                                            flurryActor = null;
-                                        }
-                                    }
-                                });
 
-                user.sprite.zap(cell, new Callback() {
-                    @Override
-                    public void call() {
+
                         flurryCount--;
                         if (flurryCount > 0) {
                             Actor.add(new Actor() {
@@ -453,7 +435,21 @@ public class SpiritBow extends Weapon {
                                 }
                             });
                             curUser.next();
-                        }
+                        }else {
+											if (user.buff(Talent.LethalMomentumTracker.class) != null){
+												user.buff(Talent.LethalMomentumTracker.class).detach();
+												user.next();
+											} else {
+												user.spendAndNext(castDelay(user, dst));
+											}
+											sniperSpecial = false;
+											flurryCount = -1;
+										}
+
+										if (flurryActor != null){
+											flurryActor.next();
+											flurryActor = null;
+										}
                     }
                 });
 

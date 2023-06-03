@@ -230,6 +230,7 @@ public class Toolbar extends Component {
                 return true;
             }
         });
+		btnWait.icon( 176, 0, 16, 16 );
 
         //hidden button for rest keybind
         add(new Button() {
@@ -261,7 +262,7 @@ public class Toolbar extends Component {
                             Buff.affect(Dungeon.hero, HoldFast.class).pos = Dungeon.hero.pos;
                         }
                         if (Dungeon.hero.hasTalent(Talent.PATIENT_STRIKE)) {
-                            Buff.prolong(Dungeon.hero, Talent.PatientStrikeTracker.class, Dungeon.hero.cooldown());
+                            Buff.affect(Dungeon.hero, Talent.PatientStrikeTracker.class).pos = Dungeon.hero.pos;
                         }
                         Dungeon.hero.next();
                     } else {
@@ -316,7 +317,7 @@ public class Toolbar extends Component {
                 return true;
             }
         });
-
+btnSearch.icon( 192, 0, 16, 16 );
         add(btnInventory = new Tool(0, 0, 24, 26) {
             private CurrencyIndicator ind;
 
@@ -373,12 +374,21 @@ public class Toolbar extends Component {
             protected void layout() {
                 super.layout();
                 ind.fill(this);
+				bringToFront(ind);
 
                 arrow.x = left() + (width - arrow.width()) / 2;
                 arrow.y = bottom() - arrow.height - 1;
                 arrow.angle = bottom() == camera().height ? 0 : 180;
             }
-        });
+        @Override
+			public void enable(boolean value) {
+				if (value != active){
+					arrow.alpha( value ? 1f : 0.4f );
+				}
+				super.enable(value);
+			}
+		});
+		btnInventory.icon( 160, 0, 16, 16 );
 
         //hidden button for inventory selector keybind
         add(new Button() {
@@ -685,7 +695,7 @@ public class Toolbar extends Component {
         private static final int BGCOLOR = 0x7B8073;
 
         private Image base;
-
+private Image icon;
         public Tool(int x, int y, int width, int height) {
             super();
 
@@ -700,7 +710,12 @@ public class Toolbar extends Component {
             this.height = height;
         }
 
-        @Override
+        public void icon( int x, int y, int width, int height){
+			if (icon == null) icon = new Image( Assets.Interfaces.TOOLBAR );
+			add(icon);
+
+			icon.frame( x, y, width, height);
+		}@Override
         protected void createChildren(Object... params) {
             super.createChildren();
 
@@ -714,11 +729,16 @@ public class Toolbar extends Component {
 
             base.x = x;
             base.y = y;
-        }
+        if (icon != null){
+				icon.x = x + (width()- icon.width())/2f;
+				icon.y = y + (height()- icon.height())/2f;
+			}
+		}
 
         public void alpha(float value) {
             base.alpha(value);
-        }
+        if (icon != null) icon.alpha(value);
+		}
 
         @Override
         protected void onPointerDown() {
@@ -736,11 +756,7 @@ public class Toolbar extends Component {
 
         public void enable(boolean value) {
             if (value != active) {
-                if (value) {
-                    base.resetColor();
-                } else {
-                    base.tint(BGCOLOR, 0.7f);
-                }
+                if (icon != null) icon.alpha( value ? 1f : 0.4f);
                 active = value;
             }
         }

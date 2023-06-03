@@ -76,13 +76,13 @@ public class RatKing extends NPC {
 
     //***This functionality is for when rat king may be summoned by a distortion trap
 
-    @Override
-    protected void onAdd() {
-        super.onAdd();
-        if (!Dungeon.customDungeon.isRatKingLevel(Dungeon.levelName)){
-            yell(Messages.get(this, "confused"));
-        }
-    }
+	@Override
+	protected void onAdd() {
+		super.onAdd();
+		if (firstAdded && !Dungeon.customDungeon.isRatKingLevel(Dungeon.levelName)){
+			yell(Messages.get(this, "confused"));
+		}
+	}
 
     @Override
     protected boolean act() {

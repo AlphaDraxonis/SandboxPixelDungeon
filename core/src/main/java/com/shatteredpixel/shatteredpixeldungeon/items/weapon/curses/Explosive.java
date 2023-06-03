@@ -72,6 +72,9 @@ public class Explosive extends Weapon.Enchantment {
 					explosionPos = defender.pos+i;
 				}
 			}
+			if (explosionPos == -1) {
+				explosionPos = defender.pos;
+			}
 
 			new Bomb.MagicalBomb().explode(explosionPos);
 

@@ -119,7 +119,7 @@ public class ItemSprite extends MovieClip {
         this.heap = heap;
         view(heap);
         renderShadow = true;
-        place(heap.pos);
+        visible = heap.seen;place(heap.pos);
     }
 
     @Override

@@ -47,7 +47,7 @@ public class Whip extends MeleeWeapon {
 
 	@Override
 	public int max(int lvl) {
-		return  3*(tier+1) +    //12 base, down from 20
+		return  5*(tier) +      //15 base, down from 20
 				lvl*(tier);     //+3 per level, down from +4
 	}
 
@@ -55,6 +55,7 @@ public class Whip extends MeleeWeapon {
 	protected void duelistAbility(Hero hero, Integer target) {
 
 		ArrayList<Char> targets = new ArrayList<>();
+		Char closest = null;
 
 		hero.belongings.abilityWeapon = this;
 		for (Char ch : Actor.chars()){
@@ -63,6 +64,9 @@ public class Whip extends MeleeWeapon {
 					&& Dungeon.level.heroFOV[ch.pos]
 					&& hero.canAttack(ch)){
 				targets.add(ch);
+				if (closest == null || Dungeon.level.trueDistance(hero.pos, closest.pos) > Dungeon.level.trueDistance(hero.pos, ch.pos)){
+					closest = ch;
+				}
 			}
 		}
 		hero.belongings.abilityWeapon = null;
@@ -73,14 +77,15 @@ public class Whip extends MeleeWeapon {
 		}
 
 		throwSound();
+		Char finalClosest = closest;
 		hero.sprite.attack(hero.pos, new Callback() {
 			@Override
 			public void call() {
-				beforeAbilityUsed(hero);
+				beforeAbilityUsed(hero, finalClosest);
 				for (Char ch : targets) {
-					hero.attack(ch);
+					hero.attack(ch, 1, 0, ch == finalClosest ? Char.INFINITE_ACCURACY : 1);
 					if (!ch.isAlive()){
-						onAbilityKill(hero);
+						onAbilityKill(hero, ch);
 					}
 				}
 				Invisibility.dispel();
