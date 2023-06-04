@@ -17,6 +17,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.S
 import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.WAND_HOLDER;
 import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.WEAPON_HOLDER;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
@@ -198,7 +199,19 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingSp
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Tomahawk;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Trident;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.AdrenalineDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.BlindingDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.ChillingDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.CleansingDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.DisplacingDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.HealingDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.HolyDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.IncendiaryDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.ParalyticDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.PoisonDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.RotDart;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.ShockingDart;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Fadeleaf;
@@ -499,7 +512,20 @@ public enum Items {
                 HeavyBoomerang.class,
                 Trident.class,
                 ThrowingHammer.class,
-                ForceCube.class
+                ForceCube.class,
+                Dart.class,
+                AdrenalineDart.class,
+                BlindingDart.class,
+                ChillingDart.class,
+                CleansingDart.class,
+                DisplacingDart.class,
+                HealingDart.class,
+                HolyDart.class,
+                IncendiaryDart.class,
+                ParalyticDart.class,
+                PoisonDart.class,
+                RotDart.class,
+                ShockingDart.class
         };
 
         ARMOR.classes = Generator.Category.ARMOR.classes;
