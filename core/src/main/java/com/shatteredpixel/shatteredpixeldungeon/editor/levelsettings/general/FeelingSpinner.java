@@ -1,12 +1,16 @@
-package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.gerneral;
+package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.general;
 
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Image;
+
+import java.util.Locale;
 
 public class FeelingSpinner extends Spinner {
 
@@ -19,7 +23,7 @@ public class FeelingSpinner extends Spinner {
     }
 
     public FeelingSpinner(Level.Feeling initialVal, int textSize, boolean includeRandom) {
-        super(new FeelingSpinnerModel(initialVal, includeRandom), " Feeling:", textSize);
+        super(new FeelingSpinnerModel(initialVal, includeRandom), " " + Messages.get(FeelingSpinner.class, "label") + ":", textSize);
     }
 
     private static class FeelingSpinnerModel extends SpinnerTextIconModel {
@@ -40,20 +44,21 @@ public class FeelingSpinner extends Spinner {
 
         @Override
         protected String getAsString(Object feeling) {
-            if (feeling == null) return "Random";
-            else return super.getAsString(feeling);
+            String text = feeling == null ? Messages.get(FeelingSpinner.class, "random") :
+                    Messages.get(FeelingSpinner.class, feeling.toString().toLowerCase(Locale.ENGLISH));
+            return Messages.titleCase(text);
         }
 
         public Image getIcon(Object feeling) {
             if (feeling == null) return new ItemSprite(ItemSpriteSheet.SOMETHING);
-            return ((Level.Feeling) feeling).icon();
+            return Icons.get((Level.Feeling) feeling);
         }
 
         public static Level.Feeling[] getAllFeelings(boolean includeRandom) {
             Level.Feeling[] fs = Level.Feeling.values();
             int startIndex = includeRandom ? 1 : 0;
             Level.Feeling[] ret = new Level.Feeling[fs.length + startIndex];
-            for (int i = startIndex; i < fs.length +startIndex; i++) {
+            for (int i = startIndex; i < fs.length + startIndex; i++) {
                 ret[i] = fs[i - startIndex];
             }
 //          ret[0] = null;

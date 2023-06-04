@@ -20,6 +20,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.W
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.ItemItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.WndEditorItemsBag;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
@@ -212,6 +213,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Para
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.PoisonDart;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.RotDart;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.ShockingDart;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Fadeleaf;
@@ -696,7 +698,7 @@ public enum Items {
     public static final EditorItemBag bag = new EditorItemBag() {
         @Override
         public String name() {
-            return "Items";
+            return Messages.get(WndEditorItemsBag.class,"items");
         }
     };
 
@@ -727,13 +729,13 @@ public enum Items {
 
     static {
 
-        bag.items.add(new ItemBag("Weapons", WEAPON_HOLDER, MELEE_WEAPON.classes(), MISSLE_WEAPON.classes(), WAND.classes()));
-        bag.items.add(new ItemBag("Equipment", ARMOR_HOLDER, ARMOR.classes(), RING.classes(), ARTIFACT.classes()));
-        bag.items.add(new ItemBag("Potion alchemy", POTION_HOLDER, SEED.classes(), POTION.classes()));
-        bag.items.add(new ItemBag("Scroll alchemy", SCROLL_HOLDER, STONE.classes(), SCROLL.classes()));
-        bag.items.add(new ItemBag("Other alchemy", CATA_HOLDER, ALCHEMICAL.classes(), SPELL.classes(), BOMB.classes()));
-        bag.items.add(new ItemBag("Misc", FOOD_HOLDER, FOOD.classes(), KEY.classes()));
-        bag.items.add(new ItemBag("Other", SOMETHING, OTHER.classes(), BAG.classes(), QUEST.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"weapons"), WEAPON_HOLDER, MELEE_WEAPON.classes(), MISSLE_WEAPON.classes(), WAND.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"eq"), ARMOR_HOLDER, ARMOR.classes(), RING.classes(), ARTIFACT.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"pot"), POTION_HOLDER, SEED.classes(), POTION.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"scroll"), SCROLL_HOLDER, STONE.classes(), SCROLL.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"alch"), CATA_HOLDER, ALCHEMICAL.classes(), SPELL.classes(), BOMB.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"misc"), FOOD_HOLDER, FOOD.classes(), KEY.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"other"), SOMETHING, OTHER.classes(), BAG.classes(), QUEST.classes()));
     }
 
 }

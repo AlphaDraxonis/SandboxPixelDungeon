@@ -69,7 +69,7 @@ public class WndEditLevelInOverview extends Window {
         content.add(depth);
 
         //From TransitionTab
-        passage = new TransitionTab.ChooseDestinationLevelComp("Passage:") {
+        passage = new TransitionTab.ChooseDestinationLevelComp(Messages.get(TransitionTab.class,"passage")) {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
@@ -78,7 +78,7 @@ public class WndEditLevelInOverview extends Window {
         };
         content.add(passage);
 
-        chasm = new TransitionTab.ChooseDestinationLevelComp("Chasm:") {
+        chasm = new TransitionTab.ChooseDestinationLevelComp(Messages.get(TransitionTab.class,"chasm")) {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
@@ -112,10 +112,10 @@ public class WndEditLevelInOverview extends Window {
                 super.onClick();
 
                 ShatteredPixelDungeon.scene().add(new WndOptions(Icons.get(Icons.WARNING),
-                        "Do you really want to delete this floor?",
-                        "The floor and all transitions leading to that floor will be irreversibly deleted.",
-                        "Yes, I want to delete it",
-                        "No, I want to continue") {
+                        Messages.get(WndEditLevelInOverview.class,"erase_title"),
+                        Messages.get(WndEditLevelInOverview.class,"erase_body"),
+                        Messages.get(WndEditLevelInOverview.class,"erase_yes"),
+                        Messages.get(WndGameInProgress.class, "erase_warn_no")) {
                     @Override
                     protected void onSelect(int index) {
                         if (index == 0) {
@@ -133,8 +133,8 @@ public class WndEditLevelInOverview extends Window {
         };
         delete.icon(Icons.get(Icons.CLOSE));
         add(delete);
-        if (levelScheme.getType() == CustomLevel.class) {
-            open = new RedButton("Open"){
+        if (levelScheme.getType() == CustomLevel.class && EditorScene.customLevel()!=levelScheme.getLevel()) {
+            open = new RedButton(Messages.get(WndEditLevelInOverview.class,"open")){
                 @Override
                 protected void onClick() {
                     WndSwitchFloor.selectLevelScheme(levelScheme, listItem,listPane);

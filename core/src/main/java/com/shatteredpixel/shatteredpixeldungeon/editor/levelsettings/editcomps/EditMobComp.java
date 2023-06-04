@@ -18,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategori
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
@@ -50,7 +51,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         super(mob);
 
         if (mob instanceof Statue) {
-            statueWeapon = new ItemSelector(" Weapon:", Weapon.class, ((Statue) mob).weapon, false) {
+            statueWeapon = new ItemSelector(" "+ Messages.get(EditMobComp.class,"weapon") +":", Weapon.class, ((Statue) mob).weapon, false) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -60,7 +61,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             };
             add(statueWeapon);
             if (mob instanceof ArmoredStatue) {
-                statueArmor = new ItemSelector(" Armor:", Armor.class, ((ArmoredStatue) mob).armor, false) {
+                statueArmor = new ItemSelector(" "+ Messages.get(EditMobComp.class,"armor") +":", Armor.class, ((ArmoredStatue) mob).armor, false) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
@@ -76,7 +77,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof Thief) {
-            thiefItem = new ItemSelector(" Item:", Item.class, ((Thief) mob).item, true) {
+            thiefItem = new ItemSelector(" "+ Messages.get(EditMobComp.class,"item") +":", Item.class, ((Thief) mob).item, true) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -117,12 +118,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         mobStateSpinner = new MobStateSpinner(mob);
         add(mobStateSpinner);
 
-        addBuffs = new RedButton("Add buffs") {
+        addBuffs = new RedButton(Messages.get(EditMobComp.class,"add_buff")) {
             @Override
             protected void onClick() {
 
                 Window w = new WndChooseOneInCategories(
-                        "Choose Buff", "",
+                        Messages.get(EditMobComp.class,"add_buff_title"), "",
                         Buffs.getAllBuffs2(mob.buffs()), new String[]{"Buffs"}) {
                     @Override
                     protected ChooseOneInCategoriesBody.BtnRow[] createCategoryRows(Object[] category) {

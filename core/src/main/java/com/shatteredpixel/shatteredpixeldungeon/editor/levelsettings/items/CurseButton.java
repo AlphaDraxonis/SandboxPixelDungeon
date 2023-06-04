@@ -1,14 +1,16 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 
 public class CurseButton extends CheckBox {
 
     private Item item;
-    public  CurseButton(Item item){
-        super("Cursed");
-        this.item=item;
+
+    public CurseButton(Item item) {
+        super(Messages.get(CurseButton.class, "label"));
+        this.item = item;
         checked(item.cursed);
     }
 
@@ -19,7 +21,7 @@ public class CurseButton extends CheckBox {
         onChange();
     }
 
-    protected  void onChange(){
+    protected void onChange() {
     }
 
 }

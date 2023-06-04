@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
@@ -42,7 +43,7 @@ public class WndInfoBuffEditor extends WndTitledMessage {
             text = PixelScene.renderTextBlock(buff.desc(), fontSize);
             add(text);
 
-            removeBuff = new RedButton("Remove") {
+            removeBuff = new RedButton(Messages.get(WndInfoBuffEditor.class,"remove")) {
                 @Override
                 protected void onClick() {
 //                  EditorScene.show(new WndOptions((Image)null,"really remove?","msg","Yes","No"));
@@ -63,7 +64,7 @@ public class WndInfoBuffEditor extends WndTitledMessage {
             };
 
             if (false) {//only apply permanent buffs for now
-                changeDuration = new Spinner(spinnerModel, " Duration:", 10) {
+                changeDuration = new Spinner(spinnerModel, " "+Messages.get(WndInfoBuffEditor.class,"duration"), 10) {
                     @Override
                     protected void onPointerUp() {
                         onSpinnerValueChange(true);

@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.Koord;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
@@ -39,7 +40,7 @@ public class EnemyTab extends WndEditorSettings.TabComp {
 
         list.clear();
 
-        list.addTitle("Mob overview");
+        list.addTitle(Messages.get(EnemyTab.class,"title"));
 
         List<Mob> mobsOnFloor = new ArrayList<>(EditorScene.customLevel().mobs);
 

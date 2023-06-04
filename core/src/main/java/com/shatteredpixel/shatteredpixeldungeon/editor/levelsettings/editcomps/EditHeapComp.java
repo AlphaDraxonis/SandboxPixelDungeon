@@ -1,7 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Koord;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
@@ -35,7 +34,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
     public EditHeapComp(Heap heap) {
         super(heap);
 
-        autoExplored = new CheckBox("AutoExplored") {
+        autoExplored = new CheckBox(Messages.get(EditHeapComp.class, "auto_explored")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -48,14 +47,14 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         autoExploredInfo = new IconButton(Icons.get(Icons.INFO)) {
             @Override
             protected void onClick() {
-                EditorScene.show(new WndTitledMessage(Icons.get(Icons.INFO), "AutoExplored",
-                        "If AutoExplored is set to true, this heap will not count for exploration score."));
+                EditorScene.show(new WndTitledMessage(Icons.get(Icons.INFO), Messages.titleCase(Messages.get(EditHeapComp.class, "auto_explored")),
+                        Messages.get(EditHeapComp.class, "auto_explored_info")));
             }
         };
         add(autoExploredInfo);
 
 
-        haunted = new CheckBox("Haunted") {
+        haunted = new CheckBox(Messages.get(EditHeapComp.class, "haunted")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -68,8 +67,8 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         hauntedInfo = new IconButton(Icons.get(Icons.INFO)) {
             @Override
             protected void onClick() {
-                EditorScene.show(new WndTitledMessage(Icons.get(Icons.INFO), "Haunted",
-                        "If Haunted is set to true, a " + Messages.get(Wraith.class, "name") + " will spawn at the heap when opening (only works for containers)."));
+                EditorScene.show(new WndTitledMessage(Icons.get(Icons.INFO), Messages.titleCase(Messages.get(EditHeapComp.class, "haunted")),
+                        Messages.get(EditHeapComp.class, "haunted_info")));
             }
         };
         add(hauntedInfo);
@@ -109,18 +108,18 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
 
     @Override
     protected String createDescription() {
-        if (item.type == Heap.Type.HEAP) return "This heap is open and all items are exposed";
+        if (item.type == Heap.Type.HEAP) return Messages.get(EditHeapComp.class, "desc_heap_open");
         if (item.type == Heap.Type.FOR_SALE)
-            return "This heap is open and the last item is sold. All other items are free.";
+            return Messages.get(EditHeapComp.class, "desc_heap_for_sale");
         return item.info();
     }
 
     private String getTitle() {
         String title;
-        if (item.type == Heap.Type.HEAP) title = "Heap: Open";
-        else if (item.type == Heap.Type.FOR_SALE) title = "Heap: For Sale";
+        if (item.type == Heap.Type.HEAP) title = Messages.get(EditHeapComp.class, "title_heap_open");
+        else if (item.type == Heap.Type.FOR_SALE) title = Messages.get(EditHeapComp.class, "title_heap_open");
         else title = Messages.titleCase(item.title());
-        return title +" "+ new Koord(item.pos);
+        return title + " " + new Koord(item.pos);
     }
 
     @Override
@@ -187,7 +186,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
     private class HeapTypeSpinner extends Spinner {
 
         public HeapTypeSpinner(Heap heap) {
-            super(new HeapTypeSpinnerModel(heap), " Type", 10);
+            super(new HeapTypeSpinnerModel(heap), " "+Messages.get(EditHeapComp.class,"type"), 10);
 
             addChangeListener(EditHeapComp.this::updateItem);
         }
@@ -212,8 +211,8 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         protected String getAsString(Object value) {
             Heap.Type type = (Heap.Type) value;
             heap.type = type;
-            if (type == Heap.Type.HEAP) return "Open";
-            if (type == Heap.Type.FOR_SALE) return "For Sale";
+            if (type == Heap.Type.HEAP) return Messages.get(EditHeapComp.class, "title_heap_open");
+            if (type == Heap.Type.FOR_SALE) return Messages.get(EditHeapComp.class, "title_heap_for_sale");
             return heap.title();
         }
 

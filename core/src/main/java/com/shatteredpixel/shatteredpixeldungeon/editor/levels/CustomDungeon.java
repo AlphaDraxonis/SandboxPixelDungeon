@@ -480,7 +480,7 @@ public class CustomDungeon implements Bundlable {
     }
 
     public CustomDungeonSaves.Info createInfo() {
-        return new CustomDungeonSaves.Info(getName(), 1);
+        return new CustomDungeonSaves.Info(getName(), 1,getNumFloors());
     }
 
     void addRatKingLevel(String name) {

@@ -1,4 +1,4 @@
-package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.gerneral;
+package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.general;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
@@ -35,7 +36,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
     @Override
     protected void createChildren(Object... params) {
 
-        title = new IconTitle(Icons.get(Icons.PREFS), "General Settings");
+        title = new IconTitle(Icons.get(Icons.PREFS), Messages.get(GeneralTab.class,"title"));
         add(title);
 
         content = new Component();
@@ -48,7 +49,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         });
         content.add(feeling);
 
-        potionColors = new RedButton("Set potion colors") {
+        potionColors = new RedButton(Messages.get(GeneralTab.class,"set_pot")) {
             @Override
             protected void onClick() {
                 EditorScene.show(WndSetPotionScrollRingType.createPotionWnd());
@@ -56,7 +57,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         };
         content.add(potionColors);
 
-        scrollRunes = new RedButton("Set scroll runes") {
+        scrollRunes = new RedButton(Messages.get(GeneralTab.class,"set_scroll")) {
             @Override
             protected void onClick() {
                 EditorScene.show(WndSetPotionScrollRingType.createScrollWnd());
@@ -64,7 +65,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         };
         content.add(scrollRunes);
 
-        ringGems = new RedButton("Set ring gems") {
+        ringGems = new RedButton(Messages.get(GeneralTab.class,"set_ring")) {
             @Override
             protected void onClick() {
                 EditorScene.show(WndSetPotionScrollRingType.createRingWnd());
@@ -73,7 +74,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         content.add(ringGems);
 
 
-        region = new RedButton("Change region") {
+        region = new RedButton(Messages.get(GeneralTab.class,"region")) {
             @Override
             protected void onClick() {
                 EditorScene.show(new WndChangeRegion());
@@ -81,7 +82,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         };
         content.add(region);
 
-        mobSpawn = new RedButton("Mob spawn settings") {
+        mobSpawn = new RedButton(Messages.get(GeneralTab.class,"mob_spawn")) {
             @Override
             protected void onClick() {
                 EditorScene.show(new WndMobSpawn());
@@ -99,7 +100,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
             public int getClicksPerSecondWhileHolding() {
                 return 13;
             }
-        }, " View distance:", 9);
+        }, " " + Messages.get(GeneralTab.class, "view_distance") + ":", 9);
         viewDistance.addChangeListener(() -> EditorScene.customLevel().viewDistance = (int) viewDistance.getValue());
         content.add(viewDistance);
 
@@ -121,7 +122,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
             public int getClicksPerSecondWhileHolding() {
                 return 8;
             }
-        }, " ShopPrice:", 9);
+        }, " " + Messages.get(GeneralTab.class, "shop_price") + ":", 9);
         shopPrice.addChangeListener(() -> {
             EditorScene.customLevel().levelScheme.setShopPriceMultiplier((int) shopPrice.getValue());
         });

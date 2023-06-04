@@ -24,13 +24,13 @@ public class WndNewDungeon extends WndTextInput {
     public WndNewDungeon(Set<String> otherNames) {
 
         super(
-                Messages.titleCase("Create new dungeon"),
-                "Enter name for new dungeon:",
+                Messages.titleCase(Messages.get(WndNewDungeon.class,"title")),
+                Messages.get(WndNewDungeon.class,"body"),
                 "",
                 50,
                 false,
-                "Create",
-                "Cancel"
+                Messages.get(WndNewDungeon.class,"yes"),
+                Messages.get(WndNewDungeon.class,"no")
         );
 
         this.otherNames = otherNames;
@@ -61,10 +61,9 @@ public class WndNewDungeon extends WndTextInput {
             public void call() {
                 Game.scene().addToFront(
                         new WndOptions(Icons.get(Icons.WARNING),
-                                "ERROR - duplicate names",
-                                "You cannot create a new dungeon or floor because one already exists with that name. " +
-                                        "Note that the names \"" + Level.SURFACE + "\" and \"" + Level.NONE + "\" are also reserved names for floors.",
-                                "Close"
+                                Messages.get(WndNewDungeon.class,"dup_name_title"),
+                                Messages.get(WndNewDungeon.class,"dup_name_body", Level.SURFACE,Level.NONE),
+                                Messages.get(WndNewDungeon.class,"dup_name_close")
                         )
                 );
             }
@@ -80,9 +79,10 @@ public class WndNewDungeon extends WndTextInput {
         }
 
         Window w = new WndOptions(Icons.get(Icons.WARNING),
-                "Add default floors",
-                "Do you really want to add the 26 default levels and set the settings to the default dungeon settings? You will need about 1KB disc space.",
-                "Yes", "No"
+                Messages.get(WndNewDungeon.class,"add_default_title"),
+                Messages.get(WndNewDungeon.class,"add_default_body"),
+                Messages.get(WndNewDungeon.class,"add_default_yes"),
+                Messages.get(WndNewDungeon.class,"add_default_no")
         ) {
             @Override
             protected void onSelect(int index) {

@@ -3,12 +3,12 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -71,12 +71,12 @@ public abstract class EditorItem extends Item {
         }
         @Override
         public String name() {
-            return "Nothing";
+            return Messages.get(EditorItem.class,"nothing_name");
         }
 
         @Override
         public String desc() {
-            return "This item represents no item.";
+            return Messages.get(EditorItem.class,"nothing_desc");
         }
     };
     public final static EditorItem REMOVER_ITEM = new EditorItem() {
@@ -125,12 +125,12 @@ public abstract class EditorItem extends Item {
 
         @Override
         public String name() {
-            return "remover";
+            return Messages.get(EditorItem.class,"remover_name");
         }
 
         @Override
         public String desc() {
-            return "This item can remove objects from the world.";
+            return Messages.get(EditorItem.class,"remover_desc");
         }
     };
 

@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
@@ -32,7 +33,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
     }
 
     private final void initComps() {
-        visible = new CheckBox("Visible") {
+        visible = new CheckBox(Messages.get(EditTrapComp.class,"visible")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -41,7 +42,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             }
         };
         add(visible);
-        active = new CheckBox("Active") {
+        active = new CheckBox(Messages.get(EditTrapComp.class,"active")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);

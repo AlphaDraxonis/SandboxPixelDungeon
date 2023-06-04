@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public abstract class EditorItemBag extends Bag{
         EditorItemBag tiles = new EditorItemBag(){
             @Override
             public String name() {
-                return "tiles";
+                return Messages.get(EditorItemBag.class,"tiles");
             }
         };
         tiles.items.addAll(Tiles.bags);
@@ -46,7 +47,7 @@ public abstract class EditorItemBag extends Bag{
         EditorItemBag mobs = new EditorItemBag() {
             @Override
             public String name() {
-                return "mobs";
+                return Messages.get(EditorItemBag.class,"mobs");
             }
         };
         mobs.items.addAll(Mobs.bags);

@@ -4,7 +4,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.ui.Component;
+
+import java.util.Locale;
 
 public class MobStateSpinner extends Spinner {
 
@@ -66,7 +69,7 @@ public class MobStateSpinner extends Spinner {
         @Override
         protected String getAsString(Object value) {
             States state = (States) value;
-            return state.toString();
+            return Messages.get(MobStateSpinner.class,state.name().toLowerCase(Locale.ENGLISH));
         }
     }
 }

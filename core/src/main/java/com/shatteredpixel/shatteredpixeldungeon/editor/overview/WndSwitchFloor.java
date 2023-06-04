@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -38,7 +39,7 @@ public class WndSwitchFloor extends Window {
         };
         add(listPane);
 
-        createFloor = new RedButton("Create new floor") {
+        createFloor = new RedButton(Messages.get(WndSwitchFloor.class,"new_floor")) {
             @Override
             protected void onClick() {
                 EditorScene.show(new WndNewFloor(Dungeon.customDungeon));

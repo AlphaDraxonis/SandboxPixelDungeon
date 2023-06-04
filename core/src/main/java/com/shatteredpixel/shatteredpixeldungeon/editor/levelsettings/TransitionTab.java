@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseObjectComp;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -44,13 +45,13 @@ public class TransitionTab extends WndEditorSettings.TabComp {
     @Override
     protected void createChildren(Object... params) {
 
-        title = PixelScene.renderTextBlock("Transitions", 10);
+        title = PixelScene.renderTextBlock(Messages.get(TransitionTab.class, "title"), 10);
         title.hardlight(Window.TITLE_COLOR);
         add(title);
 
         content = new Component();
 
-        startfloor = new ChooseDestinationLevelComp("StartFloor:") {
+        startfloor = new ChooseDestinationLevelComp(Messages.get(TransitionTab.class, "startfloor")) {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
@@ -66,7 +67,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         };
         content.add(startfloor);
 
-        passage = new ChooseDestinationLevelComp("Passage:") {
+        passage = new ChooseDestinationLevelComp(Messages.get(TransitionTab.class, "passage")) {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
@@ -80,7 +81,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         };
         content.add(passage);
 
-        chasm = new ChooseDestinationLevelComp("Chasm:") {
+        chasm = new ChooseDestinationLevelComp(Messages.get(TransitionTab.class, "chasm")) {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
@@ -112,7 +113,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         line = new ColorBlock(1, 1, 0xFF222222);
         content.add(line);
 
-        titleLevelTransitons = PixelScene.renderTextBlock("Transitions for this level", 9);
+        titleLevelTransitons = PixelScene.renderTextBlock(Messages.get(TransitionTab.class, "trans_for_lvl"), 9);
         titleLevelTransitons.hardlight(Window.TITLE_COLOR);
         content.add(titleLevelTransitons);
 
@@ -209,7 +210,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
                     return ChooseDestinationLevelComp.this.filterLevels(levels);
                 }
             };
-            if(Game.scene() instanceof EditorScene)EditorScene.show(w);
+            if (Game.scene() instanceof EditorScene) EditorScene.show(w);
             else Game.scene().addToFront(w);
         }
 
@@ -245,9 +246,11 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             add(line);
 
             title = PixelScene.renderTextBlock(9);
-            if (cell < 0) title.text(cell == CELL_DEFAULT_ENTRANCE ? "Entrance" : "Exit");
+            if (cell < 0)
+                title.text(Messages.get(TransitionTab.class, cell == CELL_DEFAULT_ENTRANCE ? "entrance" : "exit"));
             else
-                title.text((levelScheme.getLevel().map[cell] == Terrain.ENTRANCE ? "Entrance " : "Exit ") + new Koord(cell, levelScheme.getLevel()));
+                title.text(Messages.get(TransitionTab.class, (levelScheme.getLevel().map[cell] == Terrain.ENTRANCE ? "entrance" : "exit"))
+                        + " " + new Koord(cell, levelScheme.getLevel()));
             add(title);
 
             remover = new IconButton(Icons.get(Icons.CLOSE)) {
@@ -305,7 +308,8 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             remover.visible = true;
             if (updateOthers) {
                 layoutParent();
-                if (levelScheme.getLevel() == EditorScene.customLevel()) EditorScene.add(transition);
+                if (levelScheme.getLevel() == EditorScene.customLevel())
+                    EditorScene.add(transition);
             }
         }
 

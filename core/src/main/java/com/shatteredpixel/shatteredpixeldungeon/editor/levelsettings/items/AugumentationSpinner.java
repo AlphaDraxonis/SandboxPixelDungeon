@@ -7,6 +7,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
+import java.util.Locale;
+
 public class AugumentationSpinner extends Spinner {
 
 
@@ -14,7 +16,7 @@ public class AugumentationSpinner extends Spinner {
         super(item instanceof Weapon ?
                         new WeaponAugSpinnerModel((Weapon) item) :
                         new ArmorAugSpinnerModel((Armor) item),
-                " Aug.:", 10);
+                " "+Messages.get(AugumentationSpinner.class,"label")+":", 10);
 
         addChangeListener(() -> {
             ((Applyable) getModel()).apply();
@@ -47,17 +49,7 @@ public class AugumentationSpinner extends Spinner {
 
         @Override
         protected String getAsString(Object value) {
-            switch ((Weapon.Augment) value) {
-                case SPEED:
-                    return "SPEED";
-//                    return Messages.get(Weapon.class, "faster");
-                case DAMAGE:
-                    return "DMG";
-//                    return Messages.get(Weapon.class, "stronger");
-                case NONE:
-                    return "NONE";
-            }
-            return Messages.NO_TEXT_FOUND;
+            return Messages.get(AugumentationSpinner.class,((Weapon.Augment) value).name().toLowerCase(Locale.ENGLISH));
         }
     }
 
@@ -77,17 +69,7 @@ public class AugumentationSpinner extends Spinner {
 
         @Override
         protected String getAsString(Object value) {
-            switch ((Armor.Augment) value) {
-                case EVASION:
-                    return "EVASION";
-//                    return Messages.get(Armor.class, "evasion");
-                case DEFENSE:
-                    return "DEFENSE";
-//                    return Messages.get(Armor.class, "defense");
-                case NONE:
-                    return "NONE";
-            }
-            return Messages.NO_TEXT_FOUND;
+            return Messages.get(AugumentationSpinner.class,((Armor.Augment) value).name().toLowerCase(Locale.ENGLISH));
         }
     }
 }

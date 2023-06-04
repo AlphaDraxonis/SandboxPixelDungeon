@@ -1,4 +1,4 @@
-package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.gerneral;
+package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.general;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -61,14 +62,14 @@ public class WndSetPotionScrollRingType extends Window {
             content.add(spinners[i]);
         }
 
-        cancel = new RedButton("Cancel") {
+        cancel = new RedButton(Messages.get(WndChangeRegion.class,"cancel")) {
             @Override
             protected void onClick() {
                 hide();
             }
         };
         add(cancel);
-        save = new RedButton("Save and close") {
+        save = new RedButton(Messages.get(WndChangeRegion.class,"close")) {
             @Override
             protected void onClick() {
                 save();
@@ -139,15 +140,18 @@ public class WndSetPotionScrollRingType extends Window {
     }
 
     public static WndSetPotionScrollRingType createScrollWnd() {
-        return new WndSetPotionScrollRingType(Generator.Category.SCROLL.classes, "Change Runes");
+        return new WndSetPotionScrollRingType(Generator.Category.SCROLL.classes,
+                Messages.get(WndSetPotionScrollRingType.class,"title_scroll"));
     }
 
     public static WndSetPotionScrollRingType createPotionWnd() {
-        return new WndSetPotionScrollRingType(Generator.Category.POTION.classes, "Change Colors");
+        return new WndSetPotionScrollRingType(Generator.Category.POTION.classes,
+                Messages.get(WndSetPotionScrollRingType.class,"title_potion"));
     }
 
     public static WndSetPotionScrollRingType createRingWnd() {
-        return new WndSetPotionScrollRingType(Generator.Category.RING.classes, "Change Gems");
+        return new WndSetPotionScrollRingType(Generator.Category.RING.classes,
+                Messages.get(WndSetPotionScrollRingType.class,"title_ring"));
     }
 
     protected void save() {

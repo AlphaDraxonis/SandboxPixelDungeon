@@ -1,6 +1,6 @@
-package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.gerneral;
+package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.general;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.gerneral.GeneralTab.BUTTON_HEIGHT;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.general.GeneralTab.BUTTON_HEIGHT;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
@@ -32,7 +32,7 @@ import java.util.Map;
 class WndMobSpawn extends WndTitledMessage {
 
     public WndMobSpawn() {
-        super("Mob respawning", Body::new);
+        super(Messages.get(WndMobSpawn.class, "title"), Body::new);
     }
 
     private static class Body extends WndTitledMessage.Body {
@@ -44,7 +44,7 @@ class WndMobSpawn extends WndTitledMessage {
         public Body() {
             CustomLevel f = EditorScene.customLevel();
 
-            enableMutations = new CheckBox("Enable natural mutations") {
+            enableMutations = new CheckBox(Messages.get(WndMobSpawn.class, "mutation")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -58,7 +58,7 @@ class WndMobSpawn extends WndTitledMessage {
                 public float getInputFieldWith(float height) {
                     return height * 1.1f;
                 }
-            }, " Moblimit:", 9);
+            }, " " + Messages.get(WndMobSpawn.class, "limit") + ":", 9);
             moblimit.addChangeListener(() -> f.setMobLimit((int) moblimit.getValue()));
             add(moblimit);
             respawnTime = new Spinner(new SpinnerIntegerModel(1, 100, (int) f.respawnCooldown(), 1, false, null) {
@@ -66,11 +66,11 @@ class WndMobSpawn extends WndTitledMessage {
                 public float getInputFieldWith(float height) {
                     return height * 1.1f;
                 }
-            }, " Respawn time:", 9);
+            }, " " + Messages.get(WndMobSpawn.class, "respawn_time") + ":", 9);
             respawnTime.addChangeListener(() -> f.setRespawnCooldown((int) respawnTime.getValue()));
             add(respawnTime);
 
-            openMobCycle = new RedButton("Edit mob cycle") {
+            openMobCycle = new RedButton(Messages.get(WndMobSpawn.class, "edit_cycle")) {
                 @Override
                 protected void onClick() {
                     EditorScene.show(new WndChangeMobRotation());
@@ -78,7 +78,7 @@ class WndMobSpawn extends WndTitledMessage {
             };
             add(openMobCycle);
 
-            disableSpawning = new CheckBox("Enable mob respawning") {
+            disableSpawning = new CheckBox(Messages.get(WndMobSpawn.class, "enable_respawn")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -148,7 +148,7 @@ class WndChangeMobRotation extends Window {
 
         resize(width, height);
 
-        addMobBtn = new RedButton("Add mob") {
+        addMobBtn = new RedButton(Messages.get(WndMobSpawn.class, "add_mob")) {
             @Override
             protected void onClick() {
                 EditorScene.show(new WndChooseMob("", mobRotItems.keySet()) {
@@ -176,7 +176,7 @@ class WndChangeMobRotation extends Window {
         };
         add(infoBtn);
 
-        title = PixelScene.renderTextBlock("Mob rotation", 13);
+        title = PixelScene.renderTextBlock(Messages.get(WndMobSpawn.class, "mob_rot"), 13);
         title.hardlight(Window.TITLE_COLOR);
         add(title);
 
@@ -199,7 +199,9 @@ class WndChangeMobRotation extends Window {
     }
 
     private void showInfo() {
-        EditorScene.show(new WndTitledMessage(Icons.get(Icons.INFO), "Mob rotation", "Here you can set the rotation of the mobs that spawn on this level. Instead of the percentage, you give a ratio as input because it is way easier to code that way. After all mobs of a cyclus have been spawned, the cyclus will reset. This means that a larger sum of numbers will result in more randomness, even if the percentages stay the same."));
+        EditorScene.show(new WndTitledMessage(Icons.get(Icons.INFO),
+                Messages.titleCase(Messages.get(WndMobSpawn.class, "mob_rot")),
+                Messages.get(WndMobSpawn.class, "mob_rot_info")));
     }
 
     private void initComps() {

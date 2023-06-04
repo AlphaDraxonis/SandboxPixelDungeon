@@ -1,7 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings;
 
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.gerneral.GeneralTab;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.general.GeneralTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.ItemTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.mobs.EnemyTab;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;

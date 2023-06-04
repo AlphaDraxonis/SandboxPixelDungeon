@@ -16,13 +16,17 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
 public abstract class WndSelectLevelType extends WndChooseOneInCategories {
 
     public WndSelectLevelType(boolean flag) {
-        super("Choose level", "Select a level type for the floor",
+        super(Messages.get(WndSelectLevelType.class,"title"), Messages.get(WndSelectLevelType.class,"desc"),
                 createCategories(flag),
-                new String[]{"Custom", "Regular", "Boss"});
+                new String[]{
+                        Messages.get(WndSelectLevelType.class,"type_custom"),
+                        Messages.get(WndSelectLevelType.class,"type_regular"),
+                        Messages.get(WndSelectLevelType.class,"type_boss")});
     }
 
     @Override
@@ -30,19 +34,21 @@ public abstract class WndSelectLevelType extends WndChooseOneInCategories {
         ChooseOneInCategoriesBody.BtnRow[] ret = new ChooseOneInCategoriesBody.BtnRow[category.length];
         for (int i = 0; i < category.length; i++) {
             final Class<? extends Level> clazz = (Class<? extends Level>) category[i];
-            if (clazz == null) ret[i] = new ChooseOneInCategoriesBody.BtnRow("None","No template selected") {
+            if (clazz == null) ret[i] = new ChooseOneInCategoriesBody.BtnRow(Messages.get(WndSelectLevelType.class,"type_none"),
+                    Messages.get(WndSelectLevelType.class,"none_info")) {
                 @Override
                 protected void onClick() {
                     click(null);
                 }
             };
-            else if (clazz == CustomLevel.class) ret[i] = new ChooseOneInCategoriesBody.BtnRow("Custom","Customize this floor"){
+            else if (clazz == CustomLevel.class) ret[i] = new ChooseOneInCategoriesBody.BtnRow(Messages.get(WndSelectLevelType.class,"type_custom"),
+                    Messages.get(WndSelectLevelType.class,"custom_info")){
                 @Override
                 protected void onClick() {
                     click(clazz);
                 }
             };
-            else ret[i] = new ChooseOneInCategoriesBody.BtnRow(clazz.getSimpleName(),"A new "+clazz.getSimpleName()+" will be created."){
+            else ret[i] = new ChooseOneInCategoriesBody.BtnRow(clazz.getSimpleName(),Messages.get(WndSelectLevelType.class,"new_msg",clazz.getSimpleName())){
                     @Override
                     protected void onClick() {
                         click(clazz);

@@ -1,9 +1,10 @@
-package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.gerneral;
+package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.general;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Reflection;
 
 import java.util.HashSet;
@@ -17,7 +18,7 @@ public class WndChooseMob extends WndChooseOneInCategories {
         this(desc,new HashSet<>());
     }
     public WndChooseMob(String desc, Set<Class<? extends  Mob>> mobsToIgnore) {
-        super("Choose mob",
+        super(Messages.get(WndChooseMob.class,"title"),
                 desc, Mobs.getAllMobs(mobsToIgnore), Mobs.getAllNames());
         scrollTo(lastView);
     }

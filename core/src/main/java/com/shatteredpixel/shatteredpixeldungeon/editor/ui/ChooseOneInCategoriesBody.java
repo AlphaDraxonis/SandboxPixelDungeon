@@ -46,7 +46,7 @@ public abstract class ChooseOneInCategoriesBody extends Component {
         this.text = PixelScene.renderTextBlock(desc, 6);
         add(this.text);
 
-        scrollUp = new RedButton("Scroll up", 7) {
+        scrollUp = new RedButton(Messages.get(ChooseOneInCategoriesBody.class,"up"), 7) {
             @Override
             protected void onClick() {
                 scrollUp();
@@ -58,7 +58,7 @@ public abstract class ChooseOneInCategoriesBody extends Component {
             }
         };
         add(scrollUp);
-        scrollDown = new RedButton("Scroll down", 7) {
+        scrollDown = new RedButton(Messages.get(ChooseOneInCategoriesBody.class,"down"), 7) {
             @Override
             protected void onClick() {
                 scrollDown();
@@ -70,7 +70,7 @@ public abstract class ChooseOneInCategoriesBody extends Component {
             }
         };
         add(scrollDown);
-        cancel = new RedButton("Cancel", 7) {
+        cancel = new RedButton(Messages.get(ChooseOneInCategoriesBody.class,"cancel"), 7) {
             @Override
             protected void onClick() {
                 onCancel();

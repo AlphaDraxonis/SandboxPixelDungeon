@@ -102,6 +102,7 @@ public class Assets {
 	//these points to resource bundles, not raw asset files
 	public static class Messages {
 		public static final String ACTORS   = "messages/actors/actors";
+		public static final String EDITOR   = "messages/editor/editor";
 		public static final String ITEMS    = "messages/items/items";
 		public static final String JOURNAL  = "messages/journal/journal";
 		public static final String LEVELS   = "messages/levels/levels";

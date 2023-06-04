@@ -51,7 +51,7 @@ public class TrapItem extends EditorItem {
     }
 
     public static String createTitle(Trap trap) {
-        return Messages.titleCase((trap.visible ? "" : "hidden ") + trap.name());
+        return Messages.titleCase((trap.visible ?trap.name() : Messages.get(TrapItem.class,"title_hidden",trap.name())));
     }
 
     @Override

@@ -4,9 +4,9 @@ import com.badlogic.gdx.Files;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
@@ -203,9 +203,10 @@ public class CustomDungeonSaves {
         public Info() {
         }
 
-        public Info(String name, int version) {
+        public Info(String name, int version, int numLevels) {
             this.name = name;
             this.version = version;
+            this.numLevels = numLevels;
         }
 
         @Override
@@ -215,17 +216,20 @@ public class CustomDungeonSaves {
 
         private static final String NAME = "name";
         private static final String VERSION = "version";
+        private static final String NUM_LEVLES = "num_levels";
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             name = bundle.getString(NAME);
             version = bundle.getInt(VERSION);
+            numLevels = bundle.getInt(NUM_LEVLES);
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
             bundle.put(NAME, name);
             bundle.put(VERSION, version);
+            bundle.put(NUM_LEVLES, numLevels);
         }
     }
 

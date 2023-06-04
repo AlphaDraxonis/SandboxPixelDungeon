@@ -1,11 +1,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.CurseButton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.LevelSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.WndChooseEnchant;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.WndInfoEq;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -19,7 +21,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfEnc
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
@@ -58,7 +59,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 public int getClicksPerSecondWhileHolding() {
                     return 15 * quantityMultiplierForGold;
                 }
-            }, " Quantity:", 10);
+            }, " " + Messages.get(EditItemComp.class, "quantity") + ":", 10);
             quantity.setButtonWidth(14);
             quantity.addChangeListener(() -> {
                 item.quantity((int) quantity.getValue());
@@ -75,7 +76,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 }
             };
             add(curseBtn);
-            cursedKnown = new CheckBox("Cursed known") {
+            cursedKnown = new CheckBox(Messages.get(EditItemComp.class,"cursed_known")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -97,7 +98,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 }
             };
             add(levelSpinner);
-            levelKnown = new CheckBox("Level known") {
+            levelKnown = new CheckBox(Messages.get(EditItemComp.class,"level_known")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -111,8 +112,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
             levelKnown = null;
         }
 
-        if (item instanceof Weapon || item instanceof Armor) {//Missles support enchantments too
-            enchantBtn = new RedButton("Enchant") {
+        if (item instanceof Weapon || item instanceof Armor) {//Missiles support enchantments too
+            enchantBtn = new RedButton(Messages.get(WndInfoEq.class,"enchant")) {
                 @Override
                 protected void onClick() {
                     EditorScene.show(new WndChooseEnchant(item) {

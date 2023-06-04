@@ -3,12 +3,13 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
 public class LevelSpinner extends Spinner {
 
 
     public LevelSpinner(Item item) {
-        super(new LevelSpinnerModel(item), " Level:", 10);
+        super(new LevelSpinnerModel(item), " "+ Messages.get(LevelSpinner.class,"label") + ":", 10);
         addChangeListener(() -> {
             item.level((int) getValue());
             onChange();

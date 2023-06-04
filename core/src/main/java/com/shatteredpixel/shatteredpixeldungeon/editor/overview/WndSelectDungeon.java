@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -44,7 +45,7 @@ public class WndSelectDungeon extends Window {
         for (CustomDungeonSaves.Info info : allInfos) otherDungeonNames.add(info.name);
 
         if (showAddButton) {
-            createNewDungeonBtn = new RedButton("New Dungeon") {
+            createNewDungeonBtn = new RedButton(Messages.get(WndSelectDungeon.class,"new")) {
                 @Override
                 protected void onClick() {
                     Game.scene().addToFront(new WndNewDungeon(otherDungeonNames));
@@ -121,9 +122,9 @@ public class WndSelectDungeon extends Window {
                         super.onClick();
 
                         ShatteredPixelDungeon.scene().add(new WndOptions(Icons.get(Icons.WARNING),
-                                "Do you really want to delete this dungeon?",
-                                "All floors will be deleted, but you can still continue games that were started with that dungeon.",
-                                "Yes", "No") {
+                                Messages.get(WndSelectDungeon.class, "erase_title"),
+                                Messages.get(WndSelectDungeon.class, "erase_body"),
+                                Messages.get(ExoticPotion.class, "yes"), Messages.get(ExoticPotion.class, "no")) {
                             @Override
                             protected void onSelect(int index) {
                                 if (index == 0) {
@@ -137,29 +138,29 @@ public class WndSelectDungeon extends Window {
                     }
                 };
 
-                RedButton export = new RedButton("Export as JSON") {
+                RedButton export = new RedButton(Messages.get(WndSelectDungeon.class, "export_label")) {
                     @Override
                     protected void onClick() {
                         Window w = new WndOptions(
-                                "Export \""+info.name+"\" as a JSON file?",
-                                "It will be exported to Android/data/com.alphadraxonis.sandboxpd/files/exports/"+info.name+".json\n"+//TODO add platform differences!
-                                "If the file already exists, it will be overriden.\n"+
-                                "The JSON file can be used for \"Custom Pixel Dungeon\" by QuasiStellar, but not all features are supported.",
-                                "Export", "Cancel") {
+                                Messages.get(WndSelectDungeon.class, "export_title",info.name),//TODO add platform differences!
+                                Messages.get(WndSelectDungeon.class, "export_body",
+                                        "Android/data/com.alphadraxonis.sandboxpd/files/exports/\"" + info.name + "\".json"),
+                                Messages.get(WndSelectDungeon.class, "export_yes"), Messages.get(WndSelectDungeon.class, "export_no")) {
                             @Override
                             protected void onSelect(int index) {
                                 if (index == 0) {
                                     try {
                                         CustomDungeonSaves.setFileType(Files.FileType.External);
-                                        CustomDungeonSaves.writeClearText("exports/"+info.name+".json",
+                                        CustomDungeonSaves.writeClearText("exports/" + info.name + ".json",
                                                 DungeonToJsonConverter.getAsJson(CustomDungeonSaves.loadDungeon(info.name)));
 
                                         Window win = new WndOptions(
-                                                "Successfully exported \""+info.name+"\" as a JSON file",
-                                                "\""+info.name+"\" was successfully exported!\nCheck it out to see which settings were not exported."+
-                                                        (info.name.equals("dungeon")?"":"\nDon't forget to rename it to dungeon.json if you want to use it in Custom PD."),
-                                                "Close");
-                                        if (Game.scene() instanceof EditorScene) EditorScene.show(win);
+                                                Messages.get(WndSelectDungeon.class, "export_confirm_title",info.name),
+                                                Messages.get(WndSelectDungeon.class, "export_confirm_body",info.name)+
+                                                        (info.name.equals("dungeon") ? "" : Messages.get(WndSelectDungeon.class, "export_confirm_rename_hint")),
+                                                Messages.get(WndSelectDungeon.class, "export_confirm_close"));
+                                        if (Game.scene() instanceof EditorScene)
+                                            EditorScene.show(win);
                                         else Game.scene().addToFront(win);
 
                                     } catch (IOException e) {
@@ -179,7 +180,7 @@ public class WndSelectDungeon extends Window {
                 title.setPos((width - title.width()) * 0.5f, pos);
                 pos = title.bottom() + GAP;
 
-                pos = statSlot("Num floors", Integer.toString( info.numLevels), pos) + GAP * 2;
+                pos = statSlot(Messages.get(WndSelectDungeon.class,"num_floors"), Integer.toString(info.numLevels), pos) + GAP * 2;
 
                 cont.icon(Icons.get(Icons.ENTER));
                 cont.setRect(0, pos, width / 2 - 1, 20);

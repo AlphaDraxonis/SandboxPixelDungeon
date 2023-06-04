@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public abstract class TransitionEditPart extends Component {
         this.showEntrances = showEntrances;
         this.targetDepth = targetDepth;
 
-        destLevel = new TransitionTab.ChooseDestinationLevelComp("DestLevel:") {
+        destLevel = new TransitionTab.ChooseDestinationLevelComp(Messages.get(TransitionEditPart.class,"dest_level")) {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
@@ -120,7 +121,7 @@ public abstract class TransitionEditPart extends Component {
     private static class DestCellSpinner extends Spinner {
 
         public DestCellSpinner(List<Integer> cells) {
-            super(new DestCellModel(cells), "DestCell:", 8);
+            super(new DestCellModel(cells), Messages.get(TransitionEditPart.class,"dest_cell"), 8);
             setButtonWidth(13);
         }
 
@@ -152,8 +153,8 @@ public abstract class TransitionEditPart extends Component {
         @Override
         protected String getAsString(Object value) {
             int val = (int) value;
-            if (val == NONE) return "NONE";
-            if (val == DEFAULT) return "DEFAULT";
+            if (val == NONE) return Messages.get(TransitionEditPart.class,"none");
+            if (val == DEFAULT) return Messages.get(TransitionEditPart.class,"default");
             return new Koord(val).toString();
         }
     }

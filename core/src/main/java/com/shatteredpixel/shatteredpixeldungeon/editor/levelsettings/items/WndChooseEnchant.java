@@ -18,8 +18,8 @@ public class WndChooseEnchant extends WndChooseOneInCategories {
     public WndChooseEnchant(Item item) {
 
         super(
-                new IconTitle(new ItemSprite(item.image), Messages.titleCase("Choose enchantment/glyph")),
-                "Select a curse or enchantment/glyph or remove existing one",
+                new IconTitle(new ItemSprite(item.image), Messages.get(WndChooseEnchant.class, "title", getEnchantType(item instanceof Weapon))),
+                Messages.get(WndChooseEnchant.class, "body", getEnchantType(item instanceof Weapon)),
                 createCategories(item),
                 getRarityNames()
         );
@@ -49,13 +49,12 @@ public class WndChooseEnchant extends WndChooseOneInCategories {
     protected ChooseOneInCategoriesBody.BtnRow[] createCategoryRows(Object[] enchantments) {
 
         boolean isWeapon;
-        if (enchantments.length == 1 && (isWeapon = Weapon.class.isAssignableFrom((Class<?>) enchantments[0]) || Armor.class.isAssignableFrom((Class<?>) enchantments[0]))) {
+        if (enchantments.length == 1 && ((isWeapon = Weapon.class.isAssignableFrom((Class<?>) enchantments[0])) || Armor.class.isAssignableFrom((Class<?>) enchantments[0]))) {
             ChooseOneInCategoriesBody.BtnRow[] ret = new ChooseOneInCategoriesBody.BtnRow[3];
 
-            String titleRandom = isWeapon ? "Random enchantment" : "Random glyph";
-            String descRandom = isWeapon ?
-                    "Assigns a random, but different enchantment.\n" + showChances(Weapon.Enchantment.typeChances) :
-                    "Assigns a random, but different glyph.\n" + showChances(Armor.Glyph.typeChances);
+            String titleRandom = Messages.get(WndChooseEnchant.class, "random", getEnchantType(isWeapon));
+            String descRandom = Messages.get(WndChooseEnchant.class, "random_desc", getEnchantType(isWeapon)) + "\n" +
+                    (isWeapon ? showChances(Weapon.Enchantment.typeChances) : showChances(Armor.Glyph.typeChances));
             ret[0] = new ChooseOneInCategoriesBody.BtnRow(titleRandom, descRandom) {
                 @Override
                 protected void onClick() {
@@ -63,15 +62,17 @@ public class WndChooseEnchant extends WndChooseOneInCategories {
                     finish();
                 }
             };
-            ret[1] = new ChooseOneInCategoriesBody.BtnRow("Random curse", "Assigns a random, but different curse") {
+            ret[1] = new ChooseOneInCategoriesBody.BtnRow(
+                    Messages.get(WndChooseEnchant.class, "random", Messages.get(WndChooseEnchant.class, "curse")),
+                    Messages.get(WndChooseEnchant.class, "random_desc", Messages.get(WndChooseEnchant.class, "curse"))) {
                 @Override
                 protected void onClick() {
                     randomCurse(item);
                     finish();
                 }
             };
-            String descRemove = isWeapon ? "Removes the current curse or enchantment" : "Removes the current curse or glyph";
-            ret[2] = new ChooseOneInCategoriesBody.BtnRow("Remove", descRemove) {
+            String descRemove = Messages.get(WndChooseEnchant.class, "remove_desc", getEnchantType(isWeapon));
+            ret[2] = new ChooseOneInCategoriesBody.BtnRow(Messages.get(WndChooseEnchant.class, "remove"), descRemove) {
                 @Override
                 protected void onClick() {
                     removeEnchantment(item);
@@ -110,20 +111,24 @@ public class WndChooseEnchant extends WndChooseOneInCategories {
         return ret;
     }
 
-
     private static String showChances(float[] typeChances) {
         String[] rarityNames = getRarityNames();
-        StringBuilder b = new StringBuilder("The chances for each rarity are:");
+        StringBuilder b = new StringBuilder(Messages.get(WndChooseEnchant.class, "chance_desc"));
         for (int i = 0; i < typeChances.length; i++) {
             b.append("\n_-_ ").
                     append(Messages.decimalFormat("#.##", typeChances[i])).
-                    append("% for ").append(rarityNames[i + 1]);
+                    append("% " + Messages.get(WndChooseEnchant.class, "chance_desc_for") + " ").append(rarityNames[i + 1]);
         }
         return b.toString();
     }
 
     private static String[] getRarityNames() {
-        return new String[]{"other", "common", "uncommon", "rare", "curses"};
+        return new String[]{
+                Messages.get(WndChooseEnchant.class, "rarity_other"),
+                Messages.get(WndChooseEnchant.class, "rarity_common"),
+                Messages.get(WndChooseEnchant.class, "rarity_uncommon"),
+                Messages.get(WndChooseEnchant.class, "rarity_rare"),
+                Messages.get(WndChooseEnchant.class, "rarity_curses")};
     }
 
     public static Item randomCurse(Item item) {
@@ -149,5 +154,9 @@ public class WndChooseEnchant extends WndChooseOneInCategories {
         else if (item instanceof Armor) ((Armor) item).glyph = null;
     }
 
+
+    private static String getEnchantType(boolean isWeapon) {
+        return Messages.get(WndChooseEnchant.class,"ench_" + (isWeapon ? "w" : "a"));
+    }
 
 }

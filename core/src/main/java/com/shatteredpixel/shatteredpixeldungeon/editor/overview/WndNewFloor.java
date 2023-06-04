@@ -8,7 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.gerneral.FeelingSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.general.FeelingSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseObjectComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -50,9 +50,13 @@ public class WndNewFloor extends Window {
     protected Spinner numInRegion, depth;
     protected IconButton infoNumInRegion, infoDepth;
 
+    private final CustomDungeon owner;
+
     public WndNewFloor(CustomDungeon owner) {
 
         super(PixelScene.landscape() ? 215 : Math.min(160, (int) (PixelScene.uiCamera.width * 0.9)), 200);
+
+        this.owner = owner;
 
         //need to offset to give space for the soft keyboard
         if (PixelScene.landscape()) {
@@ -147,7 +151,7 @@ public class WndNewFloor extends Window {
 
         pos += inputHeight + MARGIN;
 
-        final RedButton positiveBtn = new RedButton("Create") {
+        final RedButton positiveBtn = new RedButton(Messages.get(WndNewFloor.class,"create_label")) {
             @Override
             protected void onClick() {
                 if (!textBox.getText().isEmpty()) {
@@ -159,7 +163,7 @@ public class WndNewFloor extends Window {
 
         final RedButton negativeBtn;
         if (false) {
-            negativeBtn = new RedButton("Cancel") {
+            negativeBtn = new RedButton(Messages.get(WndNewFloor.class,"cancel_label")) {
                 @Override
                 protected void onClick() {
                     onSelect(false, textBox.getText());
@@ -182,7 +186,7 @@ public class WndNewFloor extends Window {
 
         pos += BUTTON_HEIGHT + MARGIN * 3;
 
-        chooseType = new ChooseLevel("Level type:", false) {
+        chooseType = new ChooseLevel(Messages.get(WndNewFloor.class,"type"), false) {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
@@ -193,7 +197,7 @@ public class WndNewFloor extends Window {
         chooseType.setRect(MARGIN, pos, width - MARGIN * 2, BUTTON_HEIGHT);
         pos += BUTTON_HEIGHT + MARGIN;
 
-        chooseTemplate = new ChooseLevel("Template:", true) {
+        chooseTemplate = new ChooseLevel(Messages.get(WndNewFloor.class,"template"), true) {
             @Override
             protected float getDisplayWidth() {
                 return chooseType.getDW();
@@ -203,7 +207,7 @@ public class WndNewFloor extends Window {
         chooseTemplate.setRect(MARGIN, pos, width - MARGIN * 2, BUTTON_HEIGHT);
         pos += BUTTON_HEIGHT + MARGIN * 2;
 
-        seed = new ChooseObjectComp("Seed:") {
+        seed = new ChooseObjectComp(Messages.get(WndNewFloor.class,"seed")) {
             @Override
             protected void doChange() {
                 Window window = new WndTextInput(Messages.get(HeroSelectScene.class, "custom_seed_title"),
@@ -244,9 +248,8 @@ public class WndNewFloor extends Window {
         infoNumInRegion = new IconButton(Icons.get(Icons.INFO)) {
             @Override
             protected void onClick() {
-                Window window = new WndTitledMessage(Icons.get(Icons.INFO), "NumInRegion",
-                        "NumInRegion is used for the level generation. Together with the region of the template," +
-                                "the depth for generation the level is calculated. This parameter influences generated things like rooms, mobs or items.");
+                Window window = new WndTitledMessage(Icons.get(Icons.INFO), Messages.get(WndNewFloor.class,"num_region"),
+                        Messages.get(WndNewFloor.class,"num_region_info"));
                 if (Game.scene() instanceof EditorScene) EditorScene.show(window);
                 else Game.scene().addToFront(window);
             }
@@ -265,7 +268,7 @@ public class WndNewFloor extends Window {
             public int getClicksPerSecondWhileHolding() {
                 return 5;
             }
-        }, "NumInRegion:", 8);
+        },  Messages.get(WndNewFloor.class,"num_region")+":", 8);
         numInRegion.setButtonWidth(13);
         add(numInRegion);
         numInRegion.setRect(MARGIN, pos, infoNumInRegion.left() - MARGIN * 2, BUTTON_HEIGHT);
@@ -275,10 +278,8 @@ public class WndNewFloor extends Window {
         infoDepth = new IconButton(Icons.get(Icons.INFO)) {
             @Override
             protected void onClick() {
-                Window window = new WndTitledMessage(Icons.get(Icons.INFO), "Depth",
-                        "The depth is used for the level difficulty. " +
-                                "It does not change the level layout or other generated things, but is used for scaling mobs like piranhas.\n" +
-                                "Note that in Custom PD by QuasiStellar, it does affect item generation.");
+                Window window = new WndTitledMessage(Icons.get(Icons.INFO), Messages.get(WndNewFloor.class,"depth"),
+                        Messages.get(WndNewFloor.class,"depth_info"));
                 if (Game.scene() instanceof EditorScene) EditorScene.show(window);
                 else Game.scene().addToFront(window);
             }
@@ -342,8 +343,8 @@ public class WndNewFloor extends Window {
 
         @Override
         protected String objectToString(Object object) {
-            if (object == null) return "None";
-            if (object == CustomLevel.class) return "Custom";
+            if (object == null) return Messages.get(WndSelectLevelType.class,"none");
+            if (object == CustomLevel.class) return Messages.get(WndSelectLevelType.class,"type_custom");
             return super.objectToString(object);
         }
     }
@@ -367,7 +368,7 @@ public class WndNewFloor extends Window {
 
         if (positive) {
 
-            if (Dungeon.customDungeon.getFloor(name) != null || name.equals(Level.SURFACE) || name.equals(Level.NONE)) {
+            if (owner.getFloor(name) != null || name.equals(Level.SURFACE) || name.equals(Level.NONE)) {
                 WndNewDungeon.showNameWarnig();
                 return;
             }
@@ -382,8 +383,8 @@ public class WndNewFloor extends Window {
                     (Class<? extends Level>) chooseType.getObject(),
                     (Class<? extends Level>) chooseTemplate.getObject(),
                     seed, (Level.Feeling) feelingSpinner.getValue(), (int) numInRegion.getValue(), (int) depth.getValue());
-            if (Dungeon.customDungeon.getNumFloors() == 0) Dungeon.customDungeon.setStart(name);
-            Dungeon.customDungeon.addFloor(levelScheme);
+            if (owner.getNumFloors() == 0) owner.setStart(name);
+            owner.addFloor(levelScheme);
 
             if (levelScheme.getType() == CustomLevel.class) {
                 Dungeon.levelName = name;
@@ -400,7 +401,7 @@ public class WndNewFloor extends Window {
                 FloorOverviewScene.updateList();
             }
             try {
-                CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
+                CustomDungeonSaves.saveDungeon(owner);
             } catch (IOException e) {
                 ShatteredPixelDungeon.reportException(e);
             }

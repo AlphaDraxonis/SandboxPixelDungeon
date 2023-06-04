@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.TrapItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.WndEditorItemsBag;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.AlarmTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BlazingTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BurningTrap;
@@ -34,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WarpingTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WeakeningTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WornDartTrap;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Image;
@@ -42,6 +44,7 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public enum Traps {
@@ -144,30 +147,14 @@ public enum Traps {
     }
 
     public String getName() {
-        switch (this) {
-            case GAS:
-                return "Gas/Debuff traps";
-            case WATER:
-                return "Water traps";
-            case FIRE:
-                return "Fire traps";
-            case ARROW:
-                return "Arrow traps";
-            case SPAWN:
-                return "Spawing traps";
-            case TELEPORT:
-                return "Teleportation traps";
-            case EQUIPMENT:
-                return "Equipment traps";
-        }
-        return null;
+        return Messages.get(Traps.class,name().toLowerCase(Locale.ENGLISH));
     }
 
 
     public static final EditorItemBag bag = new EditorItemBag() {
         @Override
         public String name() {
-            return "Traps";
+            return Messages.get(WndEditorItemsBag.class,"traps");
         }
     };
 

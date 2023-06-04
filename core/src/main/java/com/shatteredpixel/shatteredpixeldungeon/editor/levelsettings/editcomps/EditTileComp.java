@@ -1,13 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.editcomps;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.DungeonToJsonConverter;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Koord;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
@@ -18,8 +19,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
-
-import java.util.function.Consumer;
 
 public class EditTileComp extends DefaultEditComp<TileItem> {
 
@@ -32,7 +31,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
         if (item.cell() != -1 && (item.terrainType() == Terrain.ENTRANCE || TileItem.isExitTerrainCell(item.terrainType()))) {
 
-            addTransition = new RedButton("Add transition", 9) {
+            addTransition = new RedButton(Messages.get(EditTileComp.class,"add_transition"), 9) {
                 @Override
                 protected void onClick() {
                     addTransition(createNewTransition(item.cell()));
@@ -67,7 +66,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     }
 
     public static TransitionEditPart addTransition(int terrainType, LevelTransition transition,
-                                                   LevelScheme levelScheme, Consumer<LevelTransition> deleteTransition) {
+                                                   LevelScheme levelScheme, DungeonToJsonConverter.Consumer<LevelTransition> deleteTransition) {
         String suggestion;
         if (terrainType == Terrain.ENTRANCE)
             suggestion = levelScheme.getDefaultAbove();

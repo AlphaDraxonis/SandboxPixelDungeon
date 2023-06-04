@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
@@ -69,8 +70,8 @@ public class WndInfoEq extends WndTitledMessage {
                 add(levelSpinner);
             } else levelSpinner = null;
 
-            if (item instanceof Weapon || item instanceof Armor) {//Missles support enchantments too
-                enchantBtn = new RedButton("Enchant") {
+            if (item instanceof Weapon || item instanceof Armor) {//Missiles support enchantments too
+                enchantBtn = new RedButton(Messages.get(WndInfoEq.class,"enchant")) {
                     @Override
                     protected void onClick() {
                         EditorScene.show(new WndChooseEnchant(item) {
