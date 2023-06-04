@@ -3,7 +3,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.scene.inv;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.editcomps.DefaultEditComp;
@@ -59,7 +58,6 @@ public class MobItem extends EditorItem {
 
         removeMob(level.getMobAtCell(cell));
 
-        mob.state = mob instanceof NPC ? mob.PASSIVE : mob.SLEEPING;
         mob.pos = cell;
         EditorScene.add(mob);
 

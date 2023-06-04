@@ -294,7 +294,10 @@ public enum Mobs {
 
         public MobBag(Class<?>[] mobs) {
             for (Class<?> m : mobs) {
-                items.add(new MobItem((Mob) Reflection.newInstance(m)));
+                Mob mob = (Mob) Reflection.newInstance(m);
+                if (mob instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC || mob instanceof Mimic)
+                    mob.state = mob.PASSIVE;
+                items.add(new MobItem(mob));
             }
         }
     }

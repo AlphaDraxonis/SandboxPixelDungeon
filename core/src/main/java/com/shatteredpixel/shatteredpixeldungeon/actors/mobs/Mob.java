@@ -126,15 +126,18 @@ public abstract class Mob extends Char {
     protected static final float TIME_TO_WAKE_UP = 1f;
 
     protected boolean firstAdded = true;
-	protected void onAdd(){
-		if (firstAdded) {
-			//modify health for ascension challenge if applicable, only on first add
-			float percent = HP / (float) HT;
-			HT = Math.round(HT * AscensionChallenge.statModifier(this));
-			HP = Math.round(HT * percent);
-			firstAdded = false;
-		}
-	}private static final String STATE = "state";
+
+    protected void onAdd() {
+        if (firstAdded) {
+            //modify health for ascension challenge if applicable, only on first add
+            float percent = HP / (float) HT;
+            HT = Math.round(HT * AscensionChallenge.statModifier(this));
+            HP = Math.round(HT * percent);
+            firstAdded = false;
+        }
+    }
+
+    private static final String STATE = "state";
     private static final String SEEN = "seen";
     private static final String TARGET = "target";
     private static final String MAX_LVL = "max_lvl";
@@ -193,10 +196,9 @@ public abstract class Mob extends Char {
         if (bundle.contains(ENEMY_ID)) {
             enemyID = bundle.getInt(ENEMY_ID);
         }
-    //no need to actually save this, must be false
-		firstAdded = false;
-	}
-
+        //no need to actually save this, must be false
+        firstAdded = false;
+    }
 
     //mobs need to remember their targets after every actor is added
     public void restoreEnemy() {
@@ -775,12 +777,13 @@ public abstract class Mob extends Char {
 
                 int exp = Dungeon.hero.lvl <= maxLvl ? EXP : 0;
                 //during ascent, under-levelled enemies grant 10 xp each until level 30
-				// after this enemy kills which reduce the amulet curse still grant 10 effective xp
-				// for the purposes of on-exp effects, see AscensionChallenge.processEnemyKill
-				if (Dungeon.hero.buff(AscensionChallenge.class) != null &&
-						exp == 0 && maxLvl > 0 && EXP > 0 && Dungeon.hero.lvl < Hero.MAX_LEVEL){
-					exp = Math.round(10 * spawningWeight());
-				}if (exp > 0) {
+                // after this enemy kills which reduce the amulet curse still grant 10 effective xp
+                // for the purposes of on-exp effects, see AscensionChallenge.processEnemyKill
+                if (Dungeon.hero.buff(AscensionChallenge.class) != null &&
+                        exp == 0 && maxLvl > 0 && EXP > 0 && Dungeon.hero.lvl < Hero.MAX_LEVEL) {
+                    exp = Math.round(10 * spawningWeight());
+                }
+                if (exp > 0) {
                     Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "exp", exp));
                 }
                 Dungeon.hero.earnExp(exp, getClass());
