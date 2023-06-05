@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace 'com.shatteredpixel.shatteredpixeldungeon.android'
+    namespace 'com.alphadraxonis.sandboxpixeldungeon.android'
     compileSdkVersion appAndroidCompileSDK
     compileOptions.sourceCompatibility = compileOptions.targetCompatibility = appJavaCompatibility
 

@@ -20,7 +20,7 @@ Shattered Pixel Dungeon has an internal version code which should be incremented
 
 You may be tempted to set this value back to 1, but Shattered has compatibility code for previous versions which may be incorrectly triggered if you decrement the version code. The version code is entirely internal so there is no harm in using Shattered's current version code as a starting point.
 
-If you wish to set it to 1 anyway, the various constant variables toward the top of [ShatteredPixelDungeon.java](/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java) are a good starting point for finding all of the cases where the game refers to the version code for compatibility purposes.
+If you wish to set it to 1 anyway, the various constant variables toward the top of [SandboxPixelDungeon.java](/core/src/main/java/com/alphadraxonis/sandboxpixeldungeon/SandboxPixelDungeon.java) are a good starting point for finding all of the cases where the game refers to the version code for compatibility purposes.
 
 ## Application Icon and Title Screen
 
@@ -32,9 +32,9 @@ For icons, you can find the icons for each platform here: [Android(debug)](/andr
 
 ## Credits & Supporter button
 
-You will likely want to add yourself to the credits or change the current supporter link. Feel free to adjust these however you like, the relevant code is in [AboutScene.java](/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/scenes/AboutScene.java) and [SupporterScene.java](/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/scenes/SupporterScene.java). If you wish to disable the supporter link, simply comment out the line `add(btnSupport);` in [TitleScene.java](/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/scenes/TitleScene.java).
+You will likely want to add yourself to the credits or change the current supporter link. Feel free to adjust these however you like, the relevant code is in [AboutScene.java](/core/src/main/java/com/alphadraxonis/sandboxpixeldungeon/scenes/AboutScene.java) and [SupporterScene.java](/core/src/main/java/com/alphadraxonis/sandboxpixeldungeon/scenes/SupporterScene.java). If you wish to disable the supporter link, simply comment out the line `add(btnSupport);` in [TitleScene.java](/core/src/main/java/com/alphadraxonis/sandboxpixeldungeon/scenes/TitleScene.java).
 
-The game also has a one-time nag window that appears when the player first defeats Goo. If you wish to edit this window, the code is in [WndSupportPrompt.java](/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndSupportPrompt.java). If you wish to disable it entirely, the triggering logic is in [SkeletonKey.java](/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/keys/SkeletonKey.java).
+The game also has a one-time nag window that appears when the player first defeats Goo. If you wish to edit this window, the code is in [WndSupportPrompt.java](/core/src/main/java/com/alphadraxonis/sandboxpixeldungeon/windows/WndSupportPrompt.java). If you wish to disable it entirely, the triggering logic is in [SkeletonKey.java](/core/src/main/java/com/alphadraxonis/sandboxpixeldungeon/items/keys/SkeletonKey.java).
 
 Note that due to the GPLv3 license, any edits you make to the credits scene must avoid removing any existing credits, though you can reposition them however you like. Additionally, while not required, I would appreciate leaving in a reference and a link to my Patreon, though you are free to add your own as well.
 
@@ -46,7 +46,7 @@ Shattered Pixel Dungeon includes a github-based update notification which likely
 
 To simply disable the notification change `:services:updates:githubUpdates` to `:services:updates:debugUpdates` for the release configurations in the build.gradle files in the [desktop](/desktop/build.gradle) and [android](/android/build.gradle) modules. The debug updates module does nothing by default and so works just fine in release builds.
 
-To modify the notification to point to your own github releases, go to [GitHubUpdates.java](/services/updates/githubUpdates/src/main/java/com/shatteredpixel/shatteredpixeldungeon/services/updates/GitHubUpdates.java) and change the line: `httpGet.setUrl("https://api.github.com/repos/00-Evan/shattered-pixel-dungeon/releases");` to match your own username and repository name. The github updater looks for a title, body of text followed by three dashes, and the phrase \` internal version number: # \` in your release.
+To modify the notification to point to your own github releases, go to [GitHubUpdates.java](/services/updates/githubUpdates/src/main/java/com/alphadraxonis/sandboxpixeldungeon/services/updates/GitHubUpdates.java) and change the line: `httpGet.setUrl("https://api.github.com/repos/00-Evan/shattered-pixel-dungeon/releases");` to match your own username and repository name. The github updater looks for a title, body of text followed by three dashes, and the phrase \` internal version number: # \` in your release.
 
 More advanced developers can change the format for releases if they like, or make entirely new update notification services.
 
@@ -54,9 +54,9 @@ More advanced developers can change the format for releases if they like, or mak
 
 Shattered Pixel Dungeon includes a news feed which pulls blog posts from [ShatteredPixel.com](http://ShatteredPixel.com). The articles there may not be useful to you so you may wish to remove them.
 
-To simply disable news entirely, comment out the line `add(btnNews);` in [TitleScene.java](/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/scenes/TitleScene.java).
+To simply disable news entirely, comment out the line `add(btnNews);` in [TitleScene.java](/core/src/main/java/com/alphadraxonis/sandboxpixeldungeon/scenes/TitleScene.java).
 
-You can also point the news checker to a different feed by modifing the URLs in [ShatteredNews.java](/services/news/shatteredNews/src/main/java/com/shatteredpixel/shatteredpixeldungeon/services/news/ShatteredNews.java). Note that the current logic expects an atom feed and is slightly customized to ShatteredPixel.com, but the logic can be modified to work with other xml feed types.
+You can also point the news checker to a different feed by modifing the URLs in [ShatteredNews.java](/services/news/shatteredNews/src/main/java/com/alphadraxonis/sandboxpixeldungeon/services/news/ShatteredNews.java). Note that the current logic expects an atom feed and is slightly customized to ShatteredPixel.com, but the logic can be modified to work with other xml feed types.
 
 More advanced developers can also write their own news checker services and use those.
 
@@ -65,9 +65,9 @@ More advanced developers can also write their own news checker services and use 
 Shattered Pixel Dungeon supporters a number of languages which are translated via a [community translation project](https://www.transifex.com/shattered-pixel/shattered-pixel-dungeon/).
 
 If you plan to add new text to the game, maintaining these translations may be difficult or impossible, and so you may wish to remove them:
-- In [Languages.java](/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java) remove all of the enum constants except for ENGLISH.
+- In [Languages.java](/core/src/main/java/com/alphadraxonis/sandboxpixeldungeon/messages/Languages.java) remove all of the enum constants except for ENGLISH.
 - In the [messages resource folders](/core/src/main/assets/messages) remove all of the .properties files which include an underscore followed by a language code (e.g. remove actors_ru.properties, but not actors.properties)
-- Finally remove the language picker by commenting out the lines `add( langs );` and `add( langsTab );` in [WndSettings.java](/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndSettings.java)
+- Finally remove the language picker by commenting out the lines `add( langs );` and `add( langsTab );` in [WndSettings.java](/core/src/main/java/com/alphadraxonis/sandboxpixeldungeon/windows/WndSettings.java)
 - Optionally, if you are multilingual or have translators and wish to retain some languages, do not comment out the language picker and only remove the enums/resources for the languages you won't be using.
 
 If you want to have a language other than English as the base language, you can simply remove the .properties files that do not have a language code, and remove the underscore+language code from the language you want to use. The game will consider this language to be English internally however, so you may want to look into where the ENGLISH variable is used and make adjustments accordingly, and possibly rename it.

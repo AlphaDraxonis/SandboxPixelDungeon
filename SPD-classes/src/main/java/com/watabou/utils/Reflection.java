@@ -56,6 +56,8 @@ public class Reflection {
 		else if (name.equals("com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomLevel"))//TODO remove in future!
 			name = "com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel";
 
+		name = name.replace("shatteredpixel.shatteredpixeldungeon","alphadraxonis.sandboxpixeldungeon");
+
 		try {
 			return ClassReflection.forName( name );
 		} catch (Exception e) {
