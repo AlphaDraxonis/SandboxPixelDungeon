@@ -21,9 +21,9 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.windows;
 
-import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
-import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.Statistics;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Languages;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
@@ -49,30 +49,22 @@ public class WndScoreBreakdown extends Window {
 		float pos = title.bottom()+2;
 
 		NumberFormat num = NumberFormat.getInstance(Locale.US);
-		if (Dungeon.initialVersion > SandboxPixelDungeon.v1_2_3) {
-			pos = statSlot(this, Messages.get(this, "progress_title"),
-					num.format(Statistics.progressScore), pos, Statistics.progressScore >= 50_000);
-			pos = addInfo(this, Messages.get(this, "progress_desc"), pos);
-			pos = statSlot(this, Messages.get(this, "treasure_title"),
-					num.format(Statistics.treasureScore), pos, Statistics.treasureScore >= 20_000);
-			pos = addInfo(this, Messages.get(this, "treasure_desc"), pos);
-			pos = statSlot(this, Messages.get(this, "explore_title"),
-					num.format(Statistics.exploreScore), pos, Statistics.exploreScore >= 20_000);
-			pos = addInfo(this, Messages.get(this, "explore_desc"), pos);
-			pos = statSlot(this, Messages.get(this, "bosses_title"),
-					num.format(Statistics.totalBossScore), pos, Statistics.totalBossScore >= 15_000);
-			pos = addInfo(this, Messages.get(this, "bosses_desc"), pos);
-			pos = statSlot(this, Messages.get(this, "quests_title"),
-					num.format(Statistics.totalQuestScore), pos, Statistics.totalQuestScore >= 10_000);
-			pos = addInfo(this, Messages.get(this, "quests_desc"), pos);
-		} else {
-			pos = statSlot(this, Messages.get(this, "progress_title"),
-					num.format(Statistics.progressScore), pos, Statistics.progressScore >= 78_000);
-			pos = addInfo(this, Messages.get(this, "progress_desc"), pos);
-			pos = statSlot(this, Messages.get(this, "treasure_title"),
-					num.format(Statistics.treasureScore), pos, Statistics.treasureScore >= 30_000);
-			pos = addInfo(this, Messages.get(this, "treasure_desc_old"), pos);
-		}
+		if(SPDSettings.language() == Languages.GERMAN)num = NumberFormat.getInstance(Locale.GERMAN);//Why should we get 1000 times less scrore when language is german?
+		pos = statSlot(this, Messages.get(this, "progress_title"),
+				num.format(Statistics.progressScore), pos, Statistics.progressScore >= 50_000);
+		pos = addInfo(this, Messages.get(this, "progress_desc"), pos);
+		pos = statSlot(this, Messages.get(this, "treasure_title"),
+				num.format(Statistics.treasureScore), pos, Statistics.treasureScore >= 20_000);
+		pos = addInfo(this, Messages.get(this, "treasure_desc"), pos);
+		pos = statSlot(this, Messages.get(this, "explore_title"),
+				num.format(Statistics.exploreScore), pos, Statistics.exploreScore >= 20_000);
+		pos = addInfo(this, Messages.get(this, "explore_desc"), pos);
+		pos = statSlot(this, Messages.get(this, "bosses_title"),
+				num.format(Statistics.totalBossScore), pos, Statistics.totalBossScore >= 15_000);
+		pos = addInfo(this, Messages.get(this, "bosses_desc"), pos);
+		pos = statSlot(this, Messages.get(this, "quests_title"),
+				num.format(Statistics.totalQuestScore), pos, Statistics.totalQuestScore >= 10_000);
+		pos = addInfo(this, Messages.get(this, "quests_desc"), pos);
 
 		if (Statistics.winMultiplier > 1) {
 			pos = statSlot(this, Messages.get(this, "win_multiplier"), Statistics.winMultiplier + "x", pos, false);
@@ -81,10 +73,6 @@ public class WndScoreBreakdown extends Window {
 			pos = statSlot(this, Messages.get(this, "challenge_multiplier"), Statistics.chalMultiplier + "x", pos, false);
 		}
 		pos = statSlot(this, Messages.get(this, "total"), num.format(Statistics.totalScore), pos, false);
-
-		if (Dungeon.initialVersion <= SandboxPixelDungeon.v1_2_3){
-			pos = addInfo(this, Messages.get(this, "old_score_desc"), pos);
-		}
 
 		resize(WIDTH, (int)pos);
 

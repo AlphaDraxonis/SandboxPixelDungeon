@@ -33,6 +33,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Statistics;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Belongings;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Languages;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.HeroSprite;
@@ -190,6 +191,7 @@ public class WndRanking extends WndTabbed {
 			pos = date.bottom()+5;
 
 			NumberFormat num = NumberFormat.getInstance(Locale.US);
+			if(SPDSettings.language() == Languages.GERMAN)num = NumberFormat.getInstance(Locale.GERMAN);//Why should we get 1000 times less scrore when language is german?
 
 			if (Dungeon.hero == null){
 				pos = statSlot( this, Messages.get(this, "score"), num.format( record.score ), pos );

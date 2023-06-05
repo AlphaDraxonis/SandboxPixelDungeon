@@ -22,7 +22,9 @@
 package com.alphadraxonis.sandboxpixeldungeon.windows;
 
 import com.alphadraxonis.sandboxpixeldungeon.Rankings;
+import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Languages;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
@@ -96,6 +98,7 @@ public class WndDailies extends Window {
 		top = (int) score.bottom() + 6;
 
 		NumberFormat num = NumberFormat.getInstance(Locale.US);
+		if(SPDSettings.language() == Languages.GERMAN)num = NumberFormat.getInstance(Locale.GERMAN);//Why should we get 1000 times less scrore when language is german?
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
 		format.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date date = new Date();

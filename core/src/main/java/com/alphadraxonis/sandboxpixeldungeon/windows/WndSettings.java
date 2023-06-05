@@ -25,7 +25,6 @@ import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
-import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.TileBar;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Languages;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -283,7 +282,7 @@ public class WndSettings extends WndTabbed {
 				add( chkSaver );
 			}
 
-			if (DeviceCompat.isAndroid() && (SandboxPixelDungeon.scene() instanceof EditorScene)) {//TODO fixen?
+			if (DeviceCompat.isAndroid()) {
 				Boolean landscape = SPDSettings.landscape();
 				if (landscape == null){
 					landscape = Game.width > Game.height;

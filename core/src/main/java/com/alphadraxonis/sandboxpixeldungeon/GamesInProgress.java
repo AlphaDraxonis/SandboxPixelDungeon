@@ -109,11 +109,6 @@ public class GamesInProgress {
                 info.slot = slot;
                 Dungeon.preview(info, bundle);
 
-                //saves from before v1.2.3 are not supported
-                if (info.version < SandboxPixelDungeon.v1_2_3) {
-                    info = null;
-                }
-
             } catch (IOException e) {
                 info = null;
             } catch (Exception e) {

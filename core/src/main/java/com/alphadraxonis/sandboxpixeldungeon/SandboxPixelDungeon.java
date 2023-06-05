@@ -34,33 +34,10 @@ public class SandboxPixelDungeon extends Game {
 
 	//variable constants for specific older versions of shattered, used for data conversion
 	//versions older than v1.2.3 are no longer supported, and data from them is ignored
-	public static final int v1_2_3  = 628;
-	public static final int v1_3_2  = 648;
-	public static final int v1_4_3  = 668;
-
-	public static final int v2_0_2  = 700;
-	public static final int v2_1_0  = 722;
+	public static final int _0_3_v2_1_0  = 723;
 	
 	public SandboxPixelDungeon(PlatformSupport platform ) {
 		super( sceneClass == null ? TitleScene.class : sceneClass, platform );
-
-//		//pre-v1.3.0
-//		com.watabou.utils.Bundle.addAlias(
-//				com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Bleeding.class,
-//				"com.alphadraxonis.sandboxpixeldungeon.levels.features.Chasm$FallBleed" );
-//		com.watabou.utils.Bundle.addAlias(
-//				com.alphadraxonis.sandboxpixeldungeon.plants.Mageroyal.class,
-//				"com.alphadraxonis.sandboxpixeldungeon.plants.Dreamfoil" );
-//		com.watabou.utils.Bundle.addAlias(
-//				com.alphadraxonis.sandboxpixeldungeon.plants.Mageroyal.Seed.class,
-//				"com.alphadraxonis.sandboxpixeldungeon.plants.Dreamfoil$Seed" );
-//
-//		com.watabou.utils.Bundle.addAlias(
-//				com.alphadraxonis.sandboxpixeldungeon.items.weapon.curses.Dazzling.class,
-//				"com.alphadraxonis.sandboxpixeldungeon.items.weapon.curses.Exhausting" );
-//		com.watabou.utils.Bundle.addAlias(
-//				com.alphadraxonis.sandboxpixeldungeon.items.weapon.curses.Explosive.class,
-//				"com.alphadraxonis.sandboxpixeldungeon.items.weapon.curses.Fragile" );
 	}
 	
 	@Override
