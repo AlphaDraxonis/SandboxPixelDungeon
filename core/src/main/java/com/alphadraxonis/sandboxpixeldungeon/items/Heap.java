@@ -28,6 +28,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Wraith;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.ElmoParticle;
@@ -221,7 +222,7 @@ public class Heap implements Bundlable {
         boolean burnt = false;
         boolean evaporated = false;
 
-        for (Item item : items.toArray(new Item[0])) {
+        for (Item item : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
             if (item instanceof Scroll && !item.unique) {
                 items.remove(item);
                 burnt = true;
@@ -279,7 +280,7 @@ public class Heap implements Bundlable {
 
         } else {
 
-            for (Item item : items.toArray(new Item[0])) {
+            for (Item item : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
 
                 //unique items aren't affect by explosions
                 if (item.unique || (item instanceof Armor && ((Armor) item).checkSeal() != null)) {
@@ -324,7 +325,7 @@ public class Heap implements Bundlable {
         }
 
         boolean frozen = false;
-        for (Item item : items.toArray(new Item[0])) {
+        for (Item item : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
             if (item instanceof MysteryMeat) {
                 replace(item, FrozenCarpaccio.cook((MysteryMeat) item));
                 frozen = true;
@@ -435,7 +436,7 @@ public class Heap implements Bundlable {
         items.removeAll(Collections.singleton(null));
 
         //remove any document pages that either don't exist anymore or that the player already has
-        for (Item item : items.toArray(new Item[0])) {
+        for (Item item : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
             if (item instanceof DocumentPage
                     && (!((DocumentPage) item).document().pageNames().contains(((DocumentPage) item).page())
                     || ((DocumentPage) item).document().isPageFound(((DocumentPage) item).page()))) {

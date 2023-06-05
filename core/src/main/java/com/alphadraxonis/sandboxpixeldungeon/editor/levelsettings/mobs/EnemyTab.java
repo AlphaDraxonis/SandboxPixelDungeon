@@ -3,10 +3,10 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.mobs;
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
-import com.alphadraxonis.sandboxpixeldungeon.editor.Koord;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditCompWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.editcomps.EditCompWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.AdvancedListPaneItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.SkeletonSprite;
@@ -61,7 +61,7 @@ public class EnemyTab extends WndEditorSettings.TabComp {
         private final Mob mob;
 
         public MobCatalogItem(Mob mob) {
-            super(createSprite(mob), null, EditorScene.formatTitle(mob.name(), new Koord(mob.pos)));
+            super(createSprite(mob), null, EditorUtilies.formatTitle(mob.name(),mob.pos));
             this.mob = mob;
         }
 

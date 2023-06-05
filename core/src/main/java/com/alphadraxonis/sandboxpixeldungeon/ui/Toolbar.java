@@ -31,7 +31,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.HoldFast;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LostInventory;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Belongings;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.TileItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;

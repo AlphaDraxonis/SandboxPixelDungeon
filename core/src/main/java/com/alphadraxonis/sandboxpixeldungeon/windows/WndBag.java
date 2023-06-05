@@ -25,6 +25,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Belongings;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.MagicalHolster;
@@ -267,7 +268,7 @@ public class WndBag extends WndTabbed {
         }
 
         // Items in the bag, except other containers (they have tags at the bottom)
-        for (Item item : container.items.toArray(new Item[0])) {
+        for (Item item : container.items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
             if (!(item instanceof Bag)) {
                 placeItem(item);
             } else {

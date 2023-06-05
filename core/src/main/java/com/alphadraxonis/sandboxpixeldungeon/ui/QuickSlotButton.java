@@ -31,10 +31,10 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LostInventory;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.EditorItem;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.TileBar;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.Waterskin;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -92,7 +92,7 @@ public class QuickSlotButton extends Button {
                 @Override
                 protected void onClick() {
                     super.onClick();
-                    TileBar.select(slotNum);
+                    EToolbar.select(slotNum);
                 }
             };
         } else {
@@ -318,7 +318,7 @@ public class QuickSlotButton extends Button {
     }
 
     public static void set(int slotNum, Item item) {
-        TileBar.select(slotNum);
+        EToolbar.select(slotNum);
         Dungeon.quickslot.setSlot(slotNum, item);
         refresh();
 

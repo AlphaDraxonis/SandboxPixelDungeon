@@ -40,6 +40,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LockedFloor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Terror;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.effects.BlobEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.FloatingText;
@@ -631,7 +632,7 @@ public class Tengu extends Mob {
 
 				Heap h = Dungeon.level.heaps.get(bombPos);
 				if (h != null) {
-					for (Item i : h.items.toArray(new Item[0])) {
+					for (Item i : h.items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
 						if (i instanceof BombItem) {
 							h.remove(i);
 						}

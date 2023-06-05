@@ -5,6 +5,7 @@ import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndSwitchFloor;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
@@ -57,30 +58,20 @@ public class MenuPane extends Component {
             @Override
             protected String hoverText() {
                 switch (EditorScene.customLevel().feeling) {
-                    case CHASM:
-                        return Messages.get(GameScene.class, "chasm");
-                    case WATER:
-                        return Messages.get(GameScene.class, "water");
-                    case GRASS:
-                        return Messages.get(GameScene.class, "grass");
-                    case DARK:
-                        return Messages.get(GameScene.class, "dark");
-                    case LARGE:
-                        return Messages.get(GameScene.class, "large");
-                    case TRAPS:
-                        return Messages.get(GameScene.class, "traps");
-                    case SECRETS:
-                        return Messages.get(GameScene.class, "secrets");
+                    case CHASM:     return Messages.get(GameScene.class, "chasm");
+                    case WATER:     return Messages.get(GameScene.class, "water");
+                    case GRASS:     return Messages.get(GameScene.class, "grass");
+                    case DARK:      return Messages.get(GameScene.class, "dark");
+                    case LARGE:     return Messages.get(GameScene.class, "large");
+                    case TRAPS:     return Messages.get(GameScene.class, "traps");
+                    case SECRETS:   return Messages.get(GameScene.class, "secrets");
                 }
                 return null;
             }
 
             @Override
             protected void onClick() {
-                super.onClick();
-
-//                //just open journal for now, maybe have it open landmarks after expanding that page?
-//                GameScene.show( new WndJournal() );
+                EditorScene.show(new WndSwitchFloor());
             }
         };
         add(depthButton);

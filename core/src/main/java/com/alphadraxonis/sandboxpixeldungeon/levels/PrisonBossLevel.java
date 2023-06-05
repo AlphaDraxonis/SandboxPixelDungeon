@@ -34,6 +34,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.StormCloud;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Doom;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Tengu;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
@@ -577,7 +578,7 @@ public class PrisonBossLevel extends Level {
 
 		items.addAll(storedItems);
 
-		for (Item i : items.toArray(new Item[0])){
+		for (Item i : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)){
 			if (i instanceof Tengu.BombAbility.BombItem || i instanceof Tengu.ShockerAbility.ShockerItem){
 				items.remove(i);
 			}

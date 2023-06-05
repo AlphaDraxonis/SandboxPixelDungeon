@@ -28,9 +28,8 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LostInventory;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Belongings;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.EditorItemBag;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.Tiles;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.MagicalHolster;
@@ -365,7 +364,7 @@ public class InventoryPane extends Component {
             energyTxt.visible = energy.visible = false;
         }
 
-        ArrayList<Bag> inventBags = stuff == null ? Tiles.bags : stuff.getBags();
+        ArrayList<Bag> inventBags = stuff == null ? EditorItemBag.getBags() : stuff.getBags();
         for (int i = 0; i < bags.size(); i++) {
             if (inventBags.size() > i) {
                 bags.get(i).bag(inventBags.get(i));

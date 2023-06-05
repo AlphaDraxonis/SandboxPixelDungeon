@@ -3,12 +3,12 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings;
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
-import com.alphadraxonis.sandboxpixeldungeon.editor.Koord;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditTileComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.editcomps.EditTileComp;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.editcomps.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndSelectFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseObjectComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
@@ -34,7 +34,7 @@ import java.util.Map;
 public class TransitionTab extends WndEditorSettings.TabComp {
 
 
-    private RenderedTextBlock title, titleLevelTransitons;
+    private RenderedTextBlock title, titleLevelTransitions;
     private ChooseDestinationLevelComp startfloor, passage, chasm;
 
     private ScrollPane sp;
@@ -113,9 +113,9 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         line = new ColorBlock(1, 1, 0xFF222222);
         content.add(line);
 
-        titleLevelTransitons = PixelScene.renderTextBlock(Messages.get(TransitionTab.class, "trans_for_lvl"), 9);
-        titleLevelTransitons.hardlight(Window.TITLE_COLOR);
-        content.add(titleLevelTransitons);
+        titleLevelTransitions = PixelScene.renderTextBlock(Messages.get(TransitionTab.class, "trans_for_lvl"), 9);
+        titleLevelTransitions.hardlight(Window.TITLE_COLOR);
+        content.add(titleLevelTransitions);
 
         transitionCompMap = new HashMap<>();
 
@@ -146,8 +146,8 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         line.y = pos;
         pos++;
 
-        titleLevelTransitons.maxWidth((int) width);
-        titleLevelTransitons.setPos(x + (width - titleLevelTransitons.width()) * 0.5f, pos + (WndEditorSettings.ITEM_HEIGHT - 3 - titleLevelTransitons.height()) * 0.5f);
+        titleLevelTransitions.maxWidth((int) width);
+        titleLevelTransitions.setPos(x + (width - titleLevelTransitions.width()) * 0.5f, pos + (WndEditorSettings.ITEM_HEIGHT - 3 - titleLevelTransitions.height()) * 0.5f);
         pos += WndEditorSettings.ITEM_HEIGHT - 3;
 
         pos = layoutTransitionComps(EditorScene.customLevel().levelScheme.entranceCells, pos);
@@ -250,7 +250,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
                 title.text(Messages.get(TransitionTab.class, cell == CELL_DEFAULT_ENTRANCE ? "entrance" : "exit"));
             else
                 title.text(Messages.get(TransitionTab.class, (levelScheme.getLevel().map[cell] == Terrain.ENTRANCE ? "entrance" : "exit"))
-                        + " " + new Koord(cell, levelScheme.getLevel()));
+                        + EditorUtilies.appendCellToString(cell, levelScheme.getLevel()));
             add(title);
 
             remover = new IconButton(Icons.get(Icons.CLOSE)) {

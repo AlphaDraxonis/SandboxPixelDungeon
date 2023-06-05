@@ -1,7 +1,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.Mobs;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Mobs;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.WndChooseOneInCategories;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;

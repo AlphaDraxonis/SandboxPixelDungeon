@@ -6,9 +6,6 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.watabou.noosa.ui.Component;
 
 public abstract class WndChooseOneInCategories extends Window {
-    private final int WIDTH = Math.min(160, (int) (PixelScene.uiCamera.width * 0.9));
-    private final int HEIGHT = (int) (PixelScene.uiCamera.height * 0.9);
-
 
     private final ChooseOneInCategoriesBody body;
 
@@ -17,6 +14,8 @@ public abstract class WndChooseOneInCategories extends Window {
     }
     public WndChooseOneInCategories(Component titleBar, String desc, Object[][] categories, String[] categoryNames) {
         super();
+        int WIDTH = Math.min(160, (int) (PixelScene.uiCamera.width * 0.9));
+        int HEIGHT = (int) (PixelScene.uiCamera.height * 0.8);
         resize(WIDTH, HEIGHT);
 
         body = new ChooseOneInCategoriesBody(titleBar, desc, categories, categoryNames) {

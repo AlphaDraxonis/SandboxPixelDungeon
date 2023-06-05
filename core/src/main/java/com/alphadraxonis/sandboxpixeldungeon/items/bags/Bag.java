@@ -26,6 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LostInventory;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndQuickBag;
@@ -99,7 +100,7 @@ public class Bag extends Item implements Iterable<Item> {
 	}
 
 	public void grabItems( Bag container ){
-		for (Item item : container.items.toArray( new Item[0] )) {
+		for (Item item : container.items.toArray( EditorUtilies.EMPTY_ITEM_ARRAY )) {
 			if (canHold( item )) {
 				int slot = Dungeon.quickslot.getSlot(item);
 				item.detachAll(container);
@@ -128,7 +129,7 @@ public class Bag extends Item implements Iterable<Item> {
 	}
 	
 	public void resurrect() {
-		for (Item item : items.toArray(new Item[0])){
+		for (Item item : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)){
 			if (!item.unique) items.remove(item);
 		}
 	}

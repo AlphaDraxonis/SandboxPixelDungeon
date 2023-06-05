@@ -25,7 +25,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.TileBar;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Languages;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
@@ -473,7 +473,7 @@ public class WndSettings extends WndTabbed {
 										btnCentered.textColor(WHITE);
 										SPDSettings.toolbarMode(Toolbar.Mode.SPLIT.name());
 										Toolbar.updateLayout();
-										TileBar.updateLayout();
+										EToolbar.updateLayout();
 									}
 								};
 								if (SPDSettings.toolbarMode().equals(Toolbar.Mode.SPLIT.name())) {
@@ -489,7 +489,7 @@ public class WndSettings extends WndTabbed {
 										btnCentered.textColor(WHITE);
 										SPDSettings.toolbarMode(Toolbar.Mode.GROUP.name());
 										Toolbar.updateLayout();
-										TileBar.updateLayout();
+										EToolbar.updateLayout();
 									}
 								};
 								if (SPDSettings.toolbarMode().equals(Toolbar.Mode.GROUP.name())) {
@@ -505,7 +505,7 @@ public class WndSettings extends WndTabbed {
 										textColor(TITLE_COLOR);
 										SPDSettings.toolbarMode(Toolbar.Mode.CENTER.name());
 										Toolbar.updateLayout();
-										TileBar.updateLayout();
+										EToolbar.updateLayout();
 									}
 								};
 								if (SPDSettings.toolbarMode().equals(Toolbar.Mode.CENTER.name())) {
@@ -519,7 +519,7 @@ public class WndSettings extends WndTabbed {
 										super.onClick();
 										SPDSettings.quickSwapper(checked());
 										Toolbar.updateLayout();
-										TileBar.updateLayout();
+										EToolbar.updateLayout();
 									}
 								};
 								chkQuickSwapper.checked(SPDSettings.quickSwapper());
@@ -535,7 +535,7 @@ public class WndSettings extends WndTabbed {
 										super.onClick();
 										SPDSettings.flipToolbar(checked());
 										Toolbar.updateLayout();
-										TileBar.updateLayout();
+										EToolbar.updateLayout();
 									}
 								};
 								chkFlipToolbar.checked(SPDSettings.flipToolbar());

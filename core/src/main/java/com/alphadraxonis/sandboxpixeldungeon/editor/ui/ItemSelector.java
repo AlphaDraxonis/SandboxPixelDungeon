@@ -1,11 +1,11 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.ui;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.Items;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.editcomps.EditCompWindow;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.EditorInventoryWindow;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.EditorItem;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.ItemItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditCompWindow;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.ItemItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;

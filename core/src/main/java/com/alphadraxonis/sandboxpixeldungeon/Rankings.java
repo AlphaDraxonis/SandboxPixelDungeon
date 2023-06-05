@@ -26,6 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Belongings;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
@@ -240,9 +241,9 @@ public enum Rankings {
         //save the hero and belongings
         ArrayList<Item> allItems = (ArrayList<Item>) belongings.backpack.items.clone();
         //remove items that won't show up in the rankings screen
-        for (Item item : belongings.backpack.items.toArray(new Item[0])) {
+        for (Item item : belongings.backpack.items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
             if (item instanceof Bag) {
-                for (Item bagItem : ((Bag) item).items.toArray(new Item[0])) {
+                for (Item bagItem : ((Bag) item).items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
                     if (Dungeon.quickslot.contains(bagItem)
                             && !Dungeon.quickslot.contains(item)) {
                         belongings.backpack.items.add(bagItem);

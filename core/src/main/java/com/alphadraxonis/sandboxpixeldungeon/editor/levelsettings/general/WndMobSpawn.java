@@ -5,8 +5,8 @@ import static com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Mobs;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.Mobs;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;

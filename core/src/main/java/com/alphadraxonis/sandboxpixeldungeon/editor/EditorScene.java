@@ -5,23 +5,22 @@ import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.WndEditorInv;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.EditorCellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.TerrainFeaturesTilemapEditor;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.EditorItem;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.TileBar;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.Tiles;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.inv.WndEditorItemsBag;
 import com.alphadraxonis.sandboxpixeldungeon.effects.EmoIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
-import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
@@ -36,7 +35,6 @@ import com.alphadraxonis.sandboxpixeldungeon.tiles.RaisedTerrainTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.TerrainFeaturesTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.ui.QuickSlotButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Toast;
-import com.alphadraxonis.sandboxpixeldungeon.ui.Toolbar;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndBag;
 import com.badlogic.gdx.Files;
@@ -52,7 +50,6 @@ import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
 
 import java.io.IOException;
@@ -69,8 +66,7 @@ public class EditorScene extends PixelScene {
 
 
     private MenuPane menu;
-    private TileBar tileBar;
-//    private SwitchLevelIndicator switchLevelIndicator;
+    private EToolbar toolbar;
 
 
     private Toast prompt;
@@ -109,14 +105,11 @@ public class EditorScene extends PixelScene {
 
 
     private ArrayList<Gizmo> toDestroy = new ArrayList<>();
-    private static Point lastOffset = null;
-    private static boolean invVisible = true;
 
 
     public static void start() {
         Dungeon.quickslot.reset();
         QuickSlotButton.reset();
-        Toolbar.swappedQuickslots = false;//FIXME don't do this
         Dungeon.hero = null;
         CustomDungeonSaves.setFileType(Files.FileType.External);
     }
@@ -131,31 +124,12 @@ public class EditorScene extends PixelScene {
         PathFinder.setMapSize(customLevel.width(), customLevel.height());
         SandboxPixelDungeon.switchNoFade(EditorScene.class);
     }
-//    public static void start(Floor floor) {//unused
-//        Dungeon.quickslot.reset();
-//        QuickSlotButton.reset();
-//        Toolbar.swappedQuickslots = false;//FIXME dont do this
-//        Dungeon.hero = null;
-//        EditorScene.floor = floor;
-//        SandboxPixelDungeon.switchNoFade(EditorScene.class);
-//    }
-
-
-//    ShatteredPixelDungeon.seamlessResetScene(new Game.SceneChangeCallback() {
-//        @Override
-//        public void beforeCreate() {
-//            Game.platform.resetGenerators();
-//        }
-//        @Override
-//        public void afterCreate() {
-//            //do nothing
-//        }
-//    });
 
     @Override
     public void create() {
 
-        Dungeon.level = customLevel();//so changes aren't required everywhere
+        Dungeon.level = customLevel();//so changes aren't required everywhere,
+                                      // but the preferred way to access the current level is still throug the method
         Dungeon.levelName = Dungeon.level.name;
         DungeonTileSheet.setupVariance(customLevel().length(), 1234567);
 
@@ -238,22 +212,16 @@ public class EditorScene extends PixelScene {
 
         int uiSize = SPDSettings.interfaceSize();
 
-        //
-
         menu = new MenuPane();
         menu.camera = uiCamera;
         menu.setPos(uiCamera.width - MenuPane.WIDTH, uiSize > 0 ? 0 : 1);
         add(menu);
 
-        tileBar = new TileBar();
-        tileBar.camera = uiCamera;
-        add(tileBar);
+        toolbar = new EToolbar();
+        toolbar.camera = uiCamera;
+        add(toolbar);
 
-        tileBar.setRect(0, uiCamera.height - tileBar.height(), uiCamera.width, tileBar.height());
-
-//        switchLevelIndicator = new SwitchLevelIndicator();
-//        switchLevelIndicator.camera = uiCamera;
-//        add(switchLevelIndicator);
+        toolbar.setRect(0, uiCamera.height - toolbar.height(), uiCamera.width, toolbar.height());
 
         layoutTags();
 
@@ -400,16 +368,6 @@ public class EditorScene extends PixelScene {
         scene.emoicons.add(icon);
     }
 
-
-    @Override
-    public synchronized Gizmo erase(Gizmo g) {
-        Gizmo result = super.erase(g);
-        if (result instanceof Window) {
-            lastOffset = ((Window) result).getOffset();
-        }
-        return result;
-    }
-
     public static Emitter emitter() {
 
         if (scene != null) {
@@ -462,11 +420,11 @@ public class EditorScene extends PixelScene {
         DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, cell);
     }
 
-    public static WndEditorItemsBag selectItem(WndBag.ItemSelector listener) {
+    public static WndEditorInv selectItem(WndBag.ItemSelector listener) {
         cancel();
 
         if (scene != null) {
-            WndEditorItemsBag wnd = WndEditorItemsBag.getBag(listener);
+            WndEditorInv wnd = WndEditorInv.getBag(listener);
             show(wnd);
             return wnd;
         }
@@ -506,12 +464,6 @@ public class EditorScene extends PixelScene {
         }
 
         return false;
-    }
-
-    @Override
-    public void update() {
-        lastOffset = null;
-        super.update();
     }
 
     public static void layoutTags() {
@@ -624,33 +576,22 @@ public class EditorScene extends PixelScene {
         return customLevel;
     }
 
-    public static String formatTitle(String name, Koord koord) {
-        return Messages.titleCase(name) + ": " + koord;
-    }
-
-    public static String formatTitle(CustomLevel.ItemWithPos item) {
-        return formatTitle(item.item().title(), new Koord(item.pos()));
-    }
-
 
     private static final CellSelector.Listener defaultCellListener = new CellSelector.Listener() {
         @Override
         public void onSelect(Integer cell) {
             if (cell == null) return;
 
-            Item selected = TileBar.getSelectedItem();
+            Item selected = EToolbar.getSelectedItem();
 
             if (selected instanceof EditorItem) ((EditorItem) selected).place(cell);
         }
 
         @Override
         public void onRightClick(Integer cell) {
-            if (cell == null || cell < 0 || cell > customLevel.length()) {
-                return;
+            if (cell != null && cell >= 0 && cell < customLevel.length()) {
+                EditorScene.showEditCellWindow(cell);
             }
-
-            EditorScene.showEditCellWindow(cell);
-
         }
 
         @Override

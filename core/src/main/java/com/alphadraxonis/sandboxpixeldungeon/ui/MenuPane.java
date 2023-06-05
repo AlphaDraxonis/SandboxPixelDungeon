@@ -106,26 +106,7 @@ public class MenuPane extends Component {
 		add(depthButton);
 
 		if (Challenges.activeChallenges() > 0){
-			challengeIcon = Icons.get(Icons.CHAL_COUNT);
-			add(challengeIcon);
-
-			challengeText = new BitmapText( Integer.toString( Challenges.activeChallenges() ), PixelScene.pixelFont);
-			challengeText.hardlight( 0xCACFC2 );
-			challengeText.measure();
-			add( challengeText );
-
-			challengeButton = new Button(){
-				@Override
-				protected void onClick() {
-					GameScene.show(new WndChallenges(Dungeon.challenges, false));
-				}
-
-				@Override
-				protected String hoverText() {
-					return Messages.get(WndChallenges.class, "title");
-				}
-			};
-			add(challengeButton);
+			addChallengeStuff();
 		}
 
 		btnJournal = new JournalButton();
@@ -142,6 +123,29 @@ public class MenuPane extends Component {
 		add( danger );
 
 		add( pickedUp = new Toolbar.PickedUpItem());
+	}
+
+	protected void addChallengeStuff(){
+		challengeIcon = Icons.get(Icons.CHAL_COUNT);
+		add(challengeIcon);
+
+		challengeText = new BitmapText( Integer.toString( Challenges.activeChallenges() ), PixelScene.pixelFont);
+		challengeText.hardlight( 0xCACFC2 );
+		challengeText.measure();
+		add( challengeText );
+
+		challengeButton = new Button(){
+			@Override
+			protected void onClick() {
+				GameScene.show(new WndChallenges(Dungeon.challenges, false));
+			}
+
+			@Override
+			protected String hoverText() {
+				return Messages.get(WndChallenges.class, "title");
+			}
+		};
+		add(challengeButton);
 	}
 
 	@Override

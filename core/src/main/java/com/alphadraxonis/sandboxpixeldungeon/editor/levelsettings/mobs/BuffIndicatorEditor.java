@@ -3,7 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.mobs;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.editcomps.EditMobComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditMobComp;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
 
 public class BuffIndicatorEditor extends BuffIndicator {

@@ -1,14 +1,15 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditCompWindow;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.editcomps.EditCompWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.CategoryScroller;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
@@ -24,6 +25,9 @@ import com.watabou.noosa.Image;
 import java.util.List;
 
 public class ItemTab extends WndEditorSettings.TabComp {
+
+    //FIXME Itemtab needs a full rework, catalog item class will be deleted
+
     private static ItemTab itemTab;
     private CategoryScroller categoryScroller;
 
@@ -137,7 +141,7 @@ public class ItemTab extends WndEditorSettings.TabComp {
         Item item = itemWP.item();
         if ((item.quantity() > 1 || !item.isUpgradable()) && !(item instanceof SpiritBow))
             return Messages.titleCase(item.title());
-        return EditorScene.formatTitle(itemWP);
+        return EditorUtilies.formatTitle(itemWP);
     }
 
     @Override

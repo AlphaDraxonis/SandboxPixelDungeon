@@ -27,6 +27,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Elemental;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.ElmoParticle;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
@@ -159,7 +160,7 @@ public class CeremonialCandle extends Item {
 		if (allCandles){
 
 			for (Heap h : candleHeaps) {
-				for (Item i : h.items.toArray(new Item[0])){
+				for (Item i : h.items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)){
 					if (i instanceof CeremonialCandle){
 						h.remove(i);
 					}
