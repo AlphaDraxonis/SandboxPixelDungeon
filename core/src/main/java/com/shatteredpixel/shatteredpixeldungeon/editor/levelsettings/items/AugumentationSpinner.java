@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
@@ -49,7 +50,8 @@ public class AugumentationSpinner extends Spinner {
 
         @Override
         protected String getAsString(Object value) {
-            return Messages.get(AugumentationSpinner.class,((Weapon.Augment) value).name().toLowerCase(Locale.ENGLISH));
+            if(value == Weapon.Augment.NONE)return Messages.get(AugumentationSpinner.class,"none");
+            return Messages.get(StoneOfAugmentation.WndAugment.class,((Weapon.Augment) value).name().toLowerCase(Locale.ENGLISH));
         }
     }
 
@@ -69,7 +71,8 @@ public class AugumentationSpinner extends Spinner {
 
         @Override
         protected String getAsString(Object value) {
-            return Messages.get(AugumentationSpinner.class,((Armor.Augment) value).name().toLowerCase(Locale.ENGLISH));
+            if(value == Armor.Augment.NONE)return Messages.get(AugumentationSpinner.class,"none");
+           return Messages.get(StoneOfAugmentation.WndAugment.class,((Armor.Augment) value).name().toLowerCase(Locale.ENGLISH));
         }
     }
 }
