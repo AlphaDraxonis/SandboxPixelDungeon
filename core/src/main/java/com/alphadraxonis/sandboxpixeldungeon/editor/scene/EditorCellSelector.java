@@ -4,8 +4,6 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.input.PointerEvent;
-import com.watabou.noosa.Camera;
-import com.watabou.utils.PointF;
 
 public class EditorCellSelector extends CellSelector {
 
@@ -15,8 +13,8 @@ public class EditorCellSelector extends CellSelector {
 
     @Override
     protected void handleClick(PointerEvent event) {
-        PointF p = Camera.main.screenToCamera((int) event.current.x, (int) event.current.y);
-
+//        PointF p = Camera.main.screenToCamera((int) event.current.x, (int) event.current.y);
+//
 //            //Prioritizes a sprite if it and a tile overlap, so long as that sprite isn't more than 4 pixels into another tile.
 //            //The extra check prevents large sprites from blocking the player from clicking adjacent tiles
 //
@@ -77,4 +75,12 @@ public class EditorCellSelector extends CellSelector {
         }
     }
 
+    @Override
+    protected boolean dragClickEnabled() {
+        return true;
+    }
+
+    @Override
+    protected void updateGameControlls() {
+    }
 }

@@ -31,6 +31,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
@@ -51,6 +52,11 @@ public class CellSelector extends ScrollArea {
     public boolean enabled;
 
     private float dragThreshold;
+
+
+    private boolean isPointerDown;
+    private boolean dragClicking;
+    private float time;
 
     public CellSelector(DungeonTilemap map) {
         super(map);
@@ -128,6 +134,13 @@ public class CellSelector extends ScrollArea {
                 true), event.button);
     }
 
+    protected void handleDragClick(PointerEvent event) {
+    }
+
+    protected boolean dragClickEnabled() {
+        return false;
+    }
+
     private float zoom(float value) {
 
         value = GameMath.gate(PixelScene.minZoom, value, PixelScene.maxZoom);
@@ -180,6 +193,7 @@ public class CellSelector extends ScrollArea {
 
     @Override
     protected void onPointerDown(PointerEvent event) {
+        isPointerDown = true;
         camera.edgeScroll.set(-1);
         if (event != curEvent && another == null) {
 
@@ -203,6 +217,11 @@ public class CellSelector extends ScrollArea {
 
     @Override
     protected void onPointerUp(PointerEvent event) {
+
+        isPointerDown = false;
+        dragClicking = false;
+        time = 0;
+
         camera.edgeScroll.set(1);
         if (pinching && (event == curEvent || event == another)) {
 
@@ -238,8 +257,12 @@ public class CellSelector extends ScrollArea {
 
             if (!dragging && PointF.distance(event.current, event.start) > dragThreshold) {
 
-                dragging = true;
-                lastPos.set(event.current);
+                if (dragClicking && dragClickEnabled()) {
+                    handleDragClick(event);
+                } else {
+                    dragging = true;
+                    lastPos.set(event.current);
+                }
 
             } else if (dragging) {
                 camera.shift(PointF.diff(lastPos, event.current).invScale(camera.zoom));
@@ -360,10 +383,23 @@ public class CellSelector extends ScrollArea {
     public void update() {
         super.update();
 
-        if (GameScene.interfaceBlockingHero() || Dungeon.hero == null) {
+        if (GameScene.interfaceBlockingHero()) {
             return;
         }
 
+        updateGameControlls();
+
+        if (isPointerDown && !dragClicking) {
+            time += Game.elapsed;
+            if (time >= Button.longClick) {
+                dragClicking = true;
+                if (dragClickEnabled()) Game.vibrate(50);
+            }
+        }
+
+    }
+
+    protected void updateGameControlls() {
         GameAction newLeftStick = actionFromStick(ControllerHandler.leftStickPosition.x,
                 ControllerHandler.leftStickPosition.y);
 
