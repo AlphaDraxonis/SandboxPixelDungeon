@@ -350,7 +350,7 @@ public class CellSelector extends ScrollArea {
         }
     }
 
-    private Signal.Listener<KeyEvent> keyListener = new Signal.Listener<KeyEvent>(){
+    private Signal.Listener<KeyEvent> keyListener = new Signal.Listener<KeyEvent>() {
         @Override
         public boolean onSignal(KeyEvent event) {
             GameAction action = KeyBindings.getActionForKey(event);
@@ -395,12 +395,34 @@ public class CellSelector extends ScrollArea {
                     heldDelay = initialDelay();
                 }
 
-            } else return handleOtherKeys(action);
+            } else {
+                if (directionFromAction(action) != 0) {
+
+                    if (Dungeon.hero != null) Dungeon.hero.resting = false;
+                    lastCellMoved = -1;
+                    if (heldAction1 == SPDAction.NONE) {
+                        heldAction1 = action;
+                        heldDelay = initialDelay();
+                        delayingForRelease = false;
+                    } else if (heldAction2 == SPDAction.NONE) {
+                        heldAction2 = action;
+                    } else {
+                        heldAction3 = action;
+                    }
+
+                    return true;
+                } else if (Dungeon.hero != null && Dungeon.hero.resting) {
+                    Dungeon.hero.resting = false;
+                    return true;
+                }
+
+                return false;
+            }
             return false;
         }
     };
 
-    private boolean handleZoom(GameAction action){
+    private boolean handleZoom(GameAction action) {
         if (action == SPDAction.ZOOM_IN) {
             zoom(camera.zoom + 1);
             mouseZoom = camera.zoom;
@@ -411,29 +433,6 @@ public class CellSelector extends ScrollArea {
             mouseZoom = camera.zoom;
             return true;
         }
-        return false;
-    }
-    protected boolean handleOtherKeys(GameAction action){
-        if (directionFromAction(action) != 0) {
-
-            Dungeon.hero.resting = false;
-            lastCellMoved = -1;
-            if (heldAction1 == SPDAction.NONE) {
-                heldAction1 = action;
-                heldDelay = initialDelay();
-                delayingForRelease = false;
-            } else if (heldAction2 == SPDAction.NONE) {
-                heldAction2 = action;
-            } else {
-                heldAction3 = action;
-            }
-
-            return true;
-        } else if ( Dungeon.hero.resting) {
-            Dungeon.hero.resting = false;
-            return true;
-        }
-
         return false;
     }
 
@@ -448,9 +447,31 @@ public class CellSelector extends ScrollArea {
             return;
         }
 
-        updateGameControlls();
+        GameAction newLeftStick = actionFromStick(ControllerHandler.leftStickPosition.x,
+                ControllerHandler.leftStickPosition.y);
 
-        if (isPointerDown && !dragClicking) {
+        if (newLeftStick != leftStickAction) {
+            if (leftStickAction == SPDAction.NONE) {
+                heldDelay = initialDelay();
+                if (Dungeon.hero != null) Dungeon.hero.resting = false;
+            } else if (newLeftStick == SPDAction.NONE && heldDelay > 0f) {
+                heldDelay = 0f;
+                moveFromActions(leftStickAction);
+            }
+            leftStickAction = newLeftStick;
+        }
+
+        if (heldDelay > 0) {
+            heldDelay -= Game.elapsed;
+        }
+
+        if ((heldAction1 != SPDAction.NONE || leftStickAction != SPDAction.NONE) && (Dungeon.hero == null || Dungeon.hero.ready)) {
+            processKeyHold();
+        } else if (Dungeon.hero != null && Dungeon.hero.ready) {
+            lastCellMoved = -1;
+        }
+
+        if (isPointerDown && !dragClicking) {// long click detection
             time += Game.elapsed;
             if (time >= Button.longClick) {
                 dragClicking = true;
@@ -463,36 +484,10 @@ public class CellSelector extends ScrollArea {
 
     }
 
-    protected void updateGameControlls() {
-        GameAction newLeftStick = actionFromStick(ControllerHandler.leftStickPosition.x,
-                ControllerHandler.leftStickPosition.y);
-
-        if (newLeftStick != leftStickAction) {
-            if (leftStickAction == SPDAction.NONE) {
-                heldDelay = initialDelay();
-                Dungeon.hero.resting = false;
-            } else if (newLeftStick == SPDAction.NONE && heldDelay > 0f) {
-                heldDelay = 0f;
-                moveFromActions(leftStickAction);
-            }
-            leftStickAction = newLeftStick;
-        }
-
-        if (heldDelay > 0) {
-            heldDelay -= Game.elapsed;
-        }
-
-        if ((heldAction1 != SPDAction.NONE || leftStickAction != SPDAction.NONE) && Dungeon.hero.ready) {
-            processKeyHold();
-        } else if (Dungeon.hero.ready) {
-            lastCellMoved = -1;
-        }
-    }
-
     //prevents repeated inputs when the hero isn't moving
     private int lastCellMoved = 0;
 
-    private boolean moveFromActions(GameAction... actions) {
+    protected boolean moveFromActions(GameAction... actions) {
         if (Dungeon.hero == null || !Dungeon.hero.ready) {
             return false;
         }
@@ -519,7 +514,7 @@ public class CellSelector extends ScrollArea {
 
     }
 
-    private int directionFromAction(GameAction action) {
+    protected int directionFromAction(GameAction action) {
         if (action == SPDAction.N) return -Dungeon.level.width();
         if (action == SPDAction.NE) return +1 - Dungeon.level.width();
         if (action == SPDAction.E) return +1;
@@ -560,16 +555,22 @@ public class CellSelector extends ScrollArea {
     public void processKeyHold() {
         //prioritize moving by controller stick over moving via keys
         if (directionFromAction(leftStickAction) != 0 && heldDelay < 0) {
-            enabled = Dungeon.hero.ready = true;
-            Dungeon.observe();
-            if (moveFromActions(leftStickAction)) {
+            enabled = true;
+            if (Dungeon.hero != null) {
+                Dungeon.hero.ready = true;
+                Dungeon.observe();
+            }
+            if (moveFromActions(leftStickAction) && Dungeon.hero != null) {
                 Dungeon.hero.ready = false;
             }
         } else if (directionFromAction(heldAction1) + directionFromAction(heldAction2) != 0
                 && heldDelay <= 0) {
-            enabled = Dungeon.hero.ready = true;
-            Dungeon.observe();
-            if (moveFromActions(heldAction1, heldAction2)) {
+            enabled = true;
+            if (Dungeon.hero != null) {
+                Dungeon.hero.ready = true;
+                Dungeon.observe();
+            }
+            if (moveFromActions(heldAction1, heldAction2) && Dungeon.hero != null) {
                 Dungeon.hero.ready = false;
             }
         }
@@ -614,7 +615,8 @@ public class CellSelector extends ScrollArea {
 
     public static abstract class Listener {
         public abstract void onSelect(Integer cell);
-        public void onSelectDragging(Integer cell){
+
+        public void onSelectDragging(Integer cell) {
             onSelect(cell);
         }
 
@@ -622,6 +624,7 @@ public class CellSelector extends ScrollArea {
         } //do nothing by default
 
         public abstract String prompt();
+
         protected boolean dragClickEnabled() {
             return false;
         }

@@ -1,10 +1,12 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.scene;
 
+import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.input.GameAction;
 import com.watabou.input.PointerEvent;
+import com.watabou.noosa.Camera;
 
 public class EditorCellSelector extends CellSelector {
 
@@ -77,12 +79,40 @@ public class EditorCellSelector extends CellSelector {
         }
     }
 
+    private static final int UNITS_MOVE = 9;
     @Override
-    protected void updateGameControlls() {
+    protected boolean moveFromActions(GameAction... actions) {
+
+        if (EditorScene.cancelCellSelector()) {
+            return false;
+        }
+
+        int x = 0;
+        int y = 0;
+        for (GameAction action : actions) {
+            if (action == SPDAction.E || action == SPDAction.NE || action == SPDAction.SE) x += UNITS_MOVE;
+            if (action == SPDAction.W || action == SPDAction.NW || action == SPDAction.SW) x -= UNITS_MOVE;
+            if (action == SPDAction.S || action == SPDAction.SE || action == SPDAction.SW) y += UNITS_MOVE;
+            if (action == SPDAction.N || action == SPDAction.NE || action == SPDAction.NW) y -= UNITS_MOVE;
+        }
+        if (x == 0 && y == 0) return false;
+
+        Camera.main.scroll.x += x;
+        Camera.main.scroll.y += y;
+
+        return true;
     }
 
     @Override
-    protected boolean handleOtherKeys(GameAction action) {
-        return false;
+    protected int directionFromAction(GameAction action) {
+        if (action == SPDAction.N) return -10;
+        if (action == SPDAction.NE) return -9;
+        if (action == SPDAction.E) return +1;
+        if (action == SPDAction.SE) return +11;
+        if (action == SPDAction.S) return +10;
+        if (action == SPDAction.SW) return +9;
+        if (action == SPDAction.W) return -1;
+        if (action == SPDAction.NW) return -11;
+        else return 0;
     }
 }

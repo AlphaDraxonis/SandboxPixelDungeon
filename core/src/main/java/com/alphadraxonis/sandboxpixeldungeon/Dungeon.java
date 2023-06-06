@@ -413,9 +413,7 @@ public class Dungeon {
                     }
                     if (pos == l) pos = l / 2;//if all positions are invalid, just take the center
                 }
-//                GameScene.errorMsg.add("NO TRANSITION FOUND FOR LEVEL " + level.name);
-                GameScene.errorMsg.add("There is no entrance or exit for the level \"" + level.name + "\" from Dungeon \"" + Dungeon.customDungeon.getName() + "\",");
-                GameScene.errorMsg.add(" so a random cell was chosen instead.\nPlease add a transition to this level!");
+                GameScene.errorMsg.add(Messages.get(Dungeon.class, "no_transitions_warning", level.name, Dungeon.customDungeon.getName()));
                 Random.popGenerator();
             } else
                 pos = t.cell();
