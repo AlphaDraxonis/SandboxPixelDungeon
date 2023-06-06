@@ -25,6 +25,7 @@ import com.watabou.utils.Reflection;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
@@ -143,16 +144,13 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
                 type = DeadEndLevel.class;
         }
         numInRegion = (depth - 1) % 5 + 1;
-         if (depth > 1 && depth < 5) {
+        if (depth > 1 && depth < 5) {
             customDungeon.addMaybeGhostSpawnLevel(name);
-        }
-       else if (depth > 6 && depth < 10) {
+        } else if (depth > 6 && depth < 10) {
             customDungeon.addMaybeWandmakerSpawnLevel(name);
-        }
-       else if (depth > 11 && depth < 15) {
+        } else if (depth > 11 && depth < 15) {
             customDungeon.addMaybeBlacksmithSpawnLevel(name);
-        }
-        else if (depth > 16 && depth < 20) {
+        } else if (depth > 16 && depth < 20) {
             customDungeon.addMaybeImpSpawnLevel(name);
         }
 
@@ -385,10 +383,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         int[] entrances = bundle.getIntArray(ENTRANCE_CELLS);
         entranceCells = new ArrayList<>(entrances.length + 1);
         for (int entrance : entrances) entranceCells.add(entrance);
+        Collections.sort(entranceCells);//should actually already be sorted
 
         int[] exits = bundle.getIntArray(EXIT_CELLS);
         exitCells = new ArrayList<>(exits.length + 1);
         for (int exit : exits) exitCells.add(exit);
+        Collections.sort(exitCells);
 
         type = bundle.getClass(TYPE);
         numInRegion = bundle.getInt(NUM_IN_REGION);

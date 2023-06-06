@@ -64,6 +64,7 @@ import com.watabou.utils.SparseArray;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -179,6 +180,8 @@ public class CustomLevel extends Level {
                 else if (map[i] == ENTRANCE) levelScheme.entranceCells.add(i);
                 else if (TileItem.isExitTerrainCell(map[i])) levelScheme.exitCells.add(i);
             }
+            Collections.sort(levelScheme.entranceCells);
+            Collections.sort(levelScheme.exitCells);
 
             this.feeling = level.feeling;
             mobs = level.mobs;
@@ -463,6 +466,8 @@ public class CustomLevel extends Level {
             if (terrain == ENTRANCE) levelScheme.entranceCells.add(i);
             else if (TileItem.isExitTerrainCell(terrain)) levelScheme.exitCells.add(i);
         }
+        Collections.sort(levelScheme.entranceCells);
+        Collections.sort(levelScheme.exitCells);
     }
 
     @Override
@@ -715,6 +720,8 @@ public class CustomLevel extends Level {
                 }
 
             }
+            Collections.sort(levelScheme.entranceCells);
+            Collections.sort(levelScheme.exitCells);
         }
 
         EditorScene.updateMap(cell);
@@ -809,12 +816,14 @@ public class CustomLevel extends Level {
         for (int cell : cells) {
             level.levelScheme.entranceCells.add(cell + add + cell / levelWidth * diffW);
         }
+        Collections.sort(level.levelScheme.entranceCells);
 
         cells = new ArrayList<>(level.levelScheme.exitCells);
         level.levelScheme.exitCells.clear();
         for (int cell : cells) {
             level.levelScheme.exitCells.add(cell + add + cell / levelWidth * diffW);
         }
+        Collections.sort(level.levelScheme.exitCells);
 
         Map<Integer, LevelTransition> nTrans = new HashMap<>();
         for (LevelTransition transition : level.transitions.values()) {
