@@ -60,7 +60,7 @@ public class CellSelector extends ScrollArea {
 
 
     private boolean isPointerDown;
-    private boolean dragClicking;
+    private boolean dragClicking, wasJustDragClicking;
     private float time;
     private final Set<Integer> lastSelectedCells = new HashSet<>();
     private int lastCell = -1;
@@ -94,9 +94,9 @@ public class CellSelector extends ScrollArea {
     protected void onClick(PointerEvent event) {
         if (dragging) {
             dragging = false;
-        } else if (!dragClicking) {
-            handleClick(event);
-        }
+        } else if (wasJustDragClicking) {
+            wasJustDragClicking = false;
+        } else handleClick(event);
     }
 
     protected void handleClick(PointerEvent event) {
@@ -267,6 +267,7 @@ public class CellSelector extends ScrollArea {
     @Override
     protected void onPointerUp(PointerEvent event) {
 
+        if(dragClicking) wasJustDragClicking = true;
         dragClicking = false;
         isPointerDown = false;
         time = 0;

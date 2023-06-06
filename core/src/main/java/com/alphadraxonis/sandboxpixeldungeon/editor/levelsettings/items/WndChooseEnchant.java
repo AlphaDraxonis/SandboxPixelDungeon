@@ -156,8 +156,8 @@ public class WndChooseEnchant extends WndChooseOneInCategories {
 
 
     private static String getEnchantType(boolean isWeapon) {
-        if(isWeapon)return Messages.get(Armor.Glyph.class,"glyph");
-        else return Messages.get(Weapon.Enchantment.class,"enchant");
+        if (isWeapon) return Messages.get(Weapon.Enchantment.class, "enchant");
+        else return Messages.get(Armor.Glyph.class, "glyph");
     }
 
 }

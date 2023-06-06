@@ -9,9 +9,9 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
+import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.QuickSlotButton;
-import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.watabou.noosa.Image;
@@ -22,16 +22,7 @@ public class DefaultListItem extends AdvancedListPaneItem {
     protected final Item item;
     private EditorInventoryWindow window;
 
-    protected RedButton editButton;
-
-    private static final float ICON_WIDTH, ICON_HEIGHT;
-
-    private static final Image editIcon = Icons.get(Icons.PREFS);
-
-    static {
-        ICON_WIDTH = editIcon.width();
-        ICON_HEIGHT = editIcon.height();
-    }
+    protected IconButton editButton;
 
     public DefaultListItem(Item item, EditorInventoryWindow window, String title, Image image) {
         super(image,
@@ -40,8 +31,15 @@ public class DefaultListItem extends AdvancedListPaneItem {
         this.item = item;
         this.window = window;
 
-//            editButton = new RedButton("");
-//            add(editButton);
+        if (item instanceof EditorItem) {
+            editButton = new IconButton(Icons.get(Icons.RENAME_ON)) {
+                @Override
+                protected void onClick() {
+                    openEditWindow();
+                }
+            };
+            add(editButton);
+        }
 
         onUpdate();
     }
@@ -50,8 +48,11 @@ public class DefaultListItem extends AdvancedListPaneItem {
     protected void layout() {
         super.layout();
 
-        if (editButton != null)
-            editButton.setRect(width - 1 - ICON_WIDTH, y + (height - ICON_HEIGHT) * 0.5f, ICON_WIDTH, ICON_HEIGHT);
+        if (editButton != null) {
+            editButton.setRect(width - 3 - editButton.icon().width(), y + (height - editButton.icon().height()) * 0.5f, editButton.icon().width(), editButton.icon().height());
+            hotArea.width = editButton.left() - 1;
+        }
+
     }
 
     @Override
@@ -86,6 +87,16 @@ public class DefaultListItem extends AdvancedListPaneItem {
     @Override
     protected boolean onLongClick() {
 
+        if (openEditWindow()) {
+            return true;
+        }
+
+        window.hide();
+        QuickSlotButton.set(item);
+        return true;
+    }
+
+    protected boolean openEditWindow() {
         if (item instanceof EditorItem) {
             Window w = new Window();
             DefaultEditComp<?> content = ((EditorItem) item).createEditComponent();
@@ -113,9 +124,6 @@ public class DefaultListItem extends AdvancedListPaneItem {
             EditorScene.show(w);
             return true;
         }
-
-        window.hide();
-        QuickSlotButton.set(item);
-        return true;
+        return false;
     }
 }

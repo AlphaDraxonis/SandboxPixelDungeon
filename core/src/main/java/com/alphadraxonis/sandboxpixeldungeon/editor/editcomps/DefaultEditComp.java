@@ -46,11 +46,13 @@ public abstract class DefaultEditComp<T> extends Component {
 
         height = desc.bottom() + 1;
     }
-    protected final void layoutCompsLinear(Component... comps){
+
+    protected final void layoutCompsLinear(Component... comps) {
+        if (comps == null) return;
 
         float posY = height + WndTitledMessage.GAP * 2 - 1;
 
-        for(Component c : comps){
+        for (Component c : comps) {
             if (c != null) {
                 c.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
                 PixelScene.align(c);
@@ -87,7 +89,7 @@ public abstract class DefaultEditComp<T> extends Component {
     }
 
 
-    public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap,int cell) {
+    public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap, int cell) {
 
         EditTileComp editTileComp = null;
         EditItemComp editItemComp = null;
@@ -98,7 +100,7 @@ public abstract class DefaultEditComp<T> extends Component {
         TileItem tileItem = null;
 
         if (terrainType != -1) {
-            tileItem = new TileItem(terrainType,cell);
+            tileItem = new TileItem(terrainType, cell);
             if (terrainImage != -1) tileItem.image = terrainImage;
             numTabs++;
         }
