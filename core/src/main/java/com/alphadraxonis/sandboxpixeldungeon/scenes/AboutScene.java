@@ -250,7 +250,8 @@ public class AboutScene extends PixelScene {
 				"_Pack: Stabbing Stomachs & Crushing Skulls_ by _TheFilmLook_\n" +
 				"_Sheep bleating_ by _zachrau_\n" +
 				"_Lemon,Juicy,Squeeze,Fruit.wav_ by _Filipe Chagas_\n" +
-				"_Lemon,Squeeze,Squishy,Fruit.wav_ by _Filipe Chagas_",
+				"_Lemon,Squeeze,Squishy,Fruit.wav_ by _Filipe Chagas_\n"+
+				"_Phone vibration.wav_ by _Breviceps_",
 				"www.freesound.org",
 				"https://www.freesound.org");
 		freesound.setRect(transifex.left()-10, transifex.bottom() + 8, colWidth+20, 0);

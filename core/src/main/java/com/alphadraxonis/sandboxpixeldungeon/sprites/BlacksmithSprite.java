@@ -79,7 +79,7 @@ public class BlacksmithSprite extends MobSprite {
         if (visible && emitter != null && anim == idle) {
             emitter.burst(Speck.factory(Speck.FORGE), 3);
             float volume = CustomDungeon.isEditing() ? 0.01f : 0.2f / (Dungeon.level.distance(ch.pos, Dungeon.hero.pos)); //FIXME add setting to change/disable volume
-            Sample.INSTANCE.play(Assets.Sounds.EVOKE, volume, volume, 0.8f);
+            Sample.INSTANCE.play(Assets.Sounds.EVOKE, volume, 0.8f);
         }
     }
 

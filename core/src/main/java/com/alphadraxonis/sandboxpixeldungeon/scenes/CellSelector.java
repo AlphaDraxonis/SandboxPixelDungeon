@@ -24,6 +24,7 @@ package com.alphadraxonis.sandboxpixeldungeon.scenes;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
+import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
@@ -476,7 +477,7 @@ public class CellSelector extends ScrollArea {
             if (time >= Button.longClick) {
                 dragClicking = true;
                 if (listener.dragClickEnabled() && !pinching && !dragging) {
-                    Game.vibrate(50);
+                    SandboxPixelDungeon.vibrate(50);
                     handleDragClick(curEvent);
                 }
             }

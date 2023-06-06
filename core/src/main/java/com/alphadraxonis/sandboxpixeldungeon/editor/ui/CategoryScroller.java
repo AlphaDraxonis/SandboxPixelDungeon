@@ -3,6 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.ui;
 import static com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings.ITEM_HEIGHT;
 
 import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
+import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
@@ -120,7 +121,7 @@ public class CategoryScroller extends Component {
                 if (time >= Button.longClick) {
                     isHolding = true;
                     time -= Button.longClick;
-                    Game.vibrate(50);
+                    SandboxPixelDungeon.vibrate(50);
                 }
             } else {
                 if (time >= INTERVAL) {
