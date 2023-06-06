@@ -5,6 +5,9 @@ import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.input.PointerEvent;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class EditorCellSelector extends CellSelector {
 
     public EditorCellSelector(DungeonTilemap map) {
@@ -55,6 +58,24 @@ public class EditorCellSelector extends CellSelector {
                 true), event.button);
     }
 
+    private final Set<Integer> lastSelectedCells = new HashSet<>();
+
+    @Override
+    protected void onPointerUp(PointerEvent event) {
+        lastSelectedCells.clear();
+        super.onPointerUp(event);
+    }
+
+    @Override
+    protected void handleDragClick(PointerEvent event) {
+        int cell = ((DungeonTilemap) target).screenToTile(
+                (int) event.current.x,
+                (int) event.current.y,
+                true);
+        if (lastSelectedCells.contains(cell) ||EditorScene.customLevel().isBorder(cell)) return; //dont trigger every frame, only when a new cell was entered
+        lastSelectedCells.add(cell);
+        select(cell, event.button);
+    }
 
     @Override
     public void select(int cell, int button) {

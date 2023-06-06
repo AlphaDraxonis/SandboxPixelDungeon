@@ -86,7 +86,7 @@ public class CellSelector extends ScrollArea {
     protected void onClick(PointerEvent event) {
         if (dragging) {
             dragging = false;
-        } else {
+        } else if (!dragClicking) {
             handleClick(event);
         }
     }
@@ -218,8 +218,8 @@ public class CellSelector extends ScrollArea {
     @Override
     protected void onPointerUp(PointerEvent event) {
 
-        isPointerDown = false;
         dragClicking = false;
+        isPointerDown = false;
         time = 0;
 
         camera.edgeScroll.set(1);
@@ -393,7 +393,10 @@ public class CellSelector extends ScrollArea {
             time += Game.elapsed;
             if (time >= Button.longClick) {
                 dragClicking = true;
-                if (dragClickEnabled()) Game.vibrate(50);
+                if (dragClickEnabled() && !pinching && !dragging) {
+                    Game.vibrate(50);
+                    handleDragClick(curEvent);
+                }
             }
         }
 
