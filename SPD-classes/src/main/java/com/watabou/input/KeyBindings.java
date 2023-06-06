@@ -25,6 +25,7 @@ import com.badlogic.gdx.Input;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 
 //FIXME at lot of the logic here, in WndKeyBindings, and SPDAction is fairly messy
 // should see about doing some refactoring to clean this up
@@ -134,6 +135,22 @@ public class KeyBindings {
 		} else if (keyCode == Input.Keys.FORWARD_DEL) {
 			return "Delete";
 		} else {
+
+			if(Locale.getDefault().getLanguage().equals("de")){//qwertz (feel free to send me other keyboard layout translations so I can paste them here)
+				if (keyCode == Input.Keys.Y) return "Z";
+				if (keyCode == Input.Keys.Z) return "Y";
+				if (keyCode == Input.Keys.LEFT_BRACKET) return "Ü";
+				if (keyCode == Input.Keys.RIGHT_BRACKET) return "+";
+				if (keyCode == Input.Keys.SEMICOLON) return "Ö";
+				if (keyCode == Input.Keys.APOSTROPHE) return "Ä";
+				if (keyCode == Input.Keys.BACKSLASH) return "#";
+				if (keyCode == Input.Keys.SLASH) return "-";
+				if (keyCode == Input.Keys.GRAVE) return "^";
+				if (keyCode == Input.Keys.MINUS) return "ß";
+				if (keyCode == Input.Keys.EQUALS) return "´";
+//				return keyCode+" "+Input.Keys.toString(keyCode);
+			}
+
 			return Input.Keys.toString(keyCode);
 		}
 	}
