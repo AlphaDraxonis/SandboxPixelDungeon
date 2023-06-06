@@ -267,9 +267,11 @@ public enum Mobs {
     }
 
     public static class MobBag extends EditorItemBag {
+        private final Mobs mobs;
 
         public MobBag(Mobs mobs) {
-            super(mobs.getName(), mobs.getImage());
+            super(mobs.getName(), 0);
+            this.mobs = mobs;
             for (Class<?> m : mobs.classes) {
                 Mob mob = (Mob) Reflection.newInstance(m);
                 if (mob instanceof com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC || mob instanceof Mimic)
@@ -278,9 +280,14 @@ public enum Mobs {
                 items.add(new MobItem(mob));
             }
         }
+
+        @Override
+        public Image getCategoryImage() {
+            return mobs.getImage();
+        }
     }
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "mobs"), null);
+    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "mobs"), 0);
 
     static {
         for (Mobs m : values()) {

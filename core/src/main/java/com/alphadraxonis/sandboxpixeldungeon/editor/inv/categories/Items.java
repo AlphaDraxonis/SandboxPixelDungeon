@@ -225,7 +225,7 @@ import com.alphadraxonis.sandboxpixeldungeon.plants.Starflower;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Stormvine;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Sungrass;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Swiftthistle;
-import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -692,12 +692,17 @@ public enum Items {
     }
 
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class,"items"),null);
+    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class,"items"),0){
+        @Override
+        public Image getCategoryImage() {
+            return null;
+        }
+    };
 
     public static class ItemBag extends EditorItemBag {
 
         public ItemBag(String name, int image, Class<?>[]... classes) {
-            super(name,new ItemSprite(image));
+            super(name,image);
             for (Class<?>[] cs : classes) {
                 for (Class<?> c : cs) {
                     items.add(new ItemItem((Item) Reflection.newInstance(c)));
@@ -707,13 +712,20 @@ public enum Items {
     }
 
     static {
-        bag.items.add(new ItemBag(Messages.get(Items.class,"weapons"), WEAPON_HOLDER, MELEE_WEAPON.classes(), MISSILE_WEAPON.classes(), WAND.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"eq"), ARMOR_HOLDER, ARMOR.classes(), RING.classes(), ARTIFACT.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"pot"), POTION_HOLDER, SEED.classes(), POTION.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"scroll"), SCROLL_HOLDER, STONE.classes(), SCROLL.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"alch"), CATA_HOLDER, ALCHEMICAL.classes(), SPELL.classes(), BOMB.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"misc"), FOOD_HOLDER, FOOD.classes(), KEY.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"other"), SOMETHING, OTHER.classes(), BAG.classes(), QUEST.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"melee"), WEAPON_HOLDER, MELEE_WEAPON.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"wand"), WAND_HOLDER, WAND.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"ring"), RING_HOLDER, RING.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"seed"), SEED_HOLDER, SEED.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"stone"), STONE_HOLDER, STONE.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"bomb"), BOMB_HOLDER,  BOMB.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"food"), FOOD_HOLDER, FOOD.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"missile"), MISSILE_HOLDER, MISSILE_WEAPON.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"armor"), ARMOR_HOLDER, ARMOR.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"artifact"), ARTIFACT_HOLDER, ARTIFACT.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"potion"), POTION_HOLDER,  POTION.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"scroll"), SCROLL_HOLDER, SCROLL.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"alch"), SPELL_HOLDER, ALCHEMICAL.classes(), SPELL.classes()));
+        bag.items.add(new ItemBag(Messages.get(Items.class,"other"), SOMETHING, KEY.classes(), OTHER.classes(), BAG.classes(), QUEST.classes()));
     }
 
 }

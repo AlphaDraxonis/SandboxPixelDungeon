@@ -419,8 +419,6 @@ public class GameScene extends PixelScene {
 
         layoutTags();
 
-        int simulatedDepth = Dungeon.getSimulatedDepth();
-
         switch (InterlevelScene.mode) {
             case RESURRECT:
                 Sample.INSTANCE.play(Assets.Sounds.TELEPORT);

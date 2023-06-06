@@ -343,7 +343,7 @@ public class WndNewFloor extends Window {
 
         @Override
         protected String objectToString(Object object) {
-            if (object == null) return Messages.get(WndSelectLevelType.class,"none");
+            if (object == null) return Messages.get(WndSelectLevelType.class,"type_none");
             if (object == CustomLevel.class) return Messages.get(WndSelectLevelType.class,"type_custom");
             return super.objectToString(object);
         }

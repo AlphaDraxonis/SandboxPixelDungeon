@@ -85,13 +85,13 @@ public enum Tiles {
     //TODO Icon zeige in inv an, ob brennbar, oder Schlüssel?? -> muss über ListItem gemacht werden!
 
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class,"tiles"),null);
+    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class,"tiles"),0);
 
     public static class TileBag extends EditorItemBag {
 
         private final int[] terrains;
         public TileBag(String name,int... terrainCategory) {
-            super(name,null);
+            super(name,terrainCategory[0]);
             for (int i : terrainCategory) {
                 items.add(new TileItem(i, -1));
             }
@@ -99,7 +99,7 @@ public enum Tiles {
         }
         @Override
         public Image getCategoryImage() {
-            TileItem t = new TileItem(terrains[0], -1);
+            TileItem t = new TileItem(image, -1);
             t.randomizeTexture();
             return new ItemSprite(t);
         }

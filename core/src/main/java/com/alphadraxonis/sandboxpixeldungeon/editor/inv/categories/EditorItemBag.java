@@ -3,33 +3,27 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.WndEditorInv;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
-import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
+import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
 
 public class EditorItemBag extends Bag {
 
-    {
-        image = ItemSpriteSheet.BACKPACK;
-    }
-
     private final String name;
-    private final Image img;
 
-    public EditorItemBag(String name, Image img) {
+    public EditorItemBag(String name, int img) {
         this.name = name;
-        this.img = img;
+        image = img;
     }
-
 
     @Override
     public int capacity() {
         return items.size() + 1;
     }
 
-    public Image getCategoryImage() {
-        return img;
+    public  Image getCategoryImage(){
+        return new ItemSprite(image);
     }
 
     @Override
@@ -37,7 +31,12 @@ public class EditorItemBag extends Bag {
         return name;
     }
 
-    public static final EditorItemBag mainBag = new EditorItemBag("main", null);
+    public static final EditorItemBag mainBag = new EditorItemBag("main", 0){
+        @Override
+        public Image getCategoryImage() {
+            return null;
+        }
+    };
 
     static {
         mainBag.items.add(Tiles.bag);

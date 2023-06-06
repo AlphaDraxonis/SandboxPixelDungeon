@@ -107,6 +107,9 @@ public class EditorScene extends PixelScene {
     private ArrayList<Gizmo> toDestroy = new ArrayList<>();
 
 
+    private static PointF mainCameraPos;
+
+
     public static void start() {
         Dungeon.quickslot.reset();
         QuickSlotButton.reset();
@@ -117,6 +120,7 @@ public class EditorScene extends PixelScene {
     public static void open(CustomLevel customLevel) {
         if (EditorScene.customLevel != null && customLevel != EditorScene.customLevel) {
             EditorScene.customLevel.levelScheme.unloadLevel();
+            mainCameraPos = null;
         }
         EditorScene.customLevel = customLevel;
         Dungeon.levelName = customLevel.name;
@@ -129,9 +133,9 @@ public class EditorScene extends PixelScene {
     public void create() {
 
         Dungeon.level = customLevel();//so changes aren't required everywhere,
-                                      // but the preferred way to access the current level is still throug the method
+        // but the preferred way to access the current level is still through the method
         Dungeon.levelName = Dungeon.level.name;
-        DungeonTileSheet.setupVariance(customLevel().length(), 1234567);
+        DungeonTileSheet.setupVariance(customLevel().length(), 1234567);//TODO use dungeon seed
 
         for (Heap heap : customLevel().heaps.valueList()) {
             for (Item item : heap.items) {
@@ -143,6 +147,13 @@ public class EditorScene extends PixelScene {
 
         Camera.main.zoom(GameMath.gate(minZoom, defaultZoom + SPDSettings.zoom(), maxZoom));
         Camera.main.edgeScroll.set(1);
+        if (mainCameraPos != null) Camera.main.scroll = mainCameraPos;
+        else {//FIXME point to middle! WICHTIG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            PointF to = new PointF(Camera.main.zoom/85f/16f*2f,Camera.main.zoom/85f/16f*2);
+            Camera.main.scroll.x = 85*8 / 2 - 200;
+            Camera.main.scroll.y = Camera.main.width/2f ;
+            mainCameraPos = Camera.main.scroll;
+        }
 
         scene = this;
 

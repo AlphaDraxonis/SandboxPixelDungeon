@@ -56,7 +56,7 @@ public class CategoryScroller extends Component {
     @Override
     protected void layout() {
 
-        if (PixelScene.landscape() || categoryButtons.length <= 7) {
+        if (categoryButtons.length <= 7) {
             float buttonWidth = width() / categoryButtons.length;
             for (int i = 0; i < categoryButtons.length; i++) {
                 categoryButtons[i].setRect(i * buttonWidth, 0, buttonWidth, ITEM_HEIGHT);

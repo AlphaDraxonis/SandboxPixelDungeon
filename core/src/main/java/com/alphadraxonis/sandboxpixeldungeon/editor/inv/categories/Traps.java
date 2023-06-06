@@ -145,10 +145,10 @@ public enum Traps {
     }
 
     public String getName() {
-        return Messages.get(Traps.class,name().toLowerCase(Locale.ENGLISH));
+        return Messages.get(Traps.class, name().toLowerCase(Locale.ENGLISH));
     }
 
-    public Image getImage(){
+    public Image getImage() {
         Trap t;
         switch (Traps.this) {
             case GAS:
@@ -180,7 +180,7 @@ public enum Traps {
     }
 
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "traps"), null);
+    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "traps"), 0);
 
     static {
         for (Traps traps : Traps.values()) {
@@ -189,14 +189,21 @@ public enum Traps {
     }
 
     public static class TrapBag extends EditorItemBag {
+        private final Traps traps;
 
         public TrapBag(Traps traps) {
-            super(traps.getName(),traps.getImage());
+            super(traps.getName(), 0);
+            this.traps = traps;
             for (Class<?> t : traps.classes) {
                 Trap trap = (Trap) Reflection.newInstance(t);
                 trap.visible = true;
                 items.add(new TrapItem(trap));
             }
+        }
+
+        @Override
+        public Image getCategoryImage() {
+            return traps.getImage();
         }
     }
 

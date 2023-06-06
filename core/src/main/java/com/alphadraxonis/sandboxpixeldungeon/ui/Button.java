@@ -21,6 +21,8 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.ui;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
@@ -181,7 +183,9 @@ public class Button extends Component {
 
         if (pressedButton == this && pressTime >= longClick) {
             if (getClicksPerSecondWhenHolding() > 0) {
-                Game.vibrate(50);
+                if (Gdx.input.isPeripheralAvailable(Input.Peripheral.Vibrator))
+                    Game.vibrate(50);
+//                else Sample.INSTANCE.play(Assets.Sounds.BOSS);
                 isclickHolding = true;
                 clickReady = false;//don't click when onPointerUp()
             } else {
@@ -192,7 +196,10 @@ public class Button extends Component {
                     clickReady = false; //did a long click, can't do a regular one
                     onPointerUp();
 
-                    Game.vibrate(50);
+
+                    if (Gdx.input.isPeripheralAvailable(Input.Peripheral.Vibrator))
+                        Game.vibrate(50);
+//                    else Sample.INSTANCE.play(Assets.Sounds.BOSS);
                 }
             }
         }
