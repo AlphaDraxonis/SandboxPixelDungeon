@@ -143,7 +143,8 @@ public class CustomLevel extends Level {
 
         Dungeon.depth = depth;
         if (seed == null) seed = DungeonSeed.randomSeed();
-        levelScheme.setSeed(seed);
+        else levelScheme.setSeed(seed);
+
         if (levelTemplate != null) {
 
             LevelScheme temp = new LevelScheme(null, numInRegion);
