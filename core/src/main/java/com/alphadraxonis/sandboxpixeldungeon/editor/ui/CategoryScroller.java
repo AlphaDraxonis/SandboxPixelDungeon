@@ -2,15 +2,22 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.ui;
 
 import static com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings.ITEM_HEIGHT;
 
+import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
+import com.watabou.input.GameAction;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Signal;
 
 import java.util.List;
 
@@ -19,6 +26,12 @@ public class CategoryScroller extends Component {
     public final ScrollingListPane list;
     private final Category[] categories;
     private final RedButton[] categoryButtons;
+
+    protected Signal.Listener<KeyEvent> keyListener;
+    private GameAction curAction;
+    private float time;
+    private static final float INTERVAL = 0.14f;// 7 cps
+    private boolean isHolding;
 
     private int selectedIndex;
 
@@ -51,6 +64,71 @@ public class CategoryScroller extends Component {
 
         list = new ScrollingListPane();
         add(list);
+
+
+        KeyEvent.addKeyListener(keyListener = new Signal.Listener<KeyEvent>() {
+            @Override
+            public boolean onSignal(KeyEvent keyEvent) {
+                GameAction action = KeyBindings.getActionForKey(keyEvent);
+
+                if (keyEvent.pressed) {
+                    curAction = action;
+                    return processKey();
+                }
+                curAction = null;
+                time = 0;
+                isHolding = false;
+                return false;
+            }
+        });
+    }
+
+
+    private boolean processKey() {
+        if (categoryButtons.length > 7) {
+            if (curAction == SPDAction.S) {
+                int index = (int) (selectedIndex + Math.ceil(categoryButtons.length / 2f)) % categoryButtons.length;
+                selectCategory(index);
+                return true;
+            }
+            if (curAction == SPDAction.N) {
+                int index = (int) (selectedIndex - Math.ceil(categoryButtons.length / 2f)) % categoryButtons.length;
+                if (index < 0) index += Math.ceil(categoryButtons.length / 2f) * 2;
+                selectCategory(index);
+                return true;
+            }
+        }
+        if (curAction == SPDAction.E) {
+            selectCategory((selectedIndex + 1) % categoryButtons.length);
+            return true;
+        }
+        if (curAction == SPDAction.W) {
+            int index = selectedIndex - 1;
+            if (index < 0) index = categoryButtons.length - 1;
+            selectCategory(index);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public synchronized void update() {
+        super.update();
+        if (curAction != null) {
+            time += Game.elapsed;
+            if (!isHolding) {
+                if (time >= Button.longClick) {
+                    isHolding = true;
+                    time -= Button.longClick;
+                    Game.vibrate(50);
+                }
+            } else {
+                if (time >= INTERVAL) {
+                    time -= INTERVAL;
+                    processKey();
+                }
+            }
+        }
     }
 
     @Override
@@ -80,6 +158,12 @@ public class CategoryScroller extends Component {
         }
 
         selectCategory(selectedIndex);
+    }
+
+    @Override
+    public synchronized void destroy() {
+        super.destroy();
+        KeyEvent.removeKeyListener(keyListener);
     }
 
     public int getSelectedIndex() {
@@ -124,7 +208,7 @@ public class CategoryScroller extends Component {
     }
 
     public float getCurrentViewY() {
-        return  list.content().camera.scroll.y;
+        return list.content().camera.scroll.y;
     }
 
     public abstract static class Category {

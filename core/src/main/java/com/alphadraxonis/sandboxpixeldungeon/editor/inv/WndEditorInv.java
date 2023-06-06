@@ -37,7 +37,7 @@ import java.util.Map;
 //Subclass with all necessary Dungeon.hero nullchecks implemented
 public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
-    private final int WIDTH = Math.min(160, (int) (PixelScene.uiCamera.width * 0.9));
+    private final int WIDTH = Math.min(220, (int) (PixelScene.uiCamera.width * 0.9));
     private final int HEIGHT = (int) (PixelScene.uiCamera.height * 0.63);
 
 
@@ -200,6 +200,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         protected void select(boolean value) {
             super.select(value);
         }
+
     }
 
     private static Trap lastTrapForImage;
