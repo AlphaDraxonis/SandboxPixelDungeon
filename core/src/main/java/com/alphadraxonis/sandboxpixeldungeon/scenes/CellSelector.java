@@ -42,8 +42,12 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ScrollArea;
 import com.watabou.utils.GameMath;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Signal;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class CellSelector extends ScrollArea {
 
@@ -57,6 +61,9 @@ public class CellSelector extends ScrollArea {
     private boolean isPointerDown;
     private boolean dragClicking;
     private float time;
+    private final Set<Integer> lastSelectedCells = new HashSet<>();
+    private int lastCell = -1;
+    private PointF lastPoint;
 
     public CellSelector(DungeonTilemap map) {
         super(map);
@@ -101,7 +108,7 @@ public class CellSelector extends ScrollArea {
         if (Dungeon.hero.sprite != null && Dungeon.hero.sprite.overlapsPoint(p.x, p.y)) {
             PointF c = DungeonTilemap.tileCenterToWorld(Dungeon.hero.pos);
             if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
-                select(Dungeon.hero.pos, event.button);
+                select(Dungeon.hero.pos, event.button, false);
                 return;
             }
         }
@@ -111,7 +118,7 @@ public class CellSelector extends ScrollArea {
             if (mob.sprite != null && mob.sprite.overlapsPoint(p.x, p.y)) {
                 PointF c = DungeonTilemap.tileCenterToWorld(mob.pos);
                 if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
-                    select(mob.pos, event.button);
+                    select(mob.pos, event.button, false);
                     return;
                 }
             }
@@ -122,7 +129,7 @@ public class CellSelector extends ScrollArea {
             if (heap.sprite != null && heap.sprite.overlapsPoint(p.x, p.y)) {
                 PointF c = DungeonTilemap.tileCenterToWorld(heap.pos);
                 if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
-                    select(heap.pos, event.button);
+                    select(heap.pos, event.button, false);
                     return;
                 }
             }
@@ -131,17 +138,57 @@ public class CellSelector extends ScrollArea {
         select(((DungeonTilemap) target).screenToTile(
                 (int) event.current.x,
                 (int) event.current.y,
-                true), event.button);
+                true), event.button, false);
     }
 
     protected void handleDragClick(PointerEvent event) {
+        int cell = ((DungeonTilemap) target).screenToTile(
+                (int) event.current.x,
+                (int) event.current.y,
+                true);
+        if ((CustomDungeon.isEditing() && EditorScene.customLevel().isBorder(cell))) {
+            lastPoint = null;
+            return;
+        }
+        if (lastSelectedCells.contains(cell)) {
+            lastPoint = event.current;
+            lastCell = cell;
+            return; //don't trigger every frame, only when a new cell was entered
+        }
+        lastSelectedCells.add(cell);
+        if (lastPoint != null)
+            checkForMissingCells(cell, lastCell, event.current, lastPoint, event.button);
+        lastPoint = event.current;
+        lastCell = cell;
+        select(cell, event.button, true);
     }
 
-    protected boolean dragClickEnabled() {
-        return false;
+    //if pointer is faster than the fps, some cells are skipped, this method corrects this by drawing straight lines between the known points
+    private void checkForMissingCells(int cell, int lastCell, PointF now, PointF was, int button) {
+
+        for (int i : PathFinder.NEIGHBOURS9) {
+            if (cell + i == lastCell) return;
+        }
+
+        PointF middle = new PointF(now.x + (was.x - now.x) / 2, now.y + (was.y - now.y) / 2);
+
+        int middleCell = ((DungeonTilemap) target).screenToTile(
+                (int) middle.x,
+                (int) middle.y,
+                true);
+
+        checkForMissingCells(middleCell, cell, middle, now, button);//Recursively go from the middle to the borders
+        checkForMissingCells(middleCell, lastCell, middle, was, button);
+
+        if (lastSelectedCells.contains(middleCell) || (CustomDungeon.isEditing() && EditorScene.customLevel().isBorder(cell)))
+            return;
+        lastSelectedCells.add(middleCell);
+        select(middleCell, button, true);
     }
 
     private float zoom(float value) {
+
+        lastPoint = null;
 
         value = GameMath.gate(PixelScene.minZoom, value, PixelScene.maxZoom);
         SPDSettings.zoom((int) (value - PixelScene.defaultZoom));
@@ -164,14 +211,15 @@ public class CellSelector extends ScrollArea {
         return value;
     }
 
-    public void select(int cell, int button) {
+    public void select(int cell, int button, boolean dragClick) {
 
         if (enabled && Dungeon.hero.ready && !GameScene.interfaceBlockingHero()
                 && listener != null && cell != -1) {
 
             switch (button) {
                 default:
-                    listener.onSelect(cell);
+                    if (dragClick) listener.onSelectDragging(cell);
+                    else listener.onSelect(cell);
                     break;
                 case PointerEvent.RIGHT:
                     listener.onRightClick(cell);
@@ -221,6 +269,9 @@ public class CellSelector extends ScrollArea {
         dragClicking = false;
         isPointerDown = false;
         time = 0;
+        lastSelectedCells.clear();
+        lastCell = -1;
+        lastPoint = null;
 
         camera.edgeScroll.set(1);
         if (pinching && (event == curEvent || event == another)) {
@@ -257,7 +308,7 @@ public class CellSelector extends ScrollArea {
 
             if (!dragging && PointF.distance(event.current, event.start) > dragThreshold) {
 
-                if (dragClicking && dragClickEnabled()) {
+                if (dragClicking && listener.dragClickEnabled()) {
                     handleDragClick(event);
                 } else {
                     dragging = true;
@@ -299,22 +350,13 @@ public class CellSelector extends ScrollArea {
         }
     }
 
-    private Signal.Listener<KeyEvent> keyListener = new Signal.Listener<KeyEvent>() {
+    private Signal.Listener<KeyEvent> keyListener = new Signal.Listener<KeyEvent>(){
         @Override
         public boolean onSignal(KeyEvent event) {
             GameAction action = KeyBindings.getActionForKey(event);
             if (!event.pressed) {
 
-                if (action == SPDAction.ZOOM_IN) {
-                    zoom(camera.zoom + 1);
-                    mouseZoom = camera.zoom;
-                    return true;
-
-                } else if (action == SPDAction.ZOOM_OUT) {
-                    zoom(camera.zoom - 1);
-                    mouseZoom = camera.zoom;
-                    return true;
-                }
+                if (handleZoom(action)) return true;
 
                 if (heldAction1 != SPDAction.NONE && heldAction1 == action) {
                     heldAction1 = SPDAction.NONE;
@@ -353,29 +395,48 @@ public class CellSelector extends ScrollArea {
                     heldDelay = initialDelay();
                 }
 
-            } else if (directionFromAction(action) != 0) {
-
-                Dungeon.hero.resting = false;
-                lastCellMoved = -1;
-                if (heldAction1 == SPDAction.NONE) {
-                    heldAction1 = action;
-                    heldDelay = initialDelay();
-                    delayingForRelease = false;
-                } else if (heldAction2 == SPDAction.NONE) {
-                    heldAction2 = action;
-                } else {
-                    heldAction3 = action;
-                }
-
-                return true;
-            } else if (Dungeon.hero != null && Dungeon.hero.resting) {
-                Dungeon.hero.resting = false;
-                return true;
-            }
-
+            } else return handleOtherKeys(action);
             return false;
         }
     };
+
+    private boolean handleZoom(GameAction action){
+        if (action == SPDAction.ZOOM_IN) {
+            zoom(camera.zoom + 1);
+            mouseZoom = camera.zoom;
+            return true;
+
+        } else if (action == SPDAction.ZOOM_OUT) {
+            zoom(camera.zoom - 1);
+            mouseZoom = camera.zoom;
+            return true;
+        }
+        return false;
+    }
+    protected boolean handleOtherKeys(GameAction action){
+        if (directionFromAction(action) != 0) {
+
+            Dungeon.hero.resting = false;
+            lastCellMoved = -1;
+            if (heldAction1 == SPDAction.NONE) {
+                heldAction1 = action;
+                heldDelay = initialDelay();
+                delayingForRelease = false;
+            } else if (heldAction2 == SPDAction.NONE) {
+                heldAction2 = action;
+            } else {
+                heldAction3 = action;
+            }
+
+            return true;
+        } else if ( Dungeon.hero.resting) {
+            Dungeon.hero.resting = false;
+            return true;
+        }
+
+        return false;
+    }
+
 
     private GameAction leftStickAction = SPDAction.NONE;
 
@@ -393,7 +454,7 @@ public class CellSelector extends ScrollArea {
             time += Game.elapsed;
             if (time >= Button.longClick) {
                 dragClicking = true;
-                if (dragClickEnabled() && !pinching && !dragging) {
+                if (listener.dragClickEnabled() && !pinching && !dragging) {
                     Game.vibrate(50);
                     handleDragClick(curEvent);
                 }
@@ -553,10 +614,16 @@ public class CellSelector extends ScrollArea {
 
     public static abstract class Listener {
         public abstract void onSelect(Integer cell);
+        public void onSelectDragging(Integer cell){
+            onSelect(cell);
+        }
 
         public void onRightClick(Integer cell) {
         } //do nothing by default
 
         public abstract String prompt();
+        protected boolean dragClickEnabled() {
+            return false;
+        }
     }
 }

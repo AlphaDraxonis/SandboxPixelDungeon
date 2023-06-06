@@ -392,7 +392,7 @@ public class EditorScene extends PixelScene {
     }
 
     public static void handleCell(int cell) {
-        cellSelector.select(cell, PointerEvent.LEFT);
+        cellSelector.select(cell, PointerEvent.LEFT, false);
     }
 
     public static void selectCell(CellSelector.Listener listener) {
@@ -608,6 +608,11 @@ public class EditorScene extends PixelScene {
         @Override
         public String prompt() {
             return null;
+        }
+
+        @Override
+        protected boolean dragClickEnabled() {
+            return true;
         }
     };
 
