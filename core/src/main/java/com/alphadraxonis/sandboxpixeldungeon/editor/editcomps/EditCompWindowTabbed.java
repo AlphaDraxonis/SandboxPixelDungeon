@@ -58,7 +58,7 @@ public class EditCompWindowTabbed extends WndTabbed {
         this.trap = trap;
         this.scrollPos = scrollPos;
 
-        width = PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : WndTitledMessage.WIDTH_MIN;
+        width = Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9));
 
         otherHeights = new float[scrollPos.length];//one field will remain 0
 

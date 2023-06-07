@@ -22,6 +22,7 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndBag;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTabbed;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
@@ -37,7 +38,7 @@ import java.util.Map;
 //Subclass with all necessary Dungeon.hero nullchecks implemented
 public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
-    private final int WIDTH = Math.min(220, (int) (PixelScene.uiCamera.width * 0.9));
+    private final int WIDTH = Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9));
     private final int HEIGHT = (int) (PixelScene.uiCamera.height * 0.63);
 
 

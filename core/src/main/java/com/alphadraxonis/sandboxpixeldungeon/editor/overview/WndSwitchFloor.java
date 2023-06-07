@@ -10,6 +10,7 @@ import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 
@@ -25,7 +26,7 @@ public class WndSwitchFloor extends Window {
 
     public WndSwitchFloor() {
         instance = this;
-        resize(PixelScene.landscape() ? 215 : PixelScene.uiCamera.width - 5, (int) (PixelScene.uiCamera.height * 0.8f));
+        resize(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
 
         listPane = new LevelListPane() {
 
