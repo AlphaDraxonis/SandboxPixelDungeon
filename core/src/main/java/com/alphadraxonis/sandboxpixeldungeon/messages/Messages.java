@@ -132,7 +132,7 @@ public class Messages {
 			if (c != null && c.getSuperclass() != null){
 				return get(c.getSuperclass(), k, args);
 			} else {
-				if(true) throw new RuntimeException(NO_TEXT_FOUND);
+//				if(true) throw new RuntimeException(NO_TEXT_FOUND);
 				return NO_TEXT_FOUND;
 			}
 		}

@@ -1,6 +1,5 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.overview;
 
-import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
@@ -8,7 +7,6 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Game;
-import com.watabou.noosa.audio.Sample;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,8 +30,20 @@ public abstract class LevelListPane extends ScrollingListPane {
                 }
 
                 @Override
+                protected void onRightClick() {
+                    if (!onLongClick()) {
+                        onClick();
+                    }
+                }
+
+                @Override
                 protected boolean onLongClick() {
                     return onEdit(getLevelScheme(), this);
+                }
+
+                @Override
+                protected void onPointerDown() {
+                    super.onPointerDown();
                 }
             });
         }
@@ -46,7 +56,6 @@ public abstract class LevelListPane extends ScrollingListPane {
     protected abstract void onSelect(LevelScheme levelScheme, LevelListPane.ListItem listItem);
 
     public boolean onEdit(LevelScheme levelScheme, LevelListPane.ListItem listItem) {
-        Sample.INSTANCE.play(Assets.Sounds.CLICK);
         if (Game.scene() instanceof EditorScene)
             EditorScene.show(new WndEditLevelInOverview(levelScheme, listItem, this));
         else Game.scene().addToFront(new WndEditLevelInOverview(levelScheme, listItem, this));
@@ -70,9 +79,12 @@ public abstract class LevelListPane extends ScrollingListPane {
 
         public void updateLevel() {
             String name;
-            if (levelScheme == LevelScheme.NO_LEVEL_SCHEME) name = Level.NONE;//name = Messages.get(TransitionEditPart.class,"none_level");
-            else if (levelScheme == LevelScheme.SURFACE_LEVEL_SCHEME) name = Level.SURFACE;//name = Messages.get(TransitionEditPart.class,"surface_level");
-            else name = levelScheme.getName() + " (depth=" + levelScheme.getDepth() + ", type=" + levelScheme.getType().getSimpleName() + ")";
+            if (levelScheme == LevelScheme.NO_LEVEL_SCHEME)
+                name = Level.NONE;//name = Messages.get(TransitionEditPart.class,"none_level");
+            else if (levelScheme == LevelScheme.SURFACE_LEVEL_SCHEME)
+                name = Level.SURFACE;//name = Messages.get(TransitionEditPart.class,"surface_level");
+            else
+                name = levelScheme.getName() + " (depth=" + levelScheme.getDepth() + ", type=" + levelScheme.getType().getSimpleName() + ")";
             label.text(name);
         }
     }

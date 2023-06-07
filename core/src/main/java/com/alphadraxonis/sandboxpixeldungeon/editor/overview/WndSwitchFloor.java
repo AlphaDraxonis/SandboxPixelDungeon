@@ -1,6 +1,5 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.overview;
 
-import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
@@ -10,7 +9,6 @@ import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
-import com.watabou.noosa.audio.Sample;
 
 import java.io.IOException;
 
@@ -26,20 +24,19 @@ public class WndSwitchFloor extends Window {
         instance = this;
         resize(PixelScene.landscape() ? 215 : PixelScene.uiCamera.width - 5, (int) (PixelScene.uiCamera.height * 0.8f));
 
-        listPane = new LevelListPane(){
+        listPane = new LevelListPane() {
 
             @Override
-            public void onSelect(LevelScheme levelScheme,LevelListPane.ListItem  listItem) {
+            public void onSelect(LevelScheme levelScheme, LevelListPane.ListItem listItem) {
                 if (levelScheme.getType() == CustomLevel.class) {
                     hide();
-                    selectLevelScheme(levelScheme,listItem,this);
-                }
-                else onEdit(levelScheme,listItem);
+                    selectLevelScheme(levelScheme, listItem, this);
+                } else onEdit(levelScheme, listItem);
             }
         };
         add(listPane);
 
-        createFloor = new RedButton(Messages.get(WndSwitchFloor.class,"new_floor")) {
+        createFloor = new RedButton(Messages.get(WndSwitchFloor.class, "new_floor")) {
             @Override
             protected void onClick() {
                 EditorScene.show(new WndNewFloor(Dungeon.customDungeon));
@@ -74,9 +71,8 @@ public class WndSwitchFloor extends Window {
         instance = null;
     }
 
-    public static void selectLevelScheme(LevelScheme levelScheme,LevelListPane.ListItem listItem,LevelListPane listPane){
+    public static void selectLevelScheme(LevelScheme levelScheme, LevelListPane.ListItem listItem, LevelListPane listPane) {
         if (levelScheme.getType() == CustomLevel.class) {
-            Sample.INSTANCE.play(Assets.Sounds.CLICK);
             CustomLevel f = (CustomLevel) levelScheme.getLevel();
             if (f == null) {
                 try {
@@ -86,7 +82,7 @@ public class WndSwitchFloor extends Window {
                 }
             }
             EditorScene.open(f);
-        }else listPane.onEdit(levelScheme,listItem);
+        } else listPane.onEdit(levelScheme, listItem);
     }
 
 }
