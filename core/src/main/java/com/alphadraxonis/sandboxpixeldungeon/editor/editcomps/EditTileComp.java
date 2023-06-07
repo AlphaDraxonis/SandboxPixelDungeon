@@ -1,6 +1,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
@@ -59,7 +60,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             EditorScene.remove(transition);
         });
         add(transitionEdit);
-        addTransition.visible = false;
+        addTransition.visible = addTransition.active = false;
 //        addTransition.active=false;
         layout();
         updateItem();//for resize

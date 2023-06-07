@@ -1,13 +1,9 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
+package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.TransitionTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
-import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
-import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerTextModel;
-import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -23,10 +19,10 @@ public abstract class TransitionEditPart extends Component {
     public static final int NONE = -2, DEFAULT = -1;
 
     protected final LevelTransition transition;
-    protected TransitionTab.ChooseDestinationLevelComp destLevel;
+    protected ChooseDestLevelComp destLevel;
     protected DestCellSpinner destCell;
 
-    protected boolean showEntrances;
+    protected boolean showEntrances; //else show exits,  showEntrances is true when departCell is exit
 
     private final int targetDepth;
 
@@ -36,7 +32,7 @@ public abstract class TransitionEditPart extends Component {
         this.showEntrances = showEntrances;
         this.targetDepth = targetDepth;
 
-        destLevel = new TransitionTab.ChooseDestinationLevelComp(Messages.get(TransitionEditPart.class, "dest_level")) {
+        destLevel = new ChooseDestLevelComp(Messages.get(TransitionEditPart.class, "dest_level")) {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
@@ -117,45 +113,4 @@ public abstract class TransitionEditPart extends Component {
     }
 
     protected abstract void deleteTransition(LevelTransition transition);
-
-    private static class DestCellSpinner extends Spinner {
-
-        public DestCellSpinner(List<Integer> cells) {
-            super(new DestCellModel(cells), Messages.get(TransitionEditPart.class, "dest_cell"), 8);
-            setButtonWidth(13);
-        }
-
-        public void setData(List<Integer> cells, Integer select) {
-            ((DestCellModel) getModel()).setData(cells, select);
-        }
-    }
-
-    private static class DestCellModel extends SpinnerTextModel {
-
-        public DestCellModel(List<Integer> cells) {
-            super(true, new Object[]{NONE});
-            setData(cells, null);
-        }
-
-        public void setData(List<Integer> cells, Integer select) {
-            cells = new ArrayList<>(cells);
-            if (cells.isEmpty()) cells.add(NONE);
-            Object[] data = cells.toArray();
-            setData(data);
-            if (cells.contains(DEFAULT)) setValue(DEFAULT);
-            else {
-                if (select == null || !cells.contains(select)) {
-                    setValue(data[0]);
-                } else setValue(select);
-            }
-        }
-
-        @Override
-        protected String getAsString(Object value) {
-            int val = (int) value;
-            if (val == NONE) return Messages.get(TransitionEditPart.class, "none");
-            if (val == DEFAULT) return Messages.get(TransitionEditPart.class, "default");
-            return EditorUtilies.cellToString(val);
-        }
-    }
 }

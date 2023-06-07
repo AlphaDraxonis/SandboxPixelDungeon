@@ -48,6 +48,8 @@ public class LevelTransition extends Rect implements Bundlable {
 
     public int centerCell;
 
+    public boolean showDetailsInEditor = true;
+
     //for bundling
     public LevelTransition() {
         super();
@@ -140,6 +142,7 @@ public class LevelTransition extends Rect implements Bundlable {
     public static final String DEST_TYPE = "dest_type";
     public static final String DEST_CELL = "dest_cell";
     public static final String DEPART_CELL = "depart_cell";
+    public static final String DETAILS_IN_EDITOR = "details_in_editor";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -156,6 +159,8 @@ public class LevelTransition extends Rect implements Bundlable {
         bundle.put(DEST_TYPE, destType);
         bundle.put(DEPART_CELL, departCell);
         bundle.put(DEST_CELL, destCell);
+
+        bundle.put(DETAILS_IN_EDITOR, showDetailsInEditor);
     }
 
     @Override
@@ -173,6 +178,8 @@ public class LevelTransition extends Rect implements Bundlable {
         if (bundle.contains(DEST_TYPE)) destType = bundle.getEnum(DEST_TYPE, Type.class);
         destCell = bundle.getInt(DEST_CELL);
         departCell = bundle.getInt(DEPART_CELL);
+
+        showDetailsInEditor = bundle.getBoolean(DETAILS_IN_EDITOR);
     }
 
     public LevelTransition getCopy(){

@@ -3,6 +3,8 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.overview;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionCompRow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.TransitionTab;
@@ -36,11 +38,11 @@ public class WndEditLevelInOverview extends Window {
 
     protected RenderedTextBlock title;
     protected Spinner depth;
-    protected TransitionTab.ChooseDestinationLevelComp passage, chasm;
+    protected ChooseDestLevelComp passage, chasm;
     protected RedButton delete, open;
 
     protected final LevelScheme levelScheme;
-    private final Map<Integer, TransitionTab.TransitionComp> transitionCompMap = new HashMap<>(5);
+    private final Map<Integer, TransitionCompRow> transitionCompMap = new HashMap<>(5);
 
 
     public WndEditLevelInOverview(LevelScheme levelScheme, LevelListPane.ListItem listItem,LevelListPane listPane) {
@@ -69,7 +71,7 @@ public class WndEditLevelInOverview extends Window {
         content.add(depth);
 
         //From TransitionTab
-        passage = new TransitionTab.ChooseDestinationLevelComp(Messages.get(TransitionTab.class,"passage")) {
+        passage = new ChooseDestLevelComp(Messages.get(TransitionTab.class,"passage")) {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
@@ -78,7 +80,7 @@ public class WndEditLevelInOverview extends Window {
         };
         content.add(passage);
 
-        chasm = new TransitionTab.ChooseDestinationLevelComp(Messages.get(TransitionTab.class,"chasm")) {
+        chasm = new ChooseDestLevelComp(Messages.get(TransitionTab.class,"chasm")) {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
@@ -170,8 +172,8 @@ public class WndEditLevelInOverview extends Window {
         pos++;
 
         if (levelScheme.getType() != CustomLevel.class) {
-            pos = layoutTransitionComps(Collections.singletonList(TransitionTab.TransitionComp.CELL_DEFAULT_ENTRANCE), pos);
-            pos = layoutTransitionComps(Collections.singletonList(TransitionTab.TransitionComp.CELL_DEFAULT_EXIT), pos);
+            pos = layoutTransitionComps(Collections.singletonList(TransitionCompRow.CELL_DEFAULT_ENTRANCE), pos);
+            pos = layoutTransitionComps(Collections.singletonList(TransitionCompRow.CELL_DEFAULT_EXIT), pos);
         } else {
             pos = layoutTransitionComps(levelScheme.entranceCells, pos);
             pos = layoutTransitionComps(levelScheme.exitCells, pos);
@@ -193,9 +195,9 @@ public class WndEditLevelInOverview extends Window {
 
     private float layoutTransitionComps(List<Integer> cells, float pos) {
         for (int cell : cells) {
-            TransitionTab.TransitionComp comp = transitionCompMap.get(cell);
+            TransitionCompRow comp = transitionCompMap.get(cell);
             if (comp == null) {
-                comp = new TransitionTab.TransitionComp(cell, levelScheme) {
+                comp = new TransitionCompRow(cell, levelScheme) {
                     @Override
                     protected void layoutParent() {
                         WndEditLevelInOverview.this.layout();

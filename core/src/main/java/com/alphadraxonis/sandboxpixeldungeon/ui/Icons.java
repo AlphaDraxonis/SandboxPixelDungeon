@@ -75,6 +75,8 @@ public enum Icons {
     CHECKED,
     CLOSE,
     PLUS,
+    EXPAND,
+    FOLD,
     ARROW,
     INFO,
     WARNING,
@@ -245,6 +247,12 @@ public enum Icons {
                 break;
             case PLUS:
                 icon.frame(icon.texture.uvRectBySize(48, 48, 11, 11));
+                break;
+            case EXPAND:
+                icon.frame(icon.texture.uvRectBySize(192, 80, 11, 11));
+                break;
+            case FOLD:
+                icon.frame(icon.texture.uvRectBySize(208, 80, 11, 11));
                 break;
             case ARROW:
                 icon.frame(icon.texture.uvRectBySize(64, 48, 11, 11));
