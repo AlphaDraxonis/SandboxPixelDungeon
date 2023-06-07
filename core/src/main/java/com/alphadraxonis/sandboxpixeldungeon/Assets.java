@@ -75,6 +75,8 @@ public class Assets {
 		public static final String STATUS   = "interfaces/status_pane.png";
 		public static final String MENU     = "interfaces/menu_pane.png";
 		public static final String MENU_BTN = "interfaces/menu_button.png";
+		public static final String UNDO     = "interfaces/undo_pane.png";
+		public static final String UNDO_BTN = "interfaces/undo_button.png";
 		public static final String TOOLBAR  = "interfaces/toolbar.png";
 		public static final String TILEBAR  = "interfaces/tilebar.png";
 		public static final String SHADOW   = "interfaces/shadow.png";

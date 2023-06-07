@@ -15,6 +15,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.EditorCellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.TerrainFeaturesTilemapEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.UndoPane;
 import com.alphadraxonis.sandboxpixeldungeon.effects.EmoIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -66,6 +67,7 @@ public class EditorScene extends PixelScene {
 
 
     private MenuPane menu;
+    private UndoPane undo;
     private EToolbar toolbar;
 
 
@@ -225,8 +227,13 @@ public class EditorScene extends PixelScene {
 
         menu = new MenuPane();
         menu.camera = uiCamera;
-        menu.setPos(uiCamera.width - MenuPane.WIDTH, uiSize > 0 ? 0 : 1);
+        menu.setPos(uiCamera.width - MenuPane.WIDTH, uiSize > 0 ? 0 : 0);
         add(menu);
+
+        undo = new UndoPane();
+        undo.camera = uiCamera;
+        undo.setPos(0, 0);
+        add(undo);
 
         toolbar = new EToolbar();
         toolbar.camera = uiCamera;

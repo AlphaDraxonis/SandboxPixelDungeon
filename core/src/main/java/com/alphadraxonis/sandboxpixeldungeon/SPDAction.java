@@ -121,7 +121,7 @@ public class SPDAction extends GameAction {
 
 		defaultBindings.put( Input.Keys.F,              SPDAction.INVENTORY );
 		defaultBindings.put( Input.Keys.I,              SPDAction.INVENTORY );
-		defaultBindings.put( Input.Keys.NUM_1,          SPDAction.QUICKSLOT_1 );
+		defaultBindings.put( Input.Keys.NUM_1,          SPDAction.QUICKSLOT_1 );//TODO create new hotkey wnd + more Quickslot ACs
 		defaultBindings.put( Input.Keys.NUM_2,          SPDAction.QUICKSLOT_2 );
 		defaultBindings.put( Input.Keys.NUM_3,          SPDAction.QUICKSLOT_3 );
 		defaultBindings.put( Input.Keys.NUM_4,          SPDAction.QUICKSLOT_4 );
