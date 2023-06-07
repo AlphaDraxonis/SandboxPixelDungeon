@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items;
+package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -9,7 +9,7 @@ public class LevelSpinner extends Spinner {
 
 
     public LevelSpinner(Item item) {
-        super(new LevelSpinnerModel(item), " "+ Messages.get(LevelSpinner.class,"label") + ":", 10);
+        super(new LevelSpinnerModel(item.level()), " "+ Messages.get(LevelSpinner.class,"label") + ":", 10);
         addChangeListener(() -> {
             item.level((int) getValue());
             onChange();
@@ -21,10 +21,8 @@ public class LevelSpinner extends Spinner {
 
     private static class LevelSpinnerModel extends SpinnerIntegerModel {
 
-        private Item item;
-
-        public LevelSpinnerModel(Item item) {
-            super(0, 100, item.level(), 1, false, null);
+        public LevelSpinnerModel(int level) {
+            super(0, 100, level, 1, false, null);
 
         }
 

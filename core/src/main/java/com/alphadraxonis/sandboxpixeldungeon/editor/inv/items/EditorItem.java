@@ -71,12 +71,12 @@ public abstract class EditorItem extends Item {
 
                 @Override
                 protected IconTitleWithSubIcon createTitle() {
-                    return new IconTitleWithSubIcon(getIcon(), null, Messages.titleCase(item.title()));
+                    return new IconTitleWithSubIcon(getIcon(), null, Messages.titleCase(obj.title()));
                 }
 
                 @Override
                 protected String createDescription() {
-                    return item.desc();
+                    return obj.desc();
                 }
 
                 @Override
@@ -114,12 +114,12 @@ public abstract class EditorItem extends Item {
 
                 @Override
                 protected IconTitleWithSubIcon createTitle() {
-                    return new IconTitleWithSubIcon(getIcon(), null, Messages.titleCase(item.title()));
+                    return new IconTitleWithSubIcon(getIcon(), null, Messages.titleCase(obj.title()));
                 }
 
                 @Override
                 protected String createDescription() {
-                    return item.desc();
+                    return obj.desc();
                 }
 
                 @Override

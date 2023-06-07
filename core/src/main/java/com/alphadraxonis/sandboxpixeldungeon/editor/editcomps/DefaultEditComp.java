@@ -21,14 +21,14 @@ public abstract class DefaultEditComp<T> extends Component {
     protected final Component title;
     protected final RenderedTextBlock desc;
 
-    protected final T item;
+    protected final T obj;
 
     private Runnable onUpdate;
     public AdvancedListPaneItem advancedListPaneItem;
 
-    public DefaultEditComp(T item) {
+    public DefaultEditComp(T obj) {
 
-        this.item = item;
+        this.obj = obj;
 
         title = createTitle();
         add(title);
@@ -69,12 +69,12 @@ public abstract class DefaultEditComp<T> extends Component {
 
     public abstract Image getIcon();
 
-    public T getItem() {
-        return item;
+    public T getObj() {
+        return obj;
     }
 
 
-    protected void updateItem() {
+    protected void updateObj() {
         layout();
         if (advancedListPaneItem != null) advancedListPaneItem.onUpdate();
         if (onUpdate != null) onUpdate.run();

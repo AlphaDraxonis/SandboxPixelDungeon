@@ -70,8 +70,8 @@ public class EditCompWindowTabbed extends WndTabbed {
                 int idx = index;
                 initComp(new EditItemComp(item, heap) {
                     @Override
-                    protected void updateItem() {
-                        super.updateItem();
+                    protected void updateObj() {
+                        super.updateObj();
                         if (tabs.size() > idx) ((TabBtn) tabs.get(idx)).setIcon(getIcon());
                     }
                 }, index, selectIndex);
@@ -82,8 +82,8 @@ public class EditCompWindowTabbed extends WndTabbed {
             int idx = index;
             initComp(new EditHeapComp(heap) {
                 @Override
-                protected void updateItem() {
-                    super.updateItem();
+                protected void updateObj() {
+                    super.updateObj();
                     if (tabs.size() > idx) ((TabBtn) tabs.get(idx)).setIcon(getIcon());
                 }
             }, index, selectIndex);
@@ -93,8 +93,8 @@ public class EditCompWindowTabbed extends WndTabbed {
             int idx = index;
             initComp(new EditMobComp(mob) {
                 @Override
-                public void updateItem() {
-                    super.updateItem();
+                public void updateObj() {
+                    super.updateObj();
                     if (tabs.size() > idx) ((TabBtn) tabs.get(idx)).setIcon(getIcon());
                 }
             }, index, selectIndex);
@@ -104,8 +104,8 @@ public class EditCompWindowTabbed extends WndTabbed {
             int idx = index;
             initComp(new EditTrapComp(trap) {
                 @Override
-                protected void updateItem() {
-                    super.updateItem();
+                protected void updateObj() {
+                    super.updateObj();
                     if (tabs.size() > idx) ((TabBtn) tabs.get(idx)).setIcon(getIcon());
                 }
             }, index, selectIndex);
@@ -115,8 +115,8 @@ public class EditCompWindowTabbed extends WndTabbed {
             int idx = index;
             initComp(new EditTileComp(tileItem) {
                 @Override
-                protected void updateItem() {
-                    super.updateItem();
+                protected void updateObj() {
+                    super.updateObj();
                     if (tabs.size() > idx) ((TabBtn) tabs.get(idx)).setIcon(getIcon());
                 }
             }, index, selectIndex);

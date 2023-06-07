@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.mobs;
+package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs;
 
 import static com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel.INFINITY;
 
@@ -43,7 +43,7 @@ public class WndInfoBuffEditor extends WndTitledMessage {
             text = PixelScene.renderTextBlock(buff.desc(), fontSize);
             add(text);
 
-            removeBuff = new RedButton(Messages.get(WndInfoBuffEditor.class,"remove")) {
+            removeBuff = new RedButton(Messages.get(WndInfoBuffEditor.class, "remove")) {
                 @Override
                 protected void onClick() {
 //                  EditorScene.show(new WndOptions((Image)null,"really remove?","msg","Yes","No"));
@@ -64,7 +64,7 @@ public class WndInfoBuffEditor extends WndTitledMessage {
             };
 
             if (false) {//only apply permanent buffs for now
-                changeDuration = new Spinner(spinnerModel, " "+Messages.get(WndInfoBuffEditor.class,"duration"), 10) {
+                changeDuration = new Spinner(spinnerModel, " " + Messages.get(WndInfoBuffEditor.class, "duration"), 10) {
                     @Override
                     protected void onPointerUp() {
                         onSpinnerValueChange(true);

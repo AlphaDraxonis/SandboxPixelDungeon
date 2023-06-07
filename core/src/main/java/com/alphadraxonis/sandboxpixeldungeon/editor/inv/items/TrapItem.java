@@ -103,6 +103,11 @@ public class TrapItem extends EditorItem {
         return false;
     }
 
+    @Override
+    public String name() {
+        return trap().name();
+    }
+
     public Trap trap() {
         return trap;
     }

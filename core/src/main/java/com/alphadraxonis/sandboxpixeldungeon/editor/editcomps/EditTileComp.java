@@ -7,7 +7,6 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.Consumer;
-import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
@@ -32,7 +31,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
         if (item.cell() != -1 && (item.terrainType() == Terrain.ENTRANCE || TileItem.isExitTerrainCell(item.terrainType()))) {
 
-            addTransition = new RedButton(Messages.get(EditTileComp.class,"add_transition"), 9) {
+            addTransition = new RedButton(Messages.get(EditTileComp.class, "add_transition"), 9) {
                 @Override
                 protected void onClick() {
                     addTransition(createNewTransition(item.cell()));
@@ -55,7 +54,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     }
 
     private void addTransition(LevelTransition transition) {
-        transitionEdit = addTransition(item.terrainType(), transition, EditorScene.customLevel().levelScheme, t -> {
+        transitionEdit = addTransition(obj.terrainType(), transition, EditorScene.customLevel().levelScheme, t -> {
             EditorScene.customLevel().transitions.remove(transition.cell());
             EditorScene.remove(transition);
         });
@@ -63,7 +62,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         addTransition.visible = addTransition.active = false;
 //        addTransition.active=false;
         layout();
-        updateItem();//for resize
+        updateObj();//for resize
     }
 
     public static TransitionEditPart addTransition(int terrainType, LevelTransition transition,
@@ -107,29 +106,29 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     }
 
     protected String createTitleText() {
-        return Messages.titleCase(EditorScene.customLevel().tileName(item.terrainType())) + EditorUtilies.appendCellToString(item.cell());
+        return TileItem.getName(obj.terrainType(), obj.cell());
     }
 
     @Override
     protected String createDescription() {
         CustomLevel level = EditorScene.customLevel();
-        String desc = level.tileDesc(item.terrainType());
+        String desc = level.tileDesc(obj.terrainType());
         return desc.length() == 0 ? Messages.get(WndInfoCell.class, "nothing") : desc;
     }
 
     @Override
     public Image getIcon() {
-        return createImage(item.terrainType(), EditorScene.customLevel(), item.image());
+        return createImage(obj.terrainType(), EditorScene.customLevel(), obj.image());
     }
 
     @Override
-    protected void updateItem() {
+    protected void updateObj() {
         if (title instanceof IconTitle) {
             ((IconTitle) title).label(createTitleText());
             ((IconTitle) title).icon(getIcon());
         }
         desc.text(createDescription());
-        super.updateItem();
+        super.updateObj();
     }
 
 

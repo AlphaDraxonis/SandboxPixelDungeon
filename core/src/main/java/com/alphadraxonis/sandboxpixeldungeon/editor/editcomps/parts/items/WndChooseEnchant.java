@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items;
+package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseOneInCategoriesBody.BtnRow;

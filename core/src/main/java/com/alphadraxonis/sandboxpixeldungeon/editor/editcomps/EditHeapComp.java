@@ -77,13 +77,13 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         itemContainer = new ItemContainer(heap.items, this) {
             @Override
             protected void addItem(Item item) {
-                EditHeapComp.this.item.drop(item);
+                EditHeapComp.this.obj.drop(item);
             }
 
             @Override
             protected void onUpdateItem() {
-                EditHeapComp.this.item.updateSubicon();
-                EditorScene.updateHeapImage(EditHeapComp.this.item);
+                EditHeapComp.this.obj.updateSubicon();
+                EditorScene.updateHeapImage(EditHeapComp.this.obj);
                 super.onUpdateItem();
             }
 
@@ -106,30 +106,31 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
 
     @Override
     protected String createDescription() {
-        if (item.type == Heap.Type.HEAP) return Messages.get(EditHeapComp.class, "desc_heap_open");
-        if (item.type == Heap.Type.FOR_SALE)
+        if (obj.type == Heap.Type.HEAP) return Messages.get(EditHeapComp.class, "desc_heap_open");
+        if (obj.type == Heap.Type.FOR_SALE)
             return Messages.get(EditHeapComp.class, "desc_heap_for_sale");
-        return item.info();
+        return obj.info();
     }
 
     private String getTitle() {
         String title;
-        if (item.type == Heap.Type.HEAP) title = Messages.get(EditHeapComp.class, "title_heap_open");
-        else if (item.type == Heap.Type.FOR_SALE) title = Messages.get(EditHeapComp.class, "title_heap_open");
-        else title = Messages.titleCase(item.title());
-        return title + " " + EditorUtilies.cellToString(item.pos);
+        if (obj.type == Heap.Type.HEAP) title = Messages.get(EditHeapComp.class, "title_heap_open");
+        else if (obj.type == Heap.Type.FOR_SALE)
+            title = Messages.get(EditHeapComp.class, "title_heap_open");
+        else title = Messages.titleCase(obj.title());
+        return title + " " + EditorUtilies.cellToString(obj.pos);
     }
 
     @Override
     public Image getIcon() {
         Image img = new Image();
-        img.copy(item.sprite);
+        img.copy(obj.sprite);
         return img;
     }
 
     @Override
-    protected void updateItem() {
-        item.sprite.view(item);
+    protected void updateObj() {
+        obj.sprite.view(obj);
         if (title instanceof IconTitle) {
             ((IconTitle) title).label(getTitle());
             ((IconTitle) title).icon(getIcon());
@@ -137,13 +138,13 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         desc.text(createDescription());
 
         updateHauntedEnabledState();
-        item.updateSubicon();
+        obj.updateSubicon();
 
-        super.updateItem();
+        super.updateObj();
     }
 
     private void updateHauntedEnabledState() {
-        if (item.type == Heap.Type.HEAP || item.type == Heap.Type.FOR_SALE) {
+        if (obj.type == Heap.Type.HEAP || obj.type == Heap.Type.FOR_SALE) {
             haunted.checked(false);
             haunted.enable(false);
         } else haunted.enable(true);
@@ -184,9 +185,9 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
     private class HeapTypeSpinner extends Spinner {
 
         public HeapTypeSpinner(Heap heap) {
-            super(new HeapTypeSpinnerModel(heap), " "+Messages.get(EditHeapComp.class,"type"), 10);
+            super(new HeapTypeSpinnerModel(heap), " " + Messages.get(EditHeapComp.class, "type"), 10);
 
-            addChangeListener(EditHeapComp.this::updateItem);
+            addChangeListener(EditHeapComp.this::updateObj);
         }
     }
 
@@ -210,10 +211,10 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             Heap.Type type = (Heap.Type) value;
             heap.type = type;
             if (type == Heap.Type.HEAP) return Messages.get(EditHeapComp.class, "title_heap_open");
-            if (type == Heap.Type.FOR_SALE) return Messages.get(EditHeapComp.class, "title_heap_for_sale");
+            if (type == Heap.Type.FOR_SALE)
+                return Messages.get(EditHeapComp.class, "title_heap_for_sale");
             return heap.title();
         }
-
 
         private static int getIndex(Heap.Type type) {
             Heap.Type[] types = Heap.Type.values();

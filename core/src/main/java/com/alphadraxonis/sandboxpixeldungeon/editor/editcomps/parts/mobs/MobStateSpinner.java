@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.mobs;
+package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
@@ -13,7 +13,7 @@ public class MobStateSpinner extends Spinner {
 
 
     public MobStateSpinner(Mob mob) {
-        super(new MobStateSpinnerModel(mob), " State:", 10);
+        super(new MobStateSpinnerModel(mob), " " + Messages.get(MobStateSpinner.class, "label"), 10);
 
         addChangeListener(() -> ((States) getValue()).applyChange(mob));
     }
@@ -69,7 +69,7 @@ public class MobStateSpinner extends Spinner {
         @Override
         protected String getAsString(Object value) {
             States state = (States) value;
-            return Messages.get(MobStateSpinner.class,state.name().toLowerCase(Locale.ENGLISH));
+            return Messages.get(MobStateSpinner.class, state.name().toLowerCase(Locale.ENGLISH));
         }
     }
 }

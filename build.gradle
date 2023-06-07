@@ -15,7 +15,7 @@ allprojects {
         appPackageName = 'com.alphadraxonis.sandboxpd'
 
         appVersionCode = 723
-        appVersionName = '2.1.0-0.2'
+        appVersionName = '2.1.0-0.3'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
 

@@ -695,7 +695,7 @@ btnSearch.icon( 192, 0, 16, 16 );
         private static final int BGCOLOR = 0x7B8073;
 
         private Image base;
-private Image icon;
+        private Image icon;
         public Tool(int x, int y, int width, int height) {
             super();
 

@@ -64,6 +64,11 @@ public class MobItem extends EditorItem {
         level.occupyCell(mob);
     }
 
+    @Override
+    public String name() {
+        return mob().name();
+    }
+
     public Mob mob() {
         return mob;
     }

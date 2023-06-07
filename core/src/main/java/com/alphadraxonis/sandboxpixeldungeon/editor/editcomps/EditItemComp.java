@@ -1,12 +1,11 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.CurseButton;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.WndChooseEnchant;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items.AugumentationSpinner;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items.CurseButton;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items.LevelSpinner;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items.WndChooseEnchant;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items.WndInfoEq;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -63,7 +62,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             quantity.setButtonWidth(14);
             quantity.addChangeListener(() -> {
                 item.quantity((int) quantity.getValue());
-                updateItem();
+                updateObj();
             });
             add(quantity);
         } else quantity = null;
@@ -72,7 +71,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             curseBtn = new CurseButton(item) {
                 @Override
                 protected void onChange() {
-                    updateItem();
+                    updateObj();
                 }
             };
             add(curseBtn);
@@ -94,7 +93,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             levelSpinner = new LevelSpinner(item) {
                 @Override
                 protected void onChange() {
-                    updateItem();
+                    updateObj();
                 }
             };
             add(levelSpinner);
@@ -113,14 +112,14 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
 
         if (item instanceof Weapon || item instanceof Armor) {//Missiles support enchantments too
-            enchantBtn = new RedButton(Messages.get(WndInfoEq.class,"enchant")) {
+            enchantBtn = new RedButton(Messages.get(EditItemComp.class,"enchant")) {
                 @Override
                 protected void onClick() {
                     EditorScene.show(new WndChooseEnchant(item) {
                         @Override
                         protected void finish() {
                             super.finish();
-                            updateItem();
+                            updateObj();
                         }
                     });
                 }
@@ -132,7 +131,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             augumentationSpinner = new AugumentationSpinner(item) {
                 @Override
                 protected void onChange() {
-                    updateItem();
+                    updateObj();
                 }
             };
             add(augumentationSpinner);
@@ -149,30 +148,30 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
     @Override
     protected Component createTitle() {
-        return new IconTitleWithSubIcon(item);
+        return new IconTitleWithSubIcon(obj);
     }
 
     @Override
     protected String createDescription() {
-        return item.info();
+        return obj.info();
     }
 
     @Override
     public Image getIcon() {
-        return new ItemSprite(item);
+        return new ItemSprite(obj);
     }
 
     @Override
-    protected void updateItem() {
+    protected void updateObj() {
         if (title instanceof IconTitle) {
-            ((IconTitle) title).label(Messages.titleCase(item.title()));
-            ((IconTitle) title).icon(CustomDungeon.getDungeon().getItemImage(item));
+            ((IconTitle) title).label(Messages.titleCase(obj.title()));
+            ((IconTitle) title).icon(CustomDungeon.getDungeon().getItemImage(obj));
         }
         desc.text(createDescription());
         if (heap != null) {
             heap.updateSubicon();
             EditorScene.updateHeapImage(heap);
         }
-        super.updateItem();
+        super.updateObj();
     }
 }

@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.mobs;
+package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
@@ -20,7 +20,7 @@ public class BuffIndicatorEditor extends BuffIndicator {
     }
 
     public void updateBuffs() {
-        if (editMobComp != null) editMobComp.updateItem();
+        if (editMobComp != null) editMobComp.updateObj();
         layout();
     }
 

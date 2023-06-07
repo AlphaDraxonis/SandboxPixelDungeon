@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items;
+package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerTextModel;
@@ -17,10 +17,10 @@ public class AugumentationSpinner extends Spinner {
         super(item instanceof Weapon ?
                         new WeaponAugSpinnerModel((Weapon) item) :
                         new ArmorAugSpinnerModel((Armor) item),
-                " "+Messages.get(AugumentationSpinner.class,"label")+":", 10);
+                " " + Messages.get(AugumentationSpinner.class, "label") + ":", 10);
 
         addChangeListener(() -> {
-            ((Applyable) getModel()).apply();
+            ((Runnable) getModel()).run();
             onChange();
         });
     }
@@ -29,11 +29,7 @@ public class AugumentationSpinner extends Spinner {
     }
 
 
-    private interface Applyable {
-        void apply();
-    }
-
-    private static class WeaponAugSpinnerModel extends SpinnerTextModel implements Applyable {
+    private static class WeaponAugSpinnerModel extends SpinnerTextModel implements Runnable {
 
         private Weapon item;
 
@@ -44,18 +40,19 @@ public class AugumentationSpinner extends Spinner {
 
         }
 
-        public void apply() {
+        @Override
+        public void run() {
             item.augment = (Weapon.Augment) getValue();
         }
 
         @Override
         protected String getAsString(Object value) {
-            if(value == Weapon.Augment.NONE)return Messages.get(AugumentationSpinner.class,"none");
+            if(value == Weapon.Augment.NONE) return Messages.get(AugumentationSpinner.class,"none");
             return Messages.get(StoneOfAugmentation.WndAugment.class,((Weapon.Augment) value).name().toLowerCase(Locale.ENGLISH));
         }
     }
 
-    private static class ArmorAugSpinnerModel extends SpinnerTextModel implements Applyable {
+    private static class ArmorAugSpinnerModel extends SpinnerTextModel implements Runnable {
 
         private Armor item;
 
@@ -65,13 +62,14 @@ public class AugumentationSpinner extends Spinner {
             setValue(item.augment);
         }
 
-        public void apply() {
+        @Override
+        public void run() {
             item.augment = (Armor.Augment) getValue();
         }
 
         @Override
         protected String getAsString(Object value) {
-            if(value == Armor.Augment.NONE)return Messages.get(AugumentationSpinner.class,"none");
+            if(value == Armor.Augment.NONE) return Messages.get(AugumentationSpinner.class,"none");
            return Messages.get(StoneOfAugmentation.WndAugment.class,((Armor.Augment) value).name().toLowerCase(Locale.ENGLISH));
         }
     }

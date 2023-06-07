@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemContainer extends Component {
+public class ItemContainer extends Component { // needs access to protected methods
 
     private final DefaultEditComp<?> editComp;
     protected final boolean reverseUiOrder;
@@ -112,7 +112,7 @@ public class ItemContainer extends Component {
         add(slot);
         if (editComp != null) {
             editComp.layout();
-            editComp.updateItem();
+            editComp.updateObj();
         }
     }
 
@@ -131,6 +131,7 @@ public class ItemContainer extends Component {
     }
     //IMPORTANT METHODS
     //IMPORTANT METHODS
+
 
     private static final int GAP = 2;
 
@@ -159,7 +160,7 @@ public class ItemContainer extends Component {
         slot.destroy();
         if (editComp != null) {
             editComp.layout();
-            editComp.updateItem();
+            editComp.updateObj();
         }
         return true;
     }

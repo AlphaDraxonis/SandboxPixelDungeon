@@ -196,7 +196,7 @@ public class QuickSlotButton extends Button {
         @Override
         protected String hoverText() {
             if (item == null) {
-                return Messages.titleCase(Messages.get(WndKeyBindings.class, "quickslot_" + (slotNum + 1)));
+                return Messages.titleCase(Messages.get(WndKeyBindings.class, "quickslot", (slotNum + 1)));
             } else {
                 return super.hoverText();
             }
@@ -254,7 +254,7 @@ public class QuickSlotButton extends Button {
     @Override
     protected String hoverText() {
         if (slot.item == null) {
-            return Messages.titleCase(Messages.get(WndKeyBindings.class, "quickslot_" + (slotNum + 1)));
+            return Messages.titleCase(Messages.get(WndKeyBindings.class, "quickslot", (slotNum + 1)));
         } else {
             return super.hoverText();
         }

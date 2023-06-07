@@ -436,6 +436,9 @@ public class CustomLevel extends Level {
             default:
                 break;
         }
+        if (waterTexture == REGION_HALLS && region != REGION_HALLS) {
+            HallsLevel.addHallsVisuals(this, g);//(only) HallsLevel adds WaterVisuals
+        }
         return g;
     }
 

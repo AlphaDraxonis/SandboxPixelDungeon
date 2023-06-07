@@ -37,8 +37,8 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
-                item.visible = value;
-                updateItem();
+                obj.visible = value;
+                updateObj();
             }
         };
         add(visible);
@@ -46,15 +46,15 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
-                item.active = value;
+                obj.active = value;
                 EditTrapComp.this.visible.enable(value);
-                updateItem();
+                updateObj();
             }
         };
         add(active);
 
-        visible.checked(item.visible);
-        active.checked(item.active);
+        visible.checked(obj.visible);
+        active.checked(obj.active);
 
         comps = new Component[]{visible, active};
     }
@@ -67,28 +67,28 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
     @Override
     protected Component createTitle() {
-        return new IconTitle(getIcon(), TrapItem.createTitle(item));
+        return new IconTitle(getIcon(), TrapItem.createTitle(obj));
     }
 
     @Override
     protected String createDescription() {
-        return item.desc();
+        return obj.desc();
     }
 
     @Override
     public Image getIcon() {
-        return TrapItem.getTrapImage(item);
+        return TrapItem.getTrapImage(obj);
     }
 
     @Override
-    protected void updateItem() {
-        if (!item.active && !item.visible) {
+    protected void updateObj() {
+        if (!obj.active && !obj.visible) {
             visible.checked(true);
             return;
         }
         if (title instanceof IconTitle) {
-            ((IconTitle) title).label(TrapItem.createTitle(item));
-            ((IconTitle) title).icon(TrapItem.getTrapImage(item));
+            ((IconTitle) title).label(TrapItem.createTitle(obj));
+            ((IconTitle) title).icon(TrapItem.getTrapImage(obj));
         }
         desc.text(createDescription());
 
@@ -97,8 +97,8 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             if (slot != null) slot.item(trapItem);
         }
 
-        if (item.pos != -1) EditorScene.updateMap(item.pos);
+        if (obj.pos != -1) EditorScene.updateMap(obj.pos);
 
-        super.updateItem();
+        super.updateObj();
     }
 }

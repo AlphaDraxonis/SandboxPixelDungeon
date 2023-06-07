@@ -7,9 +7,9 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.MobStateSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Buffs;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.mobs.BuffIndicatorEditor;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.mobs.MobStateSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.WndChooseOneInCategories;
@@ -53,7 +53,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
                     ((Statue) mob).weapon = (Weapon) selectedItem;
-                    EditMobComp.this.updateItem();
+                    EditMobComp.this.updateObj();
                 }
             };
             add(statueWeapon);
@@ -63,7 +63,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
                         ((ArmoredStatue) mob).armor = (Armor) selectedItem;
-                        EditMobComp.this.updateItem();
+                        EditMobComp.this.updateObj();
                     }
                 };
                 add(statueArmor);
@@ -79,7 +79,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
                     ((Thief) mob).item = selectedItem;
-                    EditMobComp.this.updateItem();
+                    EditMobComp.this.updateObj();
                 }
 
                 @Override
@@ -132,7 +132,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                                 protected void onClick() {
                                     finish();
                                     Buff.affect(mob, b.getClass());
-                                    updateItem();
+                                    updateObj();
                                 }
                             };
                         }
@@ -155,37 +155,37 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
     @Override
     protected Component createTitle() {
-        return new MobTitleEditor(item);
+        return new MobTitleEditor(obj);
     }
 
     @Override
     protected String createDescription() {
-        return item.info();
+        return obj.info();
     }
 
     @Override
     public Image getIcon() {
-        return item.sprite();
+        return obj.sprite();
     }
 
     @Override
-    public void updateItem() {
+    public void updateObj() {
         if (title instanceof MobTitleEditor) {
-            if (item instanceof ArmoredStatue) {
-                Armor armor = ((ArmoredStatue) item).armor;
+            if (obj instanceof ArmoredStatue) {
+                Armor armor = ((ArmoredStatue) obj).armor;
                 ((StatueSprite) ((MobTitleEditor) title).image).setArmor(armor == null ? 0 : armor.tier);
             }
         }
         desc.text(createDescription());
         if (statueWeapon != null) statueWeapon.updateItem();
         if (statueArmor != null) {
-            Armor armor = ((ArmoredStatue) item).armor;
-            if (item.sprite != null)
-                ((StatueSprite) item.sprite).setArmor(armor == null ? 0 : armor.tier);
+            Armor armor = ((ArmoredStatue) obj).armor;
+            if (obj.sprite != null)
+                ((StatueSprite) obj.sprite).setArmor(armor == null ? 0 : armor.tier);
             statueArmor.updateItem();
         }
 
-        super.updateItem();
+        super.updateObj();
     }
 
     private class MobTitleEditor extends WndInfoMob.MobTitle {

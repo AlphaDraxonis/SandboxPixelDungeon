@@ -108,6 +108,11 @@ public class ItemItem extends EditorItem {
         return item().quantity();
     }
 
+    @Override
+    public String name() {
+        return item().name();
+    }
+
     public static boolean removeHeap(int cell, CustomLevel level) {
         Heap heap = level.heaps.get(cell);
         if (heap != null) {

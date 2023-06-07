@@ -10,7 +10,9 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditTileComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
@@ -30,6 +32,16 @@ public class TileItem extends EditorItem {
     @Override
     public void randomizeTexture() {
         image = Tiles.getVisualWithAlts(Tiles.getPlainImage(terrainType));
+    }
+
+
+    @Override
+    public String name() {
+        return getName(terrainType(), cell());
+    }
+
+    public int terrainType() {
+        return terrainType;
     }
 
     public int cell() {
@@ -58,13 +70,13 @@ public class TileItem extends EditorItem {
         EditorScene.customLevel().setCell(cell, terrainType());
     }
 
-    public int terrainType() {
-        return terrainType;
-    }
-
 
     public static boolean isExitTerrainCell(int terrain) {//why is this not in class Tiles? because it crashes the game for no reason!
         return terrain == EXIT || terrain == LOCKED_EXIT || terrain == UNLOCKED_EXIT;
+    }
+
+    public static String getName(int terrainType, int cell) {
+        return Messages.titleCase(EditorScene.customLevel().tileName(terrainType)) + EditorUtilies.appendCellToString(cell);
     }
 
 }
