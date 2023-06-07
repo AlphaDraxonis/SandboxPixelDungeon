@@ -901,6 +901,8 @@ public class WndSettings extends WndTabbed {
 		ColorBlock sep3;
 		CheckBox chkIgnoreSilent;
 		CheckBox chkMusicBG;
+		ColorBlock sep4;
+		CheckBox vibration;
 
 		@Override
 		protected void createChildren(Object... params) {
@@ -993,6 +995,19 @@ public class WndSettings extends WndTabbed {
 				chkMusicBG.checked(SPDSettings.playMusicInBackground());
 				add(chkMusicBG);
 			}
+			if(!DeviceCompat.canVibrate()){
+				sep4 = new ColorBlock(1, 1, 0xFF000000);
+				add(sep4);
+				vibration = new CheckBox(Messages.get(this,"vibration")){
+					@Override
+					protected void onClick() {
+						super.onClick();
+						SPDSettings.vibrationSound(checked());
+					}
+				};
+				vibration.checked(SPDSettings.vibrationSound());
+				add(vibration);
+			}
 		}
 
 		@Override
@@ -1036,6 +1051,13 @@ public class WndSettings extends WndTabbed {
 
 				chkMusicBG.setRect(0, sep3.y + 1 + GAP, width, BTN_HEIGHT);
 				height = chkMusicBG.bottom();
+			}
+			if (vibration != null){
+				sep4.size(width, 1);
+				sep4.y = height + GAP;
+
+				vibration.setRect(0, sep4.y + 1 + GAP, width, BTN_HEIGHT);
+				height = vibration.bottom();
 			}
 		}
 

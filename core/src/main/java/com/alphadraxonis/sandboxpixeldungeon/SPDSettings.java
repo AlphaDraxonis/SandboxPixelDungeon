@@ -275,12 +275,13 @@ public class SPDSettings extends GameSettings {
 
 	//Audio
 	
-	public static final String KEY_MUSIC		= "music";
-	public static final String KEY_MUSIC_VOL    = "music_vol";
-	public static final String KEY_SOUND_FX		= "soundfx";
-	public static final String KEY_SFX_VOL      = "sfx_vol";
-	public static final String KEY_IGNORE_SILENT= "ignore_silent";
-	public static final String KEY_MUSIC_BG     = "music_bg";
+	public static final String KEY_MUSIC	  	  = "music";
+	public static final String KEY_MUSIC_VOL      = "music_vol";
+	public static final String KEY_SOUND_FX	   	  = "soundfx";
+	public static final String KEY_SFX_VOL        = "sfx_vol";
+	public static final String KEY_IGNORE_SILENT  = "ignore_silent";
+	public static final String KEY_MUSIC_BG       = "music_bg";
+	public static final String KEY_VIBRATION_SOUND= "vibration_sound";
 	
 	public static void music( boolean value ) {
 		Music.INSTANCE.enable( value );
@@ -333,6 +334,14 @@ public class SPDSettings extends GameSettings {
 
 	public static boolean playMusicInBackground(){
 		return getBoolean( KEY_MUSIC_BG, true);
+	}
+
+	public static void vibrationSound( boolean value ){
+		put( KEY_VIBRATION_SOUND, value);
+	}
+
+	public static boolean vibrationSound(){
+		return getBoolean( KEY_VIBRATION_SOUND, true);
 	}
 	
 	//Languages and Font

@@ -65,7 +65,7 @@ public class WndNewFloor extends Window {
             offset(0, -30);
         }
 
-        final RenderedTextBlock txtTitle = PixelScene.renderTextBlock("Create floor", 10);
+        final RenderedTextBlock txtTitle = PixelScene.renderTextBlock(Messages.get(WndNewFloor.class, "title"), 10);
         txtTitle.maxWidth(width);
         txtTitle.hardlight(Window.TITLE_COLOR);
         txtTitle.setPos((width - txtTitle.width()) / 2, 2);
@@ -151,7 +151,7 @@ public class WndNewFloor extends Window {
 
         pos += inputHeight + MARGIN;
 
-        final RedButton positiveBtn = new RedButton(Messages.get(WndNewFloor.class,"create_label")) {
+        final RedButton positiveBtn = new RedButton(Messages.get(WndNewFloor.class, "create_label")) {
             @Override
             protected void onClick() {
                 if (!textBox.getText().isEmpty()) {
@@ -163,7 +163,7 @@ public class WndNewFloor extends Window {
 
         final RedButton negativeBtn;
         if (false) {
-            negativeBtn = new RedButton(Messages.get(WndNewFloor.class,"cancel_label")) {
+            negativeBtn = new RedButton(Messages.get(WndNewFloor.class, "cancel_label")) {
                 @Override
                 protected void onClick() {
                     onSelect(false, textBox.getText());
@@ -186,7 +186,7 @@ public class WndNewFloor extends Window {
 
         pos += BUTTON_HEIGHT + MARGIN * 3;
 
-        chooseType = new ChooseLevel(Messages.get(WndNewFloor.class,"type"), false) {
+        chooseType = new ChooseLevel(Messages.get(WndNewFloor.class, "type"), false) {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
@@ -197,7 +197,7 @@ public class WndNewFloor extends Window {
         chooseType.setRect(MARGIN, pos, width - MARGIN * 2, BUTTON_HEIGHT);
         pos += BUTTON_HEIGHT + MARGIN;
 
-        chooseTemplate = new ChooseLevel(Messages.get(WndNewFloor.class,"template"), true) {
+        chooseTemplate = new ChooseLevel(Messages.get(WndNewFloor.class, "template"), true) {
             @Override
             protected float getDisplayWidth() {
                 return chooseType.getDW();
@@ -207,7 +207,7 @@ public class WndNewFloor extends Window {
         chooseTemplate.setRect(MARGIN, pos, width - MARGIN * 2, BUTTON_HEIGHT);
         pos += BUTTON_HEIGHT + MARGIN * 2;
 
-        seed = new ChooseObjectComp(Messages.get(WndNewFloor.class,"seed")) {
+        seed = new ChooseObjectComp(Messages.get(WndNewFloor.class, "seed")) {
             @Override
             protected void doChange() {
                 Window window = new WndTextInput(Messages.get(HeroSelectScene.class, "custom_seed_title"),
@@ -248,8 +248,8 @@ public class WndNewFloor extends Window {
         infoNumInRegion = new IconButton(Icons.get(Icons.INFO)) {
             @Override
             protected void onClick() {
-                Window window = new WndTitledMessage(Icons.get(Icons.INFO), Messages.get(WndNewFloor.class,"num_region"),
-                        Messages.get(WndNewFloor.class,"num_region_info"));
+                Window window = new WndTitledMessage(Icons.get(Icons.INFO), Messages.get(WndNewFloor.class, "num_region"),
+                        Messages.get(WndNewFloor.class, "num_region_info"));
                 if (Game.scene() instanceof EditorScene) EditorScene.show(window);
                 else Game.scene().addToFront(window);
             }
@@ -268,7 +268,7 @@ public class WndNewFloor extends Window {
             public int getClicksPerSecondWhileHolding() {
                 return 5;
             }
-        },  Messages.get(WndNewFloor.class,"num_region")+":", 8);
+        }, Messages.get(WndNewFloor.class, "num_region") + ":", 8);
         numInRegion.setButtonWidth(13);
         add(numInRegion);
         numInRegion.setRect(MARGIN, pos, infoNumInRegion.left() - MARGIN * 2, BUTTON_HEIGHT);
@@ -278,8 +278,8 @@ public class WndNewFloor extends Window {
         infoDepth = new IconButton(Icons.get(Icons.INFO)) {
             @Override
             protected void onClick() {
-                Window window = new WndTitledMessage(Icons.get(Icons.INFO), Messages.get(WndNewFloor.class,"depth"),
-                        Messages.get(WndNewFloor.class,"depth_info"));
+                Window window = new WndTitledMessage(Icons.get(Icons.INFO), Messages.get(WndNewFloor.class, "depth"),
+                        Messages.get(WndNewFloor.class, "depth_info"));
                 if (Game.scene() instanceof EditorScene) EditorScene.show(window);
                 else Game.scene().addToFront(window);
             }
@@ -343,8 +343,9 @@ public class WndNewFloor extends Window {
 
         @Override
         protected String objectToString(Object object) {
-            if (object == null) return Messages.get(WndSelectLevelType.class,"type_none");
-            if (object == CustomLevel.class) return Messages.get(WndSelectLevelType.class,"type_custom");
+            if (object == null) return Messages.get(WndSelectLevelType.class, "type_none");
+            if (object == CustomLevel.class)
+                return Messages.get(WndSelectLevelType.class, "type_custom");
             return super.objectToString(object);
         }
     }

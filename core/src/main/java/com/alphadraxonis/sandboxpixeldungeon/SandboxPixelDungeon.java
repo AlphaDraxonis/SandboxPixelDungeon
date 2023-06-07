@@ -24,9 +24,6 @@ package com.alphadraxonis.sandboxpixeldungeon;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.TitleScene;
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
@@ -132,9 +129,8 @@ public class SandboxPixelDungeon extends Game {
 	}
 
 	public static void vibrate(int milliseconds) {
-		if (!Gdx.input.isPeripheralAvailable(Input.Peripheral.Vibrator) || Gdx.app.getType() == Application.ApplicationType.Desktop) {
-			Sample.INSTANCE.play(Assets.Sounds.VIBRATION);
-		}
-		else Game.vibrate(milliseconds);
+		if (DeviceCompat.canVibrate() || !SPDSettings.vibrationSound()) {
+			Game.vibrate(milliseconds);
+		} else if (SPDSettings.vibrationSound()) Sample.INSTANCE.play(Assets.Sounds.VIBRATION);
 	}
 }

@@ -34,7 +34,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ShatteredNews extends NewsService {
+public class ShatteredNews extends NewsService {//No rename because this would still only be for Shattered
 
 	@Override
 	public void checkForArticles(boolean useMetered, boolean preferHTTPS, NewsResultCallback callback) {

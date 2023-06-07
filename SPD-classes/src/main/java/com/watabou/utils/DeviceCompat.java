@@ -77,4 +77,7 @@ public class DeviceCompat {
 		return result;
 	}
 
+    public static boolean canVibrate() {
+		return Gdx.input.isPeripheralAvailable(Input.Peripheral.Vibrator) && Gdx.app.getType() != Application.ApplicationType.Desktop;
+    }
 }
