@@ -1,6 +1,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.overview;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
@@ -9,6 +10,8 @@ import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
 
 import java.io.IOException;
 
@@ -63,6 +66,16 @@ public class WndSwitchFloor extends Window {
     public static void updateList() {
         if (instance == null) return;
         instance.listPane.updateList();
+    }
+
+    @Override
+    public boolean onSignal(KeyEvent event) {
+        if (event.pressed && KeyBindings.getActionForKey(event) == SPDAction.WAIT_OR_PICKUP) {//TODO change hotkey!
+            onBackPressed();
+            return true;
+        } else {
+            return super.onSignal(event);
+        }
     }
 
     @Override

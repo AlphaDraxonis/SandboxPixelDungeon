@@ -40,11 +40,6 @@ public abstract class LevelListPane extends ScrollingListPane {
                 protected boolean onLongClick() {
                     return onEdit(getLevelScheme(), this);
                 }
-
-                @Override
-                protected void onPointerDown() {
-                    super.onPointerDown();
-                }
             });
         }
     }

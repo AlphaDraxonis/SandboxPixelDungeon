@@ -150,6 +150,13 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
 
     @Override
+    public void onBackPressed() {
+        if (selector != null) {
+            selector.onSelect(null);
+        }
+        super.onBackPressed();
+    }
+    @Override
     protected void onClick(Tab tab) {
         Trap tempTrapSave = lastTrapForImage;
         hide();
