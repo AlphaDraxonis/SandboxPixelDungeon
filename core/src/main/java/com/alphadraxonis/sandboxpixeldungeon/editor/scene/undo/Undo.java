@@ -27,23 +27,14 @@ public final class Undo {
     }
 
     public static void addActionPart(ActionPart part) {
-        if (part != null &&
-                (!(part instanceof ActionPartList) || !((ActionPartList) part).isEmpty()) &&
-                !undoStack.isEmpty()) {
-            ActionPartList currentAction = undoStack.peek();
-            currentAction.addActionPart(part);
-        }
-    }
-
-    public static void addActionPart(ActionPartList part) {
-        if (part != null && !part.isEmpty() && !undoStack.isEmpty()) {
+        if (part != null && part.hasContent() && !undoStack.isEmpty()) {
             ActionPartList currentAction = undoStack.peek();
             currentAction.addActionPart(part);
         }
     }
 
     private static void addAction(ActionPartList action) {
-        if (!action.isEmpty()) {
+        if (action.hasContent()) {
             undoStack.push(action);
             if (undoStack.size() > MAX_SIZE) {
                 undoStack.removeLast();

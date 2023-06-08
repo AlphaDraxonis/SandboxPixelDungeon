@@ -3,7 +3,9 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditMobComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
 
 public /*sealed*/ abstract class MobActionPart implements ActionPart {
 
@@ -19,18 +21,32 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
     }
 
     protected void place() {
-        EditorScene.add(copyForUndo);
-        Dungeon.level.occupyCell(copyForUndo);
+        place(copyForUndo);
         mob = copyForUndo;
         copyForUndo = (Mob) mob.getCopy();
     }
 
     protected void remove() {
         Mob mobAtCell = EditorScene.customLevel().getMobAtCell(cell);
-        if (mobAtCell != null) mob = mobAtCell;//This is because another place action could swap the actual mob with another copy
+        if (mobAtCell != null)
+            mob = mobAtCell;//This is because another place action could swap the actual mob with another copy
+        remove(mob);
+    }
+
+    private static void place(Mob mob) {
+        EditorScene.add(mob);
+        Dungeon.level.occupyCell(mob);
+    }
+
+    private static void remove(Mob mob) {
         mob.destroy();
         mob.sprite.hideEmo();
         mob.sprite.killAndErase();
+    }
+
+    @Override
+    public boolean hasContent() {
+        return true;
     }
 
     public static final class Place extends MobActionPart {
@@ -63,6 +79,47 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
         @Override
         public void redo() {
             remove();
+        }
+    }
+
+    public static final class Modify implements ActionPartModify {
+
+        private final Mob before;
+        private Mob after;
+
+        public Modify(Mob mob) {
+            before = (Mob) mob.getCopy();
+            after = mob;
+        }
+
+        @Override
+        public void undo() {
+
+            Mob mobAtCell = EditorScene.customLevel().getMobAtCell(after.pos);
+
+            remove(mobAtCell);
+
+            place((Mob) before.getCopy());
+        }
+
+        @Override
+        public void redo() {
+            Mob mobAtCell = EditorScene.customLevel().getMobAtCell(after.pos);
+
+            if (mobAtCell != null) remove(mobAtCell);
+
+            place((Mob) after.getCopy());
+
+        }
+
+        @Override
+        public boolean hasContent() {
+            return !EditMobComp.areEqual(before, after);
+        }
+
+        @Override
+        public void finish() {
+            after = (Mob) after.getCopy();
         }
     }
 }

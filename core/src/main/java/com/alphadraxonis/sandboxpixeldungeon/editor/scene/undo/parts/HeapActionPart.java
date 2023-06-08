@@ -30,6 +30,11 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
         heap.destroy();
     }
 
+    @Override
+    public boolean hasContent() {
+        return true;
+    }
+
     public static final class Place extends HeapActionPart {
 
         public Place(Heap heap) {

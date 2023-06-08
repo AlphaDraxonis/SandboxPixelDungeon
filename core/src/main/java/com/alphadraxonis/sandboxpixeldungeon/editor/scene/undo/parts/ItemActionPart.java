@@ -28,6 +28,11 @@ public /*sealed*/ abstract class ItemActionPart implements ActionPart {
         heap.remove(item, quatity);
     }
 
+    @Override
+    public boolean hasContent() {
+        return true;
+    }
+
     public static final class Place extends ItemActionPart {
 
         public Place(Item item, int pos) {

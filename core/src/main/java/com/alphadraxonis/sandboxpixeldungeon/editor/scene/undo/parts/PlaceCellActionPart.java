@@ -30,4 +30,9 @@ public class PlaceCellActionPart implements ActionPart {
         Level.set(cell, newTerrain);
         //old traps are already removed here
     }
+
+    @Override
+    public boolean hasContent() {
+        return oldTerrain != newTerrain;
+    }
 }

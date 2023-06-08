@@ -52,6 +52,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogFist;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
@@ -1057,8 +1058,7 @@ public abstract class Level implements Bundlable {
             set(cell, Terrain.WATER);
             GameScene.updateMap(cell);
             return true;
-        } else if (includeTraps && (terr == Terrain.SECRET_TRAP ||
-                terr == Terrain.TRAP || terr == Terrain.INACTIVE_TRAP)) {
+        } else if (includeTraps && (TileItem.isTrapTerrainCell(terr))) {
             set(cell, Terrain.WATER);
             Dungeon.level.traps.remove(cell);
             GameScene.updateMap(cell);

@@ -3,6 +3,9 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
@@ -15,6 +18,9 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditCompWindowTabbed extends WndTabbed {
 
@@ -29,9 +35,13 @@ public class EditCompWindowTabbed extends WndTabbed {
 
     private TabBody curBody;
 
+    private static List<ActionPartModify> actionPartModifyList = new ArrayList<>(7);
+
     public static EditCompWindowTabbed createEditCompWindowTabbed(TileItem tileItem, Heap heap, Mob mob, Trap trap, int selectIndex, int numTabs) {
+        actionPartModifyList.clear();
         Item[] items = getItemsFromHeap(heap, numTabs);
         if (items != null) numTabs += items.length;
+        if (mob != null) actionPartModifyList.add(new MobActionPart.Modify(mob));//FIXME wichtig
         return new EditCompWindowTabbed(tileItem, heap, items, mob, trap, selectIndex, new float[numTabs]);
     }
 
@@ -50,7 +60,7 @@ public class EditCompWindowTabbed extends WndTabbed {
         return ret;
     }
 
-    public EditCompWindowTabbed(TileItem tileItem, Heap heap, Item[] items, Mob mob, Trap trap, int selectIndex, float[] scrollPos) {
+    private EditCompWindowTabbed(TileItem tileItem, Heap heap, Item[] items, Mob mob, Trap trap, int selectIndex, float[] scrollPos) {
         this.tileItem = tileItem;
         this.heap = heap;
         this.items = items;
@@ -205,9 +215,13 @@ public class EditCompWindowTabbed extends WndTabbed {
         }
     }
 
+    private boolean goToOtherTab;
+
     @Override
     protected void onClick(Tab tab) {
+        goToOtherTab = true;
         hide();
+        goToOtherTab = false;
         TabBtn t = (TabBtn) tab;
         scrollPos[curBody.index] = curBody.sp.content().camera().scroll.y;
         Window w = new EditCompWindowTabbed(tileItem, heap, items, mob, trap, t.index, scrollPos);
@@ -218,4 +232,16 @@ public class EditCompWindowTabbed extends WndTabbed {
         }
     }
 
+    @Override
+    public void hide() {
+        super.hide();
+        if(!goToOtherTab){
+            for (ActionPartModify modify : actionPartModifyList){
+                Undo.startAction();
+                modify.finish();
+                Undo.addActionPart(modify);
+                Undo.endAction();
+            }
+        }
+    }
 }

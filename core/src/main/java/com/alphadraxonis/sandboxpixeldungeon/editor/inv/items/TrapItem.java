@@ -1,15 +1,13 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.inv.items;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
-import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditTrapComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TrapActionPart;
-import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
@@ -55,7 +53,7 @@ public class TrapItem extends EditorItem {
     }
 
     public static String createTitle(Trap trap) {
-        return Messages.titleCase((trap.visible ?trap.name() : Messages.get(TrapItem.class,"title_hidden",trap.name())));
+        return Messages.titleCase((trap.visible ? trap.name() : Messages.get(TrapItem.class, "title_hidden", trap.name())));
     }
 
     @Override
@@ -88,17 +86,6 @@ public class TrapItem extends EditorItem {
         Undo.addActionPart(place(trap().getCopy(), cell));
     }
 
-    public static boolean removeTrap(int cell, CustomLevel level) {
-        Trap t = level.traps.get(cell);
-        if (t != null) {
-            level.traps.remove(cell);
-            level.map[cell] = Terrain.EMPTY;
-            EditorScene.updateMap(cell);
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public String name() {
         return trap().name();
@@ -115,12 +102,15 @@ public class TrapItem extends EditorItem {
         }
         return null;
     }
-    public static TrapActionPart.Place place(Trap trap){
-        if (trap != null) return new TrapActionPart.Place(trap);
+
+    public static TrapActionPart.Place place(Trap trap) {
+        if (trap != null && !EditTrapComp.areEqual(Dungeon.level.traps.get(trap.pos), trap))
+            return new TrapActionPart.Place(trap);
         return null;
     }
-    public static TrapActionPart.Place place(Trap trap, int cell){
-        if (trap != null) {
+
+    public static TrapActionPart.Place place(Trap trap, int cell) {
+        if (trap != null && !EditTrapComp.areEqual(Dungeon.level.traps.get(cell), trap)) {
             trap.pos = cell;
             return new TrapActionPart.Place(trap);
         }

@@ -75,7 +75,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 }
             };
             add(curseBtn);
-            cursedKnown = new CheckBox(Messages.get(EditItemComp.class,"cursed_known")) {
+            cursedKnown = new CheckBox(Messages.get(EditItemComp.class, "cursed_known")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -97,7 +97,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 }
             };
             add(levelSpinner);
-            levelKnown = new CheckBox(Messages.get(EditItemComp.class,"level_known")) {
+            levelKnown = new CheckBox(Messages.get(EditItemComp.class, "level_known")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -112,7 +112,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
 
         if (item instanceof Weapon || item instanceof Armor) {//Missiles support enchantments too
-            enchantBtn = new RedButton(Messages.get(EditItemComp.class,"enchant")) {
+            enchantBtn = new RedButton(Messages.get(EditItemComp.class, "enchant")) {
                 @Override
                 protected void onClick() {
                     EditorScene.show(new WndChooseEnchant(item) {
@@ -137,7 +137,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(augumentationSpinner);
         } else augumentationSpinner = null;
 
-        comps = new Component[]{quantity,levelSpinner,augumentationSpinner,curseBtn,cursedKnown,levelKnown,enchantBtn};
+        comps = new Component[]{quantity, levelSpinner, augumentationSpinner, curseBtn, cursedKnown, levelKnown, enchantBtn};
     }
 
     @Override
@@ -173,5 +173,31 @@ public class EditItemComp extends DefaultEditComp<Item> {
             EditorScene.updateHeapImage(heap);
         }
         super.updateObj();
+    }
+
+
+    public static boolean areEqual(Item a, Item b) {
+        if (a == null || b == null) return false;
+        if (a.getClass() != b.getClass()) return false;
+        if (a.quantity() != b.quantity()) return false;
+        if (a.cursed != b.cursed) return false;
+        if (a.level() != b.level()) return false;
+        if (a.getCursedKnownVar() != b.getCursedKnownVar()) return false;
+        if (a.levelKnown != b.levelKnown) return false;
+        if (a instanceof Weapon) {
+            Weapon aa = (Weapon) a, bb = (Weapon) b;
+            if (aa.augment != bb.augment) return false;
+            if (aa.enchantment == null) return bb.enchantment == null;
+            if (bb.enchantment == null) return false;
+            return aa.enchantment.getClass() == bb.enchantment.getClass();
+        }
+        if (a instanceof Armor) {
+            Armor aa = (Armor) a, bb = (Armor) b;
+            if (aa.augment != bb.augment) return false;
+            if (aa.glyph == null) return bb.glyph == null;
+            if (bb.glyph == null) return false;
+            return aa.glyph.getClass() == bb.glyph.getClass();
+        }
+        return true;
     }
 }

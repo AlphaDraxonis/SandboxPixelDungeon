@@ -33,12 +33,17 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
             ActionPart part = new ActionPart() {
                 @Override
                 public void undo() {
-                    remove();
+                    // removal is done via PlaceCellActionPart which is also called before
                 }
 
                 @Override
                 public void redo() {
                     place();
+                }
+
+                @Override
+                public boolean hasContent() {
+                    return true;
                 }
             };
             addActionPart(part);
@@ -59,6 +64,11 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
                 @Override
                 public void redo() {
                     remove();
+                }
+
+                @Override
+                public boolean hasContent() {
+                    return true;
                 }
             };
             addActionPart(part);

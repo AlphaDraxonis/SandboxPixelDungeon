@@ -9,12 +9,7 @@ public class ActionPartList implements ActionPart {
     private final List<ActionPart> actions = new ArrayList<>(5);
 
     public void addActionPart(ActionPart part) {
-        if (part != null && (!(part instanceof ActionPartList) || !((ActionPartList) part).isEmpty()))
-            actions.add(part);
-    }
-
-    public void addActionPart(ActionPartList part) {
-        if (part != null && !part.isEmpty()) actions.add(part);
+        if (part != null && part.hasContent()) actions.add(part);
     }
 
     public void undo() {
@@ -37,7 +32,8 @@ public class ActionPartList implements ActionPart {
         action.redo();
     }
 
-    public boolean isEmpty() {
-        return actions.isEmpty();
+    @Override
+    public boolean hasContent() {
+        return !actions.isEmpty();
     }
 }

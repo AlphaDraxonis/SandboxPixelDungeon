@@ -10,6 +10,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.WndEditorInv;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.CustomDungeonSaves;
@@ -432,8 +433,7 @@ public class EditorScene extends PixelScene {
 
         CustomLevel f = customLevel();
         int terrainType = f.map[cell];
-        if (terrainType == Terrain.TRAP || terrainType == Terrain.SECRET_TRAP || terrainType == Terrain.INACTIVE_TRAP)
-            terrainType = Terrain.EMPTY;
+        if (TileItem.isTrapTerrainCell(terrainType)) terrainType = Terrain.EMPTY;
 
         Trap trap = f.traps.get(cell);
         Heap heap = f.heaps.get(cell);

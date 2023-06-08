@@ -4,6 +4,9 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
@@ -91,11 +94,6 @@ public abstract class DefaultEditComp<T> extends Component {
 
     public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap, int cell) {
 
-        EditTileComp editTileComp = null;
-        EditItemComp editItemComp = null;
-        EditMobComp editMobComp = null;
-        EditTrapComp editTrapComp = null;
-
         int numTabs = 0;
         TileItem tileItem = null;
 
@@ -113,18 +111,40 @@ public abstract class DefaultEditComp<T> extends Component {
             EditorScene.show(EditCompWindowTabbed.createEditCompWindowTabbed(tileItem, heap, mob, trap, 0, numTabs));
             return;
         }
-        Window w = new Window();
 
         float newWidth = PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : WndTitledMessage.WIDTH_MIN;
 
         DefaultEditComp<?> content;
-        if (tileItem != null) content = new EditTileComp(tileItem);
-        else if (heap != null) content = new EditHeapComp(heap);
-        else if (mob != null) content = new EditMobComp(mob);
-        else content = new EditTrapComp(trap);
+        ActionPartModify actionPart;//FIXME actual assignments WICHTIG
+        if (tileItem != null) {
+            content = new EditTileComp(tileItem);
+            actionPart = null;
+        } else if (heap != null) {
+            content = new EditHeapComp(heap);
+            actionPart = null;
+        } else if (mob != null) {
+            content = new EditMobComp(mob);
+            actionPart = new MobActionPart.Modify(mob);
+        } else {
+            content = new EditTrapComp(trap);
+            actionPart = null;
+        }
 
         content.setRect(0, 0, newWidth, -1);
         ScrollPane sp = new ScrollPane(content);
+
+        Window w = new Window() {
+            @Override
+            public void hide() {
+                super.hide();
+                if (actionPart != null) {
+                    actionPart.finish();
+                    Undo.startAction();
+                    Undo.addActionPart(actionPart);
+                    Undo.endAction();
+                }
+            }
+        };
         w.add(sp);
 
         Runnable r = () -> {

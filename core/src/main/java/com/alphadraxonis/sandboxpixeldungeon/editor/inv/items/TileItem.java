@@ -1,7 +1,10 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.inv.items;
 
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.EXIT;
+import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.INACTIVE_TRAP;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.LOCKED_EXIT;
+import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.SECRET_TRAP;
+import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.TRAP;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.UNLOCKED_EXIT;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
@@ -94,6 +97,10 @@ public class TileItem extends EditorItem {
         return terrain == EXIT || terrain == LOCKED_EXIT || terrain == UNLOCKED_EXIT;
     }
 
+    public static boolean isTrapTerrainCell(int terrain) {
+        return terrain == TRAP || terrain == SECRET_TRAP || terrain == INACTIVE_TRAP;
+    }
+
     public static String getName(int terrainType, int cell) {
         return Messages.titleCase(EditorScene.customLevel().tileName(terrainType)) + EditorUtilies.appendCellToString(cell);
     }
@@ -112,98 +119,107 @@ public class TileItem extends EditorItem {
             int oldTerrain = level.map[cell];
 
             if (oldTerrain == terrainType) {
-                placeCell = null;
+                if (isTrapTerrainCell(terrainType))
+                    addActionPart(placeCell = new PlaceCellActionPart(oldTerrain, terrainType, cell, level.traps.get(cell)));
+                else placeCell = null;
                 return;//no need to continue bc nothing changes at all
             }
 
             addActionPart(placeCell = new PlaceCellActionPart(oldTerrain, terrainType, cell, level.traps.get(cell)));
 
             //Transition logic
-
-            final LevelTransition transition = level.transitions.get(cell);
-            final LevelScheme levelScheme = level.levelScheme;
             final boolean wasExit = TileItem.isExitTerrainCell(oldTerrain);
             final boolean nowExit = TileItem.isExitTerrainCell(terrainType);
+            if (wasExit || nowExit) {
 
-            ActionPart transPart = new ActionPart() {
+                final LevelTransition transition = level.transitions.get(cell);
+                final LevelScheme levelScheme = level.levelScheme;
 
-                @Override
-                public void undo() {
+                ActionPart transPart = new ActionPart() {
 
-                    if (oldTerrain == Terrain.ENTRANCE) {
-                        levelScheme.entranceCells.add((Integer) cell);
-                        levelScheme.exitCells.remove((Integer) cell);
-                        if (transition != null) {
-                            level.transitions.put(cell, transition);
-                            EditorScene.add(transition);
-                        }
-                    } else {
+                    @Override
+                    public void undo() {
 
-                        if (terrainType == Terrain.ENTRANCE) {
-                            levelScheme.entranceCells.remove((Integer) cell);
+                        if (oldTerrain == Terrain.ENTRANCE) {
+                            levelScheme.entranceCells.add((Integer) cell);
+                            levelScheme.exitCells.remove((Integer) cell);
                             if (transition != null) {
                                 level.transitions.put(cell, transition);
                                 EditorScene.add(transition);
                             }
-                        }
+                        } else {
 
-                        if (wasExit != nowExit) {
-                            if (wasExit) {
-                                levelScheme.exitCells.add((Integer) cell);
+                            if (terrainType == Terrain.ENTRANCE) {
+                                levelScheme.entranceCells.remove((Integer) cell);
                                 if (transition != null) {
                                     level.transitions.put(cell, transition);
                                     EditorScene.add(transition);
                                 }
-                            } else {
-                                levelScheme.exitCells.remove((Integer) cell);
                             }
 
+                            if (wasExit != nowExit) {
+                                if (wasExit) {
+                                    levelScheme.exitCells.add((Integer) cell);
+                                    if (transition != null) {
+                                        level.transitions.put(cell, transition);
+                                        EditorScene.add(transition);
+                                    }
+                                } else {
+                                    levelScheme.exitCells.remove((Integer) cell);
+                                }
+
+                            }
                         }
+                        Collections.sort(levelScheme.entranceCells);
+                        Collections.sort(levelScheme.exitCells);
                     }
-                    Collections.sort(levelScheme.entranceCells);
-                    Collections.sort(levelScheme.exitCells);
-                }
 
-                @Override
-                public void redo() {//sorry for comments you don't understand...
+                    @Override
+                    public void redo() {//sorry for comments you don't understand...
 
-                    if (terrainType == Terrain.ENTRANCE) {  //neu entrance
-                        levelScheme.entranceCells.add((Integer) cell);  //füge entrance cell hinzu
-                        levelScheme.exitCells.remove((Integer) cell);   // entferne ggf exit
-                        if (transition != null) { //entferne ggf alte transition
-                            level.transitions.remove(cell);
-                            EditorScene.remove(transition);
-                        }
-                    } else {
-
-                        //es wird hier kein entrance sein (da terraintype verschieden sein muss)
-                        if (oldTerrain == Terrain.ENTRANCE) {//wenn es mal entrance war, aber keiner mehr ist
-                            levelScheme.entranceCells.remove((Integer) cell);//entferne entrance
-                            if (transition != null) {//entferne ggf alte transitiom
+                        if (terrainType == Terrain.ENTRANCE) {  //neu entrance
+                            levelScheme.entranceCells.add((Integer) cell);  //füge entrance cell hinzu
+                            levelScheme.exitCells.remove((Integer) cell);   // entferne ggf exit
+                            if (transition != null) { //entferne ggf alte transition
                                 level.transitions.remove(cell);
                                 EditorScene.remove(transition);
                             }
-                        }
+                        } else {
 
-                        if (wasExit != nowExit) {//bei exit änderung
-                            if (wasExit) {//exit wurde entfernt, und nicht durch entrance ersetzt
-                                levelScheme.exitCells.remove((Integer) cell);//entferne exit
-                                if (transition != null) {//entferne ggf transition
+                            //es wird hier kein entrance sein (da terraintype verschieden sein muss)
+                            if (oldTerrain == Terrain.ENTRANCE) {//wenn es mal entrance war, aber keiner mehr ist
+                                levelScheme.entranceCells.remove((Integer) cell);//entferne entrance
+                                if (transition != null) {//entferne ggf alte transitiom
                                     level.transitions.remove(cell);
                                     EditorScene.remove(transition);
                                 }
-                            } else {//bei neuem exit: füge exit hinzu (falls es vorher entrance war, wurde zelle+transition schon entfernt)
-                                levelScheme.exitCells.add((Integer) cell);
                             }
-                        }
 
+                            if (wasExit != nowExit) {//bei exit änderung
+                                if (wasExit) {//exit wurde entfernt, und nicht durch entrance ersetzt
+                                    levelScheme.exitCells.remove((Integer) cell);//entferne exit
+                                    if (transition != null) {//entferne ggf transition
+                                        level.transitions.remove(cell);
+                                        EditorScene.remove(transition);
+                                    }
+                                } else {//bei neuem exit: füge exit hinzu (falls es vorher entrance war, wurde zelle+transition schon entfernt)
+                                    levelScheme.exitCells.add((Integer) cell);
+                                }
+                            }
+
+                        }
+                        Collections.sort(levelScheme.entranceCells);
+                        Collections.sort(levelScheme.exitCells);
                     }
-                    Collections.sort(levelScheme.entranceCells);
-                    Collections.sort(levelScheme.exitCells);
-                }
-            };
-            addActionPart(transPart);
-            transPart.redo();
+
+                    @Override
+                    public boolean hasContent() {
+                        return true;//already checked when adding this (nowExit||wasExit)
+                    }
+                };
+                addActionPart(transPart);
+                transPart.redo();
+            }
 
             EditorScene.updateMap(cell);
 

@@ -55,11 +55,11 @@ public class MobItem extends EditorItem {
         CustomLevel level = EditorScene.customLevel();
         Mob mob = (Mob) mob().getCopy();
 
-        if (invalidPlacement(mob, level, cell)) return;
+        if (invalidPlacement(mob, level, cell) || EditMobComp.areEqual(mob, EditorScene.customLevel().getMobAtCell(cell))) return;
 
         Undo.addActionPart(remove(level.getMobAtCell(cell)));
 
-        Undo.addActionPart(place(mob,cell));
+        Undo.addActionPart(place(mob, cell));
     }
 
     @Override
@@ -84,12 +84,15 @@ public class MobItem extends EditorItem {
         }
         return null;
     }
-    public static MobActionPart.Place place(Mob mob){
-        if (mob != null) return new MobActionPart.Place(mob);
+
+    public static MobActionPart.Place place(Mob mob) {
+        if (mob != null && !EditMobComp.areEqual(mob, EditorScene.customLevel().getMobAtCell(mob.pos)))
+            return new MobActionPart.Place(mob);
         return null;
     }
-    public static MobActionPart.Place place(Mob mob, int cell){
-        if (mob != null) {
+
+    private static MobActionPart.Place place(Mob mob, int cell) {
+        if (mob != null) {//Achtung! no check for equality!
             mob.pos = cell;
             return new MobActionPart.Place(mob);
         }

@@ -31,9 +31,9 @@ public class ItemSelector extends Component {
     protected IconButton changeBtn;
     private final boolean acceptsNull;
 
-    public ItemSelector(String text, Class<? extends Item> itemClasses, Item startItem,boolean acceptsNull) {
+    public ItemSelector(String text, Class<? extends Item> itemClasses, Item startItem, boolean acceptsNull) {
         this.itemClasses = itemClasses;
-        this.acceptsNull=acceptsNull;
+        this.acceptsNull = acceptsNull;
 
         renderedTextBlock = PixelScene.renderTextBlock(text, 10);
         add(renderedTextBlock);
@@ -56,6 +56,7 @@ public class ItemSelector extends Component {
                 change();
                 return true;
             }
+
             @Override
             public void item(Item item) {
                 super.item(item);
@@ -107,7 +108,7 @@ public class ItemSelector extends Component {
         w.add(sp);
         sp.setSize(WIDTH, HEIGHT);
 
-       if(acceptsNull) sp.addItem(EditorItem.NULL_ITEM.createListItem(w));
+        if (acceptsNull) sp.addItem(EditorItem.NULL_ITEM.createListItem(w));
         for (Item bagitem : Items.bag.items) {
             if (bagitem instanceof Bag) {
                 for (Item i : (Bag) bagitem) {
@@ -156,6 +157,7 @@ public class ItemSelector extends Component {
 
         @Override
         public void onSelect(Item item) {
+            if (item == null) return;//if window is canceled
             if (item == EditorItem.NULL_ITEM) setSelectedItem(null);
             else
                 setSelectedItem(item instanceof ItemItem ? ((ItemItem) item).item().getCopy() : item.getCopy());

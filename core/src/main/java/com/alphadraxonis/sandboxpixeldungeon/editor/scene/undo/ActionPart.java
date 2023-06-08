@@ -5,5 +5,6 @@ public interface ActionPart {
     void undo();
     void redo();
 
+    boolean hasContent();
 
 }

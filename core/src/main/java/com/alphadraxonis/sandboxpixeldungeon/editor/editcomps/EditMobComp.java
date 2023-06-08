@@ -29,6 +29,7 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class EditMobComp extends DefaultEditComp<Mob> {
 
@@ -186,6 +187,23 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         super.updateObj();
+    }
+
+    public static boolean areEqual(Mob a, Mob b) {
+        if (a == null || b == null) return false;
+        if (a.getClass() != b.getClass()) return false;
+        if (a.state.getClass() != b.state.getClass()) return false;
+        if (!a.buffs().equals(b.buffs())) return false;
+        if (a instanceof Statue) {
+            if (!EditItemComp.areEqual(((Statue) a).weapon, ((Statue) b).weapon)) return false;
+            return !(a instanceof ArmoredStatue)
+                    || EditItemComp.areEqual(((ArmoredStatue) a).armor, ((ArmoredStatue) b).armor);
+        }else if(a instanceof Thief){
+            return EditItemComp.areEqual(((Thief) a).item, ((Thief) b).item);
+        }else if(a instanceof Mimic){
+            return Objects.equals(((Mimic) a).items, ((Mimic) b).items);
+        }
+        return true;
     }
 
     private class MobTitleEditor extends WndInfoMob.MobTitle {

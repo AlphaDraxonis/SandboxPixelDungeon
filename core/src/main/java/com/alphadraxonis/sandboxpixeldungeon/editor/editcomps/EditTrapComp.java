@@ -101,4 +101,12 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
         super.updateObj();
     }
+
+
+    public static boolean areEqual(Trap a, Trap b) {
+        if (a == null || b == null) return false;
+        if (a.getClass() != b.getClass()) return false;
+        if (a.visible != b.visible) return false;
+        return a.active == b.active;
+    }
 }
