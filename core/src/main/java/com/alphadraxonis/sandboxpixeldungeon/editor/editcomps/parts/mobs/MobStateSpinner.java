@@ -16,6 +16,7 @@ public class MobStateSpinner extends Spinner {
         super(new MobStateSpinnerModel(mob), " " + Messages.get(MobStateSpinner.class, "label"), 10);
 
         addChangeListener(() -> ((States) getValue()).applyChange(mob));
+        setButtonWidth(12);
     }
 
     private enum States {

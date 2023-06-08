@@ -144,7 +144,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         };
         add(addBuffs);
 
-        comps = new Component[]{statueWeapon, statueArmor, thiefItem, mobStateSpinner, addBuffs};
+        comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, mobStateSpinner, addBuffs};
     }
 
     @Override
