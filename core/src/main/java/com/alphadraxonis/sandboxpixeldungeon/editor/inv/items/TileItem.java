@@ -209,14 +209,14 @@ public class TileItem extends EditorItem {
 
             for (int i : PathFinder.NEIGHBOURS9) {
                 Mob m = level.getMobAtCell(i + cell);
-                if (m != null && !MobItem.validPlacement(m, level, m.pos)) {
+                if (m != null && MobItem.invalidPlacement(m, level, m.pos)) {
                     ActionPart p = new MobActionPart.Remove(m);
                     addActionPart(p);
                     p.redo();
                 }
             }
 
-            if (!ItemItem.validPlacement(cell, level)) {
+            if (ItemItem.invalidPlacement(cell, level)) {
                 Heap h = level.heaps.get(cell);
                 if (h != null) {
                     ActionPart p = new HeapActionPart.Remove(h);

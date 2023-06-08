@@ -24,7 +24,6 @@ package com.alphadraxonis.sandboxpixeldungeon.levels;
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Challenges;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
-import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.Statistics;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
@@ -949,7 +948,7 @@ public abstract class Level implements Bundlable {
                 GameScene.add(heap);
             }
 
-        } else if (heap.type == Heap.Type.LOCKED_CHEST || heap.type == Heap.Type.CRYSTAL_CHEST) {
+        } else if (!CustomDungeon.isEditing() && ( heap.type == Heap.Type.LOCKED_CHEST || heap.type == Heap.Type.CRYSTAL_CHEST)) {
 
             int n;
             do {
@@ -961,7 +960,7 @@ public abstract class Level implements Bundlable {
             heap.drop(item);
         }
 
-        if (SandboxPixelDungeon.scene() instanceof GameScene) {
+        if (!CustomDungeon.isEditing()) {
             pressCell(cell);
         }
 

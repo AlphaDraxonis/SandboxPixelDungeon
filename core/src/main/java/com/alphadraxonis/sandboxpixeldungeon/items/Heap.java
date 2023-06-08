@@ -143,11 +143,7 @@ public class Heap implements Bundlable {
             return null;
         }
         Item item = items.removeFirst();
-        if (items.isEmpty()) {
-            destroy();
-        } else if (sprite != null) {
-            sprite.view(this).place(pos);
-        }
+        updateAfterRemovalOfItems();
 
         return item;
     }
@@ -206,10 +202,37 @@ public class Heap implements Bundlable {
 
     public void remove(Item a) {
         items.remove(a);
+        updateAfterRemovalOfItems();
+    }
+
+    public void remove(Item item, int quantity) {
+
+        if (item.stackable && type != Type.FOR_SALE) {
+
+            for (Item i : items) {
+                if (i.isSimilar(item)) {
+                    i.quantity -= quantity;
+                    if (i.quantity <= 0) {
+                        remove(i);
+                        updateAfterRemovalOfItems();
+                        return;
+                    } else {
+                        updateSubicon();
+                        return;
+                    }
+                }
+            }
+            items.remove(item);
+        }
+        remove(item);
+        updateAfterRemovalOfItems();
+    }
+    private void updateAfterRemovalOfItems(){
         if (items.isEmpty()) {
             destroy();
         } else if (sprite != null) {
             sprite.view(this).place(pos);
+            updateSubicon();
         }
     }
 

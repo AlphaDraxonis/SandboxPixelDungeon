@@ -7,7 +7,9 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.HeapActionPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.ItemActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -84,13 +86,14 @@ public class ItemItem extends EditorItem {
 
         CustomLevel level = EditorScene.customLevel();
 
-        if (!validPlacement(cell, level)) return;
+        if (invalidPlacement(cell, level)) return;
 
         Item i = item().getCopy();
 
         i.image = CustomDungeon.getDungeon().getItemSpriteOnSheet(i);
 
-        level.drop(i, cell);
+        Undo.addActionPart(place(i, cell));
+//        level.drop(i, cell);
 
         //TODO remove highGrass?
     }
@@ -114,25 +117,34 @@ public class ItemItem extends EditorItem {
         return item().name();
     }
 
-    public static boolean validPlacement(int cell, CustomLevel level){
+    public static boolean invalidPlacement(int cell, CustomLevel level) {
 //        return level.passable[cell];
-        return !level.solid[cell] && !level.pit[cell];
+        return level.solid[cell] || level.pit[cell];
     }
 
-    public static boolean removeItem(int cell, CustomLevel level) {
+    public static ItemActionPart remove(int cell, CustomLevel level) {
         Heap heap = level.heaps.get(cell);
         if (heap != null) {
-            heap.items.removeFirst();
-            if (heap.items.isEmpty()) heap.destroy();
-            else{
-                heap.sprite.link();
-                heap.updateSubicon();
-                EditorScene.updateHeapImage(heap);
-            }
-            return true;
+            return new ItemActionPart.Remove(heap.items.peek(), cell);
+//            heap.items.removeFirst();
+//            if (heap.items.isEmpty()) heap.destroy();
+//            else{
+//                heap.sprite.link();
+//                heap.updateSubicon();
+//                EditorScene.updateHeapImage(heap);
+//            }
+//            return true;
         }
-        return false;
+        return null;
     }
+
+    public static ItemActionPart.Place place(Item item, int cell) {
+        if (item != null) {
+            return new ItemActionPart.Place(item, cell);
+        }
+        return null;
+    }
+
 
     public static HeapActionPart.Remove remove(Heap heap) {
         if (heap != null) {
@@ -140,11 +152,13 @@ public class ItemItem extends EditorItem {
         }
         return null;
     }
-    public static HeapActionPart.Place place(Heap heap){
+
+    public static HeapActionPart.Place place(Heap heap) {
         if (heap != null) return new HeapActionPart.Place(heap);
         return null;
     }
-    public static HeapActionPart.Place place(Heap heap, int cell){
+
+    public static HeapActionPart.Place place(Heap heap, int cell) {
         if (heap != null) {
             heap.pos = cell;
             return new HeapActionPart.Place(heap);

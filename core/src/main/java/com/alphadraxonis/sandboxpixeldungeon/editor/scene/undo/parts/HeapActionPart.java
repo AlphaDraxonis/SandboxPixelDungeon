@@ -28,7 +28,6 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
     protected void remove() {
         heap = EditorScene.customLevel().heaps.get(cell,heap);//This is because another place action could swap the actual heap with another copy
         heap.destroy();
-        Dungeon.level.heaps.remove(heap.pos);
     }
 
     public static final class Place extends HeapActionPart {
