@@ -1,6 +1,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.scene;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
 import com.watabou.noosa.Image;
@@ -11,7 +12,8 @@ public class UndoPane extends Component {
 
     private Image bg;
 
-    private Button btnUndo, btnRedo;
+    private UndoButton btnUndo;
+    private RedoButton btnRedo;
 
     public static final int WIDTH = 48;//1.5 scale of menu pane
 
@@ -28,6 +30,8 @@ public class UndoPane extends Component {
 
         btnRedo = new RedoButton();
         add(btnRedo);
+
+        updateStates();
     }
 
     @Override
@@ -44,18 +48,53 @@ public class UndoPane extends Component {
         PixelScene.align(btnRedo);
     }
 
-    private static class UndoButton extends Button {
+    public void updateStates(){
+        btnUndo.enable(Undo.canUndo());
+        btnRedo.enable(Undo.canRedo());
+    }
 
-        private Image enabled, disabled;//Need to have same size!
+    private static abstract class Btn extends Button{
 
-        public UndoButton() {
-            super();
+        protected Image enabled, disabled;//Both need to have same size!
 
+        public Btn(){
             width = enabled.width;
             height = disabled.height;
-
-            enable(true);
         }
+
+        @Override
+        protected void layout() {
+            enabled.x = disabled.x = x;
+            enabled.y = disabled.y = y;
+            hotArea.x = x - 2;
+            hotArea.y = y - 2;
+            hotArea.width = width + 3;
+            hotArea.height = height + 4;
+        }
+
+        @Override
+        protected void onPointerDown() {
+            if (enabled.visible) enabled.brightness(1.3f);
+            else disabled.brightness(1.3f);
+            Sample.INSTANCE.play(Assets.Sounds.CLICK);
+        }
+
+        @Override
+        protected void onPointerUp() {
+            enabled.resetColor();
+            disabled.resetColor();
+        }
+
+        protected void enable(boolean value) {
+            enabled.visible = value;
+            disabled.visible = !value;
+        }
+
+        protected abstract void onClick();
+    }
+
+    private static class UndoButton extends Btn {
+
 
 //        @Override
 //        public GameAction keyAction() {
@@ -73,55 +112,21 @@ public class UndoPane extends Component {
             add(disabled);
         }
 
-        @Override
-        protected void layout() {
-            super.layout();
 
-            enabled.x = disabled.x = x;
-            enabled.y = disabled.y = y;
-        }
-
-        @Override
-        protected void onPointerDown() {
-            if (enabled.visible) enabled.brightness(1.3f);
-            else disabled.brightness(1.3f);
-            Sample.INSTANCE.play(Assets.Sounds.CLICK);
-        }
-
-        @Override
-        protected void onPointerUp() {
-            enabled.resetColor();
-            disabled.resetColor();
-        }
 
         @Override
         protected void onClick() {
-            enable(!enabled.visible);
+            if (Undo.canUndo()) Undo.undo();
         }
 
         //        @Override
 //        protected String hoverText() {
 //            return Messages.titleCase(Messages.get(WndKeyBindings.class, "journal"));
 //        }
-        private void enable(boolean value) {
-            enabled.visible = value;
-            disabled.visible = !value;
-        }
 
     }
 
-    private static class RedoButton extends Button {
-
-        private Image enabled, disabled;//Need to have same size!
-
-        public RedoButton() {
-            super();
-
-            width = enabled.width;
-            height = disabled.height;
-
-            enable(true);
-        }
+    private static class RedoButton extends Btn {
 
 //        @Override
 //        public GameAction keyAction() {
@@ -140,39 +145,14 @@ public class UndoPane extends Component {
         }
 
         @Override
-        protected void layout() {
-            super.layout();
-
-            enabled.x = disabled.x = x;
-            enabled.y = disabled.y = y;
-        }
-
-        @Override
-        protected void onPointerDown() {
-            if (enabled.visible) enabled.brightness(1.2f);
-            else disabled.brightness(0.8f);
-            Sample.INSTANCE.play(Assets.Sounds.CLICK);
-        }
-
-        @Override
-        protected void onPointerUp() {
-            enabled.resetColor();
-            disabled.resetColor();
-        }
-
-        @Override
         protected void onClick() {
-            enable(!enabled.visible);
+            if (Undo.canRedo()) Undo.redo();
         }
 
         //        @Override
 //        protected String hoverText() {
 //            return Messages.titleCase(Messages.get(WndKeyBindings.class, "journal"));
 //        }
-        private void enable(boolean value) {
-            enabled.visible = value;
-            disabled.visible = !value;
-        }
 
     }
 

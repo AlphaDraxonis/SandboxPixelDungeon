@@ -6,6 +6,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
@@ -136,7 +137,7 @@ public abstract class EditorItem extends Item {
             if (mob != null) MobItem.removeMob(mob);
             else {
                 if (!ItemItem.removeItem(cell, level) && !TrapItem.removeTrap(cell, level))
-                    level.setCell(cell, Terrain.EMPTY);
+                    Undo.addActionPart(level.setCell(cell, Terrain.EMPTY));
             }
         }
 

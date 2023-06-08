@@ -10,6 +10,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditTileComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -67,7 +68,7 @@ public class TileItem extends EditorItem {
 
     @Override
     public void place(int cell) {
-        EditorScene.customLevel().setCell(cell, terrainType());
+        Undo.addActionPart(EditorScene.customLevel().setCell(cell, terrainType()));
     }
 
 

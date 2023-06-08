@@ -16,6 +16,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.overview.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.EditorCellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.TerrainFeaturesTilemapEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.UndoPane;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.effects.EmoIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -120,9 +121,12 @@ public class EditorScene extends PixelScene {
     }
 
     public static void open(CustomLevel customLevel) {
-        if (EditorScene.customLevel != null && customLevel != EditorScene.customLevel) {
-            EditorScene.customLevel.levelScheme.unloadLevel();
+        if (customLevel != EditorScene.customLevel) {
+            if (EditorScene.customLevel != null) {
+                EditorScene.customLevel.levelScheme.unloadLevel();
+            }
             mainCameraPos = null;
+            Undo.reset();
         }
         EditorScene.customLevel = customLevel;
         Dungeon.levelName = customLevel.name;
@@ -151,9 +155,9 @@ public class EditorScene extends PixelScene {
         Camera.main.edgeScroll.set(1);
         if (mainCameraPos != null) Camera.main.scroll = mainCameraPos;
         else {//FIXME point to middle! WICHTIG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            PointF to = new PointF(Camera.main.zoom/85f/16f*2f,Camera.main.zoom/85f/16f*2);
-            Camera.main.scroll.x = 85*8 / 2 - 200;
-            Camera.main.scroll.y = Camera.main.width/2f ;
+            PointF to = new PointF(Camera.main.zoom / 85f / 16f * 2f, Camera.main.zoom / 85f / 16f * 2);
+            Camera.main.scroll.x = 85 * 8 / 2 - 200;
+            Camera.main.scroll.y = Camera.main.width / 2f;
             mainCameraPos = Camera.main.scroll;
         }
 
@@ -535,7 +539,11 @@ public class EditorScene extends PixelScene {
     public static void updateDepthIcon() {
         if (scene == null) return;
         scene.menu.updateDepthIcon();
+    }
 
+    public static void updateUndoButtons() {
+        if (scene == null) return;
+        scene.undo.updateStates();
     }
 
     public static boolean interfaceBlockingHero() {

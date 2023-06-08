@@ -76,7 +76,8 @@ public class MobItem extends EditorItem {
     public static boolean validPlacement(Mob mob, CustomLevel level, int cell) {
         return level.passable[cell]
                 && (!Char.hasProp(mob, Char.Property.LARGE) || level.openSpace[cell])
-                && (!(mob instanceof Piranha) || level.water[cell]);
+                && (!(mob instanceof Piranha) || level.water[cell])
+                ;//&& level.map[cell] != Terrain.DOOR;//TODO make placement on doors possible
     }
 
     public static boolean removeMob(Mob mob) {

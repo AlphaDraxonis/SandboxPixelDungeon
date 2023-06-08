@@ -2,6 +2,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.scene;
 
 import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.input.GameAction;
@@ -114,5 +115,25 @@ public class EditorCellSelector extends CellSelector {
         if (action == SPDAction.W) return -1;
         if (action == SPDAction.NW) return -11;
         else return 0;
+    }
+
+    @Override
+    protected void onPointerDown(PointerEvent event) {
+        Undo.startAction();
+        super.onPointerDown(event);
+    }
+
+    @Override
+    protected void onPointerUp(PointerEvent event) {
+        super.onPointerUp(event);
+        Undo.endAction();
+    }
+
+    @Override
+    protected void onClick(PointerEvent event) {
+        //onPointerUp() is called before so we just start a new action bc empty actions are filtered anyway
+        Undo.startAction();
+        super.onClick(event);
+        Undo.endAction();
     }
 }
