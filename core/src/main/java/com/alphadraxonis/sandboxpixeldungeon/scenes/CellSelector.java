@@ -94,6 +94,7 @@ public class CellSelector extends ScrollArea {
     protected void onClick(PointerEvent event) {
         if (dragging) {
             dragging = false;
+            wasJustDragClicking = false;
         } else if (wasJustDragClicking) {
             wasJustDragClicking = false;
         } else handleClick(event);
