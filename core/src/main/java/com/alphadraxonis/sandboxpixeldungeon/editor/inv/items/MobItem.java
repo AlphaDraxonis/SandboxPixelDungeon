@@ -9,6 +9,8 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditMobComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 
@@ -50,18 +52,14 @@ public class MobItem extends EditorItem {
 
     @Override
     public void place(int cell) {
-
         CustomLevel level = EditorScene.customLevel();
         Mob mob = (Mob) mob().getCopy();
 
         if (!validPlacement(mob, level, cell)) return;
 
-        removeMob(level.getMobAtCell(cell));
+        Undo.addActionPart(remove(level.getMobAtCell(cell)));
 
-        mob.pos = cell;
-        EditorScene.add(mob);
-
-        level.occupyCell(mob);
+        Undo.addActionPart(place(mob,cell));
     }
 
     @Override
@@ -74,19 +72,27 @@ public class MobItem extends EditorItem {
     }
 
     public static boolean validPlacement(Mob mob, CustomLevel level, int cell) {
-        return level.passable[cell]
+        return !level.solid[cell] && !level.pit[cell]
                 && (!Char.hasProp(mob, Char.Property.LARGE) || level.openSpace[cell])
                 && (!(mob instanceof Piranha) || level.water[cell])
-                ;//&& level.map[cell] != Terrain.DOOR;//TODO make placement on doors possible
+                ;//&& level.map[cell] != Terrain.DOOR;//TODO make placement on doors possible FIXME WICHTIG
     }
 
-    public static boolean removeMob(Mob mob) {
+    public static MobActionPart.Remove remove(Mob mob) {
         if (mob != null) {
-            mob.destroy();
-            mob.sprite.hideEmo();
-            mob.sprite.killAndErase();
-            return true;
+            return new MobActionPart.Remove(mob);
         }
-        return false;
+        return null;
+    }
+    public static MobActionPart.Place place(Mob mob){
+        if (mob != null) return new MobActionPart.Place(mob);
+        return null;
+    }
+    public static MobActionPart.Place place(Mob mob, int cell){
+        if (mob != null) {
+            mob.pos = cell;
+            return new MobActionPart.Place(mob);
+        }
+        return null;
     }
 }

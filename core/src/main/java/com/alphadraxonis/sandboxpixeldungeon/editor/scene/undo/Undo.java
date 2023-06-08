@@ -27,15 +27,18 @@ public final class Undo {
     }
 
     public static void addActionPart(ActionPart part) {
-        if (part != null && !undoStack.isEmpty()) {
+        if (part != null &&
+                (!(part instanceof ActionPartList) || !((ActionPartList) part).isEmpty()) &&
+                !undoStack.isEmpty()) {
             ActionPartList currentAction = undoStack.peek();
             currentAction.addActionPart(part);
         }
     }
 
     public static void addActionPart(ActionPartList part) {
-        if (part != null && !part.isEmpty()) {
-            addActionPart((ActionPart) part);
+        if (part != null && !part.isEmpty() && !undoStack.isEmpty()) {
+            ActionPartList currentAction = undoStack.peek();
+            currentAction.addActionPart(part);
         }
     }
 

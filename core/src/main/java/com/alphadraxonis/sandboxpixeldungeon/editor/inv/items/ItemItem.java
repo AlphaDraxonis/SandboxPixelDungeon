@@ -7,6 +7,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.HeapActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -83,7 +84,7 @@ public class ItemItem extends EditorItem {
 
         CustomLevel level = EditorScene.customLevel();
 
-        if (!level.passable[cell]) return;
+        if (!validPlacement(cell, level)) return;
 
         Item i = item().getCopy();
 
@@ -113,13 +114,9 @@ public class ItemItem extends EditorItem {
         return item().name();
     }
 
-    public static boolean removeHeap(int cell, CustomLevel level) {
-        Heap heap = level.heaps.get(cell);
-        if (heap != null) {
-            heap.destroy();
-            return true;
-        }
-        return false;
+    public static boolean validPlacement(int cell, CustomLevel level){
+//        return level.passable[cell];
+        return !level.solid[cell] && !level.pit[cell];
     }
 
     public static boolean removeItem(int cell, CustomLevel level) {
@@ -135,5 +132,23 @@ public class ItemItem extends EditorItem {
             return true;
         }
         return false;
+    }
+
+    public static HeapActionPart.Remove remove(Heap heap) {
+        if (heap != null) {
+            return new HeapActionPart.Remove(heap);
+        }
+        return null;
+    }
+    public static HeapActionPart.Place place(Heap heap){
+        if (heap != null) return new HeapActionPart.Place(heap);
+        return null;
+    }
+    public static HeapActionPart.Place place(Heap heap, int cell){
+        if (heap != null) {
+            heap.pos = cell;
+            return new HeapActionPart.Place(heap);
+        }
+        return null;
     }
 }

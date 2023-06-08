@@ -7,6 +7,8 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditTrapComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TrapActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -83,13 +85,7 @@ public class TrapItem extends EditorItem {
 
     @Override
     public void place(int cell) {
-
-        CustomLevel level = EditorScene.customLevel();
-
-        Trap t = trap().getCopy();
-        level.map[cell] = t.visible ? (t.active ? Terrain.TRAP : Terrain.INACTIVE_TRAP) : Terrain.SECRET_TRAP;
-        level.setTrap(t, cell);
-        EditorScene.updateMap(cell);
+        Undo.addActionPart(place(trap().getCopy(), cell));
     }
 
     public static boolean removeTrap(int cell, CustomLevel level) {
@@ -110,5 +106,24 @@ public class TrapItem extends EditorItem {
 
     public Trap trap() {
         return trap;
+    }
+
+
+    public static TrapActionPart.Remove remove(Trap trap) {
+        if (trap != null) {
+            return new TrapActionPart.Remove(trap);
+        }
+        return null;
+    }
+    public static TrapActionPart.Place place(Trap trap){
+        if (trap != null) return new TrapActionPart.Place(trap);
+        return null;
+    }
+    public static TrapActionPart.Place place(Trap trap, int cell){
+        if (trap != null) {
+            trap.pos = cell;
+            return new TrapActionPart.Place(trap);
+        }
+        return null;
     }
 }

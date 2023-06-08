@@ -16,9 +16,9 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartList;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.HeapActionPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.PlaceCellActionPart;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.RemoveHeapActionPart;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.RemoveMobActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
@@ -82,7 +82,11 @@ public class TileItem extends EditorItem {
 
     @Override
     public void place(int cell) {
-        Undo.addActionPart(new PlaceTileActionPart(cell, terrainType()));
+        Undo.addActionPart(place(cell, terrainType()));
+    }
+
+    public static ActionPartList place(int cell, int terrainType) {
+        return new PlaceTileActionPart(cell, terrainType);
     }
 
 
@@ -95,14 +99,11 @@ public class TileItem extends EditorItem {
     }
 
 
-    private static class PlaceTileActionPart extends ActionPartList {
+    public static class PlaceTileActionPart extends ActionPartList {
 
         private final int cell;
         private final PlaceCellActionPart placeCell;
 
-        /**
-         * <b>Warning! Already performs a redo in constructor!</b>
-         */
         public PlaceTileActionPart(int cell, int terrainType) {
 
             CustomLevel level = EditorScene.customLevel();
@@ -115,9 +116,7 @@ public class TileItem extends EditorItem {
                 return;//no need to continue bc nothing changes at all
             }
 
-            placeCell = new PlaceCellActionPart(oldTerrain, terrainType, cell, level.traps.get(cell));
-            addActionPart(placeCell);
-            placeCell.redo();
+            addActionPart(placeCell = new PlaceCellActionPart(oldTerrain, terrainType, cell, level.traps.get(cell)));
 
             //Transition logic
 
@@ -211,16 +210,16 @@ public class TileItem extends EditorItem {
             for (int i : PathFinder.NEIGHBOURS9) {
                 Mob m = level.getMobAtCell(i + cell);
                 if (m != null && !MobItem.validPlacement(m, level, m.pos)) {
-                    ActionPart p = new RemoveMobActionPart(m);
+                    ActionPart p = new MobActionPart.Remove(m);
                     addActionPart(p);
                     p.redo();
                 }
             }
 
-            if (!level.passable[cell]) {
+            if (!ItemItem.validPlacement(cell, level)) {
                 Heap h = level.heaps.get(cell);
                 if (h != null) {
-                    ActionPart p = new RemoveHeapActionPart(h);
+                    ActionPart p = new HeapActionPart.Remove(h);
                     addActionPart(p);
                     p.redo();
                 }

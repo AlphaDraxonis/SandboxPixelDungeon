@@ -9,8 +9,10 @@ public class ActionPartList implements ActionPart {
     private final List<ActionPart> actions = new ArrayList<>(5);
 
     public void addActionPart(ActionPart part) {
-        if (part != null) actions.add(part);
+        if (part != null && (!(part instanceof ActionPartList) || !((ActionPartList) part).isEmpty()))
+            actions.add(part);
     }
+
     public void addActionPart(ActionPartList part) {
         if (part != null && !part.isEmpty()) actions.add(part);
     }
@@ -27,10 +29,11 @@ public class ActionPartList implements ActionPart {
         }
     }
 
-    protected void undoAction(ActionPart action){
+    protected void undoAction(ActionPart action) {
         action.undo();
     }
-    protected void redoAction(ActionPart action){
+
+    protected void redoAction(ActionPart action) {
         action.redo();
     }
 

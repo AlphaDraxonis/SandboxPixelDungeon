@@ -15,6 +15,8 @@ public class PlaceCellActionPart implements ActionPart {
         this.newTerrain = newTerrain;
         this.cell = cell;
         this.oldTrap = oldTrap;
+
+        redo();
     }
 
     @Override
@@ -26,6 +28,6 @@ public class PlaceCellActionPart implements ActionPart {
     @Override
     public void redo() {
         Level.set(cell, newTerrain);
-        //old traps already gets removed here
+        //old traps are already removed here
     }
 }

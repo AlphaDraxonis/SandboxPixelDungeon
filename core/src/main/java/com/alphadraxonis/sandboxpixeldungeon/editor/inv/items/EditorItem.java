@@ -1,11 +1,11 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.inv.items;
 
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -133,12 +133,12 @@ public abstract class EditorItem extends Item {
         @Override
         public void place(int cell) {
             CustomLevel level = EditorScene.customLevel();
-            Mob mob = level.getMobAtCell(cell);
-            if (mob != null) MobItem.removeMob(mob);
-            else {
-                if (!ItemItem.removeItem(cell, level) && !TrapItem.removeTrap(cell, level))
-                    Undo.addActionPart(level.setCell(cell, Terrain.EMPTY));
-            }
+            ActionPart part = MobItem.remove(level.getMobAtCell(cell));
+            //would be better if the if-statements were nested...
+//            if (part == null) part = ItemItem.removeItem(cell, level);//FIXME WICHTIG und easy
+            if (part == null) part = TrapItem.remove(level.traps.get(cell));
+            if (part == null) part = TileItem.place(cell, Terrain.EMPTY);
+            Undo.addActionPart(part);
         }
 
         @Override
