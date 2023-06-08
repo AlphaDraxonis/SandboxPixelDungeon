@@ -22,8 +22,6 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartList;
-import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.PlaceTileActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
@@ -681,68 +679,6 @@ public class CustomLevel extends Level {
         int w = width();
         int remain = cell % w;
         return cell < w || remain == 0 || remain == w - 1 || cell > height() * (w - 1);
-    }
-
-    public ActionPartList setCell(int cell, int terrainType) {
-//
-//        int oldTerrain = map[cell];
-//        set(cell, terrainType);
-//
-//        //Transition logic
-//        if (oldTerrain != terrainType) {
-//
-//            LevelTransition transition = transitions.get(cell);
-//
-//            if (terrainType == Terrain.ENTRANCE) {
-//                levelScheme.entranceCells.add((Integer) cell);
-//                levelScheme.exitCells.remove((Integer) cell);
-//                if (transition != null) {
-//                    transitions.remove(cell);
-//                    EditorScene.remove(transition);
-//                }
-//            } else {
-//
-//                if (oldTerrain == Terrain.ENTRANCE) {
-//                    levelScheme.entranceCells.remove((Integer) cell);
-//                    if (transition != null) {
-//                        transitions.remove(cell);
-//                        EditorScene.remove(transition);
-//                    }
-//                }
-//
-//                boolean wasExit = TileItem.isExitTerrainCell(oldTerrain);
-//                boolean nowExit = TileItem.isExitTerrainCell(terrainType);
-//                if (wasExit != nowExit) {
-//                    if (wasExit) {
-//                        levelScheme.exitCells.remove((Integer) cell);
-//                        if (transition != null) {
-//                            transitions.remove(cell);
-//                            EditorScene.remove(transition);
-//                        }
-//                    } else levelScheme.exitCells.add((Integer) cell);
-//                }
-//
-//            }
-//            Collections.sort(levelScheme.entranceCells);
-//            Collections.sort(levelScheme.exitCells);
-//        }
-//
-//        EditorScene.updateMap(cell);
-//
-//        for (int i : PathFinder.NEIGHBOURS9) {
-//            Mob m = getMobAtCell(i + cell);
-//            if (m != null && !MobItem.validPlacement(m, this, m.pos)) MobItem.removeMob(m);
-//        }
-//
-//        if (!passable[cell]) {
-//            Heap h = heaps.get(cell);
-//            if (h != null) {
-//                h.destroy();
-//                heaps.remove(cell);
-//            }
-//        }
-
-        return new PlaceTileActionPart(cell, terrainType);
     }
 
     public Mob getMobAtCell(int cell) {
