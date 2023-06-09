@@ -50,7 +50,7 @@ public enum Traps {
     GAS,
     WATER,
     FIRE,
-    ARROW,
+    DART,
     SPAWN,
     TELEPORT,
     EQUIPMENT;
@@ -85,7 +85,7 @@ public enum Traps {
                 BurningTrap.class,
                 ExplosiveTrap.class
         };
-        ARROW.classes = new Class[]{
+        DART.classes = new Class[]{
                 WornDartTrap.class,
                 PoisonDartTrap.class,
                 DisintegrationTrap.class,
@@ -160,7 +160,7 @@ public enum Traps {
             case FIRE:
                 t = new BurningTrap();
                 break;
-            case ARROW:
+            case DART:
                 t = new PoisonDartTrap();
                 break;
             case SPAWN:
