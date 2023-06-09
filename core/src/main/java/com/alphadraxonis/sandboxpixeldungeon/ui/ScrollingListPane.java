@@ -142,6 +142,10 @@ public class ScrollingListPane extends ScrollPane {
         }
 
         public ListItem(Image icon, String iconText, String text) {
+            this(icon, iconText, text, 1f);
+        }
+
+        public ListItem(Image icon, String iconText, String text, float iconTextScale) {
             super(icon);
 
             if (icon == null) {
@@ -154,6 +158,7 @@ public class ScrollingListPane extends ScrollPane {
 
             if (iconText != null) {
                 iconLabel.text(iconText);
+                iconLabel.scale.set(iconTextScale);
                 iconLabel.measure();
             }
         }
