@@ -59,6 +59,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
+import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.BatSprite;
@@ -181,7 +182,8 @@ public enum Mobs {
                 Shopkeeper.class,
                 RatKing.class,
 //                Ghost.class,
-                Sheep.class
+                Sheep.class,
+                WandOfRegrowth.Lotus.class
         };
 
         SPECIAL.classes = new Class[]{
