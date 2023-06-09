@@ -33,6 +33,7 @@ public class WndSelectDungeon extends Window {
     protected RedButton createNewDungeonBtn;
 
     private List<CustomDungeonSaves.Info> allInfos;
+    private Set<String> dungeonNames;
 
     public WndSelectDungeon(List<CustomDungeonSaves.Info> allInfos, boolean showAddButton) {
         this.allInfos = allInfos;
@@ -42,14 +43,14 @@ public class WndSelectDungeon extends Window {
         listPane = new ScrollingListPane();
         add(listPane);
 
-        Set<String> otherDungeonNames = new HashSet<>();
-        for (CustomDungeonSaves.Info info : allInfos) otherDungeonNames.add(info.name);
+        dungeonNames = new HashSet<>();
+        for (CustomDungeonSaves.Info info : allInfos) dungeonNames.add(info.name);
 
         if (showAddButton) {
             createNewDungeonBtn = new RedButton(Messages.get(WndSelectDungeon.class, "new")) {
                 @Override
                 protected void onClick() {
-                    Game.scene().addToFront(new WndNewDungeon(otherDungeonNames));
+                    Game.scene().addToFront(new WndNewDungeon(dungeonNames));
                 }
             };
             add(createNewDungeonBtn);
@@ -131,6 +132,7 @@ public class WndSelectDungeon extends Window {
                                 if (index == 0) {
                                     CustomDungeon.deleteDungeon(info.name);
                                     allInfos.remove(info);
+                                    dungeonNames.remove(info.name);
                                     updateList();
                                     WndInfoDungeon.this.hide();
                                 }

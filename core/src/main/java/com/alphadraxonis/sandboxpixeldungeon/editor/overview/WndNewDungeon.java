@@ -19,9 +19,9 @@ import java.util.Set;
 
 public class WndNewDungeon extends WndTextInput {
 
-    private final Set<String> otherNames;
 
-    public WndNewDungeon(Set<String> otherNames) {
+    private final Set<String> dungeonNames;
+    public WndNewDungeon(Set<String> dungeonNames) {
 
         super(
                 Messages.titleCase(Messages.get(WndNewDungeon.class,"title")),
@@ -33,13 +33,13 @@ public class WndNewDungeon extends WndTextInput {
                 Messages.get(WndNewDungeon.class,"no")
         );
 
-        this.otherNames = otherNames;
+        this.dungeonNames = dungeonNames;
     }
 
     @Override
     public void onSelect(boolean positive, String text) {
         if (positive && !text.isEmpty()) {
-            if (otherNames.contains(text)) showNameWarnig();
+            if (dungeonNames.contains(text)) showNameWarnig();
             else createAndOpenNewCustomDungeon(text);
         }
     }
