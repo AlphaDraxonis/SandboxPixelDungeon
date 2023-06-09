@@ -105,6 +105,8 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
             remove(trapAtCell);
 
             place((Trap) before.getCopy());
+
+            EditorScene.updateMap(before.pos);
         }
 
         @Override
@@ -114,6 +116,8 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
             if (trapAtCell != null) remove(trapAtCell);
 
             place((Trap) after.getCopy());
+
+            EditorScene.updateMap(after.pos);
 
         }
 
