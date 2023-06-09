@@ -187,14 +187,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         if (a.autoExplored != b.autoExplored) return false;
         if (a.haunted != b.haunted) return false;
         if (a.type != b.type) return false;
-        if (a.items == null && b.items == null) return true;
-        if (a.items == null || b.items == null) return false;
-        int index = 0;
-        for (Item item : a.items) {
-            if (!EditItemComp.areEqual(item, b.items.get(index))) return false;
-            index++;
-        }
-        return true;
+        return DefaultEditComp.isItemListEqual(a.items, b.items);
     }
 
 

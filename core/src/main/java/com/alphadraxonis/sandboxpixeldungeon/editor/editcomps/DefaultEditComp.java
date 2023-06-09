@@ -12,6 +12,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TileModify;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TrapActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
@@ -20,6 +21,8 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+
+import java.util.List;
 
 public abstract class DefaultEditComp<T> extends Component {
 
@@ -163,6 +166,18 @@ public abstract class DefaultEditComp<T> extends Component {
 
         EditorScene.show(w);
 
+    }
+
+
+    public static boolean isItemListEqual(List<Item> a, List<Item> b) {
+        if (a == null) return b == null || b.size() == 0;
+        if (b == null) return a.size() == 0;
+        int index = 0;
+        for (Item i : a) {
+            if (!EditItemComp.areEqual(i, b.get(index))) return false;
+            index++;
+        }
+        return true;
     }
 
 

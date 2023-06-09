@@ -29,7 +29,6 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class EditMobComp extends DefaultEditComp<Mob> {
 
@@ -198,10 +197,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (!EditItemComp.areEqual(((Statue) a).weapon, ((Statue) b).weapon)) return false;
             return !(a instanceof ArmoredStatue)
                     || EditItemComp.areEqual(((ArmoredStatue) a).armor, ((ArmoredStatue) b).armor);
-        }else if(a instanceof Thief){
+        } else if (a instanceof Thief) {
             return EditItemComp.areEqual(((Thief) a).item, ((Thief) b).item);
-        }else if(a instanceof Mimic){
-            return Objects.equals(((Mimic) a).items, ((Mimic) b).items);
+        } else if (a instanceof Mimic) {
+            return DefaultEditComp.isItemListEqual(((Mimic) a).items, ((Mimic) b).items);
         }
         return true;
     }

@@ -187,9 +187,11 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (a instanceof Weapon) {
             Weapon aa = (Weapon) a, bb = (Weapon) b;
             if (aa.augment != bb.augment) return false;
-            if (aa.enchantment == null) return bb.enchantment == null;
-            if (bb.enchantment == null) return false;
-            return aa.enchantment.getClass() == bb.enchantment.getClass();
+            return aa.enchantment == bb.enchantment
+                    || (aa.enchantment != null && bb.enchantment != null && aa.enchantment.getClass() == bb.enchantment.getClass());
+//            if (aa.enchantment == null && bb.enchantment == null) return true;
+//            if (aa.enchantment == null || bb.enchantment == null) return false;
+//            return aa.enchantment.getClass() == bb.enchantment.getClass();
         }
         if (a instanceof Armor) {
             Armor aa = (Armor) a, bb = (Armor) b;
