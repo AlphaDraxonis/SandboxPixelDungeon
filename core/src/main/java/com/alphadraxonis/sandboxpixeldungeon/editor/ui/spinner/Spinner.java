@@ -37,6 +37,7 @@ public class Spinner extends Component {
             @Override
             protected void onClick() {
                 setValue(getNextValue());
+                if (!isClickHolding()) afterClick();
             }
 
             @Override
@@ -47,13 +48,14 @@ public class Spinner extends Component {
             @Override
             protected void onPointerUp() {
                 super.onPointerUp();
-                Spinner.this.onPointerUp();
+                afterClick();
             }
         };
         leftButton = new RedButton("<") {
             @Override
             protected void onClick() {
                 setValue(getPreviousValue());
+                if (!isClickHolding()) afterClick();
             }
 
             @Override
@@ -64,7 +66,7 @@ public class Spinner extends Component {
             @Override
             protected void onPointerUp() {
                 super.onPointerUp();
-                Spinner.this.onPointerUp();
+                afterClick();
             }
         };
         inputField = model.createInputField((int) params[2]);
@@ -109,15 +111,15 @@ public class Spinner extends Component {
         width = Math.max(width, conW + title.width() + gap);
     }
 
-    public void enable( boolean value ) {
+    public void enable(boolean value) {
         active = value;
         rightButton.enable(value);
         leftButton.enable(value);
         getModel().enable(value);
-        title.alpha( value ? 1.0f : 0.3f );
+        title.alpha(value ? 1.0f : 0.3f);
     }
 
-    protected void onPointerUp() {
+    protected void afterClick() {
     }
 
     public float getAlignmentSpinnerX() {
@@ -232,9 +234,9 @@ public class Spinner extends Component {
             this.textOffsetY = textOffsetY;
         }
 
-        public  void enable(boolean value){
-            textBlock.alpha( value ? 1.0f : 0.3f );
-            textBlock.visible=value;
+        public void enable(boolean value) {
+            textBlock.alpha(value ? 1.0f : 0.3f);
+            textBlock.visible = value;
             bg.alpha(value ? 1.0f : 0.3f);
         }
 

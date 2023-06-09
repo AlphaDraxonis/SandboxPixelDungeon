@@ -215,6 +215,10 @@ public class Button extends Component {
         hotArea.onSignal(event);
     }
 
+    protected final boolean isClickHolding(){
+        return isclickHolding;
+    }
+
 
     private boolean isclickHolding = false;
     private float clicksToToWhileHolding;

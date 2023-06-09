@@ -8,6 +8,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.LotusLevelSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.MobStateSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Buffs;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
@@ -16,6 +17,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.ui.WndChooseOneInCategories;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
+import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.StatueSprite;
@@ -41,6 +43,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final RedButton addBuffs;
 
     private final ItemContainer mimicItems;
+    private final LotusLevelSpinner lotusLevelSpinner;
 
     private final Component[] comps;
 
@@ -115,6 +118,24 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         mobStateSpinner = new MobStateSpinner(mob);
         add(mobStateSpinner);
 
+        if (mob instanceof WandOfRegrowth.Lotus) {
+            WandOfRegrowth.Lotus lotus = (WandOfRegrowth.Lotus) mob;
+            lotusLevelSpinner = new LotusLevelSpinner(lotus) {
+                private int lastValueUpdated;
+
+                @Override
+                protected void updateDesc(boolean forceUpdate) {
+                    if (lastValueUpdated != lotus.getLvl() && (forceUpdate || lotus.getLvl() % 10 == 0)) {
+                        updateObj();
+                        lastValueUpdated = lotus.getLvl();
+                    }
+                }
+            };
+            add(lotusLevelSpinner);
+        } else {
+            lotusLevelSpinner = null;
+        }
+
         addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
             @Override
             protected void onClick() {
@@ -144,7 +165,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         };
         add(addBuffs);
 
-        comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, mobStateSpinner, addBuffs};
+        comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, mobStateSpinner, addBuffs};
     }
 
     @Override

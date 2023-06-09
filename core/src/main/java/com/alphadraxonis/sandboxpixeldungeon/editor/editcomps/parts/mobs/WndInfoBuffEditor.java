@@ -66,7 +66,7 @@ public class WndInfoBuffEditor extends WndTitledMessage {
             if (false) {//only apply permanent buffs for now
                 changeDuration = new Spinner(spinnerModel, " " + Messages.get(WndInfoBuffEditor.class, "duration"), 10) {
                     @Override
-                    protected void onPointerUp() {
+                    protected void afterClick() {
                         onSpinnerValueChange(true);
                     }
                 };

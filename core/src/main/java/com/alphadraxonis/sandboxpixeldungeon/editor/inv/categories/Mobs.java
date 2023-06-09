@@ -276,8 +276,11 @@ public enum Mobs {
             this.mobs = mobs;
             for (Class<?> m : mobs.classes) {
                 Mob mob = (Mob) Reflection.newInstance(m);
-                if (mob instanceof com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC || mob instanceof Mimic)
+                if (mob instanceof com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC || mob instanceof Mimic) {
                     mob.state = mob.PASSIVE;
+                    if (mob instanceof WandOfRegrowth.Lotus)
+                        ((WandOfRegrowth.Lotus) mob).setLevel(7);
+                }
                 mob.pos = -1;
                 items.add(new MobItem(mob));
             }

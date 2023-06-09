@@ -28,10 +28,8 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.PinCushion;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
-import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
-import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.Crossbow;
@@ -171,20 +169,14 @@ public abstract class TippedDart extends Dart {
 			}
 			targetPos = -1;
 		}
-		int p = -100;
-		if(CustomDungeon.isEditing()){
-			for(Heap heap :EditorScene.customLevel().heaps.valueList()){
-				if(heap.items.contains(this)){
-					p = heap.pos;
-					break;
-				}
-			}
-		} else p = curUser == null ? Dungeon.hero.pos : curUser.pos;
-		for (Char ch : Actor.chars()){
-			if (ch instanceof WandOfRegrowth.Lotus){
-				WandOfRegrowth.Lotus l = (WandOfRegrowth.Lotus) ch;
-				if (l.inRange(p)){
-					lotusPreserve = Math.max(lotusPreserve, l.seedPreservation());
+		if (!CustomDungeon.isEditing()) {
+			int p = curUser == null ? Dungeon.hero.pos : curUser.pos;
+			for (Char ch : Actor.chars()) {
+				if (ch instanceof WandOfRegrowth.Lotus) {
+					WandOfRegrowth.Lotus l = (WandOfRegrowth.Lotus) ch;
+					if (l.inRange(p)) {
+						lotusPreserve = Math.max(lotusPreserve, l.seedPreservation());
+					}
 				}
 			}
 		}

@@ -40,6 +40,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.mage.WildMagic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DwarfKing;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.effects.MagicMissile;
 import com.alphadraxonis.sandboxpixeldungeon.items.Dewdrop;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -413,7 +414,7 @@ public class WandOfRegrowth extends Wand {
 
 		private int wandLvl = 0;
 
-		private void setLevel( int lvl ){
+		public void setLevel( int lvl ){
 			wandLvl = lvl;
 			HP = HT = 25 + 3*lvl;
 		}
@@ -456,8 +457,10 @@ public class WandOfRegrowth extends Wand {
 		@Override
 		public void destroy() {
 			super.destroy();
-			Dungeon.observe();
-			GameScene.updateFog(pos, viewDistance+1);
+			if (!CustomDungeon.isEditing()) {
+				Dungeon.observe();
+				GameScene.updateFog(pos, viewDistance + 1);
+			}
 		}
 
 		@Override
@@ -494,6 +497,10 @@ public class WandOfRegrowth extends Wand {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			wandLvl = bundle.getInt(WAND_LVL);
+		}
+
+		public int getLvl(){
+			return wandLvl;
 		}
 	}
 
