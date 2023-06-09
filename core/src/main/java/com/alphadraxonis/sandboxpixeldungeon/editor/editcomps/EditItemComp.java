@@ -5,7 +5,9 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.Augume
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.CurseButton;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.WndChooseEnchant;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -14,6 +16,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.Artifact;
+import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.exotic.ScrollOfEnchantment;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
@@ -27,6 +30,10 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.IconTitle;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class EditItemComp extends DefaultEditComp<Item> {
 
     private final Heap heap;
@@ -39,6 +46,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected final CheckBox cursedKnown;
     protected final AugumentationSpinner augumentationSpinner;
     protected final RedButton enchantBtn;
+    protected final ChooseDestLevelComp keylevel;
 
     private final Component[] comps;
 
@@ -137,7 +145,24 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(augumentationSpinner);
         } else augumentationSpinner = null;
 
-        comps = new Component[]{quantity, levelSpinner, augumentationSpinner, curseBtn, cursedKnown, levelKnown, enchantBtn};
+        if (item instanceof Key) {
+            keylevel = new ChooseDestLevelComp(Messages.get(EditItemComp.class, "floor")) {
+                @Override
+                protected List<LevelScheme> filterLevels(Collection<LevelScheme> levels) {
+                    return new ArrayList<>(levels);
+                }
+
+                @Override
+                public void selectObject(Object object) {
+                    super.selectObject(object);
+                    ((Key) item).levelName = (String) object;
+                }
+            };
+            keylevel.selectObject(((Key) item).levelName);
+            add(keylevel);
+        } else keylevel = null;
+
+        comps = new Component[]{quantity, keylevel, levelSpinner, augumentationSpinner, curseBtn, cursedKnown, levelKnown, enchantBtn};
     }
 
     @Override
@@ -200,6 +225,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             if (bb.glyph == null) return false;
             return aa.glyph.getClass() == bb.glyph.getClass();
         }
+        if (a instanceof Key) return ((Key) a).levelName.equals(((Key) b).levelName);
         return true;
     }
 }
