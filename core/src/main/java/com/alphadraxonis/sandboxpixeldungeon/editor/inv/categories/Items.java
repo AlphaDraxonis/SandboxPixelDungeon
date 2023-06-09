@@ -62,6 +62,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.food.StewedMeat;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.CrystalKey;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.GoldenKey;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.IronKey;
+import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.SkeletonKey;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.Potion;
@@ -711,6 +712,8 @@ public enum Items {
         }
     }
 
+    private static final ItemBag bagWithKeys;
+
     static {
         bag.items.add(new ItemBag(Messages.get(Items.class,"melee"), WEAPON_HOLDER, MELEE_WEAPON.classes()));
         bag.items.add(new ItemBag(Messages.get(Items.class,"wand"), WAND_HOLDER, WAND.classes()));
@@ -725,7 +728,16 @@ public enum Items {
         bag.items.add(new ItemBag(Messages.get(Items.class,"potion"), POTION_HOLDER,  POTION.classes()));
         bag.items.add(new ItemBag(Messages.get(Items.class,"scroll"), SCROLL_HOLDER, SCROLL.classes()));
         bag.items.add(new ItemBag(Messages.get(Items.class,"alch"), SPELL_HOLDER, ALCHEMICAL.classes(), SPELL.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"other"), SOMETHING, KEY.classes(), OTHER.classes(), BAG.classes(), QUEST.classes()));
+        bag.items.add(bagWithKeys = new ItemBag(Messages.get(Items.class,"other"), SOMETHING, KEY.classes(), OTHER.classes(), BAG.classes(), QUEST.classes()));
+    }
+
+    public static void updateKeys(String oldLvlName, String newLvlName){
+        for(Item item : bagWithKeys){
+            Item i = ((ItemItem) item).item();
+            if(i instanceof Key && (oldLvlName == null || ((Key) i).levelName.equals(oldLvlName))){
+                ((Key) i).levelName = newLvlName;
+            }
+        }
     }
 
 }

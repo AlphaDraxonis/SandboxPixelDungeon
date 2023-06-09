@@ -26,6 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Wraith;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Shopkeeper;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
@@ -41,6 +42,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.food.FrozenCarpaccio;
 import com.alphadraxonis.sandboxpixeldungeon.items.food.MysteryMeat;
 import com.alphadraxonis.sandboxpixeldungeon.items.journal.DocumentPage;
 import com.alphadraxonis.sandboxpixeldungeon.items.journal.Guidebook;
+import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.Potion;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.RingOfWealth;
@@ -55,6 +57,7 @@ import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ItemSlot;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
@@ -492,7 +495,7 @@ public class Heap implements Bundlable {
 
 
     public Image subicon, forSaleIndicator;
-    public BitmapText quantityDisplay, heapSize, itemLvl;
+    public BitmapText quantityDisplay, heapSize, itemLvl, keyLevel;
 
     {
         initSubicons();
@@ -503,6 +506,7 @@ public class Heap implements Bundlable {
         quantityDisplay = new BitmapText(PixelScene.pixelFont);
         heapSize = new BitmapText(PixelScene.pixelFont);
         itemLvl = new BitmapText(PixelScene.pixelFont);
+        keyLevel = new BitmapText(PixelScene.pixelFont);
         forSaleIndicator = new Image();
         forSaleIndicator.copy(new ItemSprite(ItemSpriteSheet.GOLD));
     }
@@ -512,6 +516,7 @@ public class Heap implements Bundlable {
         quantityDisplay.kill();
         heapSize.kill();
         itemLvl.kill();
+        keyLevel.kill();
         forSaleIndicator.kill();
     }
 
@@ -520,6 +525,7 @@ public class Heap implements Bundlable {
         quantityDisplay.destroy();
         heapSize.destroy();
         itemLvl.destroy();
+        keyLevel.destroy();
         forSaleIndicator.destroy();
     }
 
@@ -529,6 +535,7 @@ public class Heap implements Bundlable {
         addTo.add(quantityDisplay);
         addTo.add(heapSize);
         addTo.add(itemLvl);
+        addTo.add(keyLevel);
         addTo.add(forSaleIndicator);
     }
 
@@ -643,6 +650,28 @@ public class Heap implements Bundlable {
                 itemLvl.text(null);
                 itemLvl.visible = false;
             }
+
+            if (i instanceof Key && !((Key) i).levelName.equals(EditorScene.customLevel().name)) {
+
+                keyLevel.visible = true;
+                keyLevel.scale.set(0.45f);
+
+                keyLevel.hardlight(Window.TITLE_COLOR);
+                keyLevel.text(((Key) i).levelName);
+                keyLevel.measure();
+
+                keyLevel.point(sprite.point());
+
+                keyLevel.x += (sprite.width() - keyLevel.width()) * 0.5f;
+                keyLevel.y += sprite.height() * 0.65f;
+
+                PixelScene.align(keyLevel);
+
+            } else {
+                keyLevel.text(null);
+                keyLevel.visible = false;
+            }
+
 
             if (type == Type.FOR_SALE) {
 

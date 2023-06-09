@@ -8,6 +8,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.WndEditorInv;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
@@ -121,19 +122,25 @@ public class EditorScene extends PixelScene {
         CustomDungeonSaves.setFileType(Files.FileType.External);
     }
 
+    private static boolean firstTimeOpening = true;
+
     public static void open(CustomLevel customLevel) {
         if (customLevel != EditorScene.customLevel) {
+            String oldLvlName;
             if (EditorScene.customLevel != null) {
+                oldLvlName = EditorScene.customLevel().name;
                 EditorScene.customLevel.levelScheme.unloadLevel();
-            }
+            } else oldLvlName = null;
             mainCameraPos = null;
             Undo.reset();
+            if (!firstTimeOpening) Items.updateKeys(oldLvlName, customLevel.name);
         }
         EditorScene.customLevel = customLevel;
         Dungeon.levelName = customLevel.name;
         Dungeon.customDungeon.setLastEditedFloor(customLevel.name);
         PathFinder.setMapSize(customLevel.width(), customLevel.height());
         SandboxPixelDungeon.switchNoFade(EditorScene.class);
+        firstTimeOpening = false;
     }
 
     @Override

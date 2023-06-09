@@ -156,6 +156,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 public void selectObject(Object object) {
                     super.selectObject(object);
                     ((Key) item).levelName = (String) object;
+                    updateObj();
                 }
             };
             keylevel.selectObject(((Key) item).levelName);
