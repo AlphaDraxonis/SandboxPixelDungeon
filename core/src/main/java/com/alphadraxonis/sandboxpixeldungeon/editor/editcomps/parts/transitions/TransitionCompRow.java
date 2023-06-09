@@ -218,7 +218,6 @@ public class TransitionCompRow extends Component {
         super.destroy();
         if(tileModify != null){
             tileModify.finish();
-            System.err.println(tileModify.hasContent());
             Undo.addActionPart(tileModify);
         }
     }

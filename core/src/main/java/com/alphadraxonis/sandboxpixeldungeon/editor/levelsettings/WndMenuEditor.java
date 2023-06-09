@@ -21,11 +21,8 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings;
 
-import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
-import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
-import com.alphadraxonis.sandboxpixeldungeon.editor.overview.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.TitleScene;
 import com.alphadraxonis.sandboxpixeldungeon.services.updates.Updates;
@@ -35,8 +32,6 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndGame;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndSettings;
 import com.watabou.noosa.Game;
-
-import java.io.IOException;
 
 //from WndGame
 public class WndMenuEditor extends Window {
@@ -78,12 +73,7 @@ public class WndMenuEditor extends Window {
         addButton(curBtn = new RedButton(Messages.get(WndGame.class, "menu")) {
             @Override
             protected void onClick() {
-                try {
-                    CustomDungeonSaves.saveLevel(EditorScene.customLevel());
-                    CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
-                } catch (IOException e) {
-                    SandboxPixelDungeon.reportException(e);
-                }
+                //no need to sve here bc EditorScene autosaves anyway
                 Game.switchScene(TitleScene.class);
             }
         });

@@ -456,7 +456,7 @@ public class CustomDungeon implements Bundlable {
         if (bundle.contains(COLOR_LABELS)) {
             potionColorLabels = new LinkedHashMap<>();
             String[] labels = bundle.getStringArray(COLOR_LABELS);
-            Class<? extends Potion>[] classes = bundle.getClassArray(COLOR_LABELS);
+            Class<? extends Potion>[] classes = bundle.getClassArray(COLOR_CLASSES);
             for (int i = 0; i < labels.length; i++) {
                 potionColorLabels.put(classes[i], labels[i]);
             }
