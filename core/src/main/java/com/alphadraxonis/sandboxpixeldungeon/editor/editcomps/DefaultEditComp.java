@@ -6,7 +6,10 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.HeapActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.MobActionPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TileModify;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TrapActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
@@ -115,19 +118,19 @@ public abstract class DefaultEditComp<T> extends Component {
         float newWidth = PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : WndTitledMessage.WIDTH_MIN;
 
         DefaultEditComp<?> content;
-        ActionPartModify actionPart;//FIXME actual assignments WICHTIG
+        ActionPartModify actionPart;
         if (tileItem != null) {
             content = new EditTileComp(tileItem);
-            actionPart = null;
+            actionPart = new TileModify(cell);
         } else if (heap != null) {
             content = new EditHeapComp(heap);
-            actionPart = null;
+            actionPart = new HeapActionPart.Modify(heap);
         } else if (mob != null) {
             content = new EditMobComp(mob);
             actionPart = new MobActionPart.Modify(mob);
         } else {
             content = new EditTrapComp(trap);
-            actionPart = null;
+            actionPart = new TrapActionPart.Modify(trap);
         }
 
         content.setRect(0, 0, newWidth, -1);
@@ -137,12 +140,10 @@ public abstract class DefaultEditComp<T> extends Component {
             @Override
             public void hide() {
                 super.hide();
-                if (actionPart != null) {
-                    actionPart.finish();
-                    Undo.startAction();
-                    Undo.addActionPart(actionPart);
-                    Undo.endAction();
-                }
+                actionPart.finish();
+                Undo.startAction();
+                Undo.addActionPart(actionPart);
+                Undo.endAction();
             }
         };
         w.add(sp);

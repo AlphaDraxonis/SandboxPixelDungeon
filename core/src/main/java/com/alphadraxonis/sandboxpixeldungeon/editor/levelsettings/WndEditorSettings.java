@@ -4,8 +4,10 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.GeneralTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items.ItemTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.mobs.EnemyTab;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTabbed;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -18,7 +20,7 @@ public class WndEditorSettings extends WndTabbed {
 //    public static final int WIDTH_L = 200;
 //    public static final int HEIGHT_L = 130;
     public static int calclulateWidth() {
-        return (int) Math.min(160, (int) (PixelScene.uiCamera.width * 0.9));
+        return (int) Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9));
     }
 
     public static int calclulateHeight() {
@@ -36,6 +38,8 @@ public class WndEditorSettings extends WndTabbed {
     public static int last_index = 0;
 
     public WndEditorSettings() {
+
+        Undo.startAction();
 
 //        int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 //        int height = PixelScene.landscape() ? HEIGHT_L : HEIGHT_P;
@@ -92,4 +96,9 @@ public class WndEditorSettings extends WndTabbed {
         protected abstract Image createIcon();
     }
 
+    @Override
+    public void destroy() {
+        super.destroy();
+        Undo.endAction();
+    }
 }

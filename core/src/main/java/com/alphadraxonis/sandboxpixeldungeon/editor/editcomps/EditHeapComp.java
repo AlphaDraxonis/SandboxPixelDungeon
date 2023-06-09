@@ -181,6 +181,22 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         height = posY - y - WndTitledMessage.GAP + 1;
     }
 
+    public static boolean areEqual(Heap a, Heap b) {
+        if (a == null || b == null) return false;
+        if (a.getClass() != b.getClass()) return false;
+        if (a.autoExplored != b.autoExplored) return false;
+        if (a.haunted != b.haunted) return false;
+        if (a.type != b.type) return false;
+        if (a.items == null && b.items == null) return true;
+        if (a.items == null || b.items == null) return false;
+        int index = 0;
+        for (Item item : a.items) {
+            if (!EditItemComp.areEqual(item, b.items.get(index))) return false;
+            index++;
+        }
+        return true;
+    }
+
 
     private class HeapTypeSpinner extends Spinner {
 
@@ -210,7 +226,8 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         protected String getAsString(Object value) {
             Heap.Type type = (Heap.Type) value;
             heap.type = type;
-            if (type == Heap.Type.HEAP) return Messages.get(EditHeapComp.class, "title_heap_open");
+            if (type == Heap.Type.HEAP)
+                return Messages.get(EditHeapComp.class, "title_heap_open");
             if (type == Heap.Type.FOR_SALE)
                 return Messages.get(EditHeapComp.class, "title_heap_for_sale");
             return heap.title();

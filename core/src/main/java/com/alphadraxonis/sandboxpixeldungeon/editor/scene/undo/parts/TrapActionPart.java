@@ -2,8 +2,10 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditTrapComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
 
@@ -19,10 +21,18 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
     }
 
     protected void place() {
-        Dungeon.level.setTrap(trap, trap.pos);
+        place(trap);
     }
 
     protected void remove() {
+        remove(trap);
+    }
+
+    protected static void place(Trap trap) {
+        Dungeon.level.setTrap(trap, trap.pos);
+    }
+
+    protected static void remove(Trap trap) {
         Dungeon.level.traps.remove(trap.pos);
     }
 
@@ -74,6 +84,47 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
             addActionPart(part);
             part.redo();
             EditorScene.updateMap(trap.pos);
+        }
+    }
+
+    public static final class Modify implements ActionPartModify {
+
+        private final Trap before;
+        private Trap after;
+
+        public Modify(Trap trap) {
+            before = (Trap) trap.getCopy();
+            after = trap;
+        }
+
+        @Override
+        public void undo() {
+
+            Trap trapAtCell = EditorScene.customLevel().traps.get(after.pos);
+
+            remove(trapAtCell);
+
+            place((Trap) before.getCopy());
+        }
+
+        @Override
+        public void redo() {
+            Trap trapAtCell = EditorScene.customLevel().traps.get(after.pos);
+
+            if (trapAtCell != null) remove(trapAtCell);
+
+            place((Trap) after.getCopy());
+
+        }
+
+        @Override
+        public boolean hasContent() {
+            return !EditTrapComp.areEqual(before, after);
+        }
+
+        @Override
+        public void finish() {
+            after = (Trap) after.getCopy();
         }
     }
 }

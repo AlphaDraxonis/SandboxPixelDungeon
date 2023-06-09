@@ -1,5 +1,6 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.inv.items;
 
+import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.ENTRANCE;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.EXIT;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.INACTIVE_TRAP;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.LOCKED_EXIT;
@@ -130,7 +131,7 @@ public class TileItem extends EditorItem {
             //Transition logic
             final boolean wasExit = TileItem.isExitTerrainCell(oldTerrain);
             final boolean nowExit = TileItem.isExitTerrainCell(terrainType);
-            if (wasExit || nowExit) {
+            if (wasExit || nowExit || oldTerrain == ENTRANCE || terrainType == ENTRANCE) {
 
                 final LevelTransition transition = level.transitions.get(cell);
                 final LevelScheme levelScheme = level.levelScheme;

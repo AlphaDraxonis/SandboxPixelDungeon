@@ -7,6 +7,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.HeapActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.ItemActionPart;
@@ -126,21 +127,13 @@ public class ItemItem extends EditorItem {
         Heap heap = level.heaps.get(cell);
         if (heap != null) {
             return new ItemActionPart.Remove(heap.items.peek(), cell);
-//            heap.items.removeFirst();
-//            if (heap.items.isEmpty()) heap.destroy();
-//            else{
-//                heap.sprite.link();
-//                heap.updateSubicon();
-//                EditorScene.updateHeapImage(heap);
-//            }
-//            return true;
         }
         return null;
     }
 
-    public static ItemActionPart.Place place(Item item, int cell) {
+    public static ActionPart place(Item item, int cell) {
         if (item != null) {
-            return new ItemActionPart.Place(item, cell);
+            return ItemActionPart.Place(item, cell);
         }
         return null;
     }

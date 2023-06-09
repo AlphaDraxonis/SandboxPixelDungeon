@@ -197,7 +197,7 @@ public class WndEditLevelInOverview extends Window {
         for (int cell : cells) {
             TransitionCompRow comp = transitionCompMap.get(cell);
             if (comp == null) {
-                comp = new TransitionCompRow(cell, levelScheme) {
+                comp = new TransitionCompRow(cell, levelScheme, false) {
                     @Override
                     protected void layoutParent() {
                         WndEditLevelInOverview.this.layout();

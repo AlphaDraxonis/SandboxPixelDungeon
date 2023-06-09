@@ -152,7 +152,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         for (int cell : cells) {
             TransitionCompRow comp = transitionCompMap.get(cell);
             if (comp == null) {
-                comp = new TransitionCompRow(cell, EditorScene.customLevel().levelScheme) {
+                comp = new TransitionCompRow(cell, EditorScene.customLevel().levelScheme, true) {
                     @Override
                     protected void layoutParent() {
                         TransitionTab.this.layout();

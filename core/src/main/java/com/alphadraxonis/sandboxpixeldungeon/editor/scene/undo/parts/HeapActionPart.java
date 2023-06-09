@@ -2,31 +2,39 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditHeapComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 
 public /*sealed*/ abstract class HeapActionPart implements ActionPart {
 
     private Heap heap, copyForUndo;
-    private final int cell;
 
     private HeapActionPart(Heap heap) {
         this.heap = heap;
-        this.cell = heap.pos;
         copyForUndo = (Heap) heap.getCopy();
-        
+
         redo();
     }
 
     protected void place() {
-        Dungeon.level.heaps.put(copyForUndo.pos, copyForUndo);
-        EditorScene.add(copyForUndo);
+        place(copyForUndo);
         heap = copyForUndo;
         copyForUndo = (Heap) heap.getCopy();
     }
 
     protected void remove() {
-        heap = EditorScene.customLevel().heaps.get(cell,heap);//This is because another place action could swap the actual heap with another copy
+        remove(heap);
+    }
+
+    protected static void place(Heap heap) {
+        Dungeon.level.heaps.put(heap.pos, heap);
+        EditorScene.add(heap);
+    }
+
+    protected static void remove(Heap heap) {
+        heap = EditorScene.customLevel().heaps.get(heap.pos, heap);//This is because another place action could swap the actual heap with another copy
         heap.destroy();
     }
 
@@ -65,6 +73,47 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
         @Override
         public void redo() {
             remove();
+        }
+    }
+
+    public static final class Modify implements ActionPartModify {
+
+        private final Heap before;
+        private Heap after;
+
+        public Modify(Heap heap) {
+            before = (Heap) heap.getCopy();
+            after = heap;
+        }
+
+        @Override
+        public void undo() {
+
+            Heap heapAtCell = EditorScene.customLevel().heaps.get(after.pos);
+
+            remove(heapAtCell);
+
+            place((Heap) before.getCopy());
+        }
+
+        @Override
+        public void redo() {
+            Heap heapAtCell = EditorScene.customLevel().heaps.get(after.pos);
+
+            if (heapAtCell != null) remove(heapAtCell);
+
+            place((Heap) after.getCopy());
+
+        }
+
+        @Override
+        public boolean hasContent() {
+            return !EditHeapComp.areEqual(before, after);
+        }
+
+        @Override
+        public void finish() {
+            after = (Heap) after.getCopy();
         }
     }
 }
