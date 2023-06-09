@@ -119,14 +119,14 @@ public class EditorCellSelector extends CellSelector {
 
     @Override
     protected void onPointerDown(PointerEvent event) {
-        Undo.startAction();
+        if (!EditorScene.interfaceBlockingHero()) Undo.startAction();
         super.onPointerDown(event);
     }
 
     @Override
     protected void onPointerUp(PointerEvent event) {
         super.onPointerUp(event);
-        Undo.endAction();
+        if (!EditorScene.interfaceBlockingHero()) Undo.endAction();
     }
 
     @Override

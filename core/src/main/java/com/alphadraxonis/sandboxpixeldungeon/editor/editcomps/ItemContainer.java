@@ -75,6 +75,7 @@ public class ItemContainer extends Component { // needs access to protected meth
 
                     @Override
                     public void onSelect(Item item) {
+                        if (item == null) return;
                         if (item instanceof ItemItem) item = ((ItemItem) item).item();
                         item = item.getCopy();
                         int sizePrev = itemList.size();
