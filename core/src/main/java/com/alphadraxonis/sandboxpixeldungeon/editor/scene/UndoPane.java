@@ -1,9 +1,13 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.scene;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
+import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndKeyBindings;
+import com.watabou.input.GameAction;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
@@ -48,16 +52,16 @@ public class UndoPane extends Component {
         PixelScene.align(btnRedo);
     }
 
-    public void updateStates(){
+    public void updateStates() {
         btnUndo.enable(Undo.canUndo());
         btnRedo.enable(Undo.canRedo());
     }
 
-    private static abstract class Btn extends Button{
+    private static abstract class Btn extends Button {
 
         protected Image enabled, disabled;//Both need to have same size!
 
-        public Btn(){
+        public Btn() {
             width = enabled.width;
             height = disabled.height;
         }
@@ -74,9 +78,10 @@ public class UndoPane extends Component {
 
         @Override
         protected void onPointerDown() {
-            if (enabled.visible) enabled.brightness(1.3f);
-            else disabled.brightness(1.3f);
-            Sample.INSTANCE.play(Assets.Sounds.CLICK);
+            if (enabled.visible) {
+                enabled.brightness(1.1f);
+                Sample.INSTANCE.play(Assets.Sounds.CLICK, 0.6f);
+            }//else Sample.INSTANCE.play(Assets.Sounds.CLICK, 0.6f); TODO maybe play another sound?
         }
 
         @Override
@@ -96,10 +101,10 @@ public class UndoPane extends Component {
     private static class UndoButton extends Btn {
 
 
-//        @Override
-//        public GameAction keyAction() {
-//            return SPDAction.JOURNAL;
-//        }
+        @Override
+        public GameAction keyAction() {
+            return SPDAction.UNDO;
+        }
 
         @Override
         protected void createChildren(Object... params) {
@@ -113,25 +118,24 @@ public class UndoPane extends Component {
         }
 
 
-
         @Override
         protected void onClick() {
             if (Undo.canUndo()) Undo.undo();
         }
 
-        //        @Override
-//        protected String hoverText() {
-//            return Messages.titleCase(Messages.get(WndKeyBindings.class, "journal"));
-//        }
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(WndKeyBindings.class, "undo"));
+        }
 
     }
 
     private static class RedoButton extends Btn {
 
-//        @Override
-//        public GameAction keyAction() {
-//            return SPDAction.JOURNAL;
-//        }
+        @Override
+        public GameAction keyAction() {
+            return SPDAction.REDO;
+        }
 
         @Override
         protected void createChildren(Object... params) {
@@ -149,10 +153,10 @@ public class UndoPane extends Component {
             if (Undo.canRedo()) Undo.redo();
         }
 
-        //        @Override
-//        protected String hoverText() {
-//            return Messages.titleCase(Messages.get(WndKeyBindings.class, "journal"));
-//        }
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(WndKeyBindings.class, "redo"));
+        }
 
     }
 
