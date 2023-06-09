@@ -284,6 +284,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             if (level == null) {
                 try {
                     level = CustomDungeonSaves.loadLevel(name);
+                    ((CustomLevel)level).initForPlay();
                 } catch (IOException e) {
                     SandboxPixelDungeon.reportException(e);
                 }
