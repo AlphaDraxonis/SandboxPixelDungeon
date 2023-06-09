@@ -126,12 +126,12 @@ public class CavesLevel extends RegularLevel {
 	}
 	
 	@Override
-	public String tileDesc( int tile ) {
+	public String tileDesc( int tile, int cell ) {
 		switch (tile) {
 			case Terrain.ENTRANCE:
-				return Messages.get(CavesLevel.class, "entrance_desc");
+				return Messages.get(CavesLevel.class, "entrance_desc") + appendNoTransWarning(cell);
 			case Terrain.EXIT:
-				return Messages.get(CavesLevel.class, "exit_desc");
+				return Messages.get(CavesLevel.class, "exit_desc") + appendNoTransWarning(cell);
 			case Terrain.HIGH_GRASS:
 				return Messages.get(CavesLevel.class, "high_grass_desc");
 			case Terrain.WALL_DECO:
@@ -139,7 +139,7 @@ public class CavesLevel extends RegularLevel {
 			case Terrain.BOOKSHELF:
 				return Messages.get(CavesLevel.class, "bookshelf_desc");
 			default:
-				return super.tileDesc( tile );
+				return super.tileDesc( tile, cell );
 		}
 	}
 	

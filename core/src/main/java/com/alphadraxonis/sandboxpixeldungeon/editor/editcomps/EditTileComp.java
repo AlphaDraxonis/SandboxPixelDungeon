@@ -100,6 +100,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         height = pos - y - WndTitledMessage.GAP + 1;
     }
 
+
     @Override
     protected Component createTitle() {
         return new IconTitle(getIcon(), createTitleText());
@@ -112,7 +113,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     @Override
     protected String createDescription() {
         CustomLevel level = EditorScene.customLevel();
-        String desc = level.tileDesc(obj.terrainType());
+        String desc = level.tileDesc(obj.terrainType(), obj.cell());
         return desc.length() == 0 ? Messages.get(WndInfoCell.class, "nothing") : desc;
     }
 

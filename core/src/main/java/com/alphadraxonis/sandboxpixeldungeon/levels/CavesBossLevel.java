@@ -400,15 +400,15 @@ public class CavesBossLevel extends Level {
 	}
 
 	@Override
-	public String tileDesc( int tile ) {
+	public String tileDesc( int tile, int cell ) {
 		switch (tile) {
 			case Terrain.WATER:
-				return super.tileDesc( tile ) + "\n\n" + Messages.get(CavesBossLevel.class, "water_desc");
+				return super.tileDesc( tile, cell ) + "\n\n" + Messages.get(CavesBossLevel.class, "water_desc");
 			case Terrain.ENTRANCE:
-				return Messages.get(CavesLevel.class, "entrance_desc");
+				return Messages.get(CavesLevel.class, "entrance_desc") + appendNoTransWarning(cell);
 			case Terrain.EXIT:
 				//city exit is used
-				return Messages.get(CityLevel.class, "exit_desc");
+				return Messages.get(CityLevel.class, "exit_desc") + appendNoTransWarning(cell);
 			case Terrain.HIGH_GRASS:
 				return Messages.get(CavesLevel.class, "high_grass_desc");
 			case Terrain.WALL_DECO:
@@ -419,7 +419,7 @@ public class CavesBossLevel extends Level {
 			case Terrain.STATUE:
 				return Messages.get(CityLevel.class, "statue_desc");
 			default:
-				return super.tileDesc( tile );
+				return super.tileDesc( tile, cell );
 		}
 	}
 

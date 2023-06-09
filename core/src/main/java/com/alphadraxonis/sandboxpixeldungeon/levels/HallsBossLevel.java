@@ -324,7 +324,7 @@ public class HallsBossLevel extends Level {
 	}
 
 	@Override
-	public String tileDesc(int tile) {
+	public String tileDesc(int tile, int cell) {
 		switch (tile) {
 			case Terrain.WATER:
 				return Messages.get(HallsLevel.class, "water_desc");
@@ -334,7 +334,7 @@ public class HallsBossLevel extends Level {
 			case Terrain.BOOKSHELF:
 				return Messages.get(HallsLevel.class, "bookshelf_desc");
 			default:
-				return super.tileDesc( tile );
+				return super.tileDesc( tile, cell );
 		}
 	}
 

@@ -127,12 +127,12 @@ public class CityLevel extends RegularLevel {
 	}
 	
 	@Override
-	public String tileDesc(int tile) {
+	public String tileDesc(int tile, int cell) {
 		switch (tile) {
 			case Terrain.ENTRANCE:
-				return Messages.get(CityLevel.class, "entrance_desc");
+				return Messages.get(CityLevel.class, "entrance_desc") + appendNoTransWarning(cell);
 			case Terrain.EXIT:
-				return Messages.get(CityLevel.class, "exit_desc");
+				return Messages.get(CityLevel.class, "exit_desc") + appendNoTransWarning(cell);
 			case Terrain.WALL_DECO:
 			case Terrain.EMPTY_DECO:
 				return Messages.get(CityLevel.class, "deco_desc");
@@ -144,7 +144,7 @@ public class CityLevel extends RegularLevel {
 			case Terrain.BOOKSHELF:
 				return Messages.get(CityLevel.class, "bookshelf_desc");
 			default:
-				return super.tileDesc( tile );
+				return super.tileDesc( tile, cell );
 		}
 	}
 	

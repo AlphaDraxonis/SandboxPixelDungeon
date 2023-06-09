@@ -25,7 +25,7 @@ public class EditCompWindow extends Window {
         else if (object instanceof Item) content = new EditItemComp((Item) object, null);
         else if (object instanceof Mob) content = new EditMobComp((Mob) object);
         else if (object instanceof Trap) content = new EditTrapComp((Trap) object);
-        else if (object instanceof Heap)content=new EditHeapComp((Heap)object);
+        else if (object instanceof Heap)content = new EditHeapComp((Heap)object);
         else
             throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
         content.advancedListPaneItem = advancedListPaneItem;

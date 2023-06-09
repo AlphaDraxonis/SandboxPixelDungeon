@@ -1508,7 +1508,7 @@ public abstract class Level implements Bundlable {
         }
     }
 
-    public String tileDesc(int tile) {
+    public String tileDesc(int tile, int cell) {
 
         switch (tile) {
             case Terrain.CHASM:
@@ -1516,10 +1516,10 @@ public abstract class Level implements Bundlable {
             case Terrain.WATER:
                 return Messages.get(Level.class, "water_desc");
             case Terrain.ENTRANCE:
-                return Messages.get(Level.class, "entrance_desc");
+                return Messages.get(Level.class, "entrance_desc") + appendNoTransWarning(cell);
             case Terrain.EXIT:
             case Terrain.UNLOCKED_EXIT:
-                return Messages.get(Level.class, "exit_desc");
+                return Messages.get(Level.class, "exit_desc") + appendNoTransWarning(cell);
             case Terrain.EMBERS:
                 return Messages.get(Level.class, "embers_desc");
             case Terrain.HIGH_GRASS:
@@ -1547,5 +1547,9 @@ public abstract class Level implements Bundlable {
             default:
                 return "";
         }
+    }
+
+    protected String appendNoTransWarning(int cell) {
+        return cell >= 0 && transitions.get(cell) == null ? "\n" + Messages.get(Hero.class, "no_trans_warning") : "";
     }
 }

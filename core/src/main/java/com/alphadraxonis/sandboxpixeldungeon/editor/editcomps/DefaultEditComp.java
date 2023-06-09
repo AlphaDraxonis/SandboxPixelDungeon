@@ -158,6 +158,8 @@ public abstract class DefaultEditComp<T> extends Component {
         content.setOnUpdate(r);
         r.run();
 
+        sp.givePointerPriority();
+
         EditorScene.show(w);
 
     }

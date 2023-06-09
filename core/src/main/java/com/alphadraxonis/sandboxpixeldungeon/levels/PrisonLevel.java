@@ -123,14 +123,14 @@ public class PrisonLevel extends RegularLevel {
 	}
 
 	@Override
-	public String tileDesc(int tile) {
+	public String tileDesc(int tile, int cell) {
 		switch (tile) {
 			case Terrain.EMPTY_DECO:
 				return Messages.get(PrisonLevel.class, "empty_deco_desc");
 			case Terrain.BOOKSHELF:
 				return Messages.get(PrisonLevel.class, "bookshelf_desc");
 			default:
-				return super.tileDesc( tile );
+				return super.tileDesc( tile, cell );
 		}
 	}
 	

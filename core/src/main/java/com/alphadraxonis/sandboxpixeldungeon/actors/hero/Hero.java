@@ -70,6 +70,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Monk;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Snake;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CheckedCell;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
@@ -1654,6 +1655,10 @@ public class Hero extends Char {
             curAction = new HeroAction.LvlTransition(cell);
 
         } else {
+
+            if (Dungeon.level.map[cell] == Terrain.ENTRANCE || TileItem.isExitTerrainCell(Dungeon.level.map[cell])) {
+                GLog.n(Messages.get(Hero.class, "no_trans_warning"));
+            }
 
             if (!Dungeon.level.visited[cell] && !Dungeon.level.mapped[cell]
                     && Dungeon.level.traps.get(cell) != null && Dungeon.level.traps.get(cell).visible) {

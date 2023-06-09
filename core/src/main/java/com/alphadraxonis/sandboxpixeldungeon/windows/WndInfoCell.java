@@ -128,12 +128,12 @@ public class WndInfoCell extends Window {
 			if (customDesc != null) {
 				desc += customDesc;
 			} else {
-				desc += Dungeon.level.tileDesc(Dungeon.level.map[cell]);
+				desc += Dungeon.level.tileDesc(Dungeon.level.map[cell], cell);
 			}
 
 		} else {
 
-			desc += Dungeon.level.tileDesc(Dungeon.level.map[cell]);
+			desc += Dungeon.level.tileDesc(Dungeon.level.map[cell], cell);
 		}
 		titlebar.setRect(0, 0, WIDTH, 0);
 		add(titlebar);

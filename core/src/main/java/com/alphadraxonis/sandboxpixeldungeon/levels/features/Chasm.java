@@ -110,10 +110,9 @@ public class Chasm implements Hero.Doom {
                 public void call() {
                     GameScene.show(
                             new WndOptions(Icons.get(Icons.WARNING),
-                                    "ERROR",
-                                    "You cannot jump down because the dungeon does not specify a floor to land on. " +
-                                            "Please make sure to fix the dungeon by setting a chasm transition destination for every single floor.",
-                                    "Close"
+                                    Messages.get(Chasm.class,"no_chasm_title"),
+                                    Messages.get(Chasm.class,"no_chasm_body"),
+                                    Messages.get(Chasm.class,"no_chasm_close")
                             ) {
 
                                 private float elapsed = 0f;
