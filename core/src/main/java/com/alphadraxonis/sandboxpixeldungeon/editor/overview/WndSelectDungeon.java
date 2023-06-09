@@ -46,7 +46,7 @@ public class WndSelectDungeon extends Window {
         for (CustomDungeonSaves.Info info : allInfos) otherDungeonNames.add(info.name);
 
         if (showAddButton) {
-            createNewDungeonBtn = new RedButton(Messages.get(WndSelectDungeon.class,"new")) {
+            createNewDungeonBtn = new RedButton(Messages.get(WndSelectDungeon.class, "new")) {
                 @Override
                 protected void onClick() {
                     Game.scene().addToFront(new WndNewDungeon(otherDungeonNames));
@@ -142,22 +142,23 @@ public class WndSelectDungeon extends Window {
                 RedButton export = new RedButton(Messages.get(WndSelectDungeon.class, "export_label")) {
                     @Override
                     protected void onClick() {
+                        String fileName = "exports/" + info.name + ".json";
+                        String destLocation = CustomDungeonSaves.getAbsolutePath(fileName);
                         Window w = new WndOptions(
-                                Messages.get(WndSelectDungeon.class, "export_title",info.name),//TODO add platform differences!
-                                Messages.get(WndSelectDungeon.class, "export_body",
-                                        "Android/data/com.alphadraxonis.sandboxpd/files/exports/\"" + info.name + "\".json"),
+                                Messages.get(WndSelectDungeon.class, "export_title", info.name),
+                                Messages.get(WndSelectDungeon.class, "export_body", destLocation),
                                 Messages.get(WndSelectDungeon.class, "export_yes"), Messages.get(WndSelectDungeon.class, "export_no")) {
                             @Override
                             protected void onSelect(int index) {
                                 if (index == 0) {
                                     try {
                                         CustomDungeonSaves.setFileType(Files.FileType.External);
-                                        CustomDungeonSaves.writeClearText("exports/" + info.name + ".json",
+                                        CustomDungeonSaves.writeClearText(fileName,
                                                 DungeonToJsonConverter.getAsJson(CustomDungeonSaves.loadDungeon(info.name)));
 
                                         Window win = new WndOptions(
-                                                Messages.get(WndSelectDungeon.class, "export_confirm_title",info.name),
-                                                Messages.get(WndSelectDungeon.class, "export_confirm_body",info.name)+
+                                                Messages.get(WndSelectDungeon.class, "export_confirm_title", info.name),
+                                                Messages.get(WndSelectDungeon.class, "export_confirm_body", info.name) +
                                                         (info.name.equals("dungeon") ? "" : Messages.get(WndSelectDungeon.class, "export_confirm_rename_hint")),
                                                 Messages.get(WndSelectDungeon.class, "export_confirm_close"));
                                         if (Game.scene() instanceof EditorScene)
@@ -175,13 +176,14 @@ public class WndSelectDungeon extends Window {
                         else Game.scene().addToFront(w);
                     }
                 };
+                export.enable(info.numLevels > 0);
 
 
                 float pos = 0;
                 title.setPos((width - title.width()) * 0.5f, pos);
                 pos = title.bottom() + GAP;
 
-                pos = statSlot(Messages.get(WndSelectDungeon.class,"num_floors"), Integer.toString(info.numLevels), pos) + GAP * 2;
+                pos = statSlot(Messages.get(WndSelectDungeon.class, "num_floors"), Integer.toString(info.numLevels), pos) + GAP * 2;
 
                 cont.icon(Icons.get(Icons.ENTER));
                 cont.setRect(0, pos, width / 2 - 1, 20);

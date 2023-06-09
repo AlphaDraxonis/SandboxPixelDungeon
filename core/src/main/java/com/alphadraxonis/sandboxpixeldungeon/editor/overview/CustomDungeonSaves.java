@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 
 import java.io.BufferedWriter;
@@ -26,8 +27,9 @@ public class CustomDungeonSaves {
 
     private static final HashMap<String, CustomDungeonSaves.Info> dungeons = new HashMap<>();
 
+    private static final String ROOT_DIR = DeviceCompat.isDesktop() ? "Sandbox-Pixel-Dungeon/" : "";
     private static final String FILE_EXTENSION = ".dat";
-    private static final String DUNGEON_FOLDER = "custom_dungeons/";
+    private static final String DUNGEON_FOLDER = ROOT_DIR + "custom_dungeons/";
     private static final String LEVEL_FOLDER = "levels/";
     private static final String DUNGEON_DATA = "data" + FILE_EXTENSION;
     private static final String DUNGEON_INFO = "info" + FILE_EXTENSION;
@@ -141,7 +143,7 @@ public class CustomDungeonSaves {
 
     public static void writeClearText(String fileName, String text) throws IOException {
         try {
-            FileHandle file = FileUtils.getFileHandle(Files.FileType.External, fileName);
+            FileHandle file = FileUtils.getFileHandle(Files.FileType.External, ROOT_DIR + fileName);
             //write to a temp file, then move the files.
             // This helps prevent save corruption if writing is interrupted
             if (file.exists()) {
@@ -191,6 +193,18 @@ public class CustomDungeonSaves {
             //game classes expect an IO exception, so wrap the GDX exception in that
             throw new IOException(e);
         }
+    }
+
+    public static String getAbsolutePath(String fileName) {
+        String path = FileUtils.getFileHandle(Files.FileType.External, ROOT_DIR + fileName).file().getAbsolutePath();
+        if (DeviceCompat.isAndroid()) {
+            path = path.substring(20);// /storage/emulated/0/ ->20chars
+            path = path.replaceFirst("sandboxpd/", "sandboxpd/" + "\n");//does not work for .indev
+        } else if (DeviceCompat.isDesktop()) {
+            path = path.replace('\\', '/');//Backslashes don't look nice
+            path = path.replaceFirst(ROOT_DIR, ROOT_DIR + "\n");
+        }
+        return path;
     }
 
     public static class Info implements Comparable<Info>, Bundlable {

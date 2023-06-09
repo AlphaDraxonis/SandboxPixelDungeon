@@ -154,7 +154,7 @@ public class WndTitledMessage extends Window {
         comp.setPos(0, titlebar.bottom() + 2 * GAP);
     }
 
-    //Body factory seems messy, but is the only way for custom bodies to receive input events
+    //Body factory seems messy, but is the only way for custom bodies to receive input events //lol maybe givePointerPriority() would work too??
     public interface BodyFactory {
         Body create();
     }
