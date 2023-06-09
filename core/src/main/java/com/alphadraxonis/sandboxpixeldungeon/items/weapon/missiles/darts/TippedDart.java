@@ -28,7 +28,10 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.PinCushion;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
+import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.Crossbow;
@@ -152,8 +155,8 @@ public abstract class TippedDart extends Dart {
 	@Override
 	public float durabilityPerUse() {
 		float use = super.durabilityPerUse();
-		
-		use /= (1 + Dungeon.hero.pointsInTalent(Talent.DURABLE_TIPS));
+
+		if (Dungeon.hero != null) use /= (1 + Dungeon.hero.pointsInTalent(Talent.DURABLE_TIPS));
 
 		//checks both destination and source position
 		float lotusPreserve = 0f;
@@ -168,7 +171,15 @@ public abstract class TippedDart extends Dart {
 			}
 			targetPos = -1;
 		}
-		int p = curUser == null ? Dungeon.hero.pos : curUser.pos;
+		int p = -100;
+		if(CustomDungeon.isEditing()){
+			for(Heap heap :EditorScene.customLevel().heaps.valueList()){
+				if(heap.items.contains(this)){
+					p = heap.pos;
+					break;
+				}
+			}
+		} else p = curUser == null ? Dungeon.hero.pos : curUser.pos;
 		for (Char ch : Actor.chars()){
 			if (ch instanceof WandOfRegrowth.Lotus){
 				WandOfRegrowth.Lotus l = (WandOfRegrowth.Lotus) ch;
@@ -180,7 +191,7 @@ public abstract class TippedDart extends Dart {
 		use *= (1f - lotusPreserve);
 
 		//grants 4 extra uses with charged shot
-		if (Dungeon.hero.buff(Crossbow.ChargedShot.class) != null){
+		if (Dungeon.hero != null && Dungeon.hero.buff(Crossbow.ChargedShot.class) != null){
 			use = 100f/((100f/use) + 4f) + 0.001f;
 		}
 		
