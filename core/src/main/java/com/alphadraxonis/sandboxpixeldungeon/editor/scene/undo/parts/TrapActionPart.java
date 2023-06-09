@@ -21,7 +21,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
     }
 
     protected void place() {
-        place(trap);
+        place(trap.getCopy());
     }
 
     protected void remove() {
