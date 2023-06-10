@@ -262,6 +262,8 @@ public class AboutScene extends PixelScene {
 		list.setRect( 0, 0, w, h );
 		list.scrollTo(0, 0);
 
+		list.givePointerPriority();
+
 		ExitButton btnExit = new ExitButton();
 		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
 		add( btnExit );
@@ -417,6 +419,16 @@ public class AboutScene extends PixelScene {
 			topY -= 2;
 
 			height = Math.max(height, topY - top());
+		}
+
+		@Override
+		public void cancelClick() {
+			if (linkButton != null) linkButton.reset();
+		}
+
+		@Override
+		public void redirectPointerEvent(PointerEvent event) {
+			if (linkButton != null) linkButton.onSignal(event);
 		}
 	}
 }

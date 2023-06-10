@@ -173,9 +173,9 @@ public class Button extends Component {
         pressTime += Game.elapsed;
 
         if (isclickHolding) {
-            clicksToToWhileHolding += Game.elapsed * getClicksPerSecondWhenHolding();
-            int clicks = (int) clicksToToWhileHolding;
-            clicksToToWhileHolding -= clicks;
+            clicksToDoWhileHolding += Game.elapsed * getClicksPerSecondWhenHolding();
+            int clicks = (int) clicksToDoWhileHolding;
+            clicksToDoWhileHolding -= clicks;
             for (int i = 0; i < clicks; i++) onClick();
             return;
         }
@@ -221,7 +221,7 @@ public class Button extends Component {
 
 
     private boolean isclickHolding = false;
-    private float clicksToToWhileHolding;
+    private float clicksToDoWhileHolding;
 
     //only supports left click (calls onClick()) (maybe save a event (hotArea.pointerDown) as instance variable for middle/right click), onLongClick will never be called if return>0
     protected int getClicksPerSecondWhenHolding() {
