@@ -4,6 +4,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditTrapComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TrapItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
@@ -39,7 +40,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
     public static final class Place extends TrapActionPart {
 
         public Place(Trap trap) {
-            super(trap, trap.visible ? (trap.active ? Terrain.TRAP : Terrain.INACTIVE_TRAP) : Terrain.SECRET_TRAP);
+            super(trap, TrapItem.getTerrain(trap));
             ActionPart part = new ActionPart() {
                 @Override
                 public void undo() {
@@ -91,10 +92,13 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
 
         private final Trap before;
         private Trap after;
+        private int oldTerrain;
+        private PlaceCellActionPart placeCellActionPart;
 
         public Modify(Trap trap) {
             before = (Trap) trap.getCopy();
             after = trap;
+            oldTerrain = TrapItem.getTerrain(trap);
         }
 
         @Override
@@ -105,6 +109,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
             remove(trapAtCell);
 
             place((Trap) before.getCopy());
+            placeCellActionPart.undo();
 
             EditorScene.updateMap(before.pos);
         }
@@ -116,6 +121,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
             if (trapAtCell != null) remove(trapAtCell);
 
             place((Trap) after.getCopy());
+            placeCellActionPart.redo();
 
             EditorScene.updateMap(after.pos);
 
@@ -129,6 +135,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
         @Override
         public void finish() {
             after = (Trap) after.getCopy();
+            placeCellActionPart = new PlaceCellActionPart(oldTerrain, TrapItem.getTerrain(after), after.pos, null);
         }
     }
 }
