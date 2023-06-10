@@ -51,24 +51,26 @@ public abstract class DungeonTilemap extends Tilemap {
 
 	@Override
 	public synchronized void updateMap() {
+		boolean mapEditing = CustomDungeon.isEditing();
 		for (int i = 0; i < data.length; i++)
-			data[i] = getTileVisual(i ,map[i], CustomDungeon.isEditing());
+			data[i] = getTileVisual(i ,map[i], mapEditing);
 		super.updateMap();
 	}
 
 	@Override
 	public synchronized void updateMapCell(int cell) {
+		boolean mapEditing = CustomDungeon.isEditing();
 		//update in a 3x3 grid to account for neighbours which might also be affected
 		if (Dungeon.level.insideMap(cell)) {
 			for (int i : PathFinder.NEIGHBOURS9) {
-				data[cell + i] = getTileVisual(cell + i, map[cell + i], CustomDungeon.isEditing());
+				data[cell + i] = getTileVisual(cell + i, map[cell + i], mapEditing);
 			}
 			super.updateMapCell(cell - mapWidth - 1);
 			super.updateMapCell(cell + mapWidth + 1);
 
 		//unless we're at the level's edge, then just do the one tile.
 		} else {
-			data[cell] = getTileVisual(cell, map[cell], CustomDungeon.isEditing());
+			data[cell] = getTileVisual(cell, map[cell], mapEditing);
 			super.updateMapCell(cell);
 		}
 	}
