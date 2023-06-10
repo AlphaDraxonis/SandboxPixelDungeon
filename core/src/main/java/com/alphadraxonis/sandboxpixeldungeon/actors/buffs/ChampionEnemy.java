@@ -28,6 +28,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Fire;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
@@ -135,11 +136,11 @@ public abstract class ChampionEnemy extends Buff {
         @Override
         public void detach() {
             //don't trigger when killed by being knocked into a pit
-            if (target.pos > 0) {
+            if (target.pos > 0  && !CustomDungeon.isEditing()) {
                 if (target.flying || !Dungeon.level.pit[target.pos]) {
                     for (int i : PathFinder.NEIGHBOURS9) {
                         if (!Dungeon.level.solid[target.pos + i]) {
-                            GameScene.add(Blob.seed(target.pos + i, 2, Fire.class));
+                            GameScene.add(Blob.seed(target.pos + i, 2, Fire.class));//FIXME this method added Permafire on the map when playing, maybe add blobs to inv as well?
                         }
                     }
                 }
