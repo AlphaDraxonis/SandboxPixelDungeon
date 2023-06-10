@@ -128,7 +128,7 @@ public class EditorScene extends PixelScene {
         if (customLevel != EditorScene.customLevel) {
             String oldLvlName;
             if (EditorScene.customLevel != null) {
-                oldLvlName = EditorScene.customLevel().name;
+                oldLvlName = customLevel.levelScheme.getCustomDungeon() == Dungeon.customDungeon ? EditorScene.customLevel.name : null;
                 EditorScene.customLevel.levelScheme.unloadLevel();
             } else oldLvlName = null;
             mainCameraPos = null;
@@ -141,6 +141,13 @@ public class EditorScene extends PixelScene {
         PathFinder.setMapSize(customLevel.width(), customLevel.height());
         SandboxPixelDungeon.switchNoFade(EditorScene.class);
         firstTimeOpening = false;
+    }
+
+    public static void close(){
+        if(customLevel != null){
+            EditorScene.customLevel.levelScheme.unloadLevel();
+            customLevel = null;
+        }
     }
 
     @Override

@@ -218,6 +218,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         return level;
     }
 
+    public CustomDungeon getCustomDungeon() {
+        return customDungeon;
+    }
+
     public Level.Feeling getFeeling() {
         return feeling;
     }

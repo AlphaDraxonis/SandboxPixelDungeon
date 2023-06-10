@@ -28,6 +28,7 @@ import com.alphadraxonis.sandboxpixeldungeon.GamesInProgress;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndNewDungeon;
@@ -297,6 +298,7 @@ public class StartScene extends PixelScene {
 	}
 
 	public static void showWndSelectDungeon(int slot, HeroClass selectClass) {
+		EditorScene.close();
 		List<CustomDungeonSaves.Info> allInfos = CustomDungeonSaves.getAllInfos();
 		if (allInfos.isEmpty()) {
 			SandboxPixelDungeon.scene().add(new WndOptions(Icons.get(Icons.WARNING),
@@ -317,7 +319,7 @@ public class StartScene extends PixelScene {
 					}
 				}
 			});
-		}else {
+		} else {
 			SandboxPixelDungeon.scene().addToFront(new WndSelectDungeon(allInfos,false){
 				@Override
 				protected void select(String customDungeonName) {
