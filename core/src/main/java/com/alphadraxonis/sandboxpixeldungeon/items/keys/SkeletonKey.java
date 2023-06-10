@@ -22,17 +22,10 @@
 package com.alphadraxonis.sandboxpixeldungeon.items.keys;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
-import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
-import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
-import com.alphadraxonis.sandboxpixeldungeon.windows.WndSupportPrompt;
-import com.watabou.noosa.Game;
-import com.watabou.utils.Callback;
-
-import java.io.IOException;
 
 public class SkeletonKey extends Key {
 	
@@ -52,20 +45,20 @@ public class SkeletonKey extends Key {
 
 	@Override
 	public boolean doPickUp(Hero hero, int pos) {
-		if(!SPDSettings.supportNagged()){
-			try {
-				Dungeon.saveAll();
-				Game.runOnRenderThread(new Callback() {
-					@Override
-					public void call() {
-						SandboxPixelDungeon.scene().add(new WndSupportPrompt());
-					}
-				});
-			} catch (IOException e) {
-				SandboxPixelDungeon.reportException(e);
-			}
-			
-		}
+//		if(!SPDSettings.supportNagged()){
+//			try {
+//				Dungeon.saveAll();
+//				Game.runOnRenderThread(new Callback() {
+//					@Override
+//					public void call() {
+//						SandboxPixelDungeon.scene().add(new WndSupportPrompt());
+//					}
+//				});
+//			} catch (IOException e) {
+//				SandboxPixelDungeon.reportException(e);
+//			}
+//
+//		}
 		
 		return super.doPickUp(hero, pos);
 	}
