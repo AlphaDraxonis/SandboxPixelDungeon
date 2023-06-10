@@ -151,7 +151,7 @@ public class WelcomeScene extends PixelScene {
 						SPDSettings.intro(false);
 						SandboxPixelDungeon.switchScene(TitleScene.class);
 					} else {
-						SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+						StartScene.showWndSelectDungeon(GamesInProgress.curSlot, GamesInProgress.selectedClass);
 					}
 				} else {
 					updateVersion(previousVersion);

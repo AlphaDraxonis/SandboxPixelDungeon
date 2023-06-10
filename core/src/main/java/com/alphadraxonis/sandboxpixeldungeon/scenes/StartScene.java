@@ -26,6 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.GamesInProgress;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.CustomDungeonSaves;
@@ -290,7 +291,12 @@ public class StartScene extends PixelScene {
 	}
 
 	private static final Set<String> EMPTY_HASHSET = new HashSet<>(0);
-	public static void showWndSelectDungeon(int slot){
+
+	public static void showWndSelectDungeon(int slot) {
+		showWndSelectDungeon(slot, null);
+	}
+
+	public static void showWndSelectDungeon(int slot, HeroClass selectClass) {
 		List<CustomDungeonSaves.Info> allInfos = CustomDungeonSaves.getAllInfos();
 		if (allInfos.isEmpty()) {
 			SandboxPixelDungeon.scene().add(new WndOptions(Icons.get(Icons.WARNING),
@@ -305,7 +311,7 @@ public class StartScene extends PixelScene {
 						Dungeon.customDungeon = new CustomDungeon("Default-Dungeon");//no check if name exists bc we don't save this
 						Dungeon.customDungeon.initDefault();
 
-						GamesInProgress.selectedClass = null;
+						GamesInProgress.selectedClass = selectClass;
 						GamesInProgress.curSlot = slot;
 						SandboxPixelDungeon.switchScene(HeroSelectScene.class);
 					}
@@ -318,7 +324,7 @@ public class StartScene extends PixelScene {
 					try {
 						Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(customDungeonName);
 
-						GamesInProgress.selectedClass = null;
+						GamesInProgress.selectedClass = selectClass;
 						GamesInProgress.curSlot = slot;
 						SandboxPixelDungeon.switchScene(HeroSelectScene.class);
 

@@ -1310,9 +1310,7 @@ public class GameScene extends PixelScene {
         StyledButton restart = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(StartScene.class, "new"), 9) {
             @Override
             protected void onClick() {
-                GamesInProgress.selectedClass = Dungeon.hero.heroClass;
-                GamesInProgress.curSlot = GamesInProgress.firstEmpty();
-                SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+                StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass);
             }
 
             @Override

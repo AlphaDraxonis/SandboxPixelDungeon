@@ -129,9 +129,7 @@ public class TitleScene extends PixelScene {
             protected boolean onLongClick() {
                 //making it easier to start runs quickly while debugging
                 if (DeviceCompat.isDebug()) {
-                    GamesInProgress.selectedClass = null;
-                    GamesInProgress.curSlot = 1;
-                    SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+                    StartScene.showWndSelectDungeon(1);
                     return true;
                 }
                 return super.onLongClick();

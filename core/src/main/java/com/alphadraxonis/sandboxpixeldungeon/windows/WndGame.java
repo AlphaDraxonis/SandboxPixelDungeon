@@ -27,9 +27,9 @@ import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
-import com.alphadraxonis.sandboxpixeldungeon.scenes.HeroSelectScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.InterlevelScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.RankingsScene;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.StartScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.TitleScene;
 import com.alphadraxonis.sandboxpixeldungeon.services.updates.Updates;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
@@ -92,9 +92,7 @@ public class WndGame extends Window {
 			addButton( curBtn = new RedButton( Messages.get(this, "start") ) {
 				@Override
 				protected void onClick() {
-					GamesInProgress.selectedClass = Dungeon.hero.heroClass;
-					GamesInProgress.curSlot = GamesInProgress.firstEmpty();
-					SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+					StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass);
 				}
 			} );
 			curBtn.icon(Icons.get(Icons.ENTER));
