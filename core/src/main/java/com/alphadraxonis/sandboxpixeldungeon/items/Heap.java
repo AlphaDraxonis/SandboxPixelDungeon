@@ -27,6 +27,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Wraith;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditItemComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
@@ -225,10 +226,13 @@ public class Heap implements Bundlable {
                     }
                 }
             }
-            items.remove(item);
         }
-        remove(item);
-        updateAfterRemovalOfItems();
+        for (Item i : items) {
+            if (EditItemComp.areEqual(i, item)) {
+                remove(i);
+                break;
+            }
+        }
     }
     private void updateAfterRemovalOfItems(){
         if (items.isEmpty()) {
