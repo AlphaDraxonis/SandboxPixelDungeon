@@ -302,9 +302,11 @@ public class StartScene extends PixelScene {
 		List<CustomDungeonSaves.Info> allInfos = CustomDungeonSaves.getAllInfos();
 		if (allInfos.isEmpty()) {
 			SandboxPixelDungeon.scene().add(new WndOptions(Icons.get(Icons.WARNING),
-					"No dungeons available",
-					"You don't have any dungeons available to play. Please create one first or play the default dungeon",
-					"Create new dungeon", "Play default dungeon", "Cancel") {
+					Messages.get(StartScene.class, "wnd_no_dungeon_title"),
+					Messages.get(StartScene.class, "wnd_no_dungeon_body"),
+					Messages.get(StartScene.class, "wnd_no_dungeon_create_new"),
+					Messages.get(StartScene.class, "wnd_no_dungeon_play_default"),
+					Messages.get(StartScene.class, "wnd_no_dungeon_cancel")) {
 				@Override
 				protected void onSelect(int index) {
 					if (index == 0) {
