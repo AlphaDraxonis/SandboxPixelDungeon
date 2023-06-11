@@ -3,12 +3,16 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndSwitchFloor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
+import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.ItemStatusHandler;
+import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.Potion;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.brews.Brew;
@@ -75,7 +79,7 @@ public class CustomDungeon implements Bundlable {
     private Set<String> wandmakerSpawnLevels;
     private Set<String> blacksmithSpawnLevels;
     private Set<String> impSpawnLevels;
-    private List<String>maybeGhostSpawnLevels, maybeWandmakerSpawnLevels, maybeBlacksmithSpawnLevels, maybeImpSpawnLevels;
+    private List<String> maybeGhostSpawnLevels, maybeWandmakerSpawnLevels, maybeBlacksmithSpawnLevels, maybeImpSpawnLevels;
     //    private Map<> itemDistribution
     private Map<String, LevelScheme> floors = new HashMap<>();
     private int startGold, startEnergy;
@@ -284,25 +288,30 @@ public class CustomDungeon implements Bundlable {
         }
     }
 
-    public void calculateQuestLevels(){
-        calculateOneQuestLvl(ghostSpawnLevels,maybeGhostSpawnLevels);
-        calculateOneQuestLvl(wandmakerSpawnLevels,maybeWandmakerSpawnLevels);
-        calculateOneQuestLvl(blacksmithSpawnLevels,maybeBlacksmithSpawnLevels);
-        calculateOneQuestLvl(impSpawnLevels,maybeImpSpawnLevels);
+    public void calculateQuestLevels() {
+        calculateOneQuestLvl(ghostSpawnLevels, maybeGhostSpawnLevels);
+        calculateOneQuestLvl(wandmakerSpawnLevels, maybeWandmakerSpawnLevels);
+        calculateOneQuestLvl(blacksmithSpawnLevels, maybeBlacksmithSpawnLevels);
+        calculateOneQuestLvl(impSpawnLevels, maybeImpSpawnLevels);
     }
-    private static void calculateOneQuestLvl(Set<String>dest,List<String>maybe){
-        if(!maybe.isEmpty())dest.add(maybe.get(Random.Int(maybe.size())));
+
+    private static void calculateOneQuestLvl(Set<String> dest, List<String> maybe) {
+        if (!maybe.isEmpty()) dest.add(maybe.get(Random.Int(maybe.size())));
     }
-    public void addMaybeGhostSpawnLevel(String level){
+
+    public void addMaybeGhostSpawnLevel(String level) {
         maybeGhostSpawnLevels.add(level);
     }
-    public void addMaybeWandmakerSpawnLevel(String level){
+
+    public void addMaybeWandmakerSpawnLevel(String level) {
         maybeWandmakerSpawnLevels.add(level);
     }
-    public void addMaybeBlacksmithSpawnLevel(String level){
+
+    public void addMaybeBlacksmithSpawnLevel(String level) {
         maybeBlacksmithSpawnLevels.add(level);
     }
-    public void addMaybeImpSpawnLevel(String level){
+
+    public void addMaybeImpSpawnLevel(String level) {
         maybeImpSpawnLevels.add(level);
     }
 
@@ -480,7 +489,7 @@ public class CustomDungeon implements Bundlable {
     }
 
     public CustomDungeonSaves.Info createInfo() {
-        return new CustomDungeonSaves.Info(getName(), 1,getNumFloors());
+        return new CustomDungeonSaves.Info(getName(), 1, getNumFloors());
     }
 
     void addRatKingLevel(String name) {
@@ -531,22 +540,23 @@ public class CustomDungeon implements Bundlable {
             } else startFloor = fs.get(0).getName();
         }
         if (EditorScene.customLevel() != null && EditorScene.customLevel().levelScheme == levelScheme) {
-            LevelScheme openS = null;
-            if (startFloor != null && getFloor(startFloor).getType() == CustomLevel.class)
-                openS = getFloor(startFloor);
-            else {
-                for (LevelScheme ls : fs) {
-                    if (ls.getType() == CustomLevel.class) {
-                        openS = ls;
-                        break;
+                LevelScheme openS = null;
+                if (startFloor != null && getFloor(startFloor).getType() == CustomLevel.class)
+                    openS = getFloor(startFloor);
+                else {
+                    for (LevelScheme ls : fs) {
+                        if (ls.getType() == CustomLevel.class) {
+                            openS = ls;
+                            break;
+                        }
                     }
                 }
-            }
-            if (openS == null) SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
-            else {
-                EditorScene.open((CustomLevel) openS.loadLevel());
-                EditorScene.show(new WndSwitchFloor());
-            }
+                if (openS == null) SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
+                else {
+                    EditorScene.open((CustomLevel) openS.loadLevel());
+                    EditorScene.show(new WndSwitchFloor());
+                }
+
         }
 
         //Remove transitions
@@ -566,10 +576,24 @@ public class CustomDungeon implements Bundlable {
                         if (level == EditorScene.customLevel()) EditorScene.remove(transition);
                     }
                 }
-                boolean save = !toRemoveKeys.isEmpty();
+
+                //Remove invalid keys
+                boolean removedItems = false;
+                for (Heap h : level.heaps.valueList()) {
+                    for (Item i : h.items) {
+                        if (i instanceof Key && ((Key) i).levelName.equals(n)) {
+                            h.remove(i);
+                            removedItems = true;
+                        }
+                    }
+                }
+
+                boolean save = removedItems || !toRemoveKeys.isEmpty();
                 for (int key : toRemoveKeys) level.transitions.remove(key);
+
                 if (save) CustomDungeonSaves.saveLevel(level);
                 if (load) ls.unloadLevel();
+                else if (removedItems && level == EditorScene.customLevel()) Undo.reset();//TODO maybe not best solution to reset all
             } else {
                 if (Objects.equals(ls.getEntranceTransitionRegular().destLevel, n)) {
                     ls.getEntranceTransitionRegular().destLevel = Level.SURFACE;
@@ -580,6 +604,10 @@ public class CustomDungeon implements Bundlable {
                 }
             }
         }
+
+        //Set level for keys in inv
+        Items.updateKeys(n, EditorScene.customLevel() == null ? null : EditorScene.customLevel().name);
+
 
         CustomDungeonSaves.deleteLevelFile(n);
         CustomDungeonSaves.saveDungeon(this);

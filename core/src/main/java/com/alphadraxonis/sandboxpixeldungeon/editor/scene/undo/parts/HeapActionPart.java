@@ -82,7 +82,7 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
         private Heap after;
 
         public Modify(Heap heap) {
-            before = (Heap) heap.getCopy();
+            before = heap.getCopy();
             after = heap;
         }
 
@@ -93,7 +93,7 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
 
             remove(heapAtCell);
 
-            place((Heap) before.getCopy());
+            place(before.getCopy());
         }
 
         @Override
@@ -102,7 +102,7 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
 
             if (heapAtCell != null) remove(heapAtCell);
 
-            place((Heap) after.getCopy());
+            place(after.getCopy());
 
         }
 
@@ -113,7 +113,7 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
 
         @Override
         public void finish() {
-            after = (Heap) after.getCopy();
+            after = after.getCopy();
         }
     }
 }

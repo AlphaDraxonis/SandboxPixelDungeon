@@ -734,7 +734,7 @@ public enum Items {
     public static void updateKeys(String oldLvlName, String newLvlName){
         for(Item item : bagWithKeys){
             Item i = ((ItemItem) item).item();
-            if(i instanceof Key && (oldLvlName == null || ((Key) i).levelName.equals(oldLvlName))){
+            if(i instanceof Key && (oldLvlName == null || ((Key) i).levelName == null || ((Key) i).levelName.equals(oldLvlName))){
                 ((Key) i).levelName = newLvlName;
             }
         }
