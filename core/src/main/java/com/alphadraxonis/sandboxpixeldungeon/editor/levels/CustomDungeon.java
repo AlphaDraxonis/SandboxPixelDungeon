@@ -593,7 +593,7 @@ public class CustomDungeon implements Bundlable {
 
                 if (save) CustomDungeonSaves.saveLevel(level);
                 if (load) ls.unloadLevel();
-                else if (removedItems && level == EditorScene.customLevel()) Undo.reset();//TODO maybe not best solution to reset all
+                else if (level == EditorScene.customLevel()) Undo.reset();//TODO maybe not best solution to reset all
             } else {
                 if (Objects.equals(ls.getEntranceTransitionRegular().destLevel, n)) {
                     ls.getEntranceTransitionRegular().destLevel = Level.SURFACE;
