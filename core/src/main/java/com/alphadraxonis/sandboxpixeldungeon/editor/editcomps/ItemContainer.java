@@ -128,7 +128,7 @@ public class ItemContainer extends Component { // needs access to protected meth
         itemList.add(item);
     }
 
-    protected void onUpdateItem() {
+    protected void onUpdateItem() {//nur dafür gedacht, wenn sich bestehende Items ändern
     }
     //IMPORTANT METHODS
     //IMPORTANT METHODS

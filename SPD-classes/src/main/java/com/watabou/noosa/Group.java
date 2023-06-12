@@ -21,13 +21,11 @@
 
 package com.watabou.noosa;
 
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.watabou.input.PointerEvent;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Group extends Gizmo {
 

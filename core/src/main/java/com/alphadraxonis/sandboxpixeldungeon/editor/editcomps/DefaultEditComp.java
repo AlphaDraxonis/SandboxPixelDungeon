@@ -114,7 +114,7 @@ public abstract class DefaultEditComp<T> extends Component {
 
         if (numTabs == 0) return;
         if (numTabs > 1 || (heap != null && !heap.items.isEmpty())) {
-            EditorScene.show(EditCompWindowTabbed.createEditCompWindowTabbed(tileItem, heap, mob, trap, numTabs));
+            EditorScene.show(new EditCompWindowTabbed(tileItem, heap, mob, trap, numTabs));
             return;
         }
 

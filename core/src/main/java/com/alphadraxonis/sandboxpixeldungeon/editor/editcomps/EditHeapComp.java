@@ -78,13 +78,15 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             @Override
             protected void addItem(Item item) {
                 EditHeapComp.this.obj.drop(item);
+                updateObj();
             }
 
             @Override
             protected void onUpdateItem() {
-                EditHeapComp.this.obj.updateSubicon();
-                EditorScene.updateHeapImage(EditHeapComp.this.obj);
+                EditorScene.updateHeapImage(obj);
                 super.onUpdateItem();
+                obj.updateSubicon();
+//                updateObj();
             }
 
             @Override
