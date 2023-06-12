@@ -6,6 +6,8 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 
+import java.util.Map;
+
 public final class EditorUtilies {
 
 
@@ -17,9 +19,10 @@ public final class EditorUtilies {
 
 
     public static String appendCellToString(int cell) {
-        return appendCellToString(cell,EditorScene.customLevel());
+        return appendCellToString(cell, EditorScene.customLevel());
     }
-    public static String appendCellToString(int cell,Level level) {
+
+    public static String appendCellToString(int cell, Level level) {
         if (cell < 0) return "";
         return " " + cellToString(cell, level);
     }
@@ -49,5 +52,10 @@ public final class EditorUtilies {
 //    public static int getWindowHeight(){
 //
 //    }
+
+    public static <K, V> V getOrDefault(Map<K, V> map, K key, V defaultValue) {
+        V val = map.get(key);
+        return val == null ? defaultValue : val;
+    }
 
 }

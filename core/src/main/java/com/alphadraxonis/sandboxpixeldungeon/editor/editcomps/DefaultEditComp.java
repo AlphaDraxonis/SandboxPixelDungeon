@@ -114,7 +114,7 @@ public abstract class DefaultEditComp<T> extends Component {
 
         if (numTabs == 0) return;
         if (numTabs > 1 || (heap != null && !heap.items.isEmpty())) {
-            EditorScene.show(EditCompWindowTabbed.createEditCompWindowTabbed(tileItem, heap, mob, trap, 0, numTabs));
+            EditorScene.show(EditCompWindowTabbed.createEditCompWindowTabbed(tileItem, heap, mob, trap, numTabs));
             return;
         }
 
@@ -172,6 +172,7 @@ public abstract class DefaultEditComp<T> extends Component {
     public static boolean isItemListEqual(List<Item> a, List<Item> b) {
         if (a == null) return b == null || b.size() == 0;
         if (b == null) return a.size() == 0;
+        if (a.size() != b.size()) return false;
         int index = 0;
         for (Item i : a) {
             if (!EditItemComp.areEqual(i, b.get(index))) return false;
