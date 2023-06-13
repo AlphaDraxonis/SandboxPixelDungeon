@@ -2,6 +2,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesBossLevel;
@@ -55,6 +56,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     private long seed;
     private boolean seedSet = false;
     public List<Integer> entranceCells, exitCells;
+
+    public List<Mob> mobsToSpawn = new ArrayList<>();
 
 
     public LevelScheme() {
@@ -236,6 +239,13 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         return depth == 6 || depth == 11 || depth == 16;
     }
 
+    public int getGhostQuest() {
+        int depth = Dungeon.getSimulatedDepth(this);
+        if (depth <= 2) return 0;
+        if (depth == 3) return 1;
+        return 2;
+    }
+
     public int getPriceMultiplier() {
         return shopPriceMultiplier;
     }
@@ -289,7 +299,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             if (level == null) {
                 try {
                     level = CustomDungeonSaves.loadLevel(name);
-                    ((CustomLevel)level).initForPlay();
+                    ((CustomLevel) level).initForPlay();
                 } catch (IOException e) {
                     SandboxPixelDungeon.reportException(e);
                 }
@@ -341,6 +351,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     private static final String SEED_SET = "seed_set";
     private static final String SHOP_PRICE_MULTIPLIER = "shop_price_multiplier";
 
+    private static final String MOBS_TO_SPAWN = "mobs_to_spawn";
+
     @Override
     public void storeInBundle(Bundle bundle) {
         bundle.put(NAME, name);
@@ -371,6 +383,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             i++;
         }
         bundle.put(EXIT_CELLS, exits);
+
+        bundle.put(MOBS_TO_SPAWN, mobsToSpawn);
     }
 
     @Override
@@ -400,6 +414,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         numInRegion = bundle.getInt(NUM_IN_REGION);
         seed = bundle.getLong(SEED);
         seedSet = bundle.getBoolean(SEED_SET);
+
+        mobsToSpawn = new ArrayList<>();
+        if (bundle.contains(MOBS_TO_SPAWN))
+            for (Bundlable l : bundle.getCollection(MOBS_TO_SPAWN)) mobsToSpawn.add((Mob) l);
     }
 
     public Level loadLevel() {

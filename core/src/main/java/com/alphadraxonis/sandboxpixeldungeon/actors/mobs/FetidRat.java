@@ -21,6 +21,7 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
+import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.StenchGas;
@@ -29,60 +30,86 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Ooze;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.FetidRatSprite;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 public class FetidRat extends Rat {
 
-	{
-		spriteClass = FetidRatSprite.class;
+    {
+        spriteClass = FetidRatSprite.class;
 
-		HP = HT = 20;
-		defenseSkill = 5;
+        HP = HT = 20;
+        defenseSkill = 5;
 
-		EXP = 4;
+        EXP = 4;
 
-		state = WANDERING;
+        state = WANDERING;
 
-		properties.add(Property.MINIBOSS);
-		properties.add(Property.DEMONIC);
-	}
+        properties.add(Property.MINIBOSS);
+        properties.add(Property.DEMONIC);
+    }
 
-	@Override
-	public int attackSkill( Char target ) {
-		return 12;
-	}
+    private int quest;
 
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 2);
-	}
+    public FetidRat() {
+        //for bundling
+    }
 
-	@Override
-	public int attackProc( Char enemy, int damage ) {
-		damage = super.attackProc( enemy, damage );
-		if (Random.Int(3) == 0) {
-			Buff.affect(enemy, Ooze.class).set( Ooze.DURATION );
-		}
+    public FetidRat(Ghost questGiver) {
+        quest = questGiver.id();
+    }
 
-		return damage;
-	}
+    @Override
+    public int attackSkill(Char target) {
+        return 12;
+    }
 
-	@Override
-	public int defenseProc( Char enemy, int damage ) {
+    @Override
+    public int drRoll() {
+        return super.drRoll() + Random.NormalIntRange(0, 2);
+    }
 
-		GameScene.add(Blob.seed(pos, 20, StenchGas.class));
+    @Override
+    public int attackProc(Char enemy, int damage) {
+        damage = super.attackProc(enemy, damage);
+        if (Random.Int(3) == 0) {
+            Buff.affect(enemy, Ooze.class).set(Ooze.DURATION);
+        }
 
-		return super.defenseProc(enemy, damage);
-	}
+        return damage;
+    }
 
-	@Override
-	public void die( Object cause ) {
-		super.die( cause );
+    @Override
+    public int defenseProc(Char enemy, int damage) {
 
-		Ghost.Quest.process();
-	}
-	
-	{
-		immunities.add( StenchGas.class );
-	}
+        GameScene.add(Blob.seed(pos, 20, StenchGas.class));
+
+        return super.defenseProc(enemy, damage);
+    }
+
+    @Override
+    public void die(Object cause) {
+        super.die(cause);
+
+        Actor c = Actor.findById(quest);
+        if (c != null) ((Ghost) c).quest.process();
+    }
+
+    {
+        immunities.add(StenchGas.class);
+    }
+
+    private static final String QUEST = "quest";
+
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(QUEST, quest);
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        quest = bundle.getInt(QUEST);
+    }
 }

@@ -1656,7 +1656,9 @@ public class Hero extends Char {
 
         } else {
 
-            if (Dungeon.level.map[cell] == Terrain.ENTRANCE || TileItem.isExitTerrainCell(Dungeon.level.map[cell])) {
+            if (Dungeon.level.getTransition(cell) == null
+                    && (Dungeon.level.map[cell] == Terrain.ENTRANCE
+                    || TileItem.isExitTerrainCell(Dungeon.level.map[cell]))) {
                 GLog.n(Messages.get(Hero.class, "no_trans_warning"));
             }
 

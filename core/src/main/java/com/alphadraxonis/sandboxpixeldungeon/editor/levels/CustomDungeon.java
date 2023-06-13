@@ -2,6 +2,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
@@ -47,7 +48,7 @@ import java.util.Set;
 
 public class CustomDungeon implements Bundlable {
 
-    public boolean opMode = false;//TODO settings what to enable exactly (dont release for now)
+    public boolean opMode = true;//TODO settings what to enable exactly (dont release for now)
     //Perks:
     // - permainvisiblility
     // - permamindvision
@@ -263,10 +264,6 @@ public class CustomDungeon implements Bundlable {
         return startEnergy;
     }
 
-    public final int getGhostQuest() {
-        return (Dungeon.getSimulatedDepth() + 1) % 3;
-    }
-
     public final int getWandmakerQuest() {
         return Random.Int(3) + 1;
     }
@@ -289,7 +286,8 @@ public class CustomDungeon implements Bundlable {
     }
 
     public void calculateQuestLevels() {
-        calculateOneQuestLvl(ghostSpawnLevels, maybeGhostSpawnLevels);
+        LevelScheme ghostLevel = floors.get(maybeGhostSpawnLevels.get(Random.Int(maybeGhostSpawnLevels.size())));
+        ghostLevel.mobsToSpawn.add(new Ghost(ghostLevel));
         calculateOneQuestLvl(wandmakerSpawnLevels, maybeWandmakerSpawnLevels);
         calculateOneQuestLvl(blacksmithSpawnLevels, maybeBlacksmithSpawnLevels);
         calculateOneQuestLvl(impSpawnLevels, maybeImpSpawnLevels);
@@ -325,6 +323,7 @@ public class CustomDungeon implements Bundlable {
             String name = Integer.toString(depth);
             LevelScheme l = new LevelScheme(name, depth, this);
             addFloor(l);
+            l.mobsToSpawn.add(new Ghost(l));
         }
         if (startFloor == null) startFloor = "1";
         ratKingLevels.add("5");
@@ -540,22 +539,22 @@ public class CustomDungeon implements Bundlable {
             } else startFloor = fs.get(0).getName();
         }
         if (EditorScene.customLevel() != null && EditorScene.customLevel().levelScheme == levelScheme) {
-                LevelScheme openS = null;
-                if (startFloor != null && getFloor(startFloor).getType() == CustomLevel.class)
-                    openS = getFloor(startFloor);
-                else {
-                    for (LevelScheme ls : fs) {
-                        if (ls.getType() == CustomLevel.class) {
-                            openS = ls;
-                            break;
-                        }
+            LevelScheme openS = null;
+            if (startFloor != null && getFloor(startFloor).getType() == CustomLevel.class)
+                openS = getFloor(startFloor);
+            else {
+                for (LevelScheme ls : fs) {
+                    if (ls.getType() == CustomLevel.class) {
+                        openS = ls;
+                        break;
                     }
                 }
-                if (openS == null) SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
-                else {
-                    EditorScene.open((CustomLevel) openS.loadLevel());
-                    EditorScene.show(new WndSwitchFloor());
-                }
+            }
+            if (openS == null) SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
+            else {
+                EditorScene.open((CustomLevel) openS.loadLevel());
+                EditorScene.show(new WndSwitchFloor());
+            }
 
         }
 
@@ -593,7 +592,8 @@ public class CustomDungeon implements Bundlable {
 
                 if (save) CustomDungeonSaves.saveLevel(level);
                 if (load) ls.unloadLevel();
-                else if (level == EditorScene.customLevel()) Undo.reset();//TODO maybe not best solution to reset all
+                else if (level == EditorScene.customLevel())
+                    Undo.reset();//TODO maybe not best solution to reset all
             } else {
                 if (Objects.equals(ls.getEntranceTransitionRegular().destLevel, n)) {
                     ls.getEntranceTransitionRegular().destLevel = Level.SURFACE;

@@ -49,7 +49,6 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Bestiary;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Piranha;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogFist;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
@@ -506,7 +505,7 @@ public abstract class Level implements Bundlable {
     abstract protected void createMobs();
 
     protected void createItems() {
-        if (Dungeon.customDungeon.isGhostLevel(Dungeon.levelName)) Ghost.Quest.spawn(this);
+//        if (Dungeon.customDungeon.isGhostLevel(Dungeon.levelName)) Ghost.Quest.spawn(this);
         if (Dungeon.customDungeon.isImpLevel(Dungeon.levelName)) Imp.Quest.spawn(this);
     }
 

@@ -25,6 +25,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
+import com.alphadraxonis.sandboxpixeldungeon.editor.other.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
@@ -51,12 +52,14 @@ public class WndSadGhost extends Window {
 	private static final int GAP		= 2;
 
 	Ghost ghost;
+	private GhostQuest quest;
 	
 	public WndSadGhost( final Ghost ghost, final int type ) {
 		
 		super();
 
 		this.ghost = ghost;
+		quest = ghost.quest;
 		
 		IconTitle titlebar = new IconTitle();
 		RenderedTextBlock message;
@@ -86,11 +89,11 @@ public class WndSadGhost extends Window {
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
 
-		RewardButton btnWeapon = new RewardButton( Ghost.Quest.weapon );
+		RewardButton btnWeapon = new RewardButton( quest.weapon );
 		btnWeapon.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.top() + message.height() + BTN_GAP, BTN_SIZE, BTN_SIZE );
 		add( btnWeapon );
 
-		RewardButton btnArmor = new RewardButton( Ghost.Quest.armor );
+		RewardButton btnArmor = new RewardButton( quest.armor );
 		btnArmor.setRect( btnWeapon.right() + BTN_GAP, btnWeapon.top(), BTN_SIZE, BTN_SIZE );
 		add(btnArmor);
 
@@ -103,10 +106,10 @@ public class WndSadGhost extends Window {
 		
 		if (reward == null) return;
 
-		if (reward instanceof Weapon && Ghost.Quest.enchant != null){
-			((Weapon) reward).enchant(Ghost.Quest.enchant);
-		} else if (reward instanceof Armor && Ghost.Quest.glyph != null){
-			((Armor) reward).inscribe(Ghost.Quest.glyph);
+		if (reward instanceof Weapon && quest.enchant != null){
+			((Weapon) reward).enchant(quest.enchant);
+		} else if (reward instanceof Armor && quest.glyph != null){
+			((Armor) reward).inscribe(quest.glyph);
 		}
 		
 		reward.identify(false);
@@ -119,7 +122,7 @@ public class WndSadGhost extends Window {
 		ghost.yell( Messages.get(this, "farewell") );
 		ghost.die( null );
 		
-		Ghost.Quest.complete();
+		ghost.quest.complete();
 	}
 
 	private class RewardButton extends Component {

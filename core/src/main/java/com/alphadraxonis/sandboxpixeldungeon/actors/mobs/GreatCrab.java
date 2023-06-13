@@ -23,6 +23,7 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.items.food.MysteryMeat;
@@ -32,6 +33,7 @@ import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.GreatCrabSprite;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 public class GreatCrab extends Crab {
@@ -54,6 +56,15 @@ public class GreatCrab extends Crab {
 	}
 
 	private int moving = 0;
+	private int quest;
+
+	public GreatCrab() {
+		//for bundling
+	}
+
+	public GreatCrab(Ghost questGiver) {
+		quest = questGiver.id();
+	}
 
 	@Override
 	protected boolean getCloser( int target ) {
@@ -107,6 +118,21 @@ public class GreatCrab extends Crab {
 	public void die( Object cause ) {
 		super.die( cause );
 
-		Ghost.Quest.process();
+		Actor c = Actor.findById(quest);
+		if (c != null) ((Ghost) c).quest.process();
+	}
+
+	private static final String QUEST = "quest";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		 bundle.put(QUEST, quest);
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		quest = bundle.getInt(QUEST);
 	}
 }

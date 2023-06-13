@@ -22,6 +22,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Fire;
@@ -58,6 +59,15 @@ public class GnollTrickster extends Gnoll {
 	}
 
 	private int combo = 0;
+	private int quest;
+
+	public GnollTrickster() {
+		//for bundling
+	}
+
+	public GnollTrickster(Ghost questGiver) {
+		quest = questGiver.id();
+	}
 
 	@Override
 	public int attackSkill( Char target ) {
@@ -122,21 +132,25 @@ public class GnollTrickster extends Gnoll {
 	public void die( Object cause ) {
 		super.die( cause );
 
-		Ghost.Quest.process();
+		Actor c = Actor.findById(quest);
+		if (c != null) ((Ghost) c).quest.process();
 	}
 
 	private static final String COMBO = "combo";
+	private static final String QUEST = "quest";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle(bundle);
 		bundle.put(COMBO, combo);
+		bundle.put(QUEST, quest);
 	}
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		combo = bundle.getInt( COMBO );
+		quest = bundle.getInt(QUEST);
 	}
 
 }

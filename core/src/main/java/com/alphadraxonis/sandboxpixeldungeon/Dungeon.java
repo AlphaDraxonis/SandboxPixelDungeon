@@ -35,11 +35,11 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Blacksmith;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
+import com.alphadraxonis.sandboxpixeldungeon.editor.other.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.Amulet;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -287,7 +287,7 @@ public class Dungeon {
 
         chapters = new HashSet<>();
 
-        Ghost.Quest.reset();
+        GhostQuest.reset();
         Wandmaker.Quest.reset();
         Blacksmith.Quest.reset();
         Imp.Quest.reset();
@@ -592,7 +592,7 @@ public class Dungeon {
             bundle.put(CHAPTERS, ids);
 
             Bundle quests = new Bundle();
-            Ghost.Quest.storeInBundle(quests);
+            GhostQuest.storeStatics(quests);
             Wandmaker.Quest.storeInBundle(quests);
             Blacksmith.Quest.storeInBundle(quests);
             Imp.Quest.storeInBundle(quests);
@@ -699,12 +699,12 @@ public class Dungeon {
 
             Bundle quests = bundle.getBundle(QUESTS);
             if (!quests.isNull()) {
-                Ghost.Quest.restoreFromBundle(quests);
+                GhostQuest.restoreStatics(quests);
                 Wandmaker.Quest.restoreFromBundle(quests);
                 Blacksmith.Quest.restoreFromBundle(quests);
                 Imp.Quest.restoreFromBundle(quests);
             } else {
-                Ghost.Quest.reset();
+                GhostQuest.reset();
                 Wandmaker.Quest.reset();
                 Blacksmith.Quest.reset();
                 Imp.Quest.reset();

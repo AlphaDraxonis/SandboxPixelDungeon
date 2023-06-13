@@ -35,8 +35,8 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Blacksmith;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.alphadraxonis.sandboxpixeldungeon.editor.other.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -228,6 +228,15 @@ public abstract class RegularLevel extends Level {
 		}
 		Random.shuffle(stdRooms);
 		Iterator<Room> stdRoomIter = stdRooms.iterator();
+
+		for (Mob m : levelScheme.mobsToSpawn) {
+			int tries = length;
+			do {
+				m.pos = randomRespawnCell(m);
+				tries--;
+			} while (m.pos == -1 && tries > 0);
+			if (m.pos != -1) mobs.add(m);
+		}
 
 		while (mobsToSpawn > 0) {
 			Mob mob = createMob();
@@ -440,7 +449,7 @@ public abstract class RegularLevel extends Level {
 		}
 
 		DriedRose rose = Dungeon.hero.belongings.getItem( DriedRose.class );
-		if (rose != null && rose.isIdentified() && !rose.cursed && Ghost.Quest.completed()){
+		if (rose != null && rose.isIdentified() && !rose.cursed && GhostQuest.completedOnce()){
 			//aim to drop 1 petal every 2 floors
 			int petalsNeeded = (int) Math.ceil((float)((Dungeon.depth / 2) - rose.droppedPetals) / 3);
 
