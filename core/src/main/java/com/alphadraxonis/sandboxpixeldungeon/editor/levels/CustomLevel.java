@@ -156,13 +156,14 @@ public class CustomLevel extends Level {
             SecretRoom.initForRun();
             Random.popGenerator();
 
+            Dungeon.seed = seed + 4;
             Level level = Reflection.newInstance(levelTemplate);
             temp.setLevel(level);
             level.name = Level.NONE;
             level.feeling = feeling;
             Dungeon.level = level;
 
-            Dungeon.hero = new Hero();
+            Dungeon.hero = new Hero();//Dried rose for example checks hero
             level.create();
             Dungeon.hero = null;
             tempDungeonNameForKey = null;

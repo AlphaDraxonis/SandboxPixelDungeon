@@ -115,6 +115,7 @@ public class ItemContainer extends Component { // needs access to protected meth
             editComp.layout();
             editComp.updateObj();
         }
+        onSlotNumChange();
     }
 
 
@@ -163,8 +164,11 @@ public class ItemContainer extends Component { // needs access to protected meth
             editComp.layout();
             editComp.updateObj();
         }
+        onSlotNumChange();
         return true;
     }
+
+    protected void onSlotNumChange(){}
 
     protected class Slot extends InventorySlot {
 

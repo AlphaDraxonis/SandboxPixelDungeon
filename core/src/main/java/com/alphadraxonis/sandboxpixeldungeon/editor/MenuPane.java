@@ -5,7 +5,7 @@ import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
-import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndSwitchFloor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;

@@ -3,6 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.overview;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndEditFloorInOverview;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
@@ -52,8 +53,8 @@ public abstract class LevelListPane extends ScrollingListPane {
 
     public boolean onEdit(LevelScheme levelScheme, LevelListPane.ListItem listItem) {
         if (Game.scene() instanceof EditorScene)
-            EditorScene.show(new WndEditLevelInOverview(levelScheme, listItem, this));
-        else Game.scene().addToFront(new WndEditLevelInOverview(levelScheme, listItem, this));
+            EditorScene.show(new WndEditFloorInOverview(levelScheme, listItem, this));
+        else Game.scene().addToFront(new WndEditFloorInOverview(levelScheme, listItem, this));
         return true;
     }
 

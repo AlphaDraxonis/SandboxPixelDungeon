@@ -79,6 +79,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             level = new CustomLevel(name, levelTemplate, feeling, seed, numInRegion, depth, this);
         } else {
             initExitEntranceCellsForRandomLevel();
+            //TODO set rooms, mobs, items  here
         }
         shopPriceMultiplier = Dungeon.getSimulatedDepth(this) / 5 + 1;
         if (seed != null) setSeed(seed);

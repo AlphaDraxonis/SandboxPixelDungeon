@@ -8,7 +8,7 @@ import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
-import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndSwitchFloor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;

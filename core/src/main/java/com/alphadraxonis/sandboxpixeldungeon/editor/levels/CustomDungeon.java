@@ -5,7 +5,7 @@ import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
-import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndSwitchFloor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;

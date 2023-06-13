@@ -1,6 +1,6 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.impls;
 
-import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndNewFloor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndNewFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;

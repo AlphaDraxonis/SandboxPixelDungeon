@@ -3,7 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
-import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndSelectFloor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSelectFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseObjectComp;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;

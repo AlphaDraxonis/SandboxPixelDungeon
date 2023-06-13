@@ -17,6 +17,16 @@ public class FoldableComp extends Component {
     protected Component body;
 
 
+    protected FoldableComp() {
+    }
+
+    public FoldableComp(String label, Component body) {
+        this.body = body;
+        add(body);
+        showBody(true);
+        title.text(label);
+    }
+
     @Override
     protected void createChildren(Object... params) {
 

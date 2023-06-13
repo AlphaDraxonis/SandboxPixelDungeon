@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.overview;
+package com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
@@ -9,6 +9,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.TransitionTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.LevelListPane;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -30,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WndEditLevelInOverview extends Window {
+public class WndEditFloorInOverview extends Window {
 
     protected Component content;
     protected ScrollPane sp;
@@ -45,7 +46,7 @@ public class WndEditLevelInOverview extends Window {
     private final Map<Integer, TransitionCompRow> transitionCompMap = new HashMap<>(5);
 
 
-    public WndEditLevelInOverview(LevelScheme levelScheme, LevelListPane.ListItem listItem,LevelListPane listPane) {
+    public WndEditFloorInOverview(LevelScheme levelScheme, LevelListPane.ListItem listItem, LevelListPane listPane) {
         this.levelScheme = levelScheme;
 
         if (levelScheme.getType() == CustomLevel.class && levelScheme.getLevel() == null)
@@ -114,14 +115,14 @@ public class WndEditLevelInOverview extends Window {
                 super.onClick();
 
                 SandboxPixelDungeon.scene().add(new WndOptions(Icons.get(Icons.WARNING),
-                        Messages.get(WndEditLevelInOverview.class,"erase_title"),
-                        Messages.get(WndEditLevelInOverview.class,"erase_body"),
-                        Messages.get(WndEditLevelInOverview.class,"erase_yes"),
+                        Messages.get(WndEditFloorInOverview.class,"erase_title"),
+                        Messages.get(WndEditFloorInOverview.class,"erase_body"),
+                        Messages.get(WndEditFloorInOverview.class,"erase_yes"),
                         Messages.get(WndGameInProgress.class, "erase_warn_no")) {
                     @Override
                     protected void onSelect(int index) {
                         if (index == 0) {
-                            WndEditLevelInOverview.this.hide();//important to hide before deletion
+                            WndEditFloorInOverview.this.hide();//important to hide before deletion
                             try {
                                 Dungeon.customDungeon.delete(levelScheme);
                             } catch (IOException e) {
@@ -136,7 +137,7 @@ public class WndEditLevelInOverview extends Window {
         delete.icon(Icons.get(Icons.CLOSE));
         add(delete);
         if (levelScheme.getType() == CustomLevel.class && EditorScene.customLevel()!=levelScheme.getLevel()) {
-            open = new RedButton(Messages.get(WndEditLevelInOverview.class,"open")){
+            open = new RedButton(Messages.get(WndEditFloorInOverview.class,"open")){
                 @Override
                 protected void onClick() {
                     WndSwitchFloor.selectLevelScheme(levelScheme, listItem,listPane);
@@ -200,7 +201,7 @@ public class WndEditLevelInOverview extends Window {
                 comp = new TransitionCompRow(cell, levelScheme, false) {
                     @Override
                     protected void layoutParent() {
-                        WndEditLevelInOverview.this.layout();
+                        WndEditFloorInOverview.this.layout();
                     }
                 };
                 content.add(comp);

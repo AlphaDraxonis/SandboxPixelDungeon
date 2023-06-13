@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.overview;
+package com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
@@ -6,6 +6,8 @@ import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.LevelListPane;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;

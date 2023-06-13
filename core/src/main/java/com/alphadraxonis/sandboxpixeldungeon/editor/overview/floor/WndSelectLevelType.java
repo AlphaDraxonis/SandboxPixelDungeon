@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.overview;
+package com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
