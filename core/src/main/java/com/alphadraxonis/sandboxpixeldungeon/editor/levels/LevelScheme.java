@@ -3,7 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
-import com.alphadraxonis.sandboxpixeldungeon.editor.overview.CustomDungeonSaves;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CityBossLevel;

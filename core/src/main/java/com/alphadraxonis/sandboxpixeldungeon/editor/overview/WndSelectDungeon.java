@@ -6,6 +6,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.DungeonToJsonConverter;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;

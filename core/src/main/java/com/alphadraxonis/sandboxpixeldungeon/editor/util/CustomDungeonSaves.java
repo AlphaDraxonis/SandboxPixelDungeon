@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.overview;
+package com.alphadraxonis.sandboxpixeldungeon.editor.util;
 
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
