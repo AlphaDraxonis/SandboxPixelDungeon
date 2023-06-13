@@ -75,6 +75,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.traps.WornDartTrap;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -151,12 +152,12 @@ public abstract class RegularLevel extends Level {
 			initRooms.add(SecretRoom.createRoom());
 		}
 
-		if (Dungeon.customDungeon.isBlacksmithLevel(Dungeon.levelName)) {
-			Blacksmith.Quest.spawn(initRooms);
+		for(Class<? extends Room> r : levelScheme.roomsToSpawn){
+			initRooms.add(Reflection.newInstance(r));
 		}
 
-		if (Dungeon.customDungeon.isWandmakerLevel(Dungeon.levelName)) {
-			Wandmaker.Quest.spawnRoom(initRooms);
+		if (Dungeon.customDungeon.isBlacksmithLevel(Dungeon.levelName)) {
+			Blacksmith.Quest.spawn(initRooms);
 		}
 
 		return initRooms;
@@ -230,12 +231,44 @@ public abstract class RegularLevel extends Level {
 		Iterator<Room> stdRoomIter = stdRooms.iterator();
 
 		for (Mob m : levelScheme.mobsToSpawn) {
-			int tries = length;
-			do {
-				m.pos = randomRespawnCell(m);
-				tries--;
-			} while (m.pos == -1 && tries > 0);
-			if (m.pos != -1) mobs.add(m);
+			if (m instanceof Wandmaker) {
+//				Set<Room> entrances = new HashSet<>(4);// TODO maybe use just entranceRoom insted ?
+//				for (Room room : rooms) {
+//					if (room instanceof EntranceRoom) {
+//						entrances.add(room);
+//					}
+//				}
+
+				boolean validPos;
+				int tries = length;
+				//Do not spawn wandmaker on the entrance, a trap, or in front of a door.
+				do {
+					validPos = true;
+					m.pos = pointToCell(roomEntrance.random());
+					if (m.pos == entrance()) {
+						validPos = false;
+					}
+					for (Point door : roomEntrance.connected.values()) {
+						if (trueDistance(m.pos, pointToCell(door)) <= 1) {
+							validPos = false;
+						}
+					}
+					if (traps.get(m.pos) != null) {
+						validPos = false;
+					}
+					tries--;
+					if (!validPos) m.pos = -1;
+				} while (m.pos == -1 && tries > 0);
+				if (m.pos != -1) mobs.add(m);
+
+			} else {
+				int tries = length;
+				do {
+					m.pos = randomRespawnCell(m);
+					tries--;
+				} while (m.pos == -1 && tries > 0);
+				if (m.pos != -1) mobs.add(m);
+			}
 		}
 
 		while (mobsToSpawn > 0) {

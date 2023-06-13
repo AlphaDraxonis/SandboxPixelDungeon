@@ -36,7 +36,6 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.huntress.Spir
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.other.GhostQuest;
@@ -288,7 +287,7 @@ public class Dungeon {
         chapters = new HashSet<>();
 
         GhostQuest.reset();
-        Wandmaker.Quest.reset();
+//        Wandmaker.Quest.reset();
         Blacksmith.Quest.reset();
         Imp.Quest.reset();
 
@@ -593,7 +592,7 @@ public class Dungeon {
 
             Bundle quests = new Bundle();
             GhostQuest.storeStatics(quests);
-            Wandmaker.Quest.storeInBundle(quests);
+//            Wandmaker.Quest.storeInBundle(quests);
             Blacksmith.Quest.storeInBundle(quests);
             Imp.Quest.storeInBundle(quests);
             bundle.put(QUESTS, quests);
@@ -700,12 +699,12 @@ public class Dungeon {
             Bundle quests = bundle.getBundle(QUESTS);
             if (!quests.isNull()) {
                 GhostQuest.restoreStatics(quests);
-                Wandmaker.Quest.restoreFromBundle(quests);
+//                Wandmaker.Quest.restoreFromBundle(quests);
                 Blacksmith.Quest.restoreFromBundle(quests);
                 Imp.Quest.restoreFromBundle(quests);
             } else {
                 GhostQuest.reset();
-                Wandmaker.Quest.reset();
+//                Wandmaker.Quest.reset();
                 Blacksmith.Quest.reset();
                 Imp.Quest.reset();
             }

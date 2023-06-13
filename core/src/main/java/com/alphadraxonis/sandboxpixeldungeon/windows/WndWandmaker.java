@@ -79,11 +79,11 @@ public class WndWandmaker extends Window {
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
 		
-		RewardButton btnWand1 = new RewardButton( Wandmaker.Quest.wand1 );
+		RewardButton btnWand1 = new RewardButton( wandmaker.quest.wand1 );
 		btnWand1.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.top() + message.height() + BTN_GAP, BTN_SIZE, BTN_SIZE );
 		add( btnWand1 );
 		
-		RewardButton btnWand2 = new RewardButton( Wandmaker.Quest.wand2 );
+		RewardButton btnWand2 = new RewardButton( wandmaker.quest.wand2 );
 		btnWand2.setRect( btnWand1.right() + BTN_GAP, btnWand1.top(), BTN_SIZE, BTN_SIZE );
 		add(btnWand2);
 		
@@ -112,7 +112,7 @@ public class WndWandmaker extends Window {
 		
 		wandmaker.sprite.die();
 		
-		Wandmaker.Quest.complete();
+		wandmaker.quest.complete();
 	}
 
 	public class RewardButton extends Component {

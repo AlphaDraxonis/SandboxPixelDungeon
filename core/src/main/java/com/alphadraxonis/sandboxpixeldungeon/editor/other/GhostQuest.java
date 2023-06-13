@@ -115,7 +115,8 @@ public class GhostQuest extends Quest {
             GLog.n(Messages.get(Ghost.class, "find_me"));
             Sample.INSTANCE.play(Assets.Sounds.GHOST);
             processed = true;
-            Statistics.questScores[0] = 1000;
+            if (Statistics.questScores[0] >= 1000) Statistics.questScores[0] += 100;
+            else Statistics.questScores[0] = 1000;
         }
     }
 

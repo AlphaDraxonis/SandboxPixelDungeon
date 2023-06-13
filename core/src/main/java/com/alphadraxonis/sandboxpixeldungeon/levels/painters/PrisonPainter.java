@@ -21,11 +21,9 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.levels.painters;
 
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
-import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.EntranceRoom;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -35,12 +33,12 @@ public class PrisonPainter extends RegularPainter {
 	@Override
 	protected void decorate(Level level, ArrayList<Room> rooms) {
 		
-		for (Room r : rooms) {
-			if (r instanceof EntranceRoom) {
-				Wandmaker.Quest.spawnWandmaker(level, r);
-				break;
-			}
-		}
+//		for (Room r : rooms) {
+//			if (r instanceof EntranceRoom) {
+//				Wandmaker.Quest.spawnWandmaker(level, r);
+//				break;
+//			}
+//		}
 		
 		int w = level.width();
 		int l = level.length();

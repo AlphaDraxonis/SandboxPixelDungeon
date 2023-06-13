@@ -3,6 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
@@ -288,7 +289,11 @@ public class CustomDungeon implements Bundlable {
     public void calculateQuestLevels() {
         LevelScheme ghostLevel = floors.get(maybeGhostSpawnLevels.get(Random.Int(maybeGhostSpawnLevels.size())));
         ghostLevel.mobsToSpawn.add(new Ghost(ghostLevel));
-        calculateOneQuestLvl(wandmakerSpawnLevels, maybeWandmakerSpawnLevels);
+
+        LevelScheme wmLevel = floors.get(maybeWandmakerSpawnLevels.get(Random.Int(maybeWandmakerSpawnLevels.size())));
+        wmLevel.mobsToSpawn.add(new Wandmaker(wmLevel));
+
+//        calculateOneQuestLvl(wandmakerSpawnLevels, maybeWandmakerSpawnLevels);
         calculateOneQuestLvl(blacksmithSpawnLevels, maybeBlacksmithSpawnLevels);
         calculateOneQuestLvl(impSpawnLevels, maybeImpSpawnLevels);
     }
@@ -323,7 +328,7 @@ public class CustomDungeon implements Bundlable {
             String name = Integer.toString(depth);
             LevelScheme l = new LevelScheme(name, depth, this);
             addFloor(l);
-            l.mobsToSpawn.add(new Ghost(l));
+            l.mobsToSpawn.add(new Wandmaker(l));
         }
         if (startFloor == null) startFloor = "1";
         ratKingLevels.add("5");

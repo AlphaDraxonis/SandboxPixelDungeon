@@ -312,7 +312,7 @@ public class StartScene extends PixelScene {
 					if (index == 0) {
 						Game.scene().addToFront(new WndNewDungeon(EMPTY_HASHSET));
 					}else if(index == 1){
-						Dungeon.customDungeon = new CustomDungeon("Default-Dungeon");//no check if name exists bc we don't save this
+						Dungeon.customDungeon = new CustomDungeon(WndNewDungeon.DEFAULT_DUNGEON);
 						Dungeon.customDungeon.initDefault();
 
 						GamesInProgress.selectedClass = selectClass;

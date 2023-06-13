@@ -23,6 +23,9 @@ import java.util.Set;
 public class WndNewDungeon extends WndTextInput {
 
 
+    public static final String DEFAULT_DUNGEON = "default_dungeon";
+
+
     private final Set<String> dungeonNames;
     public WndNewDungeon(Set<String> dungeonNames) {
 
@@ -42,7 +45,7 @@ public class WndNewDungeon extends WndTextInput {
     @Override
     public void onSelect(boolean positive, String text) {
         if (positive && !text.isEmpty()) {
-            if (dungeonNames.contains(text)) showNameWarnig();
+            if (dungeonNames.contains(text) || text.equals(DEFAULT_DUNGEON)) showNameWarnig();
             else createAndOpenNewCustomDungeon(text);
         }
     }

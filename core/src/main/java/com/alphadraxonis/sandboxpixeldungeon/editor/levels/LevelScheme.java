@@ -19,6 +19,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.PrisonLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.SewerBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.SewerLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -57,7 +58,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     private boolean seedSet = false;
     public List<Integer> entranceCells, exitCells;
 
-    public List<Mob> mobsToSpawn = new ArrayList<>();
+    public List<Mob> mobsToSpawn;
+    public ArrayList<Class<? extends Room>> roomsToSpawn;
 
 
     public LevelScheme() {
@@ -68,6 +70,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         this.name = Level.NONE;
         this.level = level;
         this.numInRegion = numInRegion;
+        mobsToSpawn = new ArrayList<>();
+        roomsToSpawn = new ArrayList<>();
     }
 
     public LevelScheme(String name, Class<? extends Level> levelType, Class<? extends Level> levelTemplate, Long seed, Level.Feeling feeling, int numInRegion, int depth) {
@@ -78,6 +82,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         this.depth = depth;
         exitCells = new ArrayList<>(3);
         entranceCells = new ArrayList<>(3);
+
+        mobsToSpawn = new ArrayList<>();
+        roomsToSpawn = new ArrayList<>();
+
+
         if (type == CustomLevel.class) {
             level = new CustomLevel(name, levelTemplate, feeling, seed, numInRegion, depth, this);
         } else {
@@ -92,6 +101,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         this.name = name;
         this.depth = depth;
         this.customDungeon = customDungeon;
+        mobsToSpawn = new ArrayList<>(4);
+        roomsToSpawn = new ArrayList<>(4);
         if (depth < 26) setChasm(Integer.toString(depth + 1));
 
         switch (depth) {
@@ -246,6 +257,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         return 2;
     }
 
+    public int getWandmakerQuest() {
+        return Random.Int(3) + 1;
+    }
+
     public int getPriceMultiplier() {
         return shopPriceMultiplier;
     }
@@ -352,6 +367,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     private static final String SHOP_PRICE_MULTIPLIER = "shop_price_multiplier";
 
     private static final String MOBS_TO_SPAWN = "mobs_to_spawn";
+    private static final String ROOMS_TO_SPAWN = "rooms_to_spawn";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -385,6 +401,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         bundle.put(EXIT_CELLS, exits);
 
         bundle.put(MOBS_TO_SPAWN, mobsToSpawn);
+        bundle.put(ROOMS_TO_SPAWN, roomsToSpawn.toArray(new Class[0]));
     }
 
     @Override
@@ -418,6 +435,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         mobsToSpawn = new ArrayList<>();
         if (bundle.contains(MOBS_TO_SPAWN))
             for (Bundlable l : bundle.getCollection(MOBS_TO_SPAWN)) mobsToSpawn.add((Mob) l);
+
+        if (bundle.contains(ROOMS_TO_SPAWN)) {
+            roomsToSpawn = new ArrayList<>();
+            for (Class<? extends Room> c : bundle.getClassArray(ROOMS_TO_SPAWN)) roomsToSpawn.add(c);
+        } else roomsToSpawn = new ArrayList<>();
     }
 
     public Level loadLevel() {
