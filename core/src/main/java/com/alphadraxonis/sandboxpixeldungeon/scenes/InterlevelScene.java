@@ -370,32 +370,32 @@ public class InterlevelScene extends PixelScene {
 
     private void descend() throws IOException {
 
-        if (Dungeon.hero == null) {
-            Mob.clearHeldAllies();
-            Dungeon.init();
-            GameLog.wipe();
+    if (Dungeon.hero == null) {
+        Mob.clearHeldAllies();
+        Dungeon.init();
+        GameLog.wipe();
 
-            Level level = Dungeon.newLevel();
-            addLevelToVisited(level);
-            Dungeon.switchLevel(level, -1);
+        Level level = Dungeon.newLevel();
+        addLevelToVisited(level);
+        Dungeon.switchLevel(level, -1);
+    } else {
+        Mob.holdAllies(Dungeon.level);
+        Dungeon.saveAll();
+
+        Level level;
+        Dungeon.depth = Dungeon.customDungeon.getFloor(curTransition.destLevel).getDepth();
+        Dungeon.levelName = curTransition.destLevel;
+        if (Arrays.asList(Dungeon.visited).contains(Dungeon.levelName)) {
+            level = Dungeon.loadLevel(GamesInProgress.curSlot);
         } else {
-            Mob.holdAllies(Dungeon.level);
-            Dungeon.saveAll();
-
-            Level level;
-            Dungeon.depth = Dungeon.customDungeon.getFloor(curTransition.destLevel).getDepth();
-            Dungeon.levelName = curTransition.destLevel;
-            if (Arrays.asList(Dungeon.visited).contains(Dungeon.levelName)) {
-                level = Dungeon.loadLevel(GamesInProgress.curSlot);
-            } else {
-                level = Dungeon.newLevel();
-                addLevelToVisited(level);
-            }
-
-            int destCell = curTransition.destCell;
-            curTransition = null;
-            Dungeon.switchLevel(level, destCell);
+            level = Dungeon.newLevel();
+            addLevelToVisited(level);
         }
+
+        int destCell = curTransition.destCell;
+        curTransition = null;
+        Dungeon.switchLevel(level, destCell);
+    }
 
     }
 

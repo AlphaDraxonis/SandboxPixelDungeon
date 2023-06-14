@@ -34,11 +34,11 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.other.GhostQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.Amulet;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -198,11 +198,13 @@ public class Dungeon {
     public static void init() {
 
         String levelDir = GamesInProgress.getCustomDungeonLevelFolder(GamesInProgress.curSlot);
-        try {
-            CustomDungeonSaves.copyLevelsForNewGame(customDungeon.getName(), levelDir);
-        } catch (IOException e) {
-            e.printStackTrace();
-            SandboxPixelDungeon.reportException(e);
+        if (!customDungeon.getName().equals(WndNewDungeon.DEFAULT_DUNGEON)) {
+            try {
+                CustomDungeonSaves.copyLevelsForNewGame(customDungeon.getName(), levelDir);
+            } catch (IOException e) {
+                e.printStackTrace();
+                SandboxPixelDungeon.reportException(e);
+            }
         }
         CustomDungeonSaves.setCurDirectory(levelDir);
         CustomDungeonSaves.setFileType(Files.FileType.Local);
@@ -288,7 +290,7 @@ public class Dungeon {
 
         GhostQuest.reset();
 //        Wandmaker.Quest.reset();
-        Blacksmith.Quest.reset();
+//        Blacksmith.Quest.reset();
         Imp.Quest.reset();
 
         hero = new Hero();
@@ -593,7 +595,7 @@ public class Dungeon {
             Bundle quests = new Bundle();
             GhostQuest.storeStatics(quests);
 //            Wandmaker.Quest.storeInBundle(quests);
-            Blacksmith.Quest.storeInBundle(quests);
+//            Blacksmith.Quest.storeInBundle(quests);
             Imp.Quest.storeInBundle(quests);
             bundle.put(QUESTS, quests);
 
@@ -700,12 +702,12 @@ public class Dungeon {
             if (!quests.isNull()) {
                 GhostQuest.restoreStatics(quests);
 //                Wandmaker.Quest.restoreFromBundle(quests);
-                Blacksmith.Quest.restoreFromBundle(quests);
+//                Blacksmith.Quest.restoreFromBundle(quests);
                 Imp.Quest.restoreFromBundle(quests);
             } else {
                 GhostQuest.reset();
 //                Wandmaker.Quest.reset();
-                Blacksmith.Quest.reset();
+//                Blacksmith.Quest.reset();
                 Imp.Quest.reset();
             }
 

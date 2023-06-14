@@ -1,6 +1,5 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.other;
 
-import com.alphadraxonis.sandboxpixeldungeon.Statistics;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.quest.CeremonialCandle;
@@ -32,7 +31,7 @@ public class WandmakerQuest extends Quest {
         quest.wand2.upgrade();
 
         // decide between 1,2, or 3 for quest type.
-        if (quest.type == 0) quest.type = levelScheme.getWandmakerQuest();
+        quest.type = levelScheme.getWandmakerQuest();
 
         switch (quest.type){
             case 1: default:
@@ -60,8 +59,7 @@ public class WandmakerQuest extends Quest {
         wand2 = null;
 
         Notes.remove( Notes.Landmark.WANDMAKER );
-        if (Statistics.questScores[1] >= 2000) Statistics.questScores[1] += 200;
-        else Statistics.questScores[1] = 2000;
+        addScore(1,2000);
     }
 
 

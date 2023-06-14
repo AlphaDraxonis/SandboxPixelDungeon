@@ -24,10 +24,11 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs;
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Badges;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
-import com.alphadraxonis.sandboxpixeldungeon.Statistics;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
+import com.alphadraxonis.sandboxpixeldungeon.editor.other.BlacksmithQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.BrokenSeal;
 import com.alphadraxonis.sandboxpixeldungeon.items.EquipableItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -37,8 +38,6 @@ import com.alphadraxonis.sandboxpixeldungeon.items.quest.Pickaxe;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
-import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
-import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BlacksmithRoom;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.BlacksmithSprite;
@@ -50,14 +49,21 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 
-import java.util.ArrayList;
-
 public class Blacksmith extends NPC {
 	
 	{
 		spriteClass = BlacksmithSprite.class;
 
 		properties.add(Property.IMMOVABLE);
+	}
+
+	public BlacksmithQuest quest;
+
+	public Blacksmith() {
+	}
+
+	public Blacksmith(LevelScheme levelScheme) {
+		quest = BlacksmithQuest.createRandom(levelScheme);
 	}
 	
 	@Override
@@ -66,7 +72,7 @@ public class Blacksmith extends NPC {
 			die(null);
 			return true;
 		}
-		if (Dungeon.level.visited[pos] && !Quest.reforged){
+		if (quest != null && Dungeon.level.visited[pos] && !quest.reforged()){
 			Notes.add( Notes.Landmark.TROLL );
 		}
 		return super.act();
@@ -80,92 +86,88 @@ public class Blacksmith extends NPC {
 		if (c != Dungeon.hero){
 			return true;
 		}
-		
-		if (!Quest.given) {
-			
-			Game.runOnRenderThread(new Callback() {
-				@Override
-				public void call() {
-					GameScene.show( new WndQuest( Blacksmith.this,
-							Quest.alternative ? Messages.get(Blacksmith.this, "blood_1") : Messages.get(Blacksmith.this, "gold_1") ) {
-						
-						@Override
-						public void onBackPressed() {
-							super.onBackPressed();
-							
-							Quest.given = true;
-							Quest.completed = false;
-							Notes.add( Notes.Landmark.TROLL );
-							
-							Pickaxe pick = new Pickaxe();
-							pick.identify();
-							if (pick.doPickUp( Dungeon.hero )) {
-								GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", pick.name()) ));
-							} else {
-								Dungeon.level.drop( pick, Dungeon.hero.pos ).sprite.drop();
+
+		if (quest != null) {
+			if (!quest.given) {
+
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						GameScene.show(new WndQuest(Blacksmith.this,
+								quest.type() == 1 ? Messages.get(Blacksmith.this, "blood_1") : Messages.get(Blacksmith.this, "gold_1")) {
+
+							@Override
+							public void onBackPressed() {
+								super.onBackPressed();
+
+								quest.given = true;
+								quest.processed = false;
+								Notes.add(Notes.Landmark.TROLL);
+
+								Pickaxe pick = new Pickaxe();
+								pick.identify();
+								if (pick.doPickUp(Dungeon.hero)) {
+									GLog.i(Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", pick.name())));
+								} else {
+									Dungeon.level.drop(pick, Dungeon.hero.pos).sprite.drop();
+								}
 							}
+						});
+					}
+				});
+
+			} else if (!quest.processed()) {
+				if (quest.type() == 1) {
+
+					Pickaxe pick = Dungeon.hero.belongings.getItem(Pickaxe.class);
+					if (pick == null) {
+						tell(Messages.get(this, "lost_pick"));
+					} else if (!pick.bloodStained) {
+						tell(Messages.get(this, "blood_2"));
+					} else {
+						if (pick.isEquipped(Dungeon.hero)) {
+							pick.cursed = false; //so that it can always be removed
+							pick.doUnequip(Dungeon.hero, false);
 						}
-					} );
-				}
-			});
-			
-		} else if (!Quest.completed) {
-			if (Quest.alternative) {
-				
-				Pickaxe pick = Dungeon.hero.belongings.getItem( Pickaxe.class );
-				if (pick == null) {
-					tell( Messages.get(this, "lost_pick") );
-				} else if (!pick.bloodStained) {
-					tell( Messages.get(this, "blood_2") );
-				} else {
-					if (pick.isEquipped( Dungeon.hero )) {
-						pick.cursed = false; //so that it can always be removed
-						pick.doUnequip( Dungeon.hero, false );
+						pick.detach(Dungeon.hero.belongings.backpack);
+						tell(Messages.get(this, "completed"));
+
+						quest.complete();
 					}
-					pick.detach( Dungeon.hero.belongings.backpack );
-					tell( Messages.get(this, "completed") );
-					
-					Quest.completed = true;
-					Quest.reforged = false;
-					Statistics.questScores[2] = 3000;
+
+				} else {
+
+					Pickaxe pick = Dungeon.hero.belongings.getItem(Pickaxe.class);
+					DarkGold gold = Dungeon.hero.belongings.getItem(DarkGold.class);
+					if (pick == null) {
+						tell(Messages.get(this, "lost_pick"));
+					} else if (gold == null || gold.quantity() < 15) {
+						tell(Messages.get(this, "gold_2"));
+					} else {
+						if (pick.isEquipped(Dungeon.hero)) {
+							pick.doUnequip(Dungeon.hero, false);
+						}
+						pick.detach(Dungeon.hero.belongings.backpack);
+						gold.detachAll(Dungeon.hero.belongings.backpack);
+						tell(Messages.get(this, "completed"));
+
+						quest.complete();
+					}
+
 				}
-				
+			} else if (!quest.reforged()) {
+
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						GameScene.show(new WndBlacksmith(Blacksmith.this, Dungeon.hero));
+					}
+				});
+
 			} else {
-				
-				Pickaxe pick = Dungeon.hero.belongings.getItem( Pickaxe.class );
-				DarkGold gold = Dungeon.hero.belongings.getItem( DarkGold.class );
-				if (pick == null) {
-					tell( Messages.get(this, "lost_pick") );
-				} else if (gold == null || gold.quantity() < 15) {
-					tell( Messages.get(this, "gold_2") );
-				} else {
-					if (pick.isEquipped( Dungeon.hero )) {
-						pick.doUnequip( Dungeon.hero, false );
-					}
-					pick.detach( Dungeon.hero.belongings.backpack );
-					gold.detachAll( Dungeon.hero.belongings.backpack );
-					tell( Messages.get(this, "completed") );
-					
-					Quest.completed = true;
-					Quest.reforged = false;
-					Statistics.questScores[2] = 3000;
-				}
-				
+				tell(Messages.get(this, "get_lost"));
 			}
-		} else if (!Quest.reforged) {
-			
-			Game.runOnRenderThread(new Callback() {
-				@Override
-				public void call() {
-					GameScene.show( new WndBlacksmith( Blacksmith.this, Dungeon.hero ) );
-				}
-			});
-			
-		} else {
-			
-			tell( Messages.get(this, "get_lost") );
-			
-		}
+		 }else tell(Messages.get(this, "get_lost"));
 
 		return true;
 	}
@@ -250,10 +252,6 @@ public class Blacksmith extends NPC {
 		Dungeon.hero.spendAndNext( 2f );
 		Badges.validateItemLevelAquired( first );
 		Item.updateQuickslot();
-		
-		Quest.reforged = true;
-		
-		Notes.remove( Notes.Landmark.TROLL );
 	}
 	
 	@Override
@@ -276,67 +274,82 @@ public class Blacksmith extends NPC {
 		return true;
 	}
 
-	public static class Quest {
-		
-		private static boolean spawned;
-		
-		private static boolean alternative;
-		private static boolean given;
-		private static boolean completed;
-		private static boolean reforged;
-		
-		public static void reset() {
-			spawned		= false;
-			given		= false;
-			completed	= false;
-			reforged	= false;
-		}
-		
-		private static final String NODE	= "blacksmith";
-		
-		private static final String SPAWNED		= "spawned";
-		private static final String ALTERNATIVE	= "alternative";
-		private static final String GIVEN		= "given";
-		private static final String COMPLETED	= "completed";
-		private static final String REFORGED	= "reforged";
-		
-		public static void storeInBundle( Bundle bundle ) {
-			
-			Bundle node = new Bundle();
-			
-			node.put( SPAWNED, spawned );
-			
-			if (spawned) {
-				node.put( ALTERNATIVE, alternative );
-				node.put( GIVEN, given );
-				node.put( COMPLETED, completed );
-				node.put( REFORGED, reforged );
-			}
-			
-			bundle.put( NODE, node );
-		}
-		
-		public static void restoreFromBundle( Bundle bundle ) {
 
-			Bundle node = bundle.getBundle( NODE );
-			
-			if (!node.isNull() && (spawned = node.getBoolean( SPAWNED ))) {
-				alternative	=  node.getBoolean( ALTERNATIVE );
-				given = node.getBoolean( GIVEN );
-				completed = node.getBoolean( COMPLETED );
-				reforged = node.getBoolean( REFORGED );
-			} else {
-				reset();
-			}
-		}
-		
-		public static ArrayList<Room> spawn( ArrayList<Room> rooms ) {
-			rooms.add(new BlacksmithRoom());
-			spawned = true;
-			alternative = Dungeon.customDungeon.getBlacksmithQuest();
+	private static final String QUEST = "quest";
 
-			given = false;
-			return rooms;
-		}
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		if (quest != null) bundle.put(QUEST, quest);
 	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		if (bundle.contains(QUEST)) quest = (BlacksmithQuest) bundle.get(QUEST);
+	}
+
+//	public static class Quest {
+//
+//		private static boolean spawned;
+//
+//		private static boolean alternative;
+//		private static boolean given;
+//		private static boolean completed;
+//		private static boolean reforged;
+//
+//		public static void reset() {
+//			spawned		= false;
+//			given		= false;
+//			completed	= false;
+//			reforged	= false;
+//		}
+//
+//		private static final String NODE	= "blacksmith";
+//
+//		private static final String SPAWNED		= "spawned";
+//		private static final String ALTERNATIVE	= "alternative";
+//		private static final String GIVEN		= "given";
+//		private static final String COMPLETED	= "completed";
+//		private static final String REFORGED	= "reforged";
+//
+//		public static void storeInBundle( Bundle bundle ) {
+//
+//			Bundle node = new Bundle();
+//
+//			node.put( SPAWNED, spawned );
+//
+//			if (spawned) {
+//				node.put( ALTERNATIVE, alternative );
+//				node.put( GIVEN, given );
+//				node.put( COMPLETED, completed );
+//				node.put( REFORGED, reforged );
+//			}
+//
+//			bundle.put( NODE, node );
+//		}
+//
+//		public static void restoreFromBundle( Bundle bundle ) {
+//
+//			Bundle node = bundle.getBundle( NODE );
+//
+//			if (!node.isNull() && (spawned = node.getBoolean( SPAWNED ))) {
+//				alternative	=  node.getBoolean( ALTERNATIVE );
+//				given = node.getBoolean( GIVEN );
+//				completed = node.getBoolean( COMPLETED );
+//				reforged = node.getBoolean( REFORGED );
+//			} else {
+//				reset();
+//			}
+//		}
+//
+//		public static ArrayList<Room> spawn( ArrayList<Room> rooms ) {
+//			rooms.add(new BlacksmithRoom());
+//			spawned = true;
+//			alternative = Dungeon.customDungeon.getBlacksmithQuest();
+//
+//			given = false;
+//			return rooms;
+//		}
+//	}
 }

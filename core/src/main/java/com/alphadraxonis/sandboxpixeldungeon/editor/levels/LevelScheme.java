@@ -261,6 +261,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         return Random.Int(3) + 1;
     }
 
+    public int getBlacksmithQuest() {
+        return Random.Int(2);
+    }
+
     public int getPriceMultiplier() {
         return shopPriceMultiplier;
     }

@@ -60,6 +60,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MagicalFireRoo
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.PitRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.ShopRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.SpecialRoom;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BlacksmithRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.EntranceRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.ExitRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.StandardRoom;
@@ -154,10 +155,6 @@ public abstract class RegularLevel extends Level {
 
 		for(Class<? extends Room> r : levelScheme.roomsToSpawn){
 			initRooms.add(Reflection.newInstance(r));
-		}
-
-		if (Dungeon.customDungeon.isBlacksmithLevel(Dungeon.levelName)) {
-			Blacksmith.Quest.spawn(initRooms);
 		}
 
 		return initRooms;
@@ -261,7 +258,14 @@ public abstract class RegularLevel extends Level {
 				} while (m.pos == -1 && tries > 0);
 				if (m.pos != -1) mobs.add(m);
 
-			} else {
+			} else if (m instanceof Blacksmith) {
+				for (Room room : rooms) {
+					if (room instanceof BlacksmithRoom) {
+						if (((BlacksmithRoom) room).placeBlacksmith((Blacksmith) m, this)) break;
+					}
+				}
+			}
+			if (m.pos < 0) {
 				int tries = length;
 				do {
 					m.pos = randomRespawnCell(m);
@@ -460,11 +464,11 @@ public abstract class RegularLevel extends Level {
 
 		for (Item item : itemsToSpawn) {
 			int cell = randomDropCell();
-			drop( item, cell ).type = Heap.Type.HEAP;
 			if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
 				map[cell] = Terrain.GRASS;
 				losBlocking[cell] = false;
 			}
+			drop( item, cell ).type = Heap.Type.HEAP;
 		}
 
 		//use a separate generator for this to prevent held items, meta progress, and talents from affecting levelgen

@@ -63,6 +63,7 @@ public class Reflection {
 		try {
 			return ClassReflection.forName( name );
 		} catch (Exception e) {
+//			throw new RuntimeException(">>>"+name+"<<<");
 			Game.reportException(e);
 			return null;
 		}

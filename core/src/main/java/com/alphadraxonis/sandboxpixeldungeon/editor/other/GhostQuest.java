@@ -1,7 +1,6 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.other;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
-import com.alphadraxonis.sandboxpixeldungeon.Statistics;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -115,8 +114,7 @@ public class GhostQuest extends Quest {
             GLog.n(Messages.get(Ghost.class, "find_me"));
             Sample.INSTANCE.play(Assets.Sounds.GHOST);
             processed = true;
-            if (Statistics.questScores[0] >= 1000) Statistics.questScores[0] += 100;
-            else Statistics.questScores[0] = 1000;
+            addScore(0,1000);
         }
     }
 
@@ -163,9 +161,10 @@ public class GhostQuest extends Quest {
     }
 
     public static void restoreStatics(Bundle bundle) {
-        Bundle b = (Bundle) bundle.get(NODE);
+        Bundle b = (Bundle) bundle.getBundle(NODE);
         completedOnce = b.getBoolean(COMPLETED_ONCE);
     }
+
     public static void reset(){
         completedOnce = false;
     }
