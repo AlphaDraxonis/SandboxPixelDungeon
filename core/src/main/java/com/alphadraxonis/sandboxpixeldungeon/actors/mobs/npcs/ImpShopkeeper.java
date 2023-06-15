@@ -23,6 +23,7 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ImpSprite;
 
@@ -47,5 +48,10 @@ public class ImpShopkeeper extends Shopkeeper {
 		}
 
 		return super.act();
+	}
+
+	@Override
+	public String name() {
+		return super.name() + (CustomDungeon.isEditing() ? " (" + Messages.get(Shopkeeper.class, "name") + ")" : "");
 	}
 }

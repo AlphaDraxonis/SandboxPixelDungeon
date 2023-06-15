@@ -39,6 +39,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.GhostSprite;
+import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndQuest;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndSadGhost;
 import com.watabou.noosa.Game;
@@ -103,83 +104,84 @@ public class Ghost extends QuestNPC<GhostQuest> {
             return super.interact(c);
         }
 
-        if (quest.given()) {
-            if (quest.weapon != null) {
-                if (quest.completed()) {
-                    Game.runOnRenderThread(new Callback() {
-                        @Override
-                        public void call() {
-                            GameScene.show(new WndSadGhost(Ghost.this, quest.type()));
-                        }
-                    });
-                } else {
-                    Game.runOnRenderThread(new Callback() {
-                        @Override
-                        public void call() {
-                            switch (quest.type()) {
-                                case GhostQuest.RAT:
-                                default:
-                                    GameScene.show(new WndQuest(Ghost.this, Messages.get(Ghost.this, "rat_2")));
-                                    break;
-                                case GhostQuest.GNOLL:
-                                    GameScene.show(new WndQuest(Ghost.this, Messages.get(Ghost.this, "gnoll_2")));
-                                    break;
-                                case GhostQuest.CRAB:
-                                    GameScene.show(new WndQuest(Ghost.this, Messages.get(Ghost.this, "crab_2")));
-                                    break;
+        if (quest != null) {
+
+            if (quest.given()) {
+                if (quest.weapon != null && quest.completed()) {
+                        Game.runOnRenderThread(new Callback() {
+                            @Override
+                            public void call() {
+                                GameScene.show(new WndSadGhost(Ghost.this, quest.type()));
+                            }
+                        });
+                    } else {
+                        Game.runOnRenderThread(new Callback() {
+                            @Override
+                            public void call() {
+                                switch (quest.type()) {
+                                    case GhostQuest.RAT:
+                                    default:
+                                        GameScene.show(new WndQuest(Ghost.this, Messages.get(Ghost.this, "rat_2")));
+                                        break;
+                                    case GhostQuest.GNOLL:
+                                        GameScene.show(new WndQuest(Ghost.this, Messages.get(Ghost.this, "gnoll_2")));
+                                        break;
+                                    case GhostQuest.CRAB:
+                                        GameScene.show(new WndQuest(Ghost.this, Messages.get(Ghost.this, "crab_2")));
+                                        break;
+                                }
+                            }
+                        });
+
+                        int newPos = -1;
+                        for (int i = 0; i < 10; i++) {
+                            newPos = Dungeon.level.randomRespawnCell(this, true);
+                            if (newPos != -1) {
+                                break;
                             }
                         }
-                    });
-
-                    int newPos = -1;
-                    for (int i = 0; i < 10; i++) {
-                        newPos = Dungeon.level.randomRespawnCell(this);
                         if (newPos != -1) {
-                            break;
+
+                            CellEmitter.get(pos).start(Speck.factory(Speck.LIGHT), 0.2f, 3);
+                            pos = newPos;
+                            sprite.place(pos);
+                            sprite.visible = Dungeon.level.heroFOV[pos];
                         }
-                    }
-                    if (newPos != -1) {
-
-                        CellEmitter.get(pos).start(Speck.factory(Speck.LIGHT), 0.2f, 3);
-                        pos = newPos;
-                        sprite.place(pos);
-                        sprite.visible = Dungeon.level.heroFOV[pos];
-                    }
                 }
+            } else {
+                Mob questBoss;
+                String txt_quest;
+
+                switch (quest.type()) {
+                    case GhostQuest.RAT:
+                    default:
+                        questBoss = new FetidRat(this);
+                        txt_quest = Messages.get(this, "rat_1", Messages.titleCase(Dungeon.hero.name()));
+                        break;
+                    case GhostQuest.GNOLL:
+                        questBoss = new GnollTrickster(this);
+                        txt_quest = Messages.get(this, "gnoll_1", Messages.titleCase(Dungeon.hero.name()));
+                        break;
+                    case GhostQuest.CRAB:
+                        questBoss = new GreatCrab(this);
+                        txt_quest = Messages.get(this, "crab_1", Messages.titleCase(Dungeon.hero.name()));
+                        break;
+                }
+
+                questBoss.pos = Dungeon.level.randomRespawnCell(this, true);
+
+                if (questBoss.pos != -1) {
+                    GameScene.add(questBoss);
+                    quest.start();
+                    Game.runOnRenderThread(new Callback() {
+                        @Override
+                        public void call() {
+                            GameScene.show(new WndQuest(Ghost.this, txt_quest));
+                        }
+                    });
+                } else GLog.n(Messages.get(this, "no_boss_warning"));
+
             }
-        } else {
-            Mob questBoss;
-            String txt_quest;
-
-            switch (quest.type()) {
-                case GhostQuest.RAT:
-                default:
-                    questBoss = new FetidRat(this);
-                    txt_quest = Messages.get(this, "rat_1", Messages.titleCase(Dungeon.hero.name()));
-                    break;
-                case GhostQuest.GNOLL:
-                    questBoss = new GnollTrickster(this);
-                    txt_quest = Messages.get(this, "gnoll_1", Messages.titleCase(Dungeon.hero.name()));
-                    break;
-                case GhostQuest.CRAB:
-                    questBoss = new GreatCrab(this);
-                    txt_quest = Messages.get(this, "crab_1", Messages.titleCase(Dungeon.hero.name()));
-                    break;
-            }
-
-            questBoss.pos = Dungeon.level.randomRespawnCell(this);
-
-            if (questBoss.pos != -1) {
-                GameScene.add(questBoss);
-                quest.start();
-                Game.runOnRenderThread(new Callback() {
-                    @Override
-                    public void call() {
-                        GameScene.show(new WndQuest(Ghost.this, txt_quest));
-                    }
-                });
-            }
-
         }
 
         return true;

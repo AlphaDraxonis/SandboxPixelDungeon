@@ -355,6 +355,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         for (Mob m : mobsToSpawn) {
             if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
         }
+        if (type == CustomLevel.class){
+            for (Mob m : level.mobs) {
+                if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
+            }
+        }
         //rooms
         //items
         Random.popGenerator();

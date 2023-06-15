@@ -85,7 +85,6 @@ public class GhostQuest extends Quest {
             }
         }
 
-
     }
 
     public void complete() {

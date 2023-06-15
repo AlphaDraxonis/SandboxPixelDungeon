@@ -2,6 +2,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.quests;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
@@ -21,6 +22,7 @@ public abstract class QuestNPC<T extends Quest> extends NPC {
     }
 
     public void initQuest(LevelScheme levelScheme) {
+        if(this instanceof Ghost)quest= (T) new GhostQuest();
         if (quest != null) {
             quest.initRandom(levelScheme);
         }

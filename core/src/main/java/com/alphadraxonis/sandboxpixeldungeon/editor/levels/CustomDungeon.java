@@ -248,17 +248,26 @@ public class CustomDungeon implements Bundlable {
     }
 
     public void calculateQuestLevels() {
-        LevelScheme level = floors.get(maybeGhostSpawnLevels.get(Random.Int(maybeGhostSpawnLevels.size())));
-        level.mobsToSpawn.add(new Ghost(new GhostQuest()));
+        LevelScheme level;
+        if (!maybeGhostSpawnLevels.isEmpty()) {
+            level = floors.get(maybeGhostSpawnLevels.get(Random.Int(maybeGhostSpawnLevels.size())));
+            level.mobsToSpawn.add(new Ghost(new GhostQuest()));
+        }
 
-        level = floors.get(maybeWandmakerSpawnLevels.get(Random.Int(maybeWandmakerSpawnLevels.size())));
-        level.mobsToSpawn.add(new Wandmaker(new WandmakerQuest()));
+        if (!maybeWandmakerSpawnLevels.isEmpty()) {
+            level = floors.get(maybeWandmakerSpawnLevels.get(Random.Int(maybeWandmakerSpawnLevels.size())));
+            level.mobsToSpawn.add(new Wandmaker(new WandmakerQuest()));
+        }
 
-        level = floors.get(maybeBlacksmithSpawnLevels.get(Random.Int(maybeBlacksmithSpawnLevels.size())));
-        level.mobsToSpawn.add(new Blacksmith(new BlacksmithQuest()));
+        if (!maybeBlacksmithSpawnLevels.isEmpty()) {
+            level = floors.get(maybeBlacksmithSpawnLevels.get(Random.Int(maybeBlacksmithSpawnLevels.size())));
+            level.mobsToSpawn.add(new Blacksmith(new BlacksmithQuest()));
+        }
 
-        level = floors.get(maybeImpSpawnLevels.get(Random.Int(maybeImpSpawnLevels.size())));
-        level.mobsToSpawn.add(new Imp(new ImpQuest()));
+        if (!maybeImpSpawnLevels.isEmpty()) {
+            level = floors.get(maybeImpSpawnLevels.get(Random.Int(maybeImpSpawnLevels.size())));
+            level.mobsToSpawn.add(new Imp(new ImpQuest()));
+        }
     }
 
     public void addMaybeGhostSpawnLevel(String level) {
@@ -293,7 +302,6 @@ public class CustomDungeon implements Bundlable {
             l.mobsToSpawn.add(new Blacksmith(new BlacksmithQuest()));
             l.mobsToSpawn.add(new Imp(new ImpQuest()));
         }
-
 
 
         if (startFloor == null) startFloor = "1";

@@ -53,7 +53,9 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Warlock;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Wraith;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogFist;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Blacksmith;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.ImpShopkeeper;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.RatKing;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Shopkeeper;
@@ -176,12 +178,13 @@ public enum Mobs {
     static {
 
         NPC.classes = new Class[]{
+                Ghost.class,
                 Wandmaker.class,
                 Blacksmith.class,
                 Imp.class,
                 Shopkeeper.class,
+                ImpShopkeeper.class,
                 RatKing.class,
-//                Ghost.class,
                 Sheep.class,
                 WandOfRegrowth.Lotus.class
         };
@@ -276,10 +279,8 @@ public enum Mobs {
             this.mobs = mobs;
             for (Class<?> m : mobs.classes) {
                 Mob mob = (Mob) Reflection.newInstance(m);
-                if (mob instanceof com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC || mob instanceof Mimic) {
-                    mob.state = mob.PASSIVE;
-                    if (mob instanceof WandOfRegrowth.Lotus)
-                        ((WandOfRegrowth.Lotus) mob).setLevel(7);
+                if (mob instanceof WandOfRegrowth.Lotus) {
+                    ((WandOfRegrowth.Lotus) mob).setLevel(7);
                 }
                 mob.pos = -1;
                 items.add(new MobItem(mob));
