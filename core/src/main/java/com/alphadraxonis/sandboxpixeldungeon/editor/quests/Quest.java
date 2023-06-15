@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.other;
+package com.alphadraxonis.sandboxpixeldungeon.editor.quests;
 
 import com.alphadraxonis.sandboxpixeldungeon.Statistics;
 import com.watabou.utils.Bundlable;
@@ -8,23 +8,31 @@ public abstract class Quest implements Bundlable {
 
     protected int type = -1;
 
-    public boolean given;
-    public boolean processed;
+    private boolean given;
+    private boolean completed;
 
-    public abstract boolean completed();
-
-    public abstract void complete();
+    public void complete(){
+        completed = true;
+    }
     void addScore(int slot, int score){
         if (Statistics.questScores[slot] >= score) Statistics.questScores[slot] += score/10;
         else Statistics.questScores[slot] = score;
     }
 
-    public boolean processed() {
-        return processed;
+    public boolean completed() {
+        return completed;
     }
 
     public int type() {
         return type;
+    }
+
+    public void start(){
+        given = true;
+    }
+
+    public boolean given() {
+        return given;
     }
 
 
@@ -36,14 +44,14 @@ public abstract class Quest implements Bundlable {
     public void storeInBundle(Bundle bundle) {
         bundle.put(TYPE, type);
         bundle.put(GIVEN, given);
-        bundle.put(PROCESSED, processed);
+        bundle.put(PROCESSED, completed);
     }
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         type = bundle.getInt(TYPE);
         given = bundle.getBoolean(GIVEN);
-        processed = bundle.getBoolean(PROCESSED);
+        completed = bundle.getBoolean(PROCESSED);
     }
 
 

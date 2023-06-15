@@ -24,7 +24,7 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.food.Food;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.MonkSprite;
@@ -73,7 +73,7 @@ public class Monk extends Mob {
 	
 	@Override
 	public void rollToDropLoot() {
-		Imp.Quest.process( this );
+		ImpQuest.process( this );
 		
 		super.rollToDropLoot();
 	}

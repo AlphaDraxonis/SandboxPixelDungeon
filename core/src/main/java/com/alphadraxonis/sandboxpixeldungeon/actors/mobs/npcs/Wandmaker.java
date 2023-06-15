@@ -26,7 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
-import com.alphadraxonis.sandboxpixeldungeon.editor.other.WandmakerQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.quest.CorpseDust;
 import com.alphadraxonis.sandboxpixeldungeon.items.quest.Embers;
@@ -99,18 +99,18 @@ public class Wandmaker extends NPC {
 		}
 
 		if (quest != null) {
-			if (quest.given) {
+			if (quest.given()) {
 
 				Item item;
 				switch (quest.type()) {
-					case 1:
+					case WandmakerQuest.ASH:
 					default:
 						item = Dungeon.hero.belongings.getItem(CorpseDust.class);
 						break;
-					case 2:
+					case WandmakerQuest.CANDLE:
 						item = Dungeon.hero.belongings.getItem(Embers.class);
 						break;
-					case 3:
+					case WandmakerQuest.SEED:
 						item = Dungeon.hero.belongings.getItem(Rotberry.Seed.class);
 						break;
 				}
@@ -169,13 +169,13 @@ public class Wandmaker extends NPC {
 				msg1 += Messages.get(this, "intro_1");
 
 				switch (quest.type()) {
-					case 1:
+					case WandmakerQuest.ASH:
 						msg2 += Messages.get(this, "intro_dust");
 						break;
-					case 2:
+					case WandmakerQuest.CANDLE:
 						msg2 += Messages.get(this, "intro_ember");
 						break;
-					case 3:
+					case WandmakerQuest.SEED:
 						msg2 += Messages.get(this, "intro_berry");
 						break;
 				}
@@ -197,8 +197,7 @@ public class Wandmaker extends NPC {
 					}
 				});
 
-				quest.given = true;
-				Notes.add(Notes.Landmark.WANDMAKER);
+				quest.start();
 			}
 		}
 

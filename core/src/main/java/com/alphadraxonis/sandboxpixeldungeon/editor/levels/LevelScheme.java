@@ -4,6 +4,8 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesLevel;
@@ -252,9 +254,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public int getGhostQuest() {
         int depth = Dungeon.getSimulatedDepth(this);
-        if (depth <= 2) return 0;
-        if (depth == 3) return 1;
-        return 2;
+        if (depth <= 2) return GhostQuest.RAT;
+        if (depth == 3) return GhostQuest.GNOLL;
+        return GhostQuest.CRAB;
     }
 
     public int getWandmakerQuest() {
@@ -263,6 +265,17 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public int getBlacksmithQuest() {
         return Random.Int(2);
+    }
+    public int getImpQuest() {
+        //always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
+        switch (Dungeon.getSimulatedDepth(this)) {
+            case 17:return ImpQuest.MONK_QUEST;//Monk quest
+            case 19:
+                return ImpQuest.GOLEM_QUEST;//Golem Quest
+            case 18:
+            default:
+                return Random.Int(2);
+        }
     }
 
     public int getPriceMultiplier() {
@@ -345,12 +358,14 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     public void initSeed() {
         if (!seedSet) {
             int lookAhead = depth;
-            if (name.equals(String.valueOf(depth))) lookAhead += name.hashCode() % 100;
+//            if (name.equals(String.valueOf(depth)))
+            lookAhead += name.hashCode() % 100;
 
             for (int i = 0; i < lookAhead; i++) {
                 Random.Long(); //we don't care about these values, just need to go through them
             }
             seed = Random.Long();
+            System.err.println(seed + " for "+name);
         }
     }
 

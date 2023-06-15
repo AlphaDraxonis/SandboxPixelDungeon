@@ -25,7 +25,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
-import com.alphadraxonis.sandboxpixeldungeon.editor.other.GhostQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
@@ -64,17 +64,17 @@ public class WndSadGhost extends Window {
 		IconTitle titlebar = new IconTitle();
 		RenderedTextBlock message;
 		switch (type){
-			case 0:default:
+			case GhostQuest.RAT:default:
 				titlebar.icon( new FetidRatSprite() );
 				titlebar.label( Messages.get(this, "rat_title") );
 				message = PixelScene.renderTextBlock( Messages.get(this, "rat")+"\n\n"+Messages.get(this, "give_item"), 6 );
 				break;
-			case 1:
+			case GhostQuest.GNOLL:
 				titlebar.icon( new GnollTricksterSprite() );
 				titlebar.label( Messages.get(this, "gnoll_title") );
 				message = PixelScene.renderTextBlock( Messages.get(this, "gnoll")+"\n\n"+Messages.get(this, "give_item"), 6 );
 				break;
-			case 2:
+			case GhostQuest.CRAB:
 				titlebar.icon( new GreatCrabSprite());
 				titlebar.label( Messages.get(this, "crab_title") );
 				message = PixelScene.renderTextBlock( Messages.get(this, "crab")+"\n\n"+Messages.get(this, "give_item"), 6 );

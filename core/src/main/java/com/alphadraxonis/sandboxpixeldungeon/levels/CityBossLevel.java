@@ -29,7 +29,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DwarfKing;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
@@ -122,7 +122,7 @@ public class CityBossLevel extends Level {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		impShop = (ImpShopRoom) bundle.get( IMP_SHOP );
-		if (map[topDoor] != Terrain.LOCKED_DOOR && Imp.Quest.isCompleted() && !impShop.shopSpawned()){
+		if (map[topDoor] != Terrain.LOCKED_DOOR && ImpQuest.completedOnce() && !impShop.shopSpawned()){
 			spawnShop();
 		}
 	}
@@ -341,7 +341,7 @@ public class CityBossLevel extends Level {
 		set( topDoor, Terrain.DOOR );
 		GameScene.updateMap( topDoor );
 
-		if (Imp.Quest.isCompleted()) {
+		if (ImpQuest.completedOnce()) {
 			spawnShop();
 		}
 		Dungeon.observe();

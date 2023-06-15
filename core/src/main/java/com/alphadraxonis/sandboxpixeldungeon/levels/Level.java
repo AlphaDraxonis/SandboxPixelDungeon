@@ -24,6 +24,7 @@ package com.alphadraxonis.sandboxpixeldungeon.levels;
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Challenges;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.Statistics;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
@@ -49,7 +50,6 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Bestiary;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Piranha;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogFist;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
@@ -506,7 +506,7 @@ public abstract class Level implements Bundlable {
 
     protected void createItems() {
 //        if (Dungeon.customDungeon.isGhostLevel(Dungeon.levelName)) Ghost.Quest.spawn(this);
-        if (Dungeon.customDungeon.isImpLevel(Dungeon.levelName)) Imp.Quest.spawn(this);
+//        if (Dungeon.customDungeon.isImpLevel(Dungeon.levelName)) Imp.Quest.spawn(this);
     }
 
     public int entrance() {
@@ -960,7 +960,7 @@ public abstract class Level implements Bundlable {
             heap.drop(item);
         }
 
-        if (!CustomDungeon.isEditing()) {
+        if (Dungeon.level != null && SandboxPixelDungeon.scene() instanceof GameScene) {
             pressCell(cell);
         }
 

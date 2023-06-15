@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.other;
+package com.alphadraxonis.sandboxpixeldungeon.editor.quests;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
@@ -18,6 +18,8 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 public class GhostQuest extends Quest {
+
+    public static final int RAT = 0, GNOLL = 1, CRAB = 2;
 
     private static boolean completedOnce;
 
@@ -100,9 +102,8 @@ public class GhostQuest extends Quest {
         Notes.remove(Notes.Landmark.GHOST);
     }
 
-    @Override
-    public boolean completed() {
-        return processed() && weapon == null && armor == null;
+    public boolean finished() {
+        return completed() && weapon == null && armor == null;
     }
 
     public static boolean completedOnce() {
@@ -110,14 +111,19 @@ public class GhostQuest extends Quest {
     }
 
     public void process() {
-        if (given && !processed()) {
+        if (given() && !completed()) {
             GLog.n(Messages.get(Ghost.class, "find_me"));
             Sample.INSTANCE.play(Assets.Sounds.GHOST);
-            processed = true;
+            super.complete();
             addScore(0,1000);
         }
     }
 
+    @Override
+    public void start() {
+        super.start();
+        Notes.add(Notes.Landmark.GHOST);
+    }
 
     private static final String NODE = "sad_ghost";
     private static final String COMPLETED_ONCE = "completed_once";
@@ -161,7 +167,7 @@ public class GhostQuest extends Quest {
     }
 
     public static void restoreStatics(Bundle bundle) {
-        Bundle b = (Bundle) bundle.getBundle(NODE);
+        Bundle b = bundle.getBundle(NODE);
         completedOnce = b.getBoolean(COMPLETED_ONCE);
     }
 

@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.other;
+package com.alphadraxonis.sandboxpixeldungeon.editor.quests;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -12,6 +12,7 @@ import com.watabou.utils.Bundle;
 
 public class WandmakerQuest extends Quest {
 
+    public static final int ASH = 1, CANDLE = 2, SEED = 3;
 
     public Wand wand1;
     public Wand wand2;
@@ -19,7 +20,6 @@ public class WandmakerQuest extends Quest {
     public static WandmakerQuest createRandom(LevelScheme levelScheme) {
         WandmakerQuest quest = new WandmakerQuest();
 
-        quest.given = false;
         quest.wand1 = (Wand) Generator.randomUsingDefaults(Generator.Category.WAND);
         quest.wand1.cursed = false;
         quest.wand1.upgrade();
@@ -34,13 +34,13 @@ public class WandmakerQuest extends Quest {
         quest.type = levelScheme.getWandmakerQuest();
 
         switch (quest.type){
-            case 1: default:
+            case ASH: default:
                 levelScheme.roomsToSpawn.add(MassGraveRoom.class);
                 break;
-            case 2:
+            case CANDLE:
                 levelScheme.roomsToSpawn.add(RitualSiteRoom.class);
                 break;
-            case 3:
+            case SEED:
                 levelScheme.roomsToSpawn.add(RotGardenRoom.class);
                 break;
         }
@@ -62,6 +62,11 @@ public class WandmakerQuest extends Quest {
         addScore(1,2000);
     }
 
+    @Override
+    public void start() {
+        super.start();
+        Notes.add(Notes.Landmark.WANDMAKER);
+    }
 
     private static final String WAND1 = "wand1";
     private static final String WAND2 = "wand2";

@@ -26,7 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.MagicImmune;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfTeleportation;
@@ -82,7 +82,7 @@ public class Golem extends Mob {
 
 	@Override
 	public void rollToDropLoot() {
-		Imp.Quest.process( this );
+		ImpQuest.process( this );
 		super.rollToDropLoot();
 	}
 

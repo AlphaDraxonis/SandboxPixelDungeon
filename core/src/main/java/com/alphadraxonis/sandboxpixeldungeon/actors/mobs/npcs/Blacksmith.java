@@ -28,7 +28,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
-import com.alphadraxonis.sandboxpixeldungeon.editor.other.BlacksmithQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.BlacksmithQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.BrokenSeal;
 import com.alphadraxonis.sandboxpixeldungeon.items.EquipableItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -88,7 +88,7 @@ public class Blacksmith extends NPC {
 		}
 
 		if (quest != null) {
-			if (!quest.given) {
+			if (!quest.given()) {
 
 				Game.runOnRenderThread(new Callback() {
 					@Override
@@ -100,9 +100,7 @@ public class Blacksmith extends NPC {
 							public void onBackPressed() {
 								super.onBackPressed();
 
-								quest.given = true;
-								quest.processed = false;
-								Notes.add(Notes.Landmark.TROLL);
+								quest.start();
 
 								Pickaxe pick = new Pickaxe();
 								pick.identify();
@@ -116,7 +114,7 @@ public class Blacksmith extends NPC {
 					}
 				});
 
-			} else if (!quest.processed()) {
+			} else if (!quest.completed()) {
 				if (quest.type() == 1) {
 
 					Pickaxe pick = Dungeon.hero.belongings.getItem(Pickaxe.class);

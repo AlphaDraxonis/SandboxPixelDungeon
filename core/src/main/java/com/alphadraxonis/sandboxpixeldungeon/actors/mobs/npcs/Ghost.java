@@ -31,7 +31,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GnollTrickster;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GreatCrab;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
-import com.alphadraxonis.sandboxpixeldungeon.editor.other.GhostQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
@@ -71,7 +71,7 @@ public class Ghost extends NPC {
             return true;
         }
         if (quest != null) {
-            if (quest.processed()) {
+            if (quest.completed()) {
                 target = Dungeon.hero.pos;
             }
             if (Dungeon.level.heroFOV[pos] && !quest.completed()) {
@@ -88,7 +88,7 @@ public class Ghost extends NPC {
 
     @Override
     public float speed() {
-        return quest != null && quest.processed() ? 2f : 0.5f;
+        return quest != null && quest.completed() ? 2f : 0.5f;
     }
 
     @Override
@@ -121,9 +121,9 @@ public class Ghost extends NPC {
             return super.interact(c);
         }
 
-        if (quest.given) {
+        if (quest.given()) {
             if (quest.weapon != null) {
-                if (quest.processed()) {
+                if (quest.finished()) {
                     Game.runOnRenderThread(new Callback() {
                         @Override
                         public void call() {
@@ -135,14 +135,14 @@ public class Ghost extends NPC {
                         @Override
                         public void call() {
                             switch (quest.type()) {
-                                case 0:
+                                case GhostQuest.RAT:
                                 default:
                                     GameScene.show(new WndQuest(Ghost.this, Messages.get(Ghost.this, "rat_2")));
                                     break;
-                                case 1:
+                                case GhostQuest.GNOLL:
                                     GameScene.show(new WndQuest(Ghost.this, Messages.get(Ghost.this, "gnoll_2")));
                                     break;
-                                case 2:
+                                case GhostQuest.CRAB:
                                     GameScene.show(new WndQuest(Ghost.this, Messages.get(Ghost.this, "crab_2")));
                                     break;
                             }
@@ -170,16 +170,16 @@ public class Ghost extends NPC {
             String txt_quest;
 
             switch (quest.type()) {
-                case 0:
+                case GhostQuest.RAT:
                 default:
                     questBoss = new FetidRat(this);
                     txt_quest = Messages.get(this, "rat_1", Messages.titleCase(Dungeon.hero.name()));
                     break;
-                case 1:
+                case GhostQuest.GNOLL:
                     questBoss = new GnollTrickster(this);
                     txt_quest = Messages.get(this, "gnoll_1", Messages.titleCase(Dungeon.hero.name()));
                     break;
-                case 2:
+                case GhostQuest.CRAB:
                     questBoss = new GreatCrab(this);
                     txt_quest = Messages.get(this, "crab_1", Messages.titleCase(Dungeon.hero.name()));
                     break;
@@ -189,8 +189,7 @@ public class Ghost extends NPC {
 
             if (questBoss.pos != -1) {
                 GameScene.add(questBoss);
-                quest.given = true;
-                Notes.add(Notes.Landmark.GHOST);
+                quest.start();
                 Game.runOnRenderThread(new Callback() {
                     @Override
                     public void call() {

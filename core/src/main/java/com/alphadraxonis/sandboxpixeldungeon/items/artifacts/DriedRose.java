@@ -39,7 +39,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Wraith;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.DirectableAlly;
-import com.alphadraxonis.sandboxpixeldungeon.editor.other.GhostQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.ShaftParticle;

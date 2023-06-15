@@ -34,11 +34,11 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
-import com.alphadraxonis.sandboxpixeldungeon.editor.other.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndNewDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.Amulet;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -291,7 +291,7 @@ public class Dungeon {
         GhostQuest.reset();
 //        Wandmaker.Quest.reset();
 //        Blacksmith.Quest.reset();
-        Imp.Quest.reset();
+        ImpQuest.reset();
 
         hero = new Hero();
         hero.live();
@@ -596,7 +596,7 @@ public class Dungeon {
             GhostQuest.storeStatics(quests);
 //            Wandmaker.Quest.storeInBundle(quests);
 //            Blacksmith.Quest.storeInBundle(quests);
-            Imp.Quest.storeInBundle(quests);
+            ImpQuest.storeStatics(quests);
             bundle.put(QUESTS, quests);
 
             SpecialRoom.storeRoomsInBundle(bundle);
@@ -703,12 +703,12 @@ public class Dungeon {
                 GhostQuest.restoreStatics(quests);
 //                Wandmaker.Quest.restoreFromBundle(quests);
 //                Blacksmith.Quest.restoreFromBundle(quests);
-                Imp.Quest.restoreFromBundle(quests);
+                ImpQuest.restoreStatics(quests);
             } else {
                 GhostQuest.reset();
 //                Wandmaker.Quest.reset();
 //                Blacksmith.Quest.reset();
-                Imp.Quest.reset();
+                ImpQuest.reset();
             }
 
             SpecialRoom.restoreRoomsFromBundle(bundle);
