@@ -255,6 +255,7 @@ public class Dungeon {
         Random.pushGenerator(seed + 1);
 
         customDungeon.initSeeds();
+        //TODO assign groups here to the different levels
 
         customDungeon.calculateQuestLevels();
 

@@ -60,7 +60,8 @@ public class Shopkeeper extends NPC {
     }
 
     public static int MAX_BUYBACK_HISTORY = 3;
-	public ArrayList<Item> buybackItems = new ArrayList<>();@Override
+	public ArrayList<Item> buybackItems = new ArrayList<>();
+    @Override
     protected boolean act() {
 
         if (Dungeon.level.visited[pos]) {

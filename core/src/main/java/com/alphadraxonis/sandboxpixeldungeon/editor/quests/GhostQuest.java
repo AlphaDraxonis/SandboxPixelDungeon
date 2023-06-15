@@ -32,66 +32,60 @@ public class GhostQuest extends Quest {
     public GhostQuest() {
     }
 
-    public GhostQuest(int type, Weapon weapon, Armor armor, Weapon.Enchantment enchant, Armor.Glyph glyph) {
-        this.type = type;
-        this.weapon = weapon;
-        this.armor = armor;
-        this.enchant = enchant;
-        this.glyph = glyph;
-    }
+    @Override
+    public void initRandom(LevelScheme levelScheme) {
+        if (type == -1) type = levelScheme.getGhostQuest();
 
-    public static GhostQuest createRandom(LevelScheme levelScheme) {
-        GhostQuest quest = new GhostQuest();
+        if (armor == null || weapon == null) {
+            //50%:+0, 30%:+1, 15%:+2, 5%:+3
+            float itemLevelRoll = Random.Float();
+            int itemLevel;
+            if (itemLevelRoll < 0.5f) {
+                itemLevel = 0;
+            } else if (itemLevelRoll < 0.8f) {
+                itemLevel = 1;
+            } else if (itemLevelRoll < 0.95f) {
+                itemLevel = 2;
+            } else {
+                itemLevel = 3;
+            }
+            boolean doEnchant = Random.Int(10) == 0;//10% to be enchanted. We store it separately so enchant status isn't revealed early
 
-        quest.type = levelScheme.getGhostQuest();
+            if (armor == null) {
+                //50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
+                switch (Random.chances(new float[]{0, 0, 10, 6, 3, 1})) {
+                    default:
+                    case 2:
+                        armor = new LeatherArmor();
+                        break;
+                    case 3:
+                        armor = new MailArmor();
+                        break;
+                    case 4:
+                        armor = new ScaleArmor();
+                        break;
+                    case 5:
+                        armor = new PlateArmor();
+                        break;
+                }
+                armor.upgrade(itemLevel);
+                if (doEnchant) glyph = Armor.Glyph.random();
+            }
+            if (weapon == null) {
+                //50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
+                int wepTier = Random.chances(new float[]{0, 0, 10, 6, 3, 1});
+                weapon = (Weapon) Generator.randomUsingDefaults(Generator.wepTiers[wepTier - 1]);
 
-        //50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
-        switch (Random.chances(new float[]{0, 0, 10, 6, 3, 1})) {
-            default:
-            case 2:
-                quest.armor = new LeatherArmor();
-                break;
-            case 3:
-                quest.armor = new MailArmor();
-                break;
-            case 4:
-                quest.armor = new ScaleArmor();
-                break;
-            case 5:
-                quest.armor = new PlateArmor();
-                break;
-        }
-        //50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
-        int wepTier = Random.chances(new float[]{0, 0, 10, 6, 3, 1});
-        quest.weapon = (Weapon) Generator.randomUsingDefaults(Generator.wepTiers[wepTier - 1]);
-
-        //clear weapon's starting properties
-        quest.weapon.level(0);
-        quest.weapon.enchant(null);
-        quest.weapon.cursed = false;
-
-        //50%:+0, 30%:+1, 15%:+2, 5%:+3
-        float itemLevelRoll = Random.Float();
-        int itemLevel;
-        if (itemLevelRoll < 0.5f) {
-            itemLevel = 0;
-        } else if (itemLevelRoll < 0.8f) {
-            itemLevel = 1;
-        } else if (itemLevelRoll < 0.95f) {
-            itemLevel = 2;
-        } else {
-            itemLevel = 3;
-        }
-        quest.weapon.upgrade(itemLevel);
-        quest.armor.upgrade(itemLevel);
-
-        //10% to be enchanted. We store it separately so enchant status isn't revealed early
-        if (Random.Int(10) == 0) {
-            quest.enchant = Weapon.Enchantment.random();
-            quest.glyph = Armor.Glyph.random();
+                //clear weapon's starting properties
+                weapon.level(0);
+                weapon.enchant(null);
+                weapon.cursed = false;
+                weapon.upgrade(itemLevel);
+                if (doEnchant) enchant = Weapon.Enchantment.random();
+            }
         }
 
-        return quest;
+
     }
 
     public void complete() {
@@ -100,10 +94,6 @@ public class GhostQuest extends Quest {
         completedOnce = true;
 
         Notes.remove(Notes.Landmark.GHOST);
-    }
-
-    public boolean finished() {
-        return completed() && weapon == null && armor == null;
     }
 
     public static boolean completedOnce() {
@@ -115,7 +105,7 @@ public class GhostQuest extends Quest {
             GLog.n(Messages.get(Ghost.class, "find_me"));
             Sample.INSTANCE.play(Assets.Sounds.GHOST);
             super.complete();
-            addScore(0,1000);
+            addScore(0, 1000);
         }
     }
 
@@ -171,7 +161,7 @@ public class GhostQuest extends Quest {
         completedOnce = b.getBoolean(COMPLETED_ONCE);
     }
 
-    public static void reset(){
+    public static void reset() {
         completedOnce = false;
     }
 

@@ -25,16 +25,17 @@ import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
-import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.FetidRat;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GnollTrickster;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GreatCrab;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
+import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.GhostSprite;
@@ -45,7 +46,9 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 
-public class Ghost extends NPC {
+import java.util.List;
+
+public class Ghost extends QuestNPC<GhostQuest> {
 
     {
         spriteClass = GhostSprite.class;
@@ -55,13 +58,11 @@ public class Ghost extends NPC {
         state = WANDERING;
     }
 
-    public GhostQuest quest;
-
     public Ghost() {
     }
 
-    public Ghost(LevelScheme levelScheme) {
-        quest = GhostQuest.createRandom(levelScheme);
+    public Ghost(GhostQuest quest) {
+        super(quest);
     }
 
     @Override
@@ -82,11 +83,6 @@ public class Ghost extends NPC {
     }
 
     @Override
-    public int defenseSkill(Char enemy) {
-        return INFINITE_EVASION;
-    }
-
-    @Override
     public float speed() {
         return quest != null && quest.completed() ? 2f : 0.5f;
     }
@@ -96,20 +92,6 @@ public class Ghost extends NPC {
         return null;
     }
 
-    @Override
-    public void damage(int dmg, Object src) {
-        //do nothing
-    }
-
-    @Override
-    public boolean add(Buff buff) {
-        return false;
-    }
-
-    @Override
-    public boolean reset() {
-        return true;
-    }
 
     @Override
     public boolean interact(Char c) {
@@ -123,7 +105,7 @@ public class Ghost extends NPC {
 
         if (quest.given()) {
             if (quest.weapon != null) {
-                if (quest.finished()) {
+                if (quest.completed()) {
                     Game.runOnRenderThread(new Callback() {
                         @Override
                         public void call() {
@@ -201,6 +183,16 @@ public class Ghost extends NPC {
         }
 
         return true;
+    }
+
+    @Override
+    public void place(RegularLevel level, List<Room> rooms) {
+        int tries = level.length();
+        do {
+            pos = level.randomRespawnCell(this);
+            tries--;
+        } while (pos == -1 && tries > 0);
+        if (pos != -1) level.mobs.add(this);
     }
 
     private static final String QUEST = "quest";

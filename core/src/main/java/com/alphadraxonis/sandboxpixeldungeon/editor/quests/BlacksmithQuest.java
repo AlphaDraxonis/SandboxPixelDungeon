@@ -7,18 +7,14 @@ import com.watabou.utils.Bundle;
 
 public class BlacksmithQuest extends Quest{
 
+    public static final int GOLD = 0, BLOOD = 1;
+
     public boolean reforged;
 
-
-    public static BlacksmithQuest createRandom(LevelScheme levelScheme) {
-        BlacksmithQuest quest = new BlacksmithQuest();
-
-        // decide between 0 or 1 for quest type.
-        quest.type = levelScheme.getBlacksmithQuest();
-
-        levelScheme.roomsToSpawn.add(BlacksmithRoom.class);
-
-        return quest;
+    @Override
+    public void initRandom(LevelScheme levelScheme) {
+        if (type == -1) type = levelScheme.getBlacksmithQuest();
+        levelScheme.roomsToSpawn.add(BlacksmithRoom.class);//TODO WICHTIG add room when adding and player may remove the room
     }
 
     @Override

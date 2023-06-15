@@ -12,29 +12,34 @@ import com.watabou.utils.Bundle;
 
 public class WandmakerQuest extends Quest {
 
-    public static final int ASH = 1, CANDLE = 2, SEED = 3;
+    public static final int ASH = 1, SEED = 2, CANDLE = 3;
 
     public Wand wand1;
     public Wand wand2;
 
-    public static WandmakerQuest createRandom(LevelScheme levelScheme) {
-        WandmakerQuest quest = new WandmakerQuest();
 
-        quest.wand1 = (Wand) Generator.randomUsingDefaults(Generator.Category.WAND);
-        quest.wand1.cursed = false;
-        quest.wand1.upgrade();
+    @Override
+    public void initRandom(LevelScheme levelScheme) {
+        if (type == -1) {// decide between 1,2, or 3 for quest type.
+            type = levelScheme.getWandmakerQuest();
+        }
 
-        do {
-            quest.wand2 = (Wand) Generator.randomUsingDefaults(Generator.Category.WAND);
-        } while (quest.wand2.getClass().equals(quest.wand1.getClass()));
-        quest.wand2.cursed = false;
-        quest.wand2.upgrade();
+        if (wand1 == null) {
+            wand1 = (Wand) Generator.randomUsingDefaults(Generator.Category.WAND);
+            wand1.cursed = false;
+            wand1.upgrade();
+        }
+        if (wand2 == null) {
+            do {
+                wand2 = (Wand) Generator.randomUsingDefaults(Generator.Category.WAND);
+            } while (wand2.getClass().equals(wand1.getClass()));
+            wand2.cursed = false;
+            wand2.upgrade();
+        }
 
-        // decide between 1,2, or 3 for quest type.
-        quest.type = levelScheme.getWandmakerQuest();
-
-        switch (quest.type){
-            case ASH: default:
+        switch (type) {
+            case ASH:
+            default:
                 levelScheme.roomsToSpawn.add(MassGraveRoom.class);
                 break;
             case CANDLE:
@@ -44,8 +49,6 @@ public class WandmakerQuest extends Quest {
                 levelScheme.roomsToSpawn.add(RotGardenRoom.class);
                 break;
         }
-
-        return quest;
     }
 
     @Override
@@ -58,8 +61,8 @@ public class WandmakerQuest extends Quest {
         wand1 = null;
         wand2 = null;
 
-        Notes.remove( Notes.Landmark.WANDMAKER );
-        addScore(1,2000);
+        Notes.remove(Notes.Landmark.WANDMAKER);
+        addScore(1, 2000);
     }
 
     @Override

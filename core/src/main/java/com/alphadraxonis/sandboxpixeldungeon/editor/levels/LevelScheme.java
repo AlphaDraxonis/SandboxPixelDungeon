@@ -6,6 +6,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesLevel;
@@ -260,16 +261,18 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     }
 
     public int getWandmakerQuest() {
-        return Random.Int(3) + 1;
+        return Random.Int(2) + 1;//no candle for now
     }
 
     public int getBlacksmithQuest() {
         return Random.Int(2);
     }
+
     public int getImpQuest() {
         //always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
         switch (Dungeon.getSimulatedDepth(this)) {
-            case 17:return ImpQuest.MONK_QUEST;//Monk quest
+            case 17:
+                return ImpQuest.MONK_QUEST;//Monk quest
             case 19:
                 return ImpQuest.GOLEM_QUEST;//Golem Quest
             case 18:
@@ -325,6 +328,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             level.name = name;
             level.levelScheme = this;
             level.feeling = feeling;
+            initRandomStats();
             level.create();
             Random.popGenerator();
         } else {
@@ -341,8 +345,19 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             level.name = name;
             Dungeon.level = level;
             Dungeon.levelName = name;
+            initRandomStats();
         }
         return level;
+    }
+
+    private void initRandomStats() {
+        Random.pushGenerator(Random.Long());
+        for (Mob m : mobsToSpawn) {
+            if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
+        }
+        //rooms
+        //items
+        Random.popGenerator();
     }
 
 
@@ -365,7 +380,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
                 Random.Long(); //we don't care about these values, just need to go through them
             }
             seed = Random.Long();
-            System.err.println(seed + " for "+name);
         }
     }
 
@@ -457,7 +471,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
         if (bundle.contains(ROOMS_TO_SPAWN)) {
             roomsToSpawn = new ArrayList<>();
-            for (Class<? extends Room> c : bundle.getClassArray(ROOMS_TO_SPAWN)) roomsToSpawn.add(c);
+            for (Class<? extends Room> c : bundle.getClassArray(ROOMS_TO_SPAWN))
+                roomsToSpawn.add(c);
         } else roomsToSpawn = new ArrayList<>();
     }
 

@@ -24,13 +24,15 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
-import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.quest.CorpseDust;
 import com.alphadraxonis.sandboxpixeldungeon.items.quest.Embers;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
+import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.EntranceRoom;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Rotberry;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
@@ -40,181 +42,207 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndWandmaker;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
 
-public class Wandmaker extends NPC {
+import java.util.List;
 
-	{
-		spriteClass = WandmakerSprite.class;
+public class Wandmaker extends QuestNPC<WandmakerQuest> {
 
-		properties.add(Property.IMMOVABLE);
-	}
+    {
+        spriteClass = WandmakerSprite.class;
 
-	public WandmakerQuest quest;//FIXME WARNING getCopy() will not work for quest type 2!!!! (bc candles)
+        properties.add(Property.IMMOVABLE);
+    }
 
-	public Wandmaker() {
-	}
+    //FIXME WARNING getCopy() for quest will not work for quest type 2!!!! (bc candles)
 
-	public Wandmaker(LevelScheme levelScheme) {
-		quest = WandmakerQuest.createRandom(levelScheme);
-	}
+    public Wandmaker() {
+    }
 
-	@Override
-	protected boolean act() {
-		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
-			die(null);
-			return true;
-		}
-		if (quest != null && Dungeon.level.visited[pos] && quest.wand1 != null) {
-			Notes.add( Notes.Landmark.WANDMAKER );
-		}
-		return super.act();
-	}
-	
-	@Override
-	public int defenseSkill( Char enemy ) {
-		return INFINITE_EVASION;
-	}
+    public Wandmaker(WandmakerQuest quest) {
+        super(quest);
+    }
 
-	@Override
-	public void damage( int dmg, Object src ) {
-		//do nothing
-	}
+    @Override
+    protected boolean act() {
+        if (Dungeon.hero.buff(AscensionChallenge.class) != null) {
+            die(null);
+            return true;
+        }
+        if (quest != null && Dungeon.level.visited[pos] && quest.wand1 != null) {
+            Notes.add(Notes.Landmark.WANDMAKER);
+        }
+        return super.act();
+    }
 
-	@Override
-	public boolean add( Buff buff ) {
-		return false;
-	}
-	
-	@Override
-	public boolean reset() {
-		return true;
-	}
-	
-	@Override
-	public boolean interact(Char c) {
-		sprite.turnTo(pos, Dungeon.hero.pos);
+    @Override
+    public boolean interact(Char c) {
+        sprite.turnTo(pos, Dungeon.hero.pos);
 
-		if (c != Dungeon.hero) {
-			return true;
-		}
+        if (c != Dungeon.hero) {
+            return true;
+        }
 
-		if (quest != null) {
-			if (quest.given()) {
+        if (quest != null) {
+            if (quest.given()) {
 
-				Item item;
-				switch (quest.type()) {
-					case WandmakerQuest.ASH:
-					default:
-						item = Dungeon.hero.belongings.getItem(CorpseDust.class);
-						break;
-					case WandmakerQuest.CANDLE:
-						item = Dungeon.hero.belongings.getItem(Embers.class);
-						break;
-					case WandmakerQuest.SEED:
-						item = Dungeon.hero.belongings.getItem(Rotberry.Seed.class);
-						break;
-				}
+                Item item;
+                switch (quest.type()) {
+                    case WandmakerQuest.ASH:
+                    default:
+                        item = Dungeon.hero.belongings.getItem(CorpseDust.class);
+                        break;
+                    case WandmakerQuest.CANDLE:
+                        item = Dungeon.hero.belongings.getItem(Embers.class);
+                        break;
+                    case WandmakerQuest.SEED:
+                        item = Dungeon.hero.belongings.getItem(Rotberry.Seed.class);
+                        break;
+                }
 
-				if (item != null) {
-					Game.runOnRenderThread(new Callback() {
-						@Override
-						public void call() {
-							GameScene.show(new WndWandmaker(Wandmaker.this, item));
-						}
-					});
-				} else {
-					String msg;
-					switch (quest.type()) {
-						case 1:
-						default:
-							msg = Messages.get(this, "reminder_dust", Messages.titleCase(Dungeon.hero.name()));
-							break;
-						case 2:
-							msg = Messages.get(this, "reminder_ember", Messages.titleCase(Dungeon.hero.name()));
-							break;
-						case 3:
-							msg = Messages.get(this, "reminder_berry", Messages.titleCase(Dungeon.hero.name()));
-							break;
-					}
-					Game.runOnRenderThread(new Callback() {
-						@Override
-						public void call() {
-							GameScene.show(new WndQuest(Wandmaker.this, msg));
-						}
-					});
-				}
+                if (item != null) {
+                    Game.runOnRenderThread(new Callback() {
+                        @Override
+                        public void call() {
+                            GameScene.show(new WndWandmaker(Wandmaker.this, item));
+                        }
+                    });
+                } else {
+                    String msg;
+                    switch (quest.type()) {
+                        case 1:
+                        default:
+                            msg = Messages.get(this, "reminder_dust", Messages.titleCase(Dungeon.hero.name()));
+                            break;
+                        case 2:
+                            msg = Messages.get(this, "reminder_ember", Messages.titleCase(Dungeon.hero.name()));
+                            break;
+                        case 3:
+                            msg = Messages.get(this, "reminder_berry", Messages.titleCase(Dungeon.hero.name()));
+                            break;
+                    }
+                    Game.runOnRenderThread(new Callback() {
+                        @Override
+                        public void call() {
+                            GameScene.show(new WndQuest(Wandmaker.this, msg));
+                        }
+                    });
+                }
 
-			} else {
+            } else {
 
-				String msg1 = "";
-				String msg2 = "";
-				switch (Dungeon.hero.heroClass) {
-					case WARRIOR:
-						msg1 += Messages.get(this, "intro_warrior");
-						break;
-					case ROGUE:
-						msg1 += Messages.get(this, "intro_rogue");
-						break;
-					case MAGE:
-						msg1 += Messages.get(this, "intro_mage", Messages.titleCase(Dungeon.hero.name()));
-						break;
-					case HUNTRESS:
-						msg1 += Messages.get(this, "intro_huntress");
-						break;
-					case DUELIST:
-						msg1 += Messages.get(this, "intro_duelist");
-						break;
-				}
+                String msg1 = "";
+                String msg2 = "";
+                switch (Dungeon.hero.heroClass) {
+                    case WARRIOR:
+                        msg1 += Messages.get(this, "intro_warrior");
+                        break;
+                    case ROGUE:
+                        msg1 += Messages.get(this, "intro_rogue");
+                        break;
+                    case MAGE:
+                        msg1 += Messages.get(this, "intro_mage", Messages.titleCase(Dungeon.hero.name()));
+                        break;
+                    case HUNTRESS:
+                        msg1 += Messages.get(this, "intro_huntress");
+                        break;
+                    case DUELIST:
+                        msg1 += Messages.get(this, "intro_duelist");
+                        break;
+                }
 
-				msg1 += Messages.get(this, "intro_1");
+                msg1 += Messages.get(this, "intro_1");
 
-				switch (quest.type()) {
-					case WandmakerQuest.ASH:
-						msg2 += Messages.get(this, "intro_dust");
-						break;
-					case WandmakerQuest.CANDLE:
-						msg2 += Messages.get(this, "intro_ember");
-						break;
-					case WandmakerQuest.SEED:
-						msg2 += Messages.get(this, "intro_berry");
-						break;
-				}
+                switch (quest.type()) {
+                    case WandmakerQuest.ASH:
+                        msg2 += Messages.get(this, "intro_dust");
+                        break;
+                    case WandmakerQuest.CANDLE:
+                        msg2 += Messages.get(this, "intro_ember");
+                        break;
+                    case WandmakerQuest.SEED:
+                        msg2 += Messages.get(this, "intro_berry");
+                        break;
+                }
 
-				msg2 += Messages.get(this, "intro_2");
-				final String msg1Final = msg1;
-				final String msg2Final = msg2;
+                msg2 += Messages.get(this, "intro_2");
+                final String msg1Final = msg1;
+                final String msg2Final = msg2;
 
-				Game.runOnRenderThread(new Callback() {
-					@Override
-					public void call() {
-						GameScene.show(new WndQuest(Wandmaker.this, msg1Final) {
-							@Override
-							public void hide() {
-								super.hide();
-								GameScene.show(new WndQuest(Wandmaker.this, msg2Final));
-							}
-						});
-					}
-				});
+                Game.runOnRenderThread(new Callback() {
+                    @Override
+                    public void call() {
+                        GameScene.show(new WndQuest(Wandmaker.this, msg1Final) {
+                            @Override
+                            public void hide() {
+                                super.hide();
+                                GameScene.show(new WndQuest(Wandmaker.this, msg2Final));
+                            }
+                        });
+                    }
+                });
 
-				quest.start();
-			}
-		}
+                quest.start();
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	private static final String QUEST = "quest";
+    @Override
+    public void place(RegularLevel level, List<Room> rooms) {
+//        Set<Room> entrances = new HashSet<>(4);// TODO maybe use just entranceRoom insted ?
+//        for (Room room : rooms) {
+//            if (room instanceof EntranceRoom) {
+//                entrances.add(room);
+//            }
+//        }
+        Room roomEntrance = null;
+        for (Room room : rooms) {
+            if (room instanceof EntranceRoom) {
+                roomEntrance = room;
+                break;
+            }
+        }
+        if (roomEntrance == null) {
+            roomEntrance = rooms.get(Random.Int(rooms.size()));
+        }
 
-	@Override
-	public void storeInBundle(Bundle bundle) {
-		super.storeInBundle(bundle);
-		if (quest != null) bundle.put(QUEST, quest);
-	}
+        boolean validPos;
+        int tries = level.length();
+        //Do not spawn wandmaker on the entrance, a trap, or in front of a door.
+        do {
+            validPos = true;
+            pos = level.pointToCell(roomEntrance.random());
+            if (pos == level.entrance()) {
+                validPos = false;
+            }
+            for (Point door : roomEntrance.connected.values()) {
+                if (level.trueDistance(pos, level.pointToCell(door)) <= 1) {
+                    validPos = false;
+                }
+            }
+            if (level.traps.get(pos) != null) {
+                validPos = false;
+            }
+            tries--;
+            if (!validPos) pos = -1;
+        } while (pos == -1 && tries > 0);
+        if (pos != -1) level.mobs.add(this);
+    }
 
-	@Override
-	public void restoreFromBundle(Bundle bundle) {
-		super.restoreFromBundle(bundle);
-		if (bundle.contains(QUEST)) quest = (WandmakerQuest) bundle.get(QUEST);
-	}
+    private static final String QUEST = "quest";
+
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        if (quest != null) bundle.put(QUEST, quest);
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        if (bundle.contains(QUEST)) quest = (WandmakerQuest) bundle.get(QUEST);
+    }
 }

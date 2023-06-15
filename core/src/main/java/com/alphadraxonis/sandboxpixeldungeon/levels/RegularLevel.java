@@ -34,10 +34,8 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GoldenMimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Blacksmith;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -61,7 +59,6 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MagicalFireRoo
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.PitRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.ShopRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.SpecialRoom;
-import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BlacksmithRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.EntranceRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.ExitRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.StandardRoom;
@@ -75,7 +72,6 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.traps.PitfallTrap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.WornDartTrap;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -230,56 +226,11 @@ public abstract class RegularLevel extends Level {
 		Iterator<Room> stdRoomIter = stdRooms.iterator();
 
 		for (Mob m : levelScheme.mobsToSpawn) {
-			if (m instanceof Wandmaker) {
-//				Set<Room> entrances = new HashSet<>(4);// TODO maybe use just entranceRoom insted ?
-//				for (Room room : rooms) {
-//					if (room instanceof EntranceRoom) {
-//						entrances.add(room);
-//					}
-//				}
-
-				boolean validPos;
-				int tries = length;
-				//Do not spawn wandmaker on the entrance, a trap, or in front of a door.
-				do {
-					validPos = true;
-					m.pos = pointToCell(roomEntrance.random());
-					if (m.pos == entrance()) {
-						validPos = false;
-					}
-					for (Point door : roomEntrance.connected.values()) {
-						if (trueDistance(m.pos, pointToCell(door)) <= 1) {
-							validPos = false;
-						}
-					}
-					if (traps.get(m.pos) != null) {
-						validPos = false;
-					}
-					tries--;
-					if (!validPos) m.pos = -1;
-				} while (m.pos == -1 && tries > 0);
-				if (m.pos != -1) mobs.add(m);
-
-			} else if (m instanceof Blacksmith) {
-				for (Room room : rooms) {
-					if (room instanceof BlacksmithRoom) {
-						if (((BlacksmithRoom) room).placeBlacksmith((Blacksmith) m, this)) break;
-					}
-				}
-			} else if (m instanceof Imp) {
-				do {
-					m.pos = randomRespawnCell(m);
-				} while (m.pos == -1 ||
-						heaps.get(m.pos) != null ||
-						traps.get(m.pos) != null ||
-						findMob(m.pos) != null ||
-						//The imp doesn't move, so he cannot obstruct a passageway
-						!(passable[m.pos + PathFinder.CIRCLE4[0]] && passable[m.pos + PathFinder.CIRCLE4[2]]) ||
-						!(passable[m.pos + PathFinder.CIRCLE4[1]] && passable[m.pos + PathFinder.CIRCLE4[3]]));
-				if (m.pos != -1) mobs.add(m);
+			if (m instanceof QuestNPC) {
+				((QuestNPC<?>) m).place(this,rooms);
 			}
 
-			if (m.pos < 0) {
+			if (m.pos <= 0) {
 				int tries = length;
 				do {
 					m.pos = randomRespawnCell(m);

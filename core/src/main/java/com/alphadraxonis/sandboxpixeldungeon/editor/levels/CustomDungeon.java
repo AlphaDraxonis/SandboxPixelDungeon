@@ -10,6 +10,10 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.BlacksmithQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -245,16 +249,16 @@ public class CustomDungeon implements Bundlable {
 
     public void calculateQuestLevels() {
         LevelScheme level = floors.get(maybeGhostSpawnLevels.get(Random.Int(maybeGhostSpawnLevels.size())));
-        level.mobsToSpawn.add(new Ghost(level));
+        level.mobsToSpawn.add(new Ghost(new GhostQuest()));
 
         level = floors.get(maybeWandmakerSpawnLevels.get(Random.Int(maybeWandmakerSpawnLevels.size())));
-        level.mobsToSpawn.add(new Wandmaker(level));
+        level.mobsToSpawn.add(new Wandmaker(new WandmakerQuest()));
 
         level = floors.get(maybeBlacksmithSpawnLevels.get(Random.Int(maybeBlacksmithSpawnLevels.size())));
-        level.mobsToSpawn.add(new Blacksmith(level));
+        level.mobsToSpawn.add(new Blacksmith(new BlacksmithQuest()));
 
         level = floors.get(maybeImpSpawnLevels.get(Random.Int(maybeImpSpawnLevels.size())));
-        level.mobsToSpawn.add(new Imp(level));
+        level.mobsToSpawn.add(new Imp(new ImpQuest()));
     }
 
     public void addMaybeGhostSpawnLevel(String level) {
@@ -284,13 +288,14 @@ public class CustomDungeon implements Bundlable {
             LevelScheme l = new LevelScheme(name, depth, this);
             addFloor(l);
 
-            Random.pushGenerator(l.getSeed() + 1234);
-            l.mobsToSpawn.add(new Wandmaker(l));
-            l.mobsToSpawn.add(new Wandmaker(l));
-            l.mobsToSpawn.add(new Imp(l));
-            l.mobsToSpawn.add(new Imp(l));
-            Random.popGenerator();
+            l.mobsToSpawn.add(new Wandmaker(new WandmakerQuest()));
+            l.mobsToSpawn.add(new Ghost(new GhostQuest()));
+            l.mobsToSpawn.add(new Blacksmith(new BlacksmithQuest()));
+            l.mobsToSpawn.add(new Imp(new ImpQuest()));
         }
+
+
+
         if (startFloor == null) startFloor = "1";
         ratKingLevels.add("5");
     }

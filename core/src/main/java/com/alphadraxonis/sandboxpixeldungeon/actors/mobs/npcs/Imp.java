@@ -24,11 +24,12 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
-import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.items.quest.DwarfToken;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
+import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ImpSprite;
@@ -37,8 +38,11 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndQuest;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
+import com.watabou.utils.PathFinder;
 
-public class Imp extends NPC {
+import java.util.List;
+
+public class Imp extends QuestNPC<ImpQuest> {
 
 	{
 		spriteClass = ImpSprite.class;
@@ -47,13 +51,12 @@ public class Imp extends NPC {
 	}
 	
 	private boolean seenBefore = false;
-	public ImpQuest quest;
 
 	public Imp() {
 	}
 
-	public Imp(LevelScheme levelScheme) {
-		quest = ImpQuest.createRandom(levelScheme);
+	public Imp(ImpQuest quest) {
+		super(quest);
 	}
 	
 	@Override
@@ -73,26 +76,6 @@ public class Imp extends NPC {
 		}
 		
 		return super.act();
-	}
-	
-	@Override
-	public int defenseSkill( Char enemy ) {
-		return INFINITE_EVASION;
-	}
-
-	@Override
-	public void damage( int dmg, Object src ) {
-		//do nothing
-	}
-
-	@Override
-	public boolean add( Buff buff ) {
-		return false;
-	}
-	
-	@Override
-	public boolean reset() {
-		return true;
 	}
 	
 	@Override
@@ -148,6 +131,20 @@ public class Imp extends NPC {
 		sprite.die();
 	}
 
+	@Override
+	public void place(RegularLevel level, List<Room> rooms) {
+		do {
+			pos = level.randomRespawnCell(this);
+		} while (pos == -1 ||
+				level.heaps.get(pos) != null ||
+				level.traps.get(pos) != null ||
+				level.findMob(pos) != null ||
+				//The imp doesn't move, so he cannot obstruct a passageway
+				!(level.passable[pos + PathFinder.CIRCLE4[0]] && level.passable[pos + PathFinder.CIRCLE4[2]]) ||
+				!(level.passable[pos + PathFinder.CIRCLE4[1]] && level.passable[pos + PathFinder.CIRCLE4[3]]));
+		if (pos != -1) level.mobs.add(this);
+	}
+
 	private static final String QUEST = "quest";
 
 	@Override
@@ -162,109 +159,4 @@ public class Imp extends NPC {
 		if (bundle.contains(QUEST)) quest = (ImpQuest) bundle.get(QUEST);
 	}
 
-//	public static class Quest {
-//
-//		private static boolean alternative;
-//
-//		private static boolean spawned;
-//		private static boolean given;
-//		private static boolean completed;
-//
-//		public static Ring reward;
-//
-//		public static void reset() {
-//			spawned = false;
-//			given = false;
-//			completed = false;
-//
-//			reward = null;
-//		}
-//
-//		private static final String NODE		= "demon";
-//
-//		private static final String ALTERNATIVE	= "alternative";
-//		private static final String SPAWNED		= "spawned";
-//		private static final String GIVEN		= "given";
-//		private static final String COMPLETED	= "completed";
-//		private static final String REWARD		= "reward";
-//
-//		public static void storeInBundle( Bundle bundle ) {
-//
-//			Bundle node = new Bundle();
-//
-//			node.put( SPAWNED, spawned );
-//
-//			if (spawned) {
-//				node.put( ALTERNATIVE, alternative );
-//
-//				node.put( GIVEN, given );
-//				node.put( COMPLETED, completed );
-//				node.put( REWARD, reward );
-//			}
-//
-//			bundle.put( NODE, node );
-//		}
-//
-//		public static void restoreFromBundle( Bundle bundle ) {
-//
-//			Bundle node = bundle.getBundle( NODE );
-//
-//			if (!node.isNull() && (spawned = node.getBoolean( SPAWNED ))) {
-//				alternative	= node.getBoolean( ALTERNATIVE );
-//
-//				given = node.getBoolean( GIVEN );
-//				completed = node.getBoolean( COMPLETED );
-//				reward = (Ring)node.get( REWARD );
-//			}
-//		}
-//
-//		public static void spawn( Level level ) {
-//			Imp npc = new Imp();
-//			do {
-//				npc.pos = level.randomRespawnCell( npc );
-//			} while (
-//					npc.pos == -1 ||
-//							level.heaps.get( npc.pos ) != null ||
-//							level.traps.get( npc.pos) != null ||
-//							level.findMob( npc.pos ) != null ||
-//							//The imp doesn't move, so he cannot obstruct a passageway
-//							!(level.passable[npc.pos + PathFinder.CIRCLE4[0]] && level.passable[npc.pos + PathFinder.CIRCLE4[2]]) ||
-//							!(level.passable[npc.pos + PathFinder.CIRCLE4[1]] && level.passable[npc.pos + PathFinder.CIRCLE4[3]]));
-//			level.mobs.add( npc );
-//			spawned = true;
-//
-//			//always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
-//			alternative= CustomDungeon.getDungeon().getImpQuest();
-//
-//			given = false;
-//
-//			do {
-//				reward = (Ring)Generator.randomUsingDefaults( Generator.Category.RING );
-//			} while (reward.cursed);
-//			reward.upgrade( 2 );
-//			reward.cursed = true;
-//		}
-//
-//		public static void process( Mob mob ) {
-//			if (spawned && given && !completed && !Dungeon.bossLevel()) {
-//				if ((alternative && mob instanceof Monk) ||
-//					(!alternative && mob instanceof Golem)) {
-//
-//					Dungeon.level.drop( new DwarfToken(), mob.pos ).sprite.drop();
-//				}
-//			}
-//		}
-//
-//		public static void complete() {
-//			reward = null;
-//			completed = true;
-//
-//			Statistics.questScores[3] = 4000;
-//			Notes.remove( Notes.Landmark.IMP );
-//		}
-//
-//		public static boolean isCompleted() {
-//			return completed;
-//		}
-//	}
 }

@@ -21,18 +21,16 @@ public class ImpQuest extends Quest {
 
     public Ring reward;
 
-    public static ImpQuest createRandom(LevelScheme levelScheme) {
-        ImpQuest quest = new ImpQuest();
-
-        quest.type = levelScheme.getImpQuest();
-
-        do {
-            quest.reward = (Ring) Generator.randomUsingDefaults(Generator.Category.RING);
-        } while (quest.reward.cursed);
-        quest.reward.upgrade(2);
-        quest.reward.cursed = true;
-
-        return quest;
+    @Override
+    public void initRandom(LevelScheme levelScheme) {
+        if (type == -1) type = levelScheme.getImpQuest();
+        if (reward == null) {
+            do {
+                reward = (Ring) Generator.randomUsingDefaults(Generator.Category.RING);
+            } while (reward.cursed);
+            reward.upgrade(2);
+            reward.cursed = true;
+        }
     }
 
 

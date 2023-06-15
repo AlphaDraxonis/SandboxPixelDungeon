@@ -1,6 +1,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.quests;
 
 import com.alphadraxonis.sandboxpixeldungeon.Statistics;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
@@ -10,6 +11,8 @@ public abstract class Quest implements Bundlable {
 
     private boolean given;
     private boolean completed;
+
+    public abstract void initRandom(LevelScheme levelScheme);
 
     public void complete(){
         completed = true;
