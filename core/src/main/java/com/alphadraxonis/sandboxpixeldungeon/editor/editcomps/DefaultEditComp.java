@@ -19,6 +19,7 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -114,7 +115,9 @@ public abstract class DefaultEditComp<T> extends Component {
 
         if (numTabs == 0) return;
         if (numTabs > 1 || (heap != null && !heap.items.isEmpty())) {
-            EditorScene.show(new EditCompWindowTabbed(tileItem, heap, mob, trap, numTabs));
+            Window w = new EditCompWindowTabbed(tileItem, heap, mob, trap, numTabs);
+            if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+            else Game.scene().addToFront(w);
             return;
         }
 
@@ -164,7 +167,8 @@ public abstract class DefaultEditComp<T> extends Component {
 
         sp.givePointerPriority();
 
-        EditorScene.show(w);
+        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+        else Game.scene().addToFront(w);
 
     }
 

@@ -14,6 +14,7 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.QuickSlotButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 
@@ -121,7 +122,8 @@ public class DefaultListItem extends AdvancedListPaneItem {
             content.setOnUpdate(r);
             r.run();
 
-            EditorScene.show(w);
+            if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+            else Game.scene().addToFront(w);
             return true;
         }
         return false;
