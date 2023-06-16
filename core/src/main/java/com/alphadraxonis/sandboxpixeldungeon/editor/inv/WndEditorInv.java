@@ -74,7 +74,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
         this.selector = selector;
 
-        if (addTabs) lastBag = bag;
+        lastBag = bag;
 
         resize(WIDTH, HEIGHT + (addTabs ? 0 : 50));
 
@@ -233,7 +233,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
     @Override
     public void hide() {
-        if (addTabs) lastSelected.put(lastBag(), body.getSelectedIndex());
+        lastSelected.put(lastBag(), body.getSelectedIndex());
         lastScrollPos.put(lastBag, body.getCurrentViewY());
         lastTrapForImage = null;
         super.hide();
