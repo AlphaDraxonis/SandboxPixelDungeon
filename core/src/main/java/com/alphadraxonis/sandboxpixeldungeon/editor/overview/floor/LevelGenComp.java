@@ -8,20 +8,15 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.ItemContainer;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.FeelingSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseObjectComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.FoldableComp;
-import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
-import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.HeroSelectScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
-import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
-import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.utils.DungeonSeed;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTextInput;
-import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
@@ -41,9 +36,6 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
     protected ColorBlock line;
 
-    protected IconButton infoNumInRegion;
-    protected Spinner numInRegion;
-    //numInRegion
     //items
     //mobs
     //rooms
@@ -103,30 +95,6 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         note = PixelScene.renderTextBlock("Note that following settings are only applied when generating the floor", 6);
         content.add(note);
 
-        infoNumInRegion = new IconButton(Icons.get(Icons.INFO)) {
-            @Override
-            protected void onClick() {
-                Window window = new WndTitledMessage(Icons.get(Icons.INFO), Messages.get(WndNewFloor.class, "num_region"),
-                        Messages.get(WndNewFloor.class, "num_region_info"));
-                if (Game.scene() instanceof EditorScene) EditorScene.show(window);
-                else Game.scene().addToFront(window);
-            }
-        };
-        content.add(infoNumInRegion);
-        numInRegion = new Spinner(new SpinnerIntegerModel(1, 5, 1, 1, true, null) {
-            @Override
-            public float getInputFieldWith(float height) {
-                return height * 1.2f;
-            }
-
-            @Override
-            public int getClicksPerSecondWhileHolding() {
-                return 5;
-            }
-        }, Messages.get(WndNewFloor.class, "num_region") + ":", 8);
-        numInRegion.setButtonWidth(13);
-        content.add(numInRegion);
-
         sectionItems = new SpawnSection("Items", spawnItems = new ItemContainer(spawnItemsList = new ArrayList<>()){
             @Override
             protected void onSlotNumChange() {
@@ -162,12 +130,6 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         note.setPos(0, pos);
         pos = note.bottom() + MARGIN * 3;
 
-        infoNumInRegion.setRect(width - MARGIN - BUTTON_HEIGHT, pos, BUTTON_HEIGHT, BUTTON_HEIGHT);
-        PixelScene.align(infoNumInRegion);
-        numInRegion.setRect(MARGIN, pos, infoNumInRegion.left() - MARGIN * 2, BUTTON_HEIGHT);
-        PixelScene.align(numInRegion);
-        pos += BUTTON_HEIGHT + MARGIN * 3;
-
         sectionItems.setRect(MARGIN, pos, width - MARGIN * 2, -1);
         pos = sectionItems.bottom() + MARGIN;
 
@@ -184,7 +146,6 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
     //seed
     //feeling
 
-    //numInRegion
     //items
     //mobs (inkl questnpcsm deren Quest durch bearbeiten verändert werden kann)
     //rooms

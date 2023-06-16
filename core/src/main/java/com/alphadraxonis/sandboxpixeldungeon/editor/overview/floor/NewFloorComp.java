@@ -8,6 +8,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseObjectComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -32,6 +33,8 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
     protected ChooseLevel chooseType, chooseTemplate;
     protected Spinner depth;
     protected IconButton infoDepth;
+    protected IconButton infoNumInRegion;
+    protected Spinner numInRegion;
 
 
     public NewFloorComp() {
@@ -109,6 +112,30 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
         };
         depth.setButtonWidth(13);
         add(depth);
+
+        infoNumInRegion = new IconButton(Icons.get(Icons.INFO)) {
+            @Override
+            protected void onClick() {
+                Window window = new WndTitledMessage(Icons.get(Icons.INFO), Messages.get(WndNewFloor.class, "num_region"),
+                        Messages.get(WndNewFloor.class, "num_region_info"));
+                if (Game.scene() instanceof EditorScene) EditorScene.show(window);
+                else Game.scene().addToFront(window);
+            }
+        };
+        add(infoNumInRegion);
+        numInRegion = new Spinner(new SpinnerIntegerModel(1, 5, 1, 1, true, null) {
+            @Override
+            public float getInputFieldWith(float height) {
+                return height * 1.2f;
+            }
+
+            @Override
+            public int getClicksPerSecondWhileHolding() {
+                return 5;
+            }
+        }, Messages.get(WndNewFloor.class, "num_region") + ":", 8);
+        numInRegion.setButtonWidth(13);
+        add(numInRegion);
     }
 
     @Override
@@ -136,6 +163,13 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
         depth.setRect(MARGIN, pos, infoDepth.left() - MARGIN * 2, BUTTON_HEIGHT);
         PixelScene.align(depth);
         pos += BUTTON_HEIGHT + MARGIN * 3;
+
+        infoNumInRegion.setRect(width - MARGIN - BUTTON_HEIGHT, pos, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        PixelScene.align(infoNumInRegion);
+        numInRegion.setRect(MARGIN, pos, infoNumInRegion.left() - MARGIN * 2, BUTTON_HEIGHT);
+        PixelScene.align(numInRegion);
+        pos += BUTTON_HEIGHT + MARGIN * 3;
+
         textBox.setRect(MARGIN, textBox.top(), width, inputHeight);
 
         create.setRect(MARGIN, pos, (width - MARGIN * 2) / 2, BUTTON_HEIGHT + 1);

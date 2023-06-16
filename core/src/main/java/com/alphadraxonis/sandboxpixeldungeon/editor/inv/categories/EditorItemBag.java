@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 public class EditorItemBag extends Bag {
 
+    public static void callStaticInitialisers(){}//absolutely necessary to call this before using any of the subclasses
+
     private final String name;
 
     public EditorItemBag(String name, int img) {
@@ -41,10 +43,11 @@ public class EditorItemBag extends Bag {
     static {
         mainBag.items.add(Tiles.bag);
         mainBag.items.add(Mobs.bag);
-        mainBag.items.add(Items.bag);
+        do {
+            mainBag.items.add(Items.bag);
+        } while (Items.bag == null);//remove callStaticInitialisers() and see if it is still 'always false' (obv don't enter EditorScene before)
         mainBag.items.add(Traps.bag);
     }
-
 
     public static EditorItemBag getLastBag() {
         EditorItemBag lastBag = WndEditorInv.lastBag();
@@ -58,6 +61,7 @@ public class EditorItemBag extends Bag {
             if (bagClass.isInstance(item)) {
                 return (T) item;
             }
+            if (item == null) throw new RuntimeException("FIXME WICHTIG ACHTUNG EASY DELETE");
         }
         return null;
     }

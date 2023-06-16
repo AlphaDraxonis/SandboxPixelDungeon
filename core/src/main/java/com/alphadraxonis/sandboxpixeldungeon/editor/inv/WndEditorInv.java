@@ -265,8 +265,6 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         if (selector.preferredBag() != null) {
             EditorItemBag bag = (EditorItemBag) EditorItemBag.getBag(selector.preferredBag());
             if (bag != null) return new WndEditorInv(bag, selector, selector.addOtherTabs());
-            else
-                return new WndEditorInv(EditorItemBag.mainBag, selector, selector.addOtherTabs());
         }
         return new WndEditorInv(EditorItemBag.getLastBag(), selector, selector.addOtherTabs());
     }

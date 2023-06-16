@@ -92,7 +92,7 @@ public class WndNewFloor extends WndTabbed {
                     (Class<? extends Level>) newFloorComp.chooseTemplate.getObject(),
                     seed,
                     (Level.Feeling) levelGenComp.feelingSpinner.getValue(),
-                    (int) levelGenComp.numInRegion.getValue(),
+                    (int) newFloorComp.numInRegion.getValue(),
                     (int) newFloorComp.depth.getValue());
             if (owner.getNumFloors() == 0) owner.setStart(name);
             owner.addFloor(levelScheme);
@@ -120,12 +120,15 @@ public class WndNewFloor extends WndTabbed {
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+        //do nothing TODO maybe just do confirmation?
+    }
 
     @Override
     public void offset(int xOffset, int yOffset) {
         super.offset(xOffset, yOffset);
-        if (newFloorComp !=null&& newFloorComp.textBox != null) {
+        if (newFloorComp !=null && newFloorComp.textBox != null) {
             TextInput textBox = newFloorComp.textBox;
             textBox.setRect(textBox.left(), textBox.top(), textBox.width(), textBox.height());
         }

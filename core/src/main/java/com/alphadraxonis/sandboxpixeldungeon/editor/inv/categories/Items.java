@@ -693,7 +693,7 @@ public enum Items {
     }
 
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class,"items"),0){
+    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "items"), 0) {
         @Override
         public Image getCategoryImage() {
             return null;

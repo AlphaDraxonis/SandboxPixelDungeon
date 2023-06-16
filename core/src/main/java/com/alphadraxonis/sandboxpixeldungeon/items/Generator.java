@@ -613,7 +613,7 @@ public class Generator {
 
 	public static Armor randomArmor(){
 		int set;
-		if (Dungeon.level.levelScheme == null) set = (int) (Math.random() * 5);
+		if (Dungeon.level == null || Dungeon.level.levelScheme == null) set = (int) (Math.random() * 5);
 		else set = Dungeon.level.levelScheme.getRegion() - 1;
 		return randomArmor(set);
 	}
@@ -637,7 +637,7 @@ public class Generator {
 
 	public static MeleeWeapon randomWeapon(){
 		int set;
-		if (Dungeon.level.levelScheme == null) set = (int) (Math.random() * 5);
+		if (Dungeon.level == null || Dungeon.level.levelScheme == null) set = (int) (Math.random() * 5);
 		else set = Dungeon.level.levelScheme.getRegion() - 1;
 		return randomWeapon(set);
 	}
@@ -673,7 +673,7 @@ public class Generator {
 	
 	public static MissileWeapon randomMissile(){
 		int set;
-		if (Dungeon.level.levelScheme == null) set = (int) (Math.random() * 5);
+		if (Dungeon.level == null || Dungeon.level.levelScheme == null) set = (int) (Math.random() * 5);
 		else set = Dungeon.level.levelScheme.getRegion() - 1;
 		return randomMissile(set);
 	}

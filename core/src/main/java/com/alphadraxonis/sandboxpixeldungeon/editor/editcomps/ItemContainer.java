@@ -10,8 +10,10 @@ import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.InventorySlot;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndBag;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -178,15 +180,16 @@ public class ItemContainer extends Component { // needs access to protected meth
 
         @Override
         protected void onClick() {
-            EditorScene.show(new EditCompWindow(item, editComp == null ? null : editComp.advancedListPaneItem) {
+            Window w = new EditCompWindow(item, editComp == null ? null : editComp.advancedListPaneItem) {
                 @Override
                 protected void onUpdate() {
                     super.onUpdate();
                     item(item);
                     onUpdateItem();
                 }
-            });
-
+            };
+            if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+            else Game.scene().addToFront(w);
         }
 
         @Override

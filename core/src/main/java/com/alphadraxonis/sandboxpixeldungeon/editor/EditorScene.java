@@ -46,6 +46,7 @@ import com.watabou.glwrap.Blending;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.NoosaScript;
@@ -459,13 +460,13 @@ public class EditorScene extends PixelScene {
     public static WndEditorInv selectItem(WndBag.ItemSelector listener) {
         cancel();
 
+        WndEditorInv wnd = WndEditorInv.getBag(listener);
         if (scene != null) {
-            WndEditorInv wnd = WndEditorInv.getBag(listener);
             show(wnd);
-            return wnd;
+        } else {
+            Game.scene().addToFront(wnd);
         }
-
-        return null;
+        return wnd;
     }
 
     public static void show(Window wnd) {
@@ -566,8 +567,11 @@ public class EditorScene extends PixelScene {
     }
 
     public static boolean cancel() {
-        cellSelector.resetKeyHold();
-        return cancelCellSelector();
+        if (cellSelector != null) {
+            cellSelector.resetKeyHold();
+            return cancelCellSelector();
+        }
+        return false;
     }
 
     public static void ready() {

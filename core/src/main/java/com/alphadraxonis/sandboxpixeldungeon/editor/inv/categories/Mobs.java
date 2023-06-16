@@ -282,6 +282,7 @@ public enum Mobs {
                 if (mob instanceof WandOfRegrowth.Lotus) {
                     ((WandOfRegrowth.Lotus) mob).setLevel(7);
                 }
+                if(mob == null)throw new RuntimeException(m.getName());
                 mob.pos = -1;
                 items.add(new MobItem(mob));
             }

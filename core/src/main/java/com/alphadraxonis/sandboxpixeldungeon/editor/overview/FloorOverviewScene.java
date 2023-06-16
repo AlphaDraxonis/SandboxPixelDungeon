@@ -3,6 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.overview;
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndNewFloor;
@@ -80,6 +81,8 @@ public class FloorOverviewScene extends PixelScene {
         add(btnExit);
 
         updateList();
+
+        EditorItemBag.callStaticInitialisers();;
     }
 
     public static void updateList() {

@@ -17,6 +17,7 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndBag;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
 public class ItemSelector extends Component {
@@ -42,13 +43,15 @@ public class ItemSelector extends Component {
             @Override
             protected void onClick() {
                 super.onClick();
-                EditorScene.show(new EditCompWindow(selectedItem) {
+                Window w = new EditCompWindow(selectedItem) {
                     @Override
                     protected void onUpdate() {
                         super.onUpdate();
                         updateItem();
                     }
-                });
+                };
+                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                else Game.scene().addToFront(w);
             }
 
             @Override

@@ -23,6 +23,7 @@ package com.watabou.noosa;
 
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -33,7 +34,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.watabou.glscripts.Script;
 import com.watabou.glwrap.Blending;
@@ -65,7 +65,15 @@ public class TextInput extends Component {
 		viewport.setWorldSize(Game.width, Game.height);
 		viewport.setScreenBounds(0, Game.bottomInset, Game.width, Game.height);
 		viewport.setCamera(new OrthographicCamera());
-		stage = new Stage(viewport);
+		stage = new Stage(viewport){
+			@Override
+			public boolean keyDown(int keycode) {
+				if (keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
+					return false; // don't consume the back button event
+				}
+				return super.keyDown(keycode); // Let other events be processed
+			}
+		};
 		Game.inputHandler.addInputProcessor(stage);
 
 		container = new Container<TextField>();
