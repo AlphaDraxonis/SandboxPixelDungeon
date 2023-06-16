@@ -68,10 +68,52 @@ public class TextInput extends Component {
 		stage = new Stage(viewport){
 			@Override
 			public boolean keyDown(int keycode) {
-				if (keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
+				if (!isActive() || keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
 					return false; // don't consume the back button event
 				}
 				return super.keyDown(keycode); // Let other events be processed
+			}
+
+			@Override
+			public boolean keyUp(int keycode) {
+				if (isActive()) return super.keyUp(keycode);
+				return false;
+			}
+
+			@Override
+			public boolean keyTyped(char character) {
+				if (isActive()) return super.keyTyped(character);
+				return false;
+			}
+
+			@Override
+			public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+				if (isActive()) return super.touchDown(screenX, screenY, pointer, button);
+				return false;
+			}
+
+			@Override
+			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+				if (isActive()) return super.touchUp(screenX, screenY, pointer, button);
+				return false;
+			}
+
+			@Override
+			public boolean touchDragged(int screenX, int screenY, int pointer) {
+				if (isActive()) return super.touchDragged(screenX, screenY, pointer);
+				return false;
+			}
+
+			@Override
+			public boolean mouseMoved(int screenX, int screenY) {
+				if (isActive()) return super.mouseMoved(screenX, screenY);
+				return false;
+			}
+
+			@Override
+			public boolean scrolled(float amountX, float amountY) {
+				if (isActive()) return super.scrolled(amountX, amountY);
+				return false;
 			}
 		};
 		Game.inputHandler.addInputProcessor(stage);
