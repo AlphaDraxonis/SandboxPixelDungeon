@@ -12,10 +12,12 @@ import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.InventorySlot;
+import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndBag;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.ui.Component;
 
 import java.lang.reflect.ParameterizedType;
@@ -133,6 +135,7 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
             editComp.updateObj();
         }
         onSlotNumChange();
+        updatePointerPriorityForSp();
     }
 
 
@@ -192,6 +195,14 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
     protected void onSlotNumChange() {
     }
 
+    private void updatePointerPriorityForSp(){
+        Group sp = parent;
+        while (!(sp instanceof ScrollPane) && sp != null) {
+            sp = sp.parent;
+        }
+        if (sp != null) ((ScrollPane) sp).givePointerPriority();
+    }
+
     protected class Slot extends InventorySlot {
 
         public Slot(Item item) {
@@ -238,6 +249,8 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
             if (sprite != null) addToBack(sprite);
             sendToBack(bg);
         }
+
+
     }
 
 }

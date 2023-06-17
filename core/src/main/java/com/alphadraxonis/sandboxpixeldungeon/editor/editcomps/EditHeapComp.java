@@ -74,7 +74,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         heapType = new HeapTypeSpinner(heap);
         add(heapType);
 
-        itemContainer = new ItemContainer(heap.items, this) {
+        itemContainer = new ItemContainer<Item>(heap.items, this) {
             @Override
             protected void addItem(Item item) {
                 EditHeapComp.this.obj.drop(item);
