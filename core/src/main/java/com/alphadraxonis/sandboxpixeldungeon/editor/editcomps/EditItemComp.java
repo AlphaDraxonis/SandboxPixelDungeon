@@ -26,7 +26,9 @@ import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.CheckBox;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.IconTitle;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -123,13 +125,15 @@ public class EditItemComp extends DefaultEditComp<Item> {
             enchantBtn = new RedButton(Messages.get(EditItemComp.class, "enchant")) {
                 @Override
                 protected void onClick() {
-                    EditorScene.show(new WndChooseEnchant(item) {
+                    Window w = new WndChooseEnchant(item) {
                         @Override
                         protected void finish() {
                             super.finish();
                             updateObj();
                         }
-                    });
+                    };
+                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                    else Game.scene().addToFront(w);
                 }
             };
             add(enchantBtn);

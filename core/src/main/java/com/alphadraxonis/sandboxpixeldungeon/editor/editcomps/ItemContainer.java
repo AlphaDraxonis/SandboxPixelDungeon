@@ -3,10 +3,12 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.ItemItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
+import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.InventorySlot;
@@ -16,31 +18,44 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemContainer extends Component { // needs access to protected methods
+public class ItemContainer<T extends Item> extends Component { // needs access to protected methods
 
     private final DefaultEditComp<?> editComp;
     protected final boolean reverseUiOrder;
 
-    protected List<Item> itemList;
+    public final Class<T> typeParameterClass;
+    protected List<T> itemList;
     protected List<Slot> slots;
     protected final IconButton addBtn;
 
+    {
+        Type type = getClass().getGenericSuperclass();
+        if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            Type[] typeArguments = parameterizedType.getActualTypeArguments();
+            if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
+                typeParameterClass = (Class<T>) typeArguments[0];
+            } else typeParameterClass = null;
+        } else typeParameterClass = null;
+    }
 
-    public ItemContainer(List<Item> itemList) {
+    public ItemContainer(List<T> itemList) {
         this(itemList, null);
     }
 
-    public ItemContainer(List<Item> itemList, DefaultEditComp<?> editComp) {
+    public ItemContainer(List<T> itemList, DefaultEditComp<?> editComp) {
         this(itemList, editComp, false);
     }
 
-    public ItemContainer(List<Item> itemList, DefaultEditComp<?> editComp, boolean reverseUiOrder) {
+    public ItemContainer(List<T> itemList, DefaultEditComp<?> editComp, boolean reverseUiOrder) {
         this.itemList = itemList;
         this.editComp = editComp;
         this.reverseUiOrder = reverseUiOrder;
@@ -72,16 +87,16 @@ public class ItemContainer extends Component { // needs access to protected meth
 
                     @Override
                     public Class<? extends Bag> preferredBag() {
-                        return Items.bag.getClass();
+                        return getPreferredBag();
                     }
 
                     @Override
                     public void onSelect(Item item) {
-                        if (item == null) return;
+                        if (item == null || !typeParameterClass.isInstance(item)) return;
                         if (item instanceof ItemItem) item = ((ItemItem) item).item();
                         item = item.getCopy();
                         int sizePrev = itemList.size();
-                        addItem(item);
+                        addItem((T) item);
                         if (itemList.size() > sizePrev)
                             addItemToUI(item, false);//if it wasnt stacked
                         else {
@@ -127,11 +142,15 @@ public class ItemContainer extends Component { // needs access to protected meth
         return true;
     }
 
-    protected void addItem(Item item) {
+    protected void addItem(T item) {
         itemList.add(item);
     }
 
     protected void onUpdateItem() {//nur dafür gedacht, wenn sich bestehende Items ändern
+    }
+
+    protected Class<? extends Bag> getPreferredBag() {
+        return Items.bag.getClass();
     }
     //IMPORTANT METHODS
     //IMPORTANT METHODS
@@ -170,7 +189,8 @@ public class ItemContainer extends Component { // needs access to protected meth
         return true;
     }
 
-    protected void onSlotNumChange(){}
+    protected void onSlotNumChange() {
+    }
 
     protected class Slot extends InventorySlot {
 
@@ -201,6 +221,22 @@ public class ItemContainer extends Component { // needs access to protected meth
         public void item(Item item) {
             super.item(item);
             bg.visible = true;//gold and bags should have bg
+        }
+
+        @Override
+        protected void viewSprite(Item item) {
+            if (typeParameterClass == Item.class) {
+                super.viewSprite(item);
+                return;
+            }
+            if (sprite != null) {
+                remove(sprite);
+                sprite.destroy();
+            }
+            if (item instanceof EditorItem) sprite = ((EditorItem) item).getSprite();
+            else sprite = new ItemSprite(item);
+            if (sprite != null) addToBack(sprite);
+            sendToBack(bg);
         }
     }
 

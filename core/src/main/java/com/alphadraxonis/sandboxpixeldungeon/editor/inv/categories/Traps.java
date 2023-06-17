@@ -180,7 +180,7 @@ public enum Traps {
     }
 
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "traps"), 0);
+    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "traps"), 0){};
 
     static {
         for (Traps traps : Traps.values()) {

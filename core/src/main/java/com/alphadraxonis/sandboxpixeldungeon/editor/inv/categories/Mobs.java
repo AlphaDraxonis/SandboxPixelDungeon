@@ -294,7 +294,7 @@ public enum Mobs {
         }
     }
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "mobs"), 0);
+    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "mobs"), 0){};
 
     static {
         for (Mobs m : values()) {

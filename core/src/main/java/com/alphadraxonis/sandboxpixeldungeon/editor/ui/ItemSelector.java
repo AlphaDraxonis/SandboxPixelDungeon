@@ -126,7 +126,8 @@ public class ItemSelector extends Component {
             sp.setSize(WIDTH, (int) comps[comps.length - 1].bottom());
         }
 
-        EditorScene.show(w);
+        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+        else Game.scene().addToFront(w);
     }
 
     private void addItem(ScrollingListPane sp, Item i, EditorInventoryWindow w) {

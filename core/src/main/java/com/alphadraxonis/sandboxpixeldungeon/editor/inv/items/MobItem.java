@@ -11,6 +11,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.MobActionPart;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 
@@ -70,6 +71,11 @@ public class MobItem extends EditorItem {
 
     public Mob mob() {
         return mob;
+    }
+
+    @Override
+    public Item getCopy() {
+        return new MobItem((Mob) mob().getCopy());
     }
 
     public static boolean invalidPlacement(Mob mob, CustomLevel level, int cell) {

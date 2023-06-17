@@ -4,6 +4,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
@@ -85,7 +86,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public LevelScheme(String name, Class<? extends Level> levelType, Class<? extends Level> levelTemplate,
                        Long seed, Level.Feeling feeling, int numInRegion, int depth,
-                       List<Item> itemsToSpawn) {
+                       List<Item> itemsToSpawn, List<MobItem> mobsToSpawn) {
         this.name = name;
         type = levelType;
         this.feeling = feeling;
@@ -94,9 +95,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         exitCells = new ArrayList<>(3);
         entranceCells = new ArrayList<>(3);
 
-        mobsToSpawn = new ArrayList<>();
         roomsToSpawn = new ArrayList<>();
         this.itemsToSpawn = itemsToSpawn;
+        this.mobsToSpawn = new ArrayList<>();
+        for (MobItem mobItem : mobsToSpawn) {
+            this.mobsToSpawn.add(mobItem.mob());
+        }
 
 
         if (type == CustomLevel.class) {

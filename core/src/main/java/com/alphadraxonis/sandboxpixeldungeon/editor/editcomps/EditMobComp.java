@@ -26,6 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndInfoMob;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Reflection;
@@ -42,7 +43,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final MobStateSpinner mobStateSpinner;
     private final RedButton addBuffs;
 
-    private final ItemContainer mimicItems;
+    private final ItemContainer<Item> mimicItems;
     private final LotusLevelSpinner lotusLevelSpinner;
 
     private final Component[] comps;
@@ -96,7 +97,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (mob instanceof Mimic) {
             if (((Mimic) mob).items == null) ((Mimic) mob).items = new ArrayList<>();
             ArrayList<Item> mimicItemList = ((Mimic) mob).items;
-            mimicItems = new ItemContainer(mimicItemList, this, true) {
+            mimicItems = new ItemContainer<Item>(mimicItemList, this, true) {
                 @Override
                 protected void addItem(Item item) {
                     //From Heap#drop()
@@ -160,7 +161,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                         return ret;
                     }
                 };
-                EditorScene.show(w);
+                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                else Game.scene().addToFront(w);
             }
         };
         add(addBuffs);

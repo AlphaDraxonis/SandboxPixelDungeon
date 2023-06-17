@@ -33,7 +33,6 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LostInventory;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
-import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.Waterskin;
@@ -88,7 +87,7 @@ public class QuickSlotButton extends Button {
         super.createChildren(params);
 
         if (CustomDungeon.isEditing()) {
-            slot = new QuickItemSlot(null) {
+            slot = new QuickItemSlot() {
                 @Override
                 protected void onClick() {
                     super.onClick();
@@ -138,10 +137,6 @@ public class QuickSlotButton extends Button {
     private abstract class QuickItemSlot extends ItemSlot {
         public QuickItemSlot() {
             super();
-        }
-
-        public QuickItemSlot(TileItem tileItem) {
-            super(tileItem);
         }
 
         @Override

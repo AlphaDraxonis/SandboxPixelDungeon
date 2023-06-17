@@ -5,10 +5,13 @@ import static com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndNew
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.ItemContainer;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Mobs;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.FeelingSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseObjectComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.FoldableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.HeroSelectScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
@@ -39,10 +42,8 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
     //items
     //mobs
     //rooms
-    protected ItemContainer spawnItems;
-    protected SpawnSection sectionItems;
-
-    List<Item> spawnItemsList;
+    protected SpawnSection<Item> sectionItems;
+    protected SpawnSection<MobItem> sectionMobs;
 
     public LevelGenComp() {
 
@@ -95,13 +96,28 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         note = PixelScene.renderTextBlock("Note that following settings are only applied when generating the floor", 6);
         content.add(note);
 
-        sectionItems = new SpawnSection("Items", spawnItems = new ItemContainer(spawnItemsList = new ArrayList<>()){
+        List<Item> listItems = new ArrayList<>();
+        sectionItems = new SpawnSection<>("Items", new ItemContainer<Item>(listItems) {
             @Override
             protected void onSlotNumChange() {
                 LevelGenComp.this.layout();
             }
-        });
+        }, listItems);
         content.add(sectionItems);
+
+        List<MobItem> listMobs = new ArrayList<>();
+        sectionMobs = new SpawnSection<>("Mobs", new ItemContainer<MobItem>(listMobs) {
+            @Override
+            protected void onSlotNumChange() {
+                LevelGenComp.this.layout();
+            }
+
+            @Override
+            protected Class<? extends Bag> getPreferredBag() {
+                return Mobs.bag.getClass();
+            }
+        }, listMobs);
+        content.add(sectionMobs);
 
         sp = new ScrollPane(content);
         add(sp);
@@ -133,6 +149,9 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         sectionItems.setRect(MARGIN, pos, width - MARGIN * 2, -1);
         pos = sectionItems.bottom() + MARGIN;
 
+        sectionMobs.setRect(MARGIN, pos, width - MARGIN * 2, -1);
+        pos = sectionMobs.bottom() + MARGIN;
+
 
         content.setSize(width, pos);
         sp.setSize(width, height);
@@ -151,10 +170,20 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
     //rooms
 
 
-    private class SpawnSection extends FoldableComp {
+    public List<Item> getSpawnItemsList() {
+        return sectionItems.list;
+    }
+    public List<MobItem> getSpawnMobsList() {
+        return sectionMobs.list;
+    }
 
-        public SpawnSection(String label, ItemContainer container) {
+    private class SpawnSection<T extends Item> extends FoldableComp {
+
+        private List<T> list;
+
+        public SpawnSection(String label, ItemContainer<T> container, List<T> list) {
             super(label, container);
+            this.list = list;
             container.setSize(LevelGenComp.this.width, -1);
         }
 

@@ -41,10 +41,6 @@ public class InventorySlot extends ItemSlot {
 
     protected ColorBlock bg;
 
-    public InventorySlot(TileItem item) {
-        super(item);
-    }
-
     public InventorySlot(Item item) {
 
         super(item);

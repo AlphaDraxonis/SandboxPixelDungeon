@@ -23,7 +23,6 @@ package com.alphadraxonis.sandboxpixeldungeon.ui;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
-import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
@@ -122,14 +121,6 @@ public class ItemSlot extends Button {
         }
     };
 
-    public ItemSlot(TileItem tileItem) {
-        super(tileItem);
-        if (sprite instanceof ItemSprite) ((ItemSprite) sprite).visible(false);
-        else sprite.visible = false;
-        enable(false);
-        item(tileItem);
-    }
-
     public ItemSlot() {
         super();
         if (sprite instanceof ItemSprite) ((ItemSprite) sprite).visible(false);
@@ -147,8 +138,7 @@ public class ItemSlot extends Button {
 
         super.createChildren(params);
 
-        if (params != null && params.length > 0) sprite = new ItemSprite((TileItem) null);
-        else sprite = new ItemSprite();
+        sprite = new ItemSprite();
         add(sprite);
 
         status = new BitmapText(PixelScene.pixelFont);
