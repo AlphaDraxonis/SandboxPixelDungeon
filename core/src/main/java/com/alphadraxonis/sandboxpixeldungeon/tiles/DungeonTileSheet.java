@@ -134,10 +134,15 @@ public class DungeonTileSheet {
 		chasmStitcheable.put( Terrain.BOOKSHELF,    CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.BARRICADE,    CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.PEDESTAL,     CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.ENTRANCE,     CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.EXIT,         CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.LOCKED_EXIT,  CHASM_FLOOR );
+		chasmStitcheable.put( Terrain.UNLOCKED_EXIT,CHASM_FLOOR );
 
 		//special floor
 		chasmStitcheable.put( Terrain.EMPTY_SP,     CHASM_FLOOR_SP );
 		chasmStitcheable.put( Terrain.STATUE_SP,    CHASM_FLOOR_SP );
+		chasmStitcheable.put( Terrain.ALCHEMY,      CHASM_FLOOR_SP );
 
 		//wall
 		chasmStitcheable.put( Terrain.WALL,         CHASM_WALL );
@@ -145,6 +150,7 @@ public class DungeonTileSheet {
 		chasmStitcheable.put( Terrain.OPEN_DOOR,    CHASM_WALL );
 		chasmStitcheable.put( Terrain.LOCKED_DOOR,  CHASM_WALL );
 		chasmStitcheable.put( Terrain.SECRET_DOOR,  CHASM_WALL );
+		chasmStitcheable.put( Terrain.CRYSTAL_DOOR, CHASM_WALL );
 		chasmStitcheable.put( Terrain.WALL_DECO,    CHASM_WALL );
 
 		//water

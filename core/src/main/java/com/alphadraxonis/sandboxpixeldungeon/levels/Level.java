@@ -1541,7 +1541,7 @@ public abstract class Level implements Bundlable {
             case Terrain.CRYSTAL_DOOR:
                 return Messages.get(Level.class, "crystal_door_desc");
             case Terrain.LOCKED_EXIT:
-                return Messages.get(Level.class, "locked_exit_desc");
+                return Messages.get(Level.class, "locked_exit_desc") + appendNoTransWarning(cell);
             case Terrain.BARRICADE:
                 return Messages.get(Level.class, "barricade_desc");
             case Terrain.SIGN:
