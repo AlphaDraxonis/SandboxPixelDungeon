@@ -285,12 +285,6 @@ public class CustomLevel extends Level {
         createItems();
     }
 
-    protected void initForPlay(){
-        for (Mob m : mobs) {
-            if (m instanceof Mimic) ((Mimic) m).adjustStats(Dungeon.depth);
-        }
-    }
-
     @Override
     public String tilesTex() {
         switch (region) {
