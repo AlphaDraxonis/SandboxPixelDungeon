@@ -42,7 +42,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
     protected ItemContainer spawnItems;
     protected SpawnSection sectionItems;
 
-    private List<Item> spawnItemsList;
+    List<Item> spawnItemsList;
 
     public LevelGenComp() {
 

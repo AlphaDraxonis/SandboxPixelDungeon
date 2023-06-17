@@ -502,14 +502,15 @@ public class CustomLevel extends Level {
     }
 
     protected int randomDropCell() {
-        int tries = 100;
+        int tries = length;
+        int lengthHalf = length / 2;
         while (tries-- > 0) {
             int pos = Random.Int(length());
             if (passable[pos] && !solid[pos] && canSpawnThings[pos]
                     && map[pos] != ENTRANCE
                     && map[pos] != EXIT
                     && heaps.get(pos) == null
-                    && findMob(pos) == null) {
+                    && (tries <= lengthHalf || findMob(pos) == null)) {
 
                 Trap t = traps.get(pos);
 

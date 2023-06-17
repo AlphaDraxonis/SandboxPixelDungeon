@@ -8,6 +8,8 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
+import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CityBossLevel;
@@ -19,8 +21,10 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.LastLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.PrisonBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.PrisonLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.SewerBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.SewerLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
 import com.watabou.utils.Bundlable;
@@ -63,6 +67,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public List<Mob> mobsToSpawn;
     public ArrayList<Class<? extends Room>> roomsToSpawn;
+    public List<Item> itemsToSpawn;
 
 
     public LevelScheme() {
@@ -75,9 +80,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         this.numInRegion = numInRegion;
         mobsToSpawn = new ArrayList<>();
         roomsToSpawn = new ArrayList<>();
+        itemsToSpawn = new ArrayList<>();
     }
 
-    public LevelScheme(String name, Class<? extends Level> levelType, Class<? extends Level> levelTemplate, Long seed, Level.Feeling feeling, int numInRegion, int depth) {
+    public LevelScheme(String name, Class<? extends Level> levelType, Class<? extends Level> levelTemplate,
+                       Long seed, Level.Feeling feeling, int numInRegion, int depth,
+                       List<Item> itemsToSpawn) {
         this.name = name;
         type = levelType;
         this.feeling = feeling;
@@ -88,6 +96,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
         mobsToSpawn = new ArrayList<>();
         roomsToSpawn = new ArrayList<>();
+        this.itemsToSpawn = itemsToSpawn;
 
 
         if (type == CustomLevel.class) {
@@ -106,6 +115,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         this.customDungeon = customDungeon;
         mobsToSpawn = new ArrayList<>(4);
         roomsToSpawn = new ArrayList<>(4);
+        itemsToSpawn = new ArrayList<>(4);
         if (depth < 26) setChasm(Integer.toString(depth + 1));
 
         switch (depth) {
@@ -328,8 +338,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             level.name = name;
             level.levelScheme = this;
             level.feeling = feeling;
-            initRandomStats();
+            initRandomStats(Random.Long());
             level.create();
+            spawnItemsAndMobs(Random.Long());
             Random.popGenerator();
         } else {
             if (level == null) {
@@ -345,23 +356,54 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             level.name = name;
             Dungeon.level = level;
             Dungeon.levelName = name;
-            initRandomStats();
+            initRandomStats(seed);
+            spawnItemsAndMobs(seed + 229203);
         }
         return level;
     }
 
-    private void initRandomStats() {
-        Random.pushGenerator(Random.Long());
+    private void initRandomStats(long seed) {
+        Random.pushGenerator(seed);
+
         for (Mob m : mobsToSpawn) {
             if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
         }
-        if (type == CustomLevel.class){
+        if (type == CustomLevel.class) {
             for (Mob m : level.mobs) {
                 if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
             }
         }
-        //rooms
-        //items
+        Random.popGenerator();
+    }
+
+    private void spawnItemsAndMobs(long seed) {
+        Random.pushGenerator(seed);
+
+        if (type == CustomLevel.class) {
+            for (Mob m : mobsToSpawn) {
+                if (m.pos <= 0) {
+                    int tries = level.length();
+                    do {
+                        m.pos = level.randomRespawnCell(m);
+                        tries--;
+                    } while (m.pos == -1 && tries > 0);
+                    if (m.pos != -1) level.mobs.add(m);
+                }
+            }
+        }
+
+        for (Item item : itemsToSpawn) {
+            item.reset();//important for scroll runes being inited
+            int cell;
+            if (level instanceof CustomLevel) cell = ((CustomLevel) level).randomDropCell();
+            else cell = ((RegularLevel) level).randomDropCell();
+            if (level.map[cell] == Terrain.HIGH_GRASS || level.map[cell] == Terrain.FURROWED_GRASS) {
+                level.map[cell] = Terrain.GRASS;
+                level.losBlocking[cell] = false;
+            }
+            level.drop(item, cell).type = Heap.Type.HEAP;
+        }
+
         Random.popGenerator();
     }
 
@@ -406,6 +448,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     private static final String MOBS_TO_SPAWN = "mobs_to_spawn";
     private static final String ROOMS_TO_SPAWN = "rooms_to_spawn";
+    private static final String ITEMS_TO_SPAWN = "items_to_spawn";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -439,6 +482,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         bundle.put(EXIT_CELLS, exits);
 
         bundle.put(MOBS_TO_SPAWN, mobsToSpawn);
+        bundle.put(ITEMS_TO_SPAWN, itemsToSpawn);
         bundle.put(ROOMS_TO_SPAWN, roomsToSpawn.toArray(new Class[0]));
     }
 
@@ -473,6 +517,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         mobsToSpawn = new ArrayList<>();
         if (bundle.contains(MOBS_TO_SPAWN))
             for (Bundlable l : bundle.getCollection(MOBS_TO_SPAWN)) mobsToSpawn.add((Mob) l);
+
+        itemsToSpawn = new ArrayList<>();
+        if (bundle.contains(ITEMS_TO_SPAWN))
+            for (Bundlable l : bundle.getCollection(ITEMS_TO_SPAWN)) itemsToSpawn.add((Item) l);
 
         if (bundle.contains(ROOMS_TO_SPAWN)) {
             roomsToSpawn = new ArrayList<>();

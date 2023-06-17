@@ -93,7 +93,8 @@ public class WndNewFloor extends WndTabbed {
                     seed,
                     (Level.Feeling) levelGenComp.feelingSpinner.getValue(),
                     (int) newFloorComp.numInRegion.getValue(),
-                    (int) newFloorComp.depth.getValue());
+                    (int) newFloorComp.depth.getValue(),
+                    levelGenComp.spawnItemsList);
             if (owner.getNumFloors() == 0) owner.setStart(name);
             owner.addFloor(levelScheme);
 
