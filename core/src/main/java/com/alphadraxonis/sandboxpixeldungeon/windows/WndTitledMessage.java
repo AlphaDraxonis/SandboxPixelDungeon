@@ -137,7 +137,7 @@ public class WndTitledMessage extends Window {
         setPosAfterTitleBar(sp);
         if (needsScrollPane) sp.setSize(newWidth, height - titlebar.bottom() - 2.5f * GAP);
         else sp.setSize(newWidth, body.height() + GAP);
-        sp.scrollTo(sp.content().camera.scroll.x, sp.content().camera.scroll.y);
+        sp.scrollToCurrentView();
 
         bringToFront(titlebar);
     }

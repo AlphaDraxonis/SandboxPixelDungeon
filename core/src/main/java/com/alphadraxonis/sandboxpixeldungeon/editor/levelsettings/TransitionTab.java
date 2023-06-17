@@ -145,7 +145,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         content.setSize(width, pos - 1);
         sp.setPos(sp.left(), sp.top());
 
-        sp.scrollTo(sp.content().camera().scroll.x, sp.content().camera().scroll.y);
+        sp.scrollToCurrentView();
     }
 
     private float layoutTransitionComps(List<Integer> cells, float pos) {

@@ -134,6 +134,7 @@ public class CustomDungeonSaves {
     public static void copyLevelsForNewGame(String dungeonName, String dirDestination) throws IOException {
         try {
             FileHandle src = FileUtils.getFileHandle(Files.FileType.External, DUNGEON_FOLDER + dungeonName + "/" + LEVEL_FOLDER);
+            if (!src.exists()) return;
             FileHandle dest = FileUtils.getFileHandle(Files.FileType.Local, dirDestination);
             src.copyTo(dest);
         } catch (GdxRuntimeException e) {

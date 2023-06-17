@@ -49,7 +49,7 @@ public class EditCompWindow extends Window {
         int weite = (int) Math.ceil(ch > maxHeight ? maxHeight : ch);
         resize(width, weite);
         sp.setSize(width, weite);
-        sp.scrollTo(sp.content().camera.scroll.x, sp.content().camera.scroll.y);
+        sp.scrollToCurrentView();
     }
 
 }

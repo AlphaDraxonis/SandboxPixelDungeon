@@ -36,7 +36,6 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.huntress.Spir
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
-import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
@@ -198,13 +197,11 @@ public class Dungeon {
     public static void init() {
 
         String levelDir = GamesInProgress.getCustomDungeonLevelFolder(GamesInProgress.curSlot);
-        if (!customDungeon.getName().equals(WndNewDungeon.DEFAULT_DUNGEON)) {
-            try {
-                CustomDungeonSaves.copyLevelsForNewGame(customDungeon.getName(), levelDir);
-            } catch (IOException e) {
-                e.printStackTrace();
-                SandboxPixelDungeon.reportException(e);
-            }
+        try {
+            CustomDungeonSaves.copyLevelsForNewGame(customDungeon.getName(), levelDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+            SandboxPixelDungeon.reportException(e);
         }
         CustomDungeonSaves.setCurDirectory(levelDir);
         CustomDungeonSaves.setFileType(Files.FileType.Local);

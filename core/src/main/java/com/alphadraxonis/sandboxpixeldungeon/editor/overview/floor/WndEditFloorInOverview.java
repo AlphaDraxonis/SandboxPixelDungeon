@@ -190,7 +190,7 @@ public class WndEditFloorInOverview extends Window {
         if(open!=null)open.setRect(0,height - WndEditorSettings.ITEM_HEIGHT,deleteW,WndEditorSettings.ITEM_HEIGHT);
 
         sp.setRect(0, titlePos, width, height - titlePos - WndEditorSettings.ITEM_HEIGHT - gapBetweenButtonAndSp);
-        sp.scrollTo(sp.content().camera().scroll.x, sp.content().camera().scroll.y);
+        sp.scrollToCurrentView();
 
     }
 

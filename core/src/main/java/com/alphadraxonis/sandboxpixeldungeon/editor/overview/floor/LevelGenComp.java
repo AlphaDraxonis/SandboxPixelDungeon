@@ -155,6 +155,8 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
         content.setSize(width, pos);
         sp.setSize(width, height);
+
+        sp.scrollToCurrentView();
     }
 
     //typ
@@ -185,6 +187,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             super(label, container);
             this.list = list;
             container.setSize(LevelGenComp.this.width, -1);
+            showBody(false);
         }
 
         @Override

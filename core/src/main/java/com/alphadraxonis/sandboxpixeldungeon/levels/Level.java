@@ -225,7 +225,7 @@ public abstract class Level implements Bundlable {
                 addItemToSpawn(new StoneOfEnchantment());
             }
 
-            if (Dungeon.depth == ((Dungeon.seed % 3) + 1)) {
+            if (Dungeon.getSimulatedDepth(levelScheme) == ((Dungeon.seed % 3) + 1)) {
                 addItemToSpawn(new StoneOfIntuition());
             }
 
@@ -260,8 +260,8 @@ public abstract class Level implements Bundlable {
             if (feeling == Feeling.DARK) {
                 if (!(this instanceof CustomLevel)) {
                     addItemToSpawn(new Torch());
+                    viewDistance = Math.round(viewDistance / 2f);
                 }
-//              viewDistance = Math.round(viewDistance / 2f);
             } else if (feeling == Feeling.LARGE) {
                 if (!(this instanceof CustomLevel)) {
                     addItemToSpawn(Generator.random(Generator.Category.FOOD));

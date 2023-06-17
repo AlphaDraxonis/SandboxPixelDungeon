@@ -112,6 +112,9 @@ public class ScrollPane extends Component {
         }
         thumb.y = this.y + height * c.scroll.y / content.height();
     }
+    public void scrollToCurrentView() {// if the size has changed, this method will move the camera to a valid position
+        scrollTo(content().camera.scroll.x, content().camera.scroll.y);
+    }
 
     @Override
     public synchronized void update() {

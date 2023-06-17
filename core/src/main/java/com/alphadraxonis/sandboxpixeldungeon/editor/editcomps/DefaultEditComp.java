@@ -160,7 +160,7 @@ public abstract class DefaultEditComp<T> extends Component {
             int weite = (int) Math.ceil(ch > maxHeight ? maxHeight : ch);
             w.resize((int) Math.ceil(newWidth), weite);
             sp.setSize((int) Math.ceil(newWidth), weite);
-            sp.scrollTo(sp.content().camera.scroll.x, sp.content().camera.scroll.y);
+            sp.scrollToCurrentView();
         };
         content.setOnUpdate(r);
         r.run();

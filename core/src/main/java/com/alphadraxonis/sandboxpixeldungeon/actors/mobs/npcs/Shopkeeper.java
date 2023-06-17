@@ -28,6 +28,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.ElmoParticle;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
@@ -225,14 +226,14 @@ public class Shopkeeper extends NPC {
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
 			return Messages.get(this, "talk_ascent");
 		}
-		switch (Dungeon.depth){
-			case 6: default:
+		switch (Dungeon.curLvlScheme().getRegion()){
+            case LevelScheme.REGION_PRISON: default:
 				return Messages.get(this, "talk_prison_intro") + "\n\n" + Messages.get(this, "talk_prison_" + Dungeon.hero.heroClass.name());
-			case 11:
+            case LevelScheme.REGION_CAVES:
 				return Messages.get(this, "talk_caves");
-			case 16:
+            case LevelScheme.REGION_CITY:
 				return Messages.get(this, "talk_city");
-			case 20:
+            case LevelScheme.REGION_HALLS:
 				return Messages.get(this, "talk_halls");
 		}
 	}

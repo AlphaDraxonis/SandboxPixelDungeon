@@ -270,7 +270,7 @@ public class EditCompWindowTabbed extends WndTabbed {
             content.setPos(0, 0);
             content.setRect(0, 0, EditCompWindowTabbed.this.width, content.height());
             sp.setRect(0, 0, EditCompWindowTabbed.this.width, EditCompWindowTabbed.this.height);
-            sp.scrollTo(sp.content().camera().scroll.x, sp.content().camera().scroll.y);
+            sp.scrollToCurrentView();
         }
 
         private float getPreferredHeight() {

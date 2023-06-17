@@ -87,9 +87,9 @@ public class FoldableComp extends Component {
         //insert part for add/remove buttons here
 
         if (fold.visible)
-            fold.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY, BUTTON_HEIGHT, BUTTON_HEIGHT);
+            fold.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (BUTTON_HEIGHT - fold.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
         else if (expand.visible)
-            expand.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY, BUTTON_HEIGHT, BUTTON_HEIGHT);
+            expand.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY+ (BUTTON_HEIGHT - expand.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
 
         title.maxWidth((int) posX);
         title.setPos(x, (BUTTON_HEIGHT - title.height()) * 0.5f + posY + 1);

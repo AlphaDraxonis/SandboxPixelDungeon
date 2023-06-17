@@ -117,7 +117,7 @@ public class DefaultListItem extends AdvancedListPaneItem {
                 int h = (int) Math.ceil(ch > maxHeight ? maxHeight : ch);
                 w.resize((int) Math.ceil(newWidth), h);
                 sp.setSize((int) Math.ceil(newWidth), h);
-                sp.scrollTo(sp.content().camera.scroll.x, sp.content().camera.scroll.y);
+                sp.scrollToCurrentView();
             };
             content.setOnUpdate(r);
             r.run();
