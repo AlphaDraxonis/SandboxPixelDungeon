@@ -20,9 +20,6 @@ public class WandmakerQuest extends Quest {
 
     @Override
     public void initRandom(LevelScheme levelScheme) {
-        if (type == -1) {// decide between 1,2, or 3 for quest type.
-            type = levelScheme.getWandmakerQuest();
-        }
 
         if (wand1 == null) {
             wand1 = (Wand) Generator.randomUsingDefaults(Generator.Category.WAND);
@@ -37,17 +34,21 @@ public class WandmakerQuest extends Quest {
             wand2.upgrade();
         }
 
-        switch (type) {
-            case ASH:
-            default:
-                levelScheme.roomsToSpawn.add(MassGraveRoom.class);
-                break;
-            case CANDLE:
-                levelScheme.roomsToSpawn.add(RitualSiteRoom.class);
-                break;
-            case SEED:
-                levelScheme.roomsToSpawn.add(RotGardenRoom.class);
-                break;
+        //TODO WICHTIG add room when adding and player may remove the room sobals mann addded direkt auch raum adden!
+        if (type == -1) {// decide between 1,2, or 3 for quest type.
+            type = levelScheme.getWandmakerQuest();
+            switch (type) {
+                case ASH:
+                default:
+                    levelScheme.roomsToSpawn.add(new MassGraveRoom());
+                    break;
+                case CANDLE:
+                    levelScheme.roomsToSpawn.add(new RitualSiteRoom());
+                    break;
+                case SEED:
+                    levelScheme.roomsToSpawn.add(new RotGardenRoom());
+                    break;
+            }
         }
     }
 

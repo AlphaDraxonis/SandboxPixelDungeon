@@ -95,7 +95,8 @@ public class WndNewFloor extends WndTabbed {
                     (int) newFloorComp.numInRegion.getValue(),
                     (int) newFloorComp.depth.getValue(),
                     levelGenComp.getSpawnItemsList(),
-                    levelGenComp.getSpawnMobsList());
+                    levelGenComp.getSpawnMobsList(),
+                    levelGenComp.getSpawnRoomsList());
             if (owner.getNumFloors() == 0) owner.setStart(name);
             owner.addFloor(levelScheme);
 

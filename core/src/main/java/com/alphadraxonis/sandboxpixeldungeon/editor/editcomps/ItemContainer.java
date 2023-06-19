@@ -97,22 +97,7 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
                         if (item == null || !typeParameterClass.isInstance(item)) return;
                         if (item instanceof ItemItem) item = ((ItemItem) item).item();
                         item = item.getCopy();
-                        int sizePrev = itemList.size();
-                        addItem((T) item);
-                        if (itemList.size() > sizePrev)
-                            addItemToUI(item, false);//if it wasnt stacked
-                        else {
-                            //Rearrange slots
-                            Map<Item, Slot> slotMap = new HashMap<>();
-                            for (Slot slot : slots) {
-                                slot.item(slot.item());
-                                slotMap.put(slot.item(), slot);
-                            }
-                            slots.clear();
-                            for (Item i : itemList) slots.add(slotMap.get(i));
-                            if (reverseUiOrder) Collections.reverse(slots);
-                            ItemContainer.this.layout();
-                        }
+                        addNewItem((T) item);
                     }
                 });
             }
@@ -121,6 +106,25 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
 
         for (Item i : itemList) {
             addItemToUI(i, !reverseUiOrder);
+        }
+    }
+
+    public final void addNewItem(T item) {
+        int sizePrev = itemList.size();
+        doAddItem((T) item);
+        if (itemList.size() > sizePrev)
+            addItemToUI(item, false);//if it wasnt stacked
+        else {
+            //Rearrange slots
+            Map<Item, Slot> slotMap = new HashMap<>();
+            for (Slot slot : slots) {
+                slot.item(slot.item());
+                slotMap.put(slot.item(), slot);
+            }
+            slots.clear();
+            for (Item i : itemList) slots.add(slotMap.get(i));
+            if (reverseUiOrder) Collections.reverse(slots);
+            ItemContainer.this.layout();
         }
     }
 
@@ -145,7 +149,7 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
         return true;
     }
 
-    protected void addItem(T item) {
+    protected void doAddItem(T item) {
         itemList.add(item);
     }
 
@@ -195,7 +199,7 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
     protected void onSlotNumChange() {
     }
 
-    private void updatePointerPriorityForSp(){
+    private void updatePointerPriorityForSp() {
         Group sp = parent;
         while (!(sp instanceof ScrollPane) && sp != null) {
             sp = sp.parent;

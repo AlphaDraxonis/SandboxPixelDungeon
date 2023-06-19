@@ -76,7 +76,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
 
         itemContainer = new ItemContainer<Item>(heap.items, this) {
             @Override
-            protected void addItem(Item item) {
+            protected void doAddItem(Item item) {
                 EditHeapComp.this.obj.drop(item);
                 updateObj();
             }

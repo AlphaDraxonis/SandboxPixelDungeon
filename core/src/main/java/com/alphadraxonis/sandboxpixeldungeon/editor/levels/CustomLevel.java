@@ -667,8 +667,7 @@ public class CustomLevel extends Level {
     }
 
 
-    public final TextureFilm getTextureFilm() {
-        String theme = tilesTex();
+    public static TextureFilm getTextureFilm(String theme) {
         TextureFilm tf = textureFilms.get(theme);
         if (tf == null) {
             tf = new TextureFilm(theme, DungeonTilemap.SIZE, DungeonTilemap.SIZE);

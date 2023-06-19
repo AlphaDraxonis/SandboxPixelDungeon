@@ -17,7 +17,7 @@ public class ImpQuest extends Quest {
 
 
     private static int activeMonkQuests, activeGolemQuests;//maybe use array instead and type is index
-    private static boolean completedOnce;
+    private static int numComleted;//not actual num because it gets lower when imp shop rooms spawn
 
     public Ring reward;
 
@@ -42,6 +42,8 @@ public class ImpQuest extends Quest {
 
         if (type == MONK_QUEST) activeMonkQuests--;
         else if (type == GOLEM_QUEST) activeGolemQuests--;
+
+        numComleted++;
 
         Notes.remove(Notes.Landmark.IMP);
     }
@@ -70,7 +72,10 @@ public class ImpQuest extends Quest {
 
 
     public static boolean completedOnce(){
-        return completedOnce;
+        return numComleted > 0;
+    }
+    public static void decreaseCompletedCounter(){
+        numComleted--;
     }
 
     private static final String RING = "ring";
@@ -90,13 +95,13 @@ public class ImpQuest extends Quest {
     private static final String NODE = "imp";
     private static String MONKS = "monks";
     private static final String GOLEMS = "golems";
-    private static final String COMPLETED_ONCE = "completed_once";
+    private static final String NUM_COMPLETED = "num_completed";
 
     public static void storeStatics(Bundle bundle) {
         Bundle node = new Bundle();
         node.put(MONKS, activeMonkQuests);
         node.put(GOLEMS, activeGolemQuests);
-        node.put(COMPLETED_ONCE, completedOnce);
+        node.put(NUM_COMPLETED, numComleted);
         bundle.put(NODE, node);
     }
 
@@ -104,12 +109,12 @@ public class ImpQuest extends Quest {
         Bundle b = bundle.getBundle(NODE);
         activeMonkQuests = b.getInt(MONKS);
         activeGolemQuests = b.getInt(GOLEMS);
-        completedOnce = b.getBoolean(COMPLETED_ONCE);
+        numComleted = b.getInt(NUM_COMPLETED);
     }
 
     public static void reset() {
         activeMonkQuests = 0;
         activeGolemQuests = 0;
-        completedOnce = false;
+        numComleted = 0;
     }
 }

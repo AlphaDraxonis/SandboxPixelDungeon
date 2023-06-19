@@ -2,7 +2,6 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.quests;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
-import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BlacksmithRoom;
 import com.watabou.utils.Bundle;
 
 public class BlacksmithQuest extends Quest{
@@ -14,7 +13,6 @@ public class BlacksmithQuest extends Quest{
     @Override
     public void initRandom(LevelScheme levelScheme) {
         if (type == -1) type = levelScheme.getBlacksmithQuest();
-        levelScheme.roomsToSpawn.add(BlacksmithRoom.class);//TODO WICHTIG add room when adding and player may remove the room
     }
 
     @Override

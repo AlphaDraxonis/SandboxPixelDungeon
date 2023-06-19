@@ -10,7 +10,8 @@ import java.util.ArrayList;
 
 public class EditorItemBag extends Bag {
 
-    public static void callStaticInitialisers(){}//absolutely necessary to call this before using any of the subclasses
+    public static void callStaticInitializers() {
+    }//absolutely necessary to call this before using any of the subclasses
 
     private final String name;
 
@@ -24,7 +25,7 @@ public class EditorItemBag extends Bag {
         return items.size() + 1;
     }
 
-    public  Image getCategoryImage(){
+    public Image getCategoryImage() {
         return new ItemSprite(image);
     }
 
@@ -33,7 +34,7 @@ public class EditorItemBag extends Bag {
         return name;
     }
 
-    public static final EditorItemBag mainBag = new EditorItemBag("main", 0){
+    public static final EditorItemBag mainBag = new EditorItemBag("main", 0) {
         @Override
         public Image getCategoryImage() {
             return null;
@@ -45,7 +46,7 @@ public class EditorItemBag extends Bag {
         mainBag.items.add(Mobs.bag);
         do {
             mainBag.items.add(Items.bag);
-        } while (Items.bag == null);//remove callStaticInitialisers() and see if it is still 'always false' (obv don't enter EditorScene before)
+        } while (Items.bag == null);//remove callStaticInitializers() and see if it is still 'always false' (obv don't enter EditorScene before)
         mainBag.items.add(Traps.bag);
     }
 
@@ -61,8 +62,14 @@ public class EditorItemBag extends Bag {
             if (bagClass.isInstance(item)) {
                 return (T) item;
             }
-            if (item == null) throw new RuntimeException("FIXME WICHTIG ACHTUNG EASY DELETE");
         }
+        Class<?> cl = bagClass.getEnclosingClass();
+        if (Rooms.class == cl) return (T) Rooms.bag;
+        if (Tiles.class == cl) return (T) Tiles.bag;
+        if (Mobs.class  == cl) return (T) Mobs.bag;
+        if (Items.class == cl) return (T) Items.bag;
+        if (Traps.class == cl) return (T) Traps.bag;
+
         return null;
     }
 

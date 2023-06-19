@@ -3,15 +3,19 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor;
 import static com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndNewFloor.BUTTON_HEIGHT;
 import static com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndNewFloor.MARGIN;
 
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.ItemContainer;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Mobs;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Rooms;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.RoomItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.FeelingSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseObjectComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.FoldableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BlacksmithRoom;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.HeroSelectScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
@@ -44,6 +48,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
     //rooms
     protected SpawnSection<Item> sectionItems;
     protected SpawnSection<MobItem> sectionMobs;
+    protected SpawnSection<RoomItem> sectionRooms;
 
     public LevelGenComp() {
 
@@ -116,8 +121,39 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             protected Class<? extends Bag> getPreferredBag() {
                 return Mobs.bag.getClass();
             }
+
+            @Override
+            protected void doAddItem(MobItem item) {
+                if (item.mob() instanceof Blacksmith) {
+                    int numSmiths = 0;
+                    for (MobItem m : sectionMobs.list) {
+                        if (m.mob() instanceof Blacksmith) numSmiths++;
+                    }
+                    int numSmithRooms = 0;
+                    for (RoomItem r : sectionRooms.list) {
+                        if (r.room() instanceof BlacksmithRoom) numSmithRooms++;
+                    }
+                    if (numSmithRooms <= numSmiths)
+                        sectionRooms.container.addNewItem(new RoomItem(new BlacksmithRoom()));
+                }
+                super.doAddItem(item);
+            }
         }, listMobs);
         content.add(sectionMobs);
+
+        List<RoomItem> listRooms = new ArrayList<>();
+        sectionRooms = new SpawnSection<>("Rooms", new ItemContainer<RoomItem>(listRooms) {
+            @Override
+            protected void onSlotNumChange() {
+                LevelGenComp.this.layout();
+            }
+
+            @Override
+            protected Class<? extends Bag> getPreferredBag() {
+                return Rooms.bag.getClass();
+            }
+        }, listRooms);
+        content.add(sectionRooms);
 
         sp = new ScrollPane(content);
         add(sp);
@@ -152,6 +188,9 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         sectionMobs.setRect(MARGIN, pos, width - MARGIN * 2, -1);
         pos = sectionMobs.bottom() + MARGIN;
 
+        sectionRooms.setRect(MARGIN, pos, width - MARGIN * 2, -1);
+        pos = sectionRooms.bottom() + MARGIN;
+
 
         content.setSize(width, pos);
         sp.setSize(width, height);
@@ -169,23 +208,30 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
     //items
     //mobs (inkl questnpcsm deren Quest durch bearbeiten verändert werden kann)
-    //rooms
+    //rooms FIXME remove comment!
 
 
     public List<Item> getSpawnItemsList() {
         return sectionItems.list;
     }
+
     public List<MobItem> getSpawnMobsList() {
         return sectionMobs.list;
     }
 
+    public List<RoomItem> getSpawnRoomsList() {
+        return sectionRooms.list;
+    }
+
     private class SpawnSection<T extends Item> extends FoldableComp {
 
+        private ItemContainer<T> container;
         private List<T> list;
 
         public SpawnSection(String label, ItemContainer<T> container, List<T> list) {
             super(label, container);
             this.list = list;
+            this.container = container;
             container.setSize(LevelGenComp.this.width, -1);
             showBody(false);
         }

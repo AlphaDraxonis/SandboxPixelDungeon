@@ -1,10 +1,12 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 
+import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.RoomItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
@@ -67,7 +69,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     public List<Integer> entranceCells, exitCells;
 
     public List<Mob> mobsToSpawn;
-    public ArrayList<Class<? extends Room>> roomsToSpawn;
+    public List<Room> roomsToSpawn;
     public List<Item> itemsToSpawn;
 
 
@@ -86,7 +88,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public LevelScheme(String name, Class<? extends Level> levelType, Class<? extends Level> levelTemplate,
                        Long seed, Level.Feeling feeling, int numInRegion, int depth,
-                       List<Item> itemsToSpawn, List<MobItem> mobsToSpawn) {
+                       List<Item> itemsToSpawn, List<MobItem> mobsToSpawn, List<RoomItem> roomsToSpawn) {
         this.name = name;
         type = levelType;
         this.feeling = feeling;
@@ -95,11 +97,14 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         exitCells = new ArrayList<>(3);
         entranceCells = new ArrayList<>(3);
 
-        roomsToSpawn = new ArrayList<>();
+        this.roomsToSpawn = new ArrayList<>();
         this.itemsToSpawn = itemsToSpawn;
         this.mobsToSpawn = new ArrayList<>();
         for (MobItem mobItem : mobsToSpawn) {
             this.mobsToSpawn.add(mobItem.mob());
+        }
+        for (RoomItem roomItem : roomsToSpawn) {
+            this.roomsToSpawn.add(roomItem.room());
         }
 
 
@@ -487,7 +492,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
         bundle.put(MOBS_TO_SPAWN, mobsToSpawn);
         bundle.put(ITEMS_TO_SPAWN, itemsToSpawn);
-        bundle.put(ROOMS_TO_SPAWN, roomsToSpawn.toArray(new Class[0]));
+        bundle.put(ROOMS_TO_SPAWN, roomsToSpawn);
     }
 
     @Override
@@ -526,11 +531,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         if (bundle.contains(ITEMS_TO_SPAWN))
             for (Bundlable l : bundle.getCollection(ITEMS_TO_SPAWN)) itemsToSpawn.add((Item) l);
 
-        if (bundle.contains(ROOMS_TO_SPAWN)) {
-            roomsToSpawn = new ArrayList<>();
-            for (Class<? extends Room> c : bundle.getClassArray(ROOMS_TO_SPAWN))
-                roomsToSpawn.add(c);
-        } else roomsToSpawn = new ArrayList<>();
+        roomsToSpawn = new ArrayList<>();
+        if (bundle.contains(ROOMS_TO_SPAWN))
+            for (Bundlable l : bundle.getCollection(ROOMS_TO_SPAWN)) roomsToSpawn.add((Room) l);
     }
 
     public Level loadLevel() {
@@ -575,6 +578,17 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         if (level == HallsLevel.class || level == HallsBossLevel.class || level == LastLevel.class || level == DeadEndLevel.class)
             return REGION_HALLS;
         return REGION_NONE;
+    }
+
+    public static String getRegionTexture(int region){
+        switch (region){
+            case REGION_SEWERS: return Assets.Environment.TILES_SEWERS;
+            case REGION_PRISON:return Assets.Environment.TILES_PRISON;
+            case REGION_CAVES: return Assets.Environment.TILES_CAVES;
+            case REGION_CITY:return Assets.Environment.TILES_CITY;
+            case REGION_HALLS: return Assets.Environment.TILES_HALLS;
+        }
+        return null;
     }
 
     public static int getBoss(Class<? extends Level> level) {

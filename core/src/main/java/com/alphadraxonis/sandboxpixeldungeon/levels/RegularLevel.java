@@ -74,7 +74,6 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.traps.WornDartTrap;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -151,9 +150,7 @@ public abstract class RegularLevel extends Level {
 			initRooms.add(SecretRoom.createRoom());
 		}
 
-		for(Class<? extends Room> r : levelScheme.roomsToSpawn){
-			initRooms.add(Reflection.newInstance(r));
-		}
+		initRooms.addAll(levelScheme.roomsToSpawn);
 
 		return initRooms;
 	}

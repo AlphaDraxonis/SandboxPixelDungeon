@@ -99,7 +99,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             ArrayList<Item> mimicItemList = ((Mimic) mob).items;
             mimicItems = new ItemContainer<Item>(mimicItemList, this, true) {
                 @Override
-                protected void addItem(Item item) {
+                protected void doAddItem(Item item) {
                     //From Heap#drop()
                     if (item.stackable) {
                         for (Item i : mimicItemList) {

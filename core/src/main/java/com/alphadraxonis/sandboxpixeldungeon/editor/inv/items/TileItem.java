@@ -47,6 +47,11 @@ public class TileItem extends EditorItem {
         this.cell = cell;
         randomizeTexture();
     }
+    public TileItem(int terrainFeature, int image, int cell) {
+        this.terrainType = terrainFeature;
+        this.cell = cell;
+        this.image = image;
+    }
 
     @Override
     public void randomizeTexture() {

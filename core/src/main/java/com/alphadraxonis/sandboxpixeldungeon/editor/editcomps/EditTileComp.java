@@ -140,7 +140,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             return water;
         } else {
             Image img = new Image(TextureCache.get(level.tilesTex()));
-            img.frame(EditorScene.customLevel().getTextureFilm().get(image));
+            img.frame(CustomLevel.getTextureFilm(EditorScene.customLevel().tilesTex()).get(image));
             return img;
         }
     }

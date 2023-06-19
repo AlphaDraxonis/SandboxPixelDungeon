@@ -25,6 +25,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.items.Gold;
@@ -79,6 +80,7 @@ public class ItemSprite extends MovieClip {
     protected float shadowOffset = 0.5f;
 
     protected boolean isTile = false, usesWater = false;
+    private String textureString;
 
     public ItemSprite() {
         this(ItemSpriteSheet.SOMETHING, null);
@@ -86,8 +88,13 @@ public class ItemSprite extends MovieClip {
 
     //Dont use (If you have a tileItem as an Item, you also have to cast it to use this constructor!!)
     public ItemSprite(TileItem tileItem) {
-        super(EditorScene.customLevel().tilesTex());
+        this(EditorScene.customLevel().tilesTex(), tileItem);
+        textureString = null;
+    }
+    public ItemSprite(String tilesTexture, TileItem tileItem) {
+        super(tilesTexture);
         isTile = true;
+        textureString = tilesTexture;
         if (tileItem != null && tileItem.image() >= 0) view(tileItem);
         else visible = false;
     }
@@ -204,8 +211,10 @@ public class ItemSprite extends MovieClip {
         if (isTile) {
             boolean newVal = ((TileItem) item).terrainType() == Terrain.WATER;
             if (newVal != usesWater) {
-                if (newVal) texture(EditorScene.customLevel().waterTex());
-                else texture(EditorScene.customLevel().tilesTex());
+                if (textureString == null) {
+                    if (newVal) texture(EditorScene.customLevel().waterTex());
+                    else texture(EditorScene.customLevel().tilesTex());
+                }
                 usesWater = newVal;
             }
         }
@@ -265,7 +274,9 @@ public class ItemSprite extends MovieClip {
             return;
         }
 
-        TextureFilm tf = isTile ? EditorScene.customLevel().getTextureFilm() : ItemSpriteSheet.film;
+        TextureFilm tf = isTile ?
+                CustomLevel.getTextureFilm(textureString == null ? EditorScene.customLevel().tilesTex() : textureString)
+                : ItemSpriteSheet.film;
 
         frame(tf.get(image));
 

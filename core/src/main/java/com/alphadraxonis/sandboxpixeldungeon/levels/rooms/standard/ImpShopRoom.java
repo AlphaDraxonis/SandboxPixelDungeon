@@ -101,6 +101,7 @@ public class ImpShopRoom extends ShopRoom {
 	}
 
 	public void spawnShop(Level level){
+		ImpQuest.decreaseCompletedCounter();
 		impSpawned = true;
 		placeShopkeeper(level);
 		placeItems(level);

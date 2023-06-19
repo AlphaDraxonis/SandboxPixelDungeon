@@ -420,6 +420,12 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable {
 		bottom = bundle.getInt( "bottom" );
 	}
 
+	public Room getCopy(){
+		Bundle b = new Bundle();
+		b.put("ROOM",this);
+		return (Room) b.get("ROOM");
+	}
+
 	//FIXME currently connections and neighbours are not preserved on load
 	public void onLevelLoad( Level level ){
 		//does nothing by default
