@@ -20,11 +20,13 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BlacksmithRoo
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.HeroSelectScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
+import com.alphadraxonis.sandboxpixeldungeon.ui.CheckBox;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.utils.DungeonSeed;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTextInput;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
@@ -47,6 +49,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
     protected SpawnSection<Item> sectionItems;
     protected SpawnSection<MobItem> sectionMobs;
     protected SpawnSectionMore<RoomItem> sectionRooms;
+    protected boolean spawnStandartRooms = true, spawnSecretRooms = true, spawnSpecialRooms = true;
 
     public LevelGenComp() {
 
@@ -153,7 +156,16 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         }, listRooms) {
             @Override
             protected void onAddClick() {
-                System.err.println("MOre");
+                Window w = new WndRoomSettings(spawnStandartRooms, spawnSecretRooms, spawnSpecialRooms) {
+                    @Override
+                    protected void finish() {
+                        spawnStandartRooms = stand.checked();
+                        spawnSecretRooms = sec.checked();
+                        spawnSpecialRooms = spec.checked();
+                    }
+                };
+                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                else Game.scene().addToFront(w);
             }
         };
         content.add(sectionRooms);
@@ -259,4 +271,46 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         }
     }
 
+
+    private static abstract class WndRoomSettings extends Window {
+
+        protected CheckBox stand, sec, spec;
+
+        public WndRoomSettings(boolean standart, boolean secret, boolean special) {
+
+            resize(PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : (int) (PixelScene.uiCamera.width * 0.85f), 100);
+
+            RenderedTextBlock title = PixelScene.renderTextBlock("RoomSettings", 10);
+            title.hardlight(Window.TITLE_COLOR);
+            add(title);
+
+            stand = new CheckBox("Spawn StandartRooms");
+            stand.checked(standart);
+            add(stand);
+
+            sec = new CheckBox("Spawn SecretRooms");
+            sec.checked(secret);
+            add(sec);
+
+            spec = new CheckBox("Spawn SpecialRooms");
+            spec.checked(special);
+            add(spec);
+
+            title.setPos((width - title.width()) * 0.5f, 2);
+            stand.setRect(0, title.bottom() + 5, width, 16);
+            sec.setRect(0, stand.bottom() + 2, width, 16);
+            spec.setRect(0, sec.bottom() + 2, width, 16);
+
+            resize(width, (int) (Math.ceil(spec.bottom()) + 3));
+        }
+
+        @Override
+        public void hide() {
+            super.hide();
+            finish();
+        }
+
+        protected abstract void finish();
+
+    }
 }

@@ -30,6 +30,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.SewerLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.ShopRoom;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -72,6 +73,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     public List<Room> roomsToSpawn;
     public List<Item> itemsToSpawn;
 
+    public boolean spawnStandartRooms = true, spawnSecretRooms = true, spawnSpecialRooms = true;
+
 
     public LevelScheme() {
     }
@@ -88,7 +91,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public LevelScheme(String name, Class<? extends Level> levelType, Class<? extends Level> levelTemplate,
                        Long seed, Level.Feeling feeling, int numInRegion, int depth,
-                       List<Item> itemsToSpawn, List<MobItem> mobsToSpawn, List<RoomItem> roomsToSpawn) {
+                       List<Item> itemsToSpawn, List<MobItem> mobsToSpawn, List<RoomItem> roomsToSpawn,
+                       boolean spawnStandartRooms, boolean spawnSecretRooms, boolean spawnSpecialRooms) {
         this.name = name;
         type = levelType;
         this.feeling = feeling;
@@ -96,6 +100,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         this.depth = depth;
         exitCells = new ArrayList<>(3);
         entranceCells = new ArrayList<>(3);
+        this.spawnSpecialRooms = spawnSpecialRooms;
+        this.spawnStandartRooms = spawnStandartRooms;
+        this.spawnSecretRooms = spawnSecretRooms;
 
         this.roomsToSpawn = new ArrayList<>();
         this.itemsToSpawn = itemsToSpawn;
@@ -191,6 +198,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             customDungeon.addMaybeImpSpawnLevel(name);
         }
 
+        if (depth == 6 || depth == 11 || depth == 16) roomsToSpawn.add(new ShopRoom());
+
         shopPriceMultiplier = depth / 5 + 1;
         passage = Integer.toString(((depth - 1) / 5) * 5 + 1);
 
@@ -265,11 +274,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public boolean hasBoss() {
         return getBoss() != REGION_NONE;
-    }
-
-    public boolean hasShop() {
-        int depth = Dungeon.getSimulatedDepth(this);
-        return depth == 6 || depth == 11 || depth == 16;
     }
 
     public int getGhostQuest() {
@@ -458,6 +462,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     private static final String MOBS_TO_SPAWN = "mobs_to_spawn";
     private static final String ROOMS_TO_SPAWN = "rooms_to_spawn";
     private static final String ITEMS_TO_SPAWN = "items_to_spawn";
+    private static final String SPAWN_STANDART_ROOMS = "spawn_standart_rooms";
+    private static final String SPAWN_SECRET_ROOMS = "spawn_secret_rooms";
+    private static final String SPAWN_SPECIAL_ROOMS = "spawn_special_rooms";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -493,6 +500,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         bundle.put(MOBS_TO_SPAWN, mobsToSpawn);
         bundle.put(ITEMS_TO_SPAWN, itemsToSpawn);
         bundle.put(ROOMS_TO_SPAWN, roomsToSpawn);
+        bundle.put(SPAWN_STANDART_ROOMS, spawnStandartRooms);
+        bundle.put(SPAWN_SPECIAL_ROOMS, spawnSpecialRooms);
+        bundle.put(SPAWN_SECRET_ROOMS, spawnSecretRooms);
     }
 
     @Override
@@ -534,6 +544,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         roomsToSpawn = new ArrayList<>();
         if (bundle.contains(ROOMS_TO_SPAWN))
             for (Bundlable l : bundle.getCollection(ROOMS_TO_SPAWN)) roomsToSpawn.add((Room) l);
+
+        spawnStandartRooms = bundle.getBoolean(SPAWN_STANDART_ROOMS);
+        spawnSecretRooms = bundle.getBoolean(SPAWN_SECRET_ROOMS);
+        spawnSpecialRooms = bundle.getBoolean(SPAWN_SPECIAL_ROOMS);
     }
 
     public Level loadLevel() {
@@ -580,13 +594,18 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         return REGION_NONE;
     }
 
-    public static String getRegionTexture(int region){
-        switch (region){
-            case REGION_SEWERS: return Assets.Environment.TILES_SEWERS;
-            case REGION_PRISON:return Assets.Environment.TILES_PRISON;
-            case REGION_CAVES: return Assets.Environment.TILES_CAVES;
-            case REGION_CITY:return Assets.Environment.TILES_CITY;
-            case REGION_HALLS: return Assets.Environment.TILES_HALLS;
+    public static String getRegionTexture(int region) {
+        switch (region) {
+            case REGION_SEWERS:
+                return Assets.Environment.TILES_SEWERS;
+            case REGION_PRISON:
+                return Assets.Environment.TILES_PRISON;
+            case REGION_CAVES:
+                return Assets.Environment.TILES_CAVES;
+            case REGION_CITY:
+                return Assets.Environment.TILES_CITY;
+            case REGION_HALLS:
+                return Assets.Environment.TILES_HALLS;
         }
         return null;
     }

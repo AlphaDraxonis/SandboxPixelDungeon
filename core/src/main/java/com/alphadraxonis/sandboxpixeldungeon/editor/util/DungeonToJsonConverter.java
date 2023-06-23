@@ -22,6 +22,8 @@ import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.ShopRoom;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -196,7 +198,14 @@ public class DungeonToJsonConverter {
         appendParam(b, "passage", l.getPassage());
 //        appendParam(b, "locked", "false");//TODO
         //spawner_cooldown
-        if (f == null) appendParam(b, "shop", l.hasShop());
+        if (f == null) {
+            for (Room r : l.roomsToSpawn) {
+                if (r instanceof ShopRoom) {
+                    appendParam(b, "shop", true);
+                    break;
+                }
+            }
+        }
         appendParam(b, "price_multiplier", l.getPriceMultiplier());
         //TODO visibility
         //TODO trap_detection

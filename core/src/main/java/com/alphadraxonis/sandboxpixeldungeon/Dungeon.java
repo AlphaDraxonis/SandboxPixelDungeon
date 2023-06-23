@@ -359,10 +359,6 @@ public class Dungeon {
         return customDungeon.getFloor(levelName).getSeed();
     }
 
-    public static boolean shopOnLevel() {
-        return customDungeon.getFloor(Dungeon.levelName).hasShop();
-    }
-
     public static boolean bossLevel() {
         return bossLevel(levelName);
     }

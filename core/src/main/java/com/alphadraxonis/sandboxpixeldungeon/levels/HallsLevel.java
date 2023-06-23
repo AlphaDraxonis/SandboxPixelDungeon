@@ -80,7 +80,7 @@ public class HallsLevel extends RegularLevel {
 	protected ArrayList<Room> initRooms() {
 		ArrayList<Room> rooms = super.initRooms();
 
-		rooms.add(new DemonSpawnerRoom());
+		if (levelScheme.spawnSpecialRooms) rooms.add(new DemonSpawnerRoom());
 
 		return rooms;
 	}

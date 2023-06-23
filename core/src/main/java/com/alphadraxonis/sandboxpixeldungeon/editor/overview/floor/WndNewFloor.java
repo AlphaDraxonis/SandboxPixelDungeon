@@ -36,13 +36,13 @@ public class WndNewFloor extends WndTabbed {
 
     public WndNewFloor(CustomDungeon owner) {
 
-        resize(PixelScene.landscape() ? 215 : Math.min(160, (int) (PixelScene.uiCamera.width * 0.9)),(int) (PixelScene.uiCamera.height * 0.65));
+        resize(PixelScene.landscape() ? 215 : Math.min(160, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.65));
 
         this.owner = owner;
 
 
         OwnTab[] tbs = {
-                newFloorComp = new NewFloorComp(){
+                newFloorComp = new NewFloorComp() {
                     @Override
                     protected void create(boolean positive) {
                         WndNewFloor.this.create(positive);
@@ -50,11 +50,11 @@ public class WndNewFloor extends WndTabbed {
                 },
                 levelGenComp = new LevelGenComp()
         };
-        for(int i =0;i<tbs.length;i++){
+        for (int i = 0; i < tbs.length; i++) {
             add(tbs[i]);
             tbs[i].setRect(0, 0, width, height);
             int index = i;
-            add( new IconTab(new ItemSprite(ItemSpriteSheet.SOMETHING)) {
+            add(new IconTab(new ItemSprite(ItemSpriteSheet.SOMETHING)) {
                 protected void select(boolean value) {
                     super.select(value);
                     tbs[index].active = tbs[index].visible = value;
@@ -66,7 +66,6 @@ public class WndNewFloor extends WndTabbed {
         select(0);
 
     }
-
 
 
     public void create(boolean positive) {
@@ -96,7 +95,10 @@ public class WndNewFloor extends WndTabbed {
                     (int) newFloorComp.depth.getValue(),
                     levelGenComp.getSpawnItemsList(),
                     levelGenComp.getSpawnMobsList(),
-                    levelGenComp.getSpawnRoomsList());
+                    levelGenComp.getSpawnRoomsList(),
+                    levelGenComp.spawnStandartRooms,
+                    levelGenComp.spawnSecretRooms,
+                    levelGenComp.spawnSpecialRooms);
             if (owner.getNumFloors() == 0) owner.setStart(name);
             owner.addFloor(levelScheme);
 
@@ -131,12 +133,12 @@ public class WndNewFloor extends WndTabbed {
     @Override
     public void offset(int xOffset, int yOffset) {
         super.offset(xOffset, yOffset);
-        if (newFloorComp !=null && newFloorComp.textBox != null) {
+        if (newFloorComp != null && newFloorComp.textBox != null) {
             TextInput textBox = newFloorComp.textBox;
             textBox.setRect(textBox.left(), textBox.top(), textBox.width(), textBox.height());
         }
     }
 
-    protected static class OwnTab extends Component{
+    protected static class OwnTab extends Component {
     }
 }
