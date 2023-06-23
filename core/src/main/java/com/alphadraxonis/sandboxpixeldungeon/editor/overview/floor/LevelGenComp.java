@@ -13,6 +13,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.RoomItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.FeelingSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseObjectComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.FoldableComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.FoldableCompWithAdd;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BlacksmithRoom;
@@ -43,12 +44,9 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
     protected ColorBlock line;
 
-    //items
-    //mobs
-    //rooms
     protected SpawnSection<Item> sectionItems;
     protected SpawnSection<MobItem> sectionMobs;
-    protected SpawnSection<RoomItem> sectionRooms;
+    protected SpawnSectionMore<RoomItem> sectionRooms;
 
     public LevelGenComp() {
 
@@ -98,7 +96,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         content.add(line);
 
 
-        note = PixelScene.renderTextBlock("Note that following settings are only applied when generating the floor", 6);
+        note = PixelScene.renderTextBlock("Note that some settings are only applied when generating the floor", 6);
         content.add(note);
 
         List<Item> listItems = new ArrayList<>();
@@ -142,7 +140,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         content.add(sectionMobs);
 
         List<RoomItem> listRooms = new ArrayList<>();
-        sectionRooms = new SpawnSection<>("Rooms", new ItemContainer<RoomItem>(listRooms) {
+        sectionRooms = new SpawnSectionMore<RoomItem>("Rooms", new ItemContainer<RoomItem>(listRooms) {
             @Override
             protected void onSlotNumChange() {
                 LevelGenComp.this.layout();
@@ -152,7 +150,12 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             protected Class<? extends Bag> getPreferredBag() {
                 return Rooms.bag.getClass();
             }
-        }, listRooms);
+        }, listRooms) {
+            @Override
+            protected void onAddClick() {
+                System.err.println("MOre");
+            }
+        };
         content.add(sectionRooms);
 
         sp = new ScrollPane(content);
@@ -198,18 +201,6 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         sp.scrollToCurrentView();
     }
 
-    //typ
-    //template
-    //tiefe
-
-
-    //seed
-    //feeling
-
-    //items
-    //mobs (inkl questnpcsm deren Quest durch bearbeiten verändert werden kann)
-    //rooms FIXME remove comment!
-
 
     public List<Item> getSpawnItemsList() {
         return sectionItems.list;
@@ -241,6 +232,31 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             LevelGenComp.this.layout();
         }
 
+    }
+
+    private abstract class SpawnSectionMore<T extends Item> extends FoldableCompWithAdd {
+
+        private ItemContainer<T> container;
+        private List<T> list;
+
+        public SpawnSectionMore(String label, ItemContainer<T> container, List<T> list) {
+            super(label);
+            this.list = list;
+            setBody(this.container = container);
+            container.setSize(LevelGenComp.this.width, -1);
+            showBody(false);
+            setReverseBtnOrder(true);
+        }
+
+        @Override
+        protected void layoutParent() {
+            LevelGenComp.this.layout();
+        }
+
+        @Override
+        protected final Component createBody(Object param) {
+            return null;
+        }
     }
 
 }

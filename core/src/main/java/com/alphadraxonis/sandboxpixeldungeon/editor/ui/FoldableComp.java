@@ -20,11 +20,13 @@ public class FoldableComp extends Component {
     protected FoldableComp() {
     }
 
-    public FoldableComp(String label, Component body) {
-        this.body = body;
-        add(body);
-        showBody(true);
+    public FoldableComp(String label) {
         title.text(label);
+    }
+
+    public FoldableComp(String label, Component body) {
+        this(label);
+        setBody(body);
     }
 
     @Override
@@ -73,6 +75,12 @@ public class FoldableComp extends Component {
         fold.visible = fold.active = flag;
         expand.visible = expand.active = !flag;
         body.visible = body.active = flag;
+    }
+
+    public void setBody(Component body) {
+        this.body = body;
+        add(body);
+        showBody(true);
     }
 
     protected static final int BUTTON_HEIGHT = 13, BUTTON_GAP = 1;

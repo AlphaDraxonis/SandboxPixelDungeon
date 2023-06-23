@@ -8,9 +8,13 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
 
 
     protected IconButton remover, adder;
+    protected boolean reverseBtnOrder;
 
     public FoldableCompWithAdd() {
         super();
+    }
+    public FoldableCompWithAdd(String label) {
+        super(label);
     }
 
     @Override
@@ -35,6 +39,10 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
         add(adder);
     }
 
+    public void setReverseBtnOrder(boolean reverseBtnOrder) {
+        this.reverseBtnOrder = reverseBtnOrder;
+        layout();
+    }
 
     protected abstract void onAddClick();
 
@@ -85,19 +93,24 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
         float posY = y;
 
         float posX = width - 2 - BUTTON_HEIGHT - BUTTON_GAP;
-        if (remover.visible)
-            remover.setRect(posX, posY, BUTTON_HEIGHT, BUTTON_HEIGHT);
-        else if (adder.visible)
-            adder.setRect(posX, posY, BUTTON_HEIGHT, BUTTON_HEIGHT);
 
-        if (fold.visible)
-            fold.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY, BUTTON_HEIGHT, BUTTON_HEIGHT);
-        else if (expand.visible)
-            expand.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        IconButton last = reverseBtnOrder ?
+                (fold.visible ? fold : expand):
+                (remover.visible ? remover : (adder.visible ? adder: null));
+
+        if (last != null) last.setRect(posX, posY, BUTTON_HEIGHT, BUTTON_HEIGHT);
+
+        IconButton next = !reverseBtnOrder ?
+                (fold.visible ? fold : expand):
+                (remover.visible ? remover : (adder.visible ? adder: null));
+
+        if(next != null) {
+            if (last == null) next.setRect(posX, posY, BUTTON_HEIGHT, BUTTON_HEIGHT);
+            else next.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (BUTTON_HEIGHT - last.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        }
 
         title.maxWidth((int) posX);
         title.setPos(x, (BUTTON_HEIGHT - title.height()) * 0.5f + posY + 1);
-
 
         posY += BUTTON_HEIGHT + 2;
 
