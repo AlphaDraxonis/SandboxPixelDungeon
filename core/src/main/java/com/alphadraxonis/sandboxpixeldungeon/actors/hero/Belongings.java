@@ -25,6 +25,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Badges;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.GamesInProgress;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LostInventory;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.Predicate;
 import com.alphadraxonis.sandboxpixeldungeon.items.EquipableItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.KindOfWeapon;
@@ -259,6 +260,18 @@ public class Belongings implements Iterable<Item> {
 		}
 
 		return result;
+	}
+
+	public <T extends Item> T doWithEachItem(Class<T> itemClass, Predicate<T> doWithItem) {
+		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
+		for (Item item : this) {
+			if (itemClass.isInstance(item)) {
+				if (!lostInvent || item.keptThoughLostInvent) {
+					if (doWithItem.test((T) item)) return (T) item;
+				}
+			}
+		}
+		return null;
 	}
 	
 	public boolean contains( Item contains ){

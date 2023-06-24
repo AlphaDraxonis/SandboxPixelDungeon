@@ -119,26 +119,30 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			} else if (!quest.completed()) {
 				if (quest.type() == BlacksmithQuest.BLOOD) {
 
-					Pickaxe pick = Dungeon.hero.belongings.getItem(Pickaxe.class);
-					if (pick == null) {
+					Pickaxe bloodStainedPick = Dungeon.hero.belongings.doWithEachItem(Pickaxe.class, pickaxe -> pickaxe.bloodStained);
+					Pickaxe normalPick = Dungeon.hero.belongings.getItem(Pickaxe.class);
+
+					if (normalPick == null) {
 						tell(Messages.get(this, "lost_pick"));
-					} else if (!pick.bloodStained) {
+					} else if (bloodStainedPick == null) {
 						tell(Messages.get(this, "blood_2"));
 					} else {
-						if (pick.isEquipped(Dungeon.hero)) {
-							pick.cursed = false; //so that it can always be removed
-							pick.doUnequip(Dungeon.hero, false);
+						if (bloodStainedPick.isEquipped(Dungeon.hero)) {
+							bloodStainedPick.cursed = false; //so that it can always be removed
+							bloodStainedPick.doUnequip(Dungeon.hero, false);
 						}
-						pick.detach(Dungeon.hero.belongings.backpack);
+						bloodStainedPick.detach(Dungeon.hero.belongings.backpack);
 						tell(Messages.get(this, "completed"));
 
 						quest.complete();
 					}
 
-				} else if (quest.type() == BlacksmithQuest.GOLD){
+				} else if (quest.type() == BlacksmithQuest.GOLD) {
 
-					Pickaxe pick = Dungeon.hero.belongings.getItem(Pickaxe.class);
+					Pickaxe pick = Dungeon.hero.belongings.doWithEachItem(Pickaxe.class, pickaxe -> !pickaxe.bloodStained);
+					if (pick == null) pick = Dungeon.hero.belongings.getItem(Pickaxe.class);
 					DarkGold gold = Dungeon.hero.belongings.getItem(DarkGold.class);
+
 					if (pick == null) {
 						tell(Messages.get(this, "lost_pick"));
 					} else if (gold == null || gold.quantity() < 15) {
