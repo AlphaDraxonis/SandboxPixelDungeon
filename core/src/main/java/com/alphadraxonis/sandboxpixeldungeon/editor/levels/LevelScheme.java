@@ -10,6 +10,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.RoomItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -284,7 +285,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     }
 
     public int getWandmakerQuest() {
-        return Random.Int(2) + 1;//no candle for now
+        return Random.Int(WandmakerQuest.NUM_QUESTS);
     }
 
     public int getBlacksmithQuest() {

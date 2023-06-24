@@ -61,6 +61,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -282,7 +283,10 @@ public enum Mobs {
                 if (mob instanceof WandOfRegrowth.Lotus) {
                     ((WandOfRegrowth.Lotus) mob).setLevel(7);
                 }
-                if(mob == null)throw new RuntimeException(m.getName());
+                if (mob instanceof QuestNPC) {
+                    ((QuestNPC<?>) mob).createNewQuest();
+                }
+                if (mob == null) throw new RuntimeException(m.getName());
                 mob.pos = -1;
                 items.add(new MobItem(mob));
             }

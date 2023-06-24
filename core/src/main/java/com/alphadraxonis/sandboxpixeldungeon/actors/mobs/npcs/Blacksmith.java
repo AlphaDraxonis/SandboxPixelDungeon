@@ -27,6 +27,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.BlacksmithQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.Quest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.items.BrokenSeal;
 import com.alphadraxonis.sandboxpixeldungeon.items.EquipableItem;
@@ -48,7 +49,6 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndBlacksmith;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndQuest;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 
 import java.util.List;
@@ -74,7 +74,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			die(null);
 			return true;
 		}
-		if (quest != null && Dungeon.level.visited[pos] && !quest.reforged()){
+		if (quest != null && quest.type() != Quest.NONE && Dungeon.level.visited[pos] && !quest.reforged()){
 			Notes.add( Notes.Landmark.TROLL );
 		}
 		return super.act();
@@ -89,14 +89,14 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			return true;
 		}
 
-		if (quest != null) {
+		if (quest != null && quest.type() != Quest.NONE) {
 			if (!quest.given()) {
 
 				Game.runOnRenderThread(new Callback() {
 					@Override
 					public void call() {
 						GameScene.show(new WndQuest(Blacksmith.this,
-								quest.type() == BlacksmithQuest.BLOOD ? Messages.get(Blacksmith.this, "blood_1") : Messages.get(Blacksmith.this, "gold_1")) {
+								Messages.get(Blacksmith.this, quest.getMessageString()+ "_1")) {
 
 							@Override
 							public void onBackPressed() {
@@ -135,7 +135,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 						quest.complete();
 					}
 
-				} else {
+				} else if (quest.type() == BlacksmithQuest.GOLD){
 
 					Pickaxe pick = Dungeon.hero.belongings.getItem(Pickaxe.class);
 					DarkGold gold = Dungeon.hero.belongings.getItem(DarkGold.class);
@@ -264,17 +264,8 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 		}
 	}
 
-	private static final String QUEST = "quest";
-
 	@Override
-	public void storeInBundle(Bundle bundle) {
-		super.storeInBundle(bundle);
-		if (quest != null) bundle.put(QUEST, quest);
-	}
-
-	@Override
-	public void restoreFromBundle(Bundle bundle) {
-		super.restoreFromBundle(bundle);
-		if (bundle.contains(QUEST)) quest = (BlacksmithQuest) bundle.get(QUEST);
+	public void createNewQuest() {
+		quest = new BlacksmithQuest();
 	}
 }

@@ -16,6 +16,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.secret.SecretHoardRoom
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.secret.SecretHoneypotRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.secret.SecretLaboratoryRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.secret.SecretLarderRoom;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.secret.SecretLibraryRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.secret.SecretRunestoneRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.secret.SecretSummoningRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.secret.SecretWellRoom;
@@ -216,6 +217,7 @@ public class RoomItem extends EditorItem {
         if (r == SecretHoneypotRoom.class) return new ItemSprite(ItemSpriteSheet.HONEYPOT);
         if (r == SecretLaboratoryRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(Terrain.ALCHEMY, -1));
         if (r == SecretLarderRoom.class) return new ItemSprite(ItemSpriteSheet.PASTY);
+        if (r == SecretLibraryRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(Terrain.BOOKSHELF, -1));
         //secretMaze
         if (r == SecretRunestoneRoom.class) return new ItemSprite(ItemSpriteSheet.STONE_ENCHANT);
         if (r == SecretSummoningRoom.class) return TrapItem.getTrapImage(20);//Summoning trap

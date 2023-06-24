@@ -9,11 +9,14 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.quest.DwarfToken;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
+import com.alphadraxonis.sandboxpixeldungeon.sprites.GolemSprite;
+import com.alphadraxonis.sandboxpixeldungeon.sprites.MonkSprite;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
 public class ImpQuest extends Quest {
 
-    public static int MONK_QUEST = 0, GOLEM_QUEST = 1;
+    public static final int MONK_QUEST = 0, GOLEM_QUEST = 1;
 
 
     private static int activeMonkQuests, activeGolemQuests;//maybe use array instead and type is index
@@ -48,15 +51,13 @@ public class ImpQuest extends Quest {
         Notes.remove(Notes.Landmark.IMP);
     }
 
-    public void start(){
+    public void start() {
         super.start();
-        Notes.add(Notes.Landmark.IMP );
+        Notes.add(Notes.Landmark.IMP);
 
         if (type == ImpQuest.MONK_QUEST) activeMonkQuests++;
         else if (type == ImpQuest.GOLEM_QUEST) activeGolemQuests++;
     }
-
-
 
     public static void process(Mob mob) {
         if ((activeMonkQuests > 0 && mob instanceof Monk) || (activeGolemQuests > 0 && mob instanceof Golem)) {
@@ -64,17 +65,18 @@ public class ImpQuest extends Quest {
         }
     }
 
-    public int getRequiredQuantity(){
+    public int getRequiredQuantity() {
         if (type == ImpQuest.MONK_QUEST) return 5;
         else if (type == ImpQuest.GOLEM_QUEST) return 4;
         return 1;
     }
 
 
-    public static boolean completedOnce(){
+    public static boolean completedOnce() {
         return numComleted > 0;
     }
-    public static void decreaseCompletedCounter(){
+
+    public static void decreaseCompletedCounter() {
         numComleted--;
     }
 
@@ -117,4 +119,33 @@ public class ImpQuest extends Quest {
         activeGolemQuests = 0;
         numComleted = 0;
     }
+
+    @Override
+    public int getNumQuests() {
+        return 2;
+    }
+
+    @Override
+    public Image getIcon() {
+        switch (type) {
+            case MONK_QUEST:
+                return new MonkSprite();
+            case GOLEM_QUEST:
+                return new GolemSprite();
+        }
+        return null;
+    }
+
+    @Override
+    public String getMessageString() {
+        return getMessageString(type);
+    }
+    @Override
+    public String getMessageString(int type) {
+        if (type == MONK_QUEST) return "monks";
+        if (type == GOLEM_QUEST) return "golems";
+        return null;
+    }
+
+
 }

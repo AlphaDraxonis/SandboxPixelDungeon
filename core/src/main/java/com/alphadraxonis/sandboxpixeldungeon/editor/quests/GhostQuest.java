@@ -12,7 +12,11 @@ import com.alphadraxonis.sandboxpixeldungeon.items.armor.ScaleArmor;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.sprites.FetidRatSprite;
+import com.alphadraxonis.sandboxpixeldungeon.sprites.GnollTricksterSprite;
+import com.alphadraxonis.sandboxpixeldungeon.sprites.GreatCrabSprite;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -164,4 +168,38 @@ public class GhostQuest extends Quest {
         completedOnce = false;
     }
 
+    @Override
+    public int getNumQuests() {
+        return 3;
+    }
+@Override
+    public Image getIcon(){
+        switch (type) {
+            case RAT:
+                return new FetidRatSprite();
+            case GNOLL:
+                return new GnollTricksterSprite();
+            case CRAB:
+                return new GreatCrabSprite();
+        }
+        return null;
+    }
+
+    @Override
+    public String getMessageString() {
+        return getMessageString(type);
+    }
+
+    @Override
+    public String getMessageString(int type) {
+        switch (type) {
+            case RAT:
+                return "rat";
+            case GNOLL:
+                return "gnoll";
+            case CRAB:
+                return "crab";
+        }
+        return null;
+    }
 }

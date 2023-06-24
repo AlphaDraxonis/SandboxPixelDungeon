@@ -6,11 +6,14 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.LotusLevelSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.MobStateSpinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.QuestSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Buffs;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.WndChooseOneInCategories;
@@ -23,6 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.StatueSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIcon;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
+import com.alphadraxonis.sandboxpixeldungeon.ui.CheckBox;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndInfoMob;
@@ -45,6 +49,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
     private final ItemContainer<Item> mimicItems;
     private final LotusLevelSpinner lotusLevelSpinner;
+    private final QuestSpinner questSpinner;
+    private final CheckBox spawnQuestRoom;
 
     private final Component[] comps;
 
@@ -137,6 +143,31 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             lotusLevelSpinner = null;
         }
 
+        if (mob instanceof QuestNPC<?>) {
+            questSpinner = new QuestSpinner(((QuestNPC<?>) mob).quest, h -> mobStateSpinner.getCurrentInputFieldWith());
+            add(questSpinner);
+            if (mob instanceof Wandmaker) {
+                spawnQuestRoom = new CheckBox(Messages.get(EditMobComp.class,"spawn_quest_room")) {
+                    @Override
+                    public void checked(boolean value) {
+                        super.checked(value);
+                        ((Wandmaker) mob).quest.spawnQuestRoom = value;
+                    }
+                };
+                spawnQuestRoom.checked(((Wandmaker) mob).quest.spawnQuestRoom);
+                add(spawnQuestRoom);
+                questSpinner.addChangeListener(() -> {
+                    if ("none".equals(questSpinner.getValue())) {
+                        spawnQuestRoom.enable(false);
+                        spawnQuestRoom.checked(false);
+                    } else spawnQuestRoom.enable(true);
+                });
+            } else spawnQuestRoom = null;
+        } else {
+            questSpinner = null;
+            spawnQuestRoom = null;
+        }
+
         addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
             @Override
             protected void onClick() {
@@ -167,7 +198,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         };
         add(addBuffs);
 
-        comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, mobStateSpinner, addBuffs};
+        comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, mobStateSpinner, questSpinner, spawnQuestRoom, addBuffs};
     }
 
     @Override

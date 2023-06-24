@@ -50,7 +50,7 @@ public abstract class SpinnerTextIconModel extends SpinnerTextModel {
         return inputField;
     }
 
-    public class ShowField extends Spinner.SpinnerTextBlock {
+    public static class ShowField extends Spinner.SpinnerTextBlock {
 
         private Image icon;
         private Image subIcon;

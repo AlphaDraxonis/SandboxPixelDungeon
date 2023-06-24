@@ -120,4 +120,8 @@ public class SpinnerTextModel extends AbstractSpinnerModel {
         if (inputField instanceof Spinner.SpinnerTextBlock)
             ((Spinner.SpinnerTextBlock) inputField).enable(value);
     }
+
+    public int getCurrentIndex() {
+        return index;
+    }
 }

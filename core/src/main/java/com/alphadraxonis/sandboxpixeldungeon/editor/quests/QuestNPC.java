@@ -2,11 +2,11 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.quests;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
+import com.watabou.utils.Bundle;
 
 import java.util.List;
 
@@ -22,11 +22,12 @@ public abstract class QuestNPC<T extends Quest> extends NPC {
     }
 
     public void initQuest(LevelScheme levelScheme) {
-        if(this instanceof Ghost)quest= (T) new GhostQuest();
-        if (quest != null) {
+        if (quest != null && quest.type() != Quest.NONE) {
             quest.initRandom(levelScheme);
         }
     }
+
+    public abstract void createNewQuest();
 
     public abstract void place(RegularLevel level, List<Room> rooms);
 
@@ -49,6 +50,21 @@ public abstract class QuestNPC<T extends Quest> extends NPC {
     @Override
     public boolean reset() {
         return true;
+    }
+
+
+    private static final String QUEST = "quest";
+
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        if (quest != null) bundle.put(QUEST, quest);
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        if (bundle.contains(QUEST)) quest = (T) bundle.get(QUEST);
     }
 
 }

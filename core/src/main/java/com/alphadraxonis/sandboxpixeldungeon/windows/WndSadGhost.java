@@ -62,25 +62,20 @@ public class WndSadGhost extends Window {
 		quest = ghost.quest;
 		
 		IconTitle titlebar = new IconTitle();
-		RenderedTextBlock message;
+		RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, quest.getMessageString())+"\n\n"+Messages.get(this, "give_item"), 6 );
 		switch (type){
 			case GhostQuest.RAT:default:
 				titlebar.icon( new FetidRatSprite() );
-				titlebar.label( Messages.get(this, "rat_title") );
-				message = PixelScene.renderTextBlock( Messages.get(this, "rat")+"\n\n"+Messages.get(this, "give_item"), 6 );
 				break;
 			case GhostQuest.GNOLL:
 				titlebar.icon( new GnollTricksterSprite() );
-				titlebar.label( Messages.get(this, "gnoll_title") );
-				message = PixelScene.renderTextBlock( Messages.get(this, "gnoll")+"\n\n"+Messages.get(this, "give_item"), 6 );
 				break;
 			case GhostQuest.CRAB:
 				titlebar.icon( new GreatCrabSprite());
-				titlebar.label( Messages.get(this, "crab_title") );
-				message = PixelScene.renderTextBlock( Messages.get(this, "crab")+"\n\n"+Messages.get(this, "give_item"), 6 );
 				break;
 
 		}
+		titlebar.label( Messages.get(this, quest.getMessageString()+"_title") );
 
 		titlebar.setRect( 0, 0, WIDTH, 0 );
 		add( titlebar );

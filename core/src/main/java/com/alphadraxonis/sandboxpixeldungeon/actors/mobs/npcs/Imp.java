@@ -36,7 +36,6 @@ import com.alphadraxonis.sandboxpixeldungeon.sprites.ImpSprite;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndImp;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndQuest;
 import com.watabou.noosa.Game;
-import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 
@@ -98,16 +97,11 @@ public class Imp extends QuestNPC<ImpQuest> {
 					}
 				});
 			} else {
-				String key;
-				if (quest.type() == ImpQuest.MONK_QUEST) key = "monks_2";
-				else if (quest.type() == ImpQuest.GOLEM_QUEST) key = "golems_2";
-				else key = "";
-				tell(Messages.get(this, key, Messages.titleCase(Dungeon.hero.name())));
+				tell(Messages.get(this, quest.getMessageString(), Messages.titleCase(Dungeon.hero.name())));
 			}
 
 		} else {
-			if (quest.type() == ImpQuest.MONK_QUEST) tell(Messages.get(this, "monks_1"));
-			else if (quest.type() == ImpQuest.GOLEM_QUEST) tell(Messages.get(this, "golems_1"));
+			tell(Messages.get(this, quest.getMessageString()+"_1"));
 			quest.start();
 		}
 
@@ -145,18 +139,9 @@ public class Imp extends QuestNPC<ImpQuest> {
 		if (pos != -1) level.mobs.add(this);
 	}
 
-	private static final String QUEST = "quest";
 
 	@Override
-	public void storeInBundle(Bundle bundle) {
-		super.storeInBundle(bundle);
-		if (quest != null) bundle.put(QUEST, quest);
+	public void createNewQuest() {
+		quest = new ImpQuest();
 	}
-
-	@Override
-	public void restoreFromBundle(Bundle bundle) {
-		super.restoreFromBundle(bundle);
-		if (bundle.contains(QUEST)) quest = (ImpQuest) bundle.get(QUEST);
-	}
-
 }

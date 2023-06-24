@@ -142,6 +142,10 @@ public class Spinner extends Component {
         layout();
     }
 
+    public float getCurrentInputFieldWith(){
+        return inputField.width();
+    }
+
 
     public SpinnerModel getModel() {
         return model;

@@ -2,12 +2,15 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.quests;
 
 import com.alphadraxonis.sandboxpixeldungeon.Statistics;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
 public abstract class Quest implements Bundlable {
 
-    protected int type = -1;
+    public static final int RANDOM = -1, NONE = -2;
+
+    protected int type = RANDOM;
 
     private boolean given;
     private boolean completed;
@@ -30,6 +33,10 @@ public abstract class Quest implements Bundlable {
         return type;
     }
 
+    public final void setType(int type) {
+        this.type = type;
+    }
+
     public void start(){
         given = true;
     }
@@ -37,6 +44,11 @@ public abstract class Quest implements Bundlable {
     public boolean given() {
         return given;
     }
+
+    public abstract String getMessageString();
+    public abstract String getMessageString(int type);
+    public abstract int getNumQuests();
+    public abstract Image getIcon();
 
 
     private static final String TYPE = "type";
