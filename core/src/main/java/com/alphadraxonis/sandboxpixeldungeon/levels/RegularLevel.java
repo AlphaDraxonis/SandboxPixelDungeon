@@ -330,6 +330,11 @@ public abstract class RegularLevel extends Level {
 	}
 
 	@Override
+	public int randomRespawnCell( Char ch, boolean guarantee ) {
+		return randomRespawnCell(ch);
+	}
+
+	@Override
 	public int randomDestination( Char ch ) {
 
 		int count = 0;

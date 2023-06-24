@@ -141,7 +141,6 @@ public class CustomLevel extends Level {
 
         Dungeon.depth = depth;
         if (seed == null) seed = DungeonSeed.randomSeed();
-        else levelScheme.setSeed(seed);
 
         if (levelTemplate != null) {
 
@@ -151,6 +150,12 @@ public class CustomLevel extends Level {
             temp.spawnStandartRooms = levelScheme.spawnStandartRooms;
             temp.spawnSpecialRooms = levelScheme.spawnSpecialRooms;
             temp.spawnSecretRooms = levelScheme.spawnSecretRooms;
+
+            temp.mobsToSpawn = new ArrayList<>(levelScheme.mobsToSpawn);
+            levelScheme.mobsToSpawn.clear();
+            temp.itemsToSpawn = new ArrayList<>(levelScheme.itemsToSpawn);
+            levelScheme.itemsToSpawn.clear();
+
             Dungeon.customDungeon.addFloor(temp);
             Dungeon.levelName = Level.NONE;
 

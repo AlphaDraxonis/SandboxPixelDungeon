@@ -46,7 +46,7 @@ public abstract class Quest implements Bundlable {
     }
 
     public abstract String getMessageString();
-    public abstract String getMessageString(int type);
+    public abstract String getMessageString(int type);//some places still use hardcoded message keys so don't change them only here!
     public abstract int getNumQuests();
     public abstract Image getIcon();
 
