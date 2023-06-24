@@ -365,8 +365,6 @@ public abstract class RegularLevel extends Level {
 	@Override
 	protected void createItems() {
 
-		super.createItems();
-
 		final int simulatedDepth = Dungeon.getSimulatedDepth(levelScheme);
 
 		// drops 3/4/5 items 60%/30%/10% of the time

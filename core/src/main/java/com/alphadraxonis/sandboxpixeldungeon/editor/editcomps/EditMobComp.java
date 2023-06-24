@@ -146,7 +146,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (mob instanceof QuestNPC<?>) {
             questSpinner = new QuestSpinner(((QuestNPC<?>) mob).quest, h -> mobStateSpinner.getCurrentInputFieldWith());
             add(questSpinner);
-            if (mob instanceof Wandmaker) {
+            if (mob instanceof Wandmaker && mob.pos < 0) {
                 spawnQuestRoom = new CheckBox(Messages.get(EditMobComp.class,"spawn_quest_room")) {
                     @Override
                     public void checked(boolean value) {

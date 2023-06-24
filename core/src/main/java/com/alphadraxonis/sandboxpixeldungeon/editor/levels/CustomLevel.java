@@ -21,6 +21,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Bestiary;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -32,6 +33,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.HallsLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.LastLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.PrisonLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.SewerLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
@@ -172,10 +174,29 @@ public class CustomLevel extends Level {
             level.feeling = feeling;
             Dungeon.level = level;
 
+            Random.pushGenerator(seed);
+            for (Mob m : temp.mobsToSpawn) {
+                if (m instanceof Wandmaker && ((Wandmaker) m).quest.spawnQuestRoom) ((Wandmaker) m).initQuest(temp);
+            }
+            Random.popGenerator();
+
             Dungeon.hero = new Hero();//Dried rose for example checks hero
             level.create();
             Dungeon.hero = null;
             tempDungeonNameForKey = null;
+
+            Random.pushGenerator(seed + 229203);
+            for (Item item : temp.itemsToSpawn) {
+                int cell;
+                if (level instanceof CustomLevel) cell = ((CustomLevel) level).randomDropCell();
+                else cell = ((RegularLevel) level).randomDropCell();
+                if (level.map[cell] == Terrain.HIGH_GRASS || level.map[cell] == Terrain.FURROWED_GRASS) {
+                    level.map[cell] = Terrain.GRASS;
+                    level.losBlocking[cell] = false;
+                }
+                level.drop(item, cell).type = Heap.Type.HEAP;
+            }
+            Random.popGenerator();
 
             setSize(level.width(), level.height());
 //                maxW = Math.max(maxW, level.width());

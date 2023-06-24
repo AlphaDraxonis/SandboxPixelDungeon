@@ -511,10 +511,7 @@ public abstract class Level implements Bundlable {
 
     abstract protected void createMobs();
 
-    protected void createItems() {
-//        if (Dungeon.customDungeon.isGhostLevel(Dungeon.levelName)) Ghost.Quest.spawn(this);
-//        if (Dungeon.customDungeon.isImpLevel(Dungeon.levelName)) Imp.Quest.spawn(this);
-    }
+    protected abstract void createItems();
 
     public int entrance() {
         LevelTransition l = getTransition(null);

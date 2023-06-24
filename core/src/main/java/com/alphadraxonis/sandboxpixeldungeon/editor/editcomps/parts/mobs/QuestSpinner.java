@@ -47,7 +47,7 @@ public class QuestSpinner extends Spinner {
 
         @Override
         protected String getAsString(Object value) {
-            return Messages.get(QuestSpinner.class, (String) value);
+            return " "+Messages.get(QuestSpinner.class, (String) value);
         }
 
         private static String[] createData(Quest quest) {
