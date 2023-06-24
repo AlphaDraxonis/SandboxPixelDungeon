@@ -3,9 +3,11 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditHeapComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 
 public /*sealed*/ abstract class HeapActionPart implements ActionPart {
 
@@ -30,6 +32,8 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
 
     protected static void place(Heap heap) {
         Dungeon.level.heaps.put(heap.pos, heap);
+        Item i = heap.peek();
+        i.image = CustomDungeon.getDungeon().getItemSpriteOnSheet(i);
         EditorScene.add(heap);
     }
 
