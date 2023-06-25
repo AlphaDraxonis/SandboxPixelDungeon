@@ -5,7 +5,6 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSetti
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
-import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
@@ -26,7 +25,6 @@ public class GeneralTab extends WndEditorSettings.TabComp {
     private ScrollPane sp;
     private Component content;
 
-    private FeelingSpinner feeling;
     private RedButton potionColors, scrollRunes, ringGems;
     private RedButton region;
     private RedButton mobSpawn;
@@ -41,13 +39,6 @@ public class GeneralTab extends WndEditorSettings.TabComp {
 
         content = new Component();
         sp = new ScrollPane(content);
-
-        feeling = new FeelingSpinner(EditorScene.customLevel().feeling,false);
-        feeling.addChangeListener(() -> {
-            EditorScene.customLevel().feeling = (Level.Feeling) feeling.getValue();
-            EditorScene.updateDepthIcon();
-        });
-        content.add(feeling);
 
         potionColors = new RedButton(Messages.get(GeneralTab.class,"set_pot")) {
             @Override
@@ -138,15 +129,11 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         float posY = y;
 
         title.setRect(x, posY, width, title.height());
-        posY = title.bottom() + GAP * 2.5f;
+        posY = title.bottom() + GAP * 2.5f*0;
 
         sp.setRect(x, posY, width, height - posY - GAP);
 
-
         posY = 0;
-        feeling.setRect(x, posY, width, BUTTON_HEIGHT);
-        posY = feeling.bottom() + BIG_GAP;
-
 
         potionColors.setRect(x, posY, width, BUTTON_HEIGHT);
         posY = potionColors.bottom() + GAP;

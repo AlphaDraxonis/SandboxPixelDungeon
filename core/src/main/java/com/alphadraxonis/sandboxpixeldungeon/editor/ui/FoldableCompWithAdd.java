@@ -98,14 +98,14 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
                 (fold.visible ? fold : expand):
                 (remover.visible ? remover : (adder.visible ? adder: null));
 
-        if (last != null) last.setRect(posX, posY, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        if (last != null) last.setRect(posX, posY + (BUTTON_HEIGHT - last.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
 
         IconButton next = !reverseBtnOrder ?
                 (fold.visible ? fold : expand):
                 (remover.visible ? remover : (adder.visible ? adder: null));
 
         if(next != null) {
-            if (last == null) next.setRect(posX, posY, BUTTON_HEIGHT, BUTTON_HEIGHT);
+            if (last == null) next.setRect(posX, posY + (BUTTON_HEIGHT - next.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
             else next.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (BUTTON_HEIGHT - last.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
         }
 

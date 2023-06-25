@@ -425,8 +425,6 @@ public abstract class Level implements Bundlable {
         }
 
         feeling = bundle.getEnum(FEELING, Feeling.class);
-        if (feeling == Feeling.DARK)
-            viewDistance = Math.round(viewDistance / 2f);
 
         if (bundle.contains("mobs_to_spawn")) {
             for (Class<? extends Mob> mob : bundle.getClassArray("mobs_to_spawn")) {
@@ -753,20 +751,25 @@ public abstract class Level implements Bundlable {
                 if (guarantee) {
                     int l = length();
                     for (cell = 0; cell < l; cell++) {
-                        if (!((Dungeon.level == this && heroFOV[cell])
+                        if (((Dungeon.level == this && heroFOV[cell])
                                 || !passable[cell]
                                 || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
-                                || Actor.findChar(cell) != null))
+                                || Actor.findChar(cell) != null
+                                || (ch instanceof Piranha && map[cell] != Terrain.WATER)
+                                || getMobAtCell(cell) != null))
                             return cell;//choose first valid cell
                     }
                 }
                 return -1;//if there is no valid cell, return -1
             }
             cell = Random.Int(length());//Choose a random cell
-        } while ((Dungeon.level == this && heroFOV[cell])
+        } while (
+                (Dungeon.level == this && heroFOV[cell])
                 || !passable[cell]
                 || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
-                || Actor.findChar(cell) != null);
+                || Actor.findChar(cell) != null
+                || (ch instanceof Piranha && map[cell] != Terrain.WATER)
+                || getMobAtCell(cell) != null);
 
         return cell;
     }
@@ -1566,5 +1569,13 @@ public abstract class Level implements Bundlable {
 
     protected String appendNoTransWarning(int cell) {
         return cell >= 0 && transitions.get(cell) == null ? "\n" + Messages.get(Hero.class, "no_trans_warning") : "";
+    }
+
+
+    public Mob getMobAtCell(int cell) {
+        for (Mob m : mobs) {//TODO maybe hashmap??
+            if (m.pos == cell) return m;
+        }
+        return null;
     }
 }

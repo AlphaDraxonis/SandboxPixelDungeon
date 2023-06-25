@@ -176,7 +176,8 @@ public class CustomLevel extends Level {
 
             Random.pushGenerator(seed);
             for (Mob m : temp.mobsToSpawn) {
-                if (m instanceof Wandmaker && ((Wandmaker) m).quest.spawnQuestRoom) ((Wandmaker) m).initQuest(temp);
+                if (m instanceof Wandmaker && ((Wandmaker) m).quest.spawnQuestRoom)
+                    ((Wandmaker) m).initQuest(temp);
             }
             Random.popGenerator();
 
@@ -710,13 +711,6 @@ public class CustomLevel extends Level {
         int w = width();
         int remain = cell % w;
         return cell < w || remain == 0 || remain == w - 1 || cell > height() * (w - 1);
-    }
-
-    public Mob getMobAtCell(int cell) {
-        for (Mob m : mobs) {//TODO maybe hashmap??
-            if (m.pos == cell) return m;
-        }
-        return null;
     }
 
 

@@ -77,6 +77,7 @@ public enum Icons {
     PLUS,
     EXPAND,
     FOLD,
+    MORE,
     ARROW,
     INFO,
     WARNING,
@@ -111,6 +112,7 @@ public enum Icons {
     DEPTH_LARGE,
     DEPTH_TRAPS,
     DEPTH_SECRETS,
+    RANDOM_FEELING,
     CHAL_COUNT,
 
     //icons that appear in the about screen, variable spacing
@@ -254,6 +256,9 @@ public enum Icons {
             case FOLD:
                 icon.frame(icon.texture.uvRectBySize(208, 80, 11, 11));
                 break;
+            case MORE:
+                icon.frame(icon.texture.uvRectBySize(224, 80, 11, 11));
+                break;
             case ARROW:
                 icon.frame(icon.texture.uvRectBySize(64, 48, 11, 11));
                 break;
@@ -354,6 +359,9 @@ public enum Icons {
             case DEPTH_SECRETS:
                 icon.frame(icon.texture.uvRectBySize(104, 64 + runTypeOfs(), 7, 7));
                 break;
+            case RANDOM_FEELING:
+                icon.frame(icon.texture.uvRectBySize(112, 72, 7, 7));
+                break;
             case CHAL_COUNT:
                 icon.frame(icon.texture.uvRectBySize(112, 64, 7, 7));
                 break;
@@ -427,6 +435,7 @@ public enum Icons {
     }
 
     public static Image get(Level.Feeling feeling) {
+        if(feeling == null) return get(RANDOM_FEELING);
         switch (feeling) {
             case NONE:
             default:

@@ -6,6 +6,7 @@ import static com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndNew
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseObjectComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -36,14 +37,15 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
     protected IconButton infoNumInRegion;
     protected Spinner numInRegion;
 
-
-    public NewFloorComp() {
+    public NewFloorComp(LevelScheme newLevelScheme) {
+        super(newLevelScheme);
         chooseType.selectObject(CustomLevel.class);
         chooseTemplate.selectObject(null);
     }
 
     @Override
     protected void createChildren(Object... params) {
+        super.createChildren(params);
         title = PixelScene.renderTextBlock(Messages.get(WndNewFloor.class, "title"), 10);
         title.hardlight(Window.TITLE_COLOR);
         add(title);
@@ -83,11 +85,13 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
             public void selectObject(Object object) {
                 super.selectObject(object);
                 chooseTemplate.enable(object == CustomLevel.class);
+                newLevelScheme.setType((Class<? extends Level>) object);
             }
         };
         add(chooseType);
 
         chooseTemplate = new ChooseLevel(Messages.get(WndNewFloor.class, "template"), true) {
+
             @Override
             protected float getDisplayWidth() {
                 return chooseType.getDW();
@@ -108,9 +112,11 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
         depth = new DepthSpinner(1, 8) {
             @Override
             protected void onChange(int newDepth) {
+                newLevelScheme.setDepth(newDepth);
             }
         };
         depth.setButtonWidth(13);
+        newLevelScheme.setDepth((Integer) depth.getValue());
         add(depth);
 
         infoNumInRegion = new IconButton(Icons.get(Icons.INFO)) {
@@ -135,11 +141,12 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
             }
         }, Messages.get(WndNewFloor.class, "num_region") + ":", 8);
         numInRegion.setButtonWidth(13);
+        numInRegion.addChangeListener(()->newLevelScheme.setNumInRegion((Integer) numInRegion.getValue()));
         add(numInRegion);
     }
 
     @Override
-    protected void layout() {
+    public void layout() {
 
         title.maxWidth((int) width);
         title.setPos((width - title.width()) / 2, MARGIN * 2);

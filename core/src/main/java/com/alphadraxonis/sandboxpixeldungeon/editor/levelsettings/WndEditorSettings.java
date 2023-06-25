@@ -1,9 +1,11 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings;
 
 
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.GeneralTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items.ItemTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.mobs.EnemyTab;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.LevelGenComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTabbed;
@@ -33,6 +35,7 @@ public class WndEditorSettings extends WndTabbed {
     private final ItemTab itemTab = null;
     private final GeneralTab generalTab;
     private final TransitionTab transitionTab;
+    private final LevelGenComp levelGenTab;
     private final TabComp[] ownTabs;
 
     public static int last_index = 0;
@@ -52,7 +55,8 @@ public class WndEditorSettings extends WndTabbed {
                 enemyTab = new EnemyTab(),
 //                itemTab = new ItemTab(),
                 transitionTab = new TransitionTab(),
-                generalTab = new GeneralTab()};
+                generalTab = new GeneralTab(),
+                levelGenTab = new LevelGenComp(EditorScene.customLevel().levelScheme)};
 
         Tab[] tabs = new Tab[ownTabs.length];
         for (int i = 0; i < ownTabs.length; i++) {
@@ -84,6 +88,13 @@ public class WndEditorSettings extends WndTabbed {
 
 
     public static abstract class TabComp extends Component {
+
+        public TabComp() {
+        }
+
+        public TabComp(Object... params) {
+            super(params);
+        }
 
         protected void updateList() {
         }

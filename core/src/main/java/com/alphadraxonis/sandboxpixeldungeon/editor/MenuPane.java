@@ -45,7 +45,7 @@ public class MenuPane extends Component {
         add(bg);
 
         if (EditorScene.customLevel().feeling != null) {
-            depthIcon = Icons.get(EditorScene.customLevel().feeling);
+            depthIcon =  Icons.get(EditorScene.customLevel().levelScheme.getFeeling());
             add(depthIcon);
         }
 
@@ -120,7 +120,7 @@ public class MenuPane extends Component {
     public void updateDepthIcon(){
         remove(depthIcon);
         depthIcon.destroy();
-        depthIcon = Icons.get(EditorScene.customLevel().feeling);
+        depthIcon =  Icons.get(EditorScene.customLevel().levelScheme.getFeeling());
         add(depthIcon);
         layout();
     }

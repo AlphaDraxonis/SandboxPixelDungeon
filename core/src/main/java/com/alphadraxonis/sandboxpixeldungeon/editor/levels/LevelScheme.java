@@ -5,8 +5,6 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
-import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
-import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.RoomItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
@@ -90,40 +88,72 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         itemsToSpawn = new ArrayList<>();
     }
 
-    public LevelScheme(String name, Class<? extends Level> levelType, Class<? extends Level> levelTemplate,
-                       Long seed, Level.Feeling feeling, int numInRegion, int depth,
-                       List<Item> itemsToSpawn, List<MobItem> mobsToSpawn, List<RoomItem> roomsToSpawn,
-                       boolean spawnStandartRooms, boolean spawnSecretRooms, boolean spawnSpecialRooms) {
+//    public LevelScheme(String name, Class<? extends Level> levelType, Class<? extends Level> levelTemplate,
+//                       Long seed, Level.Feeling feeling, int numInRegion, int depth,
+//                       List<Item> itemsToSpawn, List<MobItem> mobsToSpawn, List<RoomItem> roomsToSpawn,
+//                       boolean spawnStandartRooms, boolean spawnSecretRooms, boolean spawnSpecialRooms) {
+//        this.name = name;
+//        type = levelType;
+//        this.feeling = feeling;
+//        this.numInRegion = numInRegion;
+//        this.depth = depth;
+//        this.spawnSpecialRooms = spawnSpecialRooms;
+//        this.spawnStandartRooms = spawnStandartRooms;
+//        this.spawnSecretRooms = spawnSecretRooms;
+//
+//        exitCells = new ArrayList<>(3);
+//        entranceCells = new ArrayList<>(3);
+//        this.roomsToSpawn = new ArrayList<>();
+//        this.itemsToSpawn = itemsToSpawn;
+//        this.mobsToSpawn = new ArrayList<>();
+//        for (MobItem mobItem : mobsToSpawn) {
+//            this.mobsToSpawn.add(mobItem.mob());
+//        }
+//        for (RoomItem roomItem : roomsToSpawn) {
+//            this.roomsToSpawn.add(roomItem.room());
+//        }
+//
+//
+//        if (type == CustomLevel.class) {
+//            level = new CustomLevel(name, levelTemplate, feeling, seed, numInRegion, depth, this);
+//        } else {
+//            initExitEntranceCellsForRandomLevel();
+//        }
+//        shopPriceMultiplier = Dungeon.getSimulatedDepth(this) / 5 + 1;
+//        if (seed != null) setSeed(seed);
+//    }
+
+    public void initNewLevelScheme(String name, Class<? extends Level> levelTemplate) {
         this.name = name;
-        type = levelType;
-        this.feeling = feeling;
-        this.numInRegion = numInRegion;
-        this.depth = depth;
         exitCells = new ArrayList<>(3);
         entranceCells = new ArrayList<>(3);
-        this.spawnSpecialRooms = spawnSpecialRooms;
-        this.spawnStandartRooms = spawnStandartRooms;
-        this.spawnSecretRooms = spawnSecretRooms;
-
-        this.roomsToSpawn = new ArrayList<>();
-        this.itemsToSpawn = itemsToSpawn;
-        this.mobsToSpawn = new ArrayList<>();
-        for (MobItem mobItem : mobsToSpawn) {
-            this.mobsToSpawn.add(mobItem.mob());
-        }
-        for (RoomItem roomItem : roomsToSpawn) {
-            this.roomsToSpawn.add(roomItem.room());
-        }
-
 
         if (type == CustomLevel.class) {
-            level = new CustomLevel(name, levelTemplate, feeling, seed, numInRegion, depth, this);
+            level = new CustomLevel(name, levelTemplate, feeling, seedSet ? seed : null, numInRegion, depth, this);
         } else {
             initExitEntranceCellsForRandomLevel();
-            //TODO set rooms, mobs, items  here
         }
         shopPriceMultiplier = Dungeon.getSimulatedDepth(this) / 5 + 1;
-        if (seed != null) setSeed(seed);
+
+    }
+
+    //These setters are ONLY for NewFloorComp
+    public void setType(Class<? extends Level> type) {
+        this.type = type;
+    }
+
+    public void setNumInRegion(int numInRegion) {
+        this.numInRegion = numInRegion;
+    }
+
+    //These setters/getters are ONLY for LevelGenComp
+    public void resetSeed() {
+        seed = 0;
+        seedSet = false;
+    }
+
+    public boolean isSeedSet() {
+        return seedSet;
     }
 
     public LevelScheme(String name, int depth, CustomDungeon customDungeon) {
@@ -371,6 +401,38 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             Dungeon.levelName = name;
             initRandomStats(seed);
             spawnItemsAndMobs(seed + 229203);
+
+            if (feeling == null) {
+                Random.pushGenerator(seed + 56709);
+                switch (Random.Int(14)) {
+                    case 0:
+                        level.feeling = Level.Feeling.CHASM;
+                        break;
+                    case 1:
+                        level.feeling = Level.Feeling.WATER;
+                        break;
+                    case 2:
+                        level.feeling = Level.Feeling.GRASS;
+                        break;
+                    case 3:
+                        level.feeling = Level.Feeling.DARK;
+                        break;
+                    case 4:
+                        level.feeling = Level.Feeling.LARGE;
+                        break;
+                    case 5:
+                        level.feeling = Level.Feeling.TRAPS;
+                        break;
+                    case 6:
+                        level.feeling = Level.Feeling.SECRETS;
+                        break;
+                    default:
+                        level.feeling = Level.Feeling.NONE;
+                }
+                if (level.feeling == Level.Feeling.DARK)
+                    level.viewDistance = Math.round(level.viewDistance / 2f);
+                Random.popGenerator();
+            } else level.feeling = feeling;
         }
         level.initForPlay();
         return level;
@@ -401,7 +463,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
                         m.pos = level.randomRespawnCell(m);
                         tries--;
                     } while (m.pos == -1 && tries > 0);
-                    if (m.pos != -1) level.mobs.add(m);
+                    if (m.pos != -1) {
+                        level.mobs.add(m);
+                        if (level.map[m.pos] == Terrain.HIGH_GRASS)
+                            level.map[m.pos] = Terrain.GRASS;
+                    }
                 }
             }
         }

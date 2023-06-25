@@ -138,7 +138,7 @@ class WndChangeMobRotation extends Window {
     }
 
     private int sum;
-    private boolean isInInit;
+    private boolean isInInit = true;//NOT redundant!
 
     public WndChangeMobRotation() {
         super();
@@ -217,7 +217,7 @@ class WndChangeMobRotation extends Window {
         }
         for (Class<? extends Mob> cl : mobCounterMap.keySet()) {
             Integer count = mobCounterMap.get(cl);
-            mobRotItems.get(cl).setCount(count);
+            mobRotItems.get(cl).setCount(count);//uses isInit
             sum += count;
         }
         updateList();

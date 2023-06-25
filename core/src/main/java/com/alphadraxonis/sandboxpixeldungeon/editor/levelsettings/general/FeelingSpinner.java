@@ -5,8 +5,6 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
-import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
-import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.watabou.noosa.Image;
 
@@ -50,7 +48,6 @@ public class FeelingSpinner extends Spinner {
         }
 
         public Image getIcon(Object feeling) {
-            if (feeling == null) return new ItemSprite(ItemSpriteSheet.SOMETHING);
             return Icons.get((Level.Feeling) feeling);
         }
 
