@@ -48,6 +48,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BurnedRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.CaveRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.CavesFissureRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.ChasmRoom;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.CircleBasinRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.CirclePitRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.EmptyRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.EntranceRoom;
@@ -58,7 +59,6 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.HallwayRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.ImpShopRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.MinefieldRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.PlatformRoom;
-import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.RingRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.RitualSiteRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.SegmentedLibraryRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.SegmentedRoom;
@@ -155,7 +155,7 @@ public class RoomItem extends EditorItem {
         if(r == CavesFissureRoom.class) return new ItemSprite(Assets.Environment.TILES_CAVES, new TileItem(-1, DungeonTileSheet.CHASM_FLOOR, -1));
         //CellBlock
         if (r == ChasmRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(-1, DungeonTileSheet.CHASM_WALL, -1));
-        //CircleBasin
+        if (r == CircleBasinRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(-1, DungeonTileSheet.CHASM_FLOOR_SP, -1));
         if (r == CirclePitRoom.class)return new ItemSprite(Assets.Environment.TILES_CAVES, new TileItem(-1, DungeonTileSheet.CHASM_WALL, -1));
         if (r == EntranceRoom.class)return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(Terrain.ENTRANCE, -1));
         if (r == ExitRoom.class)    return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(Terrain.EXIT, -1));
@@ -167,7 +167,7 @@ public class RoomItem extends EditorItem {
         //Pillars
         //Plants
         if (r == PlatformRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(-1, DungeonTileSheet.CHASM_FLOOR_SP, -1));
-        if (r == RingRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(-1, DungeonTileSheet.CHASM_FLOOR_SP, -1));
+        //Ring
         if (r == RitualSiteRoom.class) return new ItemSprite(ItemSpriteSheet.CANDLE);
         //Ruins
         if (r == SegmentedLibraryRoom.class) return new ItemSprite(Assets.Environment.TILES_CITY, new TileItem(Terrain.BOOKSHELF, -1));

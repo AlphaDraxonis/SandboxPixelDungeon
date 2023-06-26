@@ -79,6 +79,7 @@ public class FigureEightBuilder extends RegularBuilder {
 	@Override
 	public ArrayList<Room> build(ArrayList<Room> rooms) {
 		setupRooms(rooms);
+		if(mainPathRooms.isEmpty())return rooms;
 		
 		if (landmarkRoom == null){
 			//prefer large and giant standard rooms over others

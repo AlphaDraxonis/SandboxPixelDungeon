@@ -113,18 +113,29 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         line = new ColorBlock(1, 1, 0xFF222222);
         content.add(line);
 
-        sectionItems = new SpawnSection<>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn) {
+        sectionItems = new SpawnSection<>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn, null, true) {
+
             @Override
             protected void onSlotNumChange() {
                 if (sectionItems != null) sectionItems.updateTitle(getNumSlots());
                 LevelGenComp.this.layout();
+            }
+
+            @Override
+            protected void addItemToUI(Item item, boolean last) {
+                super.addItemToUI(item, !last);
             }
         });
         content.add(sectionItems);
 
         List<MobItem> listMobs = new ArrayList<>();
         for (Mob mob : newLevelScheme.mobsToSpawn) listMobs.add(new MobItem(mob));
-        sectionMobs = new SpawnSection<>("mobs", new ItemContainer<MobItem>(listMobs) {
+        sectionMobs = new SpawnSection<>("mobs", new ItemContainer<MobItem>(listMobs, null, true) {
+            @Override
+            protected void addItemToUI(Item item, boolean last) {
+                super.addItemToUI(item, !last);
+            }
+
             @Override
             protected void onSlotNumChange() {
                 if (sectionMobs != null) sectionMobs.updateTitle(getNumSlots());
@@ -157,7 +168,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             @Override
             protected boolean removeSlot(ItemContainer<MobItem>.Slot slot) {
                 if (super.removeSlot(slot)) {
-                    newLevelScheme.mobsToSpawn.remove(slot.item());
+                    newLevelScheme.mobsToSpawn.remove(((MobItem) slot.item()).mob());
                     return true;
                 }
                 return false;
@@ -168,7 +179,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         if (newLevelScheme.getName() == null || newLevelScheme.getType() != CustomLevel.class) {
             List<RoomItem> listRooms = new ArrayList<>();
             for (Room room : newLevelScheme.roomsToSpawn) listRooms.add(new RoomItem(room));
-            sectionRooms = new SpawnSectionMore<RoomItem>("rooms", new ItemContainer<RoomItem>(listRooms) {
+            sectionRooms = new SpawnSectionMore<RoomItem>("rooms", new ItemContainer<RoomItem>(listRooms, null, true) {
                 @Override
                 protected void onSlotNumChange() {
                     if (sectionRooms != null) sectionRooms.updateTitle(getNumSlots());
@@ -181,6 +192,11 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                 }
 
                 @Override
+                protected void addItemToUI(Item item, boolean last) {
+                    super.addItemToUI(item, !last);
+                }
+
+                @Override
                 protected void doAddItem(RoomItem item) {
                     super.doAddItem(item);
                     newLevelScheme.roomsToSpawn.add(item.room());
@@ -189,7 +205,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                 @Override
                 protected boolean removeSlot(ItemContainer<RoomItem>.Slot slot) {
                     if (super.removeSlot(slot)) {
-                        newLevelScheme.roomsToSpawn.remove(slot.item());
+                        newLevelScheme.roomsToSpawn.remove(((RoomItem) slot.item()).room());
                         return true;
                     }
                     return false;

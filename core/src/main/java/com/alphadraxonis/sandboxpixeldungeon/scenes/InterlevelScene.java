@@ -363,6 +363,12 @@ public class InterlevelScene extends PixelScene {
                                     "Seed:" + Dungeon.seed + " depth:" + Dungeon.depth + " trace:" +
                                     s)
                     );
+                    add(new WndError(Messages.get(InterlevelScene.class,"could_not_generate", Dungeon.seed)) {
+                        public void onBackPressed() {
+                            super.onBackPressed();
+                            Game.switchScene(StartScene.class);
+                        }
+                    });
                 }
                 break;
         }
