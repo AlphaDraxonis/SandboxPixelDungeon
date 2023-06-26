@@ -97,7 +97,7 @@ public class Imp extends QuestNPC<ImpQuest> {
 					}
 				});
 			} else {
-				tell(Messages.get(this, quest.getMessageString(), Messages.titleCase(Dungeon.hero.name())));
+				tell(Messages.get(this, quest.getMessageString()+"_2", Messages.titleCase(Dungeon.hero.name())));
 			}
 
 		} else {

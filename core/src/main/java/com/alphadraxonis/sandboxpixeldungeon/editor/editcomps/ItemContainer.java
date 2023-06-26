@@ -162,6 +162,9 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
     //IMPORTANT METHODS
     //IMPORTANT METHODS
 
+    public int getNumSlots() {
+        return slots.size();
+    }
 
     private static final int GAP = 2;
 

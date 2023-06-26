@@ -11,6 +11,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Mobs;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Rooms;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.RoomItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.FeelingSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseObjectComp;
@@ -97,11 +98,6 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                 if (Game.scene() instanceof EditorScene) EditorScene.show(window);
                 else Game.scene().addToFront(window);
             }
-
-//            @Override
-//            protected float getDisplayWidth() {
-//                return chooseType.getDW();
-//            }
         };
         if (newLevelScheme.isSeedSet())
             seed.selectObject(DungeonSeed.convertToCode(newLevelScheme.getSeed()));
@@ -117,9 +113,10 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         line = new ColorBlock(1, 1, 0xFF222222);
         content.add(line);
 
-        sectionItems = new SpawnSection<>(Messages.get(LevelGenComp.class, "items"), new ItemContainer<Item>(newLevelScheme.itemsToSpawn) {
+        sectionItems = new SpawnSection<>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn) {
             @Override
             protected void onSlotNumChange() {
+                if (sectionItems != null) sectionItems.updateTitle(getNumSlots());
                 LevelGenComp.this.layout();
             }
         });
@@ -127,9 +124,10 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
         List<MobItem> listMobs = new ArrayList<>();
         for (Mob mob : newLevelScheme.mobsToSpawn) listMobs.add(new MobItem(mob));
-        sectionMobs = new SpawnSection<>(Messages.get(LevelGenComp.class, "mobs"), new ItemContainer<MobItem>(listMobs) {
+        sectionMobs = new SpawnSection<>("mobs", new ItemContainer<MobItem>(listMobs) {
             @Override
             protected void onSlotNumChange() {
+                if (sectionMobs != null) sectionMobs.updateTitle(getNumSlots());
                 LevelGenComp.this.layout();
             }
 
@@ -167,12 +165,13 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         });
         content.add(sectionMobs);
 
-        if (newLevelScheme.getName() == null) {
+        if (newLevelScheme.getName() == null || newLevelScheme.getType() != CustomLevel.class) {
             List<RoomItem> listRooms = new ArrayList<>();
             for (Room room : newLevelScheme.roomsToSpawn) listRooms.add(new RoomItem(room));
-            sectionRooms = new SpawnSectionMore<RoomItem>(Messages.get(LevelGenComp.class, "rooms"), new ItemContainer<RoomItem>(listRooms) {
+            sectionRooms = new SpawnSectionMore<RoomItem>("rooms", new ItemContainer<RoomItem>(listRooms) {
                 @Override
                 protected void onSlotNumChange() {
+                    if (sectionRooms != null) sectionRooms.updateTitle(getNumSlots());
                     LevelGenComp.this.layout();
                 }
 
@@ -261,11 +260,14 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
     private class SpawnSection<T extends Item> extends FoldableComp {
 
+        private final String key;
 
-        public SpawnSection(String label, ItemContainer<T> container) {
-            super(label, container);
+        public SpawnSection(String key, ItemContainer<T> container) {
+            super(container);
+            this.key = key;
             container.setSize(LevelGenComp.this.width, -1);
             showBody(false);
+            updateTitle(container.getNumSlots());
         }
 
         @Override
@@ -273,14 +275,20 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             LevelGenComp.this.layout();
         }
 
+        private void updateTitle(int numSlots) {
+            title.text(Messages.get(LevelGenComp.class, key) + " (" + numSlots + ")");
+        }
+
     }
 
     private abstract class SpawnSectionMore<T extends Item> extends FoldableCompWithAdd {
 
         private ItemContainer<T> container;
+        private final String key;
 
-        public SpawnSectionMore(String label, ItemContainer<T> container) {
-            super(label);
+        public SpawnSectionMore(String key, ItemContainer<T> container) {
+            super();
+            this.key = key;
 
             remove(adder);
             adder.destroy();
@@ -296,6 +304,8 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             container.setSize(LevelGenComp.this.width, -1);
             showBody(false);
             setReverseBtnOrder(true);
+
+            updateTitle(container.getNumSlots());
         }
 
         @Override
@@ -306,6 +316,10 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         @Override
         protected final Component createBody(Object param) {
             return null;
+        }
+
+        private void updateTitle(int numSlots) {
+            title.text(Messages.get(LevelGenComp.class, key) + " (" + numSlots + ")");
         }
     }
 

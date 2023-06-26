@@ -23,7 +23,7 @@ import java.util.Set;
 public class WndNewDungeon extends WndTextInput {
 
 
-    public static final String DEFAULT_DUNGEON = "default_dungeon";
+    public static final String DEFAULT_DUNGEON = "default-dungeon";
 
 
     private final Set<String> dungeonNames;

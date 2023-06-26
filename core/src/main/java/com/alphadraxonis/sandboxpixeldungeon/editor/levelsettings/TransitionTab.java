@@ -173,7 +173,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
     }
 
     @Override
-    protected Image createIcon() {
+    public Image createIcon() {
         return Icons.get(Icons.STAIRS);
     }
 }

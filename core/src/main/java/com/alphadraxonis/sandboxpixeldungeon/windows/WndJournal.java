@@ -426,7 +426,7 @@ public class WndJournal extends WndTabbed {
 				for (Notes.Record rec : landmarks) {
 					ScrollingListPane.ListItem item = new ScrollingListPane.ListItem( Icons.get(Icons.STAIRS),
 							rec.levelName(),
-							Messages.titleCase(rec.desc()));
+							Messages.titleCase(rec.desc()),0.7f);
 					if (Dungeon.levelName.equals(rec.levelName())) item.hardlight(TITLE_COLOR);
 					list.addItem(item);
 				}

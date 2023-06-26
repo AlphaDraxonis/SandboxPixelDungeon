@@ -145,7 +145,7 @@ public class ItemTab extends WndEditorSettings.TabComp {
     }
 
     @Override
-    protected Image createIcon() {
+    public Image createIcon() {
         return new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER);
     }
 }

@@ -92,7 +92,7 @@ public class EnemyTab extends WndEditorSettings.TabComp {
     }
 
     @Override
-    protected Image createIcon() {
+    public Image createIcon() {
         return new SkeletonSprite();
     }
 }

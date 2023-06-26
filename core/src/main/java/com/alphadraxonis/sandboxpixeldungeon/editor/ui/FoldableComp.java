@@ -24,6 +24,10 @@ public class FoldableComp extends Component {
         title.text(label);
     }
 
+    public FoldableComp(Component body) {
+        setBody(body);
+    }
+
     public FoldableComp(String label, Component body) {
         this(label);
         setBody(body);

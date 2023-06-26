@@ -104,7 +104,7 @@ public class WndEditorSettings extends WndTabbed {
             super.layout();
         }
 
-        protected abstract Image createIcon();
+        public abstract Image createIcon();
     }
 
     @Override

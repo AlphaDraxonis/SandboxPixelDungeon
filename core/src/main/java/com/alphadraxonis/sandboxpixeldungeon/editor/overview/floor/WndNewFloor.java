@@ -143,7 +143,7 @@ public class WndNewFloor extends WndTabbed {
         }
 
         @Override
-        protected Image createIcon() {
+        public Image createIcon() {
             return new ItemSprite(ItemSpriteSheet.SOMETHING);
         }
     }

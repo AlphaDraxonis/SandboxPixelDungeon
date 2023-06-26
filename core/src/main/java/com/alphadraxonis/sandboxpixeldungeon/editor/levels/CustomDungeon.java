@@ -31,6 +31,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.Scroll;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BlacksmithRoom;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Game;
@@ -262,6 +263,7 @@ public class CustomDungeon implements Bundlable {
         if (!maybeBlacksmithSpawnLevels.isEmpty()) {
             level = floors.get(maybeBlacksmithSpawnLevels.get(Random.Int(maybeBlacksmithSpawnLevels.size())));
             level.mobsToSpawn.add(new Blacksmith(new BlacksmithQuest()));
+            level.roomsToSpawn.add(new BlacksmithRoom());
         }
 
         if (!maybeImpSpawnLevels.isEmpty()) {
@@ -296,11 +298,6 @@ public class CustomDungeon implements Bundlable {
             String name = Integer.toString(depth);
             LevelScheme l = new LevelScheme(name, depth, this);
             addFloor(l);
-
-            l.mobsToSpawn.add(new Wandmaker(new WandmakerQuest()));
-            l.mobsToSpawn.add(new Ghost(new GhostQuest()));
-            l.mobsToSpawn.add(new Blacksmith(new BlacksmithQuest()));
-            l.mobsToSpawn.add(new Imp(new ImpQuest()));
         }
 
 

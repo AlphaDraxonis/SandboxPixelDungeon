@@ -169,7 +169,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
     }
 
     @Override
-    protected Image createIcon() {
+    public Image createIcon() {
         return Icons.get(Icons.PREFS);
     }
 
