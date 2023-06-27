@@ -46,7 +46,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
     public static Window INSTANCE;
     private final static Map<Bag, Float> lastScrollPos = new HashMap<>(5);
     private final static Map<Bag, Integer> lastSelected = new HashMap<>(5);
-    private static EditorItemBag lastBag;
+    private static EditorItemBag lastBag, curBag;
 
     protected WndBag.ItemSelector selector;
 
@@ -70,11 +70,11 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                 INSTANCE.hide();
             }
             INSTANCE = this;
+            lastBag = bag;
         }
+        curBag = bag;
 
         this.selector = selector;
-
-        lastBag = bag;
 
         resize(WIDTH, HEIGHT + (addTabs ? 0 : 50));
 
@@ -233,8 +233,8 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
     @Override
     public void hide() {
-        lastSelected.put(lastBag(), body.getSelectedIndex());
-        lastScrollPos.put(lastBag, body.getCurrentViewY());
+        lastSelected.put(curBag, body.getSelectedIndex());
+        lastScrollPos.put(curBag, body.getCurrentViewY());
         lastTrapForImage = null;
         super.hide();
         if (INSTANCE == this) {

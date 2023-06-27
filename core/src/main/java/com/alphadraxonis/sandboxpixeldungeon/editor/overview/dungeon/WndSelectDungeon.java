@@ -233,10 +233,10 @@ public class WndSelectDungeon extends Window {
             SandboxPixelDungeon.reportException(e);
         }
         String lastEditedFloor = Dungeon.customDungeon.getLastEditedFloor();
-        if (Dungeon.customDungeon.getNumFloors() == 0 || lastEditedFloor == null)
+        LevelScheme l;
+        if (Dungeon.customDungeon.getNumFloors() == 0 || lastEditedFloor == null || (l = Dungeon.customDungeon.getFloor(lastEditedFloor)) == null)
             SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
         else {
-            LevelScheme l = Dungeon.customDungeon.getFloor(lastEditedFloor);
             if (l.getType() != CustomLevel.class)
                 SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
             else {

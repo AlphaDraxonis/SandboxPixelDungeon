@@ -158,7 +158,8 @@ public enum Rooms {
                 PillarsRoom.class,
                 CellBlockRoom.class,
                 RotGardenRoom.class,
-                RitualSiteRoom.class
+                RitualSiteRoom.class,
+                MassGraveRoom.class
 
         };
 
@@ -186,7 +187,6 @@ public enum Rooms {
 
                 ArmoryRoom.class,
                 CryptRoom.class,
-                MassGraveRoom.class,
                 GardenRoom.class,
                 StorageRoom.class,
                 TreasuryRoom.class,

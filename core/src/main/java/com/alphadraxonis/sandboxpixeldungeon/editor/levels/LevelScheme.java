@@ -69,7 +69,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     public List<Integer> entranceCells, exitCells;
 
     public List<Mob> mobsToSpawn;
-    public List<Room> roomsToSpawn;
+    public List<Room> roomsToSpawn;//TODO also choose builder
     public List<Item> itemsToSpawn;
 
     public boolean spawnStandartRooms = true, spawnSecretRooms = true, spawnSpecialRooms = true;

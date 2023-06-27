@@ -77,8 +77,10 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 public abstract class RegularLevel extends Level {
 
@@ -92,9 +94,20 @@ public abstract class RegularLevel extends Level {
 	@Override
 	protected boolean build() {
 
-		builder = builder();
-
 		ArrayList<Room> initRooms = initRooms();
+
+		boolean canUseFigureEight = false;
+		for (Room r : initRooms) {
+			if (r.maxConnections(Room.ALL) >= 4 && !(r instanceof EntranceRoom) && !(r instanceof ExitRoom)) {
+				canUseFigureEight = true;
+				break;
+			}
+		}
+
+		do {
+			builder = builder();
+		} while (!canUseFigureEight && builder instanceof FigureEightBuilder);
+
 		Random.shuffle(initRooms);
 
 		do {
@@ -660,7 +673,9 @@ public abstract class RegularLevel extends Level {
 	@Override
 	public int fallCell( boolean fallIntoPit ) {
 		if (fallIntoPit) {
-			for (Room room : rooms) {
+			List<Room> iter = new ArrayList<>(rooms);
+			Collections.shuffle(iter);//TODO more complex logic: link weak floor and pit rooms
+			for (Room room : iter) {
 				if (room instanceof PitRoom) {
 					ArrayList<Integer> candidates = new ArrayList<>();
 					for (Point p : room.getPoints()){

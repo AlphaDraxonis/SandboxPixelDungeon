@@ -43,7 +43,7 @@ public class EditRoomComp extends DefaultEditComp<Room> {
 
     @Override
     protected String createDescription() {
-        return Messages.NO_TEXT_FOUND;
+        return "Description unavailable atm";
     }
 
     @Override

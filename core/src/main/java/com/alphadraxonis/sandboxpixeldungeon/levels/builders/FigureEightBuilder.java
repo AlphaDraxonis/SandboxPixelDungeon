@@ -79,8 +79,8 @@ public class FigureEightBuilder extends RegularBuilder {
 	@Override
 	public ArrayList<Room> build(ArrayList<Room> rooms) {
 		setupRooms(rooms);
-		if(mainPathRooms.isEmpty())return rooms;
-		
+
+		//requires at least one room that can have 4 or more connections
 		if (landmarkRoom == null){
 			//prefer large and giant standard rooms over others
 			for (Room r : mainPathRooms){
@@ -148,7 +148,7 @@ public class FigureEightBuilder extends RegularBuilder {
 				secondLoop.add(ConnectionRoom.createRoom());
 			}
 		}
-		
+
 		landmarkRoom.setSize();
 		landmarkRoom.setPos(0, 0);
 		

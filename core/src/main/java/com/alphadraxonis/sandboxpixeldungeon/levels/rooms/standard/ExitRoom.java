@@ -54,7 +54,7 @@ public class ExitRoom extends StandardRoom {
         Painter.set(level, exit, Terrain.EXIT);
         String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultBelow();
         if ( Level.SURFACE.equals(dest)) {
-            level.transitions.put(exit,new LevelTransition(level, exit, LevelTransition.Type.SURFACE));
+            level.transitions.put(exit, new LevelTransition(level, exit, LevelTransition.Type.SURFACE));
         } else {
             if (Dungeon.customDungeon.getFloor(dest) != null)
                 level.transitions.put(exit, new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
