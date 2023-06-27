@@ -38,6 +38,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.Random;
 
 import java.io.IOException;
@@ -56,7 +57,7 @@ import java.util.Set;
 
 public class CustomDungeon implements Bundlable {
 
-    public boolean opMode = true;//TODO settings what to enable exactly (dont release for now)
+    public boolean opMode = DeviceCompat.isDebug();//TODO settings what to enable exactly (dont release for now)
     //Perks:
     // - permainvisiblility
     // - permamindvision
@@ -67,12 +68,11 @@ public class CustomDungeon implements Bundlable {
 
     //FIXME: Was noch zu tun ist  FIXME FIXME TODO System.err.println()
     //improve gui
-    //plants platzierbar
+    //plants platzierbar wichtig
     //general floor overview stuff
-    //hidden doors
+    //hidden doors wichtig
     //camera controllieren von EditorScene,  settings für EditorScene
-    //mehr Funktionen, die das Bauen erleichtern
-    //settings for generatED floors (not template): viewDistance, shopMultiplier, feeling, seed
+    //custom tiles wichtig
 
     //TODO discord server erstellen
 
