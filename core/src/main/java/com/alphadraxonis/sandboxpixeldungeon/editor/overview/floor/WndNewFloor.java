@@ -11,15 +11,25 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.InterlevelScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndError;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTabbed;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextInput;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 //a lot of code copied from WndTextInput because idk how to make TextInputs
 public class WndNewFloor extends WndTabbed {
@@ -74,10 +84,7 @@ public class WndNewFloor extends WndTabbed {
 
     }
 
-
     public void create(boolean positive) {
-
-        hide();
 
         if (positive) {
             String name = newFloorComp.textBox.getText();
@@ -87,8 +94,52 @@ public class WndNewFloor extends WndTabbed {
                 return;
             }
 
-            newLevelScheme.initNewLevelScheme(name,
-                    (Class<? extends Level>) newFloorComp.chooseTemplate.getObject());
+            // Create an ExecutorService with a single thread
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+
+            // Create a Future object to track the generation task
+            Future<Boolean> generator = executor.submit(() -> {
+                newLevelScheme.initNewLevelScheme(name,
+                        (Class<? extends Level>) newFloorComp.chooseTemplate.getObject());
+                return true;
+            });
+
+            // Wait for 10 seconds for the level generation to complete
+            Boolean generated;
+            try {
+                generated = generator.get(10, TimeUnit.SECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+                generated = null;
+            }
+            if (generated == null) {
+                Level curLevel = EditorScene.customLevel();
+                if (curLevel != null) {
+                    Dungeon.levelName = curLevel.name;
+                    Dungeon.level = curLevel;
+                } else {
+                    Dungeon.levelName = null;
+                    Dungeon.level = null;
+                }
+                for (String floor : Dungeon.customDungeon.floorNames()) {
+                    LevelScheme l = Dungeon.customDungeon.getFloor(floor);
+                    if (Level.NONE.equals(l.getName())) {
+                        Dungeon.customDungeon.removeFloor(l);
+                        break;
+                    }
+                }
+
+                executor.shutdownNow();
+                if (Game.scene() instanceof EditorScene)
+                    EditorScene.show(new WndError(Messages.get(InterlevelScene.class, "could_not_generate", Dungeon.seed)));
+                else
+                    Game.scene().addToFront(new WndError(Messages.get(InterlevelScene.class, "could_not_generate", Dungeon.seed)));
+                return;
+            }
+
+            executor.shutdownNow();
+
+
+            hide();
 
             if (owner.getNumFloors() == 0) owner.setStart(name);
             owner.addFloor(newLevelScheme);
@@ -112,9 +163,10 @@ public class WndNewFloor extends WndTabbed {
             } catch (IOException e) {
                 SandboxPixelDungeon.reportException(e);
             }
-        }
+        } else hide();
 
     }
+
 
     @Override
     public void onBackPressed() {
@@ -133,7 +185,8 @@ public class WndNewFloor extends WndTabbed {
     protected static class OwnTab extends WndEditorSettings.TabComp {
 
         protected LevelScheme newLevelScheme;
-        public OwnTab(LevelScheme newLevelScheme){
+
+        public OwnTab(LevelScheme newLevelScheme) {
             super(newLevelScheme);
         }
 
