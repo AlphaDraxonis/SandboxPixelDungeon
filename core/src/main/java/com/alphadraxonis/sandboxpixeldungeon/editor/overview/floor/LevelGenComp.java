@@ -41,6 +41,7 @@ import com.watabou.noosa.ui.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+//If you wanna see trash, then this file is the perfect place (FIXME)
 public class LevelGenComp extends WndNewFloor.OwnTab {
 
     private ScrollPane sp;
@@ -53,8 +54,8 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
     protected ColorBlock line;
 
-    protected SpawnSection<Item> sectionItems;
-    protected SpawnSection<MobItem> sectionMobs;
+    protected Component sectionItems;
+    protected Component sectionMobs;
     protected SpawnSectionMore<RoomItem> sectionRooms;
 
     public LevelGenComp(LevelScheme newLevelScheme) {
@@ -113,67 +114,161 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         line = new ColorBlock(1, 1, 0xFF222222);
         content.add(line);
 
-        sectionItems = new SpawnSection<>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn, null, true) {
+        if (newLevelScheme.getName() == null || newLevelScheme.getType() != CustomLevel.class) {
+            sectionItems = new SpawnSectionMore<Item>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn, null, true) {
 
-            @Override
-            protected void onSlotNumChange() {
-                if (sectionItems != null) sectionItems.updateTitle(getNumSlots());
-                LevelGenComp.this.layout();
-            }
+                @Override
+                protected void onSlotNumChange() {
+                    if (sectionItems != null)
+                        ((UpdateTitle) sectionItems).updateTitle(getNumSlots());
+                    LevelGenComp.this.layout();
+                }
 
-            @Override
-            protected void addItemToUI(Item item, boolean last) {
-                super.addItemToUI(item, !last);
-            }
-        });
+                @Override
+                protected void addItemToUI(Item item, boolean last) {
+                    super.addItemToUI(item, !last);
+                }
+
+            }) {
+                @Override
+                protected void onAddClick() {
+                    Window w = new WndItemSettings(newLevelScheme.spawnItems) {
+                        @Override
+                        protected void finish() {
+                            newLevelScheme.spawnItems = cb.checked();
+                        }
+                    };
+                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                    else Game.scene().addToFront(w);
+                }
+            };
+
+            List<MobItem> listMobs = new ArrayList<>();
+            for (Mob mob : newLevelScheme.mobsToSpawn) listMobs.add(new MobItem(mob));
+            sectionMobs = new SpawnSectionMore<MobItem>("mobs", new ItemContainer<MobItem>(listMobs, null, true) {
+                @Override
+                protected void addItemToUI(Item item, boolean last) {
+                    super.addItemToUI(item, !last);
+                }
+
+                @Override
+                protected void onSlotNumChange() {
+                    if (sectionMobs != null) ((UpdateTitle) sectionMobs).updateTitle(getNumSlots());
+                    LevelGenComp.this.layout();
+                }
+
+                @Override
+                protected Class<? extends Bag> getPreferredBag() {
+                    return Mobs.bag.getClass();
+                }
+
+                @Override
+                protected void doAddItem(MobItem item) {
+                    if (item.mob() instanceof Blacksmith) {
+                        int numSmiths = 0;
+                        for (Mob m : newLevelScheme.mobsToSpawn) {
+                            if (m instanceof Blacksmith) numSmiths++;
+                        }
+                        int numSmithRooms = 0;
+                        for (Room r : newLevelScheme.roomsToSpawn) {
+                            if (r instanceof BlacksmithRoom) numSmithRooms++;
+                        }
+                        if (numSmithRooms <= numSmiths)
+                            sectionRooms.container.addNewItem(new RoomItem(new BlacksmithRoom()));
+                    }
+                    super.doAddItem(item);
+                    newLevelScheme.mobsToSpawn.add(item.mob());
+                }
+
+                @Override
+                protected boolean removeSlot(ItemContainer<MobItem>.Slot slot) {
+                    if (super.removeSlot(slot)) {
+                        newLevelScheme.mobsToSpawn.remove(((MobItem) slot.item()).mob());
+                        return true;
+                    }
+                    return false;
+                }
+
+            }) {
+                @Override
+                protected void onAddClick() {
+                    Window w = new WndMobSettings(newLevelScheme.spawnMobs) {
+                        @Override
+                        protected void finish() {
+                            newLevelScheme.spawnMobs = cb.checked();
+                        }
+                    };
+                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                    else Game.scene().addToFront(w);
+                }
+            };
+        } else {
+            sectionItems = new SpawnSection<>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn, null, true) {
+
+                @Override
+                protected void onSlotNumChange() {
+                    if (sectionItems != null)
+                        ((UpdateTitle) sectionItems).updateTitle(getNumSlots());
+                    LevelGenComp.this.layout();
+                }
+
+                @Override
+                protected void addItemToUI(Item item, boolean last) {
+                    super.addItemToUI(item, !last);
+                }
+
+            });
+
+            List<MobItem> listMobs = new ArrayList<>();
+            for (Mob mob : newLevelScheme.mobsToSpawn) listMobs.add(new MobItem(mob));
+            sectionMobs = new SpawnSection<>("mobs", new ItemContainer<MobItem>(listMobs, null, true) {
+                @Override
+                protected void addItemToUI(Item item, boolean last) {
+                    super.addItemToUI(item, !last);
+                }
+
+                @Override
+                protected void onSlotNumChange() {
+                    if (sectionMobs != null) ((UpdateTitle) sectionMobs).updateTitle(getNumSlots());
+                    LevelGenComp.this.layout();
+                }
+
+                @Override
+                protected Class<? extends Bag> getPreferredBag() {
+                    return Mobs.bag.getClass();
+                }
+
+                @Override
+                protected void doAddItem(MobItem item) {
+                    if (item.mob() instanceof Blacksmith) {
+                        int numSmiths = 0;
+                        for (Mob m : newLevelScheme.mobsToSpawn) {
+                            if (m instanceof Blacksmith) numSmiths++;
+                        }
+                        int numSmithRooms = 0;
+                        for (Room r : newLevelScheme.roomsToSpawn) {
+                            if (r instanceof BlacksmithRoom) numSmithRooms++;
+                        }
+                        if (numSmithRooms <= numSmiths)
+                            sectionRooms.container.addNewItem(new RoomItem(new BlacksmithRoom()));
+                    }
+                    super.doAddItem(item);
+                    newLevelScheme.mobsToSpawn.add(item.mob());
+                }
+
+                @Override
+                protected boolean removeSlot(ItemContainer<MobItem>.Slot slot) {
+                    if (super.removeSlot(slot)) {
+                        newLevelScheme.mobsToSpawn.remove(((MobItem) slot.item()).mob());
+                        return true;
+                    }
+                    return false;
+                }
+
+            });
+        }
+
         content.add(sectionItems);
-
-        List<MobItem> listMobs = new ArrayList<>();
-        for (Mob mob : newLevelScheme.mobsToSpawn) listMobs.add(new MobItem(mob));
-        sectionMobs = new SpawnSection<>("mobs", new ItemContainer<MobItem>(listMobs, null, true) {
-            @Override
-            protected void addItemToUI(Item item, boolean last) {
-                super.addItemToUI(item, !last);
-            }
-
-            @Override
-            protected void onSlotNumChange() {
-                if (sectionMobs != null) sectionMobs.updateTitle(getNumSlots());
-                LevelGenComp.this.layout();
-            }
-
-            @Override
-            protected Class<? extends Bag> getPreferredBag() {
-                return Mobs.bag.getClass();
-            }
-
-            @Override
-            protected void doAddItem(MobItem item) {
-                if (item.mob() instanceof Blacksmith) {
-                    int numSmiths = 0;
-                    for (Mob m : newLevelScheme.mobsToSpawn) {
-                        if (m instanceof Blacksmith) numSmiths++;
-                    }
-                    int numSmithRooms = 0;
-                    for (Room r : newLevelScheme.roomsToSpawn) {
-                        if (r instanceof BlacksmithRoom) numSmithRooms++;
-                    }
-                    if (numSmithRooms <= numSmiths)
-                        sectionRooms.container.addNewItem(new RoomItem(new BlacksmithRoom()));
-                }
-                super.doAddItem(item);
-                newLevelScheme.mobsToSpawn.add(item.mob());
-            }
-
-            @Override
-            protected boolean removeSlot(ItemContainer<MobItem>.Slot slot) {
-                if (super.removeSlot(slot)) {
-                    newLevelScheme.mobsToSpawn.remove(((MobItem) slot.item()).mob());
-                    return true;
-                }
-                return false;
-            }
-        });
         content.add(sectionMobs);
 
         if (newLevelScheme.getName() == null || newLevelScheme.getType() != CustomLevel.class) {
@@ -274,7 +369,11 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         }
     }
 
-    private class SpawnSection<T extends Item> extends FoldableComp {
+    private interface UpdateTitle {
+        void updateTitle(int numSlots);
+    }
+
+    private class SpawnSection<T extends Item> extends FoldableComp implements UpdateTitle {
 
         private final String key;
 
@@ -291,13 +390,13 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             LevelGenComp.this.layout();
         }
 
-        private void updateTitle(int numSlots) {
+        public void updateTitle(int numSlots) {
             title.text(Messages.get(LevelGenComp.class, key) + " (" + numSlots + ")");
         }
 
     }
 
-    private abstract class SpawnSectionMore<T extends Item> extends FoldableCompWithAdd {
+    private abstract class SpawnSectionMore<T extends Item> extends FoldableCompWithAdd implements UpdateTitle{
 
         private ItemContainer<T> container;
         private final String key;
@@ -334,12 +433,13 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             return null;
         }
 
-        private void updateTitle(int numSlots) {
+        public void updateTitle(int numSlots) {
             title.text(Messages.get(LevelGenComp.class, key) + " (" + numSlots + ")");
         }
     }
 
 
+    //TODO copy pasta this entire file here is so trash...
     private static abstract class WndRoomSettings extends Window {
 
         protected CheckBox stand, sec, spec;
@@ -370,6 +470,70 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             spec.setRect(0, sec.bottom() + 2, width, 16);
 
             resize(width, (int) (Math.ceil(spec.bottom()) + 3));
+        }
+
+        @Override
+        public void hide() {
+            super.hide();
+            finish();
+        }
+
+        protected abstract void finish();
+
+    }
+
+    private static abstract class WndMobSettings extends Window {
+
+        protected CheckBox cb;
+
+        public WndMobSettings(boolean spawn) {
+
+            resize(PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : (int) (PixelScene.uiCamera.width * 0.85f), 100);
+
+            RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(LevelGenComp.class, "mob_settings_title"), 10);
+            title.hardlight(Window.TITLE_COLOR);
+            add(title);
+
+            cb = new CheckBox(Messages.get(LevelGenComp.class, "spawn_mobs"));
+            cb.checked(spawn);
+            add(cb);
+
+            title.setPos((width - title.width()) * 0.5f, 2);
+            cb.setRect(0, title.bottom() + 5, width, 16);
+
+            resize(width, (int) (Math.ceil(cb.bottom()) + 3));
+        }
+
+        @Override
+        public void hide() {
+            super.hide();
+            finish();
+        }
+
+        protected abstract void finish();
+
+    }
+
+    private static abstract class WndItemSettings extends Window {
+
+        protected CheckBox cb;
+
+        public WndItemSettings(boolean spawn) {
+
+            resize(PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : (int) (PixelScene.uiCamera.width * 0.85f), 100);
+
+            RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(LevelGenComp.class, "item_settings_title"), 10);
+            title.hardlight(Window.TITLE_COLOR);
+            add(title);
+
+            cb = new CheckBox(Messages.get(LevelGenComp.class, "spawn_items"));
+            cb.checked(spawn);
+            add(cb);
+
+            title.setPos((width - title.width()) * 0.5f, 2);
+            cb.setRect(0, title.bottom() + 5, width, 16);
+
+            resize(width, (int) (Math.ceil(cb.bottom()) + 3));
         }
 
         @Override

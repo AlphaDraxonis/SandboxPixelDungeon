@@ -73,6 +73,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     public List<Item> itemsToSpawn;
 
     public boolean spawnStandartRooms = true, spawnSecretRooms = true, spawnSpecialRooms = true;
+    public boolean spawnMobs = true, spawnItems = true;
 
 
     public LevelScheme() {
@@ -87,41 +88,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         roomsToSpawn = new ArrayList<>();
         itemsToSpawn = new ArrayList<>();
     }
-
-//    public LevelScheme(String name, Class<? extends Level> levelType, Class<? extends Level> levelTemplate,
-//                       Long seed, Level.Feeling feeling, int numInRegion, int depth,
-//                       List<Item> itemsToSpawn, List<MobItem> mobsToSpawn, List<RoomItem> roomsToSpawn,
-//                       boolean spawnStandartRooms, boolean spawnSecretRooms, boolean spawnSpecialRooms) {
-//        this.name = name;
-//        type = levelType;
-//        this.feeling = feeling;
-//        this.numInRegion = numInRegion;
-//        this.depth = depth;
-//        this.spawnSpecialRooms = spawnSpecialRooms;
-//        this.spawnStandartRooms = spawnStandartRooms;
-//        this.spawnSecretRooms = spawnSecretRooms;
-//
-//        exitCells = new ArrayList<>(3);
-//        entranceCells = new ArrayList<>(3);
-//        this.roomsToSpawn = new ArrayList<>();
-//        this.itemsToSpawn = itemsToSpawn;
-//        this.mobsToSpawn = new ArrayList<>();
-//        for (MobItem mobItem : mobsToSpawn) {
-//            this.mobsToSpawn.add(mobItem.mob());
-//        }
-//        for (RoomItem roomItem : roomsToSpawn) {
-//            this.roomsToSpawn.add(roomItem.room());
-//        }
-//
-//
-//        if (type == CustomLevel.class) {
-//            level = new CustomLevel(name, levelTemplate, feeling, seed, numInRegion, depth, this);
-//        } else {
-//            initExitEntranceCellsForRandomLevel();
-//        }
-//        shopPriceMultiplier = Dungeon.getSimulatedDepth(this) / 5 + 1;
-//        if (seed != null) setSeed(seed);
-//    }
 
     public void initNewLevelScheme(String name, Class<? extends Level> levelTemplate) {
         this.name = name;
@@ -532,6 +498,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     private static final String SPAWN_STANDART_ROOMS = "spawn_standart_rooms";
     private static final String SPAWN_SECRET_ROOMS = "spawn_secret_rooms";
     private static final String SPAWN_SPECIAL_ROOMS = "spawn_special_rooms";
+    private static final String SPAWN_MOBS = "spawn_mobs";
+    private static final String SPAWN_ITEMS = "spawn_items";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -570,6 +538,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         bundle.put(SPAWN_STANDART_ROOMS, spawnStandartRooms);
         bundle.put(SPAWN_SPECIAL_ROOMS, spawnSpecialRooms);
         bundle.put(SPAWN_SECRET_ROOMS, spawnSecretRooms);
+        bundle.put(SPAWN_MOBS, spawnMobs);
+        bundle.put(SPAWN_ITEMS, spawnItems);
     }
 
     @Override
@@ -615,6 +585,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         spawnStandartRooms = bundle.getBoolean(SPAWN_STANDART_ROOMS);
         spawnSecretRooms = bundle.getBoolean(SPAWN_SECRET_ROOMS);
         spawnSpecialRooms = bundle.getBoolean(SPAWN_SPECIAL_ROOMS);
+        spawnMobs = bundle.getBoolean(SPAWN_MOBS);
+        spawnItems = bundle.getBoolean(SPAWN_ITEMS);
     }
 
     public Level loadLevel() {

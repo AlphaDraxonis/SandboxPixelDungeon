@@ -224,19 +224,6 @@ public abstract class RegularLevel extends Level {
 
 	@Override
 	protected void createMobs() {
-		//on floor 1, 8 pre-set mobs are created so the player can get level 2.
-		int mobsToSpawn = Dungeon.depth == 1 ? 8 : mobLimit();
-
-		ArrayList<Room> stdRooms = new ArrayList<>();
-		for (Room room : rooms) {
-			if (room instanceof StandardRoom && room != roomEntrance) {
-				for (int i = 0; i < ((StandardRoom) room).sizeCat.roomValue; i++) {
-					stdRooms.add(room);
-				}
-			}
-		}
-		Random.shuffle(stdRooms);
-		Iterator<Room> stdRoomIter = stdRooms.iterator();
 
 		for (Mob m : levelScheme.mobsToSpawn) {
 			if (m instanceof QuestNPC) {
@@ -253,50 +240,67 @@ public abstract class RegularLevel extends Level {
 			}
 		}
 
-		while (mobsToSpawn > 0) {
-			Mob mob = createMob();
-			Room roomToSpawn;
+		if (levelScheme.spawnMobs) {
 
-			if (!stdRoomIter.hasNext()) {
-				stdRoomIter = stdRooms.iterator();
+			//on floor 1, 8 pre-set mobs are created so the player can get level 2.
+			int mobsToSpawn = Dungeon.depth == 1 ? 8 : mobLimit();
+
+			ArrayList<Room> stdRooms = new ArrayList<>();
+			for (Room room : rooms) {
+				if (room instanceof StandardRoom && room != roomEntrance) {
+					for (int i = 0; i < ((StandardRoom) room).sizeCat.roomValue; i++) {
+						stdRooms.add(room);
+					}
+				}
 			}
-			roomToSpawn = stdRoomIter.next();
+			Random.shuffle(stdRooms);
+			Iterator<Room> stdRoomIter = stdRooms.iterator();
 
-			int tries = 30;
-			do {
-				mob.pos = pointToCell(roomToSpawn.random());
-				tries--;
-			} while (tries >= 0 && (findMob(mob.pos) != null
-					|| !passable[mob.pos]
-					|| solid[mob.pos]
-					|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
-					|| mob.pos == exit()
-					|| traps.get(mob.pos) != null || plants.get(mob.pos) != null
-					|| (!openSpace[mob.pos] && mob.properties().contains(Char.Property.LARGE))));
+			while (mobsToSpawn > 0) {
+				Mob mob = createMob();
+				Room roomToSpawn;
 
-			if (tries >= 0) {
-				mobsToSpawn--;
-				mobs.add(mob);
+				if (!stdRoomIter.hasNext()) {
+					stdRoomIter = stdRooms.iterator();
+				}
+				roomToSpawn = stdRoomIter.next();
 
-				//chance to add a second mob to this room, except on floor 1
-				if (Dungeon.getSimulatedDepth(levelScheme) > 1 && mobsToSpawn > 0 && Random.Int(4) == 0){
-					mob = createMob();
+				int tries = 30;
+				do {
+					mob.pos = pointToCell(roomToSpawn.random());
+					tries--;
+				} while (tries >= 0 && (findMob(mob.pos) != null
+						|| !passable[mob.pos]
+						|| solid[mob.pos]
+						|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
+						|| mob.pos == exit()
+						|| traps.get(mob.pos) != null || plants.get(mob.pos) != null
+						|| (!openSpace[mob.pos] && mob.properties().contains(Char.Property.LARGE))));
 
-					tries = 30;
-					do {
-						mob.pos = pointToCell(roomToSpawn.random());
-						tries--;
-					} while (tries >= 0 && (findMob(mob.pos) != null
-							|| !passable[mob.pos]
-							|| solid[mob.pos]
-							|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
-							|| mob.pos == exit()
-							|| traps.get(mob.pos) != null || plants.get(mob.pos) != null
-							|| (!openSpace[mob.pos] && mob.properties().contains(Char.Property.LARGE))));
+				if (tries >= 0) {
+					mobsToSpawn--;
+					mobs.add(mob);
 
-					if (tries >= 0) {
-						mobsToSpawn--;
-						mobs.add(mob);
+					//chance to add a second mob to this room, except on floor 1
+					if (Dungeon.getSimulatedDepth(levelScheme) > 1 && mobsToSpawn > 0 && Random.Int(4) == 0) {
+						mob = createMob();
+
+						tries = 30;
+						do {
+							mob.pos = pointToCell(roomToSpawn.random());
+							tries--;
+						} while (tries >= 0 && (findMob(mob.pos) != null
+								|| !passable[mob.pos]
+								|| solid[mob.pos]
+								|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
+								|| mob.pos == exit()
+								|| traps.get(mob.pos) != null || plants.get(mob.pos) != null
+								|| (!openSpace[mob.pos] && mob.properties().contains(Char.Property.LARGE))));
+
+						if (tries >= 0) {
+							mobsToSpawn--;
+							mobs.add(mob);
+						}
 					}
 				}
 			}
@@ -380,67 +384,69 @@ public abstract class RegularLevel extends Level {
 
 		final int simulatedDepth = Dungeon.getSimulatedDepth(levelScheme);
 
-		// drops 3/4/5 items 60%/30%/10% of the time
-		int nItems = 3 + Random.chances(new float[]{6, 3, 1});
+		if (levelScheme.spawnItems) {
+			// drops 3/4/5 items 60%/30%/10% of the time
+			int nItems = 3 + Random.chances(new float[]{6, 3, 1});
 
-		if (feeling == Feeling.LARGE){
-			nItems += 2;
-		}
-
-		for (int i=0; i < nItems; i++) {
-
-			Item toDrop = Generator.random();
-			if (toDrop == null) continue;
-
-			int cell = randomDropCell();
-			if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
-				map[cell] = Terrain.GRASS;
-				losBlocking[cell] = false;
+			if (feeling == Feeling.LARGE) {
+				nItems += 2;
 			}
 
-			Heap.Type type = null;
-			switch (Random.Int( 20 )) {
-			case 0:
-				type = Heap.Type.SKELETON;
-				break;
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-				type = Heap.Type.CHEST;
-				break;
-			case 5:
-				if (simulatedDepth > 1 && findMob(cell) == null){
-					mobs.add(Mimic.spawnAt(cell, toDrop));
-					continue;
+			for (int i = 0; i < nItems; i++) {
+
+				Item toDrop = Generator.random();
+				if (toDrop == null) continue;
+
+				int cell = randomDropCell();
+				if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
+					map[cell] = Terrain.GRASS;
+					losBlocking[cell] = false;
 				}
-				type = Heap.Type.CHEST;
-				break;
-			default:
-				type = Heap.Type.HEAP;
-				break;
-			}
 
-			if ((toDrop instanceof Artifact && Random.Int(2) == 0) ||
-					(toDrop.isUpgradable() && Random.Int(4 - toDrop.level()) == 0)){
+				Heap.Type type = null;
+				switch (Random.Int(20)) {
+					case 0:
+						type = Heap.Type.SKELETON;
+						break;
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+						type = Heap.Type.CHEST;
+						break;
+					case 5:
+						if (simulatedDepth > 1 && findMob(cell) == null) {
+							mobs.add(Mimic.spawnAt(cell, toDrop));
+							continue;
+						}
+						type = Heap.Type.CHEST;
+						break;
+					default:
+						type = Heap.Type.HEAP;
+						break;
+				}
 
-				if (simulatedDepth > 1 && Random.Int(10) == 0 && findMob(cell) == null){
-					mobs.add(Mimic.spawnAt(cell, toDrop, GoldenMimic.class));
+				if ((toDrop instanceof Artifact && Random.Int(2) == 0) ||
+						(toDrop.isUpgradable() && Random.Int(4 - toDrop.level()) == 0)) {
+
+					if (simulatedDepth > 1 && Random.Int(10) == 0 && findMob(cell) == null) {
+						mobs.add(Mimic.spawnAt(cell, toDrop, GoldenMimic.class));
+					} else {
+						Heap dropped = drop(toDrop, cell);
+						if (heaps.get(cell) == dropped) {
+							dropped.type = Heap.Type.LOCKED_CHEST;
+							addItemToSpawn(new GoldenKey(Dungeon.levelName));
+						}
+					}
 				} else {
 					Heap dropped = drop(toDrop, cell);
-					if (heaps.get(cell) == dropped) {
-						dropped.type = Heap.Type.LOCKED_CHEST;
-						addItemToSpawn(new GoldenKey(Dungeon.levelName));
+					dropped.type = type;
+					if (type == Heap.Type.SKELETON) {
+						dropped.setHauntedIfCursed();
 					}
 				}
-			} else {
-				Heap dropped = drop( toDrop, cell );
-				dropped.type = type;
-				if (type == Heap.Type.SKELETON){
-					dropped.setHauntedIfCursed();
-				}
-			}
 
+			}
 		}
 
 		for (Item item : itemsToSpawn) {

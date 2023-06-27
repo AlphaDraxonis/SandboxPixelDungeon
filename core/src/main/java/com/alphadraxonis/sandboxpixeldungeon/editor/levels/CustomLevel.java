@@ -152,6 +152,8 @@ public class CustomLevel extends Level {
             temp.spawnStandartRooms = levelScheme.spawnStandartRooms;
             temp.spawnSpecialRooms = levelScheme.spawnSpecialRooms;
             temp.spawnSecretRooms = levelScheme.spawnSecretRooms;
+            temp.spawnMobs = levelScheme.spawnMobs;
+            temp.spawnItems = levelScheme.spawnItems;
 
             temp.mobsToSpawn = new ArrayList<>(levelScheme.mobsToSpawn);
             levelScheme.mobsToSpawn.clear();

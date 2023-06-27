@@ -201,33 +201,36 @@ public abstract class Level implements Bundlable {
 
         if (!(Dungeon.bossLevel())) {
 
-            addItemToSpawn(Generator.random(Generator.Category.FOOD));
+            if(levelScheme.spawnItems){
 
-            if (Dungeon.isChallenged(Challenges.DARKNESS)) {
-                addItemToSpawn(new Torch());
-            }
+                addItemToSpawn(Generator.random(Generator.Category.FOOD));
 
-            if (Dungeon.posNeeded()) {
-                addItemToSpawn(new PotionOfStrength());
-                Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
-            }
-            if (Dungeon.souNeeded()) {
-                addItemToSpawn(new ScrollOfUpgrade());
-                Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
-            }
-            if (Dungeon.asNeeded()) {
-                addItemToSpawn(new Stylus());
-                Dungeon.LimitedDrops.ARCANE_STYLI.count++;
-            }
-            //one scroll of transmutation is guaranteed to spawn somewhere on chapter 2-4
-            int enchChapter = (int) ((Dungeon.seed / 10) % 3) + 2;
-            if (levelScheme.getRegion() == enchChapter &&
-                    Dungeon.seed % 4 + 1 == levelScheme.getNumInRegion()) {
-                addItemToSpawn(new StoneOfEnchantment());
-            }
+                if (Dungeon.isChallenged(Challenges.DARKNESS)) {
+                    addItemToSpawn(new Torch());
+                }
 
-            if (Dungeon.getSimulatedDepth(levelScheme) == ((Dungeon.seed % 3) + 1)) {
-                addItemToSpawn(new StoneOfIntuition());
+                if (Dungeon.posNeeded()) {
+                    addItemToSpawn(new PotionOfStrength());
+                    Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
+                }
+                if (Dungeon.souNeeded()) {
+                    addItemToSpawn(new ScrollOfUpgrade());
+                    Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
+                }
+                if (Dungeon.asNeeded()) {
+                    addItemToSpawn(new Stylus());
+                    Dungeon.LimitedDrops.ARCANE_STYLI.count++;
+                }
+                //one scroll of transmutation is guaranteed to spawn somewhere on chapter 2-4
+                int enchChapter = (int) ((Dungeon.seed / 10) % 3) + 2;
+                if (levelScheme.getRegion() == enchChapter &&
+                        Dungeon.seed % 4 + 1 == levelScheme.getNumInRegion()) {
+                    addItemToSpawn(new StoneOfEnchantment());
+                }
+
+                if (Dungeon.getSimulatedDepth(levelScheme) == ((Dungeon.seed % 3) + 1)) {
+                    addItemToSpawn(new StoneOfIntuition());
+                }
             }
 
             if (Dungeon.depth > 1 && feeling == null) {
@@ -260,10 +263,10 @@ public abstract class Level implements Bundlable {
 
             if (feeling == Feeling.DARK) {
                 if (!(this instanceof CustomLevel)) {
-                    addItemToSpawn(new Torch());
+                    if(levelScheme.spawnItems) addItemToSpawn(new Torch());
                     viewDistance = Math.round(viewDistance / 2f);
                 }
-            } else if (feeling == Feeling.LARGE) {
+            } else if (feeling == Feeling.LARGE && levelScheme.spawnItems) {
                 if (!(this instanceof CustomLevel)) {
                     addItemToSpawn(Generator.random(Generator.Category.FOOD));
                     //add a second torch to help with the larger floor

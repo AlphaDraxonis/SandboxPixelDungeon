@@ -110,6 +110,7 @@ public class WndNewFloor extends WndTabbed {
                 generated = generator.get(10, TimeUnit.SECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException ex) {
                 generated = null;
+                ex.printStackTrace();
             }
             if (generated == null) {
                 Level curLevel = EditorScene.customLevel();
