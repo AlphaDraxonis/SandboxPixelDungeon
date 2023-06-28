@@ -1,6 +1,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -9,6 +10,7 @@ public /*sealed*/ abstract class ItemActionPart implements ActionPart {
 
     private final Item item;
     private final int cell, quantity;
+    private Heap.Type heapType;
 
     private ItemActionPart(Item item, int pos) {
         this.item = item;
@@ -19,21 +21,30 @@ public /*sealed*/ abstract class ItemActionPart implements ActionPart {
     }
 
     protected void place() {
-        place(item, cell, quantity);
+        place(item, cell, quantity, heapType);
     }
 
     protected void remove() {
-        remove(item, cell, quantity);
+        heapType = remove(item, cell, quantity);
     }
 
-    protected static void place(Item item, int cell, int quantity) {
+    protected static void place(Item item, int cell, int quantity, Heap.Type heapType) {
         item.quantity(quantity);
-        Dungeon.level.drop(item, cell);
+        Heap heap = Dungeon.level.drop(item, cell);
+        if (heapType != null) {
+            heap.type = heapType;
+            EditorScene.updateHeapImage(heap);
+        }
     }
 
-    protected static void remove(Item item, int cell, int quantity) {
+    protected static Heap.Type remove(Item item, int cell, int quantity) {
         Heap heap = Dungeon.level.heaps.get(cell);
-        if (heap != null) heap.remove(item, quantity);
+        if (heap != null) {
+            Heap.Type heapType = heap.type;
+            heap.remove(item, quantity);
+            return heapType;
+        }
+        return null;
     }
 
     @Override
@@ -80,7 +91,7 @@ public /*sealed*/ abstract class ItemActionPart implements ActionPart {
         Heap heap = Dungeon.level.heaps.get(pos);
         if (heap == null) return new PlaceClass(item, pos);
         HeapActionPart.Modify modify = new HeapActionPart.Modify(heap);
-        place(item, pos, item.quantity());
+        place(item, pos, item.quantity(), null);
         modify.finish();
         return modify;
     }
