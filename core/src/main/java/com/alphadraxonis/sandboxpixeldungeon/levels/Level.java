@@ -747,6 +747,8 @@ public abstract class Level implements Bundlable {
     }
 
     public int randomRespawnCell(Char ch, boolean guarantee) {
+        PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(passable, avoid, null));
+
         int cell;
         int count = guarantee ? length() : 300;
         do {
@@ -754,13 +756,14 @@ public abstract class Level implements Bundlable {
                 if (guarantee) {
                     int l = length();
                     for (cell = 0; cell < l; cell++) {
-                        if (((Dungeon.level == this && heroFOV[cell])
-                                || !passable[cell]
-                                || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
-                                || Actor.findChar(cell) != null
-                                || (ch instanceof Piranha && map[cell] != Terrain.WATER)
-                                || getMobAtCell(cell) != null))
-                            return cell;//choose first valid cell
+                        if ((Dungeon.level == this && !heroFOV[cell])
+                                && passable[cell]
+                                && (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])
+                                && Actor.findChar(cell) == null
+                                && (!(ch instanceof Piranha) || map[cell] == Terrain.WATER)
+                                && getMobAtCell(cell) == null
+                                && PathFinder.distance[cell] != Integer.MAX_VALUE)
+                        return cell;//choose first valid cell
                     }
                 }
                 return -1;//if there is no valid cell, return -1
@@ -772,7 +775,8 @@ public abstract class Level implements Bundlable {
                 || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
                 || Actor.findChar(cell) != null
                 || (ch instanceof Piranha && map[cell] != Terrain.WATER)
-                || getMobAtCell(cell) != null);
+                || getMobAtCell(cell) != null
+                || PathFinder.distance[cell] == Integer.MAX_VALUE);
 
         return cell;
     }
