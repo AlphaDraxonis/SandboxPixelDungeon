@@ -30,6 +30,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Ooze;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.FetidRatSprite;
+import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -92,7 +93,8 @@ public class FetidRat extends Rat {
         super.die(cause);
 
         Actor c = Actor.findById(quest);
-        if (c != null) ((Ghost) c).quest.process();
+        if (c instanceof Ghost) ((Ghost) c).quest.process();
+        else if (quest != 0) GLog.n("Rare error occurred so that the ghost couldn't be found.");
     }
 
     {

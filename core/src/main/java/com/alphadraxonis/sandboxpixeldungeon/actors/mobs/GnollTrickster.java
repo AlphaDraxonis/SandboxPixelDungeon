@@ -36,6 +36,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.MissileWeapon
 import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.GnollTricksterSprite;
+import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -133,7 +134,8 @@ public class GnollTrickster extends Gnoll {
 		super.die( cause );
 
 		Actor c = Actor.findById(quest);
-		if (c != null) ((Ghost) c).quest.process();
+		if (c instanceof Ghost) ((Ghost) c).quest.process();
+		else if (quest != 0) GLog.n("Rare error occurred so that the ghost couldn't be found.");
 	}
 
 	private static final String COMBO = "combo";
