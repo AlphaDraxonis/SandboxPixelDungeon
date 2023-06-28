@@ -215,6 +215,7 @@ public class CustomLevel extends Level {
             Collections.sort(levelScheme.exitCells);
 
             this.feeling = level.feeling;
+            levelScheme.setFeeling(this.feeling);
             mobs = level.mobs;
             heaps = level.heaps;
             viewDistance = level.viewDistance;
@@ -257,6 +258,7 @@ public class CustomLevel extends Level {
             increaseMapSize(this, 85, 85);
         } else {
             this.feeling = feeling;
+            levelScheme.setFeeling(this.feeling);
         }
 
     }
