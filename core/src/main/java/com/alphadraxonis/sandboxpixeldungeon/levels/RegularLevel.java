@@ -74,6 +74,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.traps.WornDartTrap;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -96,17 +97,19 @@ public abstract class RegularLevel extends Level {
 
 		ArrayList<Room> initRooms = initRooms();
 
-		boolean canUseFigureEight = false;
-		for (Room r : initRooms) {
-			if (r.maxConnections(Room.ALL) >= 4 && !(r instanceof EntranceRoom) && !(r instanceof ExitRoom)) {
-				canUseFigureEight = true;
-				break;
+		if (levelScheme.builder == null) {
+			boolean canUseFigureEight = false;
+			for (Room r : initRooms) {
+				if (r.maxConnections(Room.ALL) >= 4 && !(r instanceof EntranceRoom) && !(r instanceof ExitRoom)) {
+					canUseFigureEight = true;
+					break;
+				}
 			}
-		}
 
-		do {
-			builder = builder();
-		} while (!canUseFigureEight && builder instanceof FigureEightBuilder);
+			do {
+				builder = builder();
+			} while (!canUseFigureEight && builder instanceof FigureEightBuilder);
+		} else builder = Reflection.newInstance(levelScheme.builder);
 
 		Random.shuffle(initRooms);
 

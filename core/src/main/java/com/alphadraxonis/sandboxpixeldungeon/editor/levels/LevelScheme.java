@@ -27,6 +27,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.SewerBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.SewerLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
+import com.alphadraxonis.sandboxpixeldungeon.levels.builders.Builder;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.ShopRoom;
@@ -74,6 +75,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public boolean spawnStandartRooms = true, spawnSecretRooms = true, spawnSpecialRooms = true;
     public boolean spawnMobs = true, spawnItems = true;
+
+    public Class<? extends Builder> builder;
 
 
     public LevelScheme() {
@@ -500,6 +503,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     private static final String SPAWN_SPECIAL_ROOMS = "spawn_special_rooms";
     private static final String SPAWN_MOBS = "spawn_mobs";
     private static final String SPAWN_ITEMS = "spawn_items";
+    private static final String BUILDER = "builder";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -540,6 +544,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         bundle.put(SPAWN_SECRET_ROOMS, spawnSecretRooms);
         bundle.put(SPAWN_MOBS, spawnMobs);
         bundle.put(SPAWN_ITEMS, spawnItems);
+        if (builder != null) bundle.put(BUILDER, builder);
     }
 
     @Override
@@ -587,6 +592,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         spawnSpecialRooms = bundle.getBoolean(SPAWN_SPECIAL_ROOMS);
         spawnMobs = bundle.getBoolean(SPAWN_MOBS);
         spawnItems = bundle.getBoolean(SPAWN_ITEMS);
+        builder = bundle.getClass(BUILDER);
     }
 
     public Level loadLevel() {
