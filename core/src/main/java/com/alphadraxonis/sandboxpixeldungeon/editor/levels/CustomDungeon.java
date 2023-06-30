@@ -252,7 +252,12 @@ public class CustomDungeon implements Bundlable {
         LevelScheme level;
         if (!maybeGhostSpawnLevels.isEmpty()) {
             level = floors.get(maybeGhostSpawnLevels.get(Random.Int(maybeGhostSpawnLevels.size())));
-            level.mobsToSpawn.add(new Ghost(new GhostQuest()));
+            GhostQuest quest = new GhostQuest();
+            int depth = Dungeon.getSimulatedDepth(level);
+            if (depth <= 2) quest.setType(GhostQuest.RAT);
+            else if (depth == 3) quest.setType(GhostQuest.GNOLL);
+            else quest.setType(GhostQuest.CRAB);
+            level.mobsToSpawn.add(new Ghost(quest));
         }
 
         if (!maybeWandmakerSpawnLevels.isEmpty()) {

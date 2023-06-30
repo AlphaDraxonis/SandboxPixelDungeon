@@ -5,7 +5,6 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
-import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
@@ -277,10 +276,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     }
 
     public int getGhostQuest() {
-        int depth = Dungeon.getSimulatedDepth(this);
-        if (depth <= 2) return GhostQuest.RAT;
-        if (depth == 3) return GhostQuest.GNOLL;
-        return GhostQuest.CRAB;
+        return Random.Int(3);
     }
 
     public int getWandmakerQuest() {
