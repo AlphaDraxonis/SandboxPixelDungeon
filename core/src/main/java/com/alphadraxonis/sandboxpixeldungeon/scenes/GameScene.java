@@ -63,6 +63,7 @@ import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Journal;
 import com.alphadraxonis.sandboxpixeldungeon.levels.LastLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
+import com.alphadraxonis.sandboxpixeldungeon.levels.MiningLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
@@ -438,6 +439,8 @@ public class GameScene extends PixelScene {
                         Document.INTROS.readPage(region);
                     }
                 }
+                if (Dungeon.level instanceof MiningLevel){
+                    add(new WndStory(Messages.get(this, "blacksmith_quest_window_title") + ":\n\n" + Messages.get(this, "blacksmith_quest_window")).setDelays(0.4f, 0.4f));                }
                 if (Dungeon.hero.isAlive()) {
                     Badges.validateNoKilling();
                 }

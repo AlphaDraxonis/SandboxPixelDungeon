@@ -250,9 +250,6 @@ public class InterlevelScene extends PixelScene {
 
                     try {
 
-                        if (Dungeon.hero != null) {
-                            Dungeon.hero.spendToWhole();
-                        }
                         Actor.fixTime();
 
                         switch (mode) {
@@ -285,9 +282,11 @@ public class InterlevelScene extends PixelScene {
 
                     }
 
-                    if (phase == Phase.STATIC && error == null) {
-                        phase = Phase.FADE_OUT;
-                        timeLeft = fadeTime;
+                    synchronized (thread) {
+                        if (phase == Phase.STATIC && error == null) {
+                            phase = Phase.FADE_OUT;
+                            timeLeft = fadeTime;
+                        }
                     }
                 }
             };
@@ -309,11 +308,13 @@ public class InterlevelScene extends PixelScene {
             case FADE_IN:
                 message.alpha(1 - p);
                 if ((timeLeft -= Game.elapsed) <= 0) {
-                    if (!thread.isAlive() && error == null) {
-                        phase = Phase.FADE_OUT;
-                        timeLeft = fadeTime;
-                    } else {
-                        phase = Phase.STATIC;
+                    synchronized (thread) {
+                        if (!thread.isAlive() && error == null) {
+                            phase = Phase.FADE_OUT;
+                            timeLeft = fadeTime;
+                        } else {
+                            phase = Phase.STATIC;
+                        }
                     }
                 }
                 break;
@@ -391,6 +392,7 @@ public class InterlevelScene extends PixelScene {
         Level level;
         Dungeon.depth = Dungeon.customDungeon.getFloor(curTransition.destLevel).getDepth();
         Dungeon.levelName = curTransition.destLevel;
+//        Dungeon.branch = curTransition.destBranch;
         if (Arrays.asList(Dungeon.visited).contains(Dungeon.levelName)) {
             level = Dungeon.loadLevel(GamesInProgress.curSlot);
         } else {

@@ -30,9 +30,9 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.EarthParticle;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
-import com.watabou.noosa.Camera;
 import com.watabou.utils.Bundle;
 
 public class Earthroot extends Plant {
@@ -47,7 +47,7 @@ public class Earthroot extends Plant {
 
 		if (ch != null){
 			if (ch instanceof Hero && ((Hero) ch).subClass == HeroSubClass.WARDEN) {
-				Buff.affect(ch, Barkskin.class).set(Dungeon.hero.lvl + 5, 5);
+				Barkskin.conditionallyAppend(Dungeon.hero, Dungeon.hero.lvl + 5, 5);
 			} else {
 				Buff.affect(ch, Armor.class).level(ch.HT);
 			}
@@ -55,7 +55,7 @@ public class Earthroot extends Plant {
 		
 		if (Dungeon.level.heroFOV[pos]) {
 			CellEmitter.bottom( pos ).start( EarthParticle.FACTORY, 0.05f, 8 );
-			Camera.main.shake( 1, 0.4f );
+			PixelScene.shake( 1, 0.4f );
 		}
 	}
 	

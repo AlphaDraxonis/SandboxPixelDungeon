@@ -27,7 +27,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
-import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LockedFloor;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Regeneration;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
@@ -303,8 +303,7 @@ abstract public class ClassArmor extends Armor {
 
         @Override
         public boolean act() {
-            LockedFloor lock = target.buff(LockedFloor.class);
-            if (lock == null || lock.regenOn()) {
+            if (Regeneration.regenOn()) {
                 float chargeGain = 100 / 500f; //500 turns to full charge
                 chargeGain *= RingOfEnergy.armorChargeMultiplier(target);
                 charge += chargeGain;

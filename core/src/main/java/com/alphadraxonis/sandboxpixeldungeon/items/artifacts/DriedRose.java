@@ -32,8 +32,8 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AllyBuff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Burning;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Invisibility;
-import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LockedFloor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.MagicImmune;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Regeneration;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Belongings;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
@@ -397,8 +397,7 @@ public class DriedRose extends Artifact {
 			if (ghost != null && !cursed && target.buff(MagicImmune.class) == null){
 				
 				//heals to full over 500 turns
-				LockedFloor lock = target.buff(LockedFloor.class);
-				if (ghost.HP < ghost.HT && (lock == null || lock.regenOn())) {
+				if (ghost.HP < ghost.HT && Regeneration.regenOn()) {
 					partialCharge += (ghost.HT / 500f) * RingOfEnergy.artifactChargeMultiplier(target);
 					updateQuickslot();
 					
@@ -412,12 +411,11 @@ public class DriedRose extends Artifact {
 				
 				return true;
 			}
-			
-			LockedFloor lock = target.buff(LockedFloor.class);
+
 			if (charge < chargeCap
 					&& !cursed
 					&& target.buff(MagicImmune.class) == null
-					&& (lock == null || lock.regenOn())) {
+					&& Regeneration.regenOn()) {
 				//500 turns to a full charge
 				partialCharge += (1/5f * RingOfEnergy.artifactChargeMultiplier(target));
 				if (partialCharge > 1){

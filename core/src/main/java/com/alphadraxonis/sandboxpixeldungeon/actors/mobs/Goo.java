@@ -38,11 +38,11 @@ import com.alphadraxonis.sandboxpixeldungeon.items.quest.GooBlob;
 import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.GooSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BossHealthBar;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
@@ -160,7 +160,7 @@ public class Goo extends Mob {
 		}
 
 		if (pumpedUp > 0) {
-			Camera.main.shake( 3, 0.2f );
+			PixelScene.shake( 3, 0.2f );
 		}
 
 		return damage;

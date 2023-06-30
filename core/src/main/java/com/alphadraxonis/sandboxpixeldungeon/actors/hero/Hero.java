@@ -109,6 +109,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfExperience;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfHealing;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.elixirs.ElixirOfMight;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
+import com.alphadraxonis.sandboxpixeldungeon.items.quest.DarkGold;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.RingOfAccuracy;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.RingOfEvasion;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.RingOfForce;
@@ -143,6 +144,7 @@ import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.AlchemyScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.InterlevelScene;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.SurfaceScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.HeroSprite;
@@ -158,7 +160,6 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndMessage;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndOptions;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndResurrect;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTradeItem;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -833,7 +834,7 @@ public class Hero extends Char {
         }
 
         if (hasTalent(Talent.BARKSKIN) && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS) {
-            Buff.affect(this, Barkskin.class).set((lvl * pointsInTalent(Talent.BARKSKIN)) / 2, 1);
+            Barkskin.conditionallyAppend(this, (lvl*pointsInTalent(Talent.BARKSKIN))/2, 1 );
         }
 
         return actResult;
@@ -1058,6 +1059,7 @@ public class Hero extends Char {
     private boolean actOpenChest(HeroAction.OpenChest action) {
         int dst = action.dst;
         if (Dungeon.level.adjacent(pos, dst) || pos == dst) {
+            path = null;
 
             Heap heap = Dungeon.level.heaps.get(dst);
             if (heap != null && (heap.type != Type.HEAP && heap.type != Type.FOR_SALE)) {
@@ -1074,7 +1076,7 @@ public class Hero extends Char {
                 switch (heap.type) {
                     case TOMB:
                         Sample.INSTANCE.play(Assets.Sounds.TOMB);
-                        Camera.main.shake(1, 0.5f);
+                        PixelScene.shake(1, 0.5f);
                         break;
                     case SKELETON:
                     case REMAINS:
@@ -1148,12 +1150,65 @@ public class Hero extends Char {
         }
     }
 
+
+    public boolean actMine(HeroAction.Mine action){
+        if (Dungeon.level.adjacent(pos, action.dst)){
+            path = null;
+            if ((Dungeon.level.map[action.dst] == Terrain.WALL || Dungeon.level.map[action.dst] == Terrain.WALL_DECO)
+                    && Dungeon.level.insideMap(action.dst)){
+                sprite.attack(action.dst, new Callback() {
+                    @Override
+                    public void call() {
+
+                        if (Dungeon.level.map[action.dst] == Terrain.WALL_DECO){
+                            DarkGold gold = new DarkGold();
+                            if (gold.doPickUp( Dungeon.hero )) {
+                                GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", gold.name())) );
+                            } else {
+                                Dungeon.level.drop( gold, pos ).sprite.drop();
+                            }
+                            CellEmitter.center( action.dst ).burst( Speck.factory( Speck.STAR ), 7 );
+                            Sample.INSTANCE.play( Assets.Sounds.EVOKE );
+                        } else {
+                            CellEmitter.get( action.dst ).burst( Speck.factory( Speck.ROCK ), 2 );
+                            Sample.INSTANCE.play( Assets.Sounds.MINE );
+                        }
+
+                        PixelScene.shake(0.5f, 0.5f);
+
+                        Level.set( action.dst, Terrain.EMPTY_DECO );
+                        for (int i : PathFinder.NEIGHBOURS9) {
+                            Dungeon.level.discoverable[action.dst + i] = true;
+                        }
+                        for (int i : PathFinder.NEIGHBOURS9) {
+                            GameScene.updateMap( action.dst+i );
+                        }
+
+                        Dungeon.observe();
+
+                        spendAndNext(TICK);
+                    }
+                });
+            } else {
+                ready();
+            }
+            return false;
+        } else if (getCloser( action.dst )) {
+
+            return true;
+
+        } else {
+            ready();
+            return false;
+        }
+    }
+
     private boolean actTransition(HeroAction.LvlTransition action) {
         int stairs = action.dst;
         LevelTransition transition = Dungeon.level.getTransition(stairs);
 
         if (rooted) {
-            Camera.main.shake(1, 1f);
+            PixelScene.shake(1, 1f);
             ready();
             return false;
         } else if (!Dungeon.level.locked && transition != null && transition.inside(pos)) {
@@ -1206,7 +1261,8 @@ public class Hero extends Char {
                 Level.beforeTransition();
                 InterlevelScene.curTransition = transition;
                 //TODO probably want to make this more flexible when more types exist
-                if (transition.type == LevelTransition.Type.REGULAR_EXIT) {
+                if (transition.type == LevelTransition.Type.REGULAR_EXIT
+                    || transition.type == LevelTransition.Type.BRANCH_EXIT) {
                     InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
                 } else {
                     InterlevelScene.mode = InterlevelScene.Mode.ASCEND;
@@ -1500,7 +1556,7 @@ public class Hero extends Char {
             return false;
 
         if (rooted) {
-            Camera.main.shake(1, 1f);
+            PixelScene.shake(1, 1f);
             return false;
         }
 

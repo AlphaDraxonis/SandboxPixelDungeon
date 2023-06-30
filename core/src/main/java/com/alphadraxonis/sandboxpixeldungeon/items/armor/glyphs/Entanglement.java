@@ -28,9 +28,9 @@ import com.alphadraxonis.sandboxpixeldungeon.effects.particles.EarthParticle;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor.Glyph;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Earthroot;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite.Glowing;
-import com.watabou.noosa.Camera;
 import com.watabou.utils.Random;
 
 public class Entanglement extends Glyph {
@@ -49,7 +49,7 @@ public class Entanglement extends Glyph {
 
 			Buff.affect( defender, Earthroot.Armor.class ).level( Math.round((5 + 2 * level)*powerMulti) );
 			CellEmitter.bottom( defender.pos ).start( EarthParticle.FACTORY, 0.05f, 8 );
-			Camera.main.shake( 1, 0.4f );
+			PixelScene.shake( 1, 0.4f );
 			
 		}
 

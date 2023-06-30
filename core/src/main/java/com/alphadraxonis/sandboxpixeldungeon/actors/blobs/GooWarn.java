@@ -25,12 +25,14 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.blobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.effects.BlobEmitter;
+import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.GooSprite;
 
 public class GooWarn extends Blob {
 
-	//cosmetic blob, used to warn noobs that goo's pump up should, infact, be avoided.
+	//cosmetic blob, previously used for Goo's pump up attack (that's now handled by Goo's sprite)
+	// but is still used as a visual indicator for Arcane bombs
 
 	{
 		//this one needs to act just before the Goo
@@ -55,6 +57,20 @@ public class GooWarn extends Blob {
 			}
 		}
 
+	}
+
+	//to prevent multiple arcane bombs from visually stacking their effects
+	public void seed(Level level, int cell, int amount ) {
+		if (cur == null) cur = new int[level.length()];
+		if (off == null) off = new int[cur.length];
+
+		int toAdd = amount - cur[cell];
+		if (toAdd > 0){
+			cur[cell] += toAdd;
+			volume += toAdd;
+		}
+
+		area.union(cell%level.width(), cell/level.width());
 	}
 
 	@Override

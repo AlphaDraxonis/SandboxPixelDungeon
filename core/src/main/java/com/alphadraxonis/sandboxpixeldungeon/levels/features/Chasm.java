@@ -40,11 +40,11 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.InterlevelScene;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.MobSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndOptions;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
@@ -177,7 +177,7 @@ public class Chasm implements Hero.Doom {
             return;
         }
 
-        Camera.main.shake(4, 1f);
+        PixelScene.shake(4, 1f);
 
         Dungeon.level.occupyCell(hero);
         Buff.prolong(hero, Cripple.class, Cripple.DURATION);

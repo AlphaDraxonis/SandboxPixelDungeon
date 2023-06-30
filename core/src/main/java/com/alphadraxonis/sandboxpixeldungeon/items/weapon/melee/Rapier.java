@@ -30,6 +30,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.Door;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.ui.AttackIndicator;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
@@ -89,6 +90,7 @@ public class Rapier extends MeleeWeapon {
 		if (hero.rooted || Dungeon.level.distance(hero.pos, target) < 2
 				|| Dungeon.level.distance(hero.pos, target)-1 > wep.reachFactor(hero)){
 			GLog.w(Messages.get(wep, "ability_bad_position"));
+			if (hero.rooted) PixelScene.shake( 1, 1f );
 			return;
 		}
 
@@ -119,6 +121,7 @@ public class Rapier extends MeleeWeapon {
 				}
 				hero.pos = dest;
 				Dungeon.level.occupyCell(hero);
+				Dungeon.observe();
 
 				if (enemy != null && hero.canAttack(enemy)) {
 					hero.sprite.attack(enemy.pos, new Callback() {

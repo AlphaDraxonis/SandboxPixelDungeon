@@ -24,7 +24,6 @@ package com.alphadraxonis.sandboxpixeldungeon.items.food;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Barkskin;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Hunger;
-import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Invisibility;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfHealing;
@@ -50,7 +49,7 @@ public class PhantomMeat extends Food {
 	public static void effect(Hero hero){
 
 		Buff.affect( hero, Barkskin.class ).set( hero.HT / 4, 1 );
-		Buff.affect( hero, Invisibility.class, Invisibility.DURATION );
+		Barkskin.conditionallyAppend( hero, hero.HT / 4, 1 );
 		if (hero.HP < hero.HT) {
 			hero.HP = Math.min( hero.HP + hero.HT / 4, hero.HT );
 		}

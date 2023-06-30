@@ -403,6 +403,11 @@ public class PixelScene extends Scene {
         });
     }
 
+    public static void shake( float magnitude, float duration){
+        magnitude *= SPDSettings.screenShake();
+        Camera.main.shake(magnitude, duration);
+    }
+
     protected static class Fader extends ColorBlock {
 
         private static float FADE_TIME = 1f;

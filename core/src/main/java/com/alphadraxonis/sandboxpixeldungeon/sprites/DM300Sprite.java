@@ -27,7 +27,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DM300;
 import com.alphadraxonis.sandboxpixeldungeon.effects.MagicMissile;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.BlastParticle;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.SparkParticle;
-import com.watabou.noosa.Camera;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
@@ -107,7 +107,7 @@ public class DM300Sprite extends MobSprite {
 		turnTo( ch.pos , cell );
 		play( slam );
 		Sample.INSTANCE.play( Assets.Sounds.ROCKS );
-		Camera.main.shake( 3, 0.7f );
+		PixelScene.shake( 3, 0.7f );
 	}
 
 	@Override

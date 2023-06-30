@@ -25,6 +25,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.RingOfEnergy;
+import com.alphadraxonis.sandboxpixeldungeon.levels.MiningLevel;
 
 public class Regeneration extends Buff {
 	
@@ -41,8 +42,7 @@ public class Regeneration extends Buff {
 		if (target.isAlive()) {
 
 			if (target.HP < regencap() && !((Hero)target).isStarving()) {
-				LockedFloor lock = target.buff(LockedFloor.class);
-				if (lock == null || lock.regenOn()) {
+				if (regenOn()) {
 					target.HP += 1;
 					if (target.HP == regencap()) {
 						((Hero) target).resting = false;
@@ -75,5 +75,16 @@ public class Regeneration extends Buff {
 	
 	public int regencap(){
 		return target.HT;
+	}
+
+	public static boolean regenOn(){
+		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+		if (lock != null && !lock.regenOn()){
+			return false;
+		}
+		if (Dungeon.level instanceof MiningLevel){
+			return false; //this is mainly for the current test sub-level
+		}
+		return true;
 	}
 }

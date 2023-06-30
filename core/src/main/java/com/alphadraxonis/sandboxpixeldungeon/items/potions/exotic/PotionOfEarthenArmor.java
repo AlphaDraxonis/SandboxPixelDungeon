@@ -22,7 +22,6 @@
 package com.alphadraxonis.sandboxpixeldungeon.items.potions.exotic;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Barkskin;
-import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 
@@ -35,8 +34,8 @@ public class PotionOfEarthenArmor extends ExoticPotion {
 	@Override
 	public void apply( Hero hero ) {
 		identify();
-		
-		Buff.affect(hero, Barkskin.class).set( 2 + hero.lvl/3, 50 );
+
+		Barkskin.conditionallyAppend( hero, 2 + hero.lvl/3, 50 );
 	}
 	
 }

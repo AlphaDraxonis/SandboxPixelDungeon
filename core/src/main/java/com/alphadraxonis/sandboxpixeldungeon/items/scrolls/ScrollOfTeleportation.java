@@ -25,6 +25,8 @@ import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Roots;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
@@ -77,6 +79,7 @@ public class ScrollOfTeleportation extends Scroll {
 		
 		appear( ch, pos );
 		Dungeon.level.occupyCell( ch );
+		Buff.detach(ch, Roots.class);
 		if (ch == Dungeon.hero) {
 			Dungeon.observe();
 			GameScene.updateFog();
@@ -118,6 +121,7 @@ public class ScrollOfTeleportation extends Scroll {
 			
 			appear( ch, pos );
 			Dungeon.level.occupyCell( ch );
+			Buff.detach(ch, Roots.class);
 			
 			if (ch == Dungeon.hero) {
 				GLog.i( Messages.get(ScrollOfTeleportation.class, "tele") );
@@ -188,7 +192,8 @@ public class ScrollOfTeleportation extends Scroll {
 			}
 			GLog.i( Messages.get(ScrollOfTeleportation.class, "tele") );
 			appear( hero, pos );
-			Dungeon.level.occupyCell(hero );
+			Dungeon.level.occupyCell(hero);
+			Buff.detach(hero, Roots.class);
 			if (secretDoor && level.map[doorPos] == Terrain.SECRET_DOOR){
 				Sample.INSTANCE.play( Assets.Sounds.SECRET );
 				int oldValue = Dungeon.level.map[doorPos];
@@ -253,6 +258,8 @@ public class ScrollOfTeleportation extends Scroll {
 
 		appear( ch, pos );
 		Dungeon.level.occupyCell( ch );
+
+		Buff.detach(ch, Roots.class);
 
 		if (ch == Dungeon.hero) {
 			GLog.i( Messages.get(ScrollOfTeleportation.class, "tele") );

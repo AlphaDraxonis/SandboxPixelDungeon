@@ -22,10 +22,13 @@
 package com.alphadraxonis.sandboxpixeldungeon.levels;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
+import com.alphadraxonis.sandboxpixeldungeon.Bones;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 
 public class DeadEndLevel extends Level {
@@ -67,8 +70,15 @@ public class DeadEndLevel extends Level {
 		}
 		
 		int entrance = SIZE * width() + SIZE / 2 + 1;
-		LevelTransition t = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
-		if (Dungeon.customDungeon.getFloor(t.destLevel) != null) transitions.put(entrance, t);
+		//TODO Fix branch!
+		//different exit behaviour depending on main branch or side one
+//		if (Dungeon.branch == 0) {
+			LevelTransition t = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
+			if (Dungeon.customDungeon.getFloor(t.destLevel) != null) transitions.put(entrance, t);
+//		} else {
+//			LevelTransition t = new LevelTransition(this, entrance, LevelTransition.Type.BRANCH_ENTRANCE, Dungeon.depth, 0, LevelTransition.Type.BRANCH_EXIT);
+//			if (Dungeon.customDungeon.getFloor(t.destLevel) != null) transitions.put(entrance, t);
+//		}
 		map[entrance] = Terrain.ENTRANCE;
 		
 		return true;
@@ -89,6 +99,10 @@ public class DeadEndLevel extends Level {
 
 	@Override
 	protected void createItems() {
+		Item item = Bones.get();
+		if (item != null) {
+			drop( item, entrance()-width() ).setHauntedIfCursed().type = Heap.Type.REMAINS;
+		}
 	}
 	
 	@Override

@@ -199,7 +199,7 @@ public abstract class Level implements Bundlable {
 
         Random.pushGenerator(Dungeon.seedForLevel(name));
 
-        if (!(Dungeon.bossLevel())) {
+        if (!(Dungeon.bossLevel())) {//TODO Fix branch!
 
             if(levelScheme.spawnItems){
 
@@ -548,6 +548,9 @@ public abstract class Level implements Bundlable {
 
     //
     public LevelTransition getTransition(LevelTransition.Type type) {
+        if (transitions.isEmpty()){
+            return null;
+        }
         for (LevelTransition transition : transitions.values()) {
 //            if (!destination.equals(transition.destLevel)) continue;
             //if we don't specify a type, prefer to return any entrance
@@ -585,6 +588,15 @@ public abstract class Level implements Bundlable {
         //iron stomach does not persist through chasm falling
         Talent.WarriorFoodImmunity foodImmune = Dungeon.hero.buff(Talent.WarriorFoodImmunity.class);
         if (foodImmune != null) foodImmune.detach();
+
+        //spend the hero's partial turns,  so the hero cannot take partial turns between floors
+        Dungeon.hero.spendToWhole();
+        for (Char ch : Actor.chars()){
+            //also adjust any mobs that are now ahead of the hero due to this
+            if (ch.cooldown() < Dungeon.hero.cooldown()){
+                ch.spendToWhole();
+            }
+        }
     }
 
     public void seal() {

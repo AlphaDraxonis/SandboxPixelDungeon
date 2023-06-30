@@ -28,6 +28,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.items.journal.Guidebook;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
+import com.alphadraxonis.sandboxpixeldungeon.levels.MiningLevel;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
@@ -67,7 +68,9 @@ public class Hunger extends Buff implements Hero.Doom {
 		if (Dungeon.level.locked
 				|| target.buff(WellFed.class) != null
 				|| SPDSettings.intro()
-				|| target.buff(ScrollOfChallenge.ChallengeArena.class) != null){
+				|| target.buff(ScrollOfChallenge.ChallengeArena.class) != null
+				//this is mainly for the current test sub-level
+				|| Dungeon.level instanceof MiningLevel){
 			spend(STEP);
 			return true;
 		}

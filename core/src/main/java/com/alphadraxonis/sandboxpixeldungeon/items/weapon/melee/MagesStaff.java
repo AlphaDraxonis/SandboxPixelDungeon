@@ -120,7 +120,11 @@ public class MagesStaff extends MeleeWeapon {
 
     @Override
     public int targetingPos(Hero user, int dst) {
-        return wand.targetingPos(user, dst);
+        if (wand != null) {
+            return wand.targetingPos(user, dst);
+        } else {
+            return super.targetingPos(user, dst);
+        }
     }
 
     @Override

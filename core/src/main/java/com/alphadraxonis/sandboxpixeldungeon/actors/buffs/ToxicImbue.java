@@ -21,6 +21,7 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.actors.buffs;
 
+import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.ToxicGas;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -100,5 +101,15 @@ public class ToxicImbue extends Buff {
 	{
 		immunities.add( ToxicGas.class );
 		immunities.add( Poison.class );
+	}
+
+	@Override
+	public boolean attachTo(Char target) {
+		if (super.attachTo(target)){
+			Buff.detach(target, Poison.class);
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

@@ -36,8 +36,8 @@ import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfBlastWave;
 import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.HeroIcon;
-import com.watabou.noosa.Camera;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -66,6 +66,11 @@ public class HeroicLeap extends ArmorAbility {
 	@Override
 	public void activate( ClassArmor armor, Hero hero, Integer target ) {
 		if (target != null) {
+
+			if (hero.rooted){
+				PixelScene.shake( 1, 1f );
+				return;
+			}
 
 			Ballistica route = new Ballistica(hero.pos, target, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID);
 			int cell = route.collisionPos;
@@ -110,7 +115,7 @@ public class HeroicLeap extends ArmorAbility {
 					}
 
 					WandOfBlastWave.BlastWave.blast(dest);
-					Camera.main.shake(2, 0.5f);
+					PixelScene.shake(2, 0.5f);
 
 					Invisibility.dispel();
 					hero.spendAndNext(Actor.TICK);

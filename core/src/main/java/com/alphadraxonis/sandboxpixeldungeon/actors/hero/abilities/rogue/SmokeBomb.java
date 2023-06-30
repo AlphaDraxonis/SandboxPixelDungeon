@@ -47,6 +47,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.armor.ClassArmor;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.MobSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.HeroIcon;
 import com.alphadraxonis.sandboxpixeldungeon.utils.BArray;
@@ -86,11 +87,16 @@ public class SmokeBomb extends ArmorAbility {
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
 
+			if (target != hero.pos && hero.rooted){
+				PixelScene.shake( 1, 1f );
+				return;
+			}
+
 			PathFinder.buildDistanceMap(hero.pos, BArray.not(Dungeon.level.solid,null), 6);
 
 			if ( PathFinder.distance[target] == Integer.MAX_VALUE ||
 					!Dungeon.level.heroFOV[target] ||
-					Actor.findChar( target ) != null) {
+					(target != hero.pos && Actor.findChar( target ) != null)) {
 
 				GLog.w( Messages.get(this, "fov") );
 				return;

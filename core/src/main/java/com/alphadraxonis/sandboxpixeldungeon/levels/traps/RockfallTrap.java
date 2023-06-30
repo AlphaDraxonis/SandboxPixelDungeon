@@ -32,9 +32,9 @@ import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.utils.BArray;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
@@ -108,7 +108,7 @@ public class RockfallTrap extends Trap {
 		}
 		
 		if (seen){
-			Camera.main.shake(3, 0.7f);
+			PixelScene.shake(3, 0.7f);
 			Sample.INSTANCE.play(Assets.Sounds.ROCKS);
 		}
 

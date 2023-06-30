@@ -45,12 +45,12 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.painters.CavesPainter;
 import com.alphadraxonis.sandboxpixeldungeon.levels.painters.Painter;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.PylonSprite;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
@@ -288,7 +288,7 @@ public class CavesBossLevel extends Level {
 		Dungeon.observe();
 
 		CellEmitter.get( entrance ).start( Speck.factory( Speck.ROCK ), 0.07f, 10 );
-		Camera.main.shake( 3, 0.7f );
+		PixelScene.shake( 3, 0.7f );
 		Sample.INSTANCE.play( Assets.Sounds.ROCKS );
 
 		DM300 boss = new DM300();

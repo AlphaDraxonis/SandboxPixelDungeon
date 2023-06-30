@@ -24,6 +24,8 @@ package com.alphadraxonis.sandboxpixeldungeon.items;
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Badges;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Preparation;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
@@ -97,6 +99,10 @@ public class TengusMask extends Item {
 		
 		curUser.subClass = way;
 		Talent.initSubclassTalents(curUser);
+
+		if (way == HeroSubClass.ASSASSIN && curUser.invisible > 0){
+			Buff.affect(curUser, Preparation.class);
+		}
 		
 		curUser.sprite.operate( curUser.pos );
 		Sample.INSTANCE.play( Assets.Sounds.MASTERY );

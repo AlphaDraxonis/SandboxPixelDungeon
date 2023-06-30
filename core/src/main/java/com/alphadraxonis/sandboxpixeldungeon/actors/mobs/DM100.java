@@ -30,10 +30,10 @@ import com.alphadraxonis.sandboxpixeldungeon.effects.particles.SparkParticle;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.DM100Sprite;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
@@ -105,8 +105,8 @@ public class DM100 extends Mob implements Callback {
 				}
 				
 				if (enemy == Dungeon.hero) {
-					
-					Camera.main.shake( 2, 0.3f );
+
+					PixelScene.shake( 2, 0.3f );
 					
 					if (!enemy.isAlive()) {
 						Badges.validateDeathFromEnemyMagic();

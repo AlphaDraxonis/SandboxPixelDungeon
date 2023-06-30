@@ -35,15 +35,15 @@ public class RaisedTerrainTilemap extends DungeonTilemap {
 	protected int getTileVisual(int pos, int tile, boolean flat) {
 		
 		if (flat) return -1;
-		
+
 		if (tile == Terrain.HIGH_GRASS){
 			return DungeonTileSheet.getVisualWithAlts(
-					DungeonTileSheet.RAISED_HIGH_GRASS,
-					pos) + 2;
+					DungeonTileSheet.RAISED_HIGH_GRASS_OVER,
+					pos);
 		} else if (tile == Terrain.FURROWED_GRASS){
 			return DungeonTileSheet.getVisualWithAlts(
-					DungeonTileSheet.RAISED_FURROWED_GRASS,
-					pos) + 2;
+					DungeonTileSheet.RAISED_FURROWED_GRASS_OVER,
+					pos);
 		}
 		
 		

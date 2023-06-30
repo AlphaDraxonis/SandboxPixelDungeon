@@ -28,9 +28,9 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.ArtifactRecharge;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Barrier;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Haste;
-import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LockedFloor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.MonkEnergy;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Recharging;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Regeneration;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
@@ -460,9 +460,8 @@ public class MeleeWeapon extends Weapon {
 
         @Override
         public boolean act() {
-            LockedFloor lock = target.buff(LockedFloor.class);
             if (charges < chargeCap()) {
-                if (lock == null || lock.regenOn()) {
+                if (Regeneration.regenOn()) {
                     partialCharge += 1 / (40f - (chargeCap() - charges)); // 40 to 30 turns per charge
                 }
 
@@ -483,7 +482,7 @@ public class MeleeWeapon extends Weapon {
 
             if (Dungeon.hero.subClass == HeroSubClass.CHAMPION
                     && secondCharges < secondChargeCap()) {
-                if (lock == null || lock.regenOn()) {
+                if (Regeneration.regenOn()) {
                     // 80 to 60 turns per charge without talent
                     // up to 53.333 to 40 turns per charge at max talent level
                     secondPartialCharge += secondChargeMultiplier() / (40f - (secondChargeCap() - secondCharges));

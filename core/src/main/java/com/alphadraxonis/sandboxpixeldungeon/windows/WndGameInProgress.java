@@ -124,7 +124,7 @@ public class WndGameInProgress extends Window {
 				
 				Dungeon.hero = null;
 				Dungeon.daily = Dungeon.dailyReplay = false;
-				ActionIndicator.action = null;
+				ActionIndicator.clearAction();
 				InterlevelScene.mode = InterlevelScene.Mode.CONTINUE;
 				SandboxPixelDungeon.switchScene(InterlevelScene.class);
 			}

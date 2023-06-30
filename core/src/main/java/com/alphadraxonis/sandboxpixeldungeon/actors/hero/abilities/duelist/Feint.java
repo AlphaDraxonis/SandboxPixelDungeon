@@ -41,6 +41,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.Door;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.MirrorSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.HeroIcon;
@@ -83,7 +84,13 @@ public class Feint extends ArmorAbility {
 			return;
 		}
 
-		if (!Dungeon.level.passable[target] || Actor.findChar(target) != null){
+		if (Dungeon.hero.rooted){
+			PixelScene.shake( 1, 1f );
+			GLog.w(Messages.get(this, "bad_location"));
+			return;
+		}
+
+		if (Dungeon.level.solid[target] || Actor.findChar(target) != null){
 			GLog.w(Messages.get(this, "bad_location"));
 			return;
 		}

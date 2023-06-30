@@ -574,12 +574,7 @@ public abstract class Char extends Actor {
 	}
 	
 	public int drRoll() {
-		int dr = 0;
-
-		Barkskin bark = buff(Barkskin.class);
-		if (bark != null)   dr += Random.NormalIntRange( 0 , bark.level() );
-
-		return dr;
+		return Random.NormalIntRange( 0 , Barkskin.currentLevel(this) );
 	}
 	
 	public int damageRoll() {

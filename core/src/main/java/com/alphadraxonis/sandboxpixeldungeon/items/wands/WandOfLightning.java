@@ -35,11 +35,11 @@ import com.alphadraxonis.sandboxpixeldungeon.items.weapon.enchantments.Shocking;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.MagesStaff;
 import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.utils.BArray;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
-import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
@@ -74,7 +74,7 @@ public class WandOfLightning extends DamageWand {
 		if (Dungeon.level.water[bolt.collisionPos]) multiplier = 1f;
 
 		for (Char ch : affected){
-			if (ch == Dungeon.hero) Camera.main.shake( 2, 0.3f );
+			if (ch == Dungeon.hero) PixelScene.shake( 2, 0.3f );
 			ch.sprite.centerEmitter().burst( SparkParticle.FACTORY, 3 );
 			ch.sprite.flash();
 

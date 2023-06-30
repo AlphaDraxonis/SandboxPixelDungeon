@@ -27,7 +27,6 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Barkskin;
-import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
@@ -66,7 +65,7 @@ public abstract class Plant implements Bundlable {
 
         if (Dungeon.level.heroFOV[pos] && Dungeon.hero.hasTalent(Talent.NATURES_AID)) {
             // 3/5 turns based on talent points spent
-            Buff.affect(Dungeon.hero, Barkskin.class).set(2, 1 + 2 * (Dungeon.hero.pointsInTalent(Talent.NATURES_AID)));
+            Barkskin.conditionallyAppend(Dungeon.hero, 2, 1 + 2*(Dungeon.hero.pointsInTalent(Talent.NATURES_AID)));
         }
 
         wither();

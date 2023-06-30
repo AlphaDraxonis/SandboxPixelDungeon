@@ -464,6 +464,7 @@ btnSearch.icon( 192, 0, 16, 16 );
                                     if (alt && item.defaultAction() != null) {
                                         item.execute(Dungeon.hero);
                                     } else {
+                                        InventoryPane.clearTargetingSlot();
                                         Game.scene().addToFront(new WndUseItem(null, item));
                                     }
                                 }

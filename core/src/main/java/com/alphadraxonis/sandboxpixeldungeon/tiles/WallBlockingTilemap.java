@@ -24,6 +24,7 @@ package com.alphadraxonis.sandboxpixeldungeon.tiles;
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.levels.HallsBossLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.MiningLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Tilemap;
@@ -105,11 +106,12 @@ public class WallBlockingTilemap extends Tilemap {
 				//Block a camera-facing wall if:
 				//- the cell above, above-left, or above-right is not a wall, visible, and has a wall below
 				//- none of the remaining 5 neighbour cells are both not a wall and visible
-				
+
 				//if all 3 above are wall we can shortcut and just clear the cell
-				//unless one or more is a shelf, then we have to just block none
+				//unless one or more is a shelf, or we can mine, then we have to just block none
 				if (wall(cell - 1 - mapWidth) && wall(cell - mapWidth) && wall(cell + 1 - mapWidth)){
-					if (shelf(cell - 1 - mapWidth) || shelf(cell - mapWidth) || shelf(cell + 1 - mapWidth)){
+					if (shelf(cell - 1 - mapWidth) || shelf(cell - mapWidth)
+							|| shelf(cell + 1 - mapWidth) || Dungeon.level instanceof MiningLevel){
 						curr = BLOCK_NONE;
 					} else {
 						curr = CLEARED;

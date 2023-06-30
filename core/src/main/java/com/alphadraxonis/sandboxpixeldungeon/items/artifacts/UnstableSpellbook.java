@@ -25,8 +25,8 @@ import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Blindness;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
-import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LockedFloor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.MagicImmune;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Regeneration;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.ElmoParticle;
@@ -290,11 +290,10 @@ public class UnstableSpellbook extends Artifact {
     public class bookRecharge extends ArtifactBuff {
         @Override
         public boolean act() {
-            LockedFloor lock = target.buff(LockedFloor.class);
             if (charge < chargeCap
                     && !cursed
                     && target.buff(MagicImmune.class) == null
-                    && (lock == null || lock.regenOn())) {
+                    && Regeneration.regenOn()) {
                 //120 turns to charge at full, 80 turns to charge at 0/8
                 float chargeGain = 1 / (120f - (chargeCap - charge) * 5f);
                 chargeGain *= RingOfEnergy.artifactChargeMultiplier(target);

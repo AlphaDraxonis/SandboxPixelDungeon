@@ -28,8 +28,8 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.FlavourBuff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Invisibility;
-import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LockedFloor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.MagicImmune;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Regeneration;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CheckedCell;
@@ -314,11 +314,10 @@ public class TalismanOfForesight extends Artifact {
 				warn = false;
 			}
 
-			LockedFloor lock = target.buff(LockedFloor.class);
 			if (charge < chargeCap
 					&& !cursed
 					&& target.buff(MagicImmune.class) == null
-					&& (lock == null || lock.regenOn())) {
+					&& Regeneration.regenOn()) {
 				//fully charges in 2000 turns at +0, scaling to 1000 turns at +10.
 				float chargeGain = (0.05f+(level()*0.005f));
 				chargeGain *= RingOfEnergy.artifactChargeMultiplier(target);

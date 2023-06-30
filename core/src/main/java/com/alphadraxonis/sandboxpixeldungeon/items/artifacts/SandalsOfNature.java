@@ -29,11 +29,13 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.MagicImmune;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
+import com.alphadraxonis.sandboxpixeldungeon.effects.Splash;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.LeafParticle;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.VelvetPouch;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.RingOfEnergy;
+import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Blindweed;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Earthroot;
@@ -52,12 +54,12 @@ import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
-import com.alphadraxonis.sandboxpixeldungeon.utils.BArray;
+import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndBag;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
+import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
@@ -316,17 +318,23 @@ public class SandalsOfNature extends Artifact {
         @Override
         public void onSelect(Integer cell) {
             if (cell != null) {
-                PathFinder.buildDistanceMap(curUser.pos, BArray.not(Dungeon.level.solid, null), 3);
 
-                if (PathFinder.distance[cell] == Integer.MAX_VALUE) {
+                if (!Dungeon.level.heroFOV[cell] || Dungeon.level.distance(curUser.pos, cell) > 3){
                     GLog.w(Messages.get(SandalsOfNature.class, "out_of_range"));
                 } else {
-                    CellEmitter.get(cell).burst(LeafParticle.GENERAL, 6);
+
+                    Ballistica aim = new Ballistica(curUser.pos, cell, Ballistica.STOP_TARGET);
+                    for (int c : aim.subPath(0, aim.dist)){
+                        CellEmitter.get( c ).burst( LeafParticle.GENERAL, 6 );
+                    }
+
+                    Splash.at(DungeonTilemap.tileCenterToWorld( cell ), -PointF.PI/2, PointF.PI/2, seedColors.get(curSeedEffect), 6);
                     Invisibility.dispel(curUser);
 
                     Plant plant = ((Plant.Seed) Reflection.newInstance(curSeedEffect)).couch(cell, null);
                     plant.activate(Actor.findChar(cell));
-                    Sample.INSTANCE.play(Assets.Sounds.TRAMPLE, 1, Random.Float(0.96f, 1.05f));
+                    Sample.INSTANCE.play(Assets.Sounds.PLANT);
+                    Sample.INSTANCE.playDelayed(Assets.Sounds.TRAMPLE, 0.25f, 1, Random.Float( 0.96f, 1.05f ) );
 
                     charge -= seedChargeReqs.get(curSeedEffect);
                     Talent.onArtifactUsed(Dungeon.hero);

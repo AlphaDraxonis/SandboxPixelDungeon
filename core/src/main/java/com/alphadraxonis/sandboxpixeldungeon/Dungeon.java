@@ -51,6 +51,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfWarding;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
+import com.alphadraxonis.sandboxpixeldungeon.levels.MiningLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.secret.SecretRoom;
@@ -170,7 +171,13 @@ public class Dungeon {
     public static QuickSlot quickslot = new QuickSlot();
 
     public static int depth;
-    public static int prevBranch;
+    //determines path the hero is on. Current uses:
+    // 0 is the default path
+    // 1 is for quest sub-floors
+    public static int branch;
+
+    //keeps track of what levels the game should try to load instead of creating fresh
+    public static ArrayList<Integer> generatedLevels = new ArrayList<>();
 
     public static int gold;
     public static int energy;
@@ -276,6 +283,8 @@ public class Dungeon {
 
         levelName = customDungeon.getStart();
         depth = customDungeon.getFloor(levelName).getDepth();
+        branch = 0;
+        generatedLevels.clear();
 
         gold = CustomDungeon.getDungeon().getStartGold();
         energy = CustomDungeon.getDungeon().getStartAlchemicalEnergy();
@@ -297,6 +306,10 @@ public class Dungeon {
         Badges.reset();
 
         GamesInProgress.selectedClass.initHero(hero);
+    }
+
+    public static boolean levelHasBeenGenerated(int depth, int branch){
+        return generatedLevels.contains(depth + 1000*branch);
     }
 
     public static LevelScheme curLvlScheme() {
@@ -321,23 +334,28 @@ public class Dungeon {
         Dungeon.level = null;
         Actor.clear();
 
-        if (depth > Statistics.deepestFloor) {
+        Dungeon.depth = customDungeon.getFloor(levelName).getDepth();//TODO maybe move above Statistics.deepestFloor check?
+        Level level;
+        if(branch == 1 && customDungeon.getFloor(levelName).getRegion() == LevelScheme.REGION_CAVES){
+            level = new MiningLevel();
+            level.create();
+        } else level = customDungeon.getFloor(levelName).initLevel();
+
+        //this assumes that we will never have a depth value outside the range 0 to 999
+        // or -500 to 499, etc.
+        if (!generatedLevels.contains(depth + 1000*branch)) {
+            generatedLevels.add(depth + 1000 * branch);
+        }
+        if (depth > Statistics.deepestFloor && branch == 0) {
             Statistics.deepestFloor = depth;
         }
-        if (Arrays.asList(visited).contains(levelName)) {
-            if (Statistics.qualifiedForNoKilling) {
-                Statistics.completedWithNoKilling = true;
-            } else {
-                Statistics.completedWithNoKilling = false;
-            }
+        if (!Arrays.asList(visited).contains(levelName)) {
+            Statistics.completedWithNoKilling = Statistics.qualifiedForNoKilling;
         }
-
-        Dungeon.depth = customDungeon.getFloor(levelName).getDepth();//TODO maybe move above Statistics.deepestFloor check?
-        Level level = customDungeon.getFloor(levelName).initLevel();
 
         visitedDepths.add(Dungeon.depth);
 
-        Statistics.qualifiedForNoKilling = !bossLevel();
+        if (branch == 0) Statistics.qualifiedForNoKilling = !bossLevel();
         Statistics.qualifiedForBossChallengeBadge = false;
 
         return level;
@@ -523,6 +541,8 @@ public class Dungeon {
     private static final String MOBS_TO_CHAMPION = "mobs_to_champion";
     private static final String HERO = "hero";
     private static final String DEPTH = "depth";
+    private static final String BRANCH		= "branch";
+    private static final String GENERATED_LEVELS    = "generated_levels";
     private static final String LEVEL_NAME = "level_name";
     private static final String GOLD = "gold";
     private static final String ENERGY = "energy";
@@ -551,6 +571,7 @@ public class Dungeon {
             bundle.put(MOBS_TO_CHAMPION, mobsToChampion);
             bundle.put(HERO, hero);
             bundle.put(DEPTH, depth);
+            bundle.put( BRANCH, branch );
             bundle.put(LEVEL_NAME, levelName);
 
             bundle.put(VISITED, visited);
@@ -599,6 +620,12 @@ public class Dungeon {
             Statistics.storeInBundle(bundle);
             Notes.storeInBundle(bundle);
             Generator.storeInBundle(bundle);
+
+            int[] bundleArr = new int[generatedLevels.size()];
+            for (i = 0; i < generatedLevels.size(); i++){
+                bundleArr[i] = generatedLevels.get(i);
+            }
+            bundle.put( GENERATED_LEVELS, bundleArr);
 
             Scroll.save(bundle);
             Potion.save(bundle);
@@ -722,6 +749,7 @@ public class Dungeon {
         hero = (Hero) bundle.get(HERO);
 
         depth = bundle.getInt(DEPTH);
+        branch = bundle.getInt( BRANCH );
         levelName = bundle.getString(LEVEL_NAME);
 
         gold = bundle.getInt(GOLD);
@@ -731,6 +759,18 @@ public class Dungeon {
 
         Statistics.restoreFromBundle(bundle);
         Generator.restoreFromBundle(bundle);
+
+        generatedLevels.clear();
+        if (bundle.contains(GENERATED_LEVELS)){
+            for (int i : bundle.getIntArray(GENERATED_LEVELS)){
+                generatedLevels.add(i);
+            }
+            //pre-v2.1.1 saves
+        } else  {
+            for (int i = 1; i <= Statistics.deepestFloor; i++){
+                generatedLevels.add(i);
+            }
+        }
 
         droppedItems = new HashMap<>();
         for (String level : customDungeon.floorNames()) {
@@ -947,8 +987,11 @@ public class Dungeon {
             BArray.setFalse(passable);
     }
 
-    public static PathFinder.Path findPath(Char ch, int to, boolean[] pass, boolean[] vis, boolean chars) {
+    public static boolean[] findPassable(Char ch, boolean[] pass, boolean[] vis, boolean chars) {
+        return findPassable(ch, pass, vis, chars, chars);
+    }
 
+    public static boolean[] findPassable(Char ch, boolean[] pass, boolean[] vis, boolean chars, boolean considerLarge){
         setupPassable();
         if (ch.flying || ch.buff(Amok.class) != null) {
             BArray.or(pass, Dungeon.level.avoid, passable);
@@ -956,8 +999,8 @@ public class Dungeon {
             System.arraycopy(pass, 0, passable, 0, Dungeon.level.length());
         }
 
-        if (chars && Char.hasProp(ch, Char.Property.LARGE)) {
-            BArray.and(passable, Dungeon.level.openSpace, passable);
+        if (considerLarge && Char.hasProp(ch, Char.Property.LARGE)){
+            BArray.and( passable, Dungeon.level.openSpace, passable );
         }
 
         if (chars) {
@@ -968,8 +1011,11 @@ public class Dungeon {
             }
         }
 
-        return PathFinder.find(ch.pos, to, passable);
+        return passable;
+    }
 
+    public static PathFinder.Path findPath(Char ch, int to, boolean[] pass, boolean[] vis, boolean chars) {
+        return PathFinder.find( ch.pos, to, findPassable(ch, pass, vis, chars) );
     }
 
     public static int findStep(Char ch, int to, boolean[] pass, boolean[] visible, boolean chars) {
@@ -997,30 +1043,19 @@ public class Dungeon {
             }
         }
 
-        return PathFinder.getStep(ch.pos, to, passable);
+        return PathFinder.getStep( ch.pos, to, findPassable(ch, pass, visible, chars) );
 
     }
 
-    public static int flee(Char ch, int from, boolean[] pass, boolean[] visible, boolean chars) {
-
-        setupPassable();
-        if (ch.flying) {
-            BArray.or(pass, Dungeon.level.avoid, passable);
-        } else {
-            System.arraycopy(pass, 0, passable, 0, Dungeon.level.length());
-        }
-
-        if (Char.hasProp(ch, Char.Property.LARGE)) {
-            BArray.and(passable, Dungeon.level.openSpace, passable);
-        }
-
+    public static int flee( Char ch, int from, boolean[] pass, boolean[] visible, boolean chars ) {
+        //only consider chars impassable if our retreat path runs into them
+        boolean[] passable = findPassable(ch, pass, visible, false, true);
         passable[ch.pos] = true;
 
-        //only consider chars impassable if our retreat path runs into them
-        int step = PathFinder.getStepBack(ch.pos, from, passable);
-        while (step != -1 && Actor.findChar(step) != null) {
+        int step = PathFinder.getStepBack( ch.pos, from, passable );
+        while (step != -1 && Actor.findChar(step) != null && chars){
             passable[step] = false;
-            step = PathFinder.getStepBack(ch.pos, from, passable);
+            step = PathFinder.getStepBack( ch.pos, from, passable );
         }
         return step;
 
