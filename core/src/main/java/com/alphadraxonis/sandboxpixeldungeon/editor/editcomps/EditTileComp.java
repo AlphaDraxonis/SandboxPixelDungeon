@@ -90,14 +90,12 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         if (transitionEdit != null) {
             transitionEdit.setRect(x, pos, width, -1);
             pos = transitionEdit.bottom() + WndTitledMessage.GAP;
-        }
-
-        if (addTransition != null && addTransition.visible) {
+        } else if (addTransition != null) {
             addTransition.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
             pos = addTransition.bottom() + WndTitledMessage.GAP;
-        }
+        } else return;
 
-        height = pos - y - WndTitledMessage.GAP + 1;
+        height = pos - y - WndTitledMessage.GAP - 0.5f;
     }
 
 

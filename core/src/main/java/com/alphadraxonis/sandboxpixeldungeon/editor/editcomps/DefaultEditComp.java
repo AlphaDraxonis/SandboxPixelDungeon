@@ -62,17 +62,19 @@ public abstract class DefaultEditComp<T> extends Component {
     protected final void layoutCompsLinear(Component... comps) {
         if (comps == null) return;
 
-        float posY = height + WndTitledMessage.GAP * 2 - 1;
+        float posY = y + height + WndTitledMessage.GAP * 2 - 1;
 
+        boolean hasAtLeastOneComp = false;
         for (Component c : comps) {
             if (c != null) {
+                hasAtLeastOneComp = true;
                 c.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
-                PixelScene.align(c);
                 posY = c.bottom() + WndTitledMessage.GAP;
+                PixelScene.align(c);
             }
         }
 
-        height = posY - y - WndTitledMessage.GAP + 1;
+        if (hasAtLeastOneComp) height = posY - y - WndTitledMessage.GAP - 0.5f;
     }
 
     protected abstract Component createTitle();
@@ -137,10 +139,10 @@ public abstract class DefaultEditComp<T> extends Component {
         } else if (mob != null) {
             content = new EditMobComp(mob);
             actionPart = new MobActionPart.Modify(mob);
-        } else if(trap != null){
+        } else if (trap != null) {
             content = new EditTrapComp(trap);
             actionPart = new TrapActionPart.Modify(trap);
-        }else {
+        } else {
             content = new EditPlantComp(plant);
             actionPart = new PlantActionPart.Modify(plant);
         }
@@ -163,9 +165,9 @@ public abstract class DefaultEditComp<T> extends Component {
         Runnable r = () -> {
             float ch = content.height();
             int maxHeight = (int) (PixelScene.uiCamera.height * 0.9);
-            int weite = (int) Math.ceil(ch > maxHeight ? maxHeight : ch);
-            w.resize((int) Math.ceil(newWidth), weite);
-            sp.setSize((int) Math.ceil(newWidth), weite);
+            int hei = (int) Math.ceil(ch > maxHeight ? maxHeight : ch);
+            w.resize((int) Math.ceil(newWidth), hei);
+            sp.setSize((int) Math.ceil(newWidth), hei);
             sp.scrollToCurrentView();
         };
         content.setOnUpdate(r);
