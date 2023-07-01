@@ -25,7 +25,7 @@ public class LotusLevelSpinner extends Spinner {
     protected void updateDesc(boolean foreceUpdate) {
     }
 
-    private static class LevelSpinnerModel extends SpinnerIntegerModel {
+    public static class LevelSpinnerModel extends SpinnerIntegerModel {
 
         public LevelSpinnerModel(int level) {
             super(0, 200, level, 1, false, null);

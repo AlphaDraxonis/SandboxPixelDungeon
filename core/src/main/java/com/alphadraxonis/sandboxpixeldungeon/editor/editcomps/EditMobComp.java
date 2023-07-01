@@ -6,6 +6,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
@@ -17,6 +18,8 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.WndChooseOneInCategories;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
@@ -49,6 +52,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
     private final ItemContainer<Item> mimicItems;
     private final LotusLevelSpinner lotusLevelSpinner;
+    private final Spinner sheepLifespan;
     private final QuestSpinner questSpinner;
     private final CheckBox spawnQuestRoom;
 
@@ -143,11 +147,31 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             lotusLevelSpinner = null;
         }
 
+        if (mob instanceof Sheep) {
+            sheepLifespan = new Spinner(
+                    new SpinnerIntegerModel(0, 600, (int) ((Sheep) mob).lifespan, 1, false, null) {
+                        @Override
+                        public float getInputFieldWith(float height) {
+                            return height * 1.2f;
+                        }
+
+                        @Override
+                        public int getClicksPerSecondWhileHolding() {
+                            return 120;
+                        }
+                    },
+                    " " + Messages.get(EditMobComp.class, "sheep_lifespan") + ":", 9);
+            sheepLifespan.addChangeListener(() -> ((Sheep) mob).lifespan = (int) sheepLifespan.getValue());
+            sheepLifespan.setButtonWidth(12);
+            sheepLifespan.setAlignmentSpinnerX(1f);
+            add(sheepLifespan);
+        } else sheepLifespan = null;
+
         if (mob instanceof QuestNPC<?>) {
             questSpinner = new QuestSpinner(((QuestNPC<?>) mob).quest, h -> mobStateSpinner.getCurrentInputFieldWith());
             add(questSpinner);
             if (mob instanceof Wandmaker && mob.pos < 0) {
-                spawnQuestRoom = new CheckBox(Messages.get(EditMobComp.class,"spawn_quest_room")) {
+                spawnQuestRoom = new CheckBox(Messages.get(EditMobComp.class, "spawn_quest_room")) {
                     @Override
                     public void checked(boolean value) {
                         super.checked(value);
@@ -198,7 +222,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         };
         add(addBuffs);
 
-        comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, mobStateSpinner, questSpinner, spawnQuestRoom, addBuffs};
+        comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, sheepLifespan,
+                mobStateSpinner, questSpinner, spawnQuestRoom, addBuffs};
     }
 
     @Override

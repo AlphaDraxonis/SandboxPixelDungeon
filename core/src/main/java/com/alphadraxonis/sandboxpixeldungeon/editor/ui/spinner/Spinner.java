@@ -20,7 +20,6 @@ public class Spinner extends Component {
     private RenderedTextBlock title;
 
     private SpinnerModel model;//Determitesinput size
-    private Runnable modelListener;
 
     private float alignmentSpinnerX = ALIGNMENT_RIGHT;
     private float buttonWidth = SQUARE;
