@@ -207,8 +207,7 @@ public class CustomLevel extends Level {
             map = level.map;
 
             for (int i = 0; i < map.length; i++) {
-                if (map[i] == Terrain.SECRET_DOOR) map[i] = Terrain.DOOR;//TODO add secret doors!
-                else if (map[i] == ENTRANCE) levelScheme.entranceCells.add(i);
+                if (map[i] == ENTRANCE) levelScheme.entranceCells.add(i);
                 else if (TileItem.isExitTerrainCell(map[i])) levelScheme.exitCells.add(i);
             }
             Collections.sort(levelScheme.entranceCells);

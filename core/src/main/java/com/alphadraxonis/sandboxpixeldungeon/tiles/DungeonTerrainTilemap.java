@@ -22,6 +22,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.tiles;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.watabou.noosa.Image;
 import com.watabou.utils.PathFinder;
@@ -88,6 +89,7 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 				return DungeonTileSheet.NULL_TILE;
 			}
 		} else {
+			if (tile == Terrain.SECRET_DOOR && CustomDungeon.showHiddenDoors()) return DungeonTileSheet.FLAT_DOOR_SECRET;
 			return DungeonTileSheet.getVisualWithAlts(
 					DungeonTileSheet.directFlatVisuals.get(tile),
 					pos);

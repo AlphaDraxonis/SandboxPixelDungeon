@@ -181,6 +181,7 @@ public class DungeonTileSheet {
 	public static final int FLAT_DOOR_CRYSTAL   = FLAT_DOORS+11;
 	public static final int UNLOCKED_EXIT       = FLAT_DOORS+12;
 	public static final int LOCKED_EXIT         = FLAT_DOORS+13;
+	public static final int FLAT_DOOR_SECRET    = FLAT_DOORS+14;
 
 	public static final int FLAT_OTHER          =                           xy(1, 6);   //16 slots
 	public static final int FLAT_SIGN           = FLAT_OTHER+0;

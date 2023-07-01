@@ -1497,8 +1497,9 @@ public abstract class Level implements Bundlable {
                 return Messages.get(Level.class, "water_name");
             case Terrain.WALL:
             case Terrain.WALL_DECO:
-            case Terrain.SECRET_DOOR:
                 return Messages.get(Level.class, "wall_name");
+            case Terrain.SECRET_DOOR:
+                return Messages.get(Level.class, CustomDungeon.showHiddenDoors() ? "hidden_wall_name" : "wall_name");
             case Terrain.DOOR:
                 return Messages.get(Level.class, "closed_door_name");
             case Terrain.OPEN_DOOR:

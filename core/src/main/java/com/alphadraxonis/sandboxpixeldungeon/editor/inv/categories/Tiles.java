@@ -41,7 +41,7 @@ public enum Tiles {
 
     EMPTY(Terrain.EMPTY, EMPTY_DECO, WATER, GRASS, HIGH_GRASS, FURROWED_GRASS, EMPTY_SP, PEDESTAL, EMBERS),
     WALL(Terrain.WALL, WALL_DECO, BOOKSHELF, BARRICADE, STATUE, STATUE_SP, CHASM),
-    DOOR(Terrain.DOOR, LOCKED_DOOR, CRYSTAL_DOOR, LOCKED_EXIT, UNLOCKED_EXIT),//TODO hidden door
+    DOOR(Terrain.DOOR, SECRET_DOOR, LOCKED_DOOR, CRYSTAL_DOOR, LOCKED_EXIT, UNLOCKED_EXIT),
     SPECIAL(ENTRANCE, EXIT, EMPTY_WELL, WELL, ALCHEMY, SIGN);
 
 
@@ -57,7 +57,7 @@ public enum Tiles {
             case CHASM:
                 return DungeonTileSheet.CHASM_WALL;
             case SECRET_DOOR:
-                return DungeonTileSheet.FLAT_DOOR;
+                return DungeonTileSheet.FLAT_DOOR_SECRET;
             case WATER:
                 return WATER;
             case SECRET_TRAP:

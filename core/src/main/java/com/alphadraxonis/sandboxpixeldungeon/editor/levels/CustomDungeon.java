@@ -333,6 +333,9 @@ public class CustomDungeon implements Bundlable {
     public static boolean isEditing() {
         return Game.scene() instanceof EditorScene || Game.scene() instanceof FloorOverviewScene;
     }
+    public static boolean showHiddenDoors(){
+        return isEditing();
+    }
 
 
     private static final String NAME = "name";
