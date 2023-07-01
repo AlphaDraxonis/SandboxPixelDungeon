@@ -2,45 +2,46 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
-import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditTrapComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditPlantComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
-import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TrapItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
-import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
+import com.alphadraxonis.sandboxpixeldungeon.plants.Plant;
 
-public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileActionPart {
+public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActionPart {
 
-    private Trap trap;
+    private Plant plant;
 
-    private TrapActionPart(Trap trap, int terrainType, boolean forceChange) {
+    private PlantActionPart(Plant plant, int terrainType, boolean forceChange) {
 
-        super(trap.pos, terrainType, forceChange);
+        super(plant.pos, terrainType, forceChange);
 
-        this.trap = trap;
+        this.plant = plant;
     }
 
     protected void place() {
-        place(trap.getCopy());
+        place(plant.getCopy());
     }
 
     protected void remove() {
-        remove(trap);
+        remove(plant);
     }
 
-    protected static void place(Trap trap) {
-        Dungeon.level.setTrap(trap, trap.pos);
+    protected static void place(Plant plant) {
+        Dungeon.level.plants.put(plant.pos, plant);
+        EditorScene.updateMap(plant.pos);
     }
 
-    protected static void remove(Trap trap) {
-        Dungeon.level.traps.remove(trap.pos);
+    protected static void remove(Plant plant) {
+        Dungeon.level.plants.remove(plant.pos);
+        EditorScene.updateMap(plant.pos);
     }
 
-    public static final class Place extends TrapActionPart {
+    public static final class Place extends PlantActionPart {
 
-        public Place(Trap trap) {
-            super(trap, TrapItem.getTerrain(trap), true);
+        public Place(Plant plant) {
+            super(plant, Terrain.GRASS, true);
             ActionPart part = new ActionPart() {
                 @Override
                 public void undo() {
@@ -59,13 +60,13 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
             };
             addActionPart(part);
             part.redo();
-            EditorScene.updateMap(trap.pos);
+            EditorScene.updateMap(plant.pos);
         }
     }
 
-    public static final class Remove extends TrapActionPart {
-        public Remove(Trap trap) {
-            super(trap, Terrain.EMPTY, false);
+    public static final class Remove extends PlantActionPart {
+        public Remove(Plant plant) {
+            super(plant, Terrain.GRASS, false);
             ActionPart part = new ActionPart() {
                 @Override
                 public void undo() {
@@ -84,44 +85,39 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
             };
             addActionPart(part);
             part.redo();
-            EditorScene.updateMap(trap.pos);
+            EditorScene.updateMap(plant.pos);
         }
     }
 
     public static final class Modify implements ActionPartModify {
 
-        private final Trap before;
-        private Trap after;
-        private int oldTerrain;
-        private PlaceCellActionPart placeCellActionPart;
+        private final Plant before;
+        private Plant after;
 
-        public Modify(Trap trap) {
-            before = (Trap) trap.getCopy();
-            after = trap;
-            oldTerrain = TrapItem.getTerrain(trap);
+        public Modify(Plant plant) {
+            before = (Plant) plant.getCopy();
+            after = plant;
         }
 
         @Override
         public void undo() {
 
-            Trap trapAtCell = EditorScene.customLevel().traps.get(after.pos);
+            Plant plantAtCell = EditorScene.customLevel().plants.get(after.pos);
 
-            remove(trapAtCell);
+            remove(plantAtCell);
 
             place(before.getCopy());
-            placeCellActionPart.undo();
 
             EditorScene.updateMap(before.pos);
         }
 
         @Override
         public void redo() {
-            Trap trapAtCell = EditorScene.customLevel().traps.get(after.pos);
+            Plant plantAtCell = EditorScene.customLevel().plants.get(after.pos);
 
-            if (trapAtCell != null) remove(trapAtCell);
+            if (plantAtCell != null) remove(plantAtCell);
 
             place(after.getCopy());
-            placeCellActionPart.redo();
 
             EditorScene.updateMap(after.pos);
 
@@ -129,13 +125,12 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
 
         @Override
         public boolean hasContent() {
-            return !EditTrapComp.areEqual(before, after);
+            return !EditPlantComp.areEqual(before, after);
         }
 
         @Override
         public void finish() {
             after = after.getCopy();
-            placeCellActionPart = new PlaceCellActionPart(oldTerrain, TrapItem.getTerrain(after), after.pos, null, null);
         }
     }
 }

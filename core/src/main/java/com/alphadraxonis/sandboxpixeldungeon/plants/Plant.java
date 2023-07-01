@@ -110,6 +110,11 @@ public abstract class Plant implements Bundlable {
     public void storeInBundle(Bundle bundle) {
         bundle.put(POS, pos);
     }
+    public Plant getCopy(){
+        Bundle b = new Bundle();
+        b.put("PLANT", this);
+        return (Plant) b.get("PLANT");
+    }
 
     public String name() {
         return Messages.get(this, "name");
@@ -117,7 +122,7 @@ public abstract class Plant implements Bundlable {
 
     public String desc() {
         String desc = Messages.get(this, "desc");
-        if (Dungeon.hero.subClass == HeroSubClass.WARDEN) {
+        if (Dungeon.hero != null && Dungeon.hero.subClass == HeroSubClass.WARDEN) {
             desc += "\n\n" + Messages.get(this, "warden_desc");
         }
         return desc;

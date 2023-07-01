@@ -48,6 +48,7 @@ public class EditorItemBag extends Bag {
             mainBag.items.add(Items.bag);
         } while (Items.bag == null);//remove callStaticInitializers() and see if it is still 'always false' (obv don't enter EditorScene before)
         mainBag.items.add(Traps.bag);
+        mainBag.items.add(Plants.bag);
     }
 
     public static EditorItemBag getLastBag() {
@@ -69,6 +70,7 @@ public class EditorItemBag extends Bag {
         if (Mobs.class  == cl) return (T) Mobs.bag;
         if (Items.class == cl) return (T) Items.bag;
         if (Traps.class == cl) return (T) Traps.bag;
+        if (Plants.class == cl) return (T) Plants.bag;
 
         return null;
     }

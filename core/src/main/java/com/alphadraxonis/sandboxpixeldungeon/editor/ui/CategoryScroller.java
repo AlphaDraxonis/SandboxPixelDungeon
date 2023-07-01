@@ -40,48 +40,49 @@ public class CategoryScroller extends Component {
         super();
 
         this.categories = categories;
-        categoryButtons = new RedButton[categories.length];
+        if (categories.length > 1) {
+            categoryButtons = new RedButton[categories.length];
 
-        for (int i = 0; i < categoryButtons.length; i++) {
-            final int idx = i;
-            categoryButtons[i] = new RedButton("") {
-                @Override
-                protected void onClick() {
-                    if (selectedIndex != idx) {
-                        selectCategory(idx);
+            for (int i = 0; i < categoryButtons.length; i++) {
+                final int idx = i;
+                categoryButtons[i] = new RedButton("") {
+                    @Override
+                    protected void onClick() {
+                        if (selectedIndex != idx) {
+                            selectCategory(idx);
+                        }
                     }
-                }
 
+                    @Override
+                    protected String hoverText() {
+                        return categories[idx].getName();
+                    }
+                };
+                Image icon = categories[i].getImage();
+                if (icon != null) categoryButtons[i].icon(icon);
+                else categoryButtons[i].text("-");
+                add(categoryButtons[i]);
+            }
+
+            KeyEvent.addKeyListener(keyListener = new Signal.Listener<KeyEvent>() {
                 @Override
-                protected String hoverText() {
-                    return categories[idx].getName();
+                public boolean onSignal(KeyEvent keyEvent) {
+                    GameAction action = KeyBindings.getActionForKey(keyEvent);
+
+                    if (keyEvent.pressed) {
+                        curAction = action;
+                        return processKey();
+                    }
+                    curAction = null;
+                    time = 0;
+                    isHolding = false;
+                    return false;
                 }
-            };
-            Image icon = categories[i].getImage();
-            if (icon != null) categoryButtons[i].icon(icon);
-            else categoryButtons[i].text("-");
-            add(categoryButtons[i]);
-        }
+            });
+        } else categoryButtons = null;
 
         list = new ScrollingListPane();
         add(list);
-
-
-        KeyEvent.addKeyListener(keyListener = new Signal.Listener<KeyEvent>() {
-            @Override
-            public boolean onSignal(KeyEvent keyEvent) {
-                GameAction action = KeyBindings.getActionForKey(keyEvent);
-
-                if (keyEvent.pressed) {
-                    curAction = action;
-                    return processKey();
-                }
-                curAction = null;
-                time = 0;
-                isHolding = false;
-                return false;
-            }
-        });
     }
 
 
@@ -135,25 +136,27 @@ public class CategoryScroller extends Component {
     @Override
     protected void layout() {
 
-        if (categoryButtons.length <= 7) {
-            float buttonWidth = width() / categoryButtons.length;
-            for (int i = 0; i < categoryButtons.length; i++) {
-                categoryButtons[i].setRect(i * buttonWidth, 0, buttonWidth, ITEM_HEIGHT);
-                PixelScene.align(categoryButtons[i]);
-            }
-        } else {
-            //for first row
-            float buttonWidth = (float) (width() / Math.ceil(categoryButtons.length / 2f));
-            float y = 0;
-            float x = 0;
-            for (int i = 0; i < categoryButtons.length; i++) {
-                categoryButtons[i].setRect(x, y, buttonWidth, ITEM_HEIGHT);
-                PixelScene.align(categoryButtons[i]);
-                x += buttonWidth;
-                if (i == Math.ceil(categoryButtons.length / 2f) - 1) {
-                    y += ITEM_HEIGHT;
-                    x = 0;
-                    buttonWidth = (float) (width() / Math.ceil(categoryButtons.length / 2f));
+        if (categoryButtons != null) {
+            if (categoryButtons.length <= 7) {
+                float buttonWidth = width() / categoryButtons.length;
+                for (int i = 0; i < categoryButtons.length; i++) {
+                    categoryButtons[i].setRect(i * buttonWidth, 0, buttonWidth, ITEM_HEIGHT);
+                    PixelScene.align(categoryButtons[i]);
+                }
+            } else {
+                //for first row
+                float buttonWidth = (float) (width() / Math.ceil(categoryButtons.length / 2f));
+                float y = 0;
+                float x = 0;
+                for (int i = 0; i < categoryButtons.length; i++) {
+                    categoryButtons[i].setRect(x, y, buttonWidth, ITEM_HEIGHT);
+                    PixelScene.align(categoryButtons[i]);
+                    x += buttonWidth;
+                    if (i == Math.ceil(categoryButtons.length / 2f) - 1) {
+                        y += ITEM_HEIGHT;
+                        x = 0;
+                        buttonWidth = (float) (width() / Math.ceil(categoryButtons.length / 2f));
+                    }
                 }
             }
         }
@@ -177,9 +180,11 @@ public class CategoryScroller extends Component {
 
         list.clear();
 
-        for (int i = 0; i < categoryButtons.length; i++) {
-            if (i == selectedIndex) categoryButtons[i].icon().color(Window.TITLE_COLOR);
-            else categoryButtons[i].icon().resetColor();
+        if (categoryButtons != null) {
+            for (int i = 0; i < categoryButtons.length; i++) {
+                if (i == selectedIndex) categoryButtons[i].icon().color(Window.TITLE_COLOR);
+                else categoryButtons[i].icon().resetColor();
+            }
         }
 
         list.scrollTo(0, 0);
@@ -190,8 +195,9 @@ public class CategoryScroller extends Component {
             list.addItem(categories[selectedIndex].createListItem(o));
         }
 
-        list.setRect(x, categoryButtons[categoryButtons.length - 1].bottom() + 1, width,
-                height - categoryButtons[categoryButtons.length - 1].bottom() - 1);
+        float bottom = categoryButtons == null ? 0 : categoryButtons[categoryButtons.length - 1].bottom() + 1;
+        list.setRect(x, bottom, width,
+                height - bottom);
     }
 
     public Category[] getCategories() {

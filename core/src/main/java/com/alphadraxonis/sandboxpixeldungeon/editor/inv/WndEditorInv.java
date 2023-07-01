@@ -4,8 +4,10 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Plants;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Traps;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.PlantItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TrapItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.CategoryScroller;
@@ -14,6 +16,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.plants.Plant;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
@@ -157,11 +160,14 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         }
         super.onBackPressed();
     }
+
     @Override
     protected void onClick(Tab tab) {
         Trap tempTrapSave = lastTrapForImage;
+        Plant tempPlantSave = lastPlantForImage;
         hide();
         lastTrapForImage = tempTrapSave;
+        lastPlantForImage = tempPlantSave;
         Window w = new WndEditorInv((EditorItemBag) ((BagTab) tab).bag, selector, true);
         if (Game.scene() instanceof EditorScene) {
             EditorScene.show(w);
@@ -212,6 +218,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
     }
 
     private static Trap lastTrapForImage;
+    private static Plant lastPlantForImage;
 
     private static Image createIcon(int indexTab) {
         switch (indexTab) {
@@ -225,6 +232,11 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                     lastTrapForImage.visible = true;
                 }
                 return TrapItem.getTrapImage(lastTrapForImage);
+            case 5:
+                if (lastPlantForImage == null) {
+                    lastPlantForImage = Reflection.newInstance(Plants.getRandomPlant(null));
+                }
+                return PlantItem.getPlantImage(lastPlantForImage);
         }
         Image img = new ItemSprite(ItemSpriteSheet.SOMETHING);
         img.visible = false;
@@ -236,6 +248,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         lastSelected.put(curBag, body.getSelectedIndex());
         lastScrollPos.put(curBag, body.getCurrentViewY());
         lastTrapForImage = null;
+        lastPlantForImage = null;
         super.hide();
         if (INSTANCE == this) {
             INSTANCE = null;

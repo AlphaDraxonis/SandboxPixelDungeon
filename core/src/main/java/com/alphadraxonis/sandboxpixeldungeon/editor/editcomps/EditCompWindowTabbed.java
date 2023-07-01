@@ -11,6 +11,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TrapActionP
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
+import com.alphadraxonis.sandboxpixeldungeon.plants.Plant;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
@@ -36,7 +37,7 @@ public class EditCompWindowTabbed extends WndTabbed {
     private Item[] items;
 
 
-    public EditCompWindowTabbed(TileItem tileItem, Heap heap, Mob mob, Trap trap, int numTabs) {
+    public EditCompWindowTabbed(TileItem tileItem, Heap heap, Mob mob, Trap trap, Plant plant, int numTabs) {
         actionPartModifyList.clear();
         items = getItemsFromHeap(heap, numTabs);
         if (heap != null) actionPartModifyList.add(new HeapActionPart.Modify(heap));
@@ -139,6 +140,16 @@ public class EditCompWindowTabbed extends WndTabbed {
                 protected void updateObj() {
                     super.updateObj();
                     if (comps.containsKey(trap)) comps.get(trap).tabBtn.setIcon(getIcon());
+                }
+            });
+        }
+        if (plant != null) {
+            if (toSelect == null) toSelect = plant;
+            initComp(new EditPlantComp(plant) {
+                @Override
+                protected void updateObj() {
+                    super.updateObj();
+                    if (comps.containsKey(plant)) comps.get(plant).tabBtn.setIcon(getIcon());
                 }
             });
         }

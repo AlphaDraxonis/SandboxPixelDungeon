@@ -25,6 +25,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
+import com.alphadraxonis.sandboxpixeldungeon.plants.Plant;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
@@ -453,8 +454,9 @@ public class EditorScene extends PixelScene {
         Trap trap = f.traps.get(cell);
         Heap heap = f.heaps.get(cell);
         Mob mob = f.getMobAtCell(cell);
+        Plant plant = f.plants.get(cell);
 
-        DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, cell);
+        DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, plant, cell);
     }
 
     public static WndEditorInv selectItem(WndBag.ItemSelector listener) {

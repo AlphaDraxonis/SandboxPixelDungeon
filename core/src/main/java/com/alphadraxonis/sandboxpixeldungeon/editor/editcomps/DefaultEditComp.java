@@ -8,12 +8,14 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.HeapActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.MobActionPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.PlantActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TileModify;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TrapActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
+import com.alphadraxonis.sandboxpixeldungeon.plants.Plant;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
@@ -99,7 +101,7 @@ public abstract class DefaultEditComp<T> extends Component {
     }
 
 
-    public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap, int cell) {
+    public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap, Plant plant, int cell) {
 
         int numTabs = 0;
         TileItem tileItem = null;
@@ -112,10 +114,11 @@ public abstract class DefaultEditComp<T> extends Component {
         if (heap != null) numTabs++;
         if (mob != null) numTabs++;
         if (trap != null) numTabs++;
+        if (plant != null) numTabs++;
 
         if (numTabs == 0) return;
         if (numTabs > 1 || (heap != null && !heap.items.isEmpty())) {
-            Window w = new EditCompWindowTabbed(tileItem, heap, mob, trap, numTabs);
+            Window w = new EditCompWindowTabbed(tileItem, heap, mob, trap, plant, numTabs);
             if (Game.scene() instanceof EditorScene) EditorScene.show(w);
             else Game.scene().addToFront(w);
             return;
@@ -134,9 +137,12 @@ public abstract class DefaultEditComp<T> extends Component {
         } else if (mob != null) {
             content = new EditMobComp(mob);
             actionPart = new MobActionPart.Modify(mob);
-        } else {
+        } else if(trap != null){
             content = new EditTrapComp(trap);
             actionPart = new TrapActionPart.Modify(trap);
+        }else {
+            content = new EditPlantComp(plant);
+            actionPart = new PlantActionPart.Modify(plant);
         }
 
         content.setRect(0, 0, newWidth, -1);

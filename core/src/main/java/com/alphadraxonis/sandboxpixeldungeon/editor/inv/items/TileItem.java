@@ -2,6 +2,9 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.inv.items;
 
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.ENTRANCE;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.EXIT;
+import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.FURROWED_GRASS;
+import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.GRASS;
+import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.HIGH_GRASS;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.INACTIVE_TRAP;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.LOCKED_EXIT;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.SECRET_TRAP;
@@ -98,7 +101,7 @@ public class TileItem extends EditorItem {
     }
 
     public static ActionPartList place(int cell, int terrainType) {
-        return new PlaceTileActionPart(cell, terrainType);
+        return new PlaceTileActionPart(cell, terrainType, false);
     }
 
 
@@ -108,6 +111,10 @@ public class TileItem extends EditorItem {
 
     public static boolean isTrapTerrainCell(int terrain) {
         return terrain == TRAP || terrain == SECRET_TRAP || terrain == INACTIVE_TRAP;
+    }
+
+    public static boolean isGrassTerrainCell(int terrain){
+        return terrain == GRASS || terrain == HIGH_GRASS || terrain == FURROWED_GRASS;
     }
 
     public static String getName(int terrainType, int cell) {
@@ -120,7 +127,7 @@ public class TileItem extends EditorItem {
         private final int cell;
         private final PlaceCellActionPart placeCell;
 
-        public PlaceTileActionPart(int cell, int terrainType) {
+        public PlaceTileActionPart(int cell, int terrainType, boolean forceChange) {
 
             CustomLevel level = EditorScene.customLevel();
 
@@ -128,13 +135,13 @@ public class TileItem extends EditorItem {
             int oldTerrain = level.map[cell];
 
             if (oldTerrain == terrainType) {
-                if (isTrapTerrainCell(terrainType))
-                    addActionPart(placeCell = new PlaceCellActionPart(oldTerrain, terrainType, cell, level.traps.get(cell)));
+                if (forceChange)
+                    addActionPart(placeCell = new PlaceCellActionPart(oldTerrain, terrainType, cell, level.traps.get(cell), level.plants.get(cell)));
                 else placeCell = null;
                 return;//no need to continue bc nothing changes at all
             }
 
-            addActionPart(placeCell = new PlaceCellActionPart(oldTerrain, terrainType, cell, level.traps.get(cell)));
+            addActionPart(placeCell = new PlaceCellActionPart(oldTerrain, terrainType, cell, level.traps.get(cell), level.plants.get(cell)));
 
             //Transition logic
             final boolean wasExit = TileItem.isExitTerrainCell(oldTerrain);
