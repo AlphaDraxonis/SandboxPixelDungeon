@@ -272,8 +272,14 @@ public class CustomDungeon implements Bundlable {
         }
 
         if (!maybeImpSpawnLevels.isEmpty()) {
+            //always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
             level = floors.get(maybeImpSpawnLevels.get(Random.Int(maybeImpSpawnLevels.size())));
-            level.mobsToSpawn.add(new Imp(new ImpQuest()));
+            ImpQuest quest = new ImpQuest();
+            int depth = Dungeon.getSimulatedDepth(level);
+            if (depth <= 17) quest.setType(ImpQuest.MONK_QUEST);
+            else if (depth >=19) quest.setType(ImpQuest.GOLEM_QUEST);
+            else quest.setType(Random.Int(2));
+            level.mobsToSpawn.add(new Imp(quest));
         }
     }
 

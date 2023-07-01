@@ -5,7 +5,6 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
-import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
@@ -288,16 +287,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     }
 
     public int getImpQuest() {
-        //always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
-        switch (Dungeon.getSimulatedDepth(this)) {
-            case 17:
-                return ImpQuest.MONK_QUEST;//Monk quest
-            case 19:
-                return ImpQuest.GOLEM_QUEST;//Golem Quest
-            case 18:
-            default:
-                return Random.Int(2);
-        }
+        return Random.Int(2);
     }
 
     public int getPriceMultiplier() {

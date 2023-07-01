@@ -174,7 +174,7 @@ public class DungeonTileSheet {
 	public static final int FLAT_WALL_DECO_ALT  = FLAT_WALLS+5;
 	public static final int FLAT_BOOKSHELF_ALT  = FLAT_WALLS+6;
 
-	private static final int FLAT_DOORS         =                           xy(1, 6);   //16 slots
+	private static final int FLAT_DOORS         =                           xy(1, 5);   //16 slots
 	public static final int FLAT_DOOR           = FLAT_DOORS+8;
 	public static final int FLAT_DOOR_OPEN      = FLAT_DOORS+9;
 	public static final int FLAT_DOOR_LOCKED    = FLAT_DOORS+10;
