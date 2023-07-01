@@ -95,21 +95,29 @@ public abstract class RegularLevel extends Level {
 	@Override
 	protected boolean build() {
 
-		ArrayList<Room> initRooms = initRooms();
+		ArrayList<Room> initRooms;
+		if (this instanceof SewerBossLevel) {
+			builder = builder();
+			initRooms = initRooms();
+		} else {
 
-		if (levelScheme.builder == null) {
-			boolean canUseFigureEight = false;
-			for (Room r : initRooms) {
-				if (r.maxConnections(Room.ALL) >= 4 && !(r instanceof EntranceRoom) && !(r instanceof ExitRoom)) {
-					canUseFigureEight = true;
-					break;
+			initRooms = initRooms();
+
+			if (levelScheme.builder == null) {
+				boolean canUseFigureEight = false;
+				for (Room r : initRooms) {
+					if (r.maxConnections(Room.ALL) >= 4 && !(r instanceof EntranceRoom) && !(r instanceof ExitRoom)) {
+						canUseFigureEight = true;
+						break;
+					}
 				}
-			}
 
-			do {
-				builder = builder();
-			} while (!canUseFigureEight && builder instanceof FigureEightBuilder);
-		} else builder = Reflection.newInstance(levelScheme.builder);
+				do {
+					builder = builder();
+				} while (!canUseFigureEight && builder instanceof FigureEightBuilder);
+			} else
+				builder = Reflection.newInstance(levelScheme.builder);//TODO use objects here as well!
+		}
 
 		Random.shuffle(initRooms);
 
