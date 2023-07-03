@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.watabou.utils.Random;
 import com.watabou.utils.SparseArray;
@@ -135,15 +134,10 @@ public class DungeonTileSheet {
 		chasmStitcheable.put( Terrain.BOOKSHELF,    CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.BARRICADE,    CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.PEDESTAL,     CHASM_FLOOR );
-		chasmStitcheable.put( Terrain.ENTRANCE,     CHASM_FLOOR );
-		chasmStitcheable.put( Terrain.EXIT,         CHASM_FLOOR );
-		chasmStitcheable.put( Terrain.LOCKED_EXIT,  CHASM_FLOOR );
-		chasmStitcheable.put( Terrain.UNLOCKED_EXIT,CHASM_FLOOR );
 
 		//special floor
 		chasmStitcheable.put( Terrain.EMPTY_SP,     CHASM_FLOOR_SP );
 		chasmStitcheable.put( Terrain.STATUE_SP,    CHASM_FLOOR_SP );
-		chasmStitcheable.put( Terrain.ALCHEMY,      CHASM_FLOOR_SP );
 
 		//wall
 		chasmStitcheable.put( Terrain.WALL,         CHASM_WALL );
@@ -151,7 +145,6 @@ public class DungeonTileSheet {
 		chasmStitcheable.put( Terrain.OPEN_DOOR,    CHASM_WALL );
 		chasmStitcheable.put( Terrain.LOCKED_DOOR,  CHASM_WALL );
 		chasmStitcheable.put( Terrain.SECRET_DOOR,  CHASM_WALL );
-		chasmStitcheable.put( Terrain.CRYSTAL_DOOR, CHASM_WALL );
 		chasmStitcheable.put( Terrain.WALL_DECO,    CHASM_WALL );
 
 		//water
@@ -175,14 +168,12 @@ public class DungeonTileSheet {
 	public static final int FLAT_WALL_DECO_ALT  = FLAT_WALLS+5;
 	public static final int FLAT_BOOKSHELF_ALT  = FLAT_WALLS+6;
 
-	private static final int FLAT_DOORS         =                           xy(1, 5);   //16 slots
-	public static final int FLAT_DOOR           = FLAT_DOORS+8;
-	public static final int FLAT_DOOR_OPEN      = FLAT_DOORS+9;
-	public static final int FLAT_DOOR_LOCKED    = FLAT_DOORS+10;
-	public static final int FLAT_DOOR_CRYSTAL   = FLAT_DOORS+11;
-	public static final int UNLOCKED_EXIT       = FLAT_DOORS+12;
-	public static final int LOCKED_EXIT         = FLAT_DOORS+13;
-	public static final int FLAT_DOOR_SECRET    = FLAT_DOORS+14;
+	public static final int FLAT_DOOR           = FLAT_WALLS+8;
+	public static final int FLAT_DOOR_OPEN      = FLAT_WALLS+9;
+	public static final int FLAT_DOOR_LOCKED    = FLAT_WALLS+10;
+	public static final int FLAT_DOOR_CRYSTAL   = FLAT_WALLS+11;
+	public static final int UNLOCKED_EXIT       = FLAT_WALLS+12;
+	public static final int LOCKED_EXIT         = FLAT_WALLS+13;
 
 	public static final int FLAT_OTHER          =                           xy(1, 6);   //16 slots
 	public static final int FLAT_SIGN           = FLAT_OTHER+0;
@@ -243,7 +234,6 @@ public class DungeonTileSheet {
 
 		if (!wallStitcheable(right))   result += 1;
 		if (!wallStitcheable(left))    result += 2;
-
 		return result;
 	}
 
@@ -297,7 +287,6 @@ public class DungeonTileSheet {
 	public static final int RAISED_FURROWED_OVER_ALT    = RAISED_OTHER+12;
 
 
-
 	/**********************************************************************
 	 * Raised Tiles, Upper Layer
 	 **********************************************************************/
@@ -312,9 +301,7 @@ public class DungeonTileSheet {
 		int result;
 
 		if (tile == Terrain.BOOKSHELF || below == Terrain.BOOKSHELF)        result = WALL_INTERNAL_WOODEN;
-			//TODO currently this line on triggers on mining floors, do we want to make it universal?
-		else if (Dungeon.branch == 1 &&
-				(tile == Terrain.WALL_DECO || below == Terrain.WALL_DECO))   result = WALL_INTERNAL_DECO;
+		else if (tile == Terrain.WALL_DECO || below == Terrain.WALL_DECO)   result = WALL_INTERNAL_DECO;
 		else                                                                result = WALL_INTERNAL;
 
 		if (!wallStitcheable(right))        result += 1;
@@ -334,6 +321,7 @@ public class DungeonTileSheet {
 	public static final int DOOR_SIDEWAYS_OVERHANG_LOCKED   = WALLS_OVERHANG+24;
 	public static final int DOOR_SIDEWAYS_OVERHANG_CRYSTAL  = WALLS_OVERHANG+28;
 
+
 	public static int stitchWallOverhangTile(int tile, int rightBelow, int below, int leftBelow){
 		int visual;
 		if (tile == Terrain.OPEN_DOOR)                              visual = DOOR_SIDEWAYS_OVERHANG;
@@ -350,7 +338,6 @@ public class DungeonTileSheet {
 		return visual;
 	}
 
-	//no attachment to adjacent walls
 	private static final int OTHER_OVERHANG             =                   xy(1, 16);  //16 slots
 	public static final int STATUE_OVERHANG             = OTHER_OVERHANG+0;
 	public static final int ALCHEMY_POT_OVERHANG        = OTHER_OVERHANG+1;
