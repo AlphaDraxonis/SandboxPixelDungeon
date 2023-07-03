@@ -69,7 +69,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public List<Mob> mobsToSpawn;
     public List<Room> roomsToSpawn;//TODO also choose builder
-    public List<Item> itemsToSpawn;
+    public List<Item> itemsToSpawn, prizeItemsToSpawn;
 
     public boolean spawnStandartRooms = true, spawnSecretRooms = true, spawnSpecialRooms = true;
     public boolean spawnMobs = true, spawnItems = true;
@@ -85,9 +85,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         this.name = Level.NONE;
         this.level = level;
         this.numInRegion = numInRegion;
-        mobsToSpawn = new ArrayList<>();
-        roomsToSpawn = new ArrayList<>();
-        itemsToSpawn = new ArrayList<>();
+        mobsToSpawn = new ArrayList<>(4);
+        roomsToSpawn = new ArrayList<>(4);
+        itemsToSpawn = new ArrayList<>(4);
+        prizeItemsToSpawn = new ArrayList<>(4);
     }
 
     public void initNewLevelScheme(String name, Class<? extends Level> levelTemplate) {
@@ -130,6 +131,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         mobsToSpawn = new ArrayList<>(4);
         roomsToSpawn = new ArrayList<>(4);
         itemsToSpawn = new ArrayList<>(4);
+        prizeItemsToSpawn = new ArrayList<>(4);
         if (depth < 26) setChasm(Integer.toString(depth + 1));
 
         switch (depth) {
@@ -425,6 +427,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
                     }
                 }
             }
+            itemsToSpawn.addAll(prizeItemsToSpawn);
         }
 
         for (Item item : itemsToSpawn) {
@@ -484,6 +487,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     private static final String MOBS_TO_SPAWN = "mobs_to_spawn";
     private static final String ROOMS_TO_SPAWN = "rooms_to_spawn";
     private static final String ITEMS_TO_SPAWN = "items_to_spawn";
+    private static final String PRIZE_ITEMS_TO_SPAWN = "prize_items_to_spawn";
     private static final String SPAWN_STANDART_ROOMS = "spawn_standart_rooms";
     private static final String SPAWN_SECRET_ROOMS = "spawn_secret_rooms";
     private static final String SPAWN_SPECIAL_ROOMS = "spawn_special_rooms";
@@ -524,6 +528,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
         bundle.put(MOBS_TO_SPAWN, mobsToSpawn);
         bundle.put(ITEMS_TO_SPAWN, itemsToSpawn);
+        bundle.put(PRIZE_ITEMS_TO_SPAWN, prizeItemsToSpawn);
         bundle.put(ROOMS_TO_SPAWN, roomsToSpawn);
         bundle.put(SPAWN_STANDART_ROOMS, spawnStandartRooms);
         bundle.put(SPAWN_SPECIAL_ROOMS, spawnSpecialRooms);
@@ -568,6 +573,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         itemsToSpawn = new ArrayList<>();
         if (bundle.contains(ITEMS_TO_SPAWN))
             for (Bundlable l : bundle.getCollection(ITEMS_TO_SPAWN)) itemsToSpawn.add((Item) l);
+
+        prizeItemsToSpawn = new ArrayList<>();
+        if (bundle.contains(PRIZE_ITEMS_TO_SPAWN))
+            for (Bundlable l : bundle.getCollection(PRIZE_ITEMS_TO_SPAWN)) prizeItemsToSpawn.add((Item) l);
 
         roomsToSpawn = new ArrayList<>();
         if (bundle.contains(ROOMS_TO_SPAWN))

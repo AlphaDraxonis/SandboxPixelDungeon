@@ -12,6 +12,7 @@ public final class EditorUtilies {
 
 
     public static final Item[] EMPTY_ITEM_ARRAY = new Item[0];
+    public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 
     private EditorUtilies() {

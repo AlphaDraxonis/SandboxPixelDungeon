@@ -56,6 +56,7 @@ public class WndNewFloor extends WndTabbed {
         newLevelScheme.itemsToSpawn = new ArrayList<>(3);
         newLevelScheme.roomsToSpawn = new ArrayList<>(3);
         newLevelScheme.mobsToSpawn = new ArrayList<>(3);
+        newLevelScheme.prizeItemsToSpawn = new ArrayList<>(3);
 
 
         OwnTab[] tbs = {

@@ -20,15 +20,20 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.ItemStatusHandler;
+import com.alphadraxonis.sandboxpixeldungeon.items.Stylus;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.Potion;
+import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfStrength;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.brews.Brew;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.elixirs.Elixir;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.Scroll;
+import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.exotic.ExoticScroll;
+import com.alphadraxonis.sandboxpixeldungeon.items.stones.StoneOfEnchantment;
+import com.alphadraxonis.sandboxpixeldungeon.items.stones.StoneOfIntuition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BlacksmithRoom;
@@ -59,25 +64,21 @@ public class CustomDungeon implements Bundlable {
 
     public boolean opMode = DeviceCompat.isDebug();//TODO settings what to enable exactly (dont release for now)
     //Perks:
-    // - permainvisiblility
-    // - permamindvision
-    // - take 0 dmg
+    // - perma-invisiblility
+    // - perma-mindvision
+    // - take 0 dmg from all sources
     // - infinite accuracy
-    // - see hidden traps
+    // - see hidden traps and doors
     // - infinite keys
+    // - maybe add ScrollOfDebug?
 
     //FIXME: Was noch zu tun ist  FIXME FIXME TODO System.err.println()
-    //improve gui
-    //plants platzierbar wichtig
     //general floor overview stuff
-    //hidden doors wichtig
     //camera controllieren von EditorScene,  settings für EditorScene
     //custom tiles wichtig
-
-    //TODO discord server erstellen
-
-    //upload System.err.println() FIXME remove!!  (github, description, apk, releasebuild, discord)
-    //debug
+    //select builder and painter
+    //place blobs like fire
+    //Category items/mobs/rooms
 
     private String name;
     private String lastEditedFloor;
@@ -85,7 +86,7 @@ public class CustomDungeon implements Bundlable {
     private String startFloor;
     private Set<String> ratKingLevels;
     private List<String> maybeGhostSpawnLevels, maybeWandmakerSpawnLevels, maybeBlacksmithSpawnLevels, maybeImpSpawnLevels;
-    //    private Map<> itemDistribution
+    private List<ItemDistribution<? extends Bundlable>> itemDistributions;
     private Map<String, LevelScheme> floors = new HashMap<>();
     private int startGold, startEnergy;
 
@@ -97,6 +98,7 @@ public class CustomDungeon implements Bundlable {
         maybeWandmakerSpawnLevels = new ArrayList<>(5);
         maybeBlacksmithSpawnLevels = new ArrayList<>(5);
         maybeImpSpawnLevels = new ArrayList<>(5);
+        itemDistributions = new ArrayList<>(5);
     }
 
     public CustomDungeon() {
@@ -277,7 +279,7 @@ public class CustomDungeon implements Bundlable {
             ImpQuest quest = new ImpQuest();
             int depth = Dungeon.getSimulatedDepth(level);
             if (depth <= 17) quest.setType(ImpQuest.MONK_QUEST);
-            else if (depth >=19) quest.setType(ImpQuest.GOLEM_QUEST);
+            else if (depth >= 19) quest.setType(ImpQuest.GOLEM_QUEST);
             else quest.setType(Random.Int(2));
             level.mobsToSpawn.add(new Imp(quest));
         }
@@ -303,6 +305,15 @@ public class CustomDungeon implements Bundlable {
         this.lastEditedFloor = lastEditedFloor;
     }
 
+    public void initDistribution() {
+        Random.pushGenerator(Dungeon.seed + 5);
+        for (ItemDistribution<?> dis : itemDistributions) {
+            Random.Long();
+            dis.initForPlaying();
+        }
+        Random.popGenerator();
+    }
+
     public void initDefault() {
 
         for (int depth = 1; depth <= 26; depth++) {
@@ -311,6 +322,47 @@ public class CustomDungeon implements Bundlable {
             addFloor(l);
         }
 
+        for (int i = 0; i < 5; i++) {
+            ItemDistribution.Items sou = new ItemDistribution.Items(true);
+            sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
+            sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
+            sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
+            sou.getLevels().add(Integer.toString(i * 5 + 1));
+            sou.getLevels().add(Integer.toString(i * 5 + 2));
+            sou.getLevels().add(Integer.toString(i * 5 + 3));
+            sou.getLevels().add(Integer.toString(i * 5 + 4));
+            itemDistributions.add(sou);
+        }
+        for (int i = 0; i < 10; i++) {
+            ItemDistribution.Items poStr = new ItemDistribution.Items(true);
+            poStr.getObjectsToDistribute().add(new PotionOfStrength());
+            poStr.getLevels().add(Integer.toString(i * 2 + 1 + i / 2));
+            poStr.getLevels().add(Integer.toString(i * 2 + 2 + i / 2));
+            itemDistributions.add(poStr);
+        }
+        for (int i = 0; i < 5; i++) {
+            ItemDistribution.Items sty = new ItemDistribution.Items(true);
+            sty.getObjectsToDistribute().add(new Stylus());
+            sty.getLevels().add(Integer.toString(i * 5 + 1));
+            sty.getLevels().add(Integer.toString(i * 5 + 2));
+            sty.getLevels().add(Integer.toString(i * 5 + 3));
+            sty.getLevels().add(Integer.toString(i * 5 + 4));
+            itemDistributions.add(sty);
+        }
+        ItemDistribution.Items soTransmutation = new ItemDistribution.Items(true);
+        soTransmutation.getObjectsToDistribute().add(new StoneOfEnchantment());//I wonder if the comment in shatteredPD is an mistake...
+        for (int i = 6; i < 20; i++) {
+            if (i % 5 != 0) soTransmutation.getLevels().add(Integer.toString(i));
+        }
+        itemDistributions.add(soTransmutation);
+
+        //TODO bei der Erstellung automatisch ggf zu Spawnitems adden (auch food) -> dafür CategoryPlaceholders
+        ItemDistribution.Items stIntu = new ItemDistribution.Items(true);
+        stIntu.getObjectsToDistribute().add(new StoneOfIntuition());
+        for (int i = 1; i <= 3; i++) {
+            stIntu.getLevels().add(Integer.toString(i));
+        }
+        itemDistributions.add(stIntu);
 
         if (startFloor == null) startFloor = "1";
         ratKingLevels.add("5");
@@ -333,8 +385,9 @@ public class CustomDungeon implements Bundlable {
     public static boolean isEditing() {
         return Game.scene() instanceof EditorScene || Game.scene() instanceof FloorOverviewScene;
     }
-    public static boolean showHiddenDoors(){
-        return isEditing();
+
+    public static boolean showHiddenDoors() {
+        return isEditing() || getDungeon().opMode;
     }
 
 
@@ -346,6 +399,7 @@ public class CustomDungeon implements Bundlable {
     private static final String MAYBE_WANDMAKER_SPAWN_LEVELS = "maybe_wandmaker_spawn_levels";
     private static final String MAYBE_BLACKSMITH_SPAWN_LEVELS = "maybe_blacksmith_spawn_levels";
     private static final String MAYBE_IMP_SPAWN_LEVELS = "maybe_imp_spawn_levels";
+    private static final String ITEM_DISTRIBUTION = "item_distribution";
     private static final String START_GOLD = "start_gold";
     private static final String START_ENERGY = "start_energy";
     private static final String LEVEL_SCHEME = "level_scheme";
@@ -368,6 +422,7 @@ public class CustomDungeon implements Bundlable {
         bundle.put(MAYBE_WANDMAKER_SPAWN_LEVELS, maybeWandmakerSpawnLevels.toArray(EMPTY_STRING_ARRAY));
         bundle.put(MAYBE_BLACKSMITH_SPAWN_LEVELS, maybeBlacksmithSpawnLevels.toArray(EMPTY_STRING_ARRAY));
         bundle.put(MAYBE_IMP_SPAWN_LEVELS, maybeImpSpawnLevels.toArray(EMPTY_STRING_ARRAY));
+        bundle.put(ITEM_DISTRIBUTION, itemDistributions);
         bundle.put(START_GOLD, startGold);
         bundle.put(START_ENERGY, startEnergy);
 
@@ -430,6 +485,11 @@ public class CustomDungeon implements Bundlable {
         maybeWandmakerSpawnLevels = new ArrayList<>(Arrays.asList(bundle.getStringArray(MAYBE_WANDMAKER_SPAWN_LEVELS)));
         maybeBlacksmithSpawnLevels = new ArrayList<>(Arrays.asList(bundle.getStringArray(MAYBE_BLACKSMITH_SPAWN_LEVELS)));
         maybeImpSpawnLevels = new ArrayList<>(Arrays.asList(bundle.getStringArray(MAYBE_IMP_SPAWN_LEVELS)));
+        itemDistributions = new ArrayList<>(5);
+        if (bundle.contains(ITEM_DISTRIBUTION)) {
+            Collection<?> col = bundle.getCollection(ITEM_DISTRIBUTION);
+            itemDistributions.addAll((Collection<? extends ItemDistribution<? extends Bundlable>>) col);
+        }
         startGold = bundle.getInt(START_GOLD);
         startEnergy = bundle.getInt(START_ENERGY);
 

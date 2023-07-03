@@ -67,8 +67,6 @@ import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.TalismanOfForesight
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfStrength;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfUpgrade;
-import com.alphadraxonis.sandboxpixeldungeon.items.stones.StoneOfEnchantment;
-import com.alphadraxonis.sandboxpixeldungeon.items.stones.StoneOfIntuition;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfWarding;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.HeavyBoomerang;
@@ -203,6 +201,11 @@ public abstract class Level implements Bundlable {
 
             if(levelScheme.spawnItems){
 
+                for(Item item : levelScheme.prizeItemsToSpawn){
+                    addItemToSpawn(item);
+                    item.reset();//important for scroll runes being inited
+                }
+
                 addItemToSpawn(Generator.random(Generator.Category.FOOD));
 
                 if (Dungeon.isChallenged(Challenges.DARKNESS)) {
@@ -220,16 +223,6 @@ public abstract class Level implements Bundlable {
                 if (Dungeon.asNeeded()) {
                     addItemToSpawn(new Stylus());
                     Dungeon.LimitedDrops.ARCANE_STYLI.count++;
-                }
-                //one scroll of transmutation is guaranteed to spawn somewhere on chapter 2-4
-                int enchChapter = (int) ((Dungeon.seed / 10) % 3) + 2;
-                if (levelScheme.getRegion() == enchChapter &&
-                        Dungeon.seed % 4 + 1 == levelScheme.getNumInRegion()) {
-                    addItemToSpawn(new StoneOfEnchantment());
-                }
-
-                if (Dungeon.getSimulatedDepth(levelScheme) == ((Dungeon.seed % 3) + 1)) {
-                    addItemToSpawn(new StoneOfIntuition());
                 }
             }
 
@@ -759,7 +752,8 @@ public abstract class Level implements Bundlable {
     }
 
     public int randomRespawnCell(Char ch, boolean guarantee) {
-        PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(passable, avoid, null));
+        boolean checkPath = Dungeon.hero.pos > 0;
+        if(checkPath) PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(passable, avoid, null));
 
         int cell;
         int count = guarantee ? length() : 300;
@@ -774,7 +768,7 @@ public abstract class Level implements Bundlable {
                                 && Actor.findChar(cell) == null
                                 && (!(ch instanceof Piranha) || map[cell] == Terrain.WATER)
                                 && getMobAtCell(cell) == null
-                                && PathFinder.distance[cell] != Integer.MAX_VALUE)
+                                && (!checkPath || PathFinder.distance[cell] != Integer.MAX_VALUE))
                         return cell;//choose first valid cell
                     }
                 }
@@ -788,7 +782,7 @@ public abstract class Level implements Bundlable {
                 || Actor.findChar(cell) != null
                 || (ch instanceof Piranha && map[cell] != Terrain.WATER)
                 || getMobAtCell(cell) != null
-                || PathFinder.distance[cell] == Integer.MAX_VALUE);
+                || (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE));
 
         return cell;
     }

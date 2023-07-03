@@ -11,6 +11,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.alphadraxonis.sandboxpixeldungeon.items.Ankh;
 import com.alphadraxonis.sandboxpixeldungeon.items.Gold;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -46,6 +47,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected final LevelSpinner levelSpinner;
     protected final CheckBox levelKnown;
     protected final CheckBox cursedKnown;
+    protected final CheckBox blessed;
     protected final AugumentationSpinner augumentationSpinner;
     protected final RedButton enchantBtn;
     protected final ChooseDestLevelComp keylevel;
@@ -149,6 +151,19 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(augumentationSpinner);
         } else augumentationSpinner = null;
 
+        if (item instanceof Ankh) {
+            blessed = new CheckBox(Messages.get(EditItemComp.class, "blessed")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    ((Ankh) item).blessed = value;
+                    updateObj();
+                }
+            };
+            blessed.checked(((Ankh) item).blessed);
+            add(blessed);
+        } else blessed = null;
+
         if (item instanceof Key) {
             keylevel = new ChooseDestLevelComp(Messages.get(EditItemComp.class, "floor")) {
                 @Override
@@ -167,7 +182,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(keylevel);
         } else keylevel = null;
 
-        comps = new Component[]{quantity, keylevel, levelSpinner, augumentationSpinner, curseBtn, cursedKnown, levelKnown, enchantBtn};
+        comps = new Component[]{quantity, keylevel, levelSpinner, augumentationSpinner, curseBtn, cursedKnown, levelKnown, enchantBtn, blessed};
     }
 
     @Override

@@ -262,6 +262,7 @@ public class Dungeon {
         //TODO assign groups here to the different levels
 
         customDungeon.calculateQuestLevels();
+        customDungeon.initDistribution();
 
         SpecialRoom.initForRun();
         SecretRoom.initForRun();
@@ -487,48 +488,51 @@ public class Dungeon {
     public static boolean posNeeded() {
         if (CustomDungeon.isEditing()) return Random.Int(2) == 0;
         if (visitedDepths.contains(Dungeon.depth)) return false;
-        //2 POS each floor set
-        int posLeftThisSet = 2 - (LimitedDrops.STRENGTH_POTIONS.count - (depth / 5) * 2);
-        if (posLeftThisSet <= 0) return false;
-
-        int floorThisSet = (depth % 5);
-
-        //pos drops every two floors, (numbers 1-2, and 3-4) with a 50% chance for the earlier one each time.
-        int targetPOSLeft = 2 - floorThisSet / 2;
-        if (floorThisSet % 2 == 1 && Random.Int(2) == 0) targetPOSLeft--;
-
-        if (targetPOSLeft < posLeftThisSet) return true;
-        else return false;
+        return false;//uses ItemDistribution
+//        //2 POS each floor set
+//        int posLeftThisSet = 2 - (LimitedDrops.STRENGTH_POTIONS.count - (depth / 5) * 2);
+//        if (posLeftThisSet <= 0) return false;
+//
+//        int floorThisSet = (depth % 5);
+//
+//        //pos drops every two floors, (numbers 1-2, and 3-4) with a 50% chance for the earlier one each time.
+//        int targetPOSLeft = 2 - floorThisSet / 2;
+//        if (floorThisSet % 2 == 1 && Random.Int(2) == 0) targetPOSLeft--;
+//
+//        if (targetPOSLeft < posLeftThisSet) return true;
+//        else return false;
 
     }
 
     public static boolean souNeeded() {
         if (CustomDungeon.isEditing()) return Random.Int(4) <= 2;
         if (visitedDepths.contains(Dungeon.depth)) return false;
-        int souLeftThisSet;
-        //3 SOU each floor set, 1.5 (rounded) on forbidden runes challenge
-        if (isChallenged(Challenges.NO_SCROLLS)) {
-            souLeftThisSet = Math.round(1.5f - (LimitedDrops.UPGRADE_SCROLLS.count - (depth / 5) * 1.5f));
-        } else {
-            souLeftThisSet = 3 - (LimitedDrops.UPGRADE_SCROLLS.count - (depth / 5) * 3);
-        }
-        if (souLeftThisSet <= 0) return false;
-
-        int floorThisSet = (depth % 5);
-        //chance is floors left / scrolls left
-        return Random.Int(5 - floorThisSet) < souLeftThisSet;
+        return false;//uses ItemDistribution
+//        int souLeftThisSet;
+//        //3 SOU each floor set, 1.5 (rounded) on forbidden runes challenge
+//        if (isChallenged(Challenges.NO_SCROLLS)) {
+//            souLeftThisSet = Math.round(1.5f - (LimitedDrops.UPGRADE_SCROLLS.count - (depth / 5) * 1.5f));
+//        } else {
+//            souLeftThisSet = 3 - (LimitedDrops.UPGRADE_SCROLLS.count - (depth / 5) * 3);
+//        }
+//        if (souLeftThisSet <= 0) return false;
+//
+//        int floorThisSet = (depth % 5);
+//        //chance is floors left / scrolls left
+//        return Random.Int(5 - floorThisSet) < souLeftThisSet;
     }
 
     public static boolean asNeeded() {
         if (CustomDungeon.isEditing()) return Random.Int(4) == 0;
         if (visitedDepths.contains(Dungeon.depth)) return false;
-        //1 AS each floor set
-        int asLeftThisSet = 1 - (LimitedDrops.ARCANE_STYLI.count - (depth / 5));
-        if (asLeftThisSet <= 0) return false;
-
-        int floorThisSet = (depth % 5);
-        //chance is floors left / scrolls left
-        return Random.Int(5 - floorThisSet) < asLeftThisSet;
+        return false;//uses ItemDistribution
+//        //1 AS each floor set
+//        int asLeftThisSet = 1 - (LimitedDrops.ARCANE_STYLI.count - (depth / 5));
+//        if (asLeftThisSet <= 0) return false;
+//
+//        int floorThisSet = (depth % 5);
+//        //chance is floors left / scrolls left
+//        return Random.Int(5 - floorThisSet) < asLeftThisSet;
     }
 
     private static final String INIT_VER = "init_ver";

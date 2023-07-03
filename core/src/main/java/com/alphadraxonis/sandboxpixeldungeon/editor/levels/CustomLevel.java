@@ -158,7 +158,9 @@ public class CustomLevel extends Level {
             temp.mobsToSpawn = new ArrayList<>(levelScheme.mobsToSpawn);
             levelScheme.mobsToSpawn.clear();
             temp.itemsToSpawn = new ArrayList<>(levelScheme.itemsToSpawn);
+            temp.itemsToSpawn.addAll(levelScheme.prizeItemsToSpawn);
             levelScheme.itemsToSpawn.clear();
+            levelScheme.prizeItemsToSpawn.clear();
 
             Dungeon.customDungeon.addFloor(temp);
             Dungeon.levelName = Level.NONE;

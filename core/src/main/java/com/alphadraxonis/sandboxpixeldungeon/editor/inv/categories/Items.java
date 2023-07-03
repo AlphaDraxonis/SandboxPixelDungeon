@@ -20,6 +20,7 @@ import static com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet.WEAP
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.ItemItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.items.Amulet;
+import com.alphadraxonis.sandboxpixeldungeon.items.Ankh;
 import com.alphadraxonis.sandboxpixeldungeon.items.ArcaneResin;
 import com.alphadraxonis.sandboxpixeldungeon.items.EnergyCrystal;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -675,6 +676,7 @@ public enum Items {
                 Stylus.class,
                 Honeypot.class,
                 Honeypot.ShatteredPot.class,
+                Ankh.class,
                 Waterskin.class,
                 TengusMask.class,
                 KingsCrown.class,

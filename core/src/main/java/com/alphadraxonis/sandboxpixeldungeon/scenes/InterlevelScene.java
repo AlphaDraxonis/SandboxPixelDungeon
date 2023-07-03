@@ -522,7 +522,8 @@ public class InterlevelScene extends PixelScene {
                 tries++;
 
                 //prevents spawning on traps or plants, prefers farther locations first
-            } while (level.traps.get(Dungeon.hero.pos) != null
+            } while (Dungeon.hero.pos == -1
+                    || level.traps.get(Dungeon.hero.pos) != null
                     || (level.plants.get(Dungeon.hero.pos) != null && tries < 500)
                     || level.trueDistance(invPos, Dungeon.hero.pos) <= 30 - (tries / 10));
 
