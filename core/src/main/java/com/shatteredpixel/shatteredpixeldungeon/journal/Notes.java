@@ -32,7 +32,8 @@ import java.util.ArrayList;
 public class Notes {
 	
 	public static abstract class Record implements /*Comparable<Record>,*/ Bundlable {
-		
+
+		//TODO currently notes can only relate to branch = 0, add branch support here if that changes
 		protected String levelName;
 
 		public String levelName(){
