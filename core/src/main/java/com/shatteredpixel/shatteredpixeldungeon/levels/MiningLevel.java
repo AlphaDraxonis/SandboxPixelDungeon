@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.Tilemap;
+import com.watabou.noosa.audio.Music;
 
 public class MiningLevel extends Level {
 
@@ -45,6 +46,14 @@ public class MiningLevel extends Level {
     }
 
     @Override
+	public void playLevelMusic() {
+		Music.INSTANCE.playTracks(
+				new String[]{Assets.Music.CAVES_1, Assets.Music.CAVES_2, Assets.Music.CAVES_2},
+				new float[]{1, 1, 0.5f},
+				false);
+	}
+
+	@Override
     public String tilesTex() {
         return Assets.Environment.TILES_CAVES;
     }
