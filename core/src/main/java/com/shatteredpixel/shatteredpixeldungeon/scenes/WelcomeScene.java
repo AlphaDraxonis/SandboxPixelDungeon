@@ -53,7 +53,7 @@ import java.util.Collections;
 
 public class WelcomeScene extends PixelScene {
 
-	private static final int LATEST_UPDATE = SandboxPixelDungeon._0_3_v2_1_0;
+	private static final int LATEST_UPDATE = SandboxPixelDungeon._0_8_v2_1_4;
 
 	//used so that the game does not keep showing the window forever if cleaning fails
 	private static boolean triedCleaningTemp = false;
