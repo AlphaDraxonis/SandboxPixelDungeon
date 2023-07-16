@@ -540,7 +540,21 @@ public class Generator {
 	public static Category randomCategory(){
 		return Random.chances( categoryProbs );
 	}
-	
+
+	//reverts changes to drop chances generates by this item
+	public static void undoDrop(Item item){
+		for (Category cat : Category.values()){
+			if (item.getClass().isAssignableFrom(cat.superClass)){
+				if (cat.defaultProbs == null) continue;
+				for (int i = 0; i < cat.classes.length; i++){
+					if (item.getClass() == cat.classes[i]){
+						cat.probs[i]++;
+					}
+				}
+			}
+		}
+	}
+
 	public static Item random() {
 		Category cat = randomCategory();
 		if (cat == null){
