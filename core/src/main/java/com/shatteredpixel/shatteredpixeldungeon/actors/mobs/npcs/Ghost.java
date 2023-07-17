@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FetidRat;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollTrickster;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GreatCrab;
@@ -45,18 +46,20 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndSadGhost;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
 
 import java.util.List;
 
 public class Ghost extends QuestNPC<GhostQuest> {
 
-    {
-        spriteClass = GhostSprite.class;
-
-        flying = true;
-
-        state = WANDERING;
-    }
+	{
+		spriteClass = GhostSprite.class;
+		
+		flying = true;
+		
+		state = PASSIVE;
+	}
 
     public Ghost() {
     }
@@ -81,23 +84,32 @@ public class Ghost extends QuestNPC<GhostQuest> {
         }
         return super.act();
     }
+	
+	@Override
+	public float speed() {
+		return quest != null && quest.type() >= 0 && quest.completed() ? 2f : 0.5f;
+	}
+	
+	@Override
+	protected Char chooseEnemy() {
+		return null;
+	}
 
-    @Override
-    public float speed() {
-        return quest != null && quest.type() >= 0 && quest.completed() ? 2f : 0.5f;
-    }
-
-    @Override
-    protected Char chooseEnemy() {
-        return null;
-    }
-
-
-    @Override
-    public boolean interact(Char c) {
-        sprite.turnTo(pos, c.pos);
-
-        Sample.INSTANCE.play(Assets.Sounds.GHOST);
+	@Override
+	public boolean add( Buff buff ) {
+		return false;
+	}
+	
+	@Override
+	public boolean reset() {
+		return true;
+	}
+	
+	@Override
+	public boolean interact(Char c) {
+		sprite.turnTo( pos, c.pos );
+		
+		Sample.INSTANCE.play( Assets.Sounds.GHOST );
 
         if (c != Dungeon.hero) {
             return super.interact(c);
@@ -140,45 +152,73 @@ public class Ghost extends QuestNPC<GhostQuest> {
                 Mob questBoss;
                 String txt_quest = Messages.get(this, quest.getMessageString()+"_1", Messages.titleCase(Dungeon.hero.name()));
 
-                switch (quest.type()) {
-                    case GhostQuest.RAT:
-                    default:
-                        questBoss = new FetidRat(this);
-                        break;
-                    case GhostQuest.GNOLL:
-                        questBoss = new GnollTrickster(this);
-                        break;
-                    case GhostQuest.CRAB:
-                        questBoss = new GreatCrab(this);
-                        break;
-                }
+			switch (quest.type()){
+				case GhostQuest.RAT: default:
+					questBoss = new FetidRat(this);
+					txt_quest = Messages.get(this, "rat_1", Messages.titleCase(Dungeon.hero.name())); break;
+				case GhostQuest.GNOLL:
+					questBoss = new GnollTrickster(this);
+					txt_quest = Messages.get(this, "gnoll_1", Messages.titleCase(Dungeon.hero.name())); break;
+				case GhostQuest.CRAB:
+					questBoss = new GreatCrab(this);
+					txt_quest = Messages.get(this, "crab_1", Messages.titleCase(Dungeon.hero.name())); break;
+			}
 
-                questBoss.pos = Dungeon.level.randomRespawnCell(this, true);
+			questBoss.pos = Dungeon.level.randomRespawnCell( this, true );
 
-                if (questBoss.pos != -1) {
-                    GameScene.add(questBoss);
-                    quest.start();
-                    Game.runOnRenderThread(new Callback() {
-                        @Override
-                        public void call() {
-                            GameScene.show(new WndQuest(Ghost.this, txt_quest));
-                        }
-                    });
-                } else GLog.n(Messages.get(this, "no_boss_warning"));
+			if (questBoss.pos != -1) {
+				GameScene.add(questBoss);
+				quest.start();
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						GameScene.show( new WndQuest( Ghost.this, txt_quest ) );
+					}
+				});
+			} else GLog.n(Messages.get(this, "no_boss_warning"));
 
-            }
-        }
+		}}
 
-        return true;
-    }
+		return true;
+	}
 
     @Override
     public void place(RegularLevel level, List<Room> rooms) {
-        int tries = level.length();
-        do {
-            pos = level.randomRespawnCell(this);
-            tries--;
-        } while (pos == -1 && tries > 0);
+		Room exit = findExittzz;
+		if(exit != null) {
+			boolean validPos;
+			//spawn along the border, but not on the exit, a trap, or in front of a door
+			do {
+				validPos = true;
+				Point point = new Point();
+				if (Random.Int(2) == 0) {
+					point.x = Random.Int(2) == 0 ? exit.left + 1 : exit.right - 1;
+					point.y = Random.IntRange(exit.top + 1, exit.bottom - 1);
+				} else {
+					point.x = Random.IntRange(exit.left + 1, exit.right - 1);
+					point.y = Random.Int(2) == 0 ? exit.top + 1 : exit.bottom - 1;
+				}
+				pos = level.pointToCell(point);
+				if (pos == level.exit()) {
+					validPos = false;
+				}
+				for (Point door : exit.connected.values()) {
+					if (level.trueDistance(pos, level.pointToCell(door)) <= 1) {
+						validPos = false;
+					}
+				}
+				if (level.traps.get(pos) != null) {
+					validPos = false;
+				}
+			} while (!validPos);
+		}else{
+			tzz
+			int tries = level.length();
+			do {
+				pos = level.randomRespawnCell(this);
+				tries--;
+			} while (pos == -1 && tries > 0);
+		}
         if (pos != -1) level.mobs.add(this);
     }
 

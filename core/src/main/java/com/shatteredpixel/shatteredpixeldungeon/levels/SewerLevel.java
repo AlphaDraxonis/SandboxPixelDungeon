@@ -114,7 +114,7 @@ public class SewerLevel extends RegularLevel {
 						2, 2,
 						1, 1, 1, 1, 1};
 	}
-	
+
 	@Override
 	public Group addVisuals() {
 		super.addVisuals();
