@@ -25,13 +25,9 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -42,7 +38,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MimicSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -53,160 +48,157 @@ import java.util.ArrayList;
 
 public class CrystalMimic extends Mimic {
 
-    {
-        spriteClass = MimicSprite.Crystal.class;
+	{
+		spriteClass = MimicSprite.Crystal.class;
 
-        FLEEING = new Fleeing();
-    }
+		FLEEING = new Fleeing();
+	}
 
-    @Override
-    public String name() {
-        if (alignment == Alignment.NEUTRAL && !CustomDungeon.isEditing()) {
-            return Messages.get(Heap.class, "crystal_chest");
-        } else {
-            return super.name();
-        }
-    }
+	@Override
+	public String name() {
+		if (alignment == Alignment.NEUTRAL){
+			return Messages.get(Heap.class, "crystal_chest");
+		} else {
+			return super.name();
+		}
+	}
 
-    @Override
-    public String description() {
-        if (alignment == Alignment.NEUTRAL) {
-            String desc = null;
-            if (items != null) {
-                for (Item i : items) {
-                    if (i instanceof Artifact) {
-                        desc = Messages.get(Heap.class, "crystal_chest_desc", Messages.get(Heap.class, "artifact"));
-                        break;
-                    } else if (i instanceof Ring) {
-                        desc = Messages.get(Heap.class, "crystal_chest_desc", Messages.get(Heap.class, "ring"));
-                        break;
-                    } else if (i instanceof Wand) {
-                        desc = Messages.get(Heap.class, "crystal_chest_desc", Messages.get(Heap.class, "wand"));
-                        break;
-                    }
-                }
-            }
-            if (desc == null) {
-                desc = Messages.get(Heap.class, "locked_chest_desc");
-            }
-            return desc + "\n\n" + Messages.get(this, "hidden_hint");
-        } else {
-            return super.description();
-        }
-    }
+	@Override
+	public String description() {
+		if (alignment == Alignment.NEUTRAL){
+			String desc = null;
+			if (items != null){
+				for (Item i : items){
+					if (i instanceof Artifact){
+						desc = Messages.get(Heap.class, "crystal_chest_desc", Messages.get(Heap.class, "artifact"));
+						break;
+					} else if (i instanceof Ring){
+						desc = Messages.get(Heap.class, "crystal_chest_desc", Messages.get(Heap.class, "ring"));
+						break;
+					} else if (i instanceof Wand){
+						desc = Messages.get(Heap.class, "crystal_chest_desc", Messages.get(Heap.class, "wand"));
+						break;
+					}
+				}
+			}
+			if (desc == null) {
+				desc = Messages.get(Heap.class, "locked_chest_desc");
+			}
+			return desc + "\n\n" + Messages.get(this, "hidden_hint");
+		} else {
+			return super.description();
+		}
+	}
 
-    //does not deal bonus damage, steals instead. See attackProc
-    @Override
-    public int damageRoll() {
-        if (alignment == Alignment.NEUTRAL) {
-            alignment = Alignment.ENEMY;
-            int dmg = super.damageRoll();
-            alignment = Alignment.NEUTRAL;
-            return dmg;
-        } else {
-            return super.damageRoll();
-        }
-    }
+	//does not deal bonus damage, steals instead. See attackProc
+	@Override
+	public int damageRoll() {
+		if (alignment == Alignment.NEUTRAL) {
+			alignment = Alignment.ENEMY;
+			int dmg = super.damageRoll();
+			alignment = Alignment.NEUTRAL;
+			return dmg;
+		} else {
+			return super.damageRoll();
+		}
+	}
 
-    public void stopHiding() {
-        state = FLEEING;
-        if (sprite != null) sprite.idle();
-        //haste for 2 turns if attacking
-        if (alignment == Alignment.NEUTRAL) {
-            Buff.affect(this, Haste.class, 2f);
-        } else {
-            Buff.affect(this, Haste.class, 1f);
-        }
-        if (Actor.chars().contains(this) && Dungeon.level.heroFOV[pos]) {
-            enemy = Dungeon.hero;
-            target = Dungeon.hero.pos;
-            GLog.w(Messages.get(this, "reveal"));
-            CellEmitter.get(pos).burst(Speck.factory(Speck.STAR), 10);
-            Sample.INSTANCE.play(Assets.Sounds.MIMIC, 1, 1.25f);
-        }
-    }
+	public void stopHiding(){
+		state = FLEEING;
+		if (sprite != null) sprite.idle();
+		//haste for 2 turns if attacking
+		if (alignment == Alignment.NEUTRAL){
+			Buff.affect(this, Haste.class, 2f);
+		} else {
+			Buff.affect(this, Haste.class, 1f);
+		}
+		if (Actor.chars().contains(this) && Dungeon.level.heroFOV[pos]) {
+			enemy = Dungeon.hero;
+			target = Dungeon.hero.pos;
+			GLog.w(Messages.get(this, "reveal") );
+			CellEmitter.get(pos).burst(Speck.factory(Speck.STAR), 10);
+			Sample.INSTANCE.play(Assets.Sounds.MIMIC, 1, 1.25f);
+		}
+	}
 
-    @Override
-    public int attackProc(Char enemy, int damage) {
-        if (alignment == Alignment.NEUTRAL && enemy == Dungeon.hero) {
-            steal(Dungeon.hero);
+	@Override
+	public int attackProc(Char enemy, int damage) {
+		if (alignment == Alignment.NEUTRAL && enemy == Dungeon.hero){
+			steal( Dungeon.hero );
 
-        } else {
-            ArrayList<Integer> candidates = new ArrayList<>();
-            for (int i : PathFinder.NEIGHBOURS8) {
-                if (Dungeon.level.passable[pos + i] && Actor.findChar(pos + i) == null) {
-                    candidates.add(pos + i);
-                }
-            }
+		} else {
+			ArrayList<Integer> candidates = new ArrayList<>();
+			for (int i : PathFinder.NEIGHBOURS8){
+				if (Dungeon.level.passable[pos+i] && Actor.findChar(pos+i) == null){
+					candidates.add(pos + i);
+				}
+			}
 
-            if (!candidates.isEmpty()) {
-                ScrollOfTeleportation.appear(enemy, Random.element(candidates));
-            }
+			if (!candidates.isEmpty()){
+				ScrollOfTeleportation.appear(enemy, Random.element(candidates));
+			}
 
-            if (alignment == Alignment.ENEMY) state = FLEEING;
-        }
-        return super.attackProc(enemy, damage);
-    }
+			if (alignment == Alignment.ENEMY) state = FLEEING;
+		}
+		return super.attackProc(enemy, damage);
+	}
 
-    protected void steal(Hero hero) {
+	protected void steal( Hero hero ) {
 
-        int tries = 10;
-        Item item;
-        do {
-            item = hero.belongings.randomUnequipped();
-        } while (tries-- > 0 && (item == null || item.unique || item.level() > 0));
+		int tries = 10;
+		Item item;
+		do {
+			item = hero.belongings.randomUnequipped();
+		} while (tries-- > 0 && (item == null || item.unique || item.level() > 0));
 
-        if (item != null && !item.unique && item.level() < 1) {
+		if (item != null && !item.unique && item.level() < 1 ) {
 
-            GLog.w(Messages.get(this, "ate", item.name()));
-            if (!item.stackable) {
-                Dungeon.quickslot.convertToPlaceholder(item);
-            }
-            item.updateQuickslot();
+			GLog.w( Messages.get(this, "ate", item.name()) );
+			if (!item.stackable) {
+				Dungeon.quickslot.convertToPlaceholder(item);
+			}
+			item.updateQuickslot();
 
-            if (item instanceof Honeypot) {
-                items.add(((Honeypot) item).shatter(this, this.pos));
-                item.detach(hero.belongings.backpack);
-            } else {
-                items.add(item.detach(hero.belongings.backpack));
-                if (item instanceof Honeypot.ShatteredPot)
-                    ((Honeypot.ShatteredPot) item).pickupPot(this);
-            }
+			if (item instanceof Honeypot){
+				items.add(((Honeypot)item).shatter(this, this.pos));
+				item.detach( hero.belongings.backpack );
+			} else {
+				items.add(item.detach( hero.belongings.backpack ));
+				if ( item instanceof Honeypot.ShatteredPot)
+					((Honeypot.ShatteredPot)item).pickupPot(this);
+			}
 
-        }
-    }
+		}
+	}
 
-    @Override
-    protected void generatePrize() {
-        //Crystal mimic already contains a prize item. Just guarantee it isn't cursed.
-        for (Item i : items) {
-            i.cursed = false;
-            i.setCursedKnown(true);
-        }
-    }
+	@Override
+	protected void generatePrize() {
+		//Crystal mimic already contains a prize item. Just guarantee it isn't cursed.
+		for (Item i : items){
+			i.cursed = false;
+			i.setCursedKnown(true);
+		}
+	}
 
-    private class Fleeing extends Mob.Fleeing {
-        @Override
-        protected void nowhereToRun() {
-            if (buff(Terror.class) == null
-                    && buffs(AllyBuff.class).isEmpty()
-                    && buff(Dread.class) == null) {
-                if (enemySeen) {
-                    sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Mob.class, "rage"));
-                    state = HUNTING;
-                } else if (!Dungeon.level.heroFOV[pos] && Dungeon.level.distance(Dungeon.hero.pos, pos) >= 6) {
-                    GLog.n(Messages.get(CrystalMimic.class, "escaped"));
-                    if (Dungeon.level.heroFOV[pos])
-                        CellEmitter.get(pos).burst(Speck.factory(Speck.WOOL), 6);
-                    destroy();
-                    sprite.killAndErase();
-                } else {
-                    state = WANDERING;
-                }
-            } else {
-                super.nowhereToRun();
-            }
-        }
-    }
+	private class Fleeing extends Mob.Fleeing {
+		@Override
+		protected void escaped() {
+			if (!Dungeon.level.heroFOV[pos] && Dungeon.level.distance(Dungeon.hero.pos, pos) >= 6) {
+				GLog.n(Messages.get(CrystalMimic.class, "escaped"));
+				destroy();
+				sprite.killAndErase();
+			} else {
+				state = WANDERING;
+			}
+		}
+
+		@Override
+		protected void nowhereToRun() {
+			super.nowhereToRun();
+			if (state == HUNTING){
+				spend(-TICK); //crystal mimics are fast!
+			}
+		}
+	}
 
 }
