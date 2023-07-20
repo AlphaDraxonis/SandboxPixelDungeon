@@ -41,256 +41,261 @@ import java.util.ArrayList;
 
 public class RingOfForce extends Ring {
 
-    {
-        icon = ItemSpriteSheet.Icons.RING_FORCE;
-    }
+	{
+		icon = ItemSpriteSheet.Icons.RING_FORCE;
+	}
 
-    @Override
-    protected RingBuff buff() {
-        return new Force();
-    }
+	@Override
+	protected RingBuff buff( ) {
+		return new Force();
+	}
+	
+	public static int armedDamageBonus( Char ch ){
+		return getBuffedBonus( ch, Force.class);
+	}
 
-    public static int armedDamageBonus(Char ch) {
-        return getBuffedBonus(ch, Force.class);
-    }
+	@Override
+	public boolean doUnequip(Hero hero, boolean collect, boolean single) {
+		if (super.doUnequip(hero, collect, single)){
+			if (hero.buff(BrawlersStance.class) != null && hero.buff(Force.class) == null){
+				//clear brawler's stance if no ring of force is equipped
+				hero.buff(BrawlersStance.class).detach();
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	// *** Weapon-like properties ***
 
-    @Override
-    public boolean doUnequip(Hero hero, boolean collect, boolean single) {
-        if (super.doUnequip(hero, collect, single)) {
-            if (hero.buff(BrawlersStance.class) != null && hero.buff(Force.class) == null) {
-                //clear brawler's stance if no ring of force is equipped
-                hero.buff(BrawlersStance.class).detach();
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
+	private static float tier(int str){
+		float tier = Math.max(1, (str - 8)/2f);
+		//each str point after 18 is half as effective
+		if (tier > 5){
+			tier = 5 + (tier - 5) / 2f;
+		}
+		return tier;
+	}
 
-    // *** Weapon-like properties ***
+	public static int damageRoll( Hero hero ){
+		if (hero.buff(Force.class) != null
+				&& hero.buff(MonkEnergy.MonkAbility.UnarmedAbilityTracker.class) == null) {
+			int level = getBuffedBonus(hero, Force.class);
+			float tier = tier(hero.STR());
+			return Random.NormalIntRange(min(level, tier), max(level, tier));
+		} else {
+			//attack without any ring of force influence
+			return Random.NormalIntRange(1, Math.max(hero.STR()-8, 1));
+		}
+	}
 
-    private static float tier(int str) {
-        float tier = Math.max(1, (str - 8) / 2f);
-        //each str point after 18 is half as effective
-        if (tier > 5) {
-            tier = 5 + (tier - 5) / 2f;
-        }
-        return tier;
-    }
+	//same as equivalent tier weapon
+	private static int min(int lvl, float tier){
+		if (lvl <= 0) tier = 1; //tier is forced to 1 if cursed
 
-    public static int damageRoll(Hero hero) {
-        if (hero.buff(Force.class) != null
-                && hero.buff(MonkEnergy.MonkAbility.UnarmedAbilityTracker.class) == null) {
-            int level = getBuffedBonus(hero, Force.class);
-            float tier = tier(hero.STR());
-            return Random.NormalIntRange(min(level, tier), max(level, tier));
-        } else {
-            //attack without any ring of force influence
-            return Random.NormalIntRange(1, Math.max(hero.STR() - 8, 1));
-        }
-    }
+		return Math.max( 0, Math.round(
+				tier +  //base
+				lvl     //level scaling
+		));
+	}
 
-    //same as equivalent tier weapon
-    private static int min(int lvl, float tier) {
-        if (lvl <= 0) tier = 1; //tier is forced to 1 if cursed
+	//same as equivalent tier weapon
+	private static int max(int lvl, float tier){
+		if (lvl <= 0) tier = 1; //tier is forced to 1 if cursed
 
-        return Math.max(0, Math.round(
-                tier +  //base
-                        lvl     //level scaling
-        ));
-    }
+		return Math.max( 0, Math.round(
+				5*(tier+1) +    //base
+				lvl*(tier+1)    //level scaling
+		));
+	}
 
-    //same as equivalent tier weapon
-    private static int max(int lvl, float tier) {
-        if (lvl <= 0) tier = 1; //tier is forced to 1 if cursed
+	@Override
+	public String statsInfo() {
+		float tier = CustomDungeon.isEditing() ? 10 : tier(Dungeon.hero.STR());
+		if (isIdentified()) {
+			int level = soloBuffedBonus();
+			String info = Messages.get(this, "stats", min(level, tier), max(level, tier), level);
+			if (Dungeon.hero != null && isEquipped(Dungeon.hero) && soloBuffedBonus() != getBuffedBonus(Dungeon.hero, Force.class)){
+				level = getBuffedBonus(Dungeon.hero, Force.class);
+				info += "\n\n" + Messages.get(this, "combined_stats", min(level, tier), max(level, tier), level);
+			}
+			return info;
+		} else {
+			return Messages.get(this, "typical_stats", min(1, tier), max(1, tier), 1);
+		}
+	}
 
-        return Math.max(0, Math.round(
-                5 * (tier + 1) +    //base
-                        lvl * (tier + 1)    //level scaling
-        ));
-    }
+	public class Force extends RingBuff {
+	}
 
-    @Override
-    public String statsInfo() {
-        float tier = CustomDungeon.isEditing() ? 10 : tier(Dungeon.hero.STR());
-        if (isIdentified()) {
-            int level = soloBuffedBonus();
-            return Messages.get(this, "stats", min(level, tier), max(level, tier), level);
-        } else {
-            return Messages.get(this, "typical_stats", min(1, tier), max(1, tier), 1);
-        }
-    }
+	//Duelist stuff
 
-    public class Force extends RingBuff {
-    }
+	public static String AC_ABILITY = "ABILITY";
 
-    //Duelist stuff
+	@Override
+	public void activate(Char ch) {
+		super.activate(ch);
+		if (ch instanceof Hero && ((Hero) ch).heroClass == HeroClass.DUELIST){
+			Buff.affect(ch, MeleeWeapon.Charger.class);
+		}
+	}
 
-    public static String AC_ABILITY = "ABILITY";
+	@Override
+	public String defaultAction() {
+		if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.DUELIST){
+			return AC_ABILITY;
+		} else {
+			return super.defaultAction();
+		}
+	}
 
-    @Override
-    public void activate(Char ch) {
-        super.activate(ch);
-        if (ch instanceof Hero && ((Hero) ch).heroClass == HeroClass.DUELIST) {
-            Buff.affect(ch, MeleeWeapon.Charger.class);
-        }
-    }
+	@Override
+	public ArrayList<String> actions(Hero hero) {
+		ArrayList<String> actions = super.actions(hero);
+		if (isEquipped(hero) && hero.heroClass == HeroClass.DUELIST){
+			actions.add(AC_ABILITY);
+		}
+		return actions;
+	}
 
-    @Override
-    public String defaultAction() {
-        if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.DUELIST) {
-            return AC_ABILITY;
-        } else {
-            return super.defaultAction();
-        }
-    }
+	@Override
+	public String actionName(String action, Hero hero) {
+		if (action.equals(AC_ABILITY)){
+			return Messages.upperCase(Messages.get(this, "ability_name"));
+		} else {
+			return super.actionName(action, hero);
+		}
+	}
 
-    @Override
-    public ArrayList<String> actions(Hero hero) {
-        ArrayList<String> actions = super.actions(hero);
-        if (isEquipped(hero) && hero.heroClass == HeroClass.DUELIST) {
-            actions.add(AC_ABILITY);
-        }
-        return actions;
-    }
+	@Override
+	public void execute(Hero hero, String action) {
+		if (action.equals(AC_ABILITY)){
+			if (hero.buff(BrawlersStance.class) != null){
+				hero.buff(BrawlersStance.class).detach();
+				AttackIndicator.updateState();
+			} else if (!isEquipped(hero)) {
+				GLog.w(Messages.get(MeleeWeapon.class, "ability_need_equip"));
 
-    @Override
-    public String actionName(String action, Hero hero) {
-        if (action.equals(AC_ABILITY)) {
-            return Messages.upperCase(Messages.get(this, "ability_name"));
-        } else {
-            return super.actionName(action, hero);
-        }
-    }
+			} else if ((Buff.affect(hero, MeleeWeapon.Charger.class).charges + Buff.affect(hero, MeleeWeapon.Charger.class).partialCharge)
+					< BrawlersStance.HIT_CHARGE_USE){
+				GLog.w(Messages.get(MeleeWeapon.class, "ability_no_charge"));
 
-    @Override
-    public void execute(Hero hero, String action) {
-        if (action.equals(AC_ABILITY)) {
-            if (hero.buff(BrawlersStance.class) != null) {
-                hero.buff(BrawlersStance.class).detach();
-                AttackIndicator.updateState();
-            } else if (!isEquipped(hero)) {
-                GLog.w(Messages.get(MeleeWeapon.class, "ability_need_equip"));
+			} else {
+				Buff.affect(hero, BrawlersStance.class);
+				AttackIndicator.updateState();
+			}
+		} else {
+			super.execute(hero, action);
+		}
+	}
 
-            } else if ((Buff.affect(hero, MeleeWeapon.Charger.class).charges + Buff.affect(hero, MeleeWeapon.Charger.class).partialCharge)
-                    < BrawlersStance.HIT_CHARGE_USE) {
-                GLog.w(Messages.get(MeleeWeapon.class, "ability_no_charge"));
+	@Override
+	public String info() {
+		String info = super.info();
 
-            } else {
-                Buff.affect(hero, BrawlersStance.class);
-                AttackIndicator.updateState();
-            }
-        } else {
-            super.execute(hero, action);
-        }
-    }
+		if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.DUELIST
+			&& (anonymous || isIdentified() || isEquipped(Dungeon.hero))){
+			info += "\n\n" + Messages.get(this, "ability_desc");
+		}
 
-    @Override
-    public String info() {
-        String info = super.info();
+		return info;
+	}
 
-        if (Dungeon.hero!=null&& Dungeon.hero.heroClass == HeroClass.DUELIST
-                && (anonymous || isIdentified() || isEquipped(Dungeon.hero))) {
-            info += "\n\n" + Messages.get(this, "ability_desc");
-        }
+	public static boolean fightingUnarmed( Hero hero ){
+		if (hero.belongings.attackingWeapon() == null
+			|| hero.buff(MonkEnergy.MonkAbility.UnarmedAbilityTracker.class) != null){
+			return true;
+		}
+		if (hero.belongings.thrownWeapon != null || hero.belongings.abilityWeapon != null){
+			return false;
+		}
+		BrawlersStance stance = hero.buff(BrawlersStance.class);
+		if (stance != null && stance.hitsLeft() > 0){
+			//clear the buff if no ring of force is equipped
+			if (hero.buff(RingOfForce.Force.class) == null){
+				stance.detach();
+				AttackIndicator.updateState();
+				return false;
+			} else {
+				return true;
+			}
+		}
+		return false;
+	}
 
-        return info;
-    }
+	public static boolean unarmedGetsWeaponEnchantment( Hero hero ){
+		if (hero.belongings.attackingWeapon() == null){
+			return false;
+		}
+		if (hero.buff(MonkEnergy.MonkAbility.UnarmedAbilityTracker.class) != null){
+			return hero.buff(MonkEnergy.MonkAbility.FlurryEmpowerTracker.class) != null;
+		}
+		BrawlersStance stance = hero.buff(BrawlersStance.class);
+		if (stance != null && stance.hitsLeft() > 0){
+			return true;
+		}
+		return false;
+	}
 
-    public static boolean fightingUnarmed(Hero hero) {
-        if (hero.belongings.attackingWeapon() == null
-                || hero.buff(MonkEnergy.MonkAbility.UnarmedAbilityTracker.class) != null) {
-            return true;
-        }
-        if (hero.belongings.thrownWeapon != null || hero.belongings.abilityWeapon != null) {
-            return false;
-        }
-        BrawlersStance stance = hero.buff(BrawlersStance.class);
-        if (stance != null && stance.hitsLeft() > 0) {
-            //clear the buff if no ring of force is equipped
-            if (hero.buff(RingOfForce.Force.class) == null) {
-                stance.detach();
-                AttackIndicator.updateState();
-                return false;
-            } else {
-                return true;
-            }
-        }
-        return false;
-    }
+	public static boolean unarmedGetsWeaponAugment(Hero hero ){
+		if (hero.belongings.attackingWeapon() == null
+			|| hero.buff(MonkEnergy.MonkAbility.UnarmedAbilityTracker.class) != null){
+			return false;
+		}
+		BrawlersStance stance = hero.buff(BrawlersStance.class);
+		if (stance != null && stance.hitsLeft() > 0){
+			return true;
+		}
+		return false;
+	}
 
-    public static boolean unarmedGetsWeaponEnchantment(Hero hero) {
-        if (hero.belongings.attackingWeapon() == null) {
-            return false;
-        }
-        if (hero.buff(MonkEnergy.MonkAbility.UnarmedAbilityTracker.class) != null) {
-            return hero.buff(MonkEnergy.MonkAbility.FlurryEmpowerTracker.class) != null;
-        }
-        BrawlersStance stance = hero.buff(BrawlersStance.class);
-        if (stance != null && stance.hitsLeft() > 0) {
-            return true;
-        }
-        return false;
-    }
+	public static class BrawlersStance extends Buff {
 
-    public static boolean unarmedGetsWeaponAugment(Hero hero) {
-        if (hero.belongings.attackingWeapon() == null
-                || hero.buff(MonkEnergy.MonkAbility.UnarmedAbilityTracker.class) != null) {
-            return false;
-        }
-        BrawlersStance stance = hero.buff(BrawlersStance.class);
-        if (stance != null && stance.hitsLeft() > 0) {
-            return true;
-        }
-        return false;
-    }
+		public static float HIT_CHARGE_USE = 0.25f;
 
-    public static class BrawlersStance extends Buff {
+		{
+			announced = true;
+			type = buffType.POSITIVE;
+		}
 
-        public static float HIT_CHARGE_USE = 0.25f;
+		public int hitsLeft(){
+			MeleeWeapon.Charger charger = Buff.affect(target, MeleeWeapon.Charger.class);
+			float charges = charger.charges;
+			charges += charger.partialCharge;
 
-        {
-            announced = true;
-            type = buffType.POSITIVE;
-        }
+			return (int)(charges/HIT_CHARGE_USE);
+		}
 
-        public int hitsLeft() {
-            MeleeWeapon.Charger charger = Buff.affect(target, MeleeWeapon.Charger.class);
-            float charges = charger.charges;
-            charges += charger.partialCharge;
+		@Override
+		public int icon() {
+			return BuffIndicator.DUEL_BRAWL;
+		}
 
-            return (int) (charges / HIT_CHARGE_USE);
-        }
+		@Override
+		public void tintIcon(Image icon) {
+			if (hitsLeft() == 0){
+				icon.brightness(0.25f);
+			} else {
+				icon.resetColor();
+			}
+		}
 
-        @Override
-        public int icon() {
-            return BuffIndicator.DUEL_BRAWL;
-        }
+		@Override
+		public float iconFadePercent() {
+			float usableCharges = hitsLeft()*HIT_CHARGE_USE;
 
-        @Override
-        public void tintIcon(Image icon) {
-            if (hitsLeft() == 0) {
-                icon.brightness(0.25f);
-            } else {
-                icon.resetColor();
-            }
-        }
+			return 1f - (usableCharges /  Buff.affect(target, MeleeWeapon.Charger.class).chargeCap());
+		}
 
-        @Override
-        public float iconFadePercent() {
-            float usableCharges = hitsLeft() * HIT_CHARGE_USE;
+		@Override
+		public String iconTextDisplay() {
+			return Integer.toString(hitsLeft());
+		}
 
-            return 1f - (usableCharges / Buff.affect(target, MeleeWeapon.Charger.class).chargeCap());
-        }
-
-        @Override
-        public String iconTextDisplay() {
-            return Integer.toString(hitsLeft());
-        }
-
-        @Override
-        public String desc() {
-            return Messages.get(this, "desc", hitsLeft());
-        }
-    }
+		@Override
+		public String desc() {
+			return Messages.get(this, "desc", hitsLeft());
+		}
+	}
 }
