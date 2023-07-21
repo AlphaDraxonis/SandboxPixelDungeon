@@ -59,7 +59,7 @@ public class BeaconOfReturning extends Spell {
 	@Override
 	protected void onCast(final Hero hero) {
 
-		if (returnLevel.equals("surface")){
+		if (returnLevel.equals(Level.SURFACE)){
 			setBeacon(hero);
 		} else {
 			GameScene.show(new WndOptions(new ItemSprite(this),
@@ -85,13 +85,13 @@ public class BeaconOfReturning extends Spell {
 	
 	@Override
 	protected void onThrow(int cell) {
-		returnLevel = "surface";
+		returnLevel = Level.SURFACE;
 		super.onThrow(cell);
 	}
 	
 	@Override
 	public void doDrop(Hero hero) {
-		returnLevel = "surface";
+		returnLevel = Level.SURFACE;
 		super.doDrop(hero);
 	}
 	
@@ -112,7 +112,7 @@ public class BeaconOfReturning extends Spell {
 	
 	private void returnBeacon( Hero hero ){
 
-		if (returnLevel.equals(Dungeon.levelName)&& returnBranch == Dungeon.branch) {
+		if (returnLevel.equals(Dungeon.levelName) && returnBranch == Dungeon.branch) {
 
 			Char existing = Actor.findChar(returnPos);
 			if (existing != null && existing != hero){
@@ -169,7 +169,7 @@ public class BeaconOfReturning extends Spell {
 	@Override
 	public String desc() {
 		String desc = super.desc();
-		if (!returnLevel.equals("surface")){
+		if (!returnLevel.equals(Level.SURFACE)){
 			desc += "\n\n" + Messages.get(this, "desc_set", returnLevel);
 		}
 		return desc;
@@ -183,12 +183,14 @@ public class BeaconOfReturning extends Spell {
 	}
 
 	private static final String LEVEL	= "level";
+	private static final String BRANCH	= "branch";
 	private static final String POS		= "pos";
 	
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( LEVEL, returnLevel );
+		bundle.put( BRANCH, returnBranch );
 		if (!returnLevel.equals(Level.SURFACE)) {
 			bundle.put( POS, returnPos );
 		}
@@ -197,6 +199,7 @@ public class BeaconOfReturning extends Spell {
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle(bundle);
+		returnBranch = bundle.getInt( BRANCH );
 		returnLevel	= bundle.getString( LEVEL );
 		returnPos	= bundle.getInt( POS );
 	}
