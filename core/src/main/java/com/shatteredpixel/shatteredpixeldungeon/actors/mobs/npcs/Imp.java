@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
+import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -57,26 +58,26 @@ public class Imp extends QuestNPC<ImpQuest> {
 	public Imp(ImpQuest quest) {
 		super(quest);
 	}
-	
+
 	@Override
 	protected boolean act() {
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
 			die(null);
 			return true;
 		}
-		if (!quest.given() && Dungeon.level.visited[pos]) {
-			if (!seenBefore) {
+		if (!Quest.given && Dungeon.level.visited[pos]) {
+			if (!seenBefore && Dungeon.level.heroFOV[pos]) {
 				yell( Messages.get(this, "hey", Messages.titleCase(Dungeon.hero.name()) ) );
+				seenBefore = true;
 			}
 			Notes.add( Notes.Landmark.IMP );
-			seenBefore = true;
 		} else {
 			seenBefore = false;
 		}
 		
 		return super.act();
 	}
-	
+
 	@Override
 	public boolean interact(Char c) {
 		
@@ -99,7 +100,7 @@ public class Imp extends QuestNPC<ImpQuest> {
 			} else {
 				tell(Messages.get(this, quest.getMessageString()+"_2", Messages.titleCase(Dungeon.hero.name())));
 			}
-
+			
 		} else {
 			tell(Messages.get(this, quest.getMessageString()+"_1"));
 			quest.start();
