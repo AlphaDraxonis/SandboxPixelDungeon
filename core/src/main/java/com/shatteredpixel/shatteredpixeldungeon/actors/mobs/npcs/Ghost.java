@@ -32,8 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GreatCrab;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
-import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
@@ -46,8 +44,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndSadGhost;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
-import com.watabou.utils.Point;
-import com.watabou.utils.Random;
 
 import java.util.List;
 
@@ -57,33 +53,33 @@ public class Ghost extends QuestNPC<GhostQuest> {
 		spriteClass = GhostSprite.class;
 		
 		flying = true;
-		
-		state = PASSIVE;
+
+		state = WANDERING;
+
+		//not actually large of course, but this makes the ghost stick to the exit room
+		properties.add(Property.LARGE);
 	}
 
-    public Ghost() {
-    }
+	public Ghost() {
+	}
 
-    public Ghost(GhostQuest quest) {
-        super(quest);
-    }
+	public Ghost(GhostQuest quest) {
+		super(quest);
+	}
 
-    @Override
-    protected boolean act() {
-        if (Dungeon.hero.buff(AscensionChallenge.class) != null) {
-            die(null);
-            return true;
-        }
-        if (quest != null && quest.type() >= 0) {
-            if (quest.completed()) {
-                target = Dungeon.hero.pos;
-            }
-            if (Dungeon.level.heroFOV[pos] && !quest.completed()) {
-                Notes.add(Notes.Landmark.GHOST);
-            }
-        }
-        return super.act();
-    }
+	@Override
+	protected boolean act() {
+		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
+			die(null);
+			return true;
+		}
+		if (quest != null && quest.type() >= 0) {
+			if (Dungeon.level.heroFOV[pos] && !quest.completed()){
+				Notes.add( Notes.Landmark.GHOST );
+			}
+		}
+		return super.act();
+	}
 	
 	@Override
 	public float speed() {
@@ -111,46 +107,31 @@ public class Ghost extends QuestNPC<GhostQuest> {
 		
 		Sample.INSTANCE.play( Assets.Sounds.GHOST );
 
-        if (c != Dungeon.hero) {
-            return super.interact(c);
-        }
+		if (c != Dungeon.hero){
+			return super.interact(c);
+		}
 
-        if (quest != null && quest.type() >= 0) {
+		if (quest == null || quest.type() < 0) return true;
 
-            if (quest.given()) {
-                if (quest.weapon != null && quest.completed()) {
-                        Game.runOnRenderThread(new Callback() {
-                            @Override
-                            public void call() {
-                                GameScene.show(new WndSadGhost(Ghost.this, quest.type()));
-                            }
-                        });
-                    } else {
-                        Game.runOnRenderThread(new Callback() {
-                            @Override
-                            public void call() {
-                                GameScene.show(new WndQuest(Ghost.this, Messages.get(Ghost.this, quest.getMessageString()+"_2")));
-                            }
-                        });
-
-                        int newPos = -1;
-                        for (int i = 0; i < 10; i++) {
-                            newPos = Dungeon.level.randomRespawnCell(this, true);
-                            if (newPos != -1) {
-                                break;
-                            }
-                        }
-                        if (newPos != -1) {
-
-                            CellEmitter.get(pos).start(Speck.factory(Speck.LIGHT), 0.2f, 3);
-                            pos = newPos;
-                            sprite.place(pos);
-                            sprite.visible = Dungeon.level.heroFOV[pos];
-                        }
-                }
-            } else {
-                Mob questBoss;
-                String txt_quest = Messages.get(this, quest.getMessageString()+"_1", Messages.titleCase(Dungeon.hero.name()));
+		if (quest.given()) {
+			if (quest.weapon != null && quest.completed()) {
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						GameScene.show(new WndSadGhost(Ghost.this, quest.type()));
+					}
+				});
+			} else {
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						GameScene.show(new WndQuest(Ghost.this, Messages.get(Ghost.this, quest.getMessageString()+"_2")));
+					}
+				});
+			}
+		} else {
+			Mob questBoss;
+			String txt_quest;
 
 			switch (quest.type()){
 				case GhostQuest.RAT: default:
@@ -177,7 +158,7 @@ public class Ghost extends QuestNPC<GhostQuest> {
 				});
 			} else GLog.n(Messages.get(this, "no_boss_warning"));
 
-		}}
+		}
 
 		return true;
 	}
@@ -186,31 +167,9 @@ public class Ghost extends QuestNPC<GhostQuest> {
     public void place(RegularLevel level, List<Room> rooms) {
 		Room exit = findExittzz;
 		if(exit != null) {
-			boolean validPos;
-			//spawn along the border, but not on the exit, a trap, or in front of a door
 			do {
-				validPos = true;
-				Point point = new Point();
-				if (Random.Int(2) == 0) {
-					point.x = Random.Int(2) == 0 ? exit.left + 1 : exit.right - 1;
-					point.y = Random.IntRange(exit.top + 1, exit.bottom - 1);
-				} else {
-					point.x = Random.IntRange(exit.left + 1, exit.right - 1);
-					point.y = Random.Int(2) == 0 ? exit.top + 1 : exit.bottom - 1;
-				}
-				pos = level.pointToCell(point);
-				if (pos == level.exit()) {
-					validPos = false;
-				}
-				for (Point door : exit.connected.values()) {
-					if (level.trueDistance(pos, level.pointToCell(door)) <= 1) {
-						validPos = false;
-					}
-				}
-				if (level.traps.get(pos) != null) {
-					validPos = false;
-				}
-			} while (!validPos);
+				pos = level.pointToCell(exit.random());
+			} while (pos == -1 || level.transitions.containsKey(pos));
 		}else{
 			tzz
 			int tries = level.length();
