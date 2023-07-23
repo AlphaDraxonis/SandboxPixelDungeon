@@ -220,7 +220,7 @@ public class Golem extends Mob {
 				teleporting = true;
 				spend( 2*TICK );
 			} else {
-				target = Dungeon.level.randomDestination( Golem.this );
+				target = randomDestination();
 				spend( TICK );
 			}
 

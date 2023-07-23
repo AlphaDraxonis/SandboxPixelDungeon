@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollTricksterSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 public class GnollTrickster extends Gnoll {
@@ -52,6 +53,7 @@ public class GnollTrickster extends Gnoll {
 
 		EXP = 5;
 
+		WANDERING = new Wandering();
 		state = WANDERING;
 
 		//at half quantity, see createLoot()
@@ -148,6 +150,21 @@ public class GnollTrickster extends Gnoll {
 		Actor c = Actor.findById(quest);
 		if (c instanceof Ghost) ((Ghost) c).quest.process();
 		else if (quest != 0) GLog.n("Rare error occurred so that the ghost couldn't be found.");
+	}
+
+	protected class Wandering extends Mob.Wandering{
+		@Override
+		protected int randomDestination() {
+			//of two potential wander positions, picks the one closest to the hero
+			int pos1 = super.randomDestination();
+			int pos2 = super.randomDestination();
+			PathFinder.buildDistanceMap(Dungeon.hero.pos, Dungeon.level.passable);
+			if (PathFinder.distance[pos2] < PathFinder.distance[pos1]){
+				return pos2;
+			} else {
+				return pos1;
+			}
+		}
 	}
 
 	private static final String COMBO = "combo";
