@@ -36,19 +36,20 @@ public class RotLasher extends Mob {
 	{
 		spriteClass = RotLasherSprite.class;
 
-		HP = HT = 40;
+		HP = HT = 80;
 		defenseSkill = 0;
-		attackSkill = 15;
-		damageRollMin = 8;
-		damageRollMax = 15;
+		attackSkill = 25;
+		damageRollMin = 10;
+		damageRollMax = 20;
 		damageReductionMax = 8;
 
 		EXP = 1;
 
 		loot = Generator.Category.SEED;
-		lootChance = 1f;
+		lootChance = 0.75f;
 
 		state = WANDERING = new Waiting();
+		viewDistance = 1;
 
 		properties.add(Property.IMMOVABLE);
 		properties.add(Property.MINIBOSS);
@@ -57,7 +58,7 @@ public class RotLasher extends Mob {
 	@Override
 	protected boolean act() {
 		if (enemy == null || !Dungeon.level.adjacent(pos, enemy.pos)) {
-			HP = Math.min(HT, HP + 3);
+			HP = Math.min(HT, HP + 5);
 		}
 		return super.act();
 	}
@@ -86,19 +87,20 @@ public class RotLasher extends Mob {
 
 	@Override
 	protected boolean getCloser(int target) {
-		return true;
+		return false;
 	}
 
 	@Override
 	protected boolean getFurther(int target) {
-		return true;
+		return false;
 	}
 
 
 	@Override
 	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
 		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
-		Generator.convertGeneratorToCustomLootInfo(customLootInfo, Generator.Category.SEED, 1);
+		Generator.convertGeneratorToCustomLootInfo(customLootInfo, Generator.Category.SEED, 3);
+		customLootInfo.setLootChance(customLootInfo.calculateSum() / 3);
 		return customLootInfo;
 	}
 
@@ -121,5 +123,12 @@ public class RotLasher extends Mob {
 		immunities.add( ToxicGas.class );
 	}
 
-	private class Waiting extends Mob.Wandering{}
+	private class Waiting extends Mob.Wandering{
+
+		@Override
+		protected boolean noticeEnemy() {
+			spend(TICK);
+			return super.noticeEnemy();
+		}
+	}
 }
