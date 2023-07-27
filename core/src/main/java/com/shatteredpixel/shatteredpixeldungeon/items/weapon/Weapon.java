@@ -348,17 +348,17 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 
 	public static abstract class Enchantment implements Bundlable {
-		
+
 		public static final Class<?>[] common = new Class<?>[]{
 				Blazing.class, Chilling.class, Kinetic.class, Shocking.class};
-		
+
 		public static final Class<?>[] uncommon = new Class<?>[]{
 				Blocking.class, Blooming.class, Elastic.class,
 				Lucky.class, Projecting.class, Unstable.class};
-		
+
 		public static final Class<?>[] rare = new Class<?>[]{
 				Corrupting.class, Grim.class, Vampiric.class};
-		
+
 		public static final float[] typeChances = new float[]{
 				50, //12.5% each
 				40, //6.67% each
@@ -432,12 +432,13 @@ abstract public class Weapon extends KindOfWeapon {
 		@Override
 		public void storeInBundle( Bundle bundle ) {
 		}
+
 		public Enchantment getCopy(){
 			Bundle bundle = new Bundle();
 			bundle.put("ENCHANTMENT",this);
 			return  (Enchantment) bundle.get("ENCHANTMENT");
 		}
-		
+
 		public abstract ItemSprite.Glowing glowing();
 		
 		@SuppressWarnings("unchecked")
