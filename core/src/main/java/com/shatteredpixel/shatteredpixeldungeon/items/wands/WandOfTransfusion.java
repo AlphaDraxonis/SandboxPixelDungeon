@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -50,143 +51,144 @@ import com.watabou.utils.Random;
 
 public class WandOfTransfusion extends Wand {
 
-    {
-        image = ItemSpriteSheet.WAND_TRANSFUSION;
+	{
+		image = ItemSpriteSheet.WAND_TRANSFUSION;
 
-        collisionProperties = Ballistica.PROJECTILE;
-    }
+		collisionProperties = Ballistica.PROJECTILE;
+	}
 
-    private boolean freeCharge = false;
+	private boolean freeCharge = false;
 
-    @Override
-    public void onZap(Ballistica beam) {
+	@Override
+	public void onZap(Ballistica beam) {
 
-        for (int c : beam.subPath(0, beam.dist))
-            CellEmitter.center(c).burst(BloodParticle.BURST, 1);
+		for (int c : beam.subPath(0, beam.dist))
+			CellEmitter.center(c).burst( BloodParticle.BURST, 1 );
 
-        int cell = beam.collisionPos;
+		int cell = beam.collisionPos;
 
-        Char ch = Actor.findChar(cell);
+		Char ch = Actor.findChar(cell);
 
-        if (ch instanceof Mob) {
+		if (ch instanceof Mob){
+			
+			wandProc(ch, chargesPerCast());
+			
+			//this wand does different things depending on the target.
+			
+			//heals/shields an ally or a charmed enemy while damaging self
+			if (ch.alignment == Char.Alignment.ALLY || ch.buff(Charm.class) != null){
+				
+				// 5% of max hp
+				int selfDmg = Math.round(curUser.HT*0.05f);
+				
+				int healing = selfDmg + 3*buffedLvl();
+				int shielding = (ch.HP + healing) - ch.HT;
+				if (shielding > 0){
+					healing -= shielding;
+					Buff.affect(ch, Barrier.class).setShield(shielding);
+				} else {
+					shielding = 0;
+				}
+				
+				ch.HP += healing;
+				
+				ch.sprite.emitter().burst(Speck.factory(Speck.HEALING), 2 + buffedLvl() / 2);
+				ch.sprite.showStatus(CharSprite.POSITIVE, "+%dHP", healing + shielding);
+				
+				if (!freeCharge) {
+					damageHero(selfDmg);
+				} else {
+					freeCharge = false;
+				}
 
-            wandProc(ch, chargesPerCast());
+			//for enemies...
+			//(or for mimics which are hiding, special case)
+			} else if (ch.alignment == Char.Alignment.ENEMY || ch instanceof Mimic) {
 
-            //this wand does different things depending on the target.
+				//grant a self-shield, and...
+				Buff.affect(curUser, Barrier.class).setShield((5 + buffedLvl()));
+				
+				//charms living enemies
+				if (!ch.properties().contains(Char.Property.UNDEAD)) {
+					Charm charm = Buff.affect(ch, Charm.class, Charm.DURATION/2f);
+					charm.object = curUser.id();
+					charm.ignoreHeroAllies = true;
+					ch.sprite.centerEmitter().start( Speck.factory( Speck.HEART ), 0.2f, 3 );
+				
+				//harms the undead
+				} else {
+					ch.damage(Random.NormalIntRange(3 + buffedLvl(), 6+2*buffedLvl()), this);
+					ch.sprite.emitter().start(ShadowParticle.UP, 0.05f, 10 + buffedLvl());
+					Sample.INSTANCE.play(Assets.Sounds.BURNING);
+				}
 
-            //heals/shields an ally or a charmed enemy while damaging self
-            if (ch.alignment == Char.Alignment.ALLY || ch.buff(Charm.class) != null) {
+			}
+			
+		}
+		
+	}
 
-                // 5% of max hp
-                int selfDmg = Math.round(curUser.HT * 0.05f);
+	//this wand costs health too
+	private void damageHero(int damage){
+		
+		curUser.damage(damage, this);
 
-                int healing = selfDmg + 3 * buffedLvl();
-                int shielding = (ch.HP + healing) - ch.HT;
-                if (shielding > 0) {
-                    healing -= shielding;
-                    Buff.affect(ch, Barrier.class).setShield(shielding);
-                } else {
-                    shielding = 0;
-                }
+		if (!curUser.isAlive()){
+			Badges.validateDeathFromFriendlyMagic();
+			Dungeon.fail( this );
+			GLog.n( Messages.get(this, "ondeath") );
+		}
+	}
 
-                ch.HP += healing;
+	@Override
+	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
+		if (defender.buff(Charm.class) != null && defender.buff(Charm.class).object == attacker.id()){
+			//grants a free use of the staff and shields self
+			freeCharge = true;
+			Buff.affect(attacker, Barrier.class).setShield(Math.round((2*(5 + buffedLvl()))*procChanceMultiplier(attacker)));
+			GLog.p( Messages.get(this, "charged") );
+			attacker.sprite.emitter().burst(BloodParticle.BURST, 20);
+		}
+	}
 
-                ch.sprite.emitter().burst(Speck.factory(Speck.HEALING), 2 + buffedLvl() / 2);
-                ch.sprite.showStatus(CharSprite.POSITIVE, "+%dHP", healing + shielding);
+	@Override
+	public void fx(Ballistica beam, Callback callback) {
+		curUser.sprite.parent.add(
+				new Beam.HealthRay(curUser.sprite.center(), DungeonTilemap.raisedTileCenterToWorld(beam.collisionPos)));
+		callback.call();
+	}
 
-                if (!freeCharge) {
-                    damageHero(selfDmg);
-                } else {
-                    freeCharge = false;
-                }
+	@Override
+	public void staffFx(MagesStaff.StaffParticle particle) {
+		particle.color( 0xCC0000 );
+		particle.am = 0.6f;
+		particle.setLifespan(1f);
+		particle.speed.polar( Random.Float(PointF.PI2), 2f );
+		particle.setSize( 1f, 2f);
+		particle.radiateXY(0.5f);
+	}
 
-                //for enemies...
-            } else {
+	@Override
+	public String statsDesc() {
+		int selfDMG = Dungeon.hero == null ? 999 : Math.round(Dungeon.hero.HT*0.05f);
+		if (levelKnown)
+			return Messages.get(this, "stats_desc", selfDMG, selfDMG + 3*buffedLvl(), 5+buffedLvl(), 3+buffedLvl()/2, 6+ buffedLvl());
+		else
+			return Messages.get(this, "stats_desc", selfDMG, selfDMG, 5, 3, 6);
+	}
 
-                //grant a self-shield, and...
-                Buff.affect(curUser, Barrier.class).setShield((5 + buffedLvl()));
+	private static final String FREECHARGE = "freecharge";
 
-                //charms living enemies
-                if (!ch.properties().contains(Char.Property.UNDEAD)) {
-                    Charm charm = Buff.affect(ch, Charm.class, Charm.DURATION / 2f);
-                    charm.object = curUser.id();
-                    charm.ignoreHeroAllies = true;
-                    ch.sprite.centerEmitter().start(Speck.factory(Speck.HEART), 0.2f, 3);
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		freeCharge = bundle.getBoolean( FREECHARGE );
+	}
 
-                    //harms the undead
-                } else {
-                    ch.damage(Random.NormalIntRange(3 + buffedLvl(), 6 + 2 * buffedLvl()), this);
-                    ch.sprite.emitter().start(ShadowParticle.UP, 0.05f, 10 + buffedLvl());
-                    Sample.INSTANCE.play(Assets.Sounds.BURNING);
-                }
-
-            }
-
-        }
-
-    }
-
-    //this wand costs health too
-    private void damageHero(int damage) {
-
-        curUser.damage(damage, this);
-
-        if (!curUser.isAlive()) {
-            Badges.validateDeathFromFriendlyMagic();
-            Dungeon.fail(this);
-            GLog.n(Messages.get(this, "ondeath"));
-        }
-    }
-
-    @Override
-    public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
-        if (defender.buff(Charm.class) != null && defender.buff(Charm.class).object == attacker.id()) {
-            //grants a free use of the staff and shields self
-            freeCharge = true;
-            Buff.affect(attacker, Barrier.class).setShield(Math.round((2 * (5 + buffedLvl())) * procChanceMultiplier(attacker)));
-            GLog.p(Messages.get(this, "charged"));
-            attacker.sprite.emitter().burst(BloodParticle.BURST, 20);
-        }
-    }
-
-    @Override
-    public void fx(Ballistica beam, Callback callback) {
-        curUser.sprite.parent.add(
-                new Beam.HealthRay(curUser.sprite.center(), DungeonTilemap.raisedTileCenterToWorld(beam.collisionPos)));
-        callback.call();
-    }
-
-    @Override
-    public void staffFx(MagesStaff.StaffParticle particle) {
-        particle.color(0xCC0000);
-        particle.am = 0.6f;
-        particle.setLifespan(1f);
-        particle.speed.polar(Random.Float(PointF.PI2), 2f);
-        particle.setSize(1f, 2f);
-        particle.radiateXY(0.5f);
-    }
-
-    @Override
-    public String statsDesc() {
-        int selfDMG = Dungeon.hero == null ? 999 : Math.round(Dungeon.hero.HT * 0.05f);
-        if (levelKnown())
-            return Messages.get(this, "stats_desc", selfDMG, selfDMG + 3 * buffedLvl(), 5 + buffedLvl(), 3 + buffedLvl() / 2, 6 + buffedLvl());
-        else
-            return Messages.get(this, "stats_desc", selfDMG, selfDMG, 5, 3, 6);
-    }
-
-    private static final String FREECHARGE = "freecharge";
-
-    @Override
-    public void restoreFromBundle(Bundle bundle) {
-        super.restoreFromBundle(bundle);
-        freeCharge = bundle.getBoolean(FREECHARGE);
-    }
-
-    @Override
-    public void storeInBundle(Bundle bundle) {
-        super.storeInBundle(bundle);
-        bundle.put(FREECHARGE, freeCharge);
-    }
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put( FREECHARGE, freeCharge );
+	}
 
 }
