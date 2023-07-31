@@ -81,7 +81,7 @@ public class InterlevelScene extends PixelScene {
 
     public static LevelTransition curTransition = null;
     public static String returnLevel;
-    public static int returnPos;
+    public static int returnPos, returnBranch;
 
     public static boolean fallIntoPit;
 
@@ -392,7 +392,7 @@ public class InterlevelScene extends PixelScene {
         Level level;
         Dungeon.depth = Dungeon.customDungeon.getFloor(curTransition.destLevel).getDepth();
         Dungeon.levelName = curTransition.destLevel;
-//        Dungeon.branch = curTransition.destBranch;
+        Dungeon.branch = curTransition.destBranch;
         if (Arrays.asList(Dungeon.visited).contains(Dungeon.levelName)) {
             level = Dungeon.loadLevel(GamesInProgress.curSlot);
         } else {
@@ -433,6 +433,7 @@ public class InterlevelScene extends PixelScene {
         Dungeon.saveAll();
         Dungeon.depth = Dungeon.customDungeon.getFloor(curTransition.destLevel).getDepth();
         Dungeon.levelName = curTransition.destLevel;
+        Dungeon.branch = curTransition.destBranch;
         Level level;
         if (Arrays.asList(Dungeon.visited).contains(Dungeon.levelName)) {
             level = Dungeon.loadLevel(GamesInProgress.curSlot);
@@ -461,6 +462,7 @@ public class InterlevelScene extends PixelScene {
         Dungeon.saveAll();
         Dungeon.depth = Dungeon.customDungeon.getFloor(returnLevel).getDepth();
         Dungeon.levelName = returnLevel;
+        Dungeon.branch = returnBranch;
         Level level;
         if (Arrays.asList(Dungeon.visited).contains(Dungeon.levelName)) {
             level = Dungeon.loadLevel(GamesInProgress.curSlot);

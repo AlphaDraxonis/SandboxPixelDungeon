@@ -197,11 +197,11 @@ public abstract class Level implements Bundlable {
 
         Random.pushGenerator(Dungeon.seedForLevel(name));
 
-        if (!(Dungeon.bossLevel())) {//TODO Fix branch!
+        if (!(Dungeon.bossLevel()) && !(this instanceof MiningLevel)) {//TODO Fix branch!
 
-            if(levelScheme.spawnItems){
+            if (levelScheme.spawnItems) {
 
-                for(Item item : levelScheme.prizeItemsToSpawn){
+                for (Item item : levelScheme.prizeItemsToSpawn) {
                     addItemToSpawn(item);
                     item.reset();//important for scroll runes being inited
                 }
@@ -256,7 +256,7 @@ public abstract class Level implements Bundlable {
 
             if (feeling == Feeling.DARK) {
                 if (!(this instanceof CustomLevel)) {
-                    if(levelScheme.spawnItems) addItemToSpawn(new Torch());
+                    if (levelScheme.spawnItems) addItemToSpawn(new Torch());
                     viewDistance = Math.round(viewDistance / 2f);
                 }
             } else if (feeling == Feeling.LARGE && levelScheme.spawnItems) {
@@ -334,7 +334,7 @@ public abstract class Level implements Bundlable {
         createMobs();
     }
 
-    public void initForPlay(){
+    public void initForPlay() {
         for (Mob m : mobs) {
             if (m instanceof Mimic) ((Mimic) m).adjustStats(Dungeon.depth);
         }
@@ -541,7 +541,7 @@ public abstract class Level implements Bundlable {
 
     //
     public LevelTransition getTransition(LevelTransition.Type type) {
-        if (transitions.isEmpty()){
+        if (transitions.isEmpty()) {
             return null;
         }
         for (LevelTransition transition : transitions.values()) {
@@ -584,9 +584,9 @@ public abstract class Level implements Bundlable {
 
         //spend the hero's partial turns,  so the hero cannot take partial turns between floors
         Dungeon.hero.spendToWhole();
-        for (Char ch : Actor.chars()){
+        for (Char ch : Actor.chars()) {
             //also adjust any mobs that are now ahead of the hero due to this
-            if (ch.cooldown() < Dungeon.hero.cooldown()){
+            if (ch.cooldown() < Dungeon.hero.cooldown()) {
                 ch.spendToWhole();
             }
         }
@@ -753,7 +753,8 @@ public abstract class Level implements Bundlable {
 
     public int randomRespawnCell(Char ch, boolean guarantee) {
         boolean checkPath = Dungeon.hero.pos > 0;
-        if(checkPath) PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(passable, avoid, null));
+        if (checkPath)
+            PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(passable, avoid, null));
 
         int cell;
         int count = guarantee ? length() : 300;
@@ -769,7 +770,7 @@ public abstract class Level implements Bundlable {
                                 && (!(ch instanceof Piranha) || map[cell] == Terrain.WATER)
                                 && getMobAtCell(cell) == null
                                 && (!checkPath || PathFinder.distance[cell] != Integer.MAX_VALUE))
-                        return cell;//choose first valid cell
+                            return cell;//choose first valid cell
                     }
                 }
                 return -1;//if there is no valid cell, return -1
@@ -777,12 +778,12 @@ public abstract class Level implements Bundlable {
             cell = Random.Int(length());//Choose a random cell
         } while (
                 (Dungeon.level == this && heroFOV[cell])
-                || !passable[cell]
-                || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
-                || Actor.findChar(cell) != null
-                || (ch instanceof Piranha && map[cell] != Terrain.WATER)
-                || getMobAtCell(cell) != null
-                || (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE));
+                        || !passable[cell]
+                        || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
+                        || Actor.findChar(cell) != null
+                        || (ch instanceof Piranha && map[cell] != Terrain.WATER)
+                        || getMobAtCell(cell) != null
+                        || (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE));
 
         return cell;
     }
@@ -980,7 +981,7 @@ public abstract class Level implements Bundlable {
                 GameScene.add(heap);
             }
 
-        } else if (!CustomDungeon.isEditing() && ( heap.type == Heap.Type.LOCKED_CHEST || heap.type == Heap.Type.CRYSTAL_CHEST)) {
+        } else if (!CustomDungeon.isEditing() && (heap.type == Heap.Type.LOCKED_CHEST || heap.type == Heap.Type.CRYSTAL_CHEST)) {
 
             int n;
             do {
@@ -1394,7 +1395,7 @@ public abstract class Level implements Bundlable {
             }
 
             for (TalismanOfForesight.HeapAwareness h : c.buffs(TalismanOfForesight.HeapAwareness.class)) {
-                if (!Dungeon.levelName.equals(h.level)) continue;
+                if (!Dungeon.levelName.equals(h.level) || Dungeon.branch != h.branch) continue;
                 for (int i : PathFinder.NEIGHBOURS9) heroMindFov[h.pos + i] = true;
             }
 
@@ -1411,7 +1412,7 @@ public abstract class Level implements Bundlable {
             }
 
             for (RevealedArea a : c.buffs(RevealedArea.class)) {
-                if (!Dungeon.levelName.equals(a.level)) continue;
+                if (!Dungeon.levelName.equals(a.level) || Dungeon.branch != a.branch) continue;
                 for (int i : PathFinder.NEIGHBOURS9) heroMindFov[a.pos + i] = true;
             }
 

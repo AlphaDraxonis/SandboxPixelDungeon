@@ -45,6 +45,7 @@ public class LevelTransition extends Rect implements Bundlable {
     public String departLevel;
     public int departCell;
     public int destCell;
+    public int destBranch;
     public String destLevel;
     public Type destType;
 
@@ -75,18 +76,21 @@ public class LevelTransition extends Rect implements Bundlable {
             default:
                 destLevel = levelScheme.getDefaultAbove();
                 destType = Type.REGULAR_EXIT;
+                destBranch = Dungeon.branch;
                 if (destCell == -1 && levelScheme.getEntranceTransitionRegular() != null)
                     this.destCell = levelScheme.getEntranceTransitionRegular().destCell;
                 break;
             case REGULAR_EXIT:
                 destLevel = levelScheme.getDefaultBelow();
                 destType = Type.REGULAR_ENTRANCE;
+                destBranch = Dungeon.branch;
                 if (destCell == -1 && levelScheme.getExitTransitionRegular() != null)
                     this.destCell = levelScheme.getExitTransitionRegular().destCell;
                 break;
             case SURFACE:
                 destLevel = Level.SURFACE;
                 destType = null;
+                destBranch = 0;
         }
     }
 
@@ -144,6 +148,7 @@ public class LevelTransition extends Rect implements Bundlable {
     public static final String DEST_TYPE = "dest_type";
     public static final String DEST_CELL = "dest_cell";
     public static final String DEPART_CELL = "depart_cell";
+    public static final String DEST_BRANCH = "dest_branch";
     public static final String DETAILS_IN_EDITOR = "details_in_editor";
 
     @Override
@@ -161,6 +166,7 @@ public class LevelTransition extends Rect implements Bundlable {
         bundle.put(DEST_TYPE, destType);
         bundle.put(DEPART_CELL, departCell);
         bundle.put(DEST_CELL, destCell);
+        bundle.put(DEST_BRANCH, destBranch);
 
         bundle.put(DETAILS_IN_EDITOR, showDetailsInEditor);
     }
@@ -180,6 +186,7 @@ public class LevelTransition extends Rect implements Bundlable {
         if (bundle.contains(DEST_TYPE)) destType = bundle.getEnum(DEST_TYPE, Type.class);
         destCell = bundle.getInt(DEST_CELL);
         departCell = bundle.getInt(DEPART_CELL);
+        destBranch = bundle.getInt(DEST_BRANCH);
 
         showDetailsInEditor = bundle.getBoolean(DETAILS_IN_EDITOR);
     }

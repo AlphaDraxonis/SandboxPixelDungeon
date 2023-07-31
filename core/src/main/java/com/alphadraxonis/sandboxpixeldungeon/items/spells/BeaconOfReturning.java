@@ -53,6 +53,7 @@ public class BeaconOfReturning extends Spell {
 	}
 	
 	public String returnLevel = Level.SURFACE;
+	public int returnBranch	= 0;
 	public int returnPos;
 	
 	@Override
@@ -96,6 +97,7 @@ public class BeaconOfReturning extends Spell {
 	
 	private void setBeacon(Hero hero ){
 		returnLevel = Dungeon.levelName;
+		returnBranch = Dungeon.branch;
 		returnPos = hero.pos;
 		
 		hero.spend( 1f );
@@ -110,7 +112,7 @@ public class BeaconOfReturning extends Spell {
 	
 	private void returnBeacon( Hero hero ){
 
-		if (returnLevel.equals(Dungeon.levelName)) {
+		if (returnLevel.equals(Dungeon.levelName)&& returnBranch == Dungeon.branch) {
 
 			Char existing = Actor.findChar(returnPos);
 			if (existing != null && existing != hero){
@@ -157,6 +159,7 @@ public class BeaconOfReturning extends Spell {
 			Invisibility.dispel();
 			InterlevelScene.mode = InterlevelScene.Mode.RETURN;
 			InterlevelScene.returnLevel = returnLevel;
+			InterlevelScene.returnBranch = returnBranch;
 			InterlevelScene.returnPos = returnPos;
 			Game.switchScene( InterlevelScene.class );
 		}

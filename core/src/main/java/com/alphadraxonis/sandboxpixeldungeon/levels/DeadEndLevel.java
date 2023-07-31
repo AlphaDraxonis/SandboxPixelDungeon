@@ -70,7 +70,7 @@ public class DeadEndLevel extends Level {
 		}
 		
 		int entrance = SIZE * width() + SIZE / 2 + 1;
-		//TODO Fix branch!
+		//TODO Fix branch!?
 		//different exit behaviour depending on main branch or side one
 //		if (Dungeon.branch == 0) {
 			LevelTransition t = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);

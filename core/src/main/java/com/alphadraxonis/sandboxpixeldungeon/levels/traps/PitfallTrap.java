@@ -47,14 +47,15 @@ public class PitfallTrap extends Trap {
 
 	@Override
 	public void activate() {
-		
-		if( Dungeon.bossLevel() || Dungeon.curLvlScheme().getChasm()==null){
+
+		if (Dungeon.bossLevel() || Dungeon.curLvlScheme().getChasm() == null || Dungeon.branch != 0) {
 			GLog.w(Messages.get(this, "no_pit"));
 			return;
 		}
 
 		DelayedPit p = Buff.append(Dungeon.hero, DelayedPit.class, 1);
 		p.activatedOn = Dungeon.levelName;
+		p.branch = Dungeon.branch;//always 0
 		p.pos = pos;
 
 		for (int i : PathFinder.NEIGHBOURS9){
@@ -79,12 +80,13 @@ public class PitfallTrap extends Trap {
 
 		int pos;
 		String activatedOn;
+		int branch;
 
 		@Override
 		public boolean act() {
 
 			boolean herofell = false;
-			if (activatedOn.equals(Dungeon.levelName) ) {
+			if (activatedOn.equals(Dungeon.levelName) && branch == Dungeon.branch) {
 				for (int i : PathFinder.NEIGHBOURS9) {
 
 					int cell = pos + i;
@@ -131,12 +133,14 @@ public class PitfallTrap extends Trap {
 
 		private static final String POS = "pos";
 		private static final String ACTIVATED_ON = "activated_on";
+		private static final String BRANCH = "branch";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put(POS, pos);
 			bundle.put(ACTIVATED_ON, activatedOn);
+			bundle.put(BRANCH, branch);
 		}
 
 		@Override
@@ -144,6 +148,7 @@ public class PitfallTrap extends Trap {
 			super.restoreFromBundle(bundle);
 			pos = bundle.getInt(POS);
 			activatedOn = bundle.getString(ACTIVATED_ON);
+			branch = bundle.getInt(BRANCH);
 		}
 
 	}

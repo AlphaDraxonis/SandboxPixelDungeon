@@ -861,7 +861,7 @@ public class Dungeon {
     }
 
     public static void updateLevelExplored() {
-        if (level instanceof RegularLevel && !Dungeon.bossLevel()) {
+        if (branch == 0&&level instanceof RegularLevel && !Dungeon.bossLevel()) {
             Statistics.floorsExplored.put(levelName, level.isLevelExplored(levelName));
         }
     }
@@ -936,7 +936,7 @@ public class Dungeon {
         }
 
         for (TalismanOfForesight.HeapAwareness h : hero.buffs(TalismanOfForesight.HeapAwareness.class)) {
-            if (!Dungeon.levelName.equals(h.level)) continue;
+            if (!Dungeon.levelName.equals(h.level)|| Dungeon.branch != h.branch) continue;
             BArray.or(level.visited, level.heroFOV, h.pos - 1 - level.width(), 3, level.visited);
             BArray.or(level.visited, level.heroFOV, h.pos - 1, 3, level.visited);
             BArray.or(level.visited, level.heroFOV, h.pos - 1 + level.width(), 3, level.visited);
@@ -944,7 +944,7 @@ public class Dungeon {
         }
 
         for (RevealedArea a : hero.buffs(RevealedArea.class)) {
-            if (!Dungeon.levelName.equals(a.level)) continue;
+            if (!Dungeon.levelName.equals(a.level) || Dungeon.branch != a.branch) continue;
             BArray.or(level.visited, level.heroFOV, a.pos - 1 - level.width(), 3, level.visited);
             BArray.or(level.visited, level.heroFOV, a.pos - 1, 3, level.visited);
             BArray.or(level.visited, level.heroFOV, a.pos - 1 + level.width(), 3, level.visited);
