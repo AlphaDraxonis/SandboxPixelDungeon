@@ -175,6 +175,7 @@ public class GameScene extends PixelScene {
 	private Group terrain;
 	private Group customTiles;
 	private Group levelVisuals;
+	private Group levelWallVisuals;
 	private Group customWalls;
 	private Group ripples;
 	private Group plants;
@@ -319,6 +320,9 @@ public class GameScene extends PixelScene {
 		for( CustomTilemap visual : Dungeon.level.customWalls){
 			addCustomWall(visual);
 		}
+
+		levelWallVisuals = Dungeon.level.addWallVisuals();
+		add( levelWallVisuals );
 
 		wallBlocking = new WallBlockingTilemap();
 		add (wallBlocking);
