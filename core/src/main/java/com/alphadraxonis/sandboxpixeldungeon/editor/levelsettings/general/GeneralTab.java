@@ -29,6 +29,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
     private RedButton region;
     private RedButton mobSpawn;
     private Spinner viewDistance, depth, shopPrice;
+    private RedButton changeSize;
 
 
     @Override
@@ -119,6 +120,15 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         });
         content.add(shopPrice);
 
+//        changeSize = new RedButton(Messages.get(WndChangeMapSize.class, "title")){
+//
+//            @Override
+//            protected void onClick() {
+//                EditorScene.show(new WndChangeMapSize());
+//            }
+//        };
+//        content.add(changeSize);
+
         sp.givePointerPriority();
         add(sp);
     }
@@ -159,6 +169,9 @@ public class GeneralTab extends WndEditorSettings.TabComp {
 
         shopPrice.setRect(x, posY, width, BUTTON_HEIGHT);
         posY = shopPrice.bottom() + BIG_GAP;
+
+//        changeSize.setRect(x, posY, width, BUTTON_HEIGHT);
+//        posY = changeSize.bottom() + BIG_GAP;
 
         content.setSize(width, posY - BIG_GAP);
     }

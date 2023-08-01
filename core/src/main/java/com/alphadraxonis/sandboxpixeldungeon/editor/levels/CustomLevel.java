@@ -725,14 +725,21 @@ public class CustomLevel extends Level {
 
 
     public static void increaseMapSize(Level level, int newWidth, int newHeight) {
-        if (level.width() > newWidth || level.height() > newHeight) return;
-
         int diffH = newHeight - level.height();
         int diffW = newWidth - level.width();
         int newLenght = newWidth * newHeight;
 
         int addLeft = diffW / 2;
         int addTop = diffH / 2 * newWidth;
+        increaseMapSize(level, newWidth, newHeight, addTop, addLeft);
+    }
+
+    public static void increaseMapSize(Level level, int newWidth, int newHeight, int addTop, int addLeft) {
+        if (level.width() > newWidth || level.height() > newHeight) return;
+
+        int diffH = newHeight - level.height();
+        int diffW = newWidth - level.width();
+        int newLength = newWidth * newHeight;
         int add = addLeft + addTop;
 
         int[] oldMap = level.map;
@@ -746,7 +753,7 @@ public class CustomLevel extends Level {
         increaseArrayForMapSize(oldVisited, level.visited, add, levelWidth, newWidth);
         increaseArrayForMapSize(oldMapped, level.mapped, add, levelWidth, newWidth);
 
-        boolean[] nDiscoverable = new boolean[newLenght];
+        boolean[] nDiscoverable = new boolean[newLength];
         increaseArrayForMapSize(level.discoverable, nDiscoverable, add, levelWidth, newWidth);
         level.discoverable = nDiscoverable;
 
@@ -771,14 +778,16 @@ public class CustomLevel extends Level {
 
         SparseArray<Plant> nPlant = new SparseArray<>();
         for (Plant m : level.plants.valueList()) {
-            m.pos = m.pos + add + m.pos / levelWidth * diffW;
-            nPlant.put(m.pos, m);
+            if (m != null) {
+                m.pos = m.pos + add + m.pos / levelWidth * diffW;
+                nPlant.put(m.pos, m);
+            }
         }
         level.plants.clear();
         level.plants.putAll(nPlant);
 
         for (Blob b : level.blobs.values()) {
-            b.cur = new int[newLenght];
+            b.cur = new int[newLength];
         }
 
         List<Integer> cells = new ArrayList<>(level.levelScheme.entranceCells);
