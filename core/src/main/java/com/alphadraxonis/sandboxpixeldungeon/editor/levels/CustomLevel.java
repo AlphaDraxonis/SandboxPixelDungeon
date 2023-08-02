@@ -730,7 +730,7 @@ public class CustomLevel extends Level {
         int newLenght = newWidth * newHeight;
 
         int addLeft = diffW / 2;
-        int addTop = diffH / 2 * newWidth;
+        int addTop = diffH / 2;
         increaseMapSize(level, newWidth, newHeight, addTop, addLeft);
     }
 
@@ -740,7 +740,7 @@ public class CustomLevel extends Level {
         int diffH = newHeight - level.height();
         int diffW = newWidth - level.width();
         int newLength = newWidth * newHeight;
-        int add = addLeft + addTop;
+        int add = addLeft + addTop * newWidth;
 
         int[] oldMap = level.map;
         boolean[] oldVisited = level.visited;

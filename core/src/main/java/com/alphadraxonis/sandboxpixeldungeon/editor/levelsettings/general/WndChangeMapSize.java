@@ -93,10 +93,13 @@ public class WndChangeMapSize extends Window {
             return;
 
 
-        CustomLevel.increaseMapSize(EditorScene.customLevel(), left + right + 3, top + bottom + 3, top - startTop, left - startLeft);
+        int nW = left + right + 3;
+        int nH = top + bottom + 3;
+        CustomLevel.increaseMapSize(EditorScene.customLevel(), nW, nH, top - startTop, left - startLeft);
 
         Undo.reset();
         SandboxPixelDungeon.switchNoFade(EditorScene.class);
+//        PathFinder.setMapSize(nW, nH);
 //        Game.switchScene(EditorScene.class);
     }
 }
