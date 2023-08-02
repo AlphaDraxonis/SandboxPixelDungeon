@@ -25,7 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
-import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -65,7 +64,7 @@ public class Imp extends QuestNPC<ImpQuest> {
 			die(null);
 			return true;
 		}
-		if (!Quest.given && Dungeon.level.visited[pos]) {
+		if (!quest.given() && Dungeon.level.visited[pos]) {
 			if (!seenBefore && Dungeon.level.heroFOV[pos]) {
 				yell( Messages.get(this, "hey", Messages.titleCase(Dungeon.hero.name()) ) );
 				seenBefore = true;

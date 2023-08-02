@@ -26,7 +26,6 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
-import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -57,18 +56,6 @@ public class WndMenuEditor extends Window {
             }
         });
         curBtn.icon(Icons.get(Icons.PREFS));
-
-        //install prompt
-        if (Updates.isInstallable()) {
-            addButton(curBtn = new RedButton(Messages.get(WndGame.class, "install")) {
-                @Override
-                protected void onClick() {
-                    Updates.launchInstall();
-                }
-            });
-            curBtn.textColor(Window.SHPX_COLOR);
-            curBtn.icon(Icons.get(Icons.CHANGES));
-        }
 
         // Main menu
         addButton(curBtn = new RedButton(Messages.get(WndGame.class, "menu")) {

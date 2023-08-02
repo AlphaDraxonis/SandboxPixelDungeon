@@ -259,7 +259,7 @@ public class GameScene extends PixelScene {
 		ripples = new Group();
 		terrain.add( ripples );
 
-		DungeonTileSheet.setupVariance(Dungeon.level.map.length, Dungeon.seedCurDepth());
+		DungeonTileSheet.setupVariance(Dungeon.level.map.length, Dungeon.seedCurLevel());
 		
 		tiles = new DungeonTerrainTilemap();
 		terrain.add( tiles );

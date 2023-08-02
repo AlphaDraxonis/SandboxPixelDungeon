@@ -112,6 +112,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public abstract class Level implements Bundlable {
 
@@ -160,7 +161,7 @@ public abstract class Level implements Bundlable {
 	
 	public Feeling feeling = Feeling.NONE;
 
-	public HashMap<Integer, LevelTransition> transitions;
+	public Map<Integer, LevelTransition> transitions;
 
 	//when a boss level has become locked.
 	public boolean locked = false;

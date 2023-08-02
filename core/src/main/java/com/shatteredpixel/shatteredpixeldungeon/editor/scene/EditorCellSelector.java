@@ -14,6 +14,7 @@ import com.watabou.input.GameAction;
 import com.watabou.input.PointerEvent;
 import com.watabou.input.ScrollEvent;
 import com.watabou.noosa.Camera;
+import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
 
 public class EditorCellSelector extends CellSelector {
@@ -119,16 +120,16 @@ public class EditorCellSelector extends CellSelector {
     }
 
     @Override
-    protected int directionFromAction(GameAction action) {
-        if (action == SPDAction.N) return -10;
-        if (action == SPDAction.NE) return -9;
-        if (action == SPDAction.E) return +1;
-        if (action == SPDAction.SE) return +11;
-        if (action == SPDAction.S) return +10;
-        if (action == SPDAction.SW) return +9;
-        if (action == SPDAction.W) return -1;
-        if (action == SPDAction.NW) return -11;
-        else return 0;
+    protected Point directionFromAction(GameAction action) {
+        if (action == SPDAction.N) return new Point(0, -1);
+        if (action == SPDAction.NE) return new Point(1, -1);
+        if (action == SPDAction.E) return new Point(1,0);
+        if (action == SPDAction.SE) return new Point(1,1);
+        if (action == SPDAction.S) return new Point(0, 1);
+        if (action == SPDAction.SW) return new Point(-1, 1);
+        if (action == SPDAction.W) return new Point(-1, 0);
+        if (action == SPDAction.NW) return new Point(-1, -1);
+        else return new Point(0,0);
     }
 
     @Override

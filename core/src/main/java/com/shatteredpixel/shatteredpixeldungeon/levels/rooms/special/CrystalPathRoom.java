@@ -21,11 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -232,13 +229,6 @@ public class CrystalPathRoom extends SpecialRoom {
 				return;
 			}
 		}
-
-		level.addItemToSpawn( new CrystalKey( Dungeon.levelName ) );
-		level.addItemToSpawn( new CrystalKey( Dungeon.levelName ) );
-		level.addItemToSpawn( new CrystalKey( Dungeon.levelName ) );
-
-		entrance().set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey( Dungeon.levelName ) );
 
 	}
 

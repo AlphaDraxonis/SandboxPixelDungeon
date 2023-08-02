@@ -111,7 +111,7 @@ public class CellSelector extends ScrollArea {
 		if (Dungeon.hero.sprite != null && Dungeon.hero.sprite.overlapsPoint( p.x, p.y )){
 			PointF c = DungeonTilemap.tileCenterToWorld(Dungeon.hero.pos);
 			if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
-				select(Dungeon.hero.pos, event.button);
+				select(Dungeon.hero.pos, event.button, false);
 				return;
 			}
 		}
@@ -121,7 +121,7 @@ public class CellSelector extends ScrollArea {
 			if (mob.sprite != null && mob.sprite.overlapsPoint( p.x, p.y )){
 				PointF c = DungeonTilemap.tileCenterToWorld(mob.pos);
 				if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
-					select(mob.pos, event.button);
+					select(mob.pos, event.button, false);
 					return;
 				}
 			}
@@ -132,7 +132,7 @@ public class CellSelector extends ScrollArea {
 			if (heap.sprite != null && heap.sprite.overlapsPoint( p.x, p.y)){
 				PointF c = DungeonTilemap.tileCenterToWorld(heap.pos);
 				if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
-					select(heap.pos, event.button);
+					select(heap.pos, event.button, false);
 					return;
 				}
 			}
@@ -141,7 +141,7 @@ public class CellSelector extends ScrollArea {
 		select( ((DungeonTilemap)target).screenToTile(
 			(int) event.current.x,
 			(int) event.current.y,
-			true ), event.button );
+			true ), event.button, false );
 	}
 
 	protected void handleDragClick(PointerEvent event) {
@@ -509,7 +509,7 @@ public class CellSelector extends ScrollArea {
 	//prevents repeated inputs when the hero isn't moving
 	private int lastCellMoved = 0;
 
-	private boolean moveFromActions(GameAction... actions){
+	protected boolean moveFromActions(GameAction... actions){
 		if (Dungeon.hero == null || !Dungeon.hero.ready){
 			return false;
 		}
@@ -540,7 +540,7 @@ public class CellSelector extends ScrollArea {
 
 	}
 
-	private Point directionFromAction(GameAction action){
+	protected Point directionFromAction(GameAction action){
 		if (action == SPDAction.N)  return new Point( 0, -1);
 		if (action == SPDAction.NE) return new Point(+1, -1);
 		if (action == SPDAction.E)  return new Point(+1,  0);

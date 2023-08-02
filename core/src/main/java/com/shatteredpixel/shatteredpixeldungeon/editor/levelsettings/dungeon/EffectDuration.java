@@ -16,6 +16,7 @@ public class EffectDuration implements Bundlable {
     public static float get(Class<?> effect, float defaultValue) {//from Map#getOrDefault
         Float v;
         Map<Class<?>, Float> durationMap = Dungeon.customDungeon.effectDuration.durationMap;
+        if (durationMap == null) Dungeon.customDungeon.effectDuration.durationMap = new HashMap<>();
         return (((v = durationMap.get(effect)) != null) || durationMap.containsKey(effect))
                 ? v
                 : defaultValue;

@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.ExitRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GhostSprite;
@@ -165,13 +166,18 @@ public class Ghost extends QuestNPC<GhostQuest> {
 
     @Override
     public void place(RegularLevel level, List<Room> rooms) {
-		Room exit = findExittzz;
-		if(exit != null) {
+		Room exit = null;
+		for (Room room : rooms) {
+			if (room instanceof ExitRoom) {
+				exit = room;
+				break;
+			}
+		}
+		if (exit != null) {
 			do {
 				pos = level.pointToCell(exit.random());
 			} while (pos == -1 || level.transitions.containsKey(pos));
-		}else{
-			tzz
+		} else {
 			int tries = level.length();
 			do {
 				pos = level.randomRespawnCell(this);

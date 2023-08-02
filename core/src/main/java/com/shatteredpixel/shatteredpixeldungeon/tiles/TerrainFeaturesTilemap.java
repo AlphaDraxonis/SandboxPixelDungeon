@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.watabou.noosa.Image;
@@ -35,8 +36,8 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 
 	private static TerrainFeaturesTilemap instance;
 
-	private SparseArray<Plant> plants;
-	private SparseArray<Trap> traps;
+	protected SparseArray<Plant> plants;
+	protected SparseArray<Trap> traps;
 
 	public TerrainFeaturesTilemap(SparseArray<Plant> plants, SparseArray<Trap> traps) {
 		super(Assets.Environment.TERRAIN_FEATURES);
@@ -64,6 +65,17 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 
 		if (plants.get(pos) != null){
 			return plants.get(pos).image + 7*16;
+		}
+
+		int stage = Dungeon.curLvlScheme().getRegion() - 1;
+		if (tile == Terrain.HIGH_GRASS) {
+			return 9 + 16 * stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+		} else if (tile == Terrain.FURROWED_GRASS) {
+			return 11 + 16 * stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+		} else if (tile == Terrain.GRASS) {
+			return 13 + 16 * stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+		} else if (tile == Terrain.EMBERS) {
+			return 9 * (16 * 5) + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
 		}
 
 		return -1;
