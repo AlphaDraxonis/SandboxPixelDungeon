@@ -724,10 +724,9 @@ public class CustomLevel extends Level {
     }
 
     public boolean isBorder(int cell) {
-        return false;
-//        int row = cell / width;
-//        int col = cell % width;
-//        return (row == 0 || row == height - 1 || col == 0 || col == width - 1);
+        int row = cell / width;
+        int col = cell % width;
+        return (row == 0 || row == height - 1 || col == 0 || col == width - 1);
     }
 
 

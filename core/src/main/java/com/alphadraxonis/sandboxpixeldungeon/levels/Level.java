@@ -937,16 +937,23 @@ public abstract class Level implements Bundlable {
 
         for (int i : PathFinder.NEIGHBOURS9) {
             i = cell + i;
+            if (i < 0 || i >= level.solid.length) continue;
             if (level.solid[i]) {
                 level.openSpace[i] = false;
             } else {
                 for (int j = 1; j < PathFinder.CIRCLE8.length; j += 2) {
-                    if (i + PathFinder.CIRCLE8[j] < 0 || level.solid[i + PathFinder.CIRCLE8[j]]) {
+                    if (i + PathFinder.CIRCLE8[j] >= level.solid.length
+                            || i + PathFinder.CIRCLE8[j] < 0
+                            || level.solid[i + PathFinder.CIRCLE8[j]]) {
                         level.openSpace[i] = false;
-                    } else if (!level.solid[i + PathFinder.CIRCLE8[(j + 1) % 8]]
-                            && !level.solid[i + PathFinder.CIRCLE8[(j + 2) % 8]]) {
-                        level.openSpace[i] = true;
-                        break;
+                    } else {
+                        int index1 = i + PathFinder.CIRCLE8[(j + 1) % 8];
+                        int index2 = i + PathFinder.CIRCLE8[(j + 2) % 8];
+                        if (index1 >= 0 && index2 >= 0 && index1 <level.solid.length && index2 < level.solid.length
+                                && !level.solid[index1] && !level.solid[index2]) {
+                            level.openSpace[i] = true;
+                            break;
+                        }
                     }
                 }
             }

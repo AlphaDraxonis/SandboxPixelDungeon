@@ -46,10 +46,10 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 
 		if (tile == Terrain.WATER) {
 			return DungeonTileSheet.stitchWaterTile(
-					map[pos + PathFinder.CIRCLE4[0]],
-					map[pos + PathFinder.CIRCLE4[1]],
-					map[pos + PathFinder.CIRCLE4[2]],
-					map[pos + PathFinder.CIRCLE4[3]]
+					pos + PathFinder.CIRCLE4[0] < 0 || pos + PathFinder.CIRCLE4[0] >= map.length ? Terrain.EMPTY : map[pos + PathFinder.CIRCLE4[0]],
+					pos + PathFinder.CIRCLE4[1] < 0 || pos + PathFinder.CIRCLE4[1] >= map.length ? Terrain.EMPTY : map[pos + PathFinder.CIRCLE4[1]],
+					pos + PathFinder.CIRCLE4[2] < 0 || pos + PathFinder.CIRCLE4[2] >= map.length ? Terrain.EMPTY : map[pos + PathFinder.CIRCLE4[2]],
+					pos + PathFinder.CIRCLE4[3] < 0 || pos + PathFinder.CIRCLE4[3] >= map.length ? Terrain.EMPTY : map[pos + PathFinder.CIRCLE4[3]]
 			);
 
 		} else if (tile == Terrain.CHASM) {

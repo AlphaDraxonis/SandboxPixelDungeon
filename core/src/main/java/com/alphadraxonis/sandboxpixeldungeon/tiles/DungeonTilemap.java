@@ -61,18 +61,28 @@ public abstract class DungeonTilemap extends Tilemap {
 	public synchronized void updateMapCell(int cell) {
 		boolean mapEditing = CustomDungeon.isEditing();
 		//update in a 3x3 grid to account for neighbours which might also be affected
-		if (Dungeon.level.insideMap(cell)) {
+//		if (Dungeon.level.insideMap(cell)) {
 			for (int i : PathFinder.NEIGHBOURS9) {
-				data[cell + i] = getTileVisual(cell + i, map[cell + i], mapEditing);
+				int index = cell + i;
+				if (index >= 0 && index < data.length)
+					data[index] = getTileVisual(index, map[index], mapEditing);
 			}
-			super.updateMapCell(cell - mapWidth - 1);
-			super.updateMapCell(cell + mapWidth + 1);
+			if(Dungeon.level.insideMap(cell)){
+				super.updateMapCell(cell - mapWidth - 1);
+				super.updateMapCell(cell + mapWidth + 1);
+			}else{
+				for (int i : PathFinder.NEIGHBOURS9) {
+					int index = cell + i;
+					if (index >= 0 && index < data.length)
+						super.updateMapCell(index);
+				}
+			}
 
-		//unless we're at the level's edge, then just do the one tile.
-		} else {
-			data[cell] = getTileVisual(cell, map[cell], mapEditing);
-			super.updateMapCell(cell);
-		}
+//		//unless we're at the level's edge, then just do the one tile.
+//		} else {
+//			data[cell] = getTileVisual(cell, map[cell], mapEditing);
+//			super.updateMapCell(cell);
+//		}
 	}
 
 	protected abstract int getTileVisual(int pos, int tile, boolean flat);

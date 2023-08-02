@@ -63,7 +63,7 @@ public class EditorCellSelector extends CellSelector {
     @Override
     public void select(int cell, int button, boolean dragClick) {
 
-        if (enabled && !EditorScene.interfaceBlockingHero() && listener != null && cell != -1 && !EditorScene.customLevel().isBorder(cell)) {
+        if (enabled && !EditorScene.interfaceBlockingHero() && listener != null && cell != -1) {
 
             switch (button) {
                 default:

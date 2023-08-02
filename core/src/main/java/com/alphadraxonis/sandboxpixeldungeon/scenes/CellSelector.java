@@ -148,10 +148,6 @@ public class CellSelector extends ScrollArea {
                 (int) event.current.x,
                 (int) event.current.y,
                 true);
-        if ((CustomDungeon.isEditing() && EditorScene.customLevel().isBorder(cell))) {
-            lastPoint = null;
-            return;
-        }
         if (lastSelectedCells.contains(cell)) {
             lastPoint = event.current;
             lastCell = cell;
@@ -182,7 +178,7 @@ public class CellSelector extends ScrollArea {
         checkForMissingCells(middleCell, cell, middle, now, button);//Recursively go from the middle to the borders
         checkForMissingCells(middleCell, lastCell, middle, was, button);
 
-        if (lastSelectedCells.contains(middleCell) || (CustomDungeon.isEditing() && EditorScene.customLevel().isBorder(cell)))
+        if (lastSelectedCells.contains(middleCell))
             return;
         lastSelectedCells.add(middleCell);
         select(middleCell, button, true);
