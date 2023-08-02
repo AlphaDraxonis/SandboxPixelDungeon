@@ -145,8 +145,8 @@ public class EditorScene extends PixelScene {
         firstTimeOpening = false;
     }
 
-    public static void close(){
-        if(customLevel != null){
+    public static void close() {
+        if (customLevel != null) {
             EditorScene.customLevel.levelScheme.unloadLevel();
             customLevel = null;
         }
@@ -171,20 +171,9 @@ public class EditorScene extends PixelScene {
         Camera.main.zoom(GameMath.gate(minZoom, defaultZoom + SPDSettings.zoom(), maxZoom));
         Camera.main.edgeScroll.set(1);
         if (mainCameraPos != null) Camera.main.scroll = mainCameraPos;
-        else {//FIXME point to middle! WICHTIG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-//            PointF to = new PointF(Camera.main.zoom / 85f / 16f * 2f, Camera.main.zoom / 85f / 16f * 2);
-            Camera.main.scroll.x = 85 * 8 / 2 - 200;
-            Camera.main.scroll.y = Camera.main.width / 2f;
-//            mainCameraPos = Camera.main.scroll;
-//            mainCameraPos.x += 680 - 320/Camera.main.zoom;
-//            mainCameraPos.y += 680;
-//            System.err.println("zoom="+Camera.main.zoom);
-//            System.err.println("x="+mainCameraPos.x+"  y="+mainCameraPos.y+"  cam scrollpos");
-//            System.err.println(Camera.main.x+"=x  "+ Camera.main.y+"=y  cam pos");
-//            System.err.println("Center offset: "+Camera.main.center().offset( Camera.main.scroll ).x);
-//            System.err.println("Center pure: "+Camera.main.center().x);
-//            System.err.println((85*16)+" width or height");
+        else {
+            Camera.main.scroll.x = -(Camera.main.width - customLevel.width() * DungeonTilemap.SIZE) / 2f - DungeonTilemap.SIZE / 2f;
+            Camera.main.scroll.y = -(Camera.main.height - customLevel.height() * DungeonTilemap.SIZE) / 2f;
         }
 
         scene = this;
