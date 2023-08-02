@@ -256,7 +256,7 @@ public class CustomLevel extends Level {
             Dungeon.customDungeon.removeFloor(temp);
             Dungeon.levelName = name;
 
-            changeMapSize(this, 85, 85);
+//            changeMapSize(this, 85, 85);
         } else {
             this.feeling = feeling;
             levelScheme.setFeeling(this.feeling);
@@ -490,14 +490,16 @@ public class CustomLevel extends Level {
 //        increaseArrayForMapSize(terrains, map, add, 5, 85);
 
 
-        setSize(15, 15);
 
 //        for (int i = 0; i < terrains.length; i++) {
 //            map[i] = terrains[i];
 //        }
 
-        int add = 10 / 2 + 10 / 2 * 15;
-        changeArrayForMapSize(terrains, map, add, 5, 15);
+        setSize(15, 15);
+        int[] newTerrain = new int[5*15];
+        Arrays.fill(newTerrain, WALL);
+        changeArrayForMapSizeHeight(terrains, newTerrain, 5*5, 5, 5);
+        changeArrayForMapSizeWidth(newTerrain, map, 5, 5, 15);
 
 
         updateTransitionCells();
@@ -748,29 +750,43 @@ public class CustomLevel extends Level {
     public static void changeMapSize(Level level, int newWidth, int newHeight, int addTop, int addLeft) {
         if (level.width() == newWidth && level.height() == newHeight) return;
 
-//        int diffH = newHeight - level.height();
-        int diffW = newWidth - level.width();
-        int newLength = newWidth * newHeight;
-        int add = addLeft + addTop * newWidth;
+        if (newHeight != level.height()) changeMapHeight(level, newHeight, addTop);
+        if (newWidth != level.width()) changeMapWidth(level, newWidth, addLeft);
+
+
+//        transitions = level.transitions;//change
+//        customTiles = level.customTiles;//change
+//        customWalls = level.customWalls;//change
+
+        level.buildFlagMaps();
+    }
+
+    private static void changeMapHeight(Level level, int newHeight, int addTop) {
+
+        int width = level.width();
+        int newLength = width * newHeight;
+        int add = addTop * width;
 
         int[] oldMap = level.map;
         boolean[] oldVisited = level.visited;
         boolean[] oldMapped = level.mapped;
 
         int levelWidth = level.width();
-        level.setSize(newWidth, newHeight);
-        changeArrayForMapSize(oldMap, level.map, add, levelWidth, newWidth);
-
-        changeArrayForMapSize(oldVisited, level.visited, add, levelWidth, newWidth);
-        changeArrayForMapSize(oldMapped, level.mapped, add, levelWidth, newWidth);
+        level.setSize(width, newHeight);
 
         boolean[] nDiscoverable = new boolean[newLength];
-        changeArrayForMapSize(level.discoverable, nDiscoverable, add, levelWidth, newWidth);
+
+        changeArrayForMapSizeHeight(oldMap, level.map, add, levelWidth, width);
+        changeArrayForMapSizeHeight(oldVisited, level.visited, add, levelWidth, width);
+        changeArrayForMapSizeHeight(oldMapped, level.mapped, add, levelWidth, width);
+        changeArrayForMapSizeHeight(level.discoverable, nDiscoverable, add, levelWidth, width);
+
         level.discoverable = nDiscoverable;
 
         List<Mob> removeEntities = new ArrayList<>();
         for (Mob m : level.mobs) {
-            m.pos = m.pos + add + m.pos / levelWidth * diffW;
+//            m.pos = m.pos + add + m.pos / levelWidth * diffW;
+            m.pos = m.pos + add;
             if (m.pos < 0 || m.pos >= newLength || !level.insideMap(m.pos)) removeEntities.add(m);
         }
         level.mobs.removeAll(removeEntities);
@@ -779,7 +795,7 @@ public class CustomLevel extends Level {
         //Cant avoid some copy paste because Shattered has really good code
         SparseArray<Heap> nHeaps = new SparseArray<>();
         for (Heap h : level.heaps.valueList()) {
-            h.pos = h.pos + add + h.pos / levelWidth * diffW;
+            h.pos = h.pos + add;
             if (h.pos >= 0 && h.pos < newLength && level.insideMap(h.pos)) nHeaps.put(h.pos, h);
         }
         level.heaps.clear();
@@ -787,7 +803,7 @@ public class CustomLevel extends Level {
 
         SparseArray<Trap> nTrap = new SparseArray<>();
         for (Trap t : level.traps.valueList()) {
-            t.pos = t.pos + add + t.pos / levelWidth * diffW;
+            t.pos = t.pos + add;
             if (t.pos >= 0 && t.pos < newLength && level.insideMap(t.pos)) nTrap.put(t.pos, t);
         }
         level.traps.clear();
@@ -796,7 +812,7 @@ public class CustomLevel extends Level {
         SparseArray<Plant> nPlant = new SparseArray<>();
         for (Plant p : level.plants.valueList()) {
             if (p != null) {
-                p.pos = p.pos + add + p.pos / levelWidth * diffW;
+                p.pos = p.pos + add;
                 if (p.pos >= 0 && p.pos < newLength && level.insideMap(p.pos)) nPlant.put(p.pos, p);
             }
         }
@@ -810,7 +826,7 @@ public class CustomLevel extends Level {
         List<Integer> cells = new ArrayList<>(level.levelScheme.entranceCells);
         level.levelScheme.entranceCells.clear();
         for (int cell : cells) {
-            int pos = cell + add + cell / levelWidth * diffW;
+            int pos = cell + add;
             if (pos >= 0 && pos < newLength) level.levelScheme.entranceCells.add(pos);
         }
         Collections.sort(level.levelScheme.entranceCells);
@@ -818,14 +834,14 @@ public class CustomLevel extends Level {
         cells = new ArrayList<>(level.levelScheme.exitCells);
         level.levelScheme.exitCells.clear();
         for (int cell : cells) {
-            int pos = cell + add + cell / levelWidth * diffW;
+            int pos = cell + add;
             if (pos >= 0 && pos < newLength) level.levelScheme.exitCells.add(pos);
         }
         Collections.sort(level.levelScheme.exitCells);
 
         Map<Integer, LevelTransition> nTrans = new HashMap<>();
         for (LevelTransition transition : level.transitions.values()) {
-            int pos = transition.departCell + add + transition.departCell / levelWidth * diffW;
+            int pos = transition.departCell + add;
             if (pos >= 0 && pos < newLength) {
                 transition.departCell = transition.centerCell = pos;
                 //TODO maybe not so good to set centerCell!!
@@ -836,25 +852,149 @@ public class CustomLevel extends Level {
         }
         level.transitions.clear();
         level.transitions = nTrans;
-
-//        transitions = level.transitions;//change
-//        customTiles = level.customTiles;//change
-//        customWalls = level.customWalls;//change
-
-        level.buildFlagMaps();
     }
 
-    private static void changeArrayForMapSize(int[] src, int[] dest, int add, int levelWidth, int newWidth) {
+    private static void changeMapWidth(Level level, int newWidth, int addLeft) {
+
+        int diffW = newWidth - level.width();
+        int height = level.height();
+        int newLength = height * newWidth;
+        int add = addLeft;
+
+        int[] oldMap = level.map;
+        boolean[] oldVisited = level.visited;
+        boolean[] oldMapped = level.mapped;
+
+        int levelWidth = level.width();
+        level.setSize(newWidth, height);
+
+        boolean[] nDiscoverable = new boolean[newLength];
+
+        changeArrayForMapSizeWidth(oldMap, level.map, add, levelWidth, newWidth);
+        changeArrayForMapSizeWidth(oldVisited, level.visited, add, levelWidth, newWidth);
+        changeArrayForMapSizeWidth(oldMapped, level.mapped, add, levelWidth, newWidth);
+        changeArrayForMapSizeWidth(level.discoverable, nDiscoverable, add, levelWidth, newWidth);
+
+        level.discoverable = nDiscoverable;
+
+        List<Mob> removeEntities = new ArrayList<>();
+        for (Mob m : level.mobs) {
+            int nPos = m.pos + add + diffW * (m.pos / levelWidth);
+            if (m.pos < 0 || m.pos >= newLength || !level.insideMap(m.pos)
+                    || nPos / levelWidth != m.pos / newWidth) removeEntities.add(m);
+            else m.pos = nPos;
+        }
+        level.mobs.removeAll(removeEntities);
+        removeEntities.clear();
+
+        //Cant avoid some copy paste because Shattered has really good code
+        SparseArray<Heap> nHeaps = new SparseArray<>();
+        for (Heap h : level.heaps.valueList()) {
+            int nPos = h.pos + add + diffW * (h.pos / levelWidth);
+            if (h.pos >= 0 && h.pos < newLength && level.insideMap(h.pos)
+                    && nPos / levelWidth == h.pos / newWidth) {
+                nHeaps.put(h.pos, h);
+                h.pos = nPos;
+            }
+        }
+        level.heaps.clear();
+        level.heaps.putAll(nHeaps);
+
+        SparseArray<Trap> nTrap = new SparseArray<>();
+        for (Trap t : level.traps.valueList()) {
+            int nPos = t.pos + add + diffW * (t.pos / levelWidth);
+            if (t.pos >= 0 && t.pos < newLength && level.insideMap(t.pos)
+                    && nPos / levelWidth == t.pos / newWidth) {
+                nTrap.put(t.pos, t);
+                t.pos = nPos;
+            }
+        }
+        level.traps.clear();
+        level.traps.putAll(nTrap);
+
+        SparseArray<Plant> nPlant = new SparseArray<>();
+        for (Plant p : level.plants.valueList()) {
+            if (p != null) {
+                int nPos = p.pos + add + diffW * (p.pos / levelWidth);
+                if (p.pos >= 0 && p.pos < newLength && level.insideMap(p.pos)
+                        && nPos / levelWidth == p.pos / newWidth) {
+                    nPlant.put(p.pos, p);
+                    p.pos = nPos;
+                }
+            }
+        }
+        level.plants.clear();
+        level.plants.putAll(nPlant);
+
+        for (Blob b : level.blobs.values()) {
+            b.cur = new int[newLength];
+        }
+
+        List<Integer> cells = new ArrayList<>(level.levelScheme.entranceCells);
+        level.levelScheme.entranceCells.clear();
+        for (int cell : cells) {
+            int pos = cell + add + diffW * (cell / levelWidth);
+            if (pos >= 0 && pos < newLength && pos / levelWidth == cell / newWidth)
+                level.levelScheme.entranceCells.add(pos);
+        }
+        Collections.sort(level.levelScheme.entranceCells);
+
+        cells = new ArrayList<>(level.levelScheme.exitCells);
+        level.levelScheme.exitCells.clear();
+        for (int cell : cells) {
+            int pos = cell + add + diffW * (cell / levelWidth);
+            if (pos >= 0 && pos < newLength && pos / levelWidth == cell / newWidth)
+                level.levelScheme.exitCells.add(pos);
+        }
+        Collections.sort(level.levelScheme.exitCells);
+
+        Map<Integer, LevelTransition> nTrans = new HashMap<>();
+        for (LevelTransition transition : level.transitions.values()) {
+            int pos = transition.departCell + add + diffW * (transition.departCell / levelWidth);
+            if (pos >= 0 && pos < newLength && pos / levelWidth == transition.departCell / newWidth) {
+                transition.departCell = transition.centerCell = pos;
+                //TODO maybe not so good to set centerCell!!
+                nTrans.put(transition.departCell, transition);
+                Point p = level.cellToPoint(transition.departCell);
+                transition.set(p.x, p.y, p.x, p.y);
+            }
+        }
+        level.transitions.clear();
+        level.transitions = nTrans;
+    }
+
+    //add must be multiplied with width before!!
+    private static void changeArrayForMapSizeHeight(int[] src, int[] dest, int add, int levelWidth, int newWidth) {
+        int diffW = newWidth - levelWidth;
         for (int i = 0; i < src.length; i++) {
-            int index = i + add + i / levelWidth * (newWidth - levelWidth);
-            if (index >= 0 && index < dest.length) dest[index] = src[i];//
+            int index = i + add + i / levelWidth * diffW;
+            if (index >= 0 && index < dest.length) dest[index] = src[i];
         }
     }
 
-    private static void changeArrayForMapSize(boolean[] src, boolean[] dest, int add, int levelWidth, int newWidth) {
+    private static void changeArrayForMapSizeWidth(int[] src, int[] dest, int add, int levelWidth, int newWidth) {
+        int diffW = newWidth - levelWidth;
         for (int i = 0; i < src.length; i++) {
-            int index = i + add + i / levelWidth * (newWidth - levelWidth);
+            int index = i + add + diffW * (i / levelWidth);
+            if (index >= 0 && index < dest.length && i / levelWidth == index / newWidth)
+                dest[index] = src[i];
+        }
+    }
+
+    private static void changeArrayForMapSizeHeight(boolean[] src, boolean[] dest, int add, int levelWidth, int newWidth) {
+        int diffW = newWidth - levelWidth;
+        for (int i = 0; i < src.length; i++) {
+            int index = i + add + i / levelWidth * diffW;
             if (index >= 0 && index < dest.length) dest[index] = src[i];
+        }
+    }
+
+    private static void changeArrayForMapSizeWidth(boolean[] src, boolean[] dest, int add, int levelWidth, int newWidth) {
+        int diffW = newWidth - levelWidth;
+        for (int i = 0; i < src.length; i++) {
+            int index = i + add + diffW * (i / levelWidth);
+            if (index >= 0 && index < dest.length && i / levelWidth == index / newWidth)
+                dest[index] = src[i];
         }
     }
 

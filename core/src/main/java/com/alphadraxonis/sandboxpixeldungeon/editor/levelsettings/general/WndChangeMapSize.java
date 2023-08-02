@@ -41,16 +41,16 @@ public class WndChangeMapSize extends Window {
         info.maxWidth(width);
         info.setPos(0, 0);
 
-        topSpinner = new Spinner(new SpinnerIntegerModel(1, 100, startTop = (int) Math.ceil((EditorScene.customLevel().height() - 3) * 0.5f), 1, false, null), Messages.get(WndChangeMapSize.class, "n") + " ", 9);
+        topSpinner = new Spinner(new SpinnerIntegerModel(1, 100, startTop = (int) Math.ceil((EditorScene.customLevel().height() - 1) * 0.5f), 1, false, null), Messages.get(WndChangeMapSize.class, "n") + " ", 9);
         content.add(topSpinner);
         topSpinner.setRect(0, info.bottom() + 4, width, 18);
-        bottomSpinner = new Spinner(new SpinnerIntegerModel(1, 100, startBottom = (int) ((EditorScene.customLevel().height() - 3) * 0.5f), 1, false, null), Messages.get(WndChangeMapSize.class, "s") + " ", 9);
+        bottomSpinner = new Spinner(new SpinnerIntegerModel(1, 100, startBottom = (int) ((EditorScene.customLevel().height() - 1) * 0.5f), 1, false, null), Messages.get(WndChangeMapSize.class, "s") + " ", 9);
         content.add(bottomSpinner);
         bottomSpinner.setRect(0, topSpinner.bottom() + 4, width, 18);
-        leftSpinner = new Spinner(new SpinnerIntegerModel(1, 100, startLeft = (int) Math.ceil((EditorScene.customLevel().width() - 3) * 0.5f), 1, false, null), Messages.get(WndChangeMapSize.class, "w") + " ", 9);
+        leftSpinner = new Spinner(new SpinnerIntegerModel(1, 100, startLeft = (int) Math.ceil((EditorScene.customLevel().width() - 1) * 0.5f), 1, false, null), Messages.get(WndChangeMapSize.class, "w") + " ", 9);
         content.add(leftSpinner);
         leftSpinner.setRect(0, bottomSpinner.bottom() + 4, width, 18);
-        rightSpinner = new Spinner(new SpinnerIntegerModel(1, 100, startRight = (int) ((EditorScene.customLevel().width() - 3) * 0.5f), 1, false, null), Messages.get(WndChangeMapSize.class, "e") + " ", 9);
+        rightSpinner = new Spinner(new SpinnerIntegerModel(1, 100, startRight = (int) ((EditorScene.customLevel().width() - 1) * 0.5f), 1, false, null), Messages.get(WndChangeMapSize.class, "e") + " ", 9);
         content.add(rightSpinner);
         rightSpinner.setRect(0, leftSpinner.bottom() + 4, width, 18);
 
@@ -93,9 +93,10 @@ public class WndChangeMapSize extends Window {
             return;
 
 
-        int nW = left + right + 3;
-        int nH = top + bottom + 3;
-        CustomLevel.changeMapSize(EditorScene.customLevel(), nW, nH, top - startTop, left - startLeft);
+        int nW = left + right + 1;
+        int nH = top + bottom + 1;
+        CustomLevel.changeMapSize(EditorScene.customLevel(), startLeft+startRight+1, nH, top - startTop, 0);
+        CustomLevel.changeMapSize(EditorScene.customLevel(), nW, nH, 0, left - startLeft);
 
         Undo.reset();
         SandboxPixelDungeon.switchNoFade(EditorScene.class);

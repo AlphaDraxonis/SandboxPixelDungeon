@@ -103,7 +103,9 @@ public class GeyserTrap extends Trap {
 				ArrayList<Integer> candidates = new ArrayList<>();
 				for (int i : PathFinder.NEIGHBOURS8){
 					//add as a candidate if both cells on the trajectory are safe
-					if (!Dungeon.level.avoid[pos + i] && !Dungeon.level.avoid[pos + i + i]){
+					if (pos+i + i >= 0 && pos + i + i < Dungeon.level.avoid.length
+							&& pos + i >= 0 && pos + i < Dungeon.level.avoid.length
+							&& !Dungeon.level.avoid[pos + i] && !Dungeon.level.avoid[pos + i + i]) {
 						candidates.add(pos + i);
 					}
 				}
