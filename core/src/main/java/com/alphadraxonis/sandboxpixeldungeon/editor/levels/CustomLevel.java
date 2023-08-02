@@ -771,7 +771,7 @@ public class CustomLevel extends Level {
         List<Mob> removeEntities = new ArrayList<>();
         for (Mob m : level.mobs) {
             m.pos = m.pos + add + m.pos / levelWidth * diffW;
-            if (m.pos < 0 || m.pos >= newLength) removeEntities.add(m);
+            if (m.pos < 0 || m.pos >= newLength || !level.insideMap(m.pos)) removeEntities.add(m);
         }
         level.mobs.removeAll(removeEntities);
         removeEntities.clear();
@@ -780,7 +780,7 @@ public class CustomLevel extends Level {
         SparseArray<Heap> nHeaps = new SparseArray<>();
         for (Heap h : level.heaps.valueList()) {
             h.pos = h.pos + add + h.pos / levelWidth * diffW;
-            if (h.pos >= 0 && h.pos < newLength) nHeaps.put(h.pos, h);
+            if (h.pos >= 0 && h.pos < newLength && level.insideMap(h.pos)) nHeaps.put(h.pos, h);
         }
         level.heaps.clear();
         level.heaps.putAll(nHeaps);
@@ -788,7 +788,7 @@ public class CustomLevel extends Level {
         SparseArray<Trap> nTrap = new SparseArray<>();
         for (Trap t : level.traps.valueList()) {
             t.pos = t.pos + add + t.pos / levelWidth * diffW;
-            if (t.pos >= 0 && t.pos < newLength) nTrap.put(t.pos, t);
+            if (t.pos >= 0 && t.pos < newLength && level.insideMap(t.pos)) nTrap.put(t.pos, t);
         }
         level.traps.clear();
         level.traps.putAll(nTrap);
@@ -797,7 +797,7 @@ public class CustomLevel extends Level {
         for (Plant p : level.plants.valueList()) {
             if (p != null) {
                 p.pos = p.pos + add + p.pos / levelWidth * diffW;
-                if (p.pos >= 0 && p.pos < newLength) nPlant.put(p.pos, p);
+                if (p.pos >= 0 && p.pos < newLength && level.insideMap(p.pos)) nPlant.put(p.pos, p);
             }
         }
         level.plants.clear();

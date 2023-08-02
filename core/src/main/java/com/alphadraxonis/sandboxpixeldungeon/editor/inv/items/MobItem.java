@@ -79,7 +79,7 @@ public class MobItem extends EditorItem {
     }
 
     public static boolean invalidPlacement(Mob mob, CustomLevel level, int cell) {
-        return level.solid[cell] || level.pit[cell]
+        return level.solid[cell] || level.pit[cell] || !level.insideMap(cell)
                 || (Char.hasProp(mob, Char.Property.LARGE) && !level.openSpace[cell])
                 || (mob instanceof Piranha && !level.water[cell])
                 ;//&& level.map[cell] != Terrain.DOOR;//TODO make placement on doors possible FIXME WICHTIG

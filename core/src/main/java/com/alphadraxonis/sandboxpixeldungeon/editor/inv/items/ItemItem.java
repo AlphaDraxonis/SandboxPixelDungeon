@@ -120,7 +120,7 @@ public class ItemItem extends EditorItem {
 
     public static boolean invalidPlacement(int cell, CustomLevel level) {
 //        return level.passable[cell];
-        return level.solid[cell] || level.pit[cell];
+        return level.solid[cell] || level.pit[cell] || !level.insideMap(cell);
     }
 
     public static ItemActionPart remove(int cell, CustomLevel level) {

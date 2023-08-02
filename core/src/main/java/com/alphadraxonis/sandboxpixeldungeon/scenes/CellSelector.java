@@ -175,6 +175,8 @@ public class CellSelector extends ScrollArea {
                 (int) middle.y,
                 true);
 
+        if (middleCell == -1) return;
+
         checkForMissingCells(middleCell, cell, middle, now, button);//Recursively go from the middle to the borders
         checkForMissingCells(middleCell, lastCell, middle, was, button);
 

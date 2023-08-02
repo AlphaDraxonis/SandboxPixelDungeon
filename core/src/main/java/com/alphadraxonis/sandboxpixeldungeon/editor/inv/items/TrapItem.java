@@ -2,10 +2,12 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.inv.items;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditTrapComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TrapActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
@@ -84,7 +86,12 @@ public class TrapItem extends EditorItem {
 
     @Override
     public void place(int cell) {
-        Undo.addActionPart(place(trap().getCopy(), cell));
+        if (validPlacement(cell, EditorScene.customLevel()))
+            Undo.addActionPart(place(trap().getCopy(), cell));
+    }
+
+    public static boolean validPlacement(int cell, CustomLevel level) {
+        return level.insideMap(cell);
     }
 
     @Override
@@ -96,7 +103,7 @@ public class TrapItem extends EditorItem {
         return trap;
     }
 
-    public static int getTerrain(Trap trap){
+    public static int getTerrain(Trap trap) {
         return trap.visible ? (trap.active ? Terrain.TRAP : Terrain.INACTIVE_TRAP) : Terrain.SECRET_TRAP;
     }
 
