@@ -265,48 +265,44 @@ public class InterlevelScene extends PixelScene {
 	public void update() {
 		super.update();
 
-        waitingTime += Game.elapsed;
-
-        float p = timeLeft / fadeTime;
-
-        switch (phase) {
-
-            case FADE_IN:
-                message.alpha(1 - p);
-                if ((timeLeft -= Game.elapsed) <= 0) {
-                    synchronized (thread) {
-                        if (!thread.isAlive() && error == null) {
-                            phase = Phase.FADE_OUT;
-                            timeLeft = fadeTime;
-                        } else {
-                            phase = Phase.STATIC;
-                        }
-                    }
-                }
-                break;
-
-            case FADE_OUT:
-                message.alpha(p);
-
-                if ((timeLeft -= Game.elapsed) <= 0) {
-                    Game.switchScene(GameScene.class);
-                    thread = null;
-                    error = null;
-                }
-                break;
-
-            case STATIC:
-                if (error != null) {
-                    String errorMsg;
-                    if (error instanceof FileNotFoundException)
-                        errorMsg = Messages.get(this, "file_not_found");
-                    else if (error instanceof IOException)
-                        errorMsg = Messages.get(this, "io_error");
-                    else if (error.getMessage() != null &&
-                            error.getMessage().equals("old save"))
-                        errorMsg = Messages.get(this, "io_error");
-                    else if (error.getCause() instanceof CustomDungeonSaves.RenameRequiredException)
-                        errorMsg = error.getCause().getMessage();
+		waitingTime += Game.elapsed;
+		
+		float p = timeLeft / fadeTime;
+		
+		switch (phase) {
+		
+		case FADE_IN:
+			message.alpha( 1 - p );
+			if ((timeLeft -= Game.elapsed) <= 0) {
+				synchronized (thread) {
+					if (!thread.isAlive() && error == null) {
+						phase = Phase.FADE_OUT;
+						timeLeft = fadeTime;
+					} else {
+						phase = Phase.STATIC;
+					}
+				}
+			}
+			break;
+			
+		case FADE_OUT:
+			message.alpha( p );
+			
+			if ((timeLeft -= Game.elapsed) <= 0) {
+				Game.switchScene( GameScene.class );
+				thread = null;
+				error = null;
+			}
+			break;
+			
+		case STATIC:
+			if (error != null) {
+				String errorMsg;
+				if (error instanceof FileNotFoundException)     errorMsg = Messages.get(this, "file_not_found");
+				else if (error instanceof IOException)          errorMsg = Messages.get(this, "io_error");
+				else if (error.getMessage() != null &&
+						error.getMessage().equals("old save")) errorMsg = Messages.get(this, "io_error");
+				else if (error.getCause() instanceof CustomDungeonSaves.RenameRequiredException) errorMsg = error.getCause().getMessage();
 
 				else throw new RuntimeException("fatal error occured while moving between floors. " +
 							"Seed:" + Dungeon.seed + " depth:" + Dungeon.depth, error);
@@ -525,7 +521,7 @@ public class InterlevelScene extends PixelScene {
 		tempVisited.add(level.name);
 		Dungeon.visited = tempVisited.toArray(new String[]{});
 	}
-	
+
 	@Override
 	protected void onBackPressed() {
 		//Do nothing
