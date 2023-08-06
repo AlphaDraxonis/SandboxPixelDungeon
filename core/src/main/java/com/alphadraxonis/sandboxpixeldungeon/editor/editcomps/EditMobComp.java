@@ -8,7 +8,9 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.RatKing;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
@@ -43,6 +45,8 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EditMobComp extends DefaultEditComp<Mob> {
 
@@ -261,35 +265,45 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             questItem2 = null;
         }
 
-        addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
-            @Override
-            protected void onClick() {
-
-                Window w = new WndChooseOneInCategories(
-                        Messages.get(EditMobComp.class, "add_buff_title"), "",
-                        Buffs.getAllBuffs2(mob.buffs()), new String[]{"Buffs"}) {
-                    @Override
-                    protected ChooseOneInCategoriesBody.BtnRow[] createCategoryRows(Object[] category) {
-                        ChooseOneInCategoriesBody.BtnRow[] ret = new ChooseOneInCategoriesBody.BtnRow[category.length];
-                        for (int i = 0; i < ret.length; i++) {
-                            Buff b = Reflection.newInstance((Class<? extends Buff>) category[i]);
-                            ret[i] = new ChooseOneInCategoriesBody.BtnRow(b.name(), b.desc(), new BuffIcon(b, true)) {
-                                @Override
-                                protected void onClick() {
-                                    finish();
-                                    Buff.affect(mob, b.getClass());
-                                    updateObj();
-                                }
-                            };
+        if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
+                mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper)) {
+            addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
+                @Override
+                protected void onClick() {
+                    Set<Class<? extends Buff>> buffsToIgnore = new HashSet<>();
+                    for (Buff b : mob.buffs()) buffsToIgnore.add(b.getClass());
+                    for (Class<?> c : mob.immunities) {
+                        if (Buff.class.isAssignableFrom(c)) {
+                            buffsToIgnore.add((Class<? extends Buff>) c);
                         }
-                        return ret;
                     }
-                };
-                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                else Game.scene().addToFront(w);
-            }
-        };
-        add(addBuffs);
+
+                    Window w = new WndChooseOneInCategories(
+                            Messages.get(EditMobComp.class, "add_buff_title"), "",
+                            Buffs.getAllBuffs(buffsToIgnore), new String[]{"Buffs"}) {
+                        @Override
+                        protected ChooseOneInCategoriesBody.BtnRow[] createCategoryRows(Object[] category) {
+                            ChooseOneInCategoriesBody.BtnRow[] ret = new ChooseOneInCategoriesBody.BtnRow[category.length];
+                            for (int i = 0; i < ret.length; i++) {
+                                Buff b = Reflection.newInstance((Class<? extends Buff>) category[i]);
+                                ret[i] = new ChooseOneInCategoriesBody.BtnRow(b.name(), b.desc(), new BuffIcon(b, true)) {
+                                    @Override
+                                    protected void onClick() {
+                                        finish();
+                                        Buff.affect(mob, b.getClass());
+                                        updateObj();
+                                    }
+                                };
+                            }
+                            return ret;
+                        }
+                    };
+                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                    else Game.scene().addToFront(w);
+                }
+            };
+            add(addBuffs);
+        } else addBuffs = null;
 
         comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, sheepLifespan,
                 mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, addBuffs};
