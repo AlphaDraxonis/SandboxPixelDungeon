@@ -12,7 +12,6 @@ import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.InventorySlot;
-import com.alphadraxonis.sandboxpixeldungeon.ui.ItemSlot;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
@@ -28,9 +27,11 @@ public class ItemSelector extends Component {
     private Class<? extends Item> itemClasses;
     private Item selectedItem;
     protected final RenderedTextBlock renderedTextBlock;
-    protected ItemSlot itemSlot;
+    protected InventorySlot itemSlot;
     protected IconButton changeBtn;
     private final boolean acceptsNull;
+
+    private boolean showQuestinmarkIfNull;
 
     public ItemSelector(String text, Class<? extends Item> itemClasses, Item startItem, boolean acceptsNull) {
         this.itemClasses = itemClasses;
@@ -89,7 +90,21 @@ public class ItemSelector extends Component {
 
     public void setSelectedItem(Item selectedItem) {
         this.selectedItem = selectedItem;
-        itemSlot.item(selectedItem);
+        if (isShowQuestinmarkIfNull() && selectedItem == null) {
+            selectedItem = new Item();
+            selectedItem.image = 0;
+            itemSlot.item(selectedItem);
+            itemSlot.active = false;
+        } else itemSlot.item(selectedItem);
+    }
+
+    public boolean isShowQuestinmarkIfNull() {
+        return showQuestinmarkIfNull;
+    }
+
+    public void setShowQuestinmarkIfNull(boolean showQuestinmarkIfNull) {
+        this.showQuestinmarkIfNull = showQuestinmarkIfNull;
+        if (getSelectedItem() == null) setSelectedItem(getSelectedItem());
     }
 
     public Item getSelectedItem() {

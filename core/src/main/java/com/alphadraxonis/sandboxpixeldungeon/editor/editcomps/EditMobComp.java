@@ -6,6 +6,8 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
@@ -23,6 +25,8 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerMod
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
+import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
+import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -54,6 +58,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final LotusLevelSpinner lotusLevelSpinner;
     private final Spinner sheepLifespan;
     private final QuestSpinner questSpinner;
+    private final ItemSelector questItem1, questItem2;
     private final CheckBox spawnQuestRoom;
 
     private final Component[] comps;
@@ -170,26 +175,90 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (mob instanceof QuestNPC<?>) {
             questSpinner = new QuestSpinner(((QuestNPC<?>) mob).quest, h -> mobStateSpinner.getCurrentInputFieldWith());
             add(questSpinner);
-            if (mob instanceof Wandmaker && mob.pos < 0) {
-                spawnQuestRoom = new CheckBox(Messages.get(EditMobComp.class, "spawn_quest_room")) {
+            if (mob instanceof Wandmaker) {
+                if (mob.pos < 0) {
+                    spawnQuestRoom = new CheckBox(Messages.get(EditMobComp.class, "spawn_quest_room")) {
+                        @Override
+                        public void checked(boolean value) {
+                            super.checked(value);
+                            ((Wandmaker) mob).quest.spawnQuestRoom = value;
+                        }
+                    };
+                    spawnQuestRoom.checked(((Wandmaker) mob).quest.spawnQuestRoom);
+                    add(spawnQuestRoom);
+                    questSpinner.addChangeListener(() -> {
+                        if ("none".equals(questSpinner.getValue())) {
+                            spawnQuestRoom.enable(false);
+                            spawnQuestRoom.checked(false);
+                        } else spawnQuestRoom.enable(true);
+                    });
+                } else spawnQuestRoom = null;
+                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "wand_1") + ":", Wand.class, ((Wandmaker) mob).quest.wand1, true) {
                     @Override
-                    public void checked(boolean value) {
-                        super.checked(value);
-                        ((Wandmaker) mob).quest.spawnQuestRoom = value;
+                    public void setSelectedItem(Item selectedItem) {
+                        super.setSelectedItem(selectedItem);
+                        ((Wandmaker) mob).quest.wand1 = (Wand) selectedItem;
+                        EditMobComp.this.updateObj();
                     }
                 };
-                spawnQuestRoom.checked(((Wandmaker) mob).quest.spawnQuestRoom);
-                add(spawnQuestRoom);
-                questSpinner.addChangeListener(() -> {
-                    if ("none".equals(questSpinner.getValue())) {
-                        spawnQuestRoom.enable(false);
-                        spawnQuestRoom.checked(false);
-                    } else spawnQuestRoom.enable(true);
-                });
-            } else spawnQuestRoom = null;
+                add(questItem1);
+                questItem2 = new ItemSelector(" " + Messages.get(EditMobComp.class, "wand_2") + ":", Wand.class, ((Wandmaker) mob).quest.wand2, true) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+                        super.setSelectedItem(selectedItem);
+                        ((Wandmaker) mob).quest.wand2 = (Wand) selectedItem;
+                        EditMobComp.this.updateObj();
+                    }
+                };
+                add(questItem2);
+                questItem1.setShowQuestinmarkIfNull(true);
+                questItem2.setShowQuestinmarkIfNull(true);
+
+            } else if (mob instanceof Ghost) {
+                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "weapon") + ":", Weapon.class, ((Ghost) mob).quest.weapon, true) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+                        super.setSelectedItem(selectedItem);
+                        ((Ghost) mob).quest.weapon = (Weapon) selectedItem;
+                        EditMobComp.this.updateObj();
+                    }
+                };
+                add(questItem1);
+                questItem2 = new ItemSelector(" " + Messages.get(EditMobComp.class, "armor") + ":", Armor.class, ((Ghost) mob).quest.armor, true) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+                        super.setSelectedItem(selectedItem);
+                        ((Ghost) mob).quest.armor = (Armor) selectedItem;
+                        EditMobComp.this.updateObj();
+                    }
+                };
+                add(questItem2);
+                questItem1.setShowQuestinmarkIfNull(true);
+                questItem2.setShowQuestinmarkIfNull(true);
+                spawnQuestRoom = null;
+            } else if (mob instanceof Imp) {
+                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "ring") + ":", Ring.class, ((Imp) mob).quest.reward, true) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+                        super.setSelectedItem(selectedItem);
+                        ((Imp) mob).quest.reward = (Ring) selectedItem;
+                        EditMobComp.this.updateObj();
+                    }
+                };
+                add(questItem1);
+                questItem1.setShowQuestinmarkIfNull(true);
+                questItem2 = null;
+                spawnQuestRoom = null;
+            } else {
+                spawnQuestRoom = null;
+                questItem1 = null;
+                questItem2 = null;
+            }
         } else {
             questSpinner = null;
             spawnQuestRoom = null;
+            questItem1 = null;
+            questItem2 = null;
         }
 
         addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
@@ -223,7 +292,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         add(addBuffs);
 
         comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, sheepLifespan,
-                mobStateSpinner, questSpinner, spawnQuestRoom, addBuffs};
+                mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, addBuffs};
     }
 
     @Override
