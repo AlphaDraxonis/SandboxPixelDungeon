@@ -42,7 +42,6 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndChallenges;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndHeroInfo;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndKeyBindings;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndMessage;
-import com.alphadraxonis.sandboxpixeldungeon.windows.WndOptions;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTextInput;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.PointerEvent;
@@ -58,11 +57,7 @@ import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PointF;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 public class HeroSelectScene extends PixelScene {
 
@@ -609,101 +604,101 @@ public class HeroSelectScene extends PixelScene {
 				buttons.add(seedButton);
 				add(seedButton);
 
-				StyledButton dailyButton = new StyledButton(Chrome.Type.BLANK, Messages.get(HeroSelectScene.class, "daily"), 6){
-
-					private static final long SECOND = 1000;
-					private static final long MINUTE = 60 * SECOND;
-					private static final long HOUR = 60 * MINUTE;
-					private static final long DAY = 24 * HOUR;
-
-					@Override
-					protected void onClick() {
-						super.onClick();
-
-						long diff = (SPDSettings.lastDaily() + DAY) - Game.realTime;
-						if (diff > 24*HOUR){
-							SandboxPixelDungeon.scene().addToFront(new WndMessage(Messages.get(HeroSelectScene.class, "daily_unavailable_long", (diff / DAY)+1)));
-							return;
-						}
-
-						for (GamesInProgress.Info game : GamesInProgress.checkAll()){
-							if (game.daily){
-								SandboxPixelDungeon.scene().addToFront(new WndMessage(Messages.get(HeroSelectScene.class, "daily_existing")));
-								return;
-							}
-						}
-
-						Image icon = Icons.get(Icons.CALENDAR);
-						if (diff <= 0)  icon.hardlight(0.5f, 1f, 2f);
-						else            icon.hardlight(1f, 0.5f, 2f);
-						SandboxPixelDungeon.scene().addToFront(new WndOptions(
-								icon,
-								Messages.get(HeroSelectScene.class, "daily"),
-								diff > 0 ?
-									Messages.get(HeroSelectScene.class, "daily_repeat") :
-									Messages.get(HeroSelectScene.class, "daily_desc"),
-								Messages.get(HeroSelectScene.class, "daily_yes"),
-								Messages.get(HeroSelectScene.class, "daily_no")){
-							@Override
-							protected void onSelect(int index) {
-								if (index == 0){
-									if (diff <= 0) {
-										long time = Game.realTime - (Game.realTime % DAY);
-
-										//earliest possible daily for v1.4.0 is Sept 10 2022
-										//which is 19,245 days after Jan 1 1970
-										time = Math.max(time, 19_245 * DAY);
-
-										SPDSettings.lastDaily(time);
-										Dungeon.dailyReplay = false;
-									} else {
-										Dungeon.dailyReplay = true;
-									}
-
-									Dungeon.hero = null;
-									Dungeon.daily = true;
-									ActionIndicator.clearAction();
-									InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
-
-									Game.switchScene( InterlevelScene.class );
-								}
-							}
-						});
-					}
-
-					private long timeToUpdate = 0;
-
-					private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss", Locale.ROOT);
-					{
-						dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-					}
-
-					@Override
-					public void update() {
-						super.update();
-
-						if (Game.realTime > timeToUpdate && visible){
-							long diff = (SPDSettings.lastDaily() + DAY) - Game.realTime;
-
-							if (diff > 0){
-								if (diff > 30*HOUR){
-									text("30:00:00+");
-								} else {
-									text(dateFormat.format(new Date(diff)));
-								}
-								timeToUpdate = Game.realTime + SECOND;
-							} else {
-								text(Messages.get(HeroSelectScene.class, "daily"));
-								timeToUpdate = Long.MAX_VALUE;
-							}
-						}
-
-					}
-				};
-				dailyButton.leftJustify = true;
-				dailyButton.icon(Icons.get(Icons.CALENDAR));
-				add(dailyButton);
-				buttons.add(dailyButton);
+//				StyledButton dailyButton = new StyledButton(Chrome.Type.BLANK, Messages.get(HeroSelectScene.class, "daily"), 6){
+//
+//					private static final long SECOND = 1000;
+//					private static final long MINUTE = 60 * SECOND;
+//					private static final long HOUR = 60 * MINUTE;
+//					private static final long DAY = 24 * HOUR;
+//
+//					@Override
+//					protected void onClick() {
+//						super.onClick();
+//
+//						long diff = (SPDSettings.lastDaily() + DAY) - Game.realTime;
+//						if (diff > 24*HOUR){
+//							SandboxPixelDungeon.scene().addToFront(new WndMessage(Messages.get(HeroSelectScene.class, "daily_unavailable_long", (diff / DAY)+1)));
+//							return;
+//						}
+//
+//						for (GamesInProgress.Info game : GamesInProgress.checkAll()){
+//							if (game.daily){
+//								SandboxPixelDungeon.scene().addToFront(new WndMessage(Messages.get(HeroSelectScene.class, "daily_existing")));
+//								return;
+//							}
+//						}
+//
+//						Image icon = Icons.get(Icons.CALENDAR);
+//						if (diff <= 0)  icon.hardlight(0.5f, 1f, 2f);
+//						else            icon.hardlight(1f, 0.5f, 2f);
+//						SandboxPixelDungeon.scene().addToFront(new WndOptions(
+//								icon,
+//								Messages.get(HeroSelectScene.class, "daily"),
+//								diff > 0 ?
+//									Messages.get(HeroSelectScene.class, "daily_repeat") :
+//									Messages.get(HeroSelectScene.class, "daily_desc"),
+//								Messages.get(HeroSelectScene.class, "daily_yes"),
+//								Messages.get(HeroSelectScene.class, "daily_no")){
+//							@Override
+//							protected void onSelect(int index) {
+//								if (index == 0){
+//									if (diff <= 0) {
+//										long time = Game.realTime - (Game.realTime % DAY);
+//
+//										//earliest possible daily for v1.4.0 is Sept 10 2022
+//										//which is 19,245 days after Jan 1 1970
+//										time = Math.max(time, 19_245 * DAY);
+//
+//										SPDSettings.lastDaily(time);
+//										Dungeon.dailyReplay = false;
+//									} else {
+//										Dungeon.dailyReplay = true;
+//									}
+//
+//									Dungeon.hero = null;
+//									Dungeon.daily = true;
+//									ActionIndicator.clearAction();
+//									InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
+//
+//									Game.switchScene( InterlevelScene.class );
+//								}
+//							}
+//						});
+//					}
+//
+//					private long timeToUpdate = 0;
+//
+//					private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss", Locale.ROOT);
+//					{
+//						dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+//					}
+//
+//					@Override
+//					public void update() {
+//						super.update();
+//
+//						if (Game.realTime > timeToUpdate && visible){
+//							long diff = (SPDSettings.lastDaily() + DAY) - Game.realTime;
+//
+//							if (diff > 0){
+//								if (diff > 30*HOUR){
+//									text("30:00:00+");
+//								} else {
+//									text(dateFormat.format(new Date(diff)));
+//								}
+//								timeToUpdate = Game.realTime + SECOND;
+//							} else {
+//								text(Messages.get(HeroSelectScene.class, "daily"));
+//								timeToUpdate = Long.MAX_VALUE;
+//							}
+//						}
+//
+//					}
+//				};
+//				dailyButton.leftJustify = true;
+//				dailyButton.icon(Icons.get(Icons.CALENDAR));
+//				add(dailyButton);
+//				buttons.add(dailyButton);
 
 				StyledButton challengeButton = new StyledButton(Chrome.Type.BLANK, Messages.get(WndChallenges.class, "title"), 6){
 					@Override
