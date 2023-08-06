@@ -535,13 +535,17 @@ public class Generator {
 	public static void reset(Category cat){
 		if (cat.defaultProbs != null) cat.probs = cat.defaultProbs.clone();
 	}
+
+	public static Category randomCategory(){
+		return Random.chances( categoryProbs );
+	}
 	
 	public static Item random() {
-		Category cat = Random.chances( categoryProbs );
+		Category cat = randomCategory();
 		if (cat == null){
 			usingFirstDeck = !usingFirstDeck;
 			generalReset();
-			cat = Random.chances( categoryProbs );
+			cat = randomCategory();
 		}
 		categoryProbs.put( cat, categoryProbs.get( cat ) - 1);
 

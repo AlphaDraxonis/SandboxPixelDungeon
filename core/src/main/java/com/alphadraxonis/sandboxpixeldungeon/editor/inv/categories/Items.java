@@ -671,6 +671,7 @@ public enum Items {
         };
 
         OTHER.classes = new Class[]{
+//                RandomItem.class,
                 Gold.class,
                 Torch.class,
                 Stylus.class,
