@@ -7,10 +7,12 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.LevelListPane;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndItemDistribution;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
@@ -25,7 +27,7 @@ public class WndSwitchFloor extends Window {
     private static WndSwitchFloor instance;
 
     protected LevelListPane listPane;
-    protected RedButton createFloor;
+    protected RedButton createFloor, openItemDistribution;
 
     public WndSwitchFloor() {
         instance = this;
@@ -56,9 +58,21 @@ public class WndSwitchFloor extends Window {
         };
         add(createFloor);
 
+        openItemDistribution = new RedButton(""){
+            @Override
+            protected void onClick() {
+                WndItemDistribution.showWindow();
+            }
+        };
+        openItemDistribution.icon(Icons.get(Icons.BACKPACK));
+        add(openItemDistribution);
 
-        createFloor.setRect(MARGIN, height - MARGIN - 18, width - MARGIN * 2, 18);
+
+        createFloor.setRect(MARGIN, height - MARGIN - 18, width - MARGIN * 3 - 18, 18);
         PixelScene.align(createFloor);
+
+        openItemDistribution.setRect(width -18-MARGIN, height - MARGIN - 18, 18, 18);
+        PixelScene.align(openItemDistribution);
 
         listPane.setSize(width, createFloor.top() - MARGIN);
         PixelScene.align(listPane);

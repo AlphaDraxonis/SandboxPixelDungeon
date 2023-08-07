@@ -315,6 +315,10 @@ public class CustomDungeon implements Bundlable {
         Random.popGenerator();
     }
 
+    public List<ItemDistribution<? extends Bundlable>> getItemDistributions() {
+        return itemDistributions;
+    }
+
     public void initDefault() {
 
         for (int depth = 1; depth <= 26; depth++) {

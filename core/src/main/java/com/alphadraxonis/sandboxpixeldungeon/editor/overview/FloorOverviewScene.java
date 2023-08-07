@@ -12,6 +12,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ExitButton;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.NinePatch;
@@ -23,7 +24,7 @@ public class FloorOverviewScene extends PixelScene {
     private static FloorOverviewScene instance;
 
     protected LevelListPane listPane;
-    protected RedButton createFloor;
+    protected RedButton createFloor,openItemDistribution;
     private NinePatch bg;
     private ExitButton btnExit;
     private static final int MARGIN = 2;
@@ -60,8 +61,24 @@ public class FloorOverviewScene extends PixelScene {
         };
         add(createFloor);
 
-        createFloor.setRect(MARGIN, (camera().height - MARGIN * 2 - 18), camera().width - MARGIN * 2, 18);
+        openItemDistribution = new RedButton(""){
+            @Override
+            protected void onClick() {
+                WndItemDistribution.showWindow();
+            }
+        };
+        openItemDistribution.icon(Icons.get(Icons.BACKPACK));
+        add(openItemDistribution);
+
+
+        createFloor.setRect(MARGIN, camera().height - MARGIN - 18, camera().width - MARGIN * 3 - 18, 18);
         PixelScene.align(createFloor);
+
+        openItemDistribution.setRect(camera().width -18-MARGIN, camera().height - MARGIN - 18, 18, 18);
+        PixelScene.align(openItemDistribution);
+
+//        createFloor.setRect(MARGIN, (camera().height - MARGIN * 2 - 18), camera().width - MARGIN * 2, 18);
+//        PixelScene.align(createFloor);
 
         listPane.setRect(MARGIN, MARGIN, camera().width - MARGIN * 2, createFloor.top() - MARGIN);
         PixelScene.align(listPane);

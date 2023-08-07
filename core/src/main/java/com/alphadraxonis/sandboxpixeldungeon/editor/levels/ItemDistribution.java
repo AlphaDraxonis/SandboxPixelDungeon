@@ -114,7 +114,7 @@ public abstract class ItemDistribution<T extends Bundlable> implements Bundlable
         int i = 0;
         String key;
         while (bundle.contains(key = OBJECTS_TO_DISTRIBUTE + i)) {
-            objectsToDistribute.add((T) bundle.getBundle(key));
+            objectsToDistribute.add((T) bundle.get(key));
             i++;
         }
     }
