@@ -1,5 +1,6 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 
+import com.alphadraxonis.sandboxpixeldungeon.Challenges;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Blacksmith;
@@ -325,8 +326,12 @@ public class CustomDungeon implements Bundlable {
         for (int i = 0; i < 5; i++) {
             ItemDistribution.Items sou = new ItemDistribution.Items(true);
             sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
-            sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
-            sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
+            if (Dungeon.isChallenged(Challenges.NO_SCROLLS)) {
+                if (i % 2 == 0) sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
+            } else {
+                sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
+                sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
+            }
             sou.getLevels().add(Integer.toString(i * 5 + 1));
             sou.getLevels().add(Integer.toString(i * 5 + 2));
             sou.getLevels().add(Integer.toString(i * 5 + 3));
