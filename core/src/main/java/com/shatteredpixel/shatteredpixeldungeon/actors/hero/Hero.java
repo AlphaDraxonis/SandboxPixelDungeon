@@ -71,6 +71,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -151,6 +152,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.SurfaceScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.BlacksmithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -1300,6 +1302,8 @@ public class Hero extends Char {
 			PixelScene.shake(1, 1f);
 			ready();
 			return false;
+
+		//TODO, these checks are getting cumbersome, perhaps move them into Level?
 		} else if (!Dungeon.level.locked && transition != null && transition.inside(pos)) {
 
 			if (transition.type == LevelTransition.Type.SURFACE){
@@ -1335,6 +1339,41 @@ public class Hero extends Char {
 								if (index == 0){
 									Buff.affect(Hero.this, AscensionChallenge.class);
 									Statistics.highestAscent = 25;
+									actTransition(action);
+								}
+							}
+						} );
+					}
+				});
+				ready();
+
+			} else if (transition.type == LevelTransition.Type.BRANCH_EXIT
+					&& Dungeon.depth >= 11 && Dungeon.depth <= 14
+					&& (!Blacksmith.Quest.given() || Blacksmith.Quest.oldQuestMineBlocked() || Blacksmith.Quest.completed())) {
+
+				if (Blacksmith.Quest.oldQuestMineBlocked()){
+					GLog.w(Messages.get(Blacksmith.class, "cant_enter_old"));
+				} else {
+					GLog.w(Messages.get(Blacksmith.class, "entrance_blocked"));
+				}
+				ready();
+
+			} else if (transition.type == LevelTransition.Type.BRANCH_ENTRANCE
+					&& Dungeon.depth >= 11 && Dungeon.depth <= 14
+					&& !Blacksmith.Quest.completed()) {
+
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						GameScene.show( new WndOptions( new BlacksmithSprite(),
+								Messages.titleCase(Messages.get(Blacksmith.class, "name")),
+								Messages.get(Blacksmith.class, "exit_warn"),
+								Messages.get(Blacksmith.class, "exit_yes"),
+								Messages.get(Blacksmith.class, "exit_no")){
+							@Override
+							protected void onSelect(int index) {
+								if (index == 0){
+									Blacksmith.Quest.complete();
 									actTransition(action);
 								}
 							}
@@ -1819,7 +1858,7 @@ public class Hero extends Char {
 					|| TileItem.isExitTerrainCell(Dungeon.level.map[cell]))) {
 				GLog.n(Messages.get(Hero.class, "no_trans_warning"));
 			}
-			
+
 			if (!Dungeon.level.visited[cell] && !Dungeon.level.mapped[cell]
 					&& Dungeon.level.traps.get(cell) != null && Dungeon.level.traps.get(cell).visible) {
 				walkingToVisibleTrapInFog = true;

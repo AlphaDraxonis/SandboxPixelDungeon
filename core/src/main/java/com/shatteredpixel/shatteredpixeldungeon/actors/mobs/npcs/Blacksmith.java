@@ -66,11 +66,12 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 	public Blacksmith(BlacksmithQuest quest) {
 		super(quest);
 	}
-	
+
 	@Override
 	protected boolean act() {
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
 			die(null);
+			Notes.remove( Notes.Landmark.TROLL );
 			return true;
 		}
 		if (quest != null && quest.type() >= 0 && Dungeon.level.visited[pos] && !quest.reforged()){
@@ -88,89 +89,94 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			return true;
 		}
 
-		if (quest != null && quest.type() >= 0) {
-			if (!quest.given()) {
+		if (quest == null || quest.type() < 0) {
+			tell(Messages.get(this, "get_lost"));
+			return true;
+		}
+		
+		if (!quest.given()) {
 
-				Game.runOnRenderThread(new Callback() {
-					@Override
-					public void call() {
-						GameScene.show(new WndQuest(Blacksmith.this,
-								Messages.get(Blacksmith.this, quest.getMessageString()+ "_1")) {
-
-							@Override
-							public void onBackPressed() {
-								super.onBackPressed();
-
-								quest.start();
-
-								Pickaxe pick = new Pickaxe();
-								pick.identify();
-								if (pick.doPickUp(Dungeon.hero)) {
-									GLog.i(Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", pick.name())));
-								} else {
-									Dungeon.level.drop(pick, Dungeon.hero.pos).sprite.drop();
-								}
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					GameScene.show( new WndQuest( Blacksmith.this,
+							Messages.get(Blacksmith.this, quest.getMessageString()+ "_1")) {
+						
+						@Override
+						public void onBackPressed() {
+							super.onBackPressed();
+							
+							quest.start();
+							
+							Pickaxe pick = new Pickaxe();
+							pick.identify();
+							if (pick.doPickUp( Dungeon.hero )) {
+								GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", pick.name()) ));
+							} else {
+								Dungeon.level.drop( pick, Dungeon.hero.pos ).sprite.drop();
 							}
-						});
-					}
-				});
-
-			} else if (!quest.completed()) {
-				if (quest.type() == BlacksmithQuest.BLOOD) {
-
-					Pickaxe bloodStainedPick = Dungeon.hero.belongings.doWithEachItem(Pickaxe.class, pickaxe -> pickaxe.bloodStained);
-					Pickaxe normalPick = Dungeon.hero.belongings.getItem(Pickaxe.class);
-
-					if (normalPick == null) {
-						tell(Messages.get(this, "lost_pick"));
-					} else if (bloodStainedPick == null) {
-						tell(Messages.get(this, "blood_2"));
-					} else {
-						if (bloodStainedPick.isEquipped(Dungeon.hero)) {
-							bloodStainedPick.cursed = false; //so that it can always be removed
-							bloodStainedPick.doUnequip(Dungeon.hero, false);
 						}
-						bloodStainedPick.detach(Dungeon.hero.belongings.backpack);
-						tell(Messages.get(this, "completed"));
-
-						quest.complete();
-					}
-
-				} else if (quest.type() == BlacksmithQuest.GOLD) {
-
-					Pickaxe pick = Dungeon.hero.belongings.doWithEachItem(Pickaxe.class, pickaxe -> !pickaxe.bloodStained);
-					if (pick == null) pick = Dungeon.hero.belongings.getItem(Pickaxe.class);
-					DarkGold gold = Dungeon.hero.belongings.getItem(DarkGold.class);
-
-					if (pick == null) {
-						tell(Messages.get(this, "lost_pick"));
-					} else if (gold == null || gold.quantity() < 15) {
-						tell(Messages.get(this, "gold_2"));
-					} else {
-						if (pick.isEquipped(Dungeon.hero)) {
-							pick.doUnequip(Dungeon.hero, false);
-						}
-						pick.detach(Dungeon.hero.belongings.backpack);
-						gold.detachAll(Dungeon.hero.belongings.backpack);
-						tell(Messages.get(this, "completed"));
-
-						quest.complete();
-					}
-
+					} );
 				}
-			} else if (!quest.reforged()) {
+			});
+			
+		} else if (!quest.completed()) {
+			if (quest.type() == BlacksmithQuest.BLOOD) {
 
-				Game.runOnRenderThread(new Callback() {
-					@Override
-					public void call() {
-						GameScene.show(new WndBlacksmith(Blacksmith.this, Dungeon.hero));
+				Pickaxe bloodStainedPick = Dungeon.hero.belongings.doWithEachItem(Pickaxe.class, pickaxe -> pickaxe.bloodStained);
+				Pickaxe normalPick = Dungeon.hero.belongings.getItem(Pickaxe.class);
+
+				if (normalPick == null) {
+					tell(Messages.get(this, "lost_pick"));
+				} else if (bloodStainedPick == null) {
+					tell(Messages.get(this, "blood_2"));
+				} else {
+					if (bloodStainedPick.isEquipped(Dungeon.hero)) {
+						bloodStainedPick.cursed = false; //so that it can always be removed
+						bloodStainedPick.doUnequip(Dungeon.hero, false);
 					}
-				});
+					bloodStainedPick.detach(Dungeon.hero.belongings.backpack);
+					tell(Messages.get(this, "completed"));
 
-			} else {
-				tell(Messages.get(this, "get_lost"));
+					quest.complete();
+				}
+				
+			} else if (quest.type() == BlacksmithQuest.GOLD) {
+
+				Pickaxe pick = Dungeon.hero.belongings.doWithEachItem(Pickaxe.class, pickaxe -> !pickaxe.bloodStained);
+				if (pick == null) pick = Dungeon.hero.belongings.getItem(Pickaxe.class);
+				DarkGold gold = Dungeon.hero.belongings.getItem(DarkGold.class);
+
+				if (pick == null) {
+					tell( Messages.get(this, "lost_pick") );
+				} else if (gold == null || gold.quantity() < 15) {
+					tell( Messages.get(this, "gold_2") );
+				} else {
+					if (pick.isEquipped( Dungeon.hero )) {
+						pick.doUnequip( Dungeon.hero, false );
+					}
+					pick.detach( Dungeon.hero.belongings.backpack );
+					gold.detachAll( Dungeon.hero.belongings.backpack );
+					tell( Messages.get(this, "completed") );
+					
+					quest.complete();
+				}
+				
 			}
-		 }else tell(Messages.get(this, "get_lost"));
+		} else if (!quest.reforged()) {
+			
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					GameScene.show( new WndBlacksmith( Blacksmith.this, Dungeon.hero ) );
+				}
+			});
+			
+		} else {
+			
+			tell( Messages.get(this, "get_lost") );
+			
+		}
 
 		return true;
 	}
@@ -271,4 +277,5 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 	public void createNewQuest() {
 		quest = new BlacksmithQuest();
 	}
+
 }

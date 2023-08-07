@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Crab;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Scorpio;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Swarm;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -55,199 +56,203 @@ import com.watabou.utils.PathFinder;
 
 import java.util.ArrayList;
 
+//various code in here supports old blacksmith quest logic from before v2.2.0
 public class Pickaxe extends MeleeWeapon {
+	
+	public static final String AC_MINE	= "MINE";
+	
+	public static final float TIME_TO_MINE = 2;
+	
+	private static final Glowing BLOODY = new Glowing( 0x550000 );
+	
+	{
+		image = ItemSpriteSheet.PICKAXE;
 
-    public static final String AC_MINE = "MINE";
+		levelKnown = true;
+		
+		unique = true;
+		bones = false;
 
-    public static final float TIME_TO_MINE = 2;
+		tier = 2;
+	}
+	
+	public boolean bloodStained = false;
 
-    private static final Glowing BLOODY = new Glowing(0x550000);
+	@Override
+	public int STRReq(int lvl) {
+		return super.STRReq(lvl) + 2; //tier 3 strength requirement with tier 2 damage stats
+	}
 
-    {
-        image = ItemSpriteSheet.PICKAXE;
+	@Override
+	public ArrayList<String> actions( Hero hero ) {
+		ArrayList<String> actions = super.actions( hero );
+		if (Blacksmith.Quest.oldMiningQuest()) {
+			actions.add(AC_MINE);
+		}
+		return actions;
+	}
+	
+	@Override
+	public void execute( final Hero hero, String action ) {
 
-        levelKnown = true;
+		super.execute( hero, action );
+		
+		if (action.equals(AC_MINE)) {
+			
+			if (Dungeon.level.levelScheme.getRegion() != LevelScheme.REGION_CAVES) {
+				GLog.w( Messages.get(this, "no_vein") );
+				return;
+			}
+			
+			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
+				
+				final int pos = hero.pos + PathFinder.NEIGHBOURS8[i];
+				if (Dungeon.level.map[pos] == Terrain.WALL_DECO) {
+				
+					hero.spend( TIME_TO_MINE );
+					hero.busy();
+					
+					hero.sprite.attack( pos, new Callback() {
+						
+						@Override
+						public void call() {
 
-        unique = true;
-        bones = false;
+							CellEmitter.center( pos ).burst( Speck.factory( Speck.STAR ), 7 );
+							Sample.INSTANCE.play( Assets.Sounds.EVOKE );
+							
+							Level.set( pos, Terrain.WALL );
+							GameScene.updateMap( pos );
+							
+							DarkGold gold = new DarkGold();
+							if (gold.doPickUp( Dungeon.hero )) {
+								GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", gold.name())) );
+							} else {
+								Dungeon.level.drop( gold, hero.pos ).sprite.drop();
+							}
+							
+							hero.onOperateComplete();
+						}
+					} );
+					
+					return;
+				}
+			}
+			
+			GLog.w( Messages.get(this, "no_vein") );
+			
+		}
+	}
+	
+	@Override
+	public int proc( Char attacker, Char defender, int damage ) {
+		if (!bloodStained && defender instanceof Bat) {
+			Actor.add(new Actor() {
 
-        tier = 2;
-    }
+				{
+					actPriority = VFX_PRIO;
+				}
 
-    public boolean bloodStained = false;
+				@Override
+				protected boolean act() {
+					if (!defender.isAlive()){
+						bloodStained = true;
+						updateQuickslot();
+					}
 
-    @Override
-    public int STRReq(int lvl) {
-        return super.STRReq(lvl) + 2; //tier 3 strength requirement with tier 2 damage stats
-    }
+					Actor.remove(this);
+					return true;
+				}
+			});
+		}
+		return super.proc( attacker, defender, damage );
+	}
 
-    @Override
-    public ArrayList<String> actions(Hero hero) {
-        ArrayList<String> actions = super.actions(hero);
-        actions.add(AC_MINE);
-        return actions;
-    }
+	@Override
+	public String defaultAction() {
+		if (Dungeon.hero.heroClass == HeroClass.DUELIST && isEquipped(Dungeon.hero)){
+			return AC_ABILITY;
+		} else {
+			return AC_MINE;
+		}
+	}
 
-    @Override
-    public void execute(final Hero hero, String action) {
+	@Override
+	public String targetingPrompt() {
+		return Messages.get(this, "prompt");
+	}
 
-        super.execute(hero, action);
+	@Override
+	protected void duelistAbility(Hero hero, Integer target) {
+		if (target == null) {
+			return;
+		}
 
-        if (action.equals(AC_MINE)) {
+		Char enemy = Actor.findChar(target);
+		if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[target]) {
+			GLog.w(Messages.get(this, "ability_no_target"));
+			return;
+		}
 
-            if (Dungeon.level.levelScheme.getRegion() != LevelScheme.REGION_CAVES) {
-                GLog.w(Messages.get(this, "no_vein"));
-                return;
-            }
+		hero.belongings.abilityWeapon = this;
+		if (!hero.canAttack(enemy)){
+			GLog.w(Messages.get(this, "ability_bad_position"));
+			hero.belongings.abilityWeapon = null;
+			return;
+		}
+		hero.belongings.abilityWeapon = null;
 
-            for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
+		hero.sprite.attack(enemy.pos, new Callback() {
+			@Override
+			public void call() {
+				float damageMulti = 1f;
+				if (Char.hasProp(enemy, Char.Property.INORGANIC)
+						|| enemy instanceof Swarm
+						|| enemy instanceof Bee
+						|| enemy instanceof Crab
+						|| enemy instanceof Spinner
+						|| enemy instanceof Scorpio) {
+					damageMulti = 2f;
+				}
+				beforeAbilityUsed(hero, enemy);
+				AttackIndicator.target(enemy);
+				if (hero.attack(enemy, damageMulti, 0, Char.INFINITE_ACCURACY)) {
+					if (enemy.isAlive()) {
+						Buff.affect(enemy, Vulnerable.class, 3f);
+					} else {
+						onAbilityKill(hero, enemy);
+					}
+					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
+				}
+				Invisibility.dispel();
+				hero.spendAndNext(hero.attackDelay());
+				afterAbilityUsed(hero);
+			}
+		});
+	}
 
-                final int pos = hero.pos + PathFinder.NEIGHBOURS8[i];
-                if (Dungeon.level.map[pos] == Terrain.WALL_DECO) {
-
-                    hero.spend(TIME_TO_MINE);
-                    hero.busy();
-
-                    hero.sprite.attack(pos, new Callback() {
-
-                        @Override
-                        public void call() {
-
-                            CellEmitter.center(pos).burst(Speck.factory(Speck.STAR), 7);
-                            Sample.INSTANCE.play(Assets.Sounds.EVOKE);
-
-                            Level.set(pos, Terrain.WALL);
-                            GameScene.updateMap(pos);
-
-                            DarkGold gold = new DarkGold();
-                            if (gold.doPickUp(Dungeon.hero)) {
-                                GLog.i(Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", gold.name())));
-                            } else {
-                                Dungeon.level.drop(gold, hero.pos).sprite.drop();
-                            }
-
-                            hero.onOperateComplete();
-                        }
-                    });
-
-                    return;
-                }
-            }
-
-            GLog.w(Messages.get(this, "no_vein"));
-        }
-    }
-
-    @Override
-    public int proc(Char attacker, Char defender, int damage) {
-        if (!bloodStained && defender instanceof Bat) {
-            Actor.add(new Actor() {
-
-                {
-                    actPriority = VFX_PRIO;
-                }
-
-                @Override
-                protected boolean act() {
-                    if (!defender.isAlive()) {
-                        bloodStained = true;
-                        updateQuickslot();
-                    }
-
-                    Actor.remove(this);
-                    return true;
-                }
-            });
-        }
-        return super.proc(attacker, defender, damage);
-    }
-
-    @Override
-    public String defaultAction() {
-        if (Dungeon.hero.heroClass == HeroClass.DUELIST && isEquipped(Dungeon.hero)) {
-            return AC_ABILITY;
-        } else {
-            return AC_MINE;
-        }
-    }
-
-    @Override
-    public String targetingPrompt() {
-        return Messages.get(this, "prompt");
-    }
-
-    @Override
-    protected void duelistAbility(Hero hero, Integer target) {
-        if (target == null) {
-            return;
-        }
-
-        Char enemy = Actor.findChar(target);
-        if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[target]) {
-            GLog.w(Messages.get(this, "ability_no_target"));
-            return;
-        }
-
-        hero.belongings.abilityWeapon = this;
-        if (!hero.canAttack(enemy)) {
-            GLog.w(Messages.get(this, "ability_bad_position"));
-            hero.belongings.abilityWeapon = null;
-            return;
-        }
-        hero.belongings.abilityWeapon = null;
-
-        hero.sprite.attack(enemy.pos, new Callback() {
-            @Override
-            public void call() {
-                float damageMulti = 1f;
-                if (Char.hasProp(enemy, Char.Property.INORGANIC)
-                        || enemy instanceof Swarm
-                        || enemy instanceof Bee
-                        || enemy instanceof Crab
-                        || enemy instanceof Spinner
-                        || enemy instanceof Scorpio) {
-                    damageMulti = 2f;
-                }
-                beforeAbilityUsed(hero, enemy);
-                AttackIndicator.target(enemy);
-                if (hero.attack(enemy, damageMulti, 0, Char.INFINITE_ACCURACY)) {
-                    if (enemy.isAlive()) {
-                        Buff.affect(enemy, Vulnerable.class, 3f);
-                    } else {
-                        onAbilityKill(hero, enemy);
-                    }
-                    Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
-                }
-                Invisibility.dispel();
-                hero.spendAndNext(hero.attackDelay());
-                afterAbilityUsed(hero);
-            }
-        });
-    }
-
-    private static final String BLOODSTAINED = "bloodStained";
-
-    @Override
-    public void storeInBundle(Bundle bundle) {
-        super.storeInBundle(bundle);
-
-        bundle.put(BLOODSTAINED, bloodStained);
-    }
-
-    @Override
-    public void restoreFromBundle(Bundle bundle) {
-        super.restoreFromBundle(bundle);
-
-        bloodStained = bundle.getBoolean(BLOODSTAINED);
-    }
-
-    @Override
-    public Glowing glowing() {
-        if (super.glowing() == null) {
-            return bloodStained ? BLOODY : null;
-        } else {
-            return super.glowing();
-        }
-    }
+	private static final String BLOODSTAINED = "bloodStained";
+	
+	@Override
+	public void storeInBundle( Bundle bundle ) {
+		super.storeInBundle( bundle );
+		
+		bundle.put( BLOODSTAINED, bloodStained );
+	}
+	
+	@Override
+	public void restoreFromBundle( Bundle bundle ) {
+		super.restoreFromBundle( bundle );
+		
+		bloodStained = bundle.getBoolean( BLOODSTAINED );
+	}
+	
+	@Override
+	public Glowing glowing() {
+		if (super.glowing() == null) {
+			return bloodStained ? BLOODY : null;
+		} else {
+			return super.glowing();
+		}
+	}
 
 }
