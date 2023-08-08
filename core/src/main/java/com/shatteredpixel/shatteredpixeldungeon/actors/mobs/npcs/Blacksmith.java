@@ -27,9 +27,11 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
+import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
+import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DarkGold;
@@ -53,7 +55,7 @@ import com.watabou.utils.Callback;
 import java.util.List;
 
 public class Blacksmith extends QuestNPC<BlacksmithQuest> {
-	
+
 	{
 		spriteClass = BlacksmithSprite.class;
 
@@ -69,23 +71,23 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 
 	@Override
 	protected boolean act() {
-		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
+		if (Dungeon.hero.buff(AscensionChallenge.class) != null) {
 			die(null);
-			Notes.remove( Notes.Landmark.TROLL );
+			Notes.remove(Notes.Landmark.TROLL);
 			return true;
 		}
-		if (quest != null && quest.type() >= 0 && Dungeon.level.visited[pos] && !quest.reforged()){
-			Notes.add( Notes.Landmark.TROLL );
+		if (quest != null && quest.type() >= 0 && Dungeon.level.visited[pos] && !quest.reforged()) {
+			Notes.add(Notes.Landmark.TROLL);
 		}
 		return super.act();
 	}
-	
+
 	@Override
 	public boolean interact(Char c) {
-		
-		sprite.turnTo( pos, c.pos );
 
-		if (c != Dungeon.hero){
+		sprite.turnTo(pos, c.pos);
+
+		if (c != Dungeon.hero) {
 			return true;
 		}
 
@@ -93,33 +95,33 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			tell(Messages.get(this, "get_lost"));
 			return true;
 		}
-		
+
 		if (!quest.given()) {
 
 			Game.runOnRenderThread(new Callback() {
 				@Override
 				public void call() {
-					GameScene.show( new WndQuest( Blacksmith.this,
-							Messages.get(Blacksmith.this, quest.getMessageString()+ "_1")) {
-						
+					GameScene.show(new WndQuest(Blacksmith.this,
+							Messages.get(Blacksmith.this, quest.getMessageString() + "_1")) {
+
 						@Override
 						public void onBackPressed() {
 							super.onBackPressed();
-							
+
 							quest.start();
-							
+
 							Pickaxe pick = new Pickaxe();
 							pick.identify();
-							if (pick.doPickUp( Dungeon.hero )) {
-								GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", pick.name()) ));
+							if (pick.doPickUp(Dungeon.hero)) {
+								GLog.i(Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", pick.name())));
 							} else {
-								Dungeon.level.drop( pick, Dungeon.hero.pos ).sprite.drop();
+								Dungeon.level.drop(pick, Dungeon.hero.pos).sprite.drop();
 							}
 						}
-					} );
+					});
 				}
 			});
-			
+
 		} else if (!quest.completed()) {
 			if (quest.type() == BlacksmithQuest.BLOOD) {
 
@@ -140,7 +142,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 
 					quest.complete();
 				}
-				
+
 			} else if (quest.type() == BlacksmithQuest.GOLD) {
 
 				Pickaxe pick = Dungeon.hero.belongings.doWithEachItem(Pickaxe.class, pickaxe -> !pickaxe.bloodStained);
@@ -148,50 +150,56 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 				DarkGold gold = Dungeon.hero.belongings.getItem(DarkGold.class);
 
 				if (pick == null) {
-					tell( Messages.get(this, "lost_pick") );
+					tell(Messages.get(this, "lost_pick"));
 				} else if (gold == null || gold.quantity() < 15) {
-					tell( Messages.get(this, "gold_2") );
+					tell(Messages.get(this, "gold_2"));
 				} else {
-					if (pick.isEquipped( Dungeon.hero )) {
-						pick.doUnequip( Dungeon.hero, false );
+					if (pick.isEquipped(Dungeon.hero)) {
+						pick.doUnequip(Dungeon.hero, false);
 					}
-					pick.detach( Dungeon.hero.belongings.backpack );
-					gold.detachAll( Dungeon.hero.belongings.backpack );
-					tell( Messages.get(this, "completed") );
-					
+					pick.detach(Dungeon.hero.belongings.backpack);
+					gold.detachAll(Dungeon.hero.belongings.backpack);
+					tell(Messages.get(this, "completed"));
+
 					quest.complete();
 				}
-				
+
 			}
-		} else if (!quest.reforged()) {
-			
+		} else if (!quest.reforged() && quest.type() <= BlacksmithQuest.BLOOD) {
+
 			Game.runOnRenderThread(new Callback() {
 				@Override
 				public void call() {
-					GameScene.show( new WndBlacksmith( Blacksmith.this, Dungeon.hero ) );
+					GameScene.show(new WndBlacksmith(Blacksmith.this, Dungeon.hero));
 				}
 			});
-			
+
+		} else if (Quest.favor > 0) {
+
+			tell("You got " + Quest.favor + " favor. Here's some gold.");
+			new Gold(Quest.favor).doPickUp(Dungeon.hero, Dungeon.hero.pos);
+			Quest.favor = 0;
+
 		} else {
-			
-			tell( Messages.get(this, "get_lost") );
-			
+
+			tell(Messages.get(this, "get_lost"));
+
 		}
 
 		return true;
 	}
-	
-	private void tell( String text ) {
+
+	private void tell(String text) {
 		Game.runOnRenderThread(new Callback() {
 			@Override
 			public void call() {
-				GameScene.show( new WndQuest( Blacksmith.this, text ) );
+				GameScene.show(new WndQuest(Blacksmith.this, text));
 			}
 		});
 	}
-	
-	public static String verify( Item item1, Item item2 ) {
-		
+
+	public static String verify(Item item1, Item item2) {
+
 		if (item1 == item2 && (item1.quantity() == 1 && item2.quantity() == 1)) {
 			return Messages.get(Blacksmith.class, "same_item");
 		}
@@ -199,11 +207,11 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 		if (item1.getClass() != item2.getClass()) {
 			return Messages.get(Blacksmith.class, "diff_type");
 		}
-		
+
 		if (!item1.isIdentified() || !item2.isIdentified()) {
 			return Messages.get(Blacksmith.class, "un_ided");
 		}
-		
+
 		if (item1.cursed || item2.cursed ||
 				(item1 instanceof Armor && ((Armor) item1).hasCurseGlyph()) ||
 				(item2 instanceof Armor && ((Armor) item2).hasCurseGlyph()) ||
@@ -211,20 +219,20 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 				(item2 instanceof Weapon && ((Weapon) item2).hasCurseEnchant())) {
 			return Messages.get(Blacksmith.class, "cursed");
 		}
-		
+
 		if (item1.level() < 0 || item2.level() < 0) {
 			return Messages.get(Blacksmith.class, "degraded");
 		}
-		
+
 		if (!item1.isUpgradable() || !item2.isUpgradable()) {
 			return Messages.get(Blacksmith.class, "cant_reforge");
 		}
-		
+
 		return null;
 	}
-	
-	public static void upgrade( Item item1, Item item2 ) {
-		
+
+	public static void upgrade(Item item1, Item item2) {
+
 		Item first, second;
 		if (item2.trueLevel() > item1.trueLevel()) {
 			first = item2;
@@ -234,32 +242,32 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			second = item2;
 		}
 
-		Sample.INSTANCE.play( Assets.Sounds.EVOKE );
-		ScrollOfUpgrade.upgrade( Dungeon.hero );
-		Item.evoke( Dungeon.hero );
+		Sample.INSTANCE.play(Assets.Sounds.EVOKE);
+		ScrollOfUpgrade.upgrade(Dungeon.hero);
+		Item.evoke(Dungeon.hero);
 
-		if (second.isEquipped( Dungeon.hero )) {
-			((EquipableItem)second).doUnequip( Dungeon.hero, false );
+		if (second.isEquipped(Dungeon.hero)) {
+			((EquipableItem) second).doUnequip(Dungeon.hero, false);
 		}
-		second.detach( Dungeon.hero.belongings.backpack );
+		second.detach(Dungeon.hero.belongings.backpack);
 
-		if (second instanceof Armor){
+		if (second instanceof Armor) {
 			BrokenSeal seal = ((Armor) second).checkSeal();
-			if (seal != null){
-				Dungeon.level.drop( seal, Dungeon.hero.pos );
+			if (seal != null) {
+				Dungeon.level.drop(seal, Dungeon.hero.pos);
 			}
 		}
 
 		//preserves enchant/glyphs if present
-		if (first instanceof Weapon && ((Weapon) first).hasGoodEnchant()){
+		if (first instanceof Weapon && ((Weapon) first).hasGoodEnchant()) {
 			((Weapon) first).upgrade(true);
-		} else if (first instanceof Armor && ((Armor) first).hasGoodGlyph()){
+		} else if (first instanceof Armor && ((Armor) first).hasGoodGlyph()) {
 			((Armor) first).upgrade(true);
 		} else {
 			first.upgrade();
 		}
-		Dungeon.hero.spendAndNext( 2f );
-		Badges.validateItemLevelAquired( first );
+		Dungeon.hero.spendAndNext(2f);
+		Badges.validateItemLevelAquired(first);
 		Item.updateQuickslot();
 	}
 
@@ -277,5 +285,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 	public void createNewQuest() {
 		quest = new BlacksmithQuest();
 	}
+
+	Mining quest: favor!
 
 }
