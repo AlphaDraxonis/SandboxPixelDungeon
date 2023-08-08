@@ -94,7 +94,8 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
 
                     @Override
                     public void onSelect(Item item) {
-                        if (item == null || !typeParameterClass.isInstance(item)) return;
+                        if (item == null || typeParameterClass != null && !typeParameterClass.isInstance(item))
+                            return;
                         if (item instanceof ItemItem) item = ((ItemItem) item).item();
                         item = item.getCopy();
                         addNewItem((T) item);
@@ -105,7 +106,7 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
         add(addBtn);
 
         for (Item i : itemList) {
-            addItemToUI(i, !reverseUiOrder);
+            addItemToUI(i, true);
         }
     }
 
@@ -129,6 +130,7 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
     }
 
     protected void addItemToUI(Item item, boolean last) {
+        if (reverseUiOrder) last = !last;
         item.image = Dungeon.customDungeon.getItemSpriteOnSheet(item);
         Slot slot = new Slot(item);
         if (last) slots.add(slot);

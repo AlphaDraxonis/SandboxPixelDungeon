@@ -1,10 +1,12 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.RoomItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
-import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class ItemDistribution<T extends Bundlable> implements Bundlable {
+public abstract class ItemDistribution<T extends Item> implements Bundlable {
 
     private ItemDistribution() {
     }
@@ -121,6 +123,12 @@ public abstract class ItemDistribution<T extends Bundlable> implements Bundlable
 
     protected abstract void addToSpawn(LevelScheme levelScheme, T obj);
 
+    public abstract Class<? extends Bag> getPreferredBag();
+
+    public String getDistributionLabel(){
+        return Messages.get(this,"label");
+    }
+
 
     public static class Items extends ItemDistribution<Item> {
         private boolean prizeItems;
@@ -138,6 +146,11 @@ public abstract class ItemDistribution<T extends Bundlable> implements Bundlable
             else levelScheme.itemsToSpawn.add(obj);
         }
 
+        @Override
+        public Class<? extends Bag> getPreferredBag() {
+            return com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items.bag.getClass();
+        }
+
         private static final String PRIZE_ITEM = "prize_item";
 
         @Override
@@ -153,17 +166,27 @@ public abstract class ItemDistribution<T extends Bundlable> implements Bundlable
         }
     }
 
-    public static class Mobs extends ItemDistribution<Mob> {
+    public static class Mobs extends ItemDistribution<MobItem> {
         @Override
-        protected void addToSpawn(LevelScheme levelScheme, Mob obj) {
-            levelScheme.mobsToSpawn.add(obj);
+        protected void addToSpawn(LevelScheme levelScheme, MobItem obj) {
+            levelScheme.mobsToSpawn.add(obj.mob());
+        }
+
+        @Override
+        public Class<? extends Bag> getPreferredBag() {
+            return com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Mobs.bag.getClass();
         }
     }
 
-    public static class Rooms extends ItemDistribution<Room> {
+    public static class Rooms extends ItemDistribution<RoomItem> {
         @Override
-        protected void addToSpawn(LevelScheme levelScheme, Room obj) {
-            levelScheme.roomsToSpawn.add(obj);
+        protected void addToSpawn(LevelScheme levelScheme, RoomItem obj) {
+            levelScheme.roomsToSpawn.add(obj.room());
+        }
+
+        @Override
+        public Class<? extends Bag> getPreferredBag() {
+            return com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Rooms.bag.getClass();
         }
     }
 }

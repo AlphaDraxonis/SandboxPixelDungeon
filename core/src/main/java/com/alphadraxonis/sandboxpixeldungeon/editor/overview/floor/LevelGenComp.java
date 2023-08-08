@@ -124,11 +124,6 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                     LevelGenComp.this.layout();
                 }
 
-                @Override
-                protected void addItemToUI(Item item, boolean last) {
-                    super.addItemToUI(item, !last);
-                }
-
             }) {
                 @Override
                 protected void onAddClick() {
@@ -146,10 +141,6 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             List<MobItem> listMobs = new ArrayList<>();
             for (Mob mob : newLevelScheme.mobsToSpawn) listMobs.add(new MobItem(mob));
             sectionMobs = new SpawnSectionMore<MobItem>("mobs", new ItemContainer<MobItem>(listMobs, null, true) {
-                @Override
-                protected void addItemToUI(Item item, boolean last) {
-                    super.addItemToUI(item, !last);
-                }
 
                 @Override
                 protected void onSlotNumChange() {
@@ -212,20 +203,11 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                     LevelGenComp.this.layout();
                 }
 
-                @Override
-                protected void addItemToUI(Item item, boolean last) {
-                    super.addItemToUI(item, !last);
-                }
-
             });
 
             List<MobItem> listMobs = new ArrayList<>();
             for (Mob mob : newLevelScheme.mobsToSpawn) listMobs.add(new MobItem(mob));
             sectionMobs = new SpawnSection<>("mobs", new ItemContainer<MobItem>(listMobs, null, true) {
-                @Override
-                protected void addItemToUI(Item item, boolean last) {
-                    super.addItemToUI(item, !last);
-                }
 
                 @Override
                 protected void onSlotNumChange() {
@@ -284,11 +266,6 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                 @Override
                 protected Class<? extends Bag> getPreferredBag() {
                     return Rooms.bag.getClass();
-                }
-
-                @Override
-                protected void addItemToUI(Item item, boolean last) {
-                    super.addItemToUI(item, !last);
                 }
 
                 @Override

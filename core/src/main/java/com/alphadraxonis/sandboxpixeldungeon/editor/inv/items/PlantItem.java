@@ -16,15 +16,17 @@ import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.RectF;
 
 public class PlantItem extends EditorItem {
 
     private static final TextureFilm TEXTURE_FILM = new TextureFilm(Assets.Environment.TERRAIN_FEATURES, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
 
-    private final Plant plant;
+    private Plant plant;
 
 
+public PlantItem(){}
     public PlantItem(Plant plant) {
         this.plant = plant;
     }
@@ -125,5 +127,18 @@ public class PlantItem extends EditorItem {
             return new PlantActionPart.Place(plant);
         }
         return null;
+    }
+
+    private static final String PLANT = "plant";
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(PLANT,plant);
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        plant = (Plant) bundle.get(PLANT);
     }
 }

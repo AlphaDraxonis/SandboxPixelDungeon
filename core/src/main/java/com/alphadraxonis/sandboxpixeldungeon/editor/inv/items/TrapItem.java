@@ -17,15 +17,17 @@ import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.RectF;
 
 public class TrapItem extends EditorItem {
 
     private static final TextureFilm TEXTURE_FILM = new TextureFilm(Assets.Environment.TERRAIN_FEATURES, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
 
-    private final Trap trap;
+    private Trap trap;
 
 
+    public TrapItem(){}
     public TrapItem(Trap trap) {
         this.trap = trap;
     }
@@ -127,5 +129,18 @@ public class TrapItem extends EditorItem {
             return new TrapActionPart.Place(trap);
         }
         return null;
+    }
+
+    private static final String TRAP = "trap";
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(TRAP,trap);
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        trap = (Trap) bundle.get(TRAP);
     }
 }

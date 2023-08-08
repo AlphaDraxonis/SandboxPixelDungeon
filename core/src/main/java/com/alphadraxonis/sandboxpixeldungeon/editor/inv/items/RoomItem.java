@@ -83,13 +83,15 @@ import com.alphadraxonis.sandboxpixeldungeon.sprites.WraithSprite;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTileSheet;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 
 import java.util.Locale;
 
 public class RoomItem extends EditorItem {
 
-    private final Room room;
+    private  Room room;
 
+    public RoomItem(){}
     public RoomItem(Room room) {
         this.room = room;
     }
@@ -230,5 +232,18 @@ public class RoomItem extends EditorItem {
         if (Room.class.isAssignableFrom(superclass))
             return getImage((Class<? extends Room>) superclass);
         return new ItemSprite(ItemSpriteSheet.SOMETHING);
+    }
+
+    private static final String ROOM = "room";
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(ROOM,room);
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        room = (Room) bundle.get(ROOM);
     }
 }

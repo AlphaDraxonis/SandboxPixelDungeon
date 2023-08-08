@@ -97,6 +97,13 @@ public class ScrollingListPane extends ScrollPane {
         givePointerPriority();
     }
 
+    public void removeItem(ListItem item) {
+        content.remove(item);
+        items.remove(item);
+        layout();
+        scrollToCurrentView();
+    }
+
     public Component[] getItems() {
         return items.toArray(new Component[0]);
     }

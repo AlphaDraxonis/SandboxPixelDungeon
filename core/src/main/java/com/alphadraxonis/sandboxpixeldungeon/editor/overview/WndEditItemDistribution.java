@@ -1,0 +1,221 @@
+package com.alphadraxonis.sandboxpixeldungeon.editor.overview;
+
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.ItemContainer;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.ItemDistribution;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndNewFloor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSelectFloor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.FoldableComp;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
+import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
+import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
+import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
+import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
+import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.ui.Component;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class WndEditItemDistribution<T extends Item> extends Window {
+
+    private static final int GAP = 1;
+    private RedButton positive, negative, addLevel;
+    private ScrollPane scrollPane;
+    private Component content;
+    private FoldableComp objectsToDistribute;
+    private ItemContainer<T> container;
+    private RenderedTextBlock titleLevels;
+    private List<LevelComp> levelList;
+
+    private ItemDistribution<T> itemDistribution;
+
+    private List<String> prevLevels;
+    private List<T> prevObjsToDistr;
+    private List<LevelScheme> selectedLevelSchemes;
+
+    public WndEditItemDistribution(ItemDistribution<T> itemDistribution, String approveText) {
+        this.itemDistribution = itemDistribution;
+        prevLevels = new ArrayList<>(itemDistribution.getLevels());
+        prevObjsToDistr = new ArrayList<>(itemDistribution.getObjectsToDistribute());
+        selectedLevelSchemes = new ArrayList<>();
+
+        resize((int) (Math.min(WndTitledMessage.WIDTH_MAX, PixelScene.uiCamera.width * 0.9) * 0.9f), (int) (PixelScene.uiCamera.height * 0.6f));
+
+        content = new Component();
+
+        container = new ItemContainer<T>(itemDistribution.getObjectsToDistribute(), null, true) {
+            @Override
+            protected void onSlotNumChange() {
+                if (objectsToDistribute != null) updateLayout();
+            }
+
+            @Override
+            protected Class<? extends Bag> getPreferredBag() {
+                return itemDistribution.getPreferredBag();
+            }
+        };
+        objectsToDistribute = new FoldableComp(itemDistribution.getDistributionLabel(), container) {
+            @Override
+            protected void layoutParent() {
+                updateLayout();
+            }
+        };
+
+        titleLevels = PixelScene.renderTextBlock(Messages.get(this,"in_levels"), 10);
+        content.add(titleLevels);
+
+        container.setSize(width, -1);
+        content.add(objectsToDistribute);
+
+        levelList = new ArrayList<>(6);
+
+        for (String name : itemDistribution.getLevels()) {
+            LevelComp comp = new LevelComp(name);
+            content.add(comp);
+            levelList.add(comp);
+            selectedLevelSchemes.add(Dungeon.customDungeon.getFloor(name));
+        }
+
+        addLevel = new RedButton(Messages.get(this,"add_level")) {
+            @Override
+            protected void onClick() {
+                Window w = new WndSelectFloor() {
+                    @Override
+                    public boolean onSelect(LevelScheme levelScheme) {
+                        addLevel(levelScheme);
+                        return true;
+                    }
+
+                    @Override
+                    protected List<LevelScheme> filterLevels(Collection<LevelScheme> levels) {
+                        List<LevelScheme> levelsList = super.filterLevels(levels);
+                        levelsList.removeAll(selectedLevelSchemes);
+                        return levelsList;
+                    }
+                };
+                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                else Game.scene().addToFront(w);
+            }
+        };
+        content.add(addLevel);
+
+        positive = new RedButton(approveText) {
+            @Override
+            protected void onClick() {
+                hide();
+                doAfterPositive();
+            }
+        };
+        add(positive);
+        negative = new RedButton(Messages.get(WndNewFloor.class, "cancel_label")) {
+            @Override
+            protected void onClick() {
+                cancel();
+            }
+        };
+        add(negative);
+
+        scrollPane = new ScrollPane(content);
+        add(scrollPane);
+
+        updateLayout();
+
+    }
+
+    protected void doAfterPositive() {
+    }
+
+    @Override
+    public void onBackPressed() {
+    }
+
+    public void cancel() {
+        itemDistribution.getLevels().clear();
+        itemDistribution.getObjectsToDistribute().clear();
+        itemDistribution.getLevels().addAll(prevLevels);
+        itemDistribution.getObjectsToDistribute().addAll(prevObjsToDistr);
+        hide();
+    }
+
+    private void updateLayout() {
+
+        titleLevels.maxWidth(width);
+
+        objectsToDistribute.setRect(GAP, 0, width - GAP * 2, -1);
+        float posY = objectsToDistribute.bottom() + 7;
+        titleLevels.setPos((width - titleLevels.width() - GAP * 2) * 0.5f + GAP, posY);
+        posY = titleLevels.bottom() + 3;
+        for (LevelComp comp : levelList) {
+            comp.setRect(GAP, posY, width - GAP * 2, 13);
+            posY = comp.bottom() + 2;
+        }
+        float addLevelW = (width - GAP * 2) * 3 / 5f;
+        addLevel.setRect(GAP + addLevelW / 3f, posY + 2, addLevelW, 14);
+        content.setRect(0, 0, width, addLevel.bottom());
+
+        float buttonW = (width - GAP * 3 - 1) / 2f;
+        negative.setRect(GAP, height - 18, buttonW, 18);
+        positive.setRect(GAP * 2 + buttonW + 1, height - 18, buttonW, 18);
+        scrollPane.setRect(0, 0, width, height - 18 - GAP * 2);
+    }
+
+    private void addLevel(LevelScheme level) {
+        LevelComp comp = new LevelComp(level.getName());
+        levelList.add(comp);
+        content.add(comp);
+        selectedLevelSchemes.add(level);
+        itemDistribution.getLevels().add(level.getName());
+        updateLayout();
+    }
+
+    private void removeLevel(LevelComp levelComp) {
+        levelList.remove(levelComp);
+        levelComp.destroy();
+        selectedLevelSchemes.remove(Dungeon.customDungeon.getFloor(levelComp.name));
+        itemDistribution.getLevels().remove(levelComp.name);
+        updateLayout();
+        scrollPane.scrollToCurrentView();
+    }
+
+    private class LevelComp extends ScrollingListPane.ListItem {
+
+        private IconButton remove;
+        private final String name;
+
+        public LevelComp(String levelName) {
+            super(new Image(), levelName);
+            this.name = levelName;
+            remove = new IconButton(Icons.get(Icons.CLOSE)) {
+                @Override
+                protected void onClick() {
+                    removeLevel(LevelComp.this);
+                }
+            };
+            add(remove);
+        }
+
+        protected void layout() {
+            super.layout();
+            label.setPos(label.left(), label.top() + 1);
+            remove.setRect(x + width - 16, y, 16, 16);
+            hotArea.width = width - remove.left() - 2 - x;
+        }
+
+        @Override
+        protected int getLabelMaxWidth() {
+            return super.getLabelMaxWidth() - 16 - 4;
+        }
+    }
+}

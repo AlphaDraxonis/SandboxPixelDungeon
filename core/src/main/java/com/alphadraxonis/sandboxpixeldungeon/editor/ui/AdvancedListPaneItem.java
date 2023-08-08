@@ -9,7 +9,7 @@ import com.watabou.noosa.Image;
 
 public abstract class AdvancedListPaneItem extends ScrollingListPane.ListItem {
 
-    private Image subIcon;
+    protected Image subIcon;
     protected ColorBlock bg;
     protected BitmapText lvlLabel;
 

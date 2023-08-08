@@ -14,10 +14,13 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.MobActionPa
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 
 public class MobItem extends EditorItem {
 
-    private final Mob mob;
+    private Mob mob;
+
+    public MobItem(){}
 
     public MobItem(Mob mob) {
         this.mob = mob;
@@ -104,5 +107,19 @@ public class MobItem extends EditorItem {
             return new MobActionPart.Place(mob);
         }
         return null;
+    }
+
+
+    private static final String MOB = "mob";
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(MOB,mob);
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        mob = (Mob) bundle.get(MOB);
     }
 }
