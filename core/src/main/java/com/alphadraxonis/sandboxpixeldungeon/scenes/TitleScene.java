@@ -92,8 +92,8 @@ public class TitleScene extends PixelScene {
 
         align(title);
 
-        placeTorch(title.x + 22, title.y + 46);
-        placeTorch(title.x + title.width - 22, title.y + 46);
+        placeTorch(title.x + 9, title.y + 46);
+        placeTorch(title.x + title.width - 10, title.y + 46);
 
         Image signs = new Image(BannerSprites.get(BannerSprites.Type.PIXEL_DUNGEON_SIGNS)) {
             private float time = 0;
