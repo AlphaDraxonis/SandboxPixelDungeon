@@ -27,6 +27,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -105,7 +106,7 @@ public class Mimic extends Mob {
 
     @Override
     public String name() {
-        if (alignment == Alignment.NEUTRAL) {
+        if (alignment == Alignment.NEUTRAL && !CustomDungeon.isEditing()) {
             return Messages.get(Heap.class, "chest");
         } else {
             return super.name();
