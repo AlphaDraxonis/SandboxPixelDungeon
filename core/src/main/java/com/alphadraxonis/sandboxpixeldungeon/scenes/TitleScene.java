@@ -39,6 +39,7 @@ import com.alphadraxonis.sandboxpixeldungeon.services.updates.AvailableUpdateDat
 import com.alphadraxonis.sandboxpixeldungeon.services.updates.Updates;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Archs;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ExitButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.StyledButton;
@@ -51,8 +52,10 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Music;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.ColorMath;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.PointF;
 
 import java.util.HashSet;
 import java.util.List;
@@ -114,6 +117,11 @@ public class TitleScene extends PixelScene {
         add(signs);
 
         final Chrome.Type GREY_TR = Chrome.Type.GREY_BUTTON_TR;
+
+        DiscordButton btnDiscord = new DiscordButton();
+        btnDiscord.setPos(5, 5);
+        btnDiscord.updateSize();
+        add(btnDiscord);
 
         StyledButton btnPlay = new StyledButton(GREY_TR, Messages.get(this, "enter")) {
             @Override
@@ -377,6 +385,85 @@ public class TitleScene extends PixelScene {
             if (allInfos.isEmpty()) {
                 Game.scene().addToFront(new WndNewDungeon(EMPTY_HASHSET));
             } else Game.scene().addToFront(new WndSelectDungeon(allInfos, true));
+        }
+    }
+
+    public static class DiscordButton extends Button {
+
+        private Image image;
+        private BitmapText text;
+
+        private PointF scale;
+        private boolean increasing;
+
+        @Override
+        protected void createChildren(Object... params) {
+            super.createChildren(params);
+
+            scale = new PointF(1, 1);
+            increasing = true;
+
+            image = new Image(Assets.Interfaces.ICON_DISCORD);
+            image.scale = scale;
+            image.originToCenter();
+            add(image);
+
+            text = new BitmapText(Messages.get(this, "name"), PixelScene.pixelFont);
+//            text.scale = scale;
+            add(text);
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+
+            image.x = x;
+            image.y = y;
+            text.x = x + image.width + 2;
+            text.y = y + 2;
+
+            text.measure();
+            //if you don't call originToCenter
+//            float w = image.width ;
+//            float h = image.height;
+//            image.x = (int) (x - (w * (scale.x - 1) / 2));
+//            image.y = (int) (y - (h * (scale.y - 1) / 2));
+//            text.x = (int) (x + image.width * scale.x + 2 - (w * (scale.x - 1) / 2));
+//            text.y = (int) (y + 2 - (h * (scale.y - 1) / 2));
+        }
+
+        @Override
+        protected void onPointerDown() {
+            image.brightness(1.2f);
+            text.brightness(1.2f);
+            Sample.INSTANCE.play(Assets.Sounds.CLICK);
+        }
+
+        @Override
+        protected void onPointerUp() {
+            image.resetColor();
+            text.resetColor();
+        }
+
+        @Override
+        protected void onClick() {
+            SandboxPixelDungeon.platform.openURI("https://discord.gg/AQAyPqwXvS");
+//          SandboxPixelDungeon.platform.openURI("https://discord.gg@download.zip");
+        }
+
+        public void updateSize() {
+            setSize(image.width + 2 + text.width(), image.height);
+        }
+
+        @Override
+        public void update() {
+            super.update();
+            if (scale.x >= 1.8f || scale.x <= .8f) increasing = !increasing;
+            float diff = .05f;
+            if (increasing) diff = -diff;
+            scale.x += diff;
+            scale.y += diff;
+            layout();
         }
     }
 }

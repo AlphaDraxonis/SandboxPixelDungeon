@@ -84,6 +84,7 @@ public class Assets {
 		public static final String BOSSHP   = "interfaces/boss_hp.png";
 
 		public static final String SURFACE  = "interfaces/surface.png";
+		public static final String ICON_DISCORD = "interfaces/discord.png";
 
 		public static final String LOADING_SEWERS   = "interfaces/loading_sewers.png";
 		public static final String LOADING_PRISON   = "interfaces/loading_prison.png";
