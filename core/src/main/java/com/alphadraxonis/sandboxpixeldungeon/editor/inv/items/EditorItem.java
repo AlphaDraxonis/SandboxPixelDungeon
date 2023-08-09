@@ -54,7 +54,21 @@ public abstract class EditorItem extends Item {
 
     //Constant items
 
-    public static final EditorItem NULL_ITEM = new EditorItem() {
+    public static final EditorItem NULL_ITEM = new NullItemClass(), RANDOM_ITEM = new NullItemClass() {
+        @Override
+        public String name() {
+            return Messages.get(EditorItem.class, "random_name");
+        }
+
+        @Override
+        public String desc() {
+            return Messages.get(EditorItem.class, "random_desc");
+        }
+    };
+
+    public static class NullItemClass extends EditorItem {
+        private NullItemClass() {
+        }
 
         @Override
         public Image getSprite() {
@@ -63,12 +77,12 @@ public abstract class EditorItem extends Item {
 
         @Override
         public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-            return new DefaultListItem(NULL_ITEM, window, title(), getSprite());
+            return new DefaultListItem(this, window, title(), getSprite());
         }
 
         @Override
         public DefaultEditComp<?> createEditComponent() {
-            return new DefaultEditComp<Item>(NULL_ITEM) {
+            return new DefaultEditComp<Item>(this) {
 
                 @Override
                 protected IconTitleWithSubIcon createTitle() {
@@ -101,17 +115,17 @@ public abstract class EditorItem extends Item {
         public String desc() {
             return Messages.get(EditorItem.class, "nothing_desc");
         }
-    };
+    }
     public final static EditorItem REMOVER_ITEM = new EditorItem() {
 
         @Override
         public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-            return new DefaultListItem(REMOVER_ITEM, window, title(), getSprite());
+            return new DefaultListItem(this, window, title(), getSprite());
         }
 
         @Override
         public DefaultEditComp<?> createEditComponent() {
-            return new DefaultEditComp<Item>(REMOVER_ITEM) {
+            return new DefaultEditComp<Item>(this) {
 
                 @Override
                 protected IconTitleWithSubIcon createTitle() {

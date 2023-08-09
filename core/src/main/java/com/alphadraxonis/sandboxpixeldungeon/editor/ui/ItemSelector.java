@@ -21,6 +21,10 @@ import com.watabou.noosa.ui.Component;
 
 public class ItemSelector extends Component {
 
+    public enum NullTypeSelector {
+        NONE, NOTHING, RANDOM
+    }
+
     protected static final int MIN_GAP = 6;//Gap between text and title
     protected static final float GAP = 0.5f;
 
@@ -29,13 +33,13 @@ public class ItemSelector extends Component {
     protected final RenderedTextBlock renderedTextBlock;
     protected InventorySlot itemSlot;
     protected IconButton changeBtn;
-    private final boolean acceptsNull;
+    private final NullTypeSelector nullTypeSelector;
 
-    private boolean showQuestinmarkIfNull;
+    private boolean showQuestionmarkIfNull;
 
-    public ItemSelector(String text, Class<? extends Item> itemClasses, Item startItem, boolean acceptsNull) {
+    public ItemSelector(String text, Class<? extends Item> itemClasses, Item startItem, NullTypeSelector nullTypeSelector) {
         this.itemClasses = itemClasses;
-        this.acceptsNull = acceptsNull;
+        this.nullTypeSelector = nullTypeSelector;
 
         renderedTextBlock = PixelScene.renderTextBlock(text, 10);
         add(renderedTextBlock);
@@ -90,7 +94,7 @@ public class ItemSelector extends Component {
 
     public void setSelectedItem(Item selectedItem) {
         this.selectedItem = selectedItem;
-        if (isShowQuestinmarkIfNull() && selectedItem == null) {
+        if (isShowQuestionmarkIfNull() && selectedItem == null) {
             selectedItem = new Item();
             selectedItem.image = 0;
             itemSlot.item(selectedItem);
@@ -98,12 +102,12 @@ public class ItemSelector extends Component {
         } else itemSlot.item(selectedItem);
     }
 
-    public boolean isShowQuestinmarkIfNull() {
-        return showQuestinmarkIfNull;
+    public boolean isShowQuestionmarkIfNull() {
+        return showQuestionmarkIfNull;
     }
 
-    public void setShowQuestinmarkIfNull(boolean showQuestinmarkIfNull) {
-        this.showQuestinmarkIfNull = showQuestinmarkIfNull;
+    public void setShowQuestionmarkIfNull(boolean showQuestionmarkIfNull) {
+        this.showQuestionmarkIfNull = showQuestionmarkIfNull;
         if (getSelectedItem() == null) setSelectedItem(getSelectedItem());
     }
 
@@ -126,7 +130,10 @@ public class ItemSelector extends Component {
         w.add(sp);
         sp.setSize(WIDTH, HEIGHT);
 
-        if (acceptsNull) sp.addItem(EditorItem.NULL_ITEM.createListItem(w));
+        if (nullTypeSelector == NullTypeSelector.NOTHING)
+            sp.addItem(EditorItem.NULL_ITEM.createListItem(w));
+        else if (nullTypeSelector == NullTypeSelector.RANDOM)
+            sp.addItem(EditorItem.RANDOM_ITEM.createListItem(w));
         for (Item bagitem : Items.bag.items) {
             if (bagitem instanceof Bag) {
                 for (Item i : (Bag) bagitem) {

@@ -71,7 +71,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         super(mob);
 
         if (mob instanceof Statue) {
-            statueWeapon = new ItemSelector(" " + Messages.get(EditMobComp.class, "weapon") + ":", Weapon.class, ((Statue) mob).weapon, false) {
+            statueWeapon = new ItemSelector(" " + Messages.get(EditMobComp.class, "weapon") + ":",
+                    Weapon.class, ((Statue) mob).weapon, ItemSelector.NullTypeSelector.NONE) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -81,7 +82,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             };
             add(statueWeapon);
             if (mob instanceof ArmoredStatue) {
-                statueArmor = new ItemSelector(" " + Messages.get(EditMobComp.class, "armor") + ":", Armor.class, ((ArmoredStatue) mob).armor, false) {
+                statueArmor = new ItemSelector(" " + Messages.get(EditMobComp.class, "armor") + ":",
+                        Armor.class, ((ArmoredStatue) mob).armor, ItemSelector.NullTypeSelector.NONE) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
@@ -97,7 +99,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof Thief) {
-            thiefItem = new ItemSelector(" " + Messages.get(EditMobComp.class, "item") + ":", Item.class, ((Thief) mob).item, true) {
+            thiefItem = new ItemSelector(" " + Messages.get(EditMobComp.class, "item") + ":",
+                    Item.class, ((Thief) mob).item, ItemSelector.NullTypeSelector.NONE) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -197,7 +200,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                         } else spawnQuestRoom.enable(true);
                     });
                 } else spawnQuestRoom = null;
-                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "wand_1") + ":", Wand.class, ((Wandmaker) mob).quest.wand1, true) {
+                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "wand_1") + ":",
+                        Wand.class, ((Wandmaker) mob).quest.wand1, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
@@ -206,7 +210,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
                 };
                 add(questItem1);
-                questItem2 = new ItemSelector(" " + Messages.get(EditMobComp.class, "wand_2") + ":", Wand.class, ((Wandmaker) mob).quest.wand2, true) {
+                questItem2 = new ItemSelector(" " + Messages.get(EditMobComp.class, "wand_2") + ":",
+                        Wand.class, ((Wandmaker) mob).quest.wand2, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
@@ -215,11 +220,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
                 };
                 add(questItem2);
-                questItem1.setShowQuestinmarkIfNull(true);
-                questItem2.setShowQuestinmarkIfNull(true);
+                questItem1.setShowQuestionmarkIfNull(true);
+                questItem2.setShowQuestionmarkIfNull(true);
 
             } else if (mob instanceof Ghost) {
-                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "weapon") + ":", Weapon.class, ((Ghost) mob).quest.weapon, true) {
+                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "weapon") + ":",
+                        Weapon.class, ((Ghost) mob).quest.weapon, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
@@ -228,7 +234,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
                 };
                 add(questItem1);
-                questItem2 = new ItemSelector(" " + Messages.get(EditMobComp.class, "armor") + ":", Armor.class, ((Ghost) mob).quest.armor, true) {
+                questItem2 = new ItemSelector(" " + Messages.get(EditMobComp.class, "armor") + ":",
+                        Armor.class, ((Ghost) mob).quest.armor, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
@@ -237,11 +244,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
                 };
                 add(questItem2);
-                questItem1.setShowQuestinmarkIfNull(true);
-                questItem2.setShowQuestinmarkIfNull(true);
+                questItem1.setShowQuestionmarkIfNull(true);
+                questItem2.setShowQuestionmarkIfNull(true);
                 spawnQuestRoom = null;
             } else if (mob instanceof Imp) {
-                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "ring") + ":", Ring.class, ((Imp) mob).quest.reward, true) {
+                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "ring") + ":", Ring.class,
+                        ((Imp) mob).quest.reward, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
@@ -250,7 +258,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
                 };
                 add(questItem1);
-                questItem1.setShowQuestinmarkIfNull(true);
+                questItem1.setShowQuestionmarkIfNull(true);
                 questItem2 = null;
                 spawnQuestRoom = null;
             } else {
