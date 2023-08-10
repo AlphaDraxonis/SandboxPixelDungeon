@@ -42,6 +42,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Barkskin;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Barrier;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Berserk;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Bless;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Blindness;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Burning;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Combo;
@@ -70,6 +71,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Monk;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Snake;
+import com.alphadraxonis.sandboxpixeldungeon.editor.Sign;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CheckedCell;
@@ -159,6 +161,7 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndHero;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndMessage;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndOptions;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndResurrect;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTradeItem;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
@@ -828,6 +831,9 @@ public class Hero extends Char {
             } else if (curAction instanceof HeroAction.Alchemy) {
                 actResult = actAlchemy((HeroAction.Alchemy) curAction);
 
+            } else if (curAction instanceof HeroAction.ReadSign) {
+                actResult = actReadSign((HeroAction.ReadSign) curAction);
+
             } else {
                 actResult = false;
             }
@@ -970,6 +976,36 @@ public class Hero extends Char {
 
             AlchemyScene.clearToolkit();
             SandboxPixelDungeon.switchScene(AlchemyScene.class);
+            return false;
+
+        } else if (getCloser(dst)) {
+
+            return true;
+
+        } else {
+            ready();
+            return false;
+        }
+    }
+
+    private boolean actReadSign(HeroAction.ReadSign action){
+        int dst = action.dst;
+        if (Dungeon.level.distance(dst, pos) <= 1) {
+
+            ready();
+
+            Sign sign = Dungeon.level.signs.get(dst);
+            if (sign == null || sign.text == null) {
+                GLog.w(Messages.get(this, "no_sign"));
+                return false;
+            }
+            if (buff(Blindness.class) != null) {
+                GLog.w(Messages.get(Scroll.class, "blinded"));
+                return false;
+            }
+
+            Game.runOnRenderThread(() -> GameScene.show(new WndTitledMessage(null, sign.text)));
+
             return false;
 
         } else if (getCloser(dst)) {
@@ -1671,6 +1707,10 @@ public class Hero extends Char {
         if (Dungeon.level.map[cell] == Terrain.ALCHEMY && cell != pos) {
 
             curAction = new HeroAction.Alchemy(cell);
+
+        } else if (Dungeon.level.map[cell] == Terrain.SIGN && cell != pos) {
+
+            curAction = new HeroAction.ReadSign(cell);
 
         } else if (fieldOfView[cell] && ch instanceof Mob) {
 

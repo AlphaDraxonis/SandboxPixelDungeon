@@ -22,6 +22,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.alphadraxonis.sandboxpixeldungeon.editor.Sign;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -247,6 +248,7 @@ public class CustomLevel extends Level {
             transitions = level.transitions;
             plants = level.plants;
             traps = level.traps;
+            signs = level.signs;
             customTiles = level.customTiles;
             customWalls = level.customWalls;
             blobs = level.blobs;
@@ -310,6 +312,11 @@ public class CustomLevel extends Level {
         traps = new SparseArray<>();
         for (Trap trap : customLevel.traps.valueList()) {
             traps.put(trap.pos, trap.getCopy());
+        }
+
+        signs = new SparseArray<>();
+        for (Sign sign : customLevel.signs.valueList()) {
+            signs.put(sign.pos, sign.getCopy());
         }
 
         customTiles = new HashSet<>();
@@ -809,6 +816,14 @@ public class CustomLevel extends Level {
         level.traps.clear();
         level.traps.putAll(nTrap);
 
+        SparseArray<Sign> nSign = new SparseArray<>();
+        for (Sign s : level.signs.valueList()) {
+            s.pos = s.pos + add;
+            if (s.pos >= 0 && s.pos < newLength && level.insideMap(s.pos)) nSign.put(s.pos, s);
+        }
+        level.signs.clear();
+        level.signs.putAll(nSign);
+
         SparseArray<Plant> nPlant = new SparseArray<>();
         for (Plant p : level.plants.valueList()) {
             if (p != null) {
@@ -911,6 +926,18 @@ public class CustomLevel extends Level {
         }
         level.traps.clear();
         level.traps.putAll(nTrap);
+
+        SparseArray<Sign> nSign = new SparseArray<>();
+        for (Sign s : level.signs.valueList()) {
+            int nPos = s.pos + add + diffW * (s.pos / levelWidth);
+            if (s.pos >= 0 && s.pos < newLength && level.insideMap(s.pos)
+                    && nPos / levelWidth == s.pos / newWidth) {
+                nSign.put(s.pos, s);
+                s.pos = nPos;
+            }
+        }
+        level.signs.clear();
+        level.signs.putAll(nSign);
 
         SparseArray<Plant> nPlant = new SparseArray<>();
         for (Plant p : level.plants.valueList()) {

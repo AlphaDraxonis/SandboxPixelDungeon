@@ -81,7 +81,12 @@ public class HeroAction {
 			this.dst = pot;
 		}
 	}
-	
+	public static class ReadSign extends HeroAction {
+		public ReadSign( int pot ) {
+			this.dst = pot;
+		}
+	}
+
 	public static class Attack extends HeroAction {
 		public Char target;
 		public Attack( Char target ) {

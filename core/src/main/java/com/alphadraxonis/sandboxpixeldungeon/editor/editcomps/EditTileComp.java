@@ -1,11 +1,15 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.Sign;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.SignEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.Consumer;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
@@ -15,6 +19,7 @@ import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.windows.IconTitle;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndInfoCell;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTextInput;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Image;
@@ -25,24 +30,61 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
     private TransitionEditPart transitionEdit;
     private RedButton addTransition;
+    private RedButton editSignText;
 
     public EditTileComp(TileItem item) {
         super(item);
 
-        if (item.cell() != -1 && (item.terrainType() == Terrain.ENTRANCE || TileItem.isExitTerrainCell(item.terrainType()))) {
+        if (item.cell() != -1) {
+            if (item.terrainType() == Terrain.ENTRANCE || TileItem.isExitTerrainCell(item.terrainType())) {
 
-            addTransition = new RedButton(Messages.get(EditTileComp.class, "add_transition"), 9) {
-                @Override
-                protected void onClick() {
-                    addTransition(createNewTransition(item.cell()));
+                addTransition = new RedButton(Messages.get(EditTileComp.class, "add_transition"), 9) {
+                    @Override
+                    protected void onClick() {
+                        addTransition(createNewTransition(item.cell()));
+                    }
+                };
+                add(addTransition);
+
+                if (EditorScene.customLevel().transitions.get(item.cell()) != null) {
+                    addTransition(EditorScene.customLevel().transitions.get(item.cell()));
                 }
-            };
-            add(addTransition);
 
-            if (EditorScene.customLevel().transitions.get(item.cell()) != null) {
-                addTransition(EditorScene.customLevel().transitions.get(item.cell()));
+            } else if (item.terrainType() == Terrain.SIGN) {
+                Sign sign = EditorScene.customLevel().signs.get(item.cell());
+                final Sign oldSign;
+                if (sign != null) oldSign = sign.getCopy();
+                else oldSign = null;
+                editSignText = new RedButton("Edit text", 9) {
+
+                    @Override
+                    protected void onClick() {
+                        EditorScene.show(new WndTextInput("title", "body", (oldSign==null||oldSign.text==null?"":oldSign.text), 100,
+                                true, "positive", "negative") {
+                            @Override
+                            public void onSelect(boolean positive, String text) {
+                                if (positive) {
+                                    Sign newSign = EditorScene.customLevel().signs.get(item.cell());
+                                    if (newSign == null) {
+                                        newSign = new Sign();
+                                        newSign.pos = item.cell();
+                                    }
+                                    newSign.text = text;
+                                    ActionPart actionPart = new SignEditPart.ActionPart(item.cell(), oldSign, newSign);
+                                    if (actionPart.hasContent()) {
+                                        Undo.startAction();//this is maybe not so good, better if using TileModify?
+                                        Undo.addActionPart(actionPart);
+                                        Undo.endAction();
+                                        actionPart.redo();
+                                        updateObj();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                };
+                add(editSignText);
             }
-
         }
     }
 
@@ -93,6 +135,9 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         } else if (addTransition != null) {
             addTransition.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
             pos = addTransition.bottom() + WndTitledMessage.GAP;
+        } else if (editSignText != null) {
+            editSignText.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
+            pos = editSignText.bottom() + WndTitledMessage.GAP;
         } else return;
 
         height = pos - y - WndTitledMessage.GAP - 0.5f;
@@ -111,7 +156,14 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     @Override
     protected String createDescription() {
         CustomLevel level = EditorScene.customLevel();
-        String desc = level.tileDesc(obj.terrainType(), obj.cell());
+
+        String desc;
+        if (obj.terrainType() == Terrain.SIGN) {
+            Sign sign = level.signs.get(obj.cell());
+            if (sign == null || sign.text == null) desc = "";
+            else desc = sign.text;
+        } else desc = level.tileDesc(obj.terrainType(), obj.cell());
+
         return desc.length() == 0 ? Messages.get(WndInfoCell.class, "nothing") : desc;
     }
 

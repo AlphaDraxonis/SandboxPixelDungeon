@@ -13,8 +13,10 @@ import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.UNLOCKED_EXIT
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.Sign;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditTileComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.SignEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
@@ -113,7 +115,7 @@ public class TileItem extends EditorItem {
         return terrain == TRAP || terrain == SECRET_TRAP || terrain == INACTIVE_TRAP;
     }
 
-    public static boolean isGrassTerrainCell(int terrain){
+    public static boolean isGrassTerrainCell(int terrain) {
         return terrain == GRASS || terrain == HIGH_GRASS || terrain == FURROWED_GRASS;
     }
 
@@ -235,6 +237,14 @@ public class TileItem extends EditorItem {
                 };
                 addActionPart(transPart);
                 transPart.redo();
+            }
+            if (oldTerrain == Terrain.SIGN || terrainType == Terrain.SIGN) {
+                Sign newSign = new Sign();
+                Sign oldSign = level.signs.get(cell);
+                newSign.pos = cell;
+                ActionPart signActionPart = new SignEditPart.ActionPart(cell, oldSign, newSign);
+                addActionPart(signActionPart);
+                signActionPart.redo();
             }
 
             EditorScene.updateMap(cell);

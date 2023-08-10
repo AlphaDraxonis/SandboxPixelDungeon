@@ -52,6 +52,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Piranha;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogFist;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
+import com.alphadraxonis.sandboxpixeldungeon.editor.Sign;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
@@ -162,6 +163,7 @@ public abstract class Level implements Bundlable {
     public HashMap<Class<? extends Blob>, Blob> blobs;
     public SparseArray<Plant> plants;
     public SparseArray<Trap> traps;
+    public SparseArray<Sign> signs;
     public HashSet<CustomTilemap> customTiles;
     public HashSet<CustomTilemap> customWalls;
 
@@ -186,6 +188,7 @@ public abstract class Level implements Bundlable {
     private static final String HEAPS = "heaps";
     private static final String PLANTS = "plants";
     private static final String TRAPS = "traps";
+    private static final String SIGNS = "signs";
     private static final String CUSTOM_TILES = "customTiles";
     private static final String CUSTOM_WALLS = "customWalls";
     private static final String MOBS = "mobs";
@@ -282,6 +285,7 @@ public abstract class Level implements Bundlable {
             blobs = new HashMap<>();
             plants = new SparseArray<>();
             traps = new SparseArray<>();
+            signs = new SparseArray<>();
             customTiles = new HashSet<>();
             customWalls = new HashSet<>();
 
@@ -356,6 +360,7 @@ public abstract class Level implements Bundlable {
         blobs = new HashMap<>();
         plants = new SparseArray<>();
         traps = new SparseArray<>();
+        signs = new SparseArray<>();
         customTiles = new HashSet<>();
         customWalls = new HashSet<>();
 
@@ -392,6 +397,12 @@ public abstract class Level implements Bundlable {
         for (Bundlable p : collection) {
             Trap trap = (Trap) p;
             traps.put(trap.pos, trap);
+        }
+
+        collection = bundle.getCollection(SIGNS);
+        for (Bundlable p : collection) {
+            Sign sign = (Sign) p;
+            signs.put(sign.pos, sign);
         }
 
         collection = bundle.getCollection(CUSTOM_TILES);
@@ -451,6 +462,7 @@ public abstract class Level implements Bundlable {
         bundle.put(HEAPS, heaps.valueList());
         bundle.put(PLANTS, plants.valueList());
         bundle.put(TRAPS, traps.valueList());
+        bundle.put(SIGNS, signs.valueList());
         bundle.put(CUSTOM_TILES, customTiles);
         bundle.put(CUSTOM_WALLS, customWalls);
         bundle.put(MOBS, mobs);
