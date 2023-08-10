@@ -26,7 +26,6 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Wraith;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Shopkeeper;
-import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditItemComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
@@ -655,7 +654,7 @@ public class Heap implements Bundlable {
                 itemLvl.visible = false;
             }
 
-            if (i instanceof Key && !((Key) i).levelName.equals(EditorScene.customLevel().name)) {
+            if (i instanceof Key && !((Key) i).levelName.equals(Dungeon.level.name)) {
 
                 keyLevel.visible = true;
                 keyLevel.scale.set(0.45f);
