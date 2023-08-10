@@ -137,7 +137,7 @@ public class Mimic extends Mob {
     @Override
     public CharSprite sprite() {
         MimicSprite sprite = (MimicSprite) super.sprite();
-        if (alignment == Alignment.NEUTRAL) sprite.hideMimic();
+        if (alignment == Alignment.NEUTRAL && state == PASSIVE) sprite.hideMimic();
         return sprite;
     }
 

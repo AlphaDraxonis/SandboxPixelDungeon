@@ -32,6 +32,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.sprites.MimicSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.StatueSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIcon;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
@@ -140,6 +141,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         mobStateSpinner = new MobStateSpinner(mob);
         add(mobStateSpinner);
+        if (mob instanceof Mimic) mobStateSpinner.addChangeListener(this::updateObj);
 
         if (mob instanceof WandOfRegrowth.Lotus) {
             WandOfRegrowth.Lotus lotus = (WandOfRegrowth.Lotus) mob;
@@ -344,6 +346,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (obj instanceof ArmoredStatue) {
                 Armor armor = ((ArmoredStatue) obj).armor;
                 ((StatueSprite) ((MobTitleEditor) title).image).setArmor(armor == null ? 0 : armor.tier);
+            } else if (obj instanceof Mimic) {
+                MimicSprite sprite = (MimicSprite) ((MobTitleEditor) title).image;
+                if (obj.state != obj.PASSIVE) sprite.idle();
+                else sprite.hideMimic();
             }
         }
         desc.text(createDescription());
@@ -353,6 +359,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (obj.sprite != null)
                 ((StatueSprite) obj.sprite).setArmor(armor == null ? 0 : armor.tier);
             statueArmor.updateItem();
+        }
+        if (obj instanceof Mimic ) {
+            if (obj.state != obj.PASSIVE) obj.sprite.idle();
+            else ((MimicSprite) obj.sprite).hideMimic();
         }
 
         super.updateObj();
