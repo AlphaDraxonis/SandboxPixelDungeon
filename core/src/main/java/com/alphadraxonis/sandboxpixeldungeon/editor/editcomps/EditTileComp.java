@@ -8,6 +8,8 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndItemDistribution;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndNewFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.Consumer;
@@ -55,12 +57,16 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 final Sign oldSign;
                 if (sign != null) oldSign = sign.getCopy();
                 else oldSign = null;
-                editSignText = new RedButton("Edit text", 9) {
+                editSignText = new RedButton(Messages.get(EditTileComp.class, "edit_sign_title"), 9) {
 
                     @Override
                     protected void onClick() {
-                        EditorScene.show(new WndTextInput("title", "body", (oldSign==null||oldSign.text==null?"":oldSign.text), 100,
-                                true, "positive", "negative") {
+                        EditorScene.show(new WndTextInput(
+                                Messages.get(EditTileComp.class, "edit_sign_title"),
+                                Messages.get(EditTileComp.class, "edit_sign_body"),
+                                (oldSign == null || oldSign.text == null ? "" : oldSign.text), 100,
+                                true,Messages.get( WndItemDistribution.class,"save"),
+                                Messages.get(WndNewFloor.class, "cancel_label")) {
                             @Override
                             public void onSelect(boolean positive, String text) {
                                 if (positive) {
