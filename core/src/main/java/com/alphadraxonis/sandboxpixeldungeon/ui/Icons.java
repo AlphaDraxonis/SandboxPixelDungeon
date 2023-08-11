@@ -41,6 +41,9 @@ public enum Icons {
     PREFS,
     SHPX,
     EDITOR,
+    SUPPORT_SILVER,
+    SUPPORT_GOLD,
+    SUPPORT_EMERALD,
 
     //rankings and hero select icons, spacing for 16x16
     STAIRS,
@@ -159,6 +162,15 @@ public enum Icons {
                 break;
             case EDITOR:
                 icon.frame(icon.texture.uvRectBySize(135, 0, 16, 14));
+                break;
+            case SUPPORT_SILVER:
+                icon.frame(icon.texture.uvRectBySize(151, 0, 16, 16));
+                break;
+            case SUPPORT_GOLD:
+                icon.frame(icon.texture.uvRectBySize(167, 0, 16, 16));
+                break;
+            case SUPPORT_EMERALD:
+                icon.frame(icon.texture.uvRectBySize(183, 0, 16, 16));
                 break;
 
             case STAIRS:

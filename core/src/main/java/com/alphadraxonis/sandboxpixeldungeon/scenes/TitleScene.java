@@ -186,7 +186,7 @@ public class TitleScene extends PixelScene {
                 SandboxPixelDungeon.switchScene(AboutScene.class);
             }
         };
-        btnAbout.icon(Icons.get(Icons.SHPX));
+        btnAbout.icon(Icons.get(Icons.SUPPORT_EMERALD));
         add(btnAbout);
 
         final int BTN_HEIGHT = 20;
