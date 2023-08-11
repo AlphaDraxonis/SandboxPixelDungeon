@@ -31,6 +31,7 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.particles.PixelParticle;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.ColorMath;
+import com.watabou.utils.GameMath;
 import com.watabou.utils.Random;
 import com.watabou.utils.RectF;
 
@@ -47,6 +48,8 @@ public class Fireball extends Component {
 	private Image fLight;
 	private Emitter emitter;
 	private Group sparks;
+
+	private int color, flameColor;
 	
 	@Override
 	protected void createChildren(Object... params) {
@@ -66,6 +69,7 @@ public class Fireball extends Component {
 			public void emit(Emitter emitter, int index, float x, float y) {
 				Flame p = (Flame)emitter.recycle( Flame.class );
 				p.reset();
+				p.color(flameColor);
 				p.heightLimit(Fireball.this.y - 30);
 				p.x = x - p.width / 2;
 				p.y = y - p.height / 2;
@@ -120,7 +124,21 @@ public class Fireball extends Component {
 		super.draw();
 		Blending.setNormalMode();
 	}
-	
+
+	public void setColor(int color) {
+		bLight.color(color);
+		fLight.color(color);
+		this.color = color;
+
+		int red = (color >> 16) & 0xFF;
+		int green = (color >> 8) & 0xFF;
+		int blue = color & 0xFF;
+		flameColor =
+				(int) GameMath.gate(0, red - 20, 255) * 256 * 256 +
+						(int) GameMath.gate(0, green + 30, 255) * 256 +
+						(int) GameMath.gate(0, blue + 40, 255);
+	}
+
 	public static class Flame extends Image {
 		
 		private static float LIFESPAN	= 1f;

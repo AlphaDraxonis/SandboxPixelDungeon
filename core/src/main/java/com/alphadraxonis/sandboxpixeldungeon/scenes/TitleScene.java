@@ -114,6 +114,7 @@ public class TitleScene extends PixelScene {
         };
         signs.x = title.x + (title.width() - signs.width()) / 2f;
         signs.y = title.y;
+        signs.color(Window.SILVER);
         add(signs);
 
         final Chrome.Type GREY_TR = Chrome.Type.GREY_BUTTON_TR;
@@ -233,6 +234,7 @@ public class TitleScene extends PixelScene {
 
     private void placeTorch(float x, float y) {
         Fireball fb = new Fireball();
+        fb.setColor(Window.GOLD);
         fb.setPos(x, y);
         add(fb);
     }
