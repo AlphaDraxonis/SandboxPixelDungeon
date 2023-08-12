@@ -31,12 +31,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-//a lot of code copied from WndTextInput because idk how to make TextInputs
 public class WndNewFloor extends WndTabbed {
 
 
     protected static final int MARGIN = 1;
-    protected static final int BUTTON_HEIGHT = 16;
+    public static final int BUTTON_HEIGHT = 16;
 
 
     private final CustomDungeon owner;

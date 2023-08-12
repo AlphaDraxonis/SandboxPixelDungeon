@@ -1,8 +1,10 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
+import com.alphadraxonis.sandboxpixeldungeon.Challenges;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.ChampionEnemy;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
@@ -10,6 +12,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.Torch;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CityBossLevel;
@@ -76,6 +79,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public Class<? extends Builder> builder;
 
+    //Challenge stuff
+    public boolean spawnTorchIfDarkness = true, reduceViewDistanceIfDarkness = true,
+            affectedByNoScrolls = true, rollForChampionIfChampionChallenge = true;
+
 
     public LevelScheme() {
     }
@@ -85,6 +92,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         this.name = Level.NONE;
         this.level = level;
         this.numInRegion = numInRegion;
+
         mobsToSpawn = new ArrayList<>(4);
         roomsToSpawn = new ArrayList<>(4);
         itemsToSpawn = new ArrayList<>(4);
@@ -128,6 +136,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         this.name = name;
         this.depth = depth;
         this.customDungeon = customDungeon;
+
         mobsToSpawn = new ArrayList<>(4);
         roomsToSpawn = new ArrayList<>(4);
         itemsToSpawn = new ArrayList<>(4);
@@ -357,7 +366,25 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             Dungeon.level = level;
             Dungeon.levelName = name;
             initRandomStats(seed);
+
+            if (Dungeon.isChallenged(Challenges.DARKNESS)) {
+                if (reduceViewDistanceIfDarkness) level.viewDistance /= 4;
+                if (spawnTorchIfDarkness) itemsToSpawn.add(new Torch());
+            }
+
             spawnItemsAndMobs(seed + 229203);
+
+            if (Dungeon.isChallenged(Challenges.CHAMPION_ENEMIES) && rollForChampionIfChampionChallenge) {
+                Random.pushGenerator(seed + 9488532);
+                List<Mob> sortedMobs = new ArrayList<>(level.mobs);
+                Collections.sort(sortedMobs, (m1, m2) -> m1.pos - m2.pos);
+                for (Mob m : sortedMobs) {
+                    if (m.buffs(ChampionEnemy.class).isEmpty()) {
+                        ChampionEnemy.rollForChampion(m);
+                    }
+                }
+                Random.popGenerator();
+            }
 
             if (feeling == null) {
                 Random.pushGenerator(seed + 56709);
@@ -390,6 +417,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
                     level.viewDistance = Math.round(level.viewDistance / 2f);
                 Random.popGenerator();
             } else level.feeling = feeling;
+        }
+        if (Dungeon.isChallenged(Challenges.NO_SCROLLS) && affectedByNoScrolls) {
+            customDungeon.removeEverySecondSoU(level);
         }
         level.initForPlay();
         return level;
@@ -439,7 +469,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
                 level.map[cell] = Terrain.GRASS;
                 level.losBlocking[cell] = false;
             }
-            level.drop(item, cell).type = Heap.Type.HEAP;
+            Heap h = level.drop(item, cell);
+            if (h.type == null) h.type = Heap.Type.HEAP;
         }
 
         Random.popGenerator();
@@ -494,6 +525,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     private static final String SPAWN_MOBS = "spawn_mobs";
     private static final String SPAWN_ITEMS = "spawn_items";
     private static final String BUILDER = "builder";
+    private static final String SPAWN_TORCH_IF_DARKNESS = "spawn_torch_if_darkness";
+    private static final String REDUCE_VIEW_DISTANCE_IF_DARKNESS = "reduce_view_distance_if_darkness";
+    private static final String AFFECTED_BY_NO_SCROLLS = "affected_by_no_scrolls";
+    private static final String ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE = "roll_for_champion_if_champion_challenge";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -510,6 +545,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         bundle.put(SEED_SET, seedSet);
         bundle.put(FEELING, feeling);
         bundle.put(SHOP_PRICE_MULTIPLIER, shopPriceMultiplier);
+        bundle.put(SPAWN_TORCH_IF_DARKNESS, spawnTorchIfDarkness);
+        bundle.put(REDUCE_VIEW_DISTANCE_IF_DARKNESS, reduceViewDistanceIfDarkness);
+        bundle.put(AFFECTED_BY_NO_SCROLLS, affectedByNoScrolls);
+        bundle.put(ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE, rollForChampionIfChampionChallenge);
 
         int[] entrances = new int[entranceCells.size()];
         int i = 0;
@@ -550,6 +589,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         depth = bundle.getInt(DEPTH);
         if (bundle.contains(FEELING)) feeling = bundle.getEnum(FEELING, Level.Feeling.class);
         shopPriceMultiplier = bundle.getInt(SHOP_PRICE_MULTIPLIER);
+        spawnTorchIfDarkness = bundle.getBoolean(SPAWN_TORCH_IF_DARKNESS);
+        reduceViewDistanceIfDarkness = bundle.getBoolean(REDUCE_VIEW_DISTANCE_IF_DARKNESS);
+        affectedByNoScrolls = bundle.getBoolean(AFFECTED_BY_NO_SCROLLS);
+        rollForChampionIfChampionChallenge = bundle.getBoolean(ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE);
 
         int[] entrances = bundle.getIntArray(ENTRANCE_CELLS);
         entranceCells = new ArrayList<>(entrances.length + 1);
@@ -576,7 +619,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
         prizeItemsToSpawn = new ArrayList<>();
         if (bundle.contains(PRIZE_ITEMS_TO_SPAWN))
-            for (Bundlable l : bundle.getCollection(PRIZE_ITEMS_TO_SPAWN)) prizeItemsToSpawn.add((Item) l);
+            for (Bundlable l : bundle.getCollection(PRIZE_ITEMS_TO_SPAWN))
+                prizeItemsToSpawn.add((Item) l);
 
         roomsToSpawn = new ArrayList<>();
         if (bundle.contains(ROOMS_TO_SPAWN))

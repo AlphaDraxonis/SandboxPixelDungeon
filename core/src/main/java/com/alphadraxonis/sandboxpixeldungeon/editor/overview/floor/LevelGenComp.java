@@ -14,6 +14,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.RoomItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.FeelingSpinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.WndChallengeSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseObjectComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.FoldableComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.FoldableCompWithAdd;
@@ -28,6 +29,7 @@ import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.CheckBox;
 import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
+import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
@@ -57,6 +59,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
     protected Component sectionItems;
     protected Component sectionMobs;
     protected SpawnSectionMore<RoomItem> sectionRooms;
+    protected RedButton challengeSettings;
 
     public LevelGenComp(LevelScheme newLevelScheme) {
         super(newLevelScheme);
@@ -300,6 +303,15 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             content.add(sectionRooms);
         }
 
+        challengeSettings = new RedButton(Messages.get(WndChallengeSettings.class, "title")) {
+
+            @Override
+            protected void onClick() {
+                EditorScene.show(new WndChallengeSettings(newLevelScheme));
+            }
+        };
+        content.add(challengeSettings);
+
         sp = new ScrollPane(content);
         add(sp);
     }
@@ -315,7 +327,12 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         pos += BUTTON_HEIGHT + MARGIN * 2;
 
         feelingSpinner.setRect(MARGIN, pos, width - MARGIN * 2, BUTTON_HEIGHT);
-        pos = feelingSpinner.bottom() + MARGIN * 4;
+        pos = feelingSpinner.bottom() + MARGIN * 2;
+
+        if (challengeSettings != null) {
+            challengeSettings.setRect(MARGIN, pos, width - MARGIN * 2, BUTTON_HEIGHT);
+            pos = challengeSettings.bottom() + MARGIN * 4;
+        }
 
         line.size(width, 1);
         line.x = 0;
@@ -373,7 +390,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
     }
 
-    private abstract class SpawnSectionMore<T extends Item> extends FoldableCompWithAdd implements UpdateTitle{
+    private abstract class SpawnSectionMore<T extends Item> extends FoldableCompWithAdd implements UpdateTitle {
 
         private ItemContainer<T> container;
         private final String key;

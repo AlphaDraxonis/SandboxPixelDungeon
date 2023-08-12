@@ -1,6 +1,5 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 
-import com.alphadraxonis.sandboxpixeldungeon.Challenges;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Blacksmith;
@@ -319,6 +318,27 @@ public class CustomDungeon implements Bundlable {
         return itemDistributions;
     }
 
+    private boolean removeNextScroll;
+
+    protected void removeEverySecondSoU(Level level) {
+        for (Heap h : level.heaps.valueList()) {
+            for (Item i : h.items) {
+                if (i instanceof ScrollOfUpgrade) {
+                    int oldQuantity = i.quantity();
+                    if (oldQuantity % 2 == 1) {
+                        int newQuantity = removeNextScroll ? (oldQuantity - 1) / 2 : (oldQuantity + 1) / 2;
+                        if (newQuantity == 0) h.items.remove(i);
+                        else i.quantity(newQuantity);
+                        removeNextScroll = !removeNextScroll;
+                    } else {
+                        i.quantity(oldQuantity / 2);
+                    }
+                }
+            }
+            if (h.isEmpty()) level.heaps.remove(h.pos);
+        }
+    }
+
     public void initDefault() {
 
         for (int depth = 1; depth <= 26; depth++) {
@@ -330,12 +350,8 @@ public class CustomDungeon implements Bundlable {
         for (int i = 0; i < 5; i++) {
             ItemDistribution.Items sou = new ItemDistribution.Items(true);
             sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
-            if (Dungeon.isChallenged(Challenges.NO_SCROLLS)) {
-                if (i % 2 == 0) sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
-            } else {
-                sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
-                sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
-            }
+            sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
+            sou.getObjectsToDistribute().add(new ScrollOfUpgrade());
             sou.getLevels().add(Integer.toString(i * 5 + 1));
             sou.getLevels().add(Integer.toString(i * 5 + 2));
             sou.getLevels().add(Integer.toString(i * 5 + 3));
@@ -412,6 +428,7 @@ public class CustomDungeon implements Bundlable {
     private static final String START_GOLD = "start_gold";
     private static final String START_ENERGY = "start_energy";
     private static final String LEVEL_SCHEME = "level_scheme";
+    private static final String REMOVE_NEXT_SCROLL = "remove_next_scroll";
 
     private static final String RUNE_LABELS = "rune_labels";
     private static final String RUNE_CLASSES = "rune_classes";
@@ -434,6 +451,7 @@ public class CustomDungeon implements Bundlable {
         bundle.put(ITEM_DISTRIBUTION, itemDistributions);
         bundle.put(START_GOLD, startGold);
         bundle.put(START_ENERGY, startEnergy);
+        bundle.put(REMOVE_NEXT_SCROLL, removeNextScroll);
 
         if (scrollRuneLabels != null) {
             String[] labels = new String[scrollRuneLabels.size()];
@@ -501,6 +519,7 @@ public class CustomDungeon implements Bundlable {
         }
         startGold = bundle.getInt(START_GOLD);
         startEnergy = bundle.getInt(START_ENERGY);
+        removeNextScroll = bundle.getBoolean(REMOVE_NEXT_SCROLL);
 
         if (bundle.contains(RUNE_LABELS)) {
             scrollRuneLabels = new LinkedHashMap<>();

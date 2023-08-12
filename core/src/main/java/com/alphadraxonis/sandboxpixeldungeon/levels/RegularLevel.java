@@ -29,6 +29,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.SacrificialFire;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.ChampionEnemy;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GoldenMimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
@@ -236,9 +237,14 @@ public abstract class RegularLevel extends Level {
 	@Override
 	protected void createMobs() {
 
-		for (Mob m : levelScheme.mobsToSpawn) {
+		List<Mob> sortedMobsToSpawn = new ArrayList<>(levelScheme.mobsToSpawn);
+		Collections.sort(sortedMobsToSpawn, (m1, m2) -> m1.pos - m2.pos);
+
+		for (Mob m : sortedMobsToSpawn) {
 			if (m instanceof QuestNPC) {
 				((QuestNPC<?>) m).place(this,rooms);
+			} else if (m.buffs(ChampionEnemy.class).isEmpty()) {
+				ChampionEnemy.rollForChampion(m);
 			}
 
 			if (m.pos <= 0) {
@@ -657,6 +663,7 @@ public abstract class RegularLevel extends Level {
 
 	protected int randomDropCell( Class<?extends Room> roomType ) {
 		int tries = 100;
+		int lengthHalf = tries / 2;
 		while (tries-- > 0) {
 			Room room = randomRoom( roomType );
 			if (room == null){
@@ -666,9 +673,8 @@ public abstract class RegularLevel extends Level {
 				int pos = pointToCell(room.random());
 				if (passable[pos] && !solid[pos]
 						&& pos != exit()
-						&& heaps.get(pos) == null
 						&& room.canPlaceItem(cellToPoint(pos), this)
-						&& findMob(pos) == null) {
+						&& (tries <= lengthHalf || (heaps.get(pos) == null && findMob(pos) == null))) {
 
 					Trap t = traps.get(pos);
 

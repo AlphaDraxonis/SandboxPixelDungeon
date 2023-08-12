@@ -559,8 +559,7 @@ public class CustomLevel extends Level {
             if (passable[pos] && !solid[pos] && canSpawnThings[pos]
                     && map[pos] != ENTRANCE
                     && map[pos] != EXIT
-                    && heaps.get(pos) == null
-                    && (tries <= lengthHalf || findMob(pos) == null)) {
+                    && (tries <= lengthHalf || (heaps.get(pos) == null && findMob(pos) == null))) {
 
                 Trap t = traps.get(pos);
 
