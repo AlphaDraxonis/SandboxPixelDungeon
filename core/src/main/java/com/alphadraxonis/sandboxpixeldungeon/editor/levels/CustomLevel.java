@@ -866,6 +866,10 @@ public class CustomLevel extends Level {
         }
         level.transitions.clear();
         level.transitions = nTrans;
+
+        level.customWalls.clear();
+        level.customTiles.clear();
+        level.blobs.clear();
     }
 
     private static void changeMapWidth(Level level, int newWidth, int addLeft) {
@@ -907,7 +911,7 @@ public class CustomLevel extends Level {
             int nPos = h.pos + add + diffW * (h.pos / levelWidth);
             if (h.pos >= 0 && h.pos < newLength && level.insideMap(h.pos)
                     && nPos / levelWidth == h.pos / newWidth) {
-                nHeaps.put(h.pos, h);
+                nHeaps.put(nPos, h);
                 h.pos = nPos;
             }
         }
@@ -919,7 +923,7 @@ public class CustomLevel extends Level {
             int nPos = t.pos + add + diffW * (t.pos / levelWidth);
             if (t.pos >= 0 && t.pos < newLength && level.insideMap(t.pos)
                     && nPos / levelWidth == t.pos / newWidth) {
-                nTrap.put(t.pos, t);
+                nTrap.put(nPos, t);
                 t.pos = nPos;
             }
         }
@@ -931,7 +935,7 @@ public class CustomLevel extends Level {
             int nPos = s.pos + add + diffW * (s.pos / levelWidth);
             if (s.pos >= 0 && s.pos < newLength && level.insideMap(s.pos)
                     && nPos / levelWidth == s.pos / newWidth) {
-                nSign.put(s.pos, s);
+                nSign.put(nPos, s);
                 s.pos = nPos;
             }
         }
@@ -944,7 +948,7 @@ public class CustomLevel extends Level {
                 int nPos = p.pos + add + diffW * (p.pos / levelWidth);
                 if (p.pos >= 0 && p.pos < newLength && level.insideMap(p.pos)
                         && nPos / levelWidth == p.pos / newWidth) {
-                    nPlant.put(p.pos, p);
+                    nPlant.put(nPos, p);
                     p.pos = nPos;
                 }
             }
@@ -987,6 +991,10 @@ public class CustomLevel extends Level {
         }
         level.transitions.clear();
         level.transitions = nTrans;
+
+        level.customWalls.clear();
+        level.customTiles.clear();
+        level.blobs.clear();
     }
 
     //add must be multiplied with width before!!

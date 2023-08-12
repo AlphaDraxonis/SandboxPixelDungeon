@@ -26,7 +26,9 @@ public class PlantItem extends EditorItem {
     private Plant plant;
 
 
-public PlantItem(){}
+    public PlantItem() {
+    }
+
     public PlantItem(Plant plant) {
         this.plant = plant;
     }
@@ -86,7 +88,7 @@ public PlantItem(){}
 
     @Override
     public void place(int cell) {
-        if (validPlacement(cell, EditorScene.customLevel()))
+        if (!invalidPlacement(cell, EditorScene.customLevel()))
             Undo.addActionPart(place(plant().getCopy(), cell));
     }
 
@@ -99,8 +101,8 @@ public PlantItem(){}
         return plant;
     }
 
-    public static boolean validPlacement(int cell, CustomLevel level) {
-        return level.passable[cell] && level.insideMap(cell);
+    public static boolean invalidPlacement(int cell, CustomLevel level) {
+        return !level.passable[cell] || !level.insideMap(cell);
 //        return level.map[cell] == Terrain.EMPTY || TileItem.isGrassTerrainCell(level.map[cell]);
     }
 
@@ -130,10 +132,11 @@ public PlantItem(){}
     }
 
     private static final String PLANT = "plant";
+
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
-        bundle.put(PLANT,plant);
+        bundle.put(PLANT, plant);
     }
 
     @Override

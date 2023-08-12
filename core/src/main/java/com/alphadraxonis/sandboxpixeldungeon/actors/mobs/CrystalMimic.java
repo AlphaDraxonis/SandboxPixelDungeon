@@ -31,6 +31,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Dread;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Haste;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Terror;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
@@ -60,7 +61,7 @@ public class CrystalMimic extends Mimic {
 
     @Override
     public String name() {
-        if (alignment == Alignment.NEUTRAL) {
+        if (alignment == Alignment.NEUTRAL && !CustomDungeon.isEditing()) {
             return Messages.get(Heap.class, "crystal_chest");
         } else {
             return super.name();

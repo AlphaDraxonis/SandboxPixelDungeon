@@ -76,10 +76,12 @@ public class WndChangeMapSize extends Window {
         cancel.setRect(0, posY, w, GeneralTab.BUTTON_HEIGHT);
         save.setRect(cancel.right() + GeneralTab.GAP, posY, w * 2f - GeneralTab.GAP, GeneralTab.BUTTON_HEIGHT);
 
+        content.setSize(width, cancel.bottom());
+
         scrollPane = new ScrollPane(content);
         add(scrollPane);
 
-        int h = (int) Math.min((PixelScene.uiCamera.height * 0.8f), Math.ceil(title.height() + 10 + save.bottom()));
+        int h = (int) Math.min((PixelScene.uiCamera.height * 0.9f), Math.ceil(title.height() + 10 + save.bottom()));
         resize(width, h);
         scrollPane.setRect(0, title.bottom() + 5, width, h - title.bottom() - 5);
     }

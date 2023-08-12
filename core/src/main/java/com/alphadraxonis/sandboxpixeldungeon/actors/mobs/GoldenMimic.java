@@ -24,6 +24,7 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.items.EquipableItem;
@@ -48,7 +49,7 @@ public class GoldenMimic extends Mimic {
 
 	@Override
 	public String name() {
-		if (alignment == Alignment.NEUTRAL){
+		if (alignment == Alignment.NEUTRAL && !CustomDungeon.isEditing()){
 			return Messages.get(Heap.class, "locked_chest");
 		} else {
 			return super.name();

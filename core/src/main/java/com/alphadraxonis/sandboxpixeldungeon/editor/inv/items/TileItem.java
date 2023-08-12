@@ -11,6 +11,7 @@ import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.SECRET_TRAP;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.TRAP;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.UNLOCKED_EXIT;
 
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.Sign;
@@ -34,6 +35,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.plants.Plant;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
@@ -264,6 +266,30 @@ public class TileItem extends EditorItem {
                     ActionPart p = new HeapActionPart.Remove(h);
                     addActionPart(p);
                     p.redo();
+                }
+            }
+
+            if (PlantItem.invalidPlacement(cell, level) || terrainType != Terrain.GRASS) {
+                Plant p = level.plants.get(cell);
+                if (p != null) {
+                    ActionPart part = new ActionPart() {
+                        @Override
+                        public void undo() {
+                            Dungeon.level.plants.put(p.pos, p);
+                        }
+
+                        @Override
+                        public void redo() {
+                            Dungeon.level.plants.remove(p.pos);
+                        }
+
+                        @Override
+                        public boolean hasContent() {
+                            return true;
+                        }
+                    };
+                    addActionPart(part);
+                    part.redo();
                 }
             }
 

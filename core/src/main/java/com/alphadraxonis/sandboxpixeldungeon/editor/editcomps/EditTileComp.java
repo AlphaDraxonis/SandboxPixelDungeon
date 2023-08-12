@@ -64,7 +64,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                         EditorScene.show(new WndTextInput(
                                 Messages.get(EditTileComp.class, "edit_sign_title"),
                                 Messages.get(EditTileComp.class, "edit_sign_body"),
-                                (oldSign == null || oldSign.text == null ? "" : oldSign.text), 100,
+                                (oldSign == null || oldSign.text == null ? "" : oldSign.text), 30000,
                                 true,Messages.get( WndItemDistribution.class,"save"),
                                 Messages.get(WndNewFloor.class, "cancel_label")) {
                             @Override
