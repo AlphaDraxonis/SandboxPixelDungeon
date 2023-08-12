@@ -55,7 +55,7 @@ public abstract class TransitionEditPart extends Component {
         };
         add(destLevel);
 
-        destCell = new DestCellSpinner(new ArrayList<>());
+        destCell = new DestCellSpinner(new ArrayList<>(), -1);
         destCell.addChangeListener(() -> transition.destCell = (int) destCell.getValue());
         destCell.setValue(transition.destCell);
         add(destCell);
@@ -84,16 +84,17 @@ public abstract class TransitionEditPart extends Component {
         transition.destLevel = destL;
         if (destL == null || destL.isEmpty() || destL.equals(Level.SURFACE) || Dungeon.customDungeon.getFloor(destL) == null) {
             destCell.enable(false);
-            destCell.setData(new ArrayList<>(2), null);
+            destCell.setData(new ArrayList<>(2), -1, null);
         } else {
             destCell.enable(true);
 //            List<Integer> data = new ArrayList<>(Dungeon.customDungeon.getFloor(destL).entranceCells);
 //            data.addAll(Dungeon.customDungeon.getFloor(destL).exitCells);
 //            destCell.setData(data);
+            LevelScheme levelScheme = Dungeon.customDungeon.getFloor(destL);
             if (showEntrances) {
-                destCell.setData(Dungeon.customDungeon.getFloor(destL).entranceCells, transition.destCell);
+                destCell.setData(levelScheme.entranceCells, levelScheme.getSizeIfUnloaded().x, transition.destCell);
             } else
-                destCell.setData(Dungeon.customDungeon.getFloor(destL).exitCells, transition.destCell);
+                destCell.setData(levelScheme.exitCells, levelScheme.getSizeIfUnloaded().x, transition.destCell);
         }
         EditorScene.updateTransitionIndicator(transition);
     }

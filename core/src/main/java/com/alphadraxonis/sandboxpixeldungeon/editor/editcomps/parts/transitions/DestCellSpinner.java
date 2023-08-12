@@ -13,23 +13,25 @@ import java.util.List;
 
 class DestCellSpinner extends Spinner {
 
-    public DestCellSpinner(List<Integer> cells) {
-        super(new DestCellModel(cells), Messages.get(TransitionEditPart.class, "dest_cell"), 8);
+    public DestCellSpinner(List<Integer> cells, int levelWidth) {
+        super(new DestCellModel(cells, levelWidth), Messages.get(TransitionEditPart.class, "dest_cell"), 8);
         setButtonWidth(13);
     }
 
-    public void setData(List<Integer> cells, Integer select) {
-        ((DestCellModel) getModel()).setData(cells, select);
+    public void setData(List<Integer> cells, int levelWidth, Integer select) {
+        ((DestCellModel) getModel()).setData(cells, levelWidth, select);
     }
 
     private static class DestCellModel extends SpinnerTextModel {
+        private int levelWidth;
 
-        public DestCellModel(List<Integer> cells) {
+        public DestCellModel(List<Integer> cells, int levelWidth) {
             super(true, new Object[]{NONE});
-            setData(cells, null);
+            setData(cells, levelWidth, null);
         }
 
-        public void setData(List<Integer> cells, Integer select) {
+        public void setData(List<Integer> cells, int levelWidth, Integer select) {
+            if (levelWidth != -1) this.levelWidth = levelWidth;
             cells = new ArrayList<>(cells);
             if (cells.isEmpty()) cells.add(NONE);
             Object[] data = cells.toArray();
@@ -47,7 +49,8 @@ class DestCellSpinner extends Spinner {
             int val = (int) value;
             if (val == NONE) return Messages.get(DestCellSpinner.class, "none");
             if (val == DEFAULT) return Messages.get(DestCellSpinner.class, "default");
-            return EditorUtilies.cellToString(val);
+            if (levelWidth <= 0) return "ERROR";
+            return EditorUtilies.cellToString(val, levelWidth);
         }
     }
 }

@@ -33,8 +33,12 @@ public final class EditorUtilies {
     }
 
     public static String cellToString(int cell, Level level) {
-        int x = cell % level.width() + 1;
-        int y = cell / level.width() + 1;
+        return cellToString(cell, level.width());
+    }
+
+    public static String cellToString(int cell, int levelWidth) {
+        int x = cell % levelWidth + 1;
+        int y = cell / levelWidth + 1;
         return "( " + x + " | " + y + " )";
     }
 

@@ -34,6 +34,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.ShopRoom;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
@@ -632,6 +633,13 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         spawnMobs = bundle.getBoolean(SPAWN_MOBS);
         spawnItems = bundle.getBoolean(SPAWN_ITEMS);
         builder = bundle.getClass(BUILDER);
+    }
+
+    public Point getSizeIfUnloaded(){
+        loadLevel();
+        Point ret = new Point(level.width(),level.height());
+        unloadLevel();
+        return ret;
     }
 
     public Level loadLevel() {
