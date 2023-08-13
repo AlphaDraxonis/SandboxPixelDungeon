@@ -131,15 +131,13 @@ public class WndTitledMessage extends Window {
         int maxHeight = (int) (PixelScene.uiCamera.height * 0.9);
 
         needsScrollPane = height > maxHeight;
-        if (needsScrollPane) {
-            height = maxHeight;
-            resize(newWidth, height + GAP);
-        } else resize(newWidth, height + 3 * GAP);
+        if (needsScrollPane) height = maxHeight;
+        resize(newWidth, height + (titlebar == null ? 0 : GAP * 2));
         body.setPos(0, 0);
         setPosAfterTitleBar(sp);
         if (needsScrollPane)
-            sp.setSize(newWidth, height - (titlebar == null ? 0 : titlebar.bottom()) - 2.5f * GAP);
-        else sp.setSize(newWidth, body.height() + GAP);
+            sp.setSize(newWidth, height - (titlebar == null ? 0 : titlebar.bottom()) - 2.5f * GAP * 0);
+        else sp.setSize(newWidth, body.height());
         sp.scrollToCurrentView();
 
         bringToFront(titlebar);
@@ -155,7 +153,7 @@ public class WndTitledMessage extends Window {
     }
 
     private void setPosAfterTitleBar(Component comp) {
-        comp.setPos(0, (titlebar == null ? GAP : titlebar.bottom() + 2 * GAP));
+        comp.setPos(0, (titlebar == null ? 0 : titlebar.bottom() + 2 * GAP));
     }
 
     //Body factory seems messy, but is the only way for custom bodies to receive input events //lol maybe givePointerPriority() would work too??
@@ -193,7 +191,7 @@ public class WndTitledMessage extends Window {
         protected void layout() {
             if (c != null) {
                 c.setRect(0, y + 1, width, c.height() > 0 ? c.height() : WndMenuEditor.BTN_HEIGHT);
-                height = c.bottom() - y - 1;
+                height = c.bottom() - y + GAP;
             }
         }
 
