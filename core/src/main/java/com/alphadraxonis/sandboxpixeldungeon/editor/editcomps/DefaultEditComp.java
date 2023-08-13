@@ -12,6 +12,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.PlantAction
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TileModify;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TrapActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.AdvancedListPaneItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
@@ -163,12 +164,29 @@ public abstract class DefaultEditComp<T> extends Component {
         w.add(sp);
 
         Runnable r = () -> {
+
             float ch = content.height();
-            int maxHeight = (int) (PixelScene.uiCamera.height * 0.9);
-            int hei = (int) Math.ceil(ch > maxHeight ? maxHeight : ch);
-            w.resize((int) Math.ceil(newWidth), hei);
-            sp.setSize((int) Math.ceil(newWidth), hei);
+            float maxHeightNoOffset = PixelScene.uiCamera.height * 0.9f - 10;
+            int offset = EditorUtilies.getMaxWindowOffsetYForVisibleToolbar();
+            if (ch > maxHeightNoOffset) {
+                if (ch > maxHeightNoOffset + offset) ch = maxHeightNoOffset + offset;
+                else offset = (int) Math.ceil(ch - maxHeightNoOffset);
+            }
+            offset = Math.max(offset, 10);
+
+
+            w.offset(w.getOffset().x, -offset);
+            w.resize((int) Math.ceil(newWidth), (int) Math.ceil(ch));
+            sp.setSize((int) Math.ceil(newWidth), (int) Math.ceil(ch));
             sp.scrollToCurrentView();
+
+
+//            float ch = content.height();
+//            int maxHeight = (int) (PixelScene.uiCamera.height * 0.9);
+//            int hei = (int) Math.ceil(ch > maxHeight ? maxHeight : ch);
+//            w.resize((int) Math.ceil(newWidth), hei);
+//            sp.setSize((int) Math.ceil(newWidth), hei);
+//            sp.scrollToCurrentView();
         };
         content.setOnUpdate(r);
         r.run();

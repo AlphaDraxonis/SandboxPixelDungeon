@@ -8,6 +8,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.HeapActionP
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TileModify;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.TrapActionPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
@@ -186,8 +187,14 @@ public class EditCompWindowTabbed extends WndTabbed {
         for (Wrapper wrapper : comps.values()) {
             h = Math.max(h, wrapper.body.getPreferredHeight() + 1);
         }
-        h = Math.min(h, PixelScene.uiCamera.height * 0.8f - tabHeight());
-
+        float maxHeightNoOffset = PixelScene.uiCamera.height * 0.9f - tabHeight()-10;
+        int offset = EditorUtilies.getMaxWindowOffsetYForVisibleToolbar();
+        if (h > maxHeightNoOffset) {
+            if (h > maxHeightNoOffset + offset) h = maxHeightNoOffset + offset;
+            else offset = (int) Math.ceil(h - maxHeightNoOffset);
+        }
+        offset = Math.max(offset, 10);
+        offset(xOffset, -offset);
         resize(width, (int) Math.ceil(h));
     }
 

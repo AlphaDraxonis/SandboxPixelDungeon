@@ -11,6 +11,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.PlantItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TrapItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.CategoryScroller;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
@@ -42,7 +43,7 @@ import java.util.Map;
 public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
     private final int WIDTH = Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9));
-    private final int HEIGHT = (int) (PixelScene.uiCamera.height * 0.63);
+    private final int HEIGHT = (int) (PixelScene.uiCamera.height * 0.9);
 
 
     //only one bag window can appear at a time
@@ -79,7 +80,8 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
         this.selector = selector;
 
-        resize(WIDTH, HEIGHT + (addTabs ? 0 : 50));
+        offset(0, EditorUtilies.getMaxWindowOffsetYForVisibleToolbar());
+        resize(WIDTH, HEIGHT - (addTabs ? 50 : 0) - yOffset);
 
         body = createBody(bag);
         add(body);

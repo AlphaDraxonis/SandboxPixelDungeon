@@ -9,6 +9,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
@@ -116,6 +117,7 @@ public abstract class EditorItem extends Item {
             return Messages.get(EditorItem.class, "nothing_desc");
         }
     }
+
     public final static EditorItem REMOVER_ITEM = new EditorItem() {
 
         @Override
@@ -152,7 +154,8 @@ public abstract class EditorItem extends Item {
             if (part == null) part = ItemItem.remove(cell, level);
             if (part == null) part = PlantItem.remove(cell, level);
             if (part == null) part = TrapItem.remove(level.traps.get(cell));
-            if (part == null) part = TileItem.place(cell, Terrain.EMPTY);
+            if (part == null)
+                part = TileItem.place(cell, level.feeling == Level.Feeling.CHASM ? Terrain.CHASM : Terrain.EMPTY);
             Undo.addActionPart(part);
         }
 

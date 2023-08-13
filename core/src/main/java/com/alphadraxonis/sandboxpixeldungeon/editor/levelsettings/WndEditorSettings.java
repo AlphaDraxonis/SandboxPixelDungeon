@@ -7,6 +7,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items.ItemTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.mobs.EnemyTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.LevelGenComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTabbed;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
@@ -26,7 +27,7 @@ public class WndEditorSettings extends WndTabbed {
     }
 
     public static int calclulateHeight() {
-        return (int) (PixelScene.uiCamera.height * 0.63);
+        return (int) (PixelScene.uiCamera.height * 0.9);
     }
 
     public static final int ITEM_HEIGHT = 18;
@@ -44,12 +45,8 @@ public class WndEditorSettings extends WndTabbed {
 
         Undo.startAction();
 
-//        int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
-//        int height = PixelScene.landscape() ? HEIGHT_L : HEIGHT_P;
-        int width = calclulateWidth();
-        int height = calclulateHeight();
-
-        resize(width, height);
+        offset(0, EditorUtilies.getMaxWindowOffsetYForVisibleToolbar());
+        resize(calclulateWidth(), calclulateHeight() - 50 - yOffset);
 
         ownTabs = new TabComp[]{
                 enemyTab = new EnemyTab(),
@@ -81,6 +78,7 @@ public class WndEditorSettings extends WndTabbed {
     @Override
     public void offset(int xOffset, int yOffset) {
         super.offset(xOffset, yOffset);
+        if(ownTabs==null)return;
         for (TabComp tab : ownTabs) {
             tab.layout();
         }
