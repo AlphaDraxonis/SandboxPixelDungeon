@@ -36,14 +36,14 @@ public class WndChangeRegion extends Window {
                     new AssetCheckbox(Document.INTROS.pageTitle("City"), LevelScheme.REGION_CITY, CAT_REGION),
                     new AssetCheckbox(Document.INTROS.pageTitle("Halls"), LevelScheme.REGION_HALLS, CAT_REGION)
             }, {
-            new AssetCheckbox(Messages.get(WndChangeRegion.class,"same"), 0, CAT_WATER),
+            new AssetCheckbox(Messages.get(WndChangeRegion.class, "same"), 0, CAT_WATER),
             new AssetCheckbox(Document.INTROS.pageTitle("Sewers"), LevelScheme.REGION_SEWERS, CAT_WATER),
             new AssetCheckbox(Document.INTROS.pageTitle("Prison"), LevelScheme.REGION_PRISON, CAT_WATER),
             new AssetCheckbox(Document.INTROS.pageTitle("Caves"), LevelScheme.REGION_CAVES, CAT_WATER),
             new AssetCheckbox(Document.INTROS.pageTitle("City"), LevelScheme.REGION_CITY, CAT_WATER),
             new AssetCheckbox(Document.INTROS.pageTitle("Halls"), LevelScheme.REGION_HALLS, CAT_WATER)
     }, {
-            new AssetCheckbox(Messages.get(WndChangeRegion.class,"same"), 0, CAT_MUSIC),
+            new AssetCheckbox(Messages.get(WndChangeRegion.class, "same"), 0, CAT_MUSIC),
             new AssetCheckbox(Document.INTROS.pageTitle("Sewers"), LevelScheme.REGION_SEWERS, CAT_MUSIC),
             new AssetCheckbox(Document.INTROS.pageTitle("Prison"), LevelScheme.REGION_PRISON, CAT_MUSIC),
             new AssetCheckbox(Document.INTROS.pageTitle("Caves"), LevelScheme.REGION_CAVES, CAT_MUSIC),
@@ -55,7 +55,7 @@ public class WndChangeRegion extends Window {
     public WndChangeRegion() {
         super();
 
-        title = WndTitledMessage.createTitleNoIcon(Messages.titleCase(Messages.get(GeneralTab.class,"region")));
+        title = WndTitledMessage.createTitleNoIcon(Messages.titleCase(Messages.get(GeneralTab.class, "region")));
         add(title);
 
 
@@ -67,7 +67,7 @@ public class WndChangeRegion extends Window {
                 f.getMusicValue()
         };
 
-        save = new RedButton(Messages.get(WndChangeRegion.class,"close")) {
+        save = new RedButton(Messages.get(WndChangeRegion.class, "close")) {
             @Override
             protected void onClick() {
                 int[] newValues = oldValues.clone();
@@ -82,14 +82,14 @@ public class WndChangeRegion extends Window {
                         f.setRegion(newValues[CAT_REGION]);
                         f.setWaterTexture(newValues[CAT_WATER]);
                         f.setMusic(newValues[CAT_MUSIC]);
-                        Game.switchScene(EditorScene.class);
+                        if (i != newValues.length - 1) Game.switchScene(EditorScene.class);
                         return;
                     }
                 }
                 hide();
             }
         };
-        cancel = new RedButton(Messages.get(WndChangeRegion.class,"cancel")) {
+        cancel = new RedButton(Messages.get(WndChangeRegion.class, "cancel")) {
             @Override
             protected void onClick() {
                 hide();
@@ -101,9 +101,9 @@ public class WndChangeRegion extends Window {
         sp = new ScrollPane(wrapper = new Component());
 
         catTitles = new RenderedTextBlock[]{
-                PixelScene.renderTextBlock(Messages.get(WndChangeRegion.class,"region"), 9),
-                PixelScene.renderTextBlock(Messages.get(WndChangeRegion.class,"water"), 9),
-                PixelScene.renderTextBlock(Messages.get(WndChangeRegion.class,"music"), 9)
+                PixelScene.renderTextBlock(Messages.get(WndChangeRegion.class, "region"), 9),
+                PixelScene.renderTextBlock(Messages.get(WndChangeRegion.class, "water"), 9),
+                PixelScene.renderTextBlock(Messages.get(WndChangeRegion.class, "music"), 9)
         };
         for (RenderedTextBlock t : catTitles) {
             t.hardlight(Window.TITLE_COLOR);

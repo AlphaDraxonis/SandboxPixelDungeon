@@ -486,29 +486,13 @@ public class CustomLevel extends Level {
     @Override
     protected boolean build() {
 
-
-//        setSize(85, 85);
-//
-////        for (int i = 0; i < terrains.length; i++) {
-////            map[i] = terrains[i];
-////        }
-//
-//        int add = 80 / 2 + 80 / 2 * 85;
-//        increaseArrayForMapSize(terrains, map, add, 5, 85);
-
-
-
-//        for (int i = 0; i < terrains.length; i++) {
-//            map[i] = terrains[i];
-//        }
-
-        setSize(15, 15);
-        int[] newTerrain = new int[5*15];
+        int w = 25, h = 25;
+        final int oldW = 5, oldH = 5;
+        setSize(w, h);
+        int[] newTerrain = new int[oldH * w];
         Arrays.fill(newTerrain, WALL);
-        changeArrayForMapSizeHeight(terrains, newTerrain, 5*5, 5, 5);
-        changeArrayForMapSizeWidth(newTerrain, map, 5, 5, 15);
-
-
+        changeArrayForMapSizeHeight(terrains, newTerrain, (h - oldH) / 2 * oldW, oldW, oldW);
+        changeArrayForMapSizeWidth(newTerrain, map, (w - oldW) / 2, oldW, w);
         updateTransitionCells();
 
         return true;

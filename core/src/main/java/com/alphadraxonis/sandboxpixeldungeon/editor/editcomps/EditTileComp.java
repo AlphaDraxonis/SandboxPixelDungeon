@@ -53,14 +53,15 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 }
 
             } else if (item.terrainType() == Terrain.SIGN) {
-                Sign sign = EditorScene.customLevel().signs.get(item.cell());
-                final Sign oldSign;
-                if (sign != null) oldSign = sign.getCopy();
-                else oldSign = null;
+
                 editSignText = new RedButton(Messages.get(EditTileComp.class, "edit_sign_title"), 9) {
 
                     @Override
                     protected void onClick() {
+                        Sign sign = EditorScene.customLevel().signs.get(item.cell());
+                        final Sign oldSign;
+                        if (sign != null) oldSign = sign.getCopy();
+                        else oldSign = null;
                         EditorScene.show(new WndTextInput(
                                 Messages.get(EditTileComp.class, "edit_sign_title"),
                                 Messages.get(EditTileComp.class, "edit_sign_body"),

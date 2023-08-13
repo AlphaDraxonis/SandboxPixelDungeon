@@ -199,8 +199,8 @@ public class WndItemDistribution extends Window {
 
         private void layout2() {
             remove.setRect(x + width - 16, y + (height - 16) * 0.5f, 16, 16);
-            hotArea.width -= remove.width() + 2;
             super.layout();
+            hotArea.width -= remove.width() + 2;
         }
 
         @Override
