@@ -635,9 +635,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         builder = bundle.getClass(BUILDER);
     }
 
-    public Point getSizeIfUnloaded(){
+    public Point getSizeIfUnloaded() {
         loadLevel();
-        Point ret = new Point(level.width(),level.height());
+        Point ret = new Point(level.width(), level.height());
         unloadLevel();
         return ret;
     }

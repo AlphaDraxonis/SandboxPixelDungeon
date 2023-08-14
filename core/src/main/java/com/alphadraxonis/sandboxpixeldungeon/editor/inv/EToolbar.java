@@ -505,7 +505,7 @@ public class EToolbar extends Component {
 
         @Override
         public String prompt() {
-            return Messages.get(Toolbar.class, "examine_prompt");
+            return Messages.get(EToolbar.class, "examine_prompt");
         }
     };
 

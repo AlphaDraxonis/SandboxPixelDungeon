@@ -31,7 +31,7 @@ public class EditCompWindow extends Window {
             throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
         content.advancedListPaneItem = advancedListPaneItem;
 
-        float newWidth = Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.8f)) - 20;
+        float newWidth = Math.min(WndTitledMessage.WIDTH_MAX - 5, (int) (PixelScene.uiCamera.width * 0.82f));
 
         content.setRect(0, 0, newWidth, -1);
         sp = new ScrollPane(content);
