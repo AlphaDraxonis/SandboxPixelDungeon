@@ -20,7 +20,8 @@ public class MobItem extends EditorItem {
 
     private Mob mob;
 
-    public MobItem(){}
+    public MobItem() {
+    }
 
     public MobItem(Mob mob) {
         this.mob = mob;
@@ -84,7 +85,7 @@ public class MobItem extends EditorItem {
     }
 
     public static boolean invalidPlacement(Mob mob, CustomLevel level, int cell) {
-        return level.solid[cell] || level.pit[cell] || !level.insideMap(cell)
+        return level.solid[cell] || (level.pit[cell] && !mob.flying) || !level.insideMap(cell)
                 || (Char.hasProp(mob, Char.Property.LARGE) && !level.openSpace[cell])
                 || (mob instanceof Piranha && !level.water[cell])
                 ;//&& level.map[cell] != Terrain.DOOR;//TODO make placement on doors possible FIXME WICHTIG
@@ -113,10 +114,11 @@ public class MobItem extends EditorItem {
 
 
     private static final String MOB = "mob";
+
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
-        bundle.put(MOB,mob);
+        bundle.put(MOB, mob);
     }
 
     @Override

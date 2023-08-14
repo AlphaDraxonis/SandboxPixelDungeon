@@ -2,6 +2,8 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
@@ -107,9 +109,18 @@ public abstract class TransitionEditPart extends Component {
         } else {
             if (transition.destLevel.equals(Level.SURFACE))
                 transition.type = LevelTransition.Type.SURFACE;
-            else if (Dungeon.customDungeon.getFloor(transition.destLevel).getDepth() >= targetDepth)
+            else if (Dungeon.customDungeon.getFloor(transition.destLevel).getDepth() > targetDepth)
                 transition.type = LevelTransition.Type.REGULAR_EXIT;
-            else transition.type = LevelTransition.Type.REGULAR_ENTRANCE;
+            else if (Dungeon.customDungeon.getFloor(transition.destLevel).getDepth() < targetDepth)
+                transition.type = LevelTransition.Type.REGULAR_ENTRANCE;
+            else {
+                LevelScheme departLevel = Dungeon.customDungeon.getFloor(transition.departLevel);
+                if (departLevel != null && departLevel.getType() == CustomLevel.class) {
+                    if (TileItem.isExitTerrainCell(EditorScene.customLevel().map[transition.departCell]))
+                        transition.type = LevelTransition.Type.REGULAR_EXIT;
+                    else transition.type = LevelTransition.Type.REGULAR_ENTRANCE;
+                } else transition.type = LevelTransition.Type.REGULAR_EXIT;
+            }
         }
     }
 
