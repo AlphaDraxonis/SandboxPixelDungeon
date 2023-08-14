@@ -21,12 +21,15 @@ import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
+import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.ShopRoom;
+import com.alphadraxonis.sandboxpixeldungeon.plants.Plant;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -116,46 +119,56 @@ public class DungeonToJsonConverter {
             appendParam(b, "region", l.getRegion());//1 to 5   is value??!
             appendParam(b, "view_distance", f.viewDistance);
             appendMusic(b, f.getRegionValue());
-            appendArray(b, "map", f.map);
+            appendArrayReplace(b, "map", f.map, Terrain.INACTIVE_TRAP, Terrain.EMPTY);//ask quasi why this replacement is necessary
 
             appendArrayHead(b, "entrances");
             entranceCells = l.entranceCells;
-            for (int cell : entranceCells) {
+            Iterator<Integer> transitionCellIterator = entranceCells.listIterator();
+            while (transitionCellIterator.hasNext()) {
+                int cell = transitionCellIterator.next();
                 if (f.transitions.containsKey(cell)) {
-                    appendCoord(b, cell, width, height);
+                    appendCoord(b, cell, width);
+                    if (transitionCellIterator.hasNext()) b.append(',');
                 }
             }
             b.append("],\n");
 
             appendArrayHead(b, "exits");
             exitCells = l.exitCells;
-            for (int cell : exitCells) {
+            transitionCellIterator = exitCells.listIterator();
+            while (transitionCellIterator.hasNext()) {
+                int cell = transitionCellIterator.next();
                 if (f.transitions.containsKey(cell)) {
-                    appendCoord(b, cell, width, height);
+                    appendCoord(b, cell, width);
+                    if (transitionCellIterator.hasNext()) b.append(',');
                 }
             }
             b.append("],\n");
 
-            appendComplexArray(b, "items", f.heaps.valueList(), h -> h.peek() != null,
-                    obj -> appendItemValues(b, obj), h -> h.pos, width, height);
+            //Seeds cannot be added in custompd because they are not inside the items folder
+            appendComplexArray(b, "items", f.heaps.valueList(), h -> h.peek() != null && !(h.peek() instanceof Plant.Seed),
+                    obj -> appendItemValues(b, obj, width), null, 0);
 
             //TODO shuffle_items
 
             appendComplexArray(b, "mobs", f.mobs, m -> m != null,
-                    obj -> appendMobValues(b, obj), m -> m.pos, width, height);
+                    obj -> appendMobValues(b, obj), m -> m.pos, width);
 
             appendComplexArray(b, "open_traps", f.traps.values(), t -> t.visible && t.active,
-                    obj -> appendParamEnd(b, "type", obj.getClass().getSimpleName()), t -> t.pos, width, height);
+                    obj -> appendParamEnd(b, "type", obj.getClass().getSimpleName()), t -> t.pos, width);
 
             appendComplexArray(b, "hidden_traps", f.traps.values(), t -> !t.visible && t.active,
-                    obj -> appendParamEnd(b, "type", obj.getClass().getSimpleName()), t -> t.pos, width, height);
+                    obj -> appendParamEnd(b, "type", obj.getClass().getSimpleName()), t -> t.pos, width);
 
-            appendComplexArray(b, "disarmed_traps", f.traps.values(), t -> !t.active,
-                    obj -> appendParamEnd(b, "type", obj.getClass().getSimpleName()), t -> t.pos, width, height);
+            //disarmed traps cause custompd to crah because it assumes that customLevel==Dungeon.level while calling customLevel.build()
+//            appendComplexArray(b, "disarmed_traps", f.traps.values(), t -> !t.active,
+//                    obj -> appendParamEnd(b, "type", obj.getClass().getSimpleName()), t -> t.pos, width);
+
+            appendComplexArray(b, "plants", f.plants.values(), p -> p != null,
+                    obj -> appendParamEnd(b, "type", obj.getClass().getSimpleName()), p -> p.pos, width);
 
             removeLastChars(b, 2);
 
-            //TODO plants
 
             b.append("},");
 
@@ -193,9 +206,13 @@ public class DungeonToJsonConverter {
         }
         b.append("],\n");
 
-        appendParam(b, "chasm", l.getChasm());
+        String chasm = l.getChasm();
+        if (chasm == null || chasm.isEmpty()) chasm = l.getDefaultBelow();
+        appendParam(b, "chasm", chasm);
         if (l.getBoss() != LevelScheme.REGION_NONE) appendParam(b, "boss", true);
-        appendParam(b, "passage", l.getPassage());
+        String passage = l.getPassage();
+        if (passage == null || passage.isEmpty()) passage = l.getDefaultAbove();
+        appendParam(b, "passage", passage);
 //        appendParam(b, "locked", "false");//TODO
         //spawner_cooldown
         if (f == null) {
@@ -210,11 +227,12 @@ public class DungeonToJsonConverter {
         //TODO visibility
         //TODO trap_detection
         //TODO door_detection
-//        if (f == null && l.getFeeling() != Level.Feeling.NONE) //TODO why is this "unknown key"?
-//            appendParam(b, "feeling", l.getFeeling() == null ? "random" : l.getFeeling().toString().toLowerCase(Locale.ENGLISH));
+        if (f == null && l.getFeeling() != Level.Feeling.NONE && l.getFeeling() != null) //TODO why is this "unknown key"?
+            appendParam(b, "levelFeeling", l.getFeeling().toString().toLowerCase(Locale.ENGLISH));
 
-        appendComplexArray(b, "extra_items", l.itemsToSpawn, i -> i != null,
-                obj -> appendValueOneItem(b, obj, Heap.Type.HEAP));
+        //Seeds cannot be added in custompd because they are not inside the items folder
+        appendComplexArray(b, "extra_items", l.itemsToSpawn, i -> i != null && !(i instanceof Plant.Seed),
+                obj -> appendValueOneItem(b, obj, Heap.Type.HEAP, -1, 0));
 
         appendComplexArray(b, "extra_mobs", l.mobsToSpawn, m -> m != null,
                 obj -> appendMobValues(b, obj));
@@ -265,6 +283,18 @@ public class DungeonToJsonConverter {
         b.append("],\n");
     }
 
+    private static void appendArrayReplace(StringBuilder b, String name, int[] value, int oldValue, int newValue) {
+        appendArrayHead(b, name);
+        for (int i : value) {
+            if (i == oldValue) i = newValue;
+            b.append(i).append(", ");
+        }
+        if (value.length > 0) {
+            removeLastChars(b, 2);
+        }
+        b.append("],\n");
+    }
+
     private static void appendArray(StringBuilder b, String name, String[] value) {
         appendArrayHead(b, name);
         for (String i : value) {
@@ -277,14 +307,16 @@ public class DungeonToJsonConverter {
     }
 
     private static <T> void appendComplexArray(StringBuilder b, String name, Iterable<T> list, Predicate<T> validityCheck,
-                                               Consumer<T> appendObject, IntFunction<T> getPos, int width, int height) {
+                                               Consumer<T> appendObject, IntFunction<T> getPos, int width) {
         appendArrayHead(b, name);
         b.append("  ");
         for (T obj : list) {
             if (validityCheck.test(obj)) {
                 b.append("{");
-                appendCoordWithoutBrackets(b, getPos.get(obj), width, height);
-                b.append(",");
+                if (getPos != null) {
+                    appendCoordWithoutBrackets(b, getPos.get(obj), width);
+                    b.append(",");
+                }
                 appendObject.accept(obj);
                 b.append("},\n");
             }
@@ -328,36 +360,42 @@ public class DungeonToJsonConverter {
         b.append("\"").append(name).append("\": [],\n");
     }
 
-    private static void appendCoord(StringBuilder b, int cell, int width, int height) {
+    private static void appendCoord(StringBuilder b, int cell, int width) {
         b.append("{");
-        appendCoordWithoutBrackets(b, cell, width, height);
+        appendCoordWithoutBrackets(b, cell, width);
         b.append("}\n");
     }
 
-    private static void appendCoordWithoutBrackets(StringBuilder b, int cell, int width, int height) {
-        b.append("\"x\": ").append(cell % width).append(", \"y\": ").append(cell / height).append("\n");
+    private static void appendCoordWithoutBrackets(StringBuilder b, int cell, int width) {
+        b.append("\"x\": ").append(cell % width).append(", \"y\": ").append(cell / width).append("\n");
     }
 
     private static final int PACKAGE_NAME_LENGTH = "com.alphadraxonis.sandboxpixeldungeon.".length();
     private static final int PACKAGE_NAME_ITEMS_LENGTH = PACKAGE_NAME_LENGTH + "items.".length();
+    private static final int PACKAGE_NAME_SEEDS_LENGTH = PACKAGE_NAME_LENGTH + "plants.".length();
     private static final int PACKAGE_NAME_MOBS_LENGTH = PACKAGE_NAME_LENGTH + "actors.mobs.".length();
     private static final int PACKAGE_NAME_WEAPON_LENGTH = PACKAGE_NAME_ITEMS_LENGTH + "weapon.".length();
     private static final int PACKAGE_NAME_ARMOR_LENGTH = PACKAGE_NAME_ITEMS_LENGTH + "armor.".length();
 
-    private static void appendItemValues(StringBuilder b, Heap heap) {
+    private static void appendItemValues(StringBuilder b, Heap heap, int width) {
         boolean isFirst = true;
         for (Item i : heap.items) {
             if (!isFirst) b.append("},\n{");
-            if (i != null) appendValueOneItem(b, i, heap.type);
+            if (i != null) appendValueOneItem(b, i, heap.type, heap.pos, width);
             isFirst = false;
         }
     }
 
-    private static void appendValueOneItem(StringBuilder b, Item i, Heap.Type heapType) {
-        appendParam(b, "type", getShortenFullClassName(i, PACKAGE_NAME_ITEMS_LENGTH));
+    private static void appendValueOneItem(StringBuilder b, Item i, Heap.Type heapType, int pos, int width) {
+        appendParam(b, "type", getShortenFullClassName(i,
+                (i instanceof Plant.Seed ? PACKAGE_NAME_SEEDS_LENGTH : PACKAGE_NAME_ITEMS_LENGTH)));
         //TODO category (then instead of type)
         //TODO ignore_deck (only with category)
         appendParam(b, "heap_type", heapType.toString());
+        if (pos >= 0) {
+            appendCoordWithoutBrackets(b, pos, width);
+            b.append(',');
+        }
         if (i.quantity() > 1) appendParam(b, "quantity", i.quantity());
         //TODO quantity_min and _max
         if (i.level() > 0) appendParam(b, "level", i.level());
@@ -396,6 +434,8 @@ public class DungeonToJsonConverter {
     }
 
     private static void appendDefaultDistribution(StringBuilder b) {
+
+        //TODO actual item distribution
 
         b.append("\"pos_distribution\": [\n" +
                 "        {\n" +
