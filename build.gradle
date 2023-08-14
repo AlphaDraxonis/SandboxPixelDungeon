@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.android.tools.build:gradle:8.1.0'
     }
 }
 
@@ -14,8 +14,8 @@ allprojects {
         appName = 'Sandbox Pixel Dungeon'
         appPackageName = 'com.alphadraxonis.sandboxpd'
 
-        appVersionCode = 744
-        appVersionName = '2.1.4-0.7'
+        appVersionCode = 745
+        appVersionName = '2.1.4-0.8'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
 

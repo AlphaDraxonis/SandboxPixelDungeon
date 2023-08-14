@@ -23,7 +23,6 @@ android {
 
     buildTypes {
         debug {
-
             applicationIdSuffix ".indev"
             versionNameSuffix '-INDEV'
             dependencies {
@@ -42,7 +41,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             dependencies {
-                releaseImplementation project(':services:updates:debugUpdates')
+                releaseImplementation project(':services:updates:githubUpdates')
                 releaseImplementation project(':services:news:debugNews')
             }
         }
