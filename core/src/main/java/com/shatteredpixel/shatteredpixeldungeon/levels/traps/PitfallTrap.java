@@ -55,7 +55,7 @@ public class PitfallTrap extends Trap {
 
 		DelayedPit p = Buff.append(Dungeon.hero, DelayedPit.class, 1);
 		p.activatedOn = Dungeon.levelName;
-		p.branch = Dungeon.branch;//always 0
+		p.branch = Dungeon.branch;
 		p.pos = pos;
 
 		for (int i : PathFinder.NEIGHBOURS9){

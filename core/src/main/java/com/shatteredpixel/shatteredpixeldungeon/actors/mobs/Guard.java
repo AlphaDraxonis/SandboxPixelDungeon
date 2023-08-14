@@ -106,11 +106,11 @@ public class Guard extends Mob {
 							Effects.Type.CHAIN,
 							new Callback() {
 						public void call() {
-							Actor.addDelayed(new Pushing(enemy, enemy.pos, newPosFinal, new Callback() {
+							Actor.add(new Pushing(enemy, enemy.pos, newPosFinal, new Callback() {
 								public void call() {
 									pullEnemy(enemy, newPosFinal);
 								}
-							}), -1);
+							}));
 							next();
 						}
 					}));
