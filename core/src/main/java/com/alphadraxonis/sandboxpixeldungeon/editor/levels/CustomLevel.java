@@ -882,8 +882,8 @@ public class CustomLevel extends Level {
         List<Mob> removeEntities = new ArrayList<>();
         for (Mob m : level.mobs) {
             int nPos = m.pos + add + diffW * (m.pos / levelWidth);
-            if (m.pos < 0 || m.pos >= newLength || !level.insideMap(m.pos)
-                    || nPos / levelWidth != m.pos / newWidth) removeEntities.add(m);
+            if (m.pos < 0 || m.pos >= newLength || !level.insideMap(nPos)
+                    || m.pos / levelWidth != nPos / newWidth) removeEntities.add(m);
             else m.pos = nPos;
         }
         level.mobs.removeAll(removeEntities);
@@ -893,8 +893,8 @@ public class CustomLevel extends Level {
         SparseArray<Heap> nHeaps = new SparseArray<>();
         for (Heap h : level.heaps.valueList()) {
             int nPos = h.pos + add + diffW * (h.pos / levelWidth);
-            if (h.pos >= 0 && h.pos < newLength && level.insideMap(h.pos)
-                    && nPos / levelWidth == h.pos / newWidth) {
+            if (h.pos >= 0 && h.pos < newLength && level.insideMap(nPos)
+                    && h.pos / levelWidth == nPos / newWidth) {
                 nHeaps.put(nPos, h);
                 h.pos = nPos;
             }
@@ -905,8 +905,8 @@ public class CustomLevel extends Level {
         SparseArray<Trap> nTrap = new SparseArray<>();
         for (Trap t : level.traps.valueList()) {
             int nPos = t.pos + add + diffW * (t.pos / levelWidth);
-            if (t.pos >= 0 && t.pos < newLength && level.insideMap(t.pos)
-                    && nPos / levelWidth == t.pos / newWidth) {
+            if (t.pos >= 0 && t.pos < newLength && level.insideMap(nPos)
+                    && t.pos / levelWidth == nPos / newWidth) {
                 nTrap.put(nPos, t);
                 t.pos = nPos;
             }
@@ -917,8 +917,8 @@ public class CustomLevel extends Level {
         SparseArray<Sign> nSign = new SparseArray<>();
         for (Sign s : level.signs.valueList()) {
             int nPos = s.pos + add + diffW * (s.pos / levelWidth);
-            if (s.pos >= 0 && s.pos < newLength && level.insideMap(s.pos)
-                    && nPos / levelWidth == s.pos / newWidth) {
+            if (s.pos >= 0 && s.pos < newLength && level.insideMap(nPos)
+                    && s.pos / levelWidth == nPos / newWidth) {
                 nSign.put(nPos, s);
                 s.pos = nPos;
             }
@@ -930,8 +930,8 @@ public class CustomLevel extends Level {
         for (Plant p : level.plants.valueList()) {
             if (p != null) {
                 int nPos = p.pos + add + diffW * (p.pos / levelWidth);
-                if (p.pos >= 0 && p.pos < newLength && level.insideMap(p.pos)
-                        && nPos / levelWidth == p.pos / newWidth) {
+                if (p.pos >= 0 && p.pos < newLength && level.insideMap(nPos)
+                        && p.pos / levelWidth == nPos / newWidth) {
                     nPlant.put(nPos, p);
                     p.pos = nPos;
                 }
@@ -948,7 +948,7 @@ public class CustomLevel extends Level {
         level.levelScheme.entranceCells.clear();
         for (int cell : cells) {
             int pos = cell + add + diffW * (cell / levelWidth);
-            if (pos >= 0 && pos < newLength && pos / levelWidth == cell / newWidth)
+            if (pos >= 0 && pos < newLength && cell / levelWidth == pos / newWidth)
                 level.levelScheme.entranceCells.add(pos);
         }
         Collections.sort(level.levelScheme.entranceCells);
@@ -957,7 +957,7 @@ public class CustomLevel extends Level {
         level.levelScheme.exitCells.clear();
         for (int cell : cells) {
             int pos = cell + add + diffW * (cell / levelWidth);
-            if (pos >= 0 && pos < newLength && pos / levelWidth == cell / newWidth)
+            if (pos >= 0 && pos < newLength && cell / levelWidth == pos / newWidth)
                 level.levelScheme.exitCells.add(pos);
         }
         Collections.sort(level.levelScheme.exitCells);
@@ -965,7 +965,7 @@ public class CustomLevel extends Level {
         Map<Integer, LevelTransition> nTrans = new HashMap<>();
         for (LevelTransition transition : level.transitions.values()) {
             int pos = transition.departCell + add + diffW * (transition.departCell / levelWidth);
-            if (pos >= 0 && pos < newLength && pos / levelWidth == transition.departCell / newWidth) {
+            if (pos >= 0 && pos < newLength && transition.departCell / levelWidth == pos / newWidth) {
                 transition.departCell = transition.centerCell = pos;
                 //TODO maybe not so good to set centerCell!!
                 nTrans.put(transition.departCell, transition);
