@@ -223,13 +223,26 @@ public class AboutScene extends PixelScene {
 
 		addLine(transifex.bottom() + 4, content);
 
+		//*** SandboxPD translation Credits ***
+
+		CreditsBlock myTranslation = new CreditsBlock(true,
+				Window.TITLE_COLOR,
+				null,
+				null,
+				"SandboxPD is only translated by the developer, but you can contact him to add more languages.","",""
+				);
+		myTranslation.setRect(transifex.left(), transifex.bottom()+8, colWidth, -1);
+		content.add(myTranslation);
+
+		addLine(myTranslation.bottom(), content);
+
 		//*** Freesound Credits ***
 
 		CreditsBlock freesound = new CreditsBlock(true,
 				Window.TITLE_COLOR,
 				null,
 				null,
-				"Shattered Pixel Dungeon uses the following sound samples from _freesound.org_:\n\n" +
+				"Sandbox Pixel Dungeon uses the following sound samples from _freesound.org_:\n\n" +
 
 				"Creative Commons Attribution License:\n" +
 				"_SFX ATTACK SWORD 001.wav_ by _JoelAudio_\n" +
@@ -254,7 +267,7 @@ public class AboutScene extends PixelScene {
 				"_Phone vibration.wav_ by _Breviceps_",
 				"www.freesound.org",
 				"https://www.freesound.org");
-		freesound.setRect(transifex.left()-10, transifex.bottom() + 8, colWidth+20, 0);
+		freesound.setRect(myTranslation.left()-10, myTranslation.bottom() + 4, colWidth+20, -1);
 		content.add(freesound);
 
 		content.setSize( fullWidth, freesound.bottom()+10 );
@@ -270,7 +283,7 @@ public class AboutScene extends PixelScene {
 
 		//fadeIn();
 	}
-	
+
 	@Override
 	protected void onBackPressed() {
 		SandboxPixelDungeon.switchScene(TitleScene.class);
