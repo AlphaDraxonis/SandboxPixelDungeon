@@ -307,7 +307,9 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
             @Override
             protected void onClick() {
-                EditorScene.show(new WndChallengeSettings(newLevelScheme));
+                Window w = new WndChallengeSettings(newLevelScheme);
+                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                else Game.scene().addToFront(w);
             }
         };
         content.add(challengeSettings);

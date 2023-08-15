@@ -638,14 +638,16 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     public Point getSizeIfUnloaded() {
         boolean unloadLevel = level == null;
         if (unloadLevel) loadLevel();
+        if (level == null) return new Point(-1, -1);//For non CustomLevels
         Point ret = new Point(level.width(), level.height());
         if (unloadLevel) unloadLevel();
         return ret;
     }
 
-    public Level loadLevel(){
+    public Level loadLevel() {
         return loadLevel(true);
     }
+
     public Level loadLevel(boolean removeInvalidTransitions) {
         if (type == CustomLevel.class) {
             try {

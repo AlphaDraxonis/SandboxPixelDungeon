@@ -123,7 +123,7 @@ public class Button extends Component {
             }
 
             @Override
-            protected void onConsumCancelingClick() {
+            public void onConsumeCancelingClick() {
                 Group w = Button.this.parent;
                 while (w != null && !(w instanceof Window)) {
                     w = w.parent;

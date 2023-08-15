@@ -60,7 +60,7 @@ public class PointerArea extends Visual implements Signal.Listener<PointerEvent>
 
         if (!isActive()) {
             if (hit && blockLevel == ALWAYS_BLOCK) {
-                if (event.type == PointerEvent.Type.UP) onConsumCancelingClick();
+                if (event.type == PointerEvent.Type.UP) onConsumeCancelingClick();
                 return true;
             }
             return false;
@@ -122,7 +122,7 @@ public class PointerArea extends Visual implements Signal.Listener<PointerEvent>
         }
     }
 
-    protected void onConsumCancelingClick() {//Cancel all buttons that might have been clicked!!
+    public void onConsumeCancelingClick() {//Cancels all buttons that might have been clicked!!
     }
 
     protected void onPointerDown(PointerEvent event) {

@@ -49,9 +49,11 @@ public class WndChallengeSettings extends Window {
         int h = (int) Math.min((PixelScene.uiCamera.height * 0.8f), Math.ceil(title.height() + posY + 6));
         resize(width, h);
         scrollPane.setRect(0, title.bottom() + 5, width, h - title.bottom() - 5);
-    }//FIXME strings wichtig wichtig wichtig tzz tzz tzz tzz tzz tzz tzz tzz
+    }
 
     private float addChallengeSettings(float posY, int challenge, Component content) {
+
+        //TODO labels don't fit on the buttons!
 
         String titleString;
         if (challenge == Challenges.DARKNESS) titleString = "darkness";
