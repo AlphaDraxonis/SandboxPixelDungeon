@@ -643,10 +643,13 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         return ret;
     }
 
-    public Level loadLevel() {
+    public Level loadLevel(){
+        return loadLevel(true);
+    }
+    public Level loadLevel(boolean removeInvalidTransitions) {
         if (type == CustomLevel.class) {
             try {
-                level = CustomDungeonSaves.loadLevel(name);
+                level = CustomDungeonSaves.loadLevel(name, removeInvalidTransitions);
                 level.levelScheme = this;
             } catch (IOException e) {
                 SandboxPixelDungeon.reportException(e);

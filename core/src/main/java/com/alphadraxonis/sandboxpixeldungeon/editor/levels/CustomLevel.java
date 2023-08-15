@@ -24,6 +24,9 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.Sign;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.BiPredicate;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.IntFunction;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
@@ -62,6 +65,7 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import com.watabou.utils.SparseArray;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,6 +73,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class CustomLevel extends Level {
 
@@ -743,8 +748,6 @@ public class CustomLevel extends Level {
         if (newHeight != level.height()) changeMapHeight(level, newHeight, addTop);
         if (newWidth != level.width()) changeMapWidth(level, newWidth, addLeft);
 
-
-//        transitions = level.transitions;//change
 //        customTiles = level.customTiles;//change
 //        customWalls = level.customWalls;//change
 
@@ -773,83 +776,10 @@ public class CustomLevel extends Level {
 
         level.discoverable = nDiscoverable;
 
-        List<Mob> removeEntities = new ArrayList<>();
-        for (Mob m : level.mobs) {
-//            m.pos = m.pos + add + m.pos / levelWidth * diffW;
-            m.pos = m.pos + add;
-            if (m.pos < 0 || m.pos >= newLength || !level.insideMap(m.pos)) removeEntities.add(m);
-        }
-        level.mobs.removeAll(removeEntities);
-        removeEntities.clear();
+        IntFunction<Integer> newPosition = old -> old + add;
+        BiPredicate<Integer, Integer> isPositionValid = (old, neu) -> neu >= 0 && neu < newLength && level.insideMap(neu);
 
-        //Cant avoid some copy paste because Shattered has really good code
-        SparseArray<Heap> nHeaps = new SparseArray<>();
-        for (Heap h : level.heaps.valueList()) {
-            h.pos = h.pos + add;
-            if (h.pos >= 0 && h.pos < newLength && level.insideMap(h.pos)) nHeaps.put(h.pos, h);
-        }
-        level.heaps.clear();
-        level.heaps.putAll(nHeaps);
-
-        SparseArray<Trap> nTrap = new SparseArray<>();
-        for (Trap t : level.traps.valueList()) {
-            t.pos = t.pos + add;
-            if (t.pos >= 0 && t.pos < newLength && level.insideMap(t.pos)) nTrap.put(t.pos, t);
-        }
-        level.traps.clear();
-        level.traps.putAll(nTrap);
-
-        SparseArray<Sign> nSign = new SparseArray<>();
-        for (Sign s : level.signs.valueList()) {
-            s.pos = s.pos + add;
-            if (s.pos >= 0 && s.pos < newLength && level.insideMap(s.pos)) nSign.put(s.pos, s);
-        }
-        level.signs.clear();
-        level.signs.putAll(nSign);
-
-        SparseArray<Plant> nPlant = new SparseArray<>();
-        for (Plant p : level.plants.valueList()) {
-            if (p != null) {
-                p.pos = p.pos + add;
-                if (p.pos >= 0 && p.pos < newLength && level.insideMap(p.pos)) nPlant.put(p.pos, p);
-            }
-        }
-        level.plants.clear();
-        level.plants.putAll(nPlant);
-
-        for (Blob b : level.blobs.values()) {
-            b.cur = new int[newLength];
-        }
-
-        List<Integer> cells = new ArrayList<>(level.levelScheme.entranceCells);
-        level.levelScheme.entranceCells.clear();
-        for (int cell : cells) {
-            int pos = cell + add;
-            if (pos >= 0 && pos < newLength) level.levelScheme.entranceCells.add(pos);
-        }
-        Collections.sort(level.levelScheme.entranceCells);
-
-        cells = new ArrayList<>(level.levelScheme.exitCells);
-        level.levelScheme.exitCells.clear();
-        for (int cell : cells) {
-            int pos = cell + add;
-            if (pos >= 0 && pos < newLength) level.levelScheme.exitCells.add(pos);
-        }
-        Collections.sort(level.levelScheme.exitCells);
-
-        Map<Integer, LevelTransition> nTrans = new HashMap<>();
-        for (LevelTransition transition : level.transitions.values()) {
-            int pos = transition.departCell + add;
-            if (pos >= 0 && pos < newLength) {
-                transition.departCell = transition.centerCell = pos;
-                //TODO maybe not so good to set centerCell!!
-                nTrans.put(transition.departCell, transition);
-                Point p = level.cellToPoint(transition.departCell);
-                transition.set(p.x, p.y, p.x, p.y);
-            }
-        }
-        level.transitions.clear();
-        level.transitions = nTrans;
+        recalculateNewPositions(newPosition, isPositionValid, level);
 
         level.customWalls.clear();
         level.customTiles.clear();
@@ -861,7 +791,6 @@ public class CustomLevel extends Level {
         int diffW = newWidth - level.width();
         int height = level.height();
         int newLength = height * newWidth;
-        int add = addLeft;
 
         int[] oldMap = level.map;
         boolean[] oldVisited = level.visited;
@@ -872,18 +801,29 @@ public class CustomLevel extends Level {
 
         boolean[] nDiscoverable = new boolean[newLength];
 
-        changeArrayForMapSizeWidth(oldMap, level.map, add, levelWidth, newWidth);
-        changeArrayForMapSizeWidth(oldVisited, level.visited, add, levelWidth, newWidth);
-        changeArrayForMapSizeWidth(oldMapped, level.mapped, add, levelWidth, newWidth);
-        changeArrayForMapSizeWidth(level.discoverable, nDiscoverable, add, levelWidth, newWidth);
+        changeArrayForMapSizeWidth(oldMap, level.map, addLeft, levelWidth, newWidth);
+        changeArrayForMapSizeWidth(oldVisited, level.visited, addLeft, levelWidth, newWidth);
+        changeArrayForMapSizeWidth(oldMapped, level.mapped, addLeft, levelWidth, newWidth);
+        changeArrayForMapSizeWidth(level.discoverable, nDiscoverable, addLeft, levelWidth, newWidth);
 
         level.discoverable = nDiscoverable;
 
+        IntFunction<Integer> newPosition = old -> old + addLeft + diffW * (old / levelWidth);
+        BiPredicate<Integer, Integer> isPositionValid = (old, neu) -> neu >= 0 && neu < newLength && level.insideMap(neu)
+                && old / levelWidth == neu / newWidth;
+
+        recalculateNewPositions(newPosition, isPositionValid, level);
+
+        level.customWalls.clear();
+        level.customTiles.clear();
+        level.blobs.clear();
+    }
+
+    private static void recalculateNewPositions(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid, Level level) {
         List<Mob> removeEntities = new ArrayList<>();
         for (Mob m : level.mobs) {
-            int nPos = m.pos + add + diffW * (m.pos / levelWidth);
-            if (m.pos < 0 || m.pos >= newLength || !level.insideMap(nPos)
-                    || m.pos / levelWidth != nPos / newWidth) removeEntities.add(m);
+            int nPos = newPosition.get(m.pos);
+            if (!isPositionValid.test(m.pos, nPos)) removeEntities.add(m);
             else m.pos = nPos;
         }
         level.mobs.removeAll(removeEntities);
@@ -892,9 +832,8 @@ public class CustomLevel extends Level {
         //Cant avoid some copy paste because Shattered has really good code
         SparseArray<Heap> nHeaps = new SparseArray<>();
         for (Heap h : level.heaps.valueList()) {
-            int nPos = h.pos + add + diffW * (h.pos / levelWidth);
-            if (h.pos >= 0 && h.pos < newLength && level.insideMap(nPos)
-                    && h.pos / levelWidth == nPos / newWidth) {
+            int nPos = newPosition.get(h.pos);
+            if (isPositionValid.test(h.pos, nPos)) {
                 nHeaps.put(nPos, h);
                 h.pos = nPos;
             }
@@ -904,9 +843,8 @@ public class CustomLevel extends Level {
 
         SparseArray<Trap> nTrap = new SparseArray<>();
         for (Trap t : level.traps.valueList()) {
-            int nPos = t.pos + add + diffW * (t.pos / levelWidth);
-            if (t.pos >= 0 && t.pos < newLength && level.insideMap(nPos)
-                    && t.pos / levelWidth == nPos / newWidth) {
+            int nPos = newPosition.get(t.pos);
+            if (isPositionValid.test(t.pos, nPos)) {
                 nTrap.put(nPos, t);
                 t.pos = nPos;
             }
@@ -916,9 +854,8 @@ public class CustomLevel extends Level {
 
         SparseArray<Sign> nSign = new SparseArray<>();
         for (Sign s : level.signs.valueList()) {
-            int nPos = s.pos + add + diffW * (s.pos / levelWidth);
-            if (s.pos >= 0 && s.pos < newLength && level.insideMap(nPos)
-                    && s.pos / levelWidth == nPos / newWidth) {
+            int nPos = newPosition.get(s.pos);
+            if (isPositionValid.test(s.pos, nPos)) {
                 nSign.put(nPos, s);
                 s.pos = nPos;
             }
@@ -929,9 +866,8 @@ public class CustomLevel extends Level {
         SparseArray<Plant> nPlant = new SparseArray<>();
         for (Plant p : level.plants.valueList()) {
             if (p != null) {
-                int nPos = p.pos + add + diffW * (p.pos / levelWidth);
-                if (p.pos >= 0 && p.pos < newLength && level.insideMap(nPos)
-                        && p.pos / levelWidth == nPos / newWidth) {
+                int nPos = newPosition.get(p.pos);
+                if (isPositionValid.test(p.pos, nPos)) {
                     nPlant.put(nPos, p);
                     p.pos = nPos;
                 }
@@ -940,45 +876,101 @@ public class CustomLevel extends Level {
         level.plants.clear();
         level.plants.putAll(nPlant);
 
-        for (Blob b : level.blobs.values()) {
-            b.cur = new int[newLength];
-        }
-
         List<Integer> cells = new ArrayList<>(level.levelScheme.entranceCells);
         level.levelScheme.entranceCells.clear();
         for (int cell : cells) {
-            int pos = cell + add + diffW * (cell / levelWidth);
-            if (pos >= 0 && pos < newLength && cell / levelWidth == pos / newWidth)
-                level.levelScheme.entranceCells.add(pos);
+            int pos = newPosition.get(cell);
+            if (isPositionValid.test(cell, pos)) level.levelScheme.entranceCells.add(pos);
         }
         Collections.sort(level.levelScheme.entranceCells);
 
         cells = new ArrayList<>(level.levelScheme.exitCells);
         level.levelScheme.exitCells.clear();
         for (int cell : cells) {
-            int pos = cell + add + diffW * (cell / levelWidth);
-            if (pos >= 0 && pos < newLength && cell / levelWidth == pos / newWidth)
-                level.levelScheme.exitCells.add(pos);
+            int pos = newPosition.get(cell);
+            if (isPositionValid.test(cell, pos)) level.levelScheme.exitCells.add(pos);
         }
         Collections.sort(level.levelScheme.exitCells);
 
+        //Check depart cells
         Map<Integer, LevelTransition> nTrans = new HashMap<>();
         for (LevelTransition transition : level.transitions.values()) {
-            int pos = transition.departCell + add + diffW * (transition.departCell / levelWidth);
-            if (pos >= 0 && pos < newLength && transition.departCell / levelWidth == pos / newWidth) {
-                transition.departCell = transition.centerCell = pos;
-                //TODO maybe not so good to set centerCell!!
+            int posDepart = newPosition.get(transition.departCell);
+            int posCenter = newPosition.get(transition.centerCell);
+            //TODO consider the size of the transitions but atm they cant be set!
+//            int left = newPosition.get(transition.left);
+//            int top = newPosition.get(transition.top);
+//            int right = newPosition.get(transition.right);
+//            int bottom = newPosition.get(transition.bottom);
+            if (isPositionValid.test(transition.departCell, posDepart)
+                    && isPositionValid.test(transition.centerCell, posCenter)
+//                    && isPositionValid.test(transition.left, left)
+//                    && isPositionValid.test(transition.right, right)
+//                    && isPositionValid.test(transition.top, top)
+//                    && isPositionValid.test(transition.bottom, bottom)
+            ) {
+                transition.departCell = posDepart;
+                transition.centerCell = posCenter;
                 nTrans.put(transition.departCell, transition);
                 Point p = level.cellToPoint(transition.departCell);
                 transition.set(p.x, p.y, p.x, p.y);
+//                transition.set(left, top, right, bottom);
             }
         }
         level.transitions.clear();
         level.transitions = nTrans;
 
-        level.customWalls.clear();
-        level.customTiles.clear();
-        level.blobs.clear();
+
+        //Check destCells
+        for (LevelScheme ls : Dungeon.customDungeon.levelSchemes()) {
+
+            if (ls.getType() == CustomLevel.class) {
+                boolean load = ls.getLevel() == null;
+                Level l;
+                if (load) l = ls.loadLevel(false);
+                else l = ls.getLevel();
+                boolean changedSth = false;
+                for (LevelTransition transition : l.transitions.values()) {
+                    if (transition != null && Objects.equals(transition.destLevel, level.name)) {
+                        int dest = newPosition.get(transition.destCell);
+                        if (isPositionValid.test(transition.destCell, dest)) {
+                            if (dest != transition.destCell) {
+                                changedSth = true;
+                                transition.destCell = dest;
+                            }
+                        } else {
+                            changedSth = true;
+                            l.transitions.remove(transition.departCell);
+                        }
+                    }
+                }
+
+                if (changedSth) {
+                    try {
+                        CustomDungeonSaves.saveLevel(l);
+                    } catch (IOException e) {
+                        //If saving is not successful, this will only result in some disappeared transitions, nothing to worry about.
+                    }
+                }
+                if (load) ls.unloadLevel();
+            } else {
+                checkRegularLevelTransitions(ls.getEntranceTransitionRegular(), level.name, newPosition, isPositionValid);
+                checkRegularLevelTransitions(ls.getExitTransitionRegular(), level.name, newPosition, isPositionValid);
+            }
+        }
+    }
+
+    private static void checkRegularLevelTransitions(LevelTransition transition, String levelWithChanges,
+                                                     IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+        if (transition != null && Objects.equals(transition.destLevel, levelWithChanges)) {
+            int dest = newPosition.get(transition.destCell);
+            if (isPositionValid.test(transition.destCell, dest)) {
+                if (dest != transition.destCell) transition.destCell = dest;
+            } else {
+                transition.destCell = -1;
+                transition.destLevel = null;
+            }
+        }
     }
 
     //add must be multiplied with width before!!

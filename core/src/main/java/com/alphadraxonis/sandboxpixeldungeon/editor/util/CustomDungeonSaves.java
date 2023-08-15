@@ -78,17 +78,22 @@ public class CustomDungeonSaves {
     }
 
     public static CustomLevel loadLevel(String name) throws IOException {
+        return loadLevel(name,true);
+    }
+    public static CustomLevel loadLevel(String name, boolean removeInvalidTransitions) throws IOException {
         FileHandle file = FileUtils.getFileHandle(fileType, curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name));
         CustomLevel customLevel = (CustomLevel) FileUtils.bundleFromStream(file.read()).get(FLOOR);
 
         //checks if all transitions are still valid, can even remove transitions AFTER the game was started if necessary
-        for (LevelTransition t : new ArrayList<>(customLevel.transitions.values())) {
-            if (!t.destLevel.equals(Level.SURFACE)) {
-                LevelScheme destLevel = Dungeon.customDungeon.getFloor(t.destLevel);
-                if (destLevel == null
-                        || !destLevel.entranceCells.contains(t.destCell)
-                        && !destLevel.exitCells.contains(t.destCell))
-                    customLevel.transitions.remove(t.cell());
+        if (removeInvalidTransitions) {
+            for (LevelTransition t : new ArrayList<>(customLevel.transitions.values())) {
+                if (!t.destLevel.equals(Level.SURFACE)) {
+                    LevelScheme destLevel = Dungeon.customDungeon.getFloor(t.destLevel);
+                    if (destLevel == null
+                            || !destLevel.entranceCells.contains(t.destCell)
+                            && !destLevel.exitCells.contains(t.destCell))
+                        customLevel.transitions.remove(t.cell());
+                }
             }
         }
 

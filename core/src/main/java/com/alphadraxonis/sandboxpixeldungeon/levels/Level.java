@@ -880,12 +880,17 @@ public abstract class Level implements Bundlable {
                 openSpace[i] = false;
             } else {
                 for (int j = 1; j < PathFinder.CIRCLE8.length; j += 2) {
-                    if (solid[i + PathFinder.CIRCLE8[j]]) {
+                    if (i + PathFinder.CIRCLE8[j] >= map.length || i + PathFinder.CIRCLE8[j] < 0 || solid[i + PathFinder.CIRCLE8[j]]) {
                         openSpace[i] = false;
-                    } else if (!solid[i + PathFinder.CIRCLE8[(j + 1) % 8]]
-                            && !solid[i + PathFinder.CIRCLE8[(j + 2) % 8]]) {
-                        openSpace[i] = true;
-                        break;
+                    } else {
+                        int a = i + PathFinder.CIRCLE8[(j + 1) % 8];
+                        int b = i + PathFinder.CIRCLE8[(j + 2) % 8];
+                        if (a < map.length && b < map.length && a >= 0 && b >= 0
+                                && !solid[i + PathFinder.CIRCLE8[(j + 1) % 8]]
+                                && !solid[i + PathFinder.CIRCLE8[(j + 2) % 8]]) {
+                            openSpace[i] = true;
+                            break;
+                        }
                     }
                 }
             }
