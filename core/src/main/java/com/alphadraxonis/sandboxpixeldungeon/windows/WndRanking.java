@@ -236,6 +236,7 @@ public class WndRanking extends WndTabbed {
 				} else {
 					pos = statSlot(this, Messages.get(this, "ascent"), num.format(Statistics.highestAscent), pos);
 				}
+				pos = statSlot(this, "Dungeon", record.dungeonName, pos);
 				if (Dungeon.seed != -1) {
 					if (Dungeon.daily) {
 						if (Dungeon.dailyReplay) {

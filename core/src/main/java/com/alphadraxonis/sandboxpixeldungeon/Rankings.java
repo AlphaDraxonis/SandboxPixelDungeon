@@ -85,7 +85,7 @@ public enum Rankings {
         Record rec = new Record();
 
         //we trim version to just the numbers, ignoring alpha/beta, etc.
-        Pattern p = Pattern.compile("\\d+\\.\\d+\\.\\d+");
+        Pattern p = Pattern.compile("\\d+\\.\\d+\\.\\d+-\\d+.\\d+");
         Matcher m = p.matcher(SandboxPixelDungeon.version);
         if (m.find()) {
             rec.version = "v" + m.group();
@@ -117,6 +117,8 @@ public enum Rankings {
         INSTANCE.saveGameData(rec);
 
         rec.gameID = UUID.randomUUID().toString();
+
+        rec.dungeonName = Dungeon.customDungeon.getName();
 
         if (rec.daily) {
             if (Dungeon.dailyReplay) {
@@ -443,6 +445,7 @@ public enum Rankings {
         private static final String ID = "gameID";
         private static final String SEED = "custom_seed";
         private static final String DAILY = "daily";
+        private static final String DUNGEON = "dungeon";
 
         private static final String DATE = "date";
         private static final String VERSION = "version";
@@ -467,6 +470,8 @@ public enum Rankings {
 
         public String date;
         public String version;
+
+        public String dungeonName;
 
         public String desc() {
             if (win) {
@@ -517,6 +522,8 @@ public enum Rankings {
             if (bundle.contains(DATA)) gameData = bundle.getBundle(DATA);
             if (bundle.contains(ID)) gameID = bundle.getString(ID);
 
+            dungeonName = bundle.getString(DUNGEON);
+
             if (gameID == null) gameID = UUID.randomUUID().toString();
 
         }
@@ -539,6 +546,8 @@ public enum Rankings {
 
             bundle.put(DATE, date);
             bundle.put(VERSION, version);
+
+            bundle.put(DUNGEON, dungeonName);
 
             if (gameData != null) bundle.put(DATA, gameData);
             bundle.put(ID, gameID);
