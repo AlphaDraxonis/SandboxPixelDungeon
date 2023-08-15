@@ -2,6 +2,9 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
@@ -335,7 +338,10 @@ public class CustomDungeon implements Bundlable {
                     }
                 }
             }
-            if (h.isEmpty()) level.heaps.remove(h.pos);
+            if (h.isEmpty()) {
+                level.heaps.remove(h.pos);
+                h.destroyImages();
+            }
         }
     }
 
@@ -618,7 +624,7 @@ public class CustomDungeon implements Bundlable {
 
         }
 
-        //Remove transitions
+        //Remove transitions and keys
         for (LevelScheme ls : fs) {
             if (n.equals(ls.getChasm())) ls.setChasm(null);
             if (n.equals(ls.getPassage())) ls.setPassage(null);
@@ -628,32 +634,46 @@ public class CustomDungeon implements Bundlable {
                 Level level;
                 if (load) level = ls.loadLevel();
                 else level = ls.getLevel();
-                Set<Integer> toRemoveKeys = new HashSet<>(4);
+                Set<Integer> toRemoveTransitions = new HashSet<>(4);
                 for (LevelTransition transition : level.transitions.values()) {
                     if (transition != null && Objects.equals(transition.destLevel, n)) {
-                        toRemoveKeys.add(transition.cell());
+                        toRemoveTransitions.add(transition.cell());
                         if (level == EditorScene.customLevel()) EditorScene.remove(transition);
                     }
                 }
 
-                //Remove invalid keys
+                //Remove invalid keys in heaps
                 boolean removedItems = false;
                 for (Heap h : level.heaps.valueList()) {
-                    for (Item i : h.items) {
-                        if (i instanceof Key && ((Key) i).levelName.equals(n)) {
-                            h.remove(i);
-                            removedItems = true;
+                    if (removeInvalidKeys(h.items, n)) {
+                        removedItems = true;
+                        if (h.isEmpty()) {
+                            level.heaps.remove(h.pos);
+                            h.destroyImages();
                         }
                     }
                 }
+                //Remove invalid keys in mob containers
+                for (Mob m : level.mobs) {
+                    if (m instanceof Mimic && ((Mimic) m).items != null) {
+                        if (removeInvalidKeys(((Mimic) m).items, n)) removedItems = true;
+                    }
+                    if (m instanceof Thief && isInvalidKey(((Thief) m).item, n)) {
+                        ((Thief) m).item = null;
+                        removedItems = true;
+                    }
+                }
+                if (removeInvalidKeys(ls.itemsToSpawn, n)) removedItems = true;
 
-                boolean save = removedItems || !toRemoveKeys.isEmpty();
-                for (int key : toRemoveKeys) level.transitions.remove(key);
+                boolean save = removedItems || !toRemoveTransitions.isEmpty();
+                for (int key : toRemoveTransitions) level.transitions.remove(key);
 
                 if (save) CustomDungeonSaves.saveLevel(level);
                 if (load) ls.unloadLevel();
-                else if (level == EditorScene.customLevel())
+                else if (level == EditorScene.customLevel()) {
                     Undo.reset();//TODO maybe not best solution to reset all
+                    EditorScene.updateHeapImagesAndSubIcons();
+                }
             } else {
                 if (Objects.equals(ls.getEntranceTransitionRegular().destLevel, n)) {
                     ls.getEntranceTransitionRegular().destLevel = Level.SURFACE;
@@ -665,12 +685,35 @@ public class CustomDungeon implements Bundlable {
             }
         }
 
+        for (ItemDistribution<? extends Bundlable> distr : itemDistributions) {
+            if (distr instanceof ItemDistribution.Items) {
+                removeInvalidKeys((List<Item>) distr.getObjectsToDistribute(), n);
+            }
+        }
+
         //Set level for keys in inv
         Items.updateKeys(n, EditorScene.customLevel() == null ? null : EditorScene.customLevel().name);
 
 
         CustomDungeonSaves.deleteLevelFile(n);
         CustomDungeonSaves.saveDungeon(this);
+    }
+
+    private boolean removeInvalidKeys(List<Item> items, String invalidLevelName) {
+        if (items == null) return false;
+        boolean removedSth = false;
+        for (Item i : new ArrayList<>(items)) {
+            if (isInvalidKey(i, invalidLevelName)) {
+                items.remove(i);
+                removedSth = true;
+            }
+        }
+        return removedSth;
+    }
+
+    private boolean isInvalidKey(Item item, String invalidLevelName) {
+        if (item == null) return false;
+        return item instanceof Key && ((Key) item).levelName.equals(invalidLevelName);
     }
 
     public static void deleteDungeon(String name) {

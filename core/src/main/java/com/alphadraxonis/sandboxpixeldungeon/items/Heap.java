@@ -392,9 +392,12 @@ public class Heap implements Bundlable {
 
     public void destroy() {
         Dungeon.level.heaps.remove(this.pos);
+        destroyImages();
+        items.clear();
+    }
+    public void destroyImages(){
         if (sprite != null) sprite.kill();
         killSubicons();
-        items.clear();
     }
 
     public String title() {

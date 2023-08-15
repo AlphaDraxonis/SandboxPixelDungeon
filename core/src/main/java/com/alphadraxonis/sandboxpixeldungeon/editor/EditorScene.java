@@ -361,6 +361,13 @@ public class EditorScene extends PixelScene {
         }
     }
 
+    public static void updateHeapImagesAndSubIcons() {
+        if (scene == null) return;
+        for (Heap heap : customLevel().heaps.valueList()) {
+            updateHeapImage(heap);
+            heap.updateSubicon();
+        }
+    }
     public static void updateHeapImages() {
         if (scene == null) return;
         for (Heap heap : customLevel().heaps.valueList()) {
