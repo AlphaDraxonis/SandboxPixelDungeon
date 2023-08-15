@@ -65,7 +65,7 @@ import java.util.Set;
 
 public class CustomDungeon implements Bundlable {
 
-    public boolean opMode = DeviceCompat.isDebug();//TODO settings what to enable exactly (dont release for now)
+    public boolean opMode = DeviceCompat.isDebug() && false;//TODO settings what to enable exactly (dont release for now) (maybe secure with password)
     //Perks:
     // - perma-invisiblility
     // - perma-mindvision
@@ -93,6 +93,7 @@ public class CustomDungeon implements Bundlable {
     private Map<String, LevelScheme> floors = new HashMap<>();
     private int startGold, startEnergy;
 
+    private String password;
 
     public CustomDungeon(String name) {
         this.name = name;
@@ -407,7 +408,6 @@ public class CustomDungeon implements Bundlable {
         }
     }
 
-
     public static CustomDungeon getDungeon() {
         return Dungeon.customDungeon;
     }
@@ -435,6 +435,7 @@ public class CustomDungeon implements Bundlable {
     private static final String START_ENERGY = "start_energy";
     private static final String LEVEL_SCHEME = "level_scheme";
     private static final String REMOVE_NEXT_SCROLL = "remove_next_scroll";
+    private static final String PASSWORD = "password";
 
     private static final String RUNE_LABELS = "rune_labels";
     private static final String RUNE_CLASSES = "rune_classes";
@@ -458,6 +459,7 @@ public class CustomDungeon implements Bundlable {
         bundle.put(START_GOLD, startGold);
         bundle.put(START_ENERGY, startEnergy);
         bundle.put(REMOVE_NEXT_SCROLL, removeNextScroll);
+        bundle.put(PASSWORD, password);
 
         if (scrollRuneLabels != null) {
             String[] labels = new String[scrollRuneLabels.size()];
@@ -526,6 +528,8 @@ public class CustomDungeon implements Bundlable {
         startGold = bundle.getInt(START_GOLD);
         startEnergy = bundle.getInt(START_ENERGY);
         removeNextScroll = bundle.getBoolean(REMOVE_NEXT_SCROLL);
+        password = bundle.getString(PASSWORD);
+        if (password.isEmpty()) password = null;
 
         if (bundle.contains(RUNE_LABELS)) {
             scrollRuneLabels = new LinkedHashMap<>();

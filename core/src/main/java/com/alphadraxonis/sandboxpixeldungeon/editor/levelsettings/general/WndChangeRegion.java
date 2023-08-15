@@ -77,6 +77,7 @@ public class WndChangeRegion extends Window {
                         if (cb.checked()) newValues[i] = cb.region;
                     }
                 }
+                hide();
                 for (int i = 0; i < newValues.length; i++) {
                     if (newValues[i] != oldValues[i]) {
                         f.setRegion(newValues[CAT_REGION]);
@@ -86,7 +87,6 @@ public class WndChangeRegion extends Window {
                         return;
                     }
                 }
-                hide();
             }
         };
         cancel = new RedButton(Messages.get(WndChangeRegion.class, "cancel")) {
