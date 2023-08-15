@@ -1,7 +1,9 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo;
 
+import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -33,6 +35,8 @@ public final class Undo {
         }
     }
 
+    private static int autoSaveCounter = SPDSettings.autoSave();
+
     private static void addAction(ActionPartList action) {
         if (action.hasContent()) {
             undoStack.push(action);
@@ -42,6 +46,14 @@ public final class Undo {
             redoStack.clear(); // Clear redo stack when a new action is added
             EditorScene.updateUndoButtons();
         }
+        if (autoSaveCounter == 25) {
+            autoSaveCounter = SPDSettings.autoSave() * 5;
+            if (SPDSettings.powerSaver()) autoSaveCounter /= 2;
+            try {
+                EditorScene.customLevel().levelScheme.saveLevel();
+            } catch (IOException e) {
+            }
+        } else if (SPDSettings.autoSave() > 0) autoSaveCounter++;
     }
 
     public static void undo() {
@@ -75,6 +87,8 @@ public final class Undo {
         undoStack.clear();
         redoStack.clear();
         EditorScene.updateUndoButtons();
+        autoSaveCounter = SPDSettings.autoSave() * 5;
+        if (SPDSettings.powerSaver()) autoSaveCounter /= 2;
     }
 
 }

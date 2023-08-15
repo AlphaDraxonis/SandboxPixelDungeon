@@ -57,7 +57,8 @@ public class SPDSettings extends GameSettings {
 	public static final String KEY_GRID 	    = "visual_grid";
 	public static final String KEY_CAMERA_FOLLOW= "camera_follow";
 	public static final String KEY_SCREEN_SHAKE = "screen_shake";
-	
+	public static final String KEY_AUTO_SAVE = "auto_save";
+
 	public static void fullscreen( boolean value ) {
 		put( KEY_FULLSCREEN, value );
 		
@@ -134,7 +135,15 @@ public class SPDSettings extends GameSettings {
 	public static int screenShake() {
 		return getInt( KEY_SCREEN_SHAKE, 2, 0, 4 );
 	}
-	
+
+	public static void autoSave( int value ){
+		put( KEY_AUTO_SAVE, value );
+	}
+
+	public static int autoSave() {
+		return getInt( KEY_AUTO_SAVE, 1, 0, 4 );
+	}
+
 	//Interface
 
 	public static final String KEY_UI_SIZE 	    = "full_ui";

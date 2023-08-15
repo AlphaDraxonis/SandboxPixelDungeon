@@ -229,6 +229,7 @@ public class WndSettings extends WndTabbed {
 		OptionSlider optVisGrid;
 		OptionSlider optFollowIntensity;
 		OptionSlider optScreenShake;
+		OptionSlider optAutoSave;
 
 		@Override
 		protected void createChildren(Object... params) {
@@ -343,6 +344,16 @@ public class WndSettings extends WndTabbed {
 			optScreenShake.setSelectedValue(SPDSettings.screenShake());
 			add(optScreenShake);
 
+			optAutoSave = new OptionSlider(Messages.get(this, "autosave"),
+					Messages.get(this, "off"), Messages.get(this, "often"), 0, 4) {
+				@Override
+				protected void onChange() {
+					SPDSettings.autoSave(getSelectedValue());
+				}
+			};
+			optAutoSave.setSelectedValue(SPDSettings.autoSave());
+			add(optAutoSave);
+
 		}
 
 		@Override
@@ -385,20 +396,25 @@ public class WndSettings extends WndTabbed {
 			bottom = sep2.y + 1;
 
 			if (width > 200){
-				optBrightness.setRect(0, bottom + GAP, width/2-GAP/2, SLIDER_HEIGHT);
-				optVisGrid.setRect(optBrightness.right() + GAP, optBrightness.top(), width/2-GAP/2, SLIDER_HEIGHT);
+				float w = width/2-GAP/2;
+				optBrightness.setRect(0, bottom + GAP, w, SLIDER_HEIGHT);
+				optVisGrid.setRect(optBrightness.right() + GAP, optBrightness.top(), w, SLIDER_HEIGHT);
 
-				optFollowIntensity.setRect(0, optVisGrid.bottom() + GAP, width/2-GAP/2, SLIDER_HEIGHT);
-				optScreenShake.setRect(optFollowIntensity.right() + GAP, optFollowIntensity.top(), width/2-GAP/2, SLIDER_HEIGHT);
+				optFollowIntensity.setRect(0, optVisGrid.bottom() + GAP, w, SLIDER_HEIGHT);
+				optScreenShake.setRect(optFollowIntensity.right() + GAP, optFollowIntensity.top(), w, SLIDER_HEIGHT);
+
+				optAutoSave.setRect(0, optScreenShake.bottom() + GAP, w, SLIDER_HEIGHT);
 			} else {
 				optBrightness.setRect(0, bottom + GAP, width, SLIDER_HEIGHT);
 				optVisGrid.setRect(0, optBrightness.bottom() + GAP, width, SLIDER_HEIGHT);
 
 				optFollowIntensity.setRect(0, optVisGrid.bottom() + GAP, width, SLIDER_HEIGHT);
 				optScreenShake.setRect(0, optFollowIntensity.bottom() + GAP, width, SLIDER_HEIGHT);
+
+				optAutoSave.setRect(0, optScreenShake.bottom() + GAP, width, SLIDER_HEIGHT);
 			}
 
-			height = optScreenShake.bottom();
+			height = optAutoSave.bottom();
 		}
 
 	}

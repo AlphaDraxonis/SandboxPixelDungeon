@@ -154,15 +154,21 @@ public class CellSelector extends ScrollArea {
             return; //don't trigger every frame, only when a new cell was entered
         }
         lastSelectedCells.add(cell);
-        if (lastPoint != null)
+        if (lastPoint != null) {
+            stackOverflowChecker = 0;
             checkForMissingCells(cell, lastCell, event.current, lastPoint, event.button);
+        }
         lastPoint = event.current;
         lastCell = cell;
         select(cell, event.button, true);
     }
 
+    private int stackOverflowChecker;
+
     //if pointer is faster than the fps, some cells are skipped, this method corrects this by drawing straight lines between the known points
     private void checkForMissingCells(int cell, int lastCell, PointF now, PointF was, int button) {
+        if (stackOverflowChecker >= 100) return;
+        stackOverflowChecker++;
 
         for (int i : PathFinder.NEIGHBOURS9) {
             if (cell + i == lastCell) return;
