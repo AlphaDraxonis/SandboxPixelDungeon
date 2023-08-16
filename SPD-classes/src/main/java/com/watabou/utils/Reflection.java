@@ -49,14 +49,6 @@ public class Reflection {
 	}
 	
 	public static Class forName( String name ){
-		if (name.equals("com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomDungeon"))//TODO remove in future!
-			name = "com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon";
-		else if (name.equals("com.shatteredpixel.shatteredpixeldungeon.levels.editor.LevelScheme"))//TODO remove in future!
-			name = "com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme";
-		else if (name.equals("com.shatteredpixel.shatteredpixeldungeon.levels.editor.CustomLevel"))//TODO remove in future!
-			name = "com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel";
-		else if (name.equals("com.alphadraxonis.sandboxpixeldungeon.editor.overview.CustomDungeonSaves$Info"))//TODO remove in future!
-			name = "com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves$Info";
 
 		name = name.replace("shatteredpixel.shatteredpixeldungeon","alphadraxonis.sandboxpixeldungeon");
 
