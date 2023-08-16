@@ -96,8 +96,13 @@ public class Messages {
 		bundles = new ArrayList<>();
 		Locale bundleLocal = new Locale(lang.code());
 		for (String file : prop_files) {
-			bundles.add(I18NBundle.createBundle(Gdx.files.internal(file), bundleLocal));
+			if (!file.equals("messages/editor/editor"))
+				bundles.add(I18NBundle.createBundle(Gdx.files.internal(file), bundleLocal));
 		}
+		//Please tell me how to fix this
+		if (lang != Languages.ENGLISH && lang != Languages.GERMAN)
+			bundles.add(I18NBundle.createBundle(Gdx.files.internal("messages/editor/editor"), new Locale("")));
+		else bundles.add(I18NBundle.createBundle(Gdx.files.internal("messages/editor/editor"), bundleLocal));
 	}
 
 
