@@ -81,13 +81,13 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 		}
 		return super.act();
 	}
-
+	
 	@Override
 	public boolean interact(Char c) {
+		
+		sprite.turnTo( pos, c.pos );
 
-		sprite.turnTo(pos, c.pos);
-
-		if (c != Dungeon.hero) {
+		if (c != Dungeon.hero){
 			return true;
 		}
 
@@ -97,16 +97,43 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 		}
 
 		if (!quest.given()) {
+			String msg1 = "";
+			String msg2 = "";
 
+			if (Quest.type == 0){
+				//pre-v2.2.0 saves
+				msg1 = Quest.alternative ? Messages.get(Blacksmith.this, "blood_1") : Messages.get(Blacksmith.this, "gold_1");
+			} else {
+
+				switch (Dungeon.hero.heroClass){
+					case WARRIOR:   msg1 += Messages.get(Blacksmith.this, "intro_quest_warrior"); break;
+					case MAGE:      msg1 += Messages.get(Blacksmith.this, "intro_quest_mage"); break;
+					case ROGUE:     msg1 += Messages.get(Blacksmith.this, "intro_quest_rogue"); break;
+					case HUNTRESS:  msg1 += Messages.get(Blacksmith.this, "intro_quest_huntress"); break;
+					case DUELIST:   msg1 += Messages.get(Blacksmith.this, "intro_quest_duelist"); break;
+					//case CLERIC: msg1 += Messages.get(Blacksmith.this, "intro_quest_cleric"); break;
+				}
+
+				msg1 += "\n\n" + Messages.get(Blacksmith.this, "intro_quest_start");
+
+				switch (Quest.type){
+					case 1: msg2 += Messages.get(Blacksmith.this, "intro_quest_crystal"); break;
+					case 2: msg2 += Messages.get(Blacksmith.this, "intro_quest_fungi"); break;
+					case 3: msg2 += Messages.get(Blacksmith.this, "intro_quest_gnoll"); break;
+				}
+
+			}
+
+			final String msg1Final = msg1;
+			final String msg2Final = msg2;
 			Game.runOnRenderThread(new Callback() {
 				@Override
 				public void call() {
-					GameScene.show(new WndQuest(Blacksmith.this,
-							Messages.get(Blacksmith.this, quest.getMessageString() + "_1")) {
 
+					GameScene.show(new WndQuest(Blacksmith.this, msg1Final) {
 						@Override
-						public void onBackPressed() {
-							super.onBackPressed();
+						public void hide() {
+							super.hide();
 
 							quest.start();
 
@@ -115,10 +142,15 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 							if (pick.doPickUp(Dungeon.hero)) {
 								GLog.i(Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", pick.name())));
 							} else {
-								Dungeon.level.drop(pick, Dungeon.hero.pos).sprite.drop();
+								Dungeon.level.drop( pick, Dungeon.hero.pos ).sprite.drop();
 							}
+
+							if (msg2Final != ""){
+								GameScene.show(new WndQuest(Blacksmith.this, msg2Final));
+							}
+
 						}
-					});
+					} );
 				}
 			});
 
@@ -198,7 +230,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 		});
 	}
 
-	public static String verify(Item item1, Item item2) {
+	public static String verify( Item item1, Item item2 ) {
 
 		if (item1 == item2 && (item1.quantity() == 1 && item2.quantity() == 1)) {
 			return Messages.get(Blacksmith.class, "same_item");
@@ -211,7 +243,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 		if (!item1.isIdentified() || !item2.isIdentified()) {
 			return Messages.get(Blacksmith.class, "un_ided");
 		}
-
+		
 		if (item1.cursed || item2.cursed ||
 				(item1 instanceof Armor && ((Armor) item1).hasCurseGlyph()) ||
 				(item2 instanceof Armor && ((Armor) item2).hasCurseGlyph()) ||
@@ -219,20 +251,20 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 				(item2 instanceof Weapon && ((Weapon) item2).hasCurseEnchant())) {
 			return Messages.get(Blacksmith.class, "cursed");
 		}
-
+		
 		if (item1.level() < 0 || item2.level() < 0) {
 			return Messages.get(Blacksmith.class, "degraded");
 		}
-
+		
 		if (!item1.isUpgradable() || !item2.isUpgradable()) {
 			return Messages.get(Blacksmith.class, "cant_reforge");
 		}
-
+		
 		return null;
 	}
-
-	public static void upgrade(Item item1, Item item2) {
-
+	
+	public static void upgrade( Item item1, Item item2 ) {
+		
 		Item first, second;
 		if (item2.trueLevel() > item1.trueLevel()) {
 			first = item2;
@@ -242,32 +274,32 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			second = item2;
 		}
 
-		Sample.INSTANCE.play(Assets.Sounds.EVOKE);
-		ScrollOfUpgrade.upgrade(Dungeon.hero);
-		Item.evoke(Dungeon.hero);
+		Sample.INSTANCE.play( Assets.Sounds.EVOKE );
+		ScrollOfUpgrade.upgrade( Dungeon.hero );
+		Item.evoke( Dungeon.hero );
 
-		if (second.isEquipped(Dungeon.hero)) {
-			((EquipableItem) second).doUnequip(Dungeon.hero, false);
+		if (second.isEquipped( Dungeon.hero )) {
+			((EquipableItem)second).doUnequip( Dungeon.hero, false );
 		}
-		second.detach(Dungeon.hero.belongings.backpack);
+		second.detach( Dungeon.hero.belongings.backpack );
 
-		if (second instanceof Armor) {
+		if (second instanceof Armor){
 			BrokenSeal seal = ((Armor) second).checkSeal();
-			if (seal != null) {
-				Dungeon.level.drop(seal, Dungeon.hero.pos);
+			if (seal != null){
+				Dungeon.level.drop( seal, Dungeon.hero.pos );
 			}
 		}
 
 		//preserves enchant/glyphs if present
-		if (first instanceof Weapon && ((Weapon) first).hasGoodEnchant()) {
+		if (first instanceof Weapon && ((Weapon) first).hasGoodEnchant()){
 			((Weapon) first).upgrade(true);
-		} else if (first instanceof Armor && ((Armor) first).hasGoodGlyph()) {
+		} else if (first instanceof Armor && ((Armor) first).hasGoodGlyph()){
 			((Armor) first).upgrade(true);
 		} else {
 			first.upgrade();
 		}
-		Dungeon.hero.spendAndNext(2f);
-		Badges.validateItemLevelAquired(first);
+		Dungeon.hero.spendAndNext( 2f );
+		Badges.validateItemLevelAquired( first );
 		Item.updateQuickslot();
 	}
 
@@ -287,5 +319,4 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 	}
 
 	Mining quest: favor!
-
 }
