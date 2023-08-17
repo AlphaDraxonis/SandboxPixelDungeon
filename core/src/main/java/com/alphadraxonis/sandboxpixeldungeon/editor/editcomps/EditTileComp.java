@@ -52,7 +52,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                     addTransition(EditorScene.customLevel().transitions.get(item.cell()));
                 }
 
-            } else if (item.terrainType() == Terrain.SIGN) {
+            } else if (TileItem.isSignTerrainCell(item.terrainType())) {
 
                 editSignText = new RedButton(Messages.get(EditTileComp.class, "edit_sign_title"), 9) {
 
@@ -165,7 +165,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         CustomLevel level = EditorScene.customLevel();
 
         String desc;
-        if (obj.terrainType() == Terrain.SIGN) {
+        if (TileItem.isSignTerrainCell(obj.terrainType())) {
             Sign sign = level.signs.get(obj.cell());
             if (sign == null || sign.text == null) desc = "";
             else desc = sign.text;

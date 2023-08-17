@@ -1547,6 +1547,7 @@ public abstract class Level implements Bundlable {
             case Terrain.UNLOCKED_EXIT:
                 return Messages.get(Level.class, "unlocked_exit_name");
             case Terrain.SIGN:
+            case Terrain.SIGN_SP:
                 return Messages.get(Level.class, "sign_name");
             case Terrain.WELL:
                 return Messages.get(Level.class, "well_name");
@@ -1592,6 +1593,7 @@ public abstract class Level implements Bundlable {
             case Terrain.BARRICADE:
                 return Messages.get(Level.class, "barricade_desc");
             case Terrain.SIGN:
+            case Terrain.SIGN_SP:
                 return Messages.get(Level.class, "sign_desc");
             case Terrain.INACTIVE_TRAP:
                 return Messages.get(Level.class, "inactive_trap_desc");

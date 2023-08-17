@@ -51,6 +51,7 @@ public class Terrain {
 	public static final int LOCKED_EXIT		= 21;
 	public static final int UNLOCKED_EXIT	= 22;
 	public static final int SIGN			= 23;
+	public static final int SIGN_SP			= 32;
 	public static final int WELL			= 24;
 	public static final int STATUE			= 25;
 	public static final int STATUE_SP		= 26;
@@ -99,6 +100,7 @@ public class Terrain {
 		flags[LOCKED_EXIT]	= SOLID;
 		flags[UNLOCKED_EXIT]= PASSABLE;
 		flags[SIGN]			= SOLID; //Currently these are unused except for visual tile overrides where we want terrain to be solid with no other properties
+		flags[SIGN_SP]		= flags[SIGN];
 		flags[WELL]			= AVOID;
 		flags[STATUE]		= SOLID;
 		flags[STATUE_SP]	= flags[STATUE];
@@ -116,16 +118,6 @@ public class Terrain {
 		default:
 			return terr;
 		}
-	}
-
-	//removes signs, places floors instead
-	public static int[] convertTilesFrom0_6_0b(int[] map){
-		for (int i = 0; i < map.length; i++){
-			if (map[i] == 23){
-				map[i] = 1;
-			}
-		}
-		return map;
 	}
 
 }

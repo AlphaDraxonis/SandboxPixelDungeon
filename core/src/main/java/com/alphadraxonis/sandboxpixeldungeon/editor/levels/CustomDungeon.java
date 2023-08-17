@@ -65,7 +65,7 @@ import java.util.Set;
 
 public class CustomDungeon implements Bundlable {
 
-    public boolean opMode = DeviceCompat.isDebug() && false;//TODO settings what to enable exactly (dont release for now) (maybe secure with password)
+    public boolean opMode = DeviceCompat.isDebug();//TODO settings what to enable exactly (dont release for now) (maybe secure with password)
     //Perks:
     // - perma-invisiblility
     // - perma-mindvision

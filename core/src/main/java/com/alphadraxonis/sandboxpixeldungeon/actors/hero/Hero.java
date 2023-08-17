@@ -1708,7 +1708,7 @@ public class Hero extends Char {
 
             curAction = new HeroAction.Alchemy(cell);
 
-        } else if (Dungeon.level.map[cell] == Terrain.SIGN && cell != pos) {
+        } else if (TileItem.isSignTerrainCell(Dungeon.level.map[cell]) && cell != pos) {
 
             curAction = new HeroAction.ReadSign(cell);
 

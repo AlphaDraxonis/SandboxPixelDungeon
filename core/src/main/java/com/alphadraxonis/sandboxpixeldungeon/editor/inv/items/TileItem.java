@@ -8,6 +8,8 @@ import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.HIGH_GRASS;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.INACTIVE_TRAP;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.LOCKED_EXIT;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.SECRET_TRAP;
+import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.SIGN;
+import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.SIGN_SP;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.TRAP;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.UNLOCKED_EXIT;
 
@@ -119,6 +121,10 @@ public class TileItem extends EditorItem {
 
     public static boolean isGrassTerrainCell(int terrain) {
         return terrain == GRASS || terrain == HIGH_GRASS || terrain == FURROWED_GRASS;
+    }
+
+    public static boolean isSignTerrainCell(int terrain) {
+        return terrain == SIGN || terrain == SIGN_SP;
     }
 
     public static String getName(int terrainType, int cell) {
@@ -240,7 +246,7 @@ public class TileItem extends EditorItem {
                 addActionPart(transPart);
                 transPart.redo();
             }
-            if (oldTerrain == Terrain.SIGN || terrainType == Terrain.SIGN) {
+            if (isSignTerrainCell(oldTerrain) || isSignTerrainCell(terrainType)) {
                 Sign newSign = new Sign();
                 Sign oldSign = level.signs.get(cell);
                 newSign.pos = cell;

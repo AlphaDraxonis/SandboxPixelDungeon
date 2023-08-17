@@ -119,7 +119,7 @@ public class DungeonToJsonConverter {
             appendParam(b, "region", l.getRegion());//1 to 5   is value??!
             appendParam(b, "view_distance", f.viewDistance);
             appendMusic(b, f.getRegionValue());
-            appendArrayReplace(b, "map", f.map, Terrain.INACTIVE_TRAP, Terrain.EMPTY);//ask quasi why this replacement is necessary
+            appendArrayReplace(b, "map", f.map, Terrain.INACTIVE_TRAP, Terrain.EMPTY, Terrain.SIGN_SP, Terrain.SIGN);//ask quasi why this replacement is necessary
 
             appendArrayHead(b, "entrances");
             entranceCells = l.entranceCells;
@@ -283,10 +283,11 @@ public class DungeonToJsonConverter {
         b.append("],\n");
     }
 
-    private static void appendArrayReplace(StringBuilder b, String name, int[] value, int oldValue, int newValue) {
+    private static void appendArrayReplace(StringBuilder b, String name, int[] value, int oldValue, int newValue, int oldValue2, int newValue2) {
         appendArrayHead(b, name);
         for (int i : value) {
             if (i == oldValue) i = newValue;
+            else if (i == oldValue2) i = newValue2;
             b.append(i).append(", ");
         }
         if (value.length > 0) {
