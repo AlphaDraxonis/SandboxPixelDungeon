@@ -151,8 +151,14 @@ public class CityBossLevel extends Level {
 
 		int entrance = c.x + (c.y+2)*width();
 		Painter.set(this, entrance, Terrain.ENTRANCE);
-		LevelTransition t = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
-		if (Dungeon.customDungeon.getFloor(t.destLevel) != null) transitions.put(entrance, t);
+
+		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
+		if (Level.SURFACE.equals(dest)) {
+			transitions.put(entrance, new LevelTransition(this, entrance, LevelTransition.Type.SURFACE));
+		} else {
+			if (Dungeon.customDungeon.getFloor(dest) != null)
+				transitions.put(entrance, new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+		}
 
 		//DK's throne room
 		Painter.fillDiamond(this, arena, 1, Terrain.EMPTY);
@@ -179,9 +185,20 @@ public class CityBossLevel extends Level {
 		Painter.fill(this, end.left+4, end.top+5, 7, 4, Terrain.EXIT);
 
 		int exitCell = end.left+7 + (end.top+8)*width();
-		LevelTransition exit = new LevelTransition(this, exitCell, LevelTransition.Type.REGULAR_EXIT);
-		exit.set(end.left+4, end.top+4, end.left+4+6, end.top+4+4);
-		if (Dungeon.customDungeon.getFloor(exit.destLevel) != null) transitions.put(exitCell,exit);
+		String destExit = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultBelow();
+		LevelTransition exit = null;
+		if (Level.SURFACE.equals(destExit)) {
+			exit = new LevelTransition(this, exitCell, LevelTransition.Type.SURFACE);
+			transitions.put(exitCell, exit);
+		} else {
+			if (Dungeon.customDungeon.getFloor(destExit) != null) {
+				exit = new LevelTransition(this, exitCell, LevelTransition.Type.REGULAR_EXIT);
+				transitions.put(exitCell, exit);
+			}
+		}
+		if (exit != null) {
+			exit.set(end.left + 4, end.top + 4, end.left + 4 + 6, end.top + 4 + 4);
+		}
 
 		impShop = new ImpShopRoom();
 		impShop.set(end.left+3, end.top+12, end.left+11, end.top+20);

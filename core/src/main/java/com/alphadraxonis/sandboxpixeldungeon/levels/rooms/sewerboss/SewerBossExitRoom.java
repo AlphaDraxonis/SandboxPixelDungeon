@@ -62,11 +62,24 @@ public class SewerBossExitRoom extends ExitRoom {
 		
 		int exitCell = level.pointToCell(c);
 		Painter.set( level, exitCell, Terrain.LOCKED_EXIT );
-		LevelTransition exit = new LevelTransition(level, exitCell, LevelTransition.Type.REGULAR_EXIT);
-		exit.top--;
-		exit.left--;
-		exit.right++;
-		if (Dungeon.customDungeon.getFloor(exit.destLevel) != null) level.transitions.put(exitCell,exit);
+
+
+		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultBelow();
+		LevelTransition exit = null;
+		if (Level.SURFACE.equals(dest)) {
+			exit = new LevelTransition(level, exitCell, LevelTransition.Type.SURFACE);
+			level.transitions.put(exitCell, exit);
+		} else {
+			if (Dungeon.customDungeon.getFloor(dest) != null) {
+				exit = new LevelTransition(level, exitCell, LevelTransition.Type.REGULAR_EXIT);
+				level.transitions.put(exitCell, exit);
+			}
+		}
+		if (exit != null) {
+			exit.top--;
+			exit.left--;
+			exit.right++;
+		}
 		
 		CustomTilemap vis = new SewerExit();
 		vis.pos(c.x-1, c.y);

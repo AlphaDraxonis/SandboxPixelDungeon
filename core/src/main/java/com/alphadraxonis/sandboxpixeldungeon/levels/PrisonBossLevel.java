@@ -181,8 +181,13 @@ public class PrisonBossLevel extends Level {
 	                                       new Point(8, 23), new Point(12, 23)};
 	
 	private void setMapStart(){
-		LevelTransition t = new LevelTransition(this, ENTRANCE_POS, LevelTransition.Type.REGULAR_ENTRANCE);
-		if (Dungeon.customDungeon.getFloor(t.destLevel) != null) transitions.put(ENTRANCE_POS, t);
+		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
+		if (Level.SURFACE.equals(dest)) {
+			transitions.put(ENTRANCE_POS, new LevelTransition(this, ENTRANCE_POS, LevelTransition.Type.SURFACE));
+		} else {
+			if (Dungeon.customDungeon.getFloor(dest) != null)
+				transitions.put(ENTRANCE_POS, new LevelTransition(this, ENTRANCE_POS, LevelTransition.Type.REGULAR_ENTRANCE));
+		}
 		
 		Painter.fill(this, 0, 0, 32, 32, Terrain.WALL);
 		
@@ -312,10 +317,22 @@ public class PrisonBossLevel extends Level {
 			cell += width();
 		}
 
-		LevelTransition exit = new LevelTransition(this, pointToCell(levelExit), LevelTransition.Type.REGULAR_EXIT);
-		exit.right+=2;
-		exit.bottom+=3;
-		if (Dungeon.customDungeon.getFloor(exit.destLevel) != null) transitions.put(exit.departCell, exit);
+		int exitCell = pointToCell(levelExit);
+		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultBelow();
+		LevelTransition exit = null;
+		if (Level.SURFACE.equals(dest)) {
+			exit = new LevelTransition(this, exitCell, LevelTransition.Type.SURFACE);
+			transitions.put(exitCell, exit);
+		} else {
+			if (Dungeon.customDungeon.getFloor(dest) != null) {
+				exit = new LevelTransition(this, exitCell, LevelTransition.Type.REGULAR_EXIT);
+				transitions.put(exitCell, exit);
+			}
+		}
+		if (exit != null) {
+			exit.right+=2;
+			exit.bottom+=3;
+		}
 	}
 	
 	//keep track of removed items as the level is changed. Dump them back into the level at the end.

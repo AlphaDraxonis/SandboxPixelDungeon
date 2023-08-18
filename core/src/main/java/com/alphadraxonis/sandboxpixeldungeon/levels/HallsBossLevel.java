@@ -118,8 +118,13 @@ public class HallsBossLevel extends Level {
 
 			if (i == 2) {
 				int entrance = (6 + i * 5) + (bottom - 1) * width();
-				LevelTransition t = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
-				if (Dungeon.customDungeon.getFloor(t.destLevel) != null) transitions.put(entrance, t);
+				String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
+				if (Level.SURFACE.equals(dest)) {
+					transitions.put(entrance, new LevelTransition(this, entrance, LevelTransition.Type.SURFACE));
+				} else {
+					if (Dungeon.customDungeon.getFloor(dest) != null)
+						transitions.put(entrance, new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+				}
 			}
 
 		}
@@ -157,11 +162,23 @@ public class HallsBossLevel extends Level {
 		Painter.fill(this, ROOM_LEFT+3, ROOM_TOP+2, 3, 4, Terrain.EMPTY );
 
 		int exitCell = width/2 + ((ROOM_TOP+1) * width);
-		LevelTransition exit = new LevelTransition(this, exitCell, LevelTransition.Type.REGULAR_EXIT);
-		exit.top--;
-		exit.left--;
-		exit.right++;
-		if (Dungeon.customDungeon.getFloor(exit.destLevel) != null) transitions.put(exitCell,exit);
+
+		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultBelow();
+		LevelTransition exit = null;
+		if (Level.SURFACE.equals(dest)) {
+			exit = new LevelTransition(this, exitCell, LevelTransition.Type.SURFACE);
+			transitions.put(exitCell, exit);
+		} else {
+			if (Dungeon.customDungeon.getFloor(dest) != null) {
+				exit = new LevelTransition(this, exitCell, LevelTransition.Type.REGULAR_EXIT);
+				transitions.put(exitCell, exit);
+			}
+		}
+		if (exit != null) {
+			exit.top--;
+			exit.left--;
+			exit.right++;
+		}
 
 		CustomTilemap vis = new CenterPieceVisuals();
 		vis.pos(ROOM_LEFT, ROOM_TOP+1);

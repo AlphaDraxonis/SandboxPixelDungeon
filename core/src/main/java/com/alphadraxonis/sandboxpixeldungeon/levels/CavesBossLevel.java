@@ -153,9 +153,20 @@ public class CavesBossLevel extends Level {
 		Painter.fill(this, 15, 0, 3, 3, Terrain.EXIT);
 
 		int exitCell = 16 + 2*width();
-		LevelTransition exit = new LevelTransition(this, exitCell, LevelTransition.Type.REGULAR_EXIT);
-		exit.set(14, 0, 18, 2);
-		if (Dungeon.customDungeon.getFloor(exit.destLevel) != null) transitions.put(exitCell, exit);
+		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultBelow();
+		LevelTransition exit = null;
+		if (Level.SURFACE.equals(dest)) {
+			exit = new LevelTransition(this, exitCell, LevelTransition.Type.SURFACE);
+			transitions.put(exitCell, exit);
+		} else {
+			if (Dungeon.customDungeon.getFloor(dest) != null) {
+				exit = new LevelTransition(this, exitCell, LevelTransition.Type.REGULAR_EXIT);
+				transitions.put(exitCell, exit);
+			}
+		}
+		if (exit != null) {
+			exit.set(14, 0, 18, 2);
+		}
 
 		CustomTilemap customVisuals = new CityEntrance();
 		customVisuals.setRect(0, 0, width(), 11);
@@ -514,8 +525,13 @@ public class CavesBossLevel extends Level {
 
 		Painter.set(this, entrance, Terrain.ENTRANCE);
 
-		LevelTransition t = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
-		if(Dungeon.customDungeon.getFloor(t.destLevel)!=null)transitions.put(entrance,t);
+		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
+		if (Level.SURFACE.equals(dest)) {
+			transitions.put(entrance, new LevelTransition(this, entrance, LevelTransition.Type.SURFACE));
+		} else {
+			if (Dungeon.customDungeon.getFloor(dest) != null)
+				transitions.put(entrance, new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+		}
 	}
 
 	private static short[] corner1 = {

@@ -54,8 +54,14 @@ public class SewerBossEntranceRoom extends EntranceRoom {
 			entrance = level.pointToCell(random(3));
 		} while (level.findMob(entrance) != null);
 		Painter.set( level, entrance, Terrain.ENTRANCE );
-		LevelTransition t = new LevelTransition(level, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
-		if (Dungeon.customDungeon.getFloor(t.destLevel) != null) level.transitions.put(entrance, t);
+
+		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
+		if (Level.SURFACE.equals(dest)) {
+			level.transitions.put(entrance, new LevelTransition(level, entrance, LevelTransition.Type.SURFACE));
+		} else {
+			if (Dungeon.customDungeon.getFloor(dest) != null)
+				level.transitions.put(entrance, new LevelTransition(level, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+		}
 
 		for (Room.Door door : connected.values()) {
 			door.set( Room.Door.Type.REGULAR );
