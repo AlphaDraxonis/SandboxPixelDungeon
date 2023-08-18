@@ -60,6 +60,7 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -748,8 +749,14 @@ public class CustomLevel extends Level {
         if (newHeight != level.height()) changeMapHeight(level, newHeight, addTop);
         if (newWidth != level.width()) changeMapWidth(level, newWidth, addLeft);
 
+        level.customWalls.clear();
+        level.customTiles.clear();
+        level.blobs.clear();
+
 //        customTiles = level.customTiles;//change
 //        customWalls = level.customWalls;//change
+
+        PathFinder.setMapSize(newWidth, newHeight);
 
         level.buildFlagMaps();
     }
@@ -780,10 +787,6 @@ public class CustomLevel extends Level {
         BiPredicate<Integer, Integer> isPositionValid = (old, neu) -> neu >= 0 && neu < newLength && level.insideMap(neu);
 
         recalculateNewPositions(newPosition, isPositionValid, level);
-
-        level.customWalls.clear();
-        level.customTiles.clear();
-        level.blobs.clear();
     }
 
     private static void changeMapWidth(Level level, int newWidth, int addLeft) {
@@ -813,10 +816,6 @@ public class CustomLevel extends Level {
                 && old / levelWidth == neu / newWidth;
 
         recalculateNewPositions(newPosition, isPositionValid, level);
-
-        level.customWalls.clear();
-        level.customTiles.clear();
-        level.blobs.clear();
     }
 
     private static void recalculateNewPositions(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid, Level level) {
