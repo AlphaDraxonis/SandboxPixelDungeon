@@ -358,7 +358,8 @@ public class DungeonTileSheet {
 		else if (tile == Terrain.CRYSTAL_DOOR)                      visual = DOOR_SIDEWAYS_OVERHANG_CRYSTAL;
 		else if (tile == Terrain.SECRET_DOOR
 				&& Dungeon.customDungeon.seeSecrets)				visual = DOOR_SIDEWAYS_OVERHANG_SECRET;
-		else if (below == Terrain.WALL_DECO)                        visual = WALL_OVERHANG_DECO;
+			//TODO currently this line on triggers on mining floors, do we want to make it universal?
+		else if (Dungeon.branch == 1 && below == Terrain.WALL_DECO) visual = WALL_OVERHANG_DECO;
 		else if (below == Terrain.BOOKSHELF)                        visual = WALL_OVERHANG_WOODEN;
 		else                                                        visual = WALL_OVERHANG;
 
