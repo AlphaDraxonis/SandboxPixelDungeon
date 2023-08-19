@@ -343,7 +343,7 @@ public abstract class Char extends Actor {
 				if (h.belongings.attackingWeapon() instanceof MissileWeapon
 						&& h.subClass == HeroSubClass.SNIPER
 						&& !Dungeon.level.adjacent(h.pos, enemy.pos)){
-					dr = 0;
+					dr = 0;//Sniper ignores enemy armor
 				}
 
 				if (h.buff(MonkEnergy.MonkAbility.UnarmedAbilityTracker.class) != null){
@@ -561,7 +561,7 @@ public abstract class Char extends Actor {
 		return (acuRoll * accMulti) >= defRoll;
 	}
 	
-	public int attackSkill( Char target ) {
+	public int attackSkill( Char target ) {//accurancy
 		return 0;
 	}
 	
@@ -573,7 +573,7 @@ public abstract class Char extends Actor {
 		return Messages.get(this, "def_verb");
 	}
 	
-	public int drRoll() {
+	public int drRoll() { //defenseRoll
 		return Random.NormalIntRange( 0 , Barkskin.currentLevel(this) );
 	}
 	

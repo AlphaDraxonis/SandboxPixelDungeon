@@ -114,6 +114,7 @@ public abstract class Mob extends Char {
     protected int target = -1;
 
     public int defenseSkill = 0;
+    public int baseAttackSkill = 0;//accuracy
 
     public int EXP = 1;
     public int maxLvl = Hero.MAX_LEVEL - 1;
@@ -657,6 +658,11 @@ public abstract class Mob extends Char {
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public int attackSkill(Char target) {
+        return baseAttackSkill;
     }
 
     @Override

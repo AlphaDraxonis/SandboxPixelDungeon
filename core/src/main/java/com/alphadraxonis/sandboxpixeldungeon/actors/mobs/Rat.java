@@ -22,7 +22,6 @@
 package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
-import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.Ratmogrify;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.RatSprite;
 import com.watabou.utils.Bundle;
@@ -35,6 +34,7 @@ public class Rat extends Mob {
 		
 		HP = HT = 8;
 		defenseSkill = 2;
+		baseAttackSkill = 8;
 		
 		maxLvl = 5;
 	}
@@ -53,10 +53,10 @@ public class Rat extends Mob {
 		return Random.NormalIntRange( 1, 4 );
 	}
 	
-	@Override
-	public int attackSkill( Char target ) {
-		return 8;
-	}
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 8;
+//	}
 	
 	@Override
 	public int drRoll() {
