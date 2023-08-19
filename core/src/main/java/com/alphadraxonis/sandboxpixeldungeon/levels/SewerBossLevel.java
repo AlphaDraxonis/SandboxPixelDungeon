@@ -32,6 +32,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.builders.Builder;
 import com.alphadraxonis.sandboxpixeldungeon.levels.builders.FigureEightBuilder;
+import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.painters.Painter;
 import com.alphadraxonis.sandboxpixeldungeon.levels.painters.SewerPainter;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
@@ -215,8 +216,13 @@ public class SewerBossLevel extends SewerLevel {
 	@Override
 	public Group addVisuals() {
 		super.addVisuals();
-		if (map[exit()-1] != Terrain.WALL_DECO) visuals.add(new PrisonLevel.Torch(exit()-1));
-		if (map[exit()+1] != Terrain.WALL_DECO) visuals.add(new PrisonLevel.Torch(exit()+1));
+		LevelTransition t = getTransition(LevelTransition.Type.REGULAR_EXIT);
+		if (t != null && t.type == LevelTransition.Type.REGULAR_EXIT) {
+			if (map[t.cell() - 1] != Terrain.WALL_DECO)
+				visuals.add(new PrisonLevel.Torch(t.cell() - 1));
+			if (map[t.cell() + 1] != Terrain.WALL_DECO)
+				visuals.add(new PrisonLevel.Torch(t.cell() + 1));
+		}
 		return visuals;
 	}
 	
