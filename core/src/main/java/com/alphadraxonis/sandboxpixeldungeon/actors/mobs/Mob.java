@@ -52,6 +52,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.duelist.Feint;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.DirectableAlly;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
@@ -65,6 +66,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.TimekeepersHourglas
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.RingOfWealth;
 import com.alphadraxonis.sandboxpixeldungeon.items.stones.StoneOfAggression;
+import com.alphadraxonis.sandboxpixeldungeon.items.stones.StoneOfAugmentation;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.SpiritBow;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.enchantments.Lucky;
@@ -984,6 +986,36 @@ public abstract class Mob extends Char {
         for (Buff b : buffs(ChampionEnemy.class)) {
             desc += "\n\n_" + Messages.titleCase(b.name()) + "_\n" + b.desc();
         }
+
+        Mob defaultStats = DefaultStatsCache.getDefaultObject(getClass());
+        if (defaultStats != null) {
+            if (defaultStats.HT != HT || defaultStats.baseSpeed != baseSpeed
+                    || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
+                    || defaultStats.damageRollMin != damageRollMin || defaultStats.damageRollMax != damageRollMax
+                    || defaultStats.damageReductionMax != damageReductionMax) {
+                desc += "\n\n"+Messages.get(Mob.class, "base_stats_changed");
+                if (defaultStats.HT != HT) desc += "\n\n"+Messages.get(Mob.class, "hp")+": " + defaultStats.HT + " -> _" + HT+"_";
+                if (defaultStats.baseSpeed != baseSpeed)
+                    desc += "\n"+Messages.get(StoneOfAugmentation.WndAugment.class, "speed")+": " + defaultStats.baseSpeed + " -> _" + baseSpeed+"_";
+                if (defaultStats.attackSkill != attackSkill)
+                    desc += "\n"+Messages.get(Mob.class, "accuracy")+": " + defaultStats.attackSkill + " -> _" + attackSkill+"_";
+                if (defaultStats.defenseSkill != defenseSkill)
+                    desc += "\n"+Messages.get(StoneOfAugmentation.WndAugment.class,"evasion")+": " + defaultStats.defenseSkill + " -> _" + defenseSkill+"_";
+                if (defaultStats.damageReductionMax != damageReductionMax)
+                    desc += "\n"+Messages.get(Mob.class, "armor")+": " + defaultStats.damageReductionMax + " -> _" + damageReductionMax+"_";
+                if (defaultStats.damageRollMin != damageRollMin)
+                    desc += "\n"+Messages.get(Mob.class, "dmg_min")+": " + defaultStats.damageRollMin + " -> _" + damageRollMin+"_";
+                if (defaultStats.damageRollMax != damageRollMax)
+                    desc += "\n"+Messages.get(Mob.class, "dmg_max")+": " + defaultStats.damageRollMax + " -> _" + damageRollMax+"_";
+            }
+        }
+        baseSpeed = 2;
+        damageReductionMax = 5;
+        damageRollMin = 10;
+        damageRollMax = 15;
+        attackSkill = 4;
+        defenseSkill = 1000;
+        HT = 5000;
 
         return desc;
     }

@@ -1,5 +1,17 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor;
 
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Bee;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Brute;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Goo;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GreatCrab;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Piranha;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Pylon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Wraith;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogDzewa;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogFist;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
 import com.alphadraxonis.sandboxpixeldungeon.items.food.Food;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
@@ -22,8 +34,8 @@ public class DefaultStatsCache {
 
     //Mobs exclude Bee, allBrute, Goo, GreatCrab, allMimics, allPiranha, Pylon, allStatue, allWraiths, YogDzewa, YogFist, allNPC
     //TODO maybe add attackSpeed (attackDelay)
-    //HT (current HP) and HP (max HP)
-    //base Speed
+    //HT (max HP)
+    //baseSpeed
     //view distance (exclude Hero)
     //EXP (xp on death)
     //maxLevel (hero level until they drop xp incl)
@@ -43,6 +55,15 @@ public class DefaultStatsCache {
     public static <T extends Bundlable> T getDefaultObject(Class<T> clazz) {
         T ret = (T) cache.get(clazz);
         if (ret == null) {
+
+            if (NPC.class.isAssignableFrom(clazz) || Mimic.class.isAssignableFrom(clazz)
+                    || Brute.class.isAssignableFrom(clazz) || Piranha.class.isAssignableFrom(clazz)
+                    || Statue.class.isAssignableFrom(clazz) || Bee.class.isAssignableFrom(clazz)
+                    || Wraith.class.isAssignableFrom(clazz) || Goo.class.isAssignableFrom(clazz)
+                    || GreatCrab.class.isAssignableFrom(clazz) || Pylon.class.isAssignableFrom(clazz)
+                    || YogDzewa.class.isAssignableFrom(clazz) || YogFist.class.isAssignableFrom(clazz))
+                return null;
+
             ret = Reflection.newInstance(clazz);
             cache.put(clazz, ret);
         }
