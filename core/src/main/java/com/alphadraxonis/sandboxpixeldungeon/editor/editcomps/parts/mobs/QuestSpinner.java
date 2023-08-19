@@ -29,18 +29,19 @@ public class QuestSpinner extends Spinner {
         private final Quest quest;
 
         public QuestSpinnerModel(Quest quest) {
-            super(true, quest.type() + 2, (Object[]) createData(quest));
+            super(true, quest.type() + 3, (Object[]) createData(quest));
             this.quest = quest;
         }
 
         @Override
         protected Image getIcon(Object value) {
             int index = getCurrentIndex();
-            quest.setType(index-2);
+            quest.setType(index-3);
             Image icon = quest.getIcon();
             if (icon == null) {
                 if (index == 0) return null;
-                if (index == 1) return new ItemSprite(ItemSpriteSheet.SOMETHING);
+                if (index == 1) return null;
+                if (index == 2) return new ItemSprite(ItemSpriteSheet.SOMETHING);
             }
             return icon;
         }
@@ -51,11 +52,12 @@ public class QuestSpinner extends Spinner {
         }
 
         private static String[] createData(Quest quest) {
-            String[] ret = new String[quest.getNumQuests() + 2];
-            ret[0] = "none";
-            ret[1] = "random";
-            for (int i = 2; i < ret.length; i++) {
-                ret[i] = quest.getMessageString(i - 2);
+            String[] ret = new String[quest.getNumQuests() + 3];
+            ret[0] = "based_on_depth";
+            ret[1] = "none";
+            ret[2] = "random";
+            for (int i = 3; i < ret.length; i++) {
+                ret[i] = quest.getMessageString(i - 3);
             }
             return ret;
         }

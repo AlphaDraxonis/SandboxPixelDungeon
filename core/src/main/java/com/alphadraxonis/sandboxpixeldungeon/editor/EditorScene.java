@@ -174,6 +174,7 @@ public class EditorScene extends PixelScene {
         else {
             Camera.main.scroll.x = -(Camera.main.width - customLevel.width() * DungeonTilemap.SIZE) / 2f - DungeonTilemap.SIZE / 2f;
             Camera.main.scroll.y = -(Camera.main.height - customLevel.height() * DungeonTilemap.SIZE) / 2f;
+            mainCameraPos = Camera.main.scroll;
         }
 
         scene = this;

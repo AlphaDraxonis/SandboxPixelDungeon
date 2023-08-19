@@ -123,6 +123,7 @@ public class FloorOverviewScene extends PixelScene {
         instance. btnExit.setPos(Camera.main.width - instance.btnExit.width(), 0);
         instance.add(instance.btnExit);
 //        instance.bringToFront(instance.btnExit);
+        instance.btnExit.givePointerPriority();
     }
 
     @Override

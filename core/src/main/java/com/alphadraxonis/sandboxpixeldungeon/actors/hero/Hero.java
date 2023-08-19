@@ -136,6 +136,8 @@ import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.Scimitar;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
+import com.alphadraxonis.sandboxpixeldungeon.levels.CavesBossLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.CityBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.Chasm;
@@ -1708,7 +1710,8 @@ public class Hero extends Char {
 
             curAction = new HeroAction.Alchemy(cell);
 
-        } else if (TileItem.isSignTerrainCell(Dungeon.level.map[cell]) && cell != pos) {
+        } else if (TileItem.isSignTerrainCell(Dungeon.level.map[cell]) && cell != pos &&
+                !(Dungeon.level instanceof CavesBossLevel || Dungeon.level instanceof CityBossLevel)) {
 
             curAction = new HeroAction.ReadSign(cell);
 
