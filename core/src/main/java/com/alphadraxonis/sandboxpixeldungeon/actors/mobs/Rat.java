@@ -25,7 +25,6 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.Ratmogrify;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.RatSprite;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 public class Rat extends Mob {
 
@@ -34,7 +33,10 @@ public class Rat extends Mob {
 		
 		HP = HT = 8;
 		defenseSkill = 2;
-		baseAttackSkill = 8;
+		attackSkill = 8;
+		damageRollMin = 1;
+		damageRollMax = 4;
+		damageReductionMax = 1;
 		
 		maxLvl = 5;
 	}
@@ -48,20 +50,20 @@ public class Rat extends Mob {
 		return super.act();
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 1, 4 );
-	}
-	
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 1, 4 );
+//	}
+//
 //	@Override
 //	public int attackSkill( Char target ) {
 //		return 8;
 //	}
-	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 1);
-	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 1);
+//	}
 
 	private static final String RAT_ALLY = "rat_ally";
 

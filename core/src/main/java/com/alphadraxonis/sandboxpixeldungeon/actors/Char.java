@@ -133,6 +133,8 @@ public abstract class Char extends Actor {
 	
 	public int HT;
 	public int HP;
+
+	public int damageReductionMax = 0;
 	
 	protected float baseSpeed	= 1;
 	protected PathFinder.Path path;
@@ -286,7 +288,8 @@ public abstract class Char extends Actor {
 	protected static final String TAG_HT    = "HT";
 	protected static final String TAG_SHLD  = "SHLD";
 	protected static final String BUFFS	    = "buffs";
-	
+	protected static final String DAMAGE_REDUCTION_MAX= "damage_reduction_max";
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		
@@ -296,6 +299,7 @@ public abstract class Char extends Actor {
 		bundle.put( TAG_HP, HP );
 		bundle.put( TAG_HT, HT );
 		bundle.put( BUFFS, buffs );
+		bundle.put( DAMAGE_REDUCTION_MAX, damageReductionMax );
 	}
 	
 	@Override
@@ -306,7 +310,8 @@ public abstract class Char extends Actor {
 		pos = bundle.getInt( POS );
 		HP = bundle.getInt( TAG_HP );
 		HT = bundle.getInt( TAG_HT );
-		
+		damageReductionMax = bundle.getInt( DAMAGE_REDUCTION_MAX );
+
 		for (Bundlable b : bundle.getCollection( BUFFS )) {
 			if (b != null) {
 				((Buff)b).attachTo( this );
@@ -574,7 +579,7 @@ public abstract class Char extends Actor {
 	}
 	
 	public int drRoll() { //defenseRoll
-		return Random.NormalIntRange( 0 , Barkskin.currentLevel(this) );
+		return Random.NormalIntRange( 0 , Barkskin.currentLevel(this) ) + Random.NormalIntRange(0, damageReductionMax);
 	}
 	
 	public int damageRoll() {

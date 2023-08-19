@@ -55,6 +55,10 @@ public class Succubus extends Mob {
 		
 		HP = HT = 80;
 		defenseSkill = 25;
+		attackSkill = 40;
+		damageRollMin = 25;
+		damageRollMax = 30;
+		damageReductionMax = 10;
 		viewDistance = Light.DISTANCE;
 		
 		EXP = 12;
@@ -66,10 +70,10 @@ public class Succubus extends Mob {
 		properties.add(Property.DEMONIC);
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 25, 30 );
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 25, 30 );
+//	}
 	
 	@Override
 	public int attackProc( Char enemy, int damage ) {
@@ -152,15 +156,15 @@ public class Succubus extends Mob {
 		return true;
 	}
 	
-	@Override
-	public int attackSkill( Char target ) {
-		return 40;
-	}
-	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 10);
-	}
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 40;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 10);
+//	}
 
 	@Override
 	public Item createLoot() {

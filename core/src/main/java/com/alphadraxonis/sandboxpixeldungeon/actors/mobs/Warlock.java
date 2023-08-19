@@ -50,6 +50,10 @@ public class Warlock extends Mob implements Callback {
 		
 		HP = HT = 70;
 		defenseSkill = 18;
+		attackSkill = 25;
+		damageRollMin = 12;
+		damageRollMax = 18;
+		damageReductionMax = 8;
 		
 		EXP = 11;
 		maxLvl = 21;
@@ -60,20 +64,20 @@ public class Warlock extends Mob implements Callback {
 		properties.add(Property.UNDEAD);
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 12, 18 );
-	}
-	
-	@Override
-	public int attackSkill( Char target ) {
-		return 25;
-	}
-	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 8);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 12, 18 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 25;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 8);
+//	}
 	
 	@Override
 	protected boolean canAttack( Char enemy ) {

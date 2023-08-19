@@ -46,6 +46,10 @@ public class DM100 extends Mob implements Callback {
 		
 		HP = HT = 20;
 		defenseSkill = 8;
+		damageRollMin = 2;
+		damageRollMax = 8;
+		attackSkill = 11;
+		damageReductionMax = 4;
 		
 		EXP = 6;
 		maxLvl = 13;
@@ -57,20 +61,20 @@ public class DM100 extends Mob implements Callback {
 		properties.add(Property.INORGANIC);
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 2, 8 );
-	}
-	
-	@Override
-	public int attackSkill( Char target ) {
-		return 11;
-	}
-	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 4);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 2, 8 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 11;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 4);
+//	}
 
 	@Override
 	protected boolean canAttack( Char enemy ) {

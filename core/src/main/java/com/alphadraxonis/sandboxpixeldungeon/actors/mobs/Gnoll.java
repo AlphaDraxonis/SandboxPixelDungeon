@@ -21,10 +21,8 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
-import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.items.Gold;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.GnollSprite;
-import com.watabou.utils.Random;
 
 public class Gnoll extends Mob {
 	
@@ -33,6 +31,10 @@ public class Gnoll extends Mob {
 		
 		HP = HT = 12;
 		defenseSkill = 4;
+		attackSkill = 10;
+		damageRollMin = 1;
+		damageRollMax = 6;
+		damageReductionMax = 2;
 		
 		EXP = 2;
 		maxLvl = 8;
@@ -41,18 +43,18 @@ public class Gnoll extends Mob {
 		lootChance = 0.5f;
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 1, 6 );
-	}
-	
-	@Override
-	public int attackSkill( Char target ) {
-		return 10;
-	}
-	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 2);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 1, 6 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 10;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 2);
+//	}
 }

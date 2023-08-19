@@ -634,6 +634,10 @@ public class YogDzewa extends Mob {
 
 			HP = HT = 20;
 			defenseSkill = 12;
+			attackSkill = 30;
+			damageRollMin = 15;
+			damageRollMax = 25;
+			damageReductionMax = 4;
 			viewDistance = Light.DISTANCE;
 
 			EXP = 5;
@@ -643,20 +647,20 @@ public class YogDzewa extends Mob {
 			properties.add(Property.BOSS_MINION);
 		}
 
-		@Override
-		public int attackSkill( Char target ) {
-			return 30;
-		}
-
-		@Override
-		public int damageRoll() {
-			return Random.NormalIntRange( 15, 25 );
-		}
-
-		@Override
-		public int drRoll() {
-			return super.drRoll() + Random.NormalIntRange(0, 4);
-		}
+//		@Override
+//		public int attackSkill( Char target ) {
+//			return 30;
+//		}
+//
+//		@Override
+//		public int damageRoll() {
+//			return Random.NormalIntRange( 15, 25 );
+//		}
+//
+//		@Override
+//		public int drRoll() {
+//			return super.drRoll() + Random.NormalIntRange(0, 4);
+//		}
 
 	}
 

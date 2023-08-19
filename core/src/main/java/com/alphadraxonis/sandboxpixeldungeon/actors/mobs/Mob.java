@@ -113,8 +113,9 @@ public abstract class Mob extends Char {
 
     protected int target = -1;
 
-    public int defenseSkill = 0;
-    public int baseAttackSkill = 0;//accuracy
+    public int defenseSkill = 0;//evasion
+    public int attackSkill = 0;//accuracy
+    public int damageRollMin = 0, damageRollMax = 0;
 
     public int EXP = 1;
     public int maxLvl = Hero.MAX_LEVEL - 1;
@@ -142,6 +143,10 @@ public abstract class Mob extends Char {
     private static final String SEEN = "seen";
     private static final String TARGET = "target";
     private static final String MAX_LVL = "max_lvl";
+    private static final String DEFENSE_SKILL = "defense_skill";
+    private static final String ATTACK_SKILL = "attack_skill";
+    private static final String DAMAGE_ROLL_MIN = "damage_roll_min";
+    private static final String DAMAGE_ROLL_MAX = "damage_roll_max";
 
     private static final String ENEMY_ID = "enemy_id";
 
@@ -164,6 +169,10 @@ public abstract class Mob extends Char {
         bundle.put(SEEN, enemySeen);
         bundle.put(TARGET, target);
         bundle.put(MAX_LVL, maxLvl);
+        bundle.put(DEFENSE_SKILL, defenseSkill);
+        bundle.put(ATTACK_SKILL, attackSkill);
+        bundle.put(DAMAGE_ROLL_MIN, damageRollMin);
+        bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
 
         if (enemy != null) {
             bundle.put(ENEMY_ID, enemy.id());
@@ -199,6 +208,13 @@ public abstract class Mob extends Char {
         }
         //no need to actually save this, must be false
         firstAdded = false;
+
+        if (bundle.contains(DEFENSE_SKILL)) {
+            bundle.put(DEFENSE_SKILL, defenseSkill);
+            bundle.put(ATTACK_SKILL, attackSkill);
+            bundle.put(DAMAGE_ROLL_MIN, damageRollMin);
+            bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
+        }
     }
 
     //mobs need to remember their targets after every actor is added
@@ -662,7 +678,12 @@ public abstract class Mob extends Char {
 
     @Override
     public int attackSkill(Char target) {
-        return baseAttackSkill;
+        return attackSkill;
+    }
+
+    @Override
+    public int damageRoll() {
+        return Random.NormalIntRange(damageRollMin, damageRollMax);
     }
 
     @Override

@@ -49,6 +49,10 @@ public class Thief extends Mob {
 
         HP = HT = 20;
         defenseSkill = 12;
+        attackSkill = 12;
+        damageRollMin = 1;
+        damageRollMax = 10;
+        damageReductionMax = 3;
 
         EXP = 5;
         maxLvl = 11;
@@ -82,10 +86,10 @@ public class Thief extends Mob {
         else return super.speed();
     }
 
-    @Override
-    public int damageRoll() {
-        return Random.NormalIntRange(1, 10);
-    }
+//    @Override
+//    public int damageRoll() {
+//        return Random.NormalIntRange(1, 10);
+//    }
 
     @Override
     public float attackDelay() {
@@ -117,15 +121,15 @@ public class Thief extends Mob {
         return super.createLoot();
     }
 
-    @Override
-    public int attackSkill(Char target) {
-        return 12;
-    }
-
-    @Override
-    public int drRoll() {
-        return super.drRoll() + Random.NormalIntRange(0, 3);
-    }
+//    @Override
+//    public int attackSkill(Char target) {
+//        return 12;
+//    }
+//
+//    @Override
+//    public int drRoll() {
+//        return super.drRoll() + Random.NormalIntRange(0, 3);
+//    }
 
     @Override
     public int attackProc(Char enemy, int damage) {

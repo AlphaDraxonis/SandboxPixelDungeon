@@ -43,6 +43,10 @@ public class Scorpio extends Mob {
 		
 		HP = HT = 110;
 		defenseSkill = 24;
+		attackSkill = 36;
+		damageRollMin = 30;
+		damageRollMax = 40;
+		damageReductionMax = 16;
 		viewDistance = Light.DISTANCE;
 		
 		EXP = 14;
@@ -54,20 +58,20 @@ public class Scorpio extends Mob {
 		properties.add(Property.DEMONIC);
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 30, 40 );
-	}
-	
-	@Override
-	public int attackSkill( Char target ) {
-		return 36;
-	}
-	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 16);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 30, 40 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 36;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 16);
+//	}
 	
 	@Override
 	protected boolean canAttack( Char enemy ) {

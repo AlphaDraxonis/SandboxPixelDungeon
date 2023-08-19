@@ -46,6 +46,10 @@ public abstract class Shaman extends Mob {
 	{
 		HP = HT = 35;
 		defenseSkill = 15;
+		attackSkill = 18;
+		damageRollMin = 5;
+		damageRollMax = 10;
+		damageReductionMax = 6;
 		
 		EXP = 8;
 		maxLvl = 16;
@@ -54,20 +58,20 @@ public abstract class Shaman extends Mob {
 		lootChance = 0.03f; //initially, see lootChance()
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 5, 10 );
-	}
-	
-	@Override
-	public int attackSkill( Char target ) {
-		return 18;
-	}
-	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 6);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 5, 10 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 18;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 6);
+//	}
 
 	@Override
 	protected boolean canAttack( Char enemy ) {

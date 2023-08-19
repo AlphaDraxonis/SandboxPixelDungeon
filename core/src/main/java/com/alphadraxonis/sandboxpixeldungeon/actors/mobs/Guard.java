@@ -38,7 +38,6 @@ import com.alphadraxonis.sandboxpixeldungeon.sprites.GuardSprite;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
-import com.watabou.utils.Random;
 
 public class Guard extends Mob {
 
@@ -50,6 +49,10 @@ public class Guard extends Mob {
 
 		HP = HT = 40;
 		defenseSkill = 10;
+		attackSkill = 12;
+		damageRollMin = 4;
+		damageRollMax = 12;
+		damageReductionMax = 7;
 
 		EXP = 7;
 		maxLvl = 14;
@@ -62,10 +65,10 @@ public class Guard extends Mob {
 		HUNTING = new Hunting();
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange(4, 12);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange(4, 12);
+//	}
 
 	private boolean chain(int target){
 		if (chainsUsed || enemy.properties().contains(Property.IMMOVABLE))
@@ -130,15 +133,15 @@ public class Guard extends Mob {
 		}
 	}
 
-	@Override
-	public int attackSkill( Char target ) {
-		return 12;
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 7);
-	}
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 12;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 7);
+//	}
 
 	@Override
 	public float lootChance() {

@@ -41,6 +41,10 @@ public class Monk extends Mob {
 		
 		HP = HT = 70;
 		defenseSkill = 30;
+		attackSkill = 30;
+		damageRollMin = 12;
+		damageRollMax = 25;
+		damageReductionMax = 2;
 		
 		EXP = 11;
 		maxLvl = 21;
@@ -51,25 +55,25 @@ public class Monk extends Mob {
 		properties.add(Property.UNDEAD);
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 12, 25 );
-	}
-	
-	@Override
-	public int attackSkill( Char target ) {
-		return 30;
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 12, 25 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 30;
+//	}
 	
 	@Override
 	public float attackDelay() {
 		return super.attackDelay()*0.5f;
 	}
 	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 2);
-	}
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 2);
+//	}
 	
 	@Override
 	public void rollToDropLoot() {

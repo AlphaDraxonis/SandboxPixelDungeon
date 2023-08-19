@@ -27,7 +27,6 @@ import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfHealing;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.BatSprite;
-import com.watabou.utils.Random;
 
 public class Bat extends Mob {
 
@@ -36,6 +35,10 @@ public class Bat extends Mob {
 		
 		HP = HT = 30;
 		defenseSkill = 15;
+		attackSkill = 16;
+		damageRollMin = 5;
+		damageRollMax = 18;
+		damageReductionMax = 4;
 		baseSpeed = 2f;
 		
 		EXP = 7;
@@ -47,20 +50,20 @@ public class Bat extends Mob {
 		lootChance = 0.1667f; //by default, see lootChance()
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 5, 18 );
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 5, 18 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 16;
+//	}
 	
-	@Override
-	public int attackSkill( Char target ) {
-		return 16;
-	}
-	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 4);
-	}
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 4);
+//	}
 	
 	@Override
 	public int attackProc( Char enemy, int damage ) {

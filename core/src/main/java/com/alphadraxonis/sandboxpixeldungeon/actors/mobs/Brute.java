@@ -22,7 +22,6 @@
 package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
-import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.ShieldBuff;
@@ -43,6 +42,8 @@ public class Brute extends Mob {
 		
 		HP = HT = 40;
 		defenseSkill = 15;
+		attackSkill = 20;
+		damageReductionMax = 8;
 		
 		EXP = 8;
 		maxLvl = 16;
@@ -60,15 +61,15 @@ public class Brute extends Mob {
 			Random.NormalIntRange( 5, 25 );
 	}
 	
-	@Override
-	public int attackSkill( Char target ) {
-		return 20;
-	}
-	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 8);
-	}
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 20;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 8);
+//	}
 
 	@Override
 	public void die(Object cause) {

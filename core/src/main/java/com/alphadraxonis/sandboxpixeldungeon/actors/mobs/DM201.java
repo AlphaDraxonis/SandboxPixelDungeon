@@ -37,16 +37,17 @@ public class DM201 extends DM200 {
 		spriteClass = DM201Sprite.class;
 
 		HP = HT = 120;
+		damageRollMin = 15;
 
 		properties.add(Property.IMMOVABLE);
 
 		HUNTING = new Mob.Hunting();
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 15, 25 );
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 15, 25 );
+//	}
 
 	private boolean threatened = false;
 

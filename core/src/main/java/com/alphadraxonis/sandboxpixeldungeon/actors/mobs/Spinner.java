@@ -45,6 +45,10 @@ public class Spinner extends Mob {
 
 		HP = HT = 50;
 		defenseSkill = 17;
+		attackSkill = 22;
+		damageRollMin = 10;
+		damageRollMax = 20;
+		damageReductionMax = 6;
 
 		EXP = 9;
 		maxLvl = 17;
@@ -56,20 +60,20 @@ public class Spinner extends Mob {
 		FLEEING = new Fleeing();
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange(10, 20);
-	}
-
-	@Override
-	public int attackSkill(Char target) {
-		return 22;
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 6);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange(10, 20);
+//	}
+//
+//	@Override
+//	public int attackSkill(Char target) {
+//		return 22;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 6);
+//	}
 
 	private int webCoolDown = 0;
 	private int lastEnemyPos = -1;

@@ -41,6 +41,8 @@ public class FetidRat extends Rat {
 
         HP = HT = 20;
         defenseSkill = 5;
+        attackSkill = 12;
+        damageReductionMax = 2;
 
         EXP = 4;
 
@@ -60,15 +62,15 @@ public class FetidRat extends Rat {
         quest = questGiver.id();
     }
 
-    @Override
-    public int attackSkill(Char target) {
-        return 12;
-    }
-
-    @Override
-    public int drRoll() {
-        return super.drRoll() + Random.NormalIntRange(0, 2);
-    }
+//    @Override
+//    public int attackSkill(Char target) {
+//        return 12;
+//    }
+//
+//    @Override
+//    public int drRoll() {
+//        return super.drRoll() + Random.NormalIntRange(0, 2);
+//    }
 
     @Override
     public int attackProc(Char enemy, int damage) {

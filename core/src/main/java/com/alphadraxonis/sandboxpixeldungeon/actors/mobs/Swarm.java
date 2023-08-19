@@ -46,6 +46,9 @@ public class Swarm extends Mob {
 		
 		HP = HT = 50;
 		defenseSkill = 5;
+		attackSkill = 10;
+		damageRollMin = 1;
+		damageRollMax = 4;
 
 		EXP = 3;
 		maxLvl = 9;
@@ -75,10 +78,10 @@ public class Swarm extends Mob {
 		if (generation > 0) EXP = 0;
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 1, 4 );
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 1, 4 );
+//	}
 	
 	@Override
 	public int defenseProc( Char enemy, int damage ) {
@@ -115,10 +118,10 @@ public class Swarm extends Mob {
 		return super.defenseProc(enemy, damage);
 	}
 	
-	@Override
-	public int attackSkill( Char target ) {
-		return 10;
-	}
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 10;
+//	}
 	
 	private Swarm split() {
 		Swarm clone = new Swarm();

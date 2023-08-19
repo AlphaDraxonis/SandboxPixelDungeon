@@ -47,6 +47,7 @@ public class GnollTrickster extends Gnoll {
 
 		HP = HT = 20;
 		defenseSkill = 5;
+		attackSkill = 16;
 
 		EXP = 5;
 
@@ -70,10 +71,10 @@ public class GnollTrickster extends Gnoll {
 		quest = questGiver.id();
 	}
 
-	@Override
-	public int attackSkill( Char target ) {
-		return 16;
-	}
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 16;
+//	}
 
 	@Override
 	protected boolean canAttack( Char enemy ) {

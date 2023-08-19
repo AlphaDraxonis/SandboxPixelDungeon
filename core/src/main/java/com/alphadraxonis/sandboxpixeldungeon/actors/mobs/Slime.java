@@ -22,13 +22,11 @@
 package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
-import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.SlimeSprite;
-import com.watabou.utils.Random;
 
 public class Slime extends Mob {
 	
@@ -37,6 +35,9 @@ public class Slime extends Mob {
 		
 		HP = HT = 20;
 		defenseSkill = 5;
+		attackSkill = 12;
+		damageRollMin = 2;
+		damageRollMax = 5;
 		
 		EXP = 4;
 		maxLvl = 9;
@@ -44,15 +45,15 @@ public class Slime extends Mob {
 		lootChance = 0.2f; //by default, see lootChance()
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 2, 5 );
-	}
-	
-	@Override
-	public int attackSkill( Char target ) {
-		return 12;
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 2, 5 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 12;
+//	}
 	
 	@Override
 	public void damage(int dmg, Object src) {

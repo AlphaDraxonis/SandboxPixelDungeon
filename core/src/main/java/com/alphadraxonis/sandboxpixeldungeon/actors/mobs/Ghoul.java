@@ -47,6 +47,10 @@ public class Ghoul extends Mob {
 		
 		HP = HT = 45;
 		defenseSkill = 20;
+		attackSkill = 24;
+		damageRollMin = 16;
+		damageRollMax = 22;
+		damageReductionMax = 4;
 		
 		EXP = 5;
 		maxLvl = 20;
@@ -61,20 +65,20 @@ public class Ghoul extends Mob {
 		properties.add(Property.UNDEAD);
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 16, 22 );
-	}
-
-	@Override
-	public int attackSkill( Char target ) {
-		return 24;
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 4);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 16, 22 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 24;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 4);
+//	}
 
 	@Override
 	public float spawningWeight() {

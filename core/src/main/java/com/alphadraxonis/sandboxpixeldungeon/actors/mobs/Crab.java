@@ -21,10 +21,8 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
-import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.items.food.MysteryMeat;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CrabSprite;
-import com.watabou.utils.Random;
 
 public class Crab extends Mob {
 
@@ -34,6 +32,10 @@ public class Crab extends Mob {
 		HP = HT = 15;
 		defenseSkill = 5;
 		baseSpeed = 2f;
+		attackSkill = 12;
+		damageReductionMax = 4;
+		damageRollMin = 1;
+		damageRollMax = 7;
 		
 		EXP = 4;
 		maxLvl = 9;
@@ -42,18 +44,18 @@ public class Crab extends Mob {
 		lootChance = 0.167f;
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 1, 7 );
-	}
-	
-	@Override
-	public int attackSkill( Char target ) {
-		return 12;
-	}
-	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 4);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 1, 7 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 12;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 4);
+//	}
 }

@@ -42,6 +42,10 @@ public class Skeleton extends Mob {
 		
 		HP = HT = 25;
 		defenseSkill = 9;
+		attackSkill = 12;
+		damageRollMin = 2;
+		damageRollMax = 10;
+		defenseSkill = 5;
 		
 		EXP = 5;
 		maxLvl = 10;
@@ -53,10 +57,10 @@ public class Skeleton extends Mob {
 		properties.add(Property.INORGANIC);
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 2, 10 );
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 2, 10 );
+//	}
 	
 	@Override
 	public void die( Object cause ) {
@@ -102,14 +106,14 @@ public class Skeleton extends Mob {
 		return super.createLoot();
 	}
 
-	@Override
-	public int attackSkill( Char target ) {
-		return 12;
-	}
-	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 5);
-	}
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 12;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 5);
+//	}
 
 }

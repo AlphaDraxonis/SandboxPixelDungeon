@@ -29,7 +29,6 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Burning;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Cripple;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.RotLasherSprite;
-import com.watabou.utils.Random;
 
 public class RotLasher extends Mob {
 
@@ -38,6 +37,10 @@ public class RotLasher extends Mob {
 
 		HP = HT = 40;
 		defenseSkill = 0;
+		attackSkill = 15;
+		damageRollMin = 8;
+		damageRollMax = 15;
+		damageReductionMax = 8;
 
 		EXP = 1;
 
@@ -90,20 +93,20 @@ public class RotLasher extends Mob {
 		return true;
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange(8, 15);
-	}
-
-	@Override
-	public int attackSkill( Char target ) {
-		return 15;
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 8);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange(8, 15);
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 15;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 8);
+//	}
 	
 	{
 		immunities.add( ToxicGas.class );

@@ -50,6 +50,7 @@ public class Necromancer extends Mob {
 		
 		HP = HT = 40;
 		defenseSkill = 14;
+		damageReductionMax = 5;
 		
 		EXP = 7;
 		maxLvl = 14;
@@ -79,10 +80,10 @@ public class Necromancer extends Mob {
 		return super.act();
 	}
 	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 5);
-	}
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 5);
+//	}
 	
 	@Override
 	public float lootChance() {

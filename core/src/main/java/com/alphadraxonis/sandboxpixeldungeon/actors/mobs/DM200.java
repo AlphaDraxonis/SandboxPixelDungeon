@@ -22,7 +22,6 @@
 package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
-import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.ToxicGas;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -42,6 +41,10 @@ public class DM200 extends Mob {
 
 		HP = HT = 80;
 		defenseSkill = 12;
+		damageRollMin = 10;
+		damageRollMax = 25;
+		attackSkill = 20;
+		damageReductionMax = 8;
 
 		EXP = 9;
 		maxLvl = 17;
@@ -55,20 +58,20 @@ public class DM200 extends Mob {
 		HUNTING = new Hunting();
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 10, 25 );
-	}
-
-	@Override
-	public int attackSkill( Char target ) {
-		return 20;
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 8);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 10, 25 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 20;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 8);
+//	}
 
 	@Override
 	public float lootChance(){

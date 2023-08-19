@@ -57,6 +57,10 @@ public abstract class Elemental extends Mob {
 	{
 		HP = HT = 60;
 		defenseSkill = 20;
+		damageReductionMax = 5;
+		damageRollMin = 20;
+		damageRollMax = 25;
+		attackSkill = 25;
 		
 		EXP = 10;
 		maxLvl = 20;
@@ -69,7 +73,7 @@ public abstract class Elemental extends Mob {
 	@Override
 	public int damageRoll() {
 		if (!summonedALly) {
-			return Random.NormalIntRange(20, 25);
+			return super.damageRoll();
 		} else {
 			int regionScale = Math.max(2, (1 + Dungeon.scalingDepth()/5));
 			return Random.NormalIntRange(5*regionScale, 5 + 5*regionScale);
@@ -79,7 +83,7 @@ public abstract class Elemental extends Mob {
 	@Override
 	public int attackSkill( Char target ) {
 		if (!summonedALly) {
-			return 25;
+			return super.attackSkill(target);
 		} else {
 			int regionScale = Math.max(2, (1 + Dungeon.scalingDepth()/5));
 			return 5 + 5*regionScale;
@@ -94,10 +98,10 @@ public abstract class Elemental extends Mob {
 		HT = 15*regionScale;
 	}
 	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 5);
-	}
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 5);
+//	}
 	
 	protected int rangedCooldown = Random.NormalIntRange( 3, 5 );
 	

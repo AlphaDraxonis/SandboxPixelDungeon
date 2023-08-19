@@ -88,6 +88,10 @@ public class Tengu extends Mob {
 		HP = HT = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 250 : 200;
 		EXP = 20;
 		defenseSkill = 15;
+		attackSkill = 20;
+		damageRollMin = 6;
+		damageRollMax = 12;
+		damageReductionMax = 5;
 		
 		HUNTING = new Hunting();
 		
@@ -98,24 +102,24 @@ public class Tengu extends Mob {
 		viewDistance = 12;
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 6, 12 );
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 6, 12 );
+//	}
 	
 	@Override
 	public int attackSkill( Char target ) {
 		if (Dungeon.level.adjacent(pos, target.pos)){
-			return 10;
+			return attackSkill / 2;
 		} else {
-			return 20;
+			return attackSkill;
 		}
 	}
 	
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 5);
-	}
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 5);
+//	}
 
 	boolean loading = false;
 

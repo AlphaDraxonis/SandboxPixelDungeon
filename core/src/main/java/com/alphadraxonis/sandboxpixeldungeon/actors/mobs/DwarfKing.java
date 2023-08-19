@@ -77,25 +77,29 @@ public class DwarfKing extends Mob {
 		HP = HT = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 450 : 300;
 		EXP = 40;
 		defenseSkill = 22;
+		attackSkill = 26;
+		damageRollMin = 15;
+		damageRollMax = 25;
+		damageReductionMax = 10;
 
 		properties.add(Property.BOSS);
 		properties.add(Property.UNDEAD);
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 15, 25 );
-	}
-
-	@Override
-	public int attackSkill( Char target ) {
-		return 26;
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 10);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 15, 25 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 26;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 10);
+//	}
 
 	private int phase = 1;
 	private int summonsMade = 0;

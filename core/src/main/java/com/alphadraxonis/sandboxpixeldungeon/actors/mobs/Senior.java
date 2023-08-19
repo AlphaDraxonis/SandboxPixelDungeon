@@ -23,12 +23,13 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.items.food.Pasty;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.SeniorSprite;
-import com.watabou.utils.Random;
 
 public class Senior extends Monk {
 
 	{
 		spriteClass = SeniorSprite.class;
+
+		damageRollMin = 16;
 
 		loot = new Pasty();
 		lootChance = 1f;
@@ -42,9 +43,9 @@ public class Senior extends Monk {
 		super.move( step, travelling);
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 16, 25 );
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 16, 25 );
+//	}
 	
 }

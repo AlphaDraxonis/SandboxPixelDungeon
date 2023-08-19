@@ -51,6 +51,7 @@ public class DemonSpawner extends Mob {
 
 		HP = HT = 120;
 		defenseSkill = 0;
+		damageReductionMax = 12;
 
 		EXP = 15;
 		maxLvl = 29;
@@ -65,10 +66,10 @@ public class DemonSpawner extends Mob {
 		properties.add(Property.DEMONIC);
 	}
 
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 12);
-	}
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 12);
+//	}
 
 	@Override
 	public void beckon(int cell) {

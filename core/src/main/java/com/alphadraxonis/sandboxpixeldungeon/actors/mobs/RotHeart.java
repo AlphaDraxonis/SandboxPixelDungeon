@@ -36,7 +36,6 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Vertigo;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Rotberry;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.RotHeartSprite;
-import com.watabou.utils.Random;
 
 public class RotHeart extends Mob {
 
@@ -45,6 +44,7 @@ public class RotHeart extends Mob {
 
 		HP = HT = 80;
 		defenseSkill = 0;
+		damageReductionMax = 5;
 
 		EXP = 4;
 
@@ -110,20 +110,20 @@ public class RotHeart extends Mob {
 		return true;
 	}
 
-	@Override
-	public int damageRoll() {
-		return 0;
-	}
-
-	@Override
-	public int attackSkill( Char target ) {
-		return 0;
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 5);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return 0;
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 0;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 5);
+//	}
 	
 	{
 		immunities.add( Paralysis.class );

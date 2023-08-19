@@ -18,15 +18,24 @@ public class DefaultStatsCache {
     //Holiday pasty?
     //Ring: Effect multilpier (Achtung Ring of Force)  sage auch: all rings (except force) scale exponationally, level is exponent, eggectMultip is basis
 
-    //Mobs
+    //ACHTUNG nur laden wenn gespeichert!!!!!!
+
+    //Mobs exclude Bee, allBrute, Goo, GreatCrab, allMimics, allPiranha, Pylon, allStatue, allWraiths, YogDzewa, YogFist, allNPC
+    //TODO maybe add attackSpeed (attackDelay)
     //HT (current HP) and HP (max HP)
     //base Speed
     //view distance (exclude Hero)
     //EXP (xp on death)
     //maxLevel (hero level until they drop xp incl)
-    //loot chance
+    //loot chance (only if loot != null)
     //loot (braucht noch generator und classes)
-    //defenseSkill (evasion)
+
+
+    //defenseSkill (evasion)   drRoll max  (0 - set)
+    //attackSkill  (accuracy)  constant
+    //damage       (damageRoll)min UND max
+
+
     //properties?
 
     private static Map<Class<? extends Bundlable>, Bundlable> cache = new HashMap<>();

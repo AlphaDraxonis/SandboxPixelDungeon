@@ -22,7 +22,6 @@
 package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Badges;
-import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.journal.Guidebook;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
@@ -30,7 +29,6 @@ import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.SnakeSprite;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
-import com.watabou.utils.Random;
 
 public class Snake extends Mob {
 	
@@ -39,6 +37,9 @@ public class Snake extends Mob {
 		
 		HP = HT = 4;
 		defenseSkill = 25;
+		attackSkill = 10;
+		damageRollMin = 1;
+		damageRollMax = 4;
 		
 		EXP = 2;
 		maxLvl = 7;
@@ -47,15 +48,15 @@ public class Snake extends Mob {
 		lootChance = 0.25f;
 	}
 	
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 1, 4 );
-	}
-	
-	@Override
-	public int attackSkill( Char target ) {
-		return 10;
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 1, 4 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 10;
+//	}
 
 	private static int dodges = 0;
 
