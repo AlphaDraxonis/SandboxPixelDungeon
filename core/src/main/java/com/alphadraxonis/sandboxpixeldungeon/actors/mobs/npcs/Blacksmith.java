@@ -27,7 +27,6 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.BlacksmithQuest;
-import com.alphadraxonis.sandboxpixeldungeon.editor.quests.Quest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.items.BrokenSeal;
 import com.alphadraxonis.sandboxpixeldungeon.items.EquipableItem;
@@ -74,7 +73,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			die(null);
 			return true;
 		}
-		if (quest != null && quest.type() != Quest.NONE && Dungeon.level.visited[pos] && !quest.reforged()){
+		if (quest != null && quest.type() >= 0 && Dungeon.level.visited[pos] && !quest.reforged()){
 			Notes.add( Notes.Landmark.TROLL );
 		}
 		return super.act();
@@ -89,7 +88,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			return true;
 		}
 
-		if (quest != null && quest.type() != Quest.NONE) {
+		if (quest != null && quest.type() >= 0) {
 			if (!quest.given()) {
 
 				Game.runOnRenderThread(new Callback() {

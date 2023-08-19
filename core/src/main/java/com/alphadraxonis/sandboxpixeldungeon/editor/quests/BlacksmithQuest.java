@@ -2,11 +2,13 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.quests;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BlacksmithRoom;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.BatSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 
 public class BlacksmithQuest extends Quest {
 
@@ -16,7 +18,11 @@ public class BlacksmithQuest extends Quest {
 
     @Override
     public void initRandom(LevelScheme levelScheme) {
-        if (type == -1) type = levelScheme.getBlacksmithQuest();
+        if (type == BASED_ON_DEPTH){
+            type = levelScheme.generateBlacksmithQuest();
+            levelScheme.roomsToSpawn.add(new BlacksmithRoom());
+        }
+        else if (type == RANDOM) type = Random.Int(2);
     }
 
     @Override

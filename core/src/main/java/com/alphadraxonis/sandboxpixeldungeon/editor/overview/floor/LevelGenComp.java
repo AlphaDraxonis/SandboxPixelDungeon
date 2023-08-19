@@ -158,6 +158,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
                 @Override
                 protected void doAddItem(MobItem item) {
+                    newLevelScheme.mobsToSpawn.add(item.mob());
                     if (item.mob() instanceof Blacksmith) {
                         int numSmiths = 0;
                         for (Mob m : newLevelScheme.mobsToSpawn) {
@@ -167,11 +168,10 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                         for (Room r : newLevelScheme.roomsToSpawn) {
                             if (r instanceof BlacksmithRoom) numSmithRooms++;
                         }
-                        if (numSmithRooms <= numSmiths)
+                        if (numSmithRooms < numSmiths)
                             sectionRooms.container.addNewItem(new RoomItem(new BlacksmithRoom()));
                     }
                     super.doAddItem(item);
-                    newLevelScheme.mobsToSpawn.add(item.mob());
                 }
 
                 @Override
@@ -225,6 +225,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
                 @Override
                 protected void doAddItem(MobItem item) {
+                    newLevelScheme.mobsToSpawn.add(item.mob());
                     if (item.mob() instanceof Blacksmith) {
                         int numSmiths = 0;
                         for (Mob m : newLevelScheme.mobsToSpawn) {
@@ -234,11 +235,10 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                         for (Room r : newLevelScheme.roomsToSpawn) {
                             if (r instanceof BlacksmithRoom) numSmithRooms++;
                         }
-                        if (numSmithRooms <= numSmiths)
+                        if (numSmithRooms < numSmiths)
                             sectionRooms.container.addNewItem(new RoomItem(new BlacksmithRoom()));
                     }
                     super.doAddItem(item);
-                    newLevelScheme.mobsToSpawn.add(item.mob());
                 }
 
                 @Override
@@ -273,8 +273,20 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
                 @Override
                 protected void doAddItem(RoomItem item) {
-                    super.doAddItem(item);
                     newLevelScheme.roomsToSpawn.add(item.room());
+                    if (item.room() instanceof BlacksmithRoom) {
+                        int numSmiths = 0;
+                        for (Mob m : newLevelScheme.mobsToSpawn) {
+                            if (m instanceof Blacksmith) numSmiths++;
+                        }
+                        int numSmithRooms = 0;
+                        for (Room r : newLevelScheme.roomsToSpawn) {
+                            if (r instanceof BlacksmithRoom) numSmithRooms++;
+                        }
+                        if (numSmiths < numSmithRooms)
+                            ((SpawnSectionMore<MobItem>)  sectionMobs).container.addNewItem(new MobItem(new Blacksmith()));
+                    }
+                    super.doAddItem(item);
                 }
 
                 @Override

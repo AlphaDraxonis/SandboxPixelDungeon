@@ -200,7 +200,7 @@ public abstract class Level implements Bundlable {
 
         Random.pushGenerator(Dungeon.seedForLevel(name));
 
-        if (!(Dungeon.bossLevel()) && !(this instanceof MiningLevel)) {//TODO Fix branch!
+        if (!Dungeon.bossLevel() && !(this instanceof MiningLevel)) {//TODO Fix branch!
 
             if (levelScheme.spawnItems) {
 

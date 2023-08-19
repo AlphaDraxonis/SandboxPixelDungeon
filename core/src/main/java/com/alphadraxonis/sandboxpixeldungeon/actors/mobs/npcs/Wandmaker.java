@@ -24,7 +24,6 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
-import com.alphadraxonis.sandboxpixeldungeon.editor.quests.Quest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -70,7 +69,7 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
             die(null);
             return true;
         }
-        if (quest != null && quest.type() != Quest.NONE && Dungeon.level.visited[pos] && quest.wand1 != null) {
+        if (quest != null && quest.type() >= 0 && Dungeon.level.visited[pos] && quest.wand1 != null) {
             Notes.add(Notes.Landmark.WANDMAKER);
         }
         return super.act();
@@ -84,7 +83,7 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
             return true;
         }
 
-        if (quest != null && quest.type() != Quest.NONE) {
+        if (quest != null && quest.type() >= 0) {
             if (quest.given()) {
 
                 Item item;

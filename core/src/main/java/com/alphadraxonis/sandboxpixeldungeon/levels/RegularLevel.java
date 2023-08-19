@@ -260,7 +260,7 @@ public abstract class RegularLevel extends Level {
 		if (levelScheme.spawnMobs) {
 
 			//on floor 1, 8 pre-set mobs are created so the player can get level 2.
-			int mobsToSpawn = Dungeon.depth == 1 ? 8 : mobLimit();
+			int mobsToSpawn = Dungeon.getSimulatedDepth() == 1 ? 8 : mobLimit();
 
 			ArrayList<Room> stdRooms = new ArrayList<>();
 			for (Room room : rooms) {

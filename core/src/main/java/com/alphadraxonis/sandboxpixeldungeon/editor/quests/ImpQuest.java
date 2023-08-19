@@ -13,6 +13,7 @@ import com.alphadraxonis.sandboxpixeldungeon.sprites.GolemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.MonkSprite;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 
 public class ImpQuest extends Quest {
 
@@ -26,7 +27,8 @@ public class ImpQuest extends Quest {
 
     @Override
     public void initRandom(LevelScheme levelScheme) {
-        if (type == -1) type = levelScheme.getImpQuest();
+        if (type == BASED_ON_DEPTH) type = levelScheme.generateImpQuestNotRandom();
+        else if (type == RANDOM) type = Random.Int(2);
         if (reward == null) {
             do {
                 reward = (Ring) Generator.randomUsingDefaults(Generator.Category.RING);

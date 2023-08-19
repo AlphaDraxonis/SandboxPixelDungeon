@@ -50,9 +50,14 @@ import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.Scroll;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfWarding;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
+import com.alphadraxonis.sandboxpixeldungeon.levels.CavesBossLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.CityBossLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.HallsBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.MiningLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.PrisonBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.SewerBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.SpecialRoom;
@@ -261,7 +266,6 @@ public class Dungeon {
         customDungeon.initSeeds();
         //TODO assign groups here to the different levels
 
-        customDungeon.calculateQuestLevels();
         customDungeon.initDistribution();
 
         SpecialRoom.initForRun();
@@ -322,6 +326,11 @@ public class Dungeon {
     }
 
     public static int getSimulatedDepth(LevelScheme levelScheme) {
+        if (levelScheme.getType() == SewerBossLevel.class) return 5;
+        if (levelScheme.getType() == PrisonBossLevel.class) return 10;
+        if (levelScheme.getType() == CavesBossLevel.class) return 15;
+        if (levelScheme.getType() == CityBossLevel.class) return 20;
+        if (levelScheme.getType() == HallsBossLevel.class) return 25;
         return (levelScheme.getRegion() - 1) * 5 + levelScheme.getNumInRegion();
     }
 

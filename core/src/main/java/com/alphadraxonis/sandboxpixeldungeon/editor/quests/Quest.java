@@ -8,7 +8,7 @@ import com.watabou.utils.Bundle;
 
 public abstract class Quest implements Bundlable {
 
-    public static final int RANDOM = -1, NONE = -2;
+    public static final int RANDOM = -1, NONE = -2, BASED_ON_DEPTH = -3;
 
     protected int type = RANDOM;
 

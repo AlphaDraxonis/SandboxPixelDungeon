@@ -22,7 +22,7 @@ public abstract class QuestNPC<T extends Quest> extends NPC {
     }
 
     public void initQuest(LevelScheme levelScheme) {
-        if (quest != null && quest.type() != Quest.NONE) {
+        if (quest != null) {
             quest.initRandom(levelScheme);
         }
     }

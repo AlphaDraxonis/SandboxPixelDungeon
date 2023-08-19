@@ -63,18 +63,10 @@ public class DungeonToJsonConverter {
 
         String ratKingLevel = dungeon.getAnyRatKingLevel();
         if (ratKingLevel != null) appendParam(b, "rat_king_level", ratKingLevel);
-        if (dungeon.getMaybeGhostSpawnLevels().length > 0)
-            appendArray(b, "ghost_spawn_levels", dungeon.getMaybeGhostSpawnLevels());
-        else appendArray(b, "ghost_spawn_levels", new String[]{Level.SURFACE});
-        if (dungeon.getMaybeWandmakerSpawnLevels().length > 0)
-            appendArray(b, "wandmaker_spawn_levels", dungeon.getMaybeWandmakerSpawnLevels());
-        else appendArray(b, "wandmaker_spawn_levels", new String[]{Level.SURFACE});
-        if (dungeon.getMaybeBlacksmithSpawnLevels().length > 0)
-            appendArray(b, "blacksmith_spawn_levels", dungeon.getMaybeBlacksmithSpawnLevels());
-        else appendArray(b, "blacksmith_spawn_levels", new String[]{Level.SURFACE});
-        if (dungeon.getMaybeImpSpawnLevels().length > 0)
-            appendArray(b, "imp_spawn_levels", dungeon.getMaybeImpSpawnLevels());
-        else appendArray(b, "imp_spawn_levels", new String[]{Level.SURFACE});
+        appendArray(b, "ghost_spawn_levels", new String[]{Level.SURFACE});
+        appendArray(b, "wandmaker_spawn_levels", new String[]{Level.SURFACE});
+        appendArray(b, "blacksmith_spawn_levels", new String[]{Level.SURFACE});
+        appendArray(b, "imp_spawn_levels", new String[]{Level.SURFACE});
 
         boolean countsAsDefault = true;
         Collection<String> floorNames = dungeon.floorNames();

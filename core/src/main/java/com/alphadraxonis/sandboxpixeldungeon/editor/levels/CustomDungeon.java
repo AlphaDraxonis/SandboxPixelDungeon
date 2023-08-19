@@ -11,11 +11,14 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.BlacksmithQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.Quest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
@@ -39,7 +42,6 @@ import com.alphadraxonis.sandboxpixeldungeon.items.stones.StoneOfEnchantment;
 import com.alphadraxonis.sandboxpixeldungeon.items.stones.StoneOfIntuition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
-import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.BlacksmithRoom;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Game;
@@ -88,7 +90,6 @@ public class CustomDungeon implements Bundlable {
 
     private String startFloor;
     private Set<String> ratKingLevels;
-    private List<String> maybeGhostSpawnLevels, maybeWandmakerSpawnLevels, maybeBlacksmithSpawnLevels, maybeImpSpawnLevels;
     private List<ItemDistribution<? extends Bundlable>> itemDistributions;
     private Map<String, LevelScheme> floors = new HashMap<>();
     private int startGold, startEnergy;
@@ -98,10 +99,6 @@ public class CustomDungeon implements Bundlable {
     public CustomDungeon(String name) {
         this.name = name;
         ratKingLevels = new HashSet<>();
-        maybeGhostSpawnLevels = new ArrayList<>(5);
-        maybeWandmakerSpawnLevels = new ArrayList<>(5);
-        maybeBlacksmithSpawnLevels = new ArrayList<>(5);
-        maybeImpSpawnLevels = new ArrayList<>(5);
         itemDistributions = new ArrayList<>(5);
     }
 
@@ -254,57 +251,6 @@ public class CustomDungeon implements Bundlable {
         return startEnergy;
     }
 
-    public void calculateQuestLevels() {
-        LevelScheme level;
-        if (!maybeGhostSpawnLevels.isEmpty()) {
-            level = floors.get(maybeGhostSpawnLevels.get(Random.Int(maybeGhostSpawnLevels.size())));
-            GhostQuest quest = new GhostQuest();
-            int depth = Dungeon.getSimulatedDepth(level);
-            if (depth <= 2) quest.setType(GhostQuest.RAT);
-            else if (depth == 3) quest.setType(GhostQuest.GNOLL);
-            else quest.setType(GhostQuest.CRAB);
-            level.mobsToSpawn.add(new Ghost(quest));
-        }
-
-        if (!maybeWandmakerSpawnLevels.isEmpty()) {
-            level = floors.get(maybeWandmakerSpawnLevels.get(Random.Int(maybeWandmakerSpawnLevels.size())));
-            level.mobsToSpawn.add(new Wandmaker(new WandmakerQuest()));
-        }
-
-        if (!maybeBlacksmithSpawnLevels.isEmpty()) {
-            level = floors.get(maybeBlacksmithSpawnLevels.get(Random.Int(maybeBlacksmithSpawnLevels.size())));
-            level.mobsToSpawn.add(new Blacksmith(new BlacksmithQuest()));
-            level.roomsToSpawn.add(new BlacksmithRoom());
-        }
-
-        if (!maybeImpSpawnLevels.isEmpty()) {
-            //always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
-            level = floors.get(maybeImpSpawnLevels.get(Random.Int(maybeImpSpawnLevels.size())));
-            ImpQuest quest = new ImpQuest();
-            int depth = Dungeon.getSimulatedDepth(level);
-            if (depth <= 17) quest.setType(ImpQuest.MONK_QUEST);
-            else if (depth >= 19) quest.setType(ImpQuest.GOLEM_QUEST);
-            else quest.setType(Random.Int(2));
-            level.mobsToSpawn.add(new Imp(quest));
-        }
-    }
-
-    public void addMaybeGhostSpawnLevel(String level) {
-        maybeGhostSpawnLevels.add(level);
-    }
-
-    public void addMaybeWandmakerSpawnLevel(String level) {
-        maybeWandmakerSpawnLevels.add(level);
-    }
-
-    public void addMaybeBlacksmithSpawnLevel(String level) {
-        maybeBlacksmithSpawnLevels.add(level);
-    }
-
-    public void addMaybeImpSpawnLevel(String level) {
-        maybeImpSpawnLevels.add(level);
-    }
-
     public void setLastEditedFloor(String lastEditedFloor) {
         this.lastEditedFloor = lastEditedFloor;
     }
@@ -396,6 +342,46 @@ public class CustomDungeon implements Bundlable {
         }
         itemDistributions.add(stIntu);
 
+        ItemDistribution.Mobs ghostDistr = new ItemDistribution.Mobs();
+        QuestNPC<?> questNPC = new Ghost(new GhostQuest());
+        questNPC.quest.setType(Quest.BASED_ON_DEPTH);
+        questNPC.pos = -1;
+        ghostDistr.getObjectsToDistribute().add(new MobItem(questNPC));
+        for (int i = 2; i <= 4; i++) {
+            ghostDistr.getLevels().add(Integer.toString(i));
+        }
+        itemDistributions.add(ghostDistr);
+
+        ItemDistribution.Mobs wandmakerDistr = new ItemDistribution.Mobs();
+        questNPC = new Wandmaker(new WandmakerQuest());
+        questNPC.quest.setType(Quest.BASED_ON_DEPTH);
+        questNPC.pos = -1;
+        wandmakerDistr.getObjectsToDistribute().add(new MobItem(questNPC));
+        for (int i = 7; i <= 9; i++) {
+            wandmakerDistr.getLevels().add(Integer.toString(i));
+        }
+        itemDistributions.add(wandmakerDistr);
+
+        ItemDistribution.Mobs blacksmithDistr = new ItemDistribution.Mobs();
+        questNPC = new Blacksmith(new BlacksmithQuest());
+        questNPC.quest.setType(Quest.BASED_ON_DEPTH);
+        questNPC.pos = -1;
+        blacksmithDistr.getObjectsToDistribute().add(new MobItem(questNPC));
+        for (int i = 12; i <= 14; i++) {
+            blacksmithDistr.getLevels().add(Integer.toString(i));
+        }
+        itemDistributions.add(blacksmithDistr);
+
+        ItemDistribution.Mobs impDistr = new ItemDistribution.Mobs();
+        questNPC = new Imp(new ImpQuest());
+        questNPC.quest.setType(Quest.BASED_ON_DEPTH);
+        questNPC.pos = -1;
+        impDistr.getObjectsToDistribute().add(new MobItem(questNPC));
+        for (int i = 17; i <= 19; i++) {
+            impDistr.getLevels().add(Integer.toString(i));
+        }
+        itemDistributions.add(impDistr);
+
         if (startFloor == null) startFloor = "1";
         ratKingLevels.add("5");
     }
@@ -426,10 +412,6 @@ public class CustomDungeon implements Bundlable {
     private static final String LAST_EDITED_FLOOR = "last_edited_floor";
     private static final String START_FLOOR = "start_floor";
     private static final String RAT_KING_LEVELS = "rat_king_levels";
-    private static final String MAYBE_GHOST_SPAWN_LEVELS = "maybe_ghost_spawn_levels";
-    private static final String MAYBE_WANDMAKER_SPAWN_LEVELS = "maybe_wandmaker_spawn_levels";
-    private static final String MAYBE_BLACKSMITH_SPAWN_LEVELS = "maybe_blacksmith_spawn_levels";
-    private static final String MAYBE_IMP_SPAWN_LEVELS = "maybe_imp_spawn_levels";
     private static final String ITEM_DISTRIBUTION = "item_distribution";
     private static final String START_GOLD = "start_gold";
     private static final String START_ENERGY = "start_energy";
@@ -451,10 +433,6 @@ public class CustomDungeon implements Bundlable {
         bundle.put(LAST_EDITED_FLOOR, lastEditedFloor);
         if (startFloor != null) bundle.put(START_FLOOR, startFloor);
         bundle.put(RAT_KING_LEVELS, ratKingLevels.toArray(EMPTY_STRING_ARRAY));
-        bundle.put(MAYBE_GHOST_SPAWN_LEVELS, maybeGhostSpawnLevels.toArray(EMPTY_STRING_ARRAY));
-        bundle.put(MAYBE_WANDMAKER_SPAWN_LEVELS, maybeWandmakerSpawnLevels.toArray(EMPTY_STRING_ARRAY));
-        bundle.put(MAYBE_BLACKSMITH_SPAWN_LEVELS, maybeBlacksmithSpawnLevels.toArray(EMPTY_STRING_ARRAY));
-        bundle.put(MAYBE_IMP_SPAWN_LEVELS, maybeImpSpawnLevels.toArray(EMPTY_STRING_ARRAY));
         bundle.put(ITEM_DISTRIBUTION, itemDistributions);
         bundle.put(START_GOLD, startGold);
         bundle.put(START_ENERGY, startEnergy);
@@ -516,10 +494,6 @@ public class CustomDungeon implements Bundlable {
         lastEditedFloor = bundle.getString(LAST_EDITED_FLOOR);
         if (bundle.contains(START_FLOOR)) startFloor = bundle.getString(START_FLOOR);
         ratKingLevels = new HashSet<>(Arrays.asList(bundle.getStringArray(RAT_KING_LEVELS)));
-        maybeGhostSpawnLevels = new ArrayList<>(Arrays.asList(bundle.getStringArray(MAYBE_GHOST_SPAWN_LEVELS)));
-        maybeWandmakerSpawnLevels = new ArrayList<>(Arrays.asList(bundle.getStringArray(MAYBE_WANDMAKER_SPAWN_LEVELS)));
-        maybeBlacksmithSpawnLevels = new ArrayList<>(Arrays.asList(bundle.getStringArray(MAYBE_BLACKSMITH_SPAWN_LEVELS)));
-        maybeImpSpawnLevels = new ArrayList<>(Arrays.asList(bundle.getStringArray(MAYBE_IMP_SPAWN_LEVELS)));
         itemDistributions = new ArrayList<>(5);
         if (bundle.contains(ITEM_DISTRIBUTION)) {
             Collection<?> col = bundle.getCollection(ITEM_DISTRIBUTION);
@@ -576,22 +550,6 @@ public class CustomDungeon implements Bundlable {
     public String getAnyRatKingLevel() {
         if (ratKingLevels.isEmpty()) return null;
         return ratKingLevels.iterator().next();
-    }
-
-    public String[] getMaybeGhostSpawnLevels() {
-        return maybeGhostSpawnLevels.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public String[] getMaybeWandmakerSpawnLevels() {
-        return maybeWandmakerSpawnLevels.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public String[] getMaybeBlacksmithSpawnLevels() {
-        return maybeBlacksmithSpawnLevels.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public String[] getMaybeImpSpawnLevels() {
-        return maybeImpSpawnLevels.toArray(EMPTY_STRING_ARRAY);
     }
 
 

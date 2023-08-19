@@ -12,6 +12,7 @@ import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 
 public class WandmakerQuest extends Quest {
 
@@ -40,9 +41,9 @@ public class WandmakerQuest extends Quest {
             wand2.upgrade();
         }
 
-        if (type == -1) {// decide between 1,2, or 3 for quest type.
-            type = levelScheme.getWandmakerQuest();
-        }
+        if (type == BASED_ON_DEPTH) type = levelScheme.generateWandmakerQuest();
+        else if (type == RANDOM) type = Random.Int(NUM_QUESTS);
+
         if (spawnQuestRoom) {
             switch (type) {
                 case ASH:

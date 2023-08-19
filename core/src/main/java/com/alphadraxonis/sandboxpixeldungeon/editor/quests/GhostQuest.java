@@ -38,7 +38,8 @@ public class GhostQuest extends Quest {
 
     @Override
     public void initRandom(LevelScheme levelScheme) {
-        if (type == -1) type = levelScheme.getGhostQuest();
+        if (type == BASED_ON_DEPTH) type = levelScheme.generateGhostQuestNotRandom();
+        else if (type == RANDOM) type = Random.Int(3);
 
         if (armor == null || weapon == null) {
             //50%:+0, 30%:+1, 15%:+2, 5%:+3

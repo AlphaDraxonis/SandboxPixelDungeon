@@ -30,7 +30,6 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GnollTrickster;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GreatCrab;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
-import com.alphadraxonis.sandboxpixeldungeon.editor.quests.Quest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
@@ -72,7 +71,7 @@ public class Ghost extends QuestNPC<GhostQuest> {
             die(null);
             return true;
         }
-        if (quest != null && quest.type() != Quest.NONE) {
+        if (quest != null && quest.type() >= 0) {
             if (quest.completed()) {
                 target = Dungeon.hero.pos;
             }
@@ -85,7 +84,7 @@ public class Ghost extends QuestNPC<GhostQuest> {
 
     @Override
     public float speed() {
-        return quest != null && quest.type() != Quest.NONE && quest.completed() ? 2f : 0.5f;
+        return quest != null && quest.type() >= 0 && quest.completed() ? 2f : 0.5f;
     }
 
     @Override
@@ -104,7 +103,7 @@ public class Ghost extends QuestNPC<GhostQuest> {
             return super.interact(c);
         }
 
-        if (quest != null && quest.type() != Quest.NONE) {
+        if (quest != null && quest.type() >= 0) {
 
             if (quest.given()) {
                 if (quest.weapon != null && quest.completed()) {

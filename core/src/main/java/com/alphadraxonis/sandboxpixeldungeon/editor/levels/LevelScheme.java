@@ -7,6 +7,8 @@ import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.ChampionEnemy;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
+import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
@@ -198,15 +200,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
                 type = DeadEndLevel.class;
         }
         numInRegion = (depth - 1) % 5 + 1;
-        if (depth > 1 && depth < 5) {
-            customDungeon.addMaybeGhostSpawnLevel(name);
-        } else if (depth > 6 && depth < 10) {
-            customDungeon.addMaybeWandmakerSpawnLevel(name);
-        } else if (depth > 11 && depth < 15) {
-            customDungeon.addMaybeBlacksmithSpawnLevel(name);
-        } else if (depth > 16 && depth < 20) {
-            customDungeon.addMaybeImpSpawnLevel(name);
-        }
 
         if (depth == 6 || depth == 11 || depth == 16) roomsToSpawn.add(new ShopRoom());
 
@@ -286,19 +279,24 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         return getBoss() != REGION_NONE;
     }
 
-    public int getGhostQuest() {
-        return Random.Int(3);
+    public int generateGhostQuestNotRandom() {
+        if (numInRegion <= 2) return GhostQuest.RAT;
+        if (numInRegion == 3) return GhostQuest.GNOLL;
+        return GhostQuest.CRAB;
     }
 
-    public int getWandmakerQuest() {
+    public int generateWandmakerQuest() {
         return Random.Int(WandmakerQuest.NUM_QUESTS);
     }
 
-    public int getBlacksmithQuest() {
+    public int generateBlacksmithQuest() {
         return Random.Int(2);
     }
 
-    public int getImpQuest() {
+    public int generateImpQuestNotRandom() {
+        //always assigns monks on floor 17, golems on floor 19, and 50/50 between either on 18
+        if (numInRegion <= 2) return ImpQuest.MONK_QUEST;
+        if (numInRegion >= 4) return ImpQuest.GOLEM_QUEST;
         return Random.Int(2);
     }
 
