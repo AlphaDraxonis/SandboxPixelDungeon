@@ -144,6 +144,7 @@ import com.watabou.utils.RectF;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -691,7 +692,7 @@ public class GameScene extends PixelScene {
 	public static boolean updateItemDisplays = false;
 
 	public static boolean tagsNeedLayout = false;
-
+	
 	@Override
 	public synchronized void update() {
 		lastOffset = null;
@@ -902,6 +903,23 @@ public class GameScene extends PixelScene {
 		sprite.visible = Dungeon.level.heroFOV[mob.pos];
 		mobs.add( sprite );
 		sprite.link( mob );
+		sortMobSprites();
+	}
+
+	//ensures that mob sprites are drawn in the correct order, in case of overlap
+	public static void sortMobSprites(){
+		if (scene != null){
+			tzz do this with editorscene! (delegate to editorscene from here)
+			scene.mobs.sort(new Comparator() {
+				@Override
+				public int compare(Object a, Object b) {
+					if (a instanceof CharSprite && b instanceof CharSprite){
+						return ((CharSprite) a).ch.pos - ((CharSprite) b).ch.pos;
+					}
+					return 0;
+				}
+			});
+		}
 	}
 	
 	private synchronized void prompt( String text ) {

@@ -26,6 +26,8 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Group extends Gizmo {
 
@@ -291,7 +293,7 @@ public class Group extends Gizmo {
 		members.clear();
 		length = 0;
 	}
-
+	
 	public synchronized Gizmo bringToFront( Gizmo g ) {
 		if (members.contains( g )) {
 			members.remove( g );
@@ -301,7 +303,7 @@ public class Group extends Gizmo {
 			return null;
 		}
 	}
-
+	
 	public synchronized Gizmo sendToBack( Gizmo g ) {
 		if (members.contains( g )) {
 			members.remove( g );
@@ -310,6 +312,10 @@ public class Group extends Gizmo {
 		} else {
 			return null;
 		}
+	}
+
+	public synchronized void sort(Comparator c){
+		Collections.sort(members, c);
 	}
 
 	//Important for scrollpane fix: add scrollpane last (first add the buttons to the sp, then the sp to the window)
