@@ -289,6 +289,7 @@ public abstract class Char extends Actor {
 	protected static final String TAG_SHLD  = "SHLD";
 	protected static final String BUFFS	    = "buffs";
 	protected static final String DAMAGE_REDUCTION_MAX= "damage_reduction_max";
+	protected static final String SPEED = "speed";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -300,6 +301,7 @@ public abstract class Char extends Actor {
 		bundle.put( TAG_HT, HT );
 		bundle.put( BUFFS, buffs );
 		bundle.put( DAMAGE_REDUCTION_MAX, damageReductionMax );
+		bundle.put( SPEED, baseSpeed );
 	}
 	
 	@Override
@@ -310,7 +312,10 @@ public abstract class Char extends Actor {
 		pos = bundle.getInt( POS );
 		HP = bundle.getInt( TAG_HP );
 		HT = bundle.getInt( TAG_HT );
-		damageReductionMax = bundle.getInt( DAMAGE_REDUCTION_MAX );
+		if (bundle.contains(DAMAGE_REDUCTION_MAX)) {
+			damageReductionMax = bundle.getInt(DAMAGE_REDUCTION_MAX);
+			baseSpeed = bundle.getFloat(DAMAGE_REDUCTION_MAX);
+		}
 
 		for (Bundlable b : bundle.getCollection( BUFFS )) {
 			if (b != null) {

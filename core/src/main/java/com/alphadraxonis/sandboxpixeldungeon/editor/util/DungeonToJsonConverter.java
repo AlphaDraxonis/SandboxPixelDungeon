@@ -12,6 +12,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.ChampionEnemy;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Bestiary;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
@@ -412,8 +413,10 @@ public class DungeonToJsonConverter {
 
     private static void appendMobValues(StringBuilder b, Mob m) {
 
+        Mob defaultValue = DefaultStatsCache.getDefaultObject(m.getClass());
+
         appendParam(b, "type", getShortenFullClassName(m, PACKAGE_NAME_MOBS_LENGTH));
-        //TODO hp
+       if(defaultValue!=null&& defaultValue.HT != m.HT) appendParam(b, "hp", m.HT);
         //TODO alignment
         appendParam(b, "ai_state", m.state.getClass().getSimpleName().toLowerCase(Locale.ENGLISH));
 

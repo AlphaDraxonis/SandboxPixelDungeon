@@ -80,7 +80,6 @@ public class CustomLevel extends Level {
 
 
     private static final Map<String, TextureFilm> textureFilms = new HashMap<>();
-    public boolean isEditing = true;
 
     int region;
     private int waterTexture = REGION_NONE;
@@ -273,7 +272,6 @@ public class CustomLevel extends Level {
     }
 
     public CustomLevel(CustomLevel customLevel) {
-        isEditing = false;
         width = customLevel.width;
         height = customLevel.height;
         setSize(width, height);
@@ -301,7 +299,7 @@ public class CustomLevel extends Level {
         mobs = new HashSet<>();
         for (Mob m : customLevel.mobs) {
             Mob clone = (Mob) m.getCopy();
-            if (clone instanceof Mimic) ((Mimic) clone).adjustStats(Dungeon.depth);
+            if (clone instanceof Mimic) ((Mimic) clone).setLevel(Dungeon.depth);
             mobs.add(clone);
         }
 

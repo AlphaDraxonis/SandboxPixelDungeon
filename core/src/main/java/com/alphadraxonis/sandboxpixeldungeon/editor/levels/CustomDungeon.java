@@ -79,7 +79,7 @@ public class CustomDungeon implements Bundlable {
 
     //FIXME: Was noch zu tun ist  FIXME FIXME TODO System.err.println()
     //general floor overview stuff
-    //camera controllieren von EditorScene,  settings für EditorScene
+    //settings für EditorScene
     //custom tiles wichtig
     //select builder and painter
     //place blobs like fire
@@ -651,6 +651,7 @@ public class CustomDungeon implements Bundlable {
             if (distr instanceof ItemDistribution.Items) {
                 removeInvalidKeys((List<Item>) distr.getObjectsToDistribute(), n);
             }
+            distr.getLevels().remove(n);
         }
 
         //Set level for keys in inv

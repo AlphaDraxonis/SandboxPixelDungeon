@@ -341,7 +341,7 @@ public abstract class Level implements Bundlable {
 
     public void initForPlay() {
         for (Mob m : mobs) {
-            if (m instanceof Mimic) ((Mimic) m).adjustStats(Dungeon.depth);
+            if (m instanceof Mimic) ((Mimic) m).setLevel(Dungeon.depth);
         }
     }
 
@@ -995,7 +995,7 @@ public abstract class Level implements Bundlable {
         if (heap == null) {
 
             heap = new Heap();
-            heap.seen = Dungeon.level == this && heroFOV[cell] || (this instanceof CustomLevel && ((CustomLevel) this).isEditing);
+            heap.seen = Dungeon.level == this && heroFOV[cell] || CustomDungeon.isEditing();
             heap.pos = cell;
             heap.drop(item);
             if (map[cell] == Terrain.CHASM || (Dungeon.level != null && pit[cell])) {
