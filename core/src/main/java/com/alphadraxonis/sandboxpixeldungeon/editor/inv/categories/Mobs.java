@@ -62,6 +62,8 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -298,7 +300,17 @@ public enum Mobs {
         }
     }
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "mobs"), 0){};
+    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "mobs"), 0){
+        @Override
+        public Item findItem(Object src) {
+            for (Item bag : items) {
+                for (Item i : ((Bag) bag).items) {
+                    if (((MobItem) i).mob().getClass() == src) return i;
+                }
+            }
+            return null;
+        }
+    };
 
     static {
         for (Mobs m : values()) {

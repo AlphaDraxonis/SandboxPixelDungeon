@@ -9,7 +9,10 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.WndEditorInv;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Mobs;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Plants;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Traps;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
@@ -559,6 +562,26 @@ public class EditorScene extends PixelScene {
 //        scene.switchLevelIndicator.setRect(0, 0, Tag.SIZE, Tag.SIZE);
     }
 
+    private static Object getObjAtCell(int cell) {
+        Mob mob = customLevel.getMobAtCell(cell);
+        if (mob != null) return mob;
+        Heap heap = customLevel.heaps.get(cell);
+        if (heap != null && heap.peek() != null)return heap.peek();
+        Plant plant = customLevel.plants.get(cell);
+        if (plant != null) return plant;
+        Trap trap = customLevel.traps.get(cell);
+        if (trap != null) return trap;
+        return customLevel.map[cell];
+    }
+    private static EditorItem getObjAsInBag(Object obj){
+        if(obj instanceof Item) return (EditorItem) Items.bag.findItem(obj.getClass());
+        if(obj instanceof Mob) return (EditorItem) Mobs.bag.findItem(obj.getClass());
+        if(obj instanceof Integer) return (EditorItem) Tiles.bag.findItem(obj);
+        if(obj instanceof Trap) return (EditorItem) Traps.bag.findItem(obj.getClass());
+        if(obj instanceof Plant) return (EditorItem) Plants.bag.findItem(obj.getClass());
+        return null;
+    }
+
     public static void updateDepthIcon() {
         if (scene == null) return;
         scene.menu.updateDepthIcon();
@@ -643,6 +666,13 @@ public class EditorScene extends PixelScene {
         public void onRightClick(Integer cell) {
             if (cell != null && cell >= 0 && cell < customLevel.length()) {
                 EditorScene.showEditCellWindow(cell);
+            }
+        }
+
+        @Override
+        public void onMiddleClick(Integer cell) {
+            if (cell != null && cell >= 0 && cell < customLevel.length()) {
+                QuickSlotButton.set(getObjAsInBag(getObjAtCell(cell)));
             }
         }
 

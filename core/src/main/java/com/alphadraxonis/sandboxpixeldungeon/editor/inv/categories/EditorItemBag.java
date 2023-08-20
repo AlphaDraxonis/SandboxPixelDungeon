@@ -34,6 +34,13 @@ public class EditorItemBag extends Bag {
         return name;
     }
 
+    public Item findItem(Object src){
+        for (Item i : items) {
+            if (i.getClass() == src) return i;
+        }
+        return null;
+    }
+
     public static final EditorItemBag mainBag = new EditorItemBag("main", 0) {
         @Override
         public Image getCategoryImage() {

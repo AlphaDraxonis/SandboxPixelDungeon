@@ -630,6 +630,9 @@ public class CellSelector extends ScrollArea {
         public void onRightClick(Integer cell) {
         } //do nothing by default
 
+        public void onMiddleClick(Integer cell) {
+        } //do nothing by default
+
         public abstract String prompt();
 
         protected boolean dragClickEnabled() {

@@ -1,6 +1,8 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.PlantItem;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.plants.BlandfruitBush;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Blindweed;
@@ -92,6 +94,15 @@ public enum Plants {
     }
 
     public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "plants"), 0) {
+        @Override
+        public Item findItem(Object src) {
+            for (Item bag : items) {
+                for (Item i : ((Bag) bag).items) {
+                    if (((PlantItem) i).plant().getClass() == src) return i;
+                }
+            }
+            return null;
+        }
     };
 
     static {

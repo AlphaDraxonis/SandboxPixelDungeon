@@ -1,6 +1,8 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TrapItem;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.AlarmTrap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.BlazingTrap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.BurningTrap;
@@ -180,7 +182,17 @@ public enum Traps {
     }
 
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "traps"), 0){};
+    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "traps"), 0){
+        @Override
+        public Item findItem(Object src) {
+            for (Item bag : items) {
+                for (Item i : ((Bag) bag).items) {
+                    if (((TrapItem) i).trap().getClass() == src) return i;
+                }
+            }
+            return null;
+        }
+    };
 
     static {
         for (Traps traps : Traps.values()) {

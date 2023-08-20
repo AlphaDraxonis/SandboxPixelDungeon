@@ -73,6 +73,9 @@ public class EditorCellSelector extends CellSelector {
                 case PointerEvent.RIGHT:
                     listener.onRightClick(cell);
                     break;
+                case PointerEvent.MIDDLE:
+                    listener.onMiddleClick(cell);
+                    break;
             }
             EditorScene.ready();
         } else {

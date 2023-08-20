@@ -30,6 +30,8 @@ import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.WATER;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.WELL;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
@@ -85,7 +87,18 @@ public enum Tiles {
     //TODO Icon zeige in inv an, ob brennbar, oder Schlüssel?? -> muss über ListItem gemacht werden!
 
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class,"tiles"),0){};
+    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class,"tiles"),0){
+        @Override
+        public Item findItem(Object src) {
+            int val = (int) src;
+            for (Item bag : items) {
+                for (Item i : ((Bag) bag).items) {
+                    if (((TileItem) i).terrainType() == val) return i;
+                }
+            }
+            return null;
+        }
+    };
 
     public static class TileBag extends EditorItemBag {
 

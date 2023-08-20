@@ -3,6 +3,8 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories;
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.RoomItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.Room;
@@ -268,6 +270,15 @@ public enum Rooms {
     }
 
     public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "rooms"), 0) {
+        @Override
+        public Item findItem(Object src) {
+            for (Item bag : items) {
+                for (Item i : ((Bag) bag).items) {
+                    if (((RoomItem) i).room().getClass() == src) return i;
+                }
+            }
+            return null;
+        }
     };
 
     static {

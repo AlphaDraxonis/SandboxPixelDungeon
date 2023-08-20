@@ -35,6 +35,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Torch;
 import com.alphadraxonis.sandboxpixeldungeon.items.Waterskin;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.Artifact;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.MagicalHolster;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.PotionBandolier;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.ScrollHolder;
@@ -699,6 +700,16 @@ public enum Items {
     public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "items"), 0) {
         @Override
         public Image getCategoryImage() {
+            return null;
+        }
+
+        @Override
+        public Item findItem(Object src) {
+            for (Item bag : items) {
+                for (Item i : ((Bag) bag).items) {
+                    if (((ItemItem) i).item().getClass() == src) return i;
+                }
+            }
             return null;
         }
     };
