@@ -314,7 +314,7 @@ public abstract class Char extends Actor {
 		HT = bundle.getInt( TAG_HT );
 		if (bundle.contains(DAMAGE_REDUCTION_MAX)) {
 			damageReductionMax = bundle.getInt(DAMAGE_REDUCTION_MAX);
-			baseSpeed = bundle.getFloat(DAMAGE_REDUCTION_MAX);
+			baseSpeed = bundle.getFloat(SPEED);
 		}
 
 		for (Bundlable b : bundle.getCollection( BUFFS )) {

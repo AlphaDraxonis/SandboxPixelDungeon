@@ -343,6 +343,9 @@ public abstract class Level implements Bundlable {
         for (Mob m : mobs) {
             if (m instanceof Mimic) ((Mimic) m).setLevel(Dungeon.depth);
         }
+        for (Heap h : heaps.valueList()) {
+            h.seen = false;
+        }
     }
 
     public void playLevelMusic() {

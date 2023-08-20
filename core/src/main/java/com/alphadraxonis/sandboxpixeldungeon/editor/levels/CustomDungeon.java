@@ -632,7 +632,7 @@ public class CustomDungeon implements Bundlable {
 
                 if (save) CustomDungeonSaves.saveLevel(level);
                 if (load) ls.unloadLevel();
-                else if (level == EditorScene.customLevel()) {
+                else if (level == EditorScene.customLevel() && levelScheme != level.levelScheme) {
                     Undo.reset();//TODO maybe not best solution to reset all
                     EditorScene.updateHeapImagesAndSubIcons();
                 }

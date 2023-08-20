@@ -112,11 +112,23 @@ public class LastLevel extends Level {
 		Painter.fill(this, 0, height - ROOM_TOP, width, 2, Terrain.WALL);
 		map[entrance] = Terrain.ENTRANCE;
 		map[entrance+width] = Terrain.ENTRANCE;
-		LevelTransition entry = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
-		entry.left--;
-		entry.right++;
-		entry.bottom += 2;
-		transitions.put(entrance,entry);
+
+		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
+		LevelTransition entry = null;
+		if (Level.SURFACE.equals(dest)) {
+			entry = new LevelTransition(this, entrance, LevelTransition.Type.SURFACE);
+		} else {
+			if (Dungeon.customDungeon.getFloor(dest) != null)
+				entry = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
+
+		}
+		if (entry != null) {
+			entry.left--;
+			entry.right++;
+			entry.bottom += 2;
+			transitions.put(entrance, entry);
+		}
+
 		Painter.fill(this, 0, height - ROOM_TOP + 2, width, 8, Terrain.EMPTY);
 		Painter.fill(this, MID-1, height - ROOM_TOP + 2, 3, 1, Terrain.ENTRANCE);
 
