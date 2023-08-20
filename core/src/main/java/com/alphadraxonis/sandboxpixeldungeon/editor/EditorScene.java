@@ -42,7 +42,6 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.QuickSlotButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Toast;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndBag;
-import com.badlogic.gdx.Files;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.BitmapText;
@@ -121,7 +120,7 @@ public class EditorScene extends PixelScene {
         Dungeon.quickslot.reset();
         QuickSlotButton.reset();
         Dungeon.hero = null;
-        CustomDungeonSaves.setFileType(Files.FileType.External);
+        CustomDungeonSaves.setFileType(CustomDungeonSaves.defaultFileType);
     }
 
     private static boolean firstTimeOpening = true;
@@ -365,6 +364,7 @@ public class EditorScene extends PixelScene {
     public static void updateHeapImagesAndSubIcons() {
         if (scene == null) return;
         for (Heap heap : customLevel().heaps.valueList()) {
+            if (heap.sprite == null) continue;
             updateHeapImage(heap);
             heap.updateSubicon();
         }

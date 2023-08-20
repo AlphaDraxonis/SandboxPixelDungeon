@@ -32,7 +32,7 @@ public class CustomDungeonSaves {
 
     private static final String ROOT_DIR = DeviceCompat.isDesktop() ? "Sandbox-Pixel-Dungeon/" : "";
     private static final String FILE_EXTENSION = ".dat";
-    private static final String DUNGEON_FOLDER = ROOT_DIR + "custom_dungeons/";
+    public static final String DUNGEON_FOLDER = ROOT_DIR + "custom_dungeons/";
     private static final String LEVEL_FOLDER = "levels/";
     private static final String DUNGEON_DATA = "data" + FILE_EXTENSION;
     private static final String DUNGEON_INFO = "info" + FILE_EXTENSION;
@@ -44,7 +44,8 @@ public class CustomDungeonSaves {
     private static final String FLOOR = "floor";
 
     private static String curDirectory;
-    private static Files.FileType fileType = Files.FileType.External;//set to internal while playing
+    private static Files.FileType fileType = Files.FileType.External;//set to local while playing
+    public static final Files.FileType defaultFileType = Files.FileType.External;
 
     public static void setCurDirectory(String curDirectory) {
         CustomDungeonSaves.curDirectory = curDirectory;
@@ -62,14 +63,14 @@ public class CustomDungeonSaves {
         Bundle bundleInfo = new Bundle();
         bundleInfo.put(INFO, dungeon.createInfo());
 
-        setCurDirectory(DUNGEON_FOLDER + dungeon.getName() + "/");
+        setCurDirectory(DUNGEON_FOLDER + dungeon.getName().replace(' ','_') + "/");
         saveBundle(curDirectory + DUNGEON_DATA, bundle);
         saveBundle(curDirectory + DUNGEON_INFO, bundleInfo);
     }
 
     public static CustomDungeon loadDungeon(String name) throws IOException {
         Files.FileType oldFileType = fileType;
-        fileType = Files.FileType.External;
+        fileType = defaultFileType;
         setCurDirectory(DUNGEON_FOLDER + name.replace(' ','_') + "/");
         FileHandle file = FileUtils.getFileHandle(fileType, curDirectory + DUNGEON_DATA);
         CustomDungeon dungeon = (CustomDungeon) FileUtils.bundleFromStream(file.read()).get(DUNGEON);
@@ -132,7 +133,7 @@ public class CustomDungeonSaves {
 
     public static List<Info> getAllInfos() {
         Files.FileType oldFileType = fileType;
-        fileType = Files.FileType.External;
+        fileType = defaultFileType;
         try {
             List<String> dungeonDirs = getFilesInDir(DUNGEON_FOLDER);
             List<Info> result = new ArrayList<>();
@@ -153,7 +154,7 @@ public class CustomDungeonSaves {
 
     public static void copyLevelsForNewGame(String dungeonName, String dirDestination) throws IOException {
         try {
-            FileHandle src = FileUtils.getFileHandle(Files.FileType.External, DUNGEON_FOLDER + dungeonName.replace(' ','_') + "/" + LEVEL_FOLDER);
+            FileHandle src = FileUtils.getFileHandle(defaultFileType, DUNGEON_FOLDER + dungeonName.replace(' ','_') + "/" + LEVEL_FOLDER);
             if (!src.exists()) return;
             FileHandle dest = FileUtils.getFileHandle(Files.FileType.Local, dirDestination.replace(' ','_'));
             src.copyTo(dest);
@@ -164,7 +165,7 @@ public class CustomDungeonSaves {
 
     public static void writeClearText(String fileName, String text) throws IOException {
         try {
-            FileHandle file = FileUtils.getFileHandle(Files.FileType.External, ROOT_DIR + fileName.replace(' ','_'));
+            FileHandle file = FileUtils.getFileHandle(defaultFileType, ROOT_DIR + fileName.replace(' ','_'));
             //write to a temp file, then move the files.
             // This helps prevent save corruption if writing is interrupted
             if (file.exists()) {
@@ -214,10 +215,12 @@ public class CustomDungeonSaves {
             //game classes expect an IO exception, so wrap the GDX exception in that
             throw new IOException(e);
         }
+
+
     }
 
     public static String getAbsolutePath(String fileName) {
-        String path = FileUtils.getFileHandle(Files.FileType.External, ROOT_DIR + fileName.replace(' ','_')).file().getAbsolutePath();
+        String path = FileUtils.getFileHandle(defaultFileType, ROOT_DIR + fileName.replace(' ','_')).file().getAbsolutePath();
         if (DeviceCompat.isAndroid()) {
             path = path.substring(20);// /storage/emulated/0/ ->20chars
             path = path.replaceFirst("sandboxpd/", "sandboxpd/" + "\n");//does not work for .indev

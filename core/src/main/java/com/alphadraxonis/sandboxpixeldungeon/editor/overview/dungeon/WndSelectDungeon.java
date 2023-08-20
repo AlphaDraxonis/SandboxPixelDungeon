@@ -20,9 +20,12 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndGameInProgress;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndOptions;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
-import com.badlogic.gdx.Files;
 import com.watabou.noosa.Game;
+import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.FileUtils;
 
+import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +35,7 @@ public class WndSelectDungeon extends Window {
 
 
     protected ScrollingListPane listPane;
-    protected RedButton createNewDungeonBtn;
+    protected RedButton createNewDungeonBtn, openFileExplorer;
 
     private List<CustomDungeonSaves.Info> allInfos;
     private Set<String> dungeonNames;
@@ -56,7 +59,30 @@ public class WndSelectDungeon extends Window {
                 }
             };
             add(createNewDungeonBtn);
-            createNewDungeonBtn.setRect(0, height - 18, width, 18);
+
+            if(DeviceCompat.isDesktop() && Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)){
+                createNewDungeonBtn.setRect(0, height - 18, (width*9/16f)-2, 18);
+                openFileExplorer = new RedButton("Open File Explorer"){
+                    @Override
+                    protected void onClick() {
+                        Desktop desktop = Desktop.getDesktop();
+                        desktop.isSupported(Desktop.Action.OPEN);
+                        File fileToOpen = FileUtils.getFileHandle(
+                                CustomDungeonSaves.defaultFileType, CustomDungeonSaves.DUNGEON_FOLDER).file();
+                        try {
+                            desktop.open(fileToOpen);
+                        } catch (IOException e) {
+                            Game.runOnRenderThread(()->
+                                    Game.scene().addToFront(new WndTitledMessage(Icons.get(Icons.WARNING), "ERROR",
+                                            "Something went wrong:\n"+e.getMessage())));
+                        }
+                    }
+                };
+                add(openFileExplorer);
+                openFileExplorer.setRect(createNewDungeonBtn.right()+2, height - 18, (width*7/16f)-2, 18);
+            }else{
+                createNewDungeonBtn.setRect(0, height - 18, width, 18);
+            }
         }
 
         listPane.setSize(width, createNewDungeonBtn == null ? height : createNewDungeonBtn.top());
@@ -156,7 +182,7 @@ public class WndSelectDungeon extends Window {
                             protected void onSelect(int index) {
                                 if (index == 0) {
                                     try {
-                                        CustomDungeonSaves.setFileType(Files.FileType.External);
+                                        CustomDungeonSaves.setFileType(CustomDungeonSaves.defaultFileType);
                                         CustomDungeonSaves.writeClearText(fileName,
                                                 DungeonToJsonConverter.getAsJson(CustomDungeonSaves.loadDungeon(info.name)));
 
