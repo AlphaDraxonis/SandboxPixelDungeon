@@ -45,7 +45,13 @@ public class WndNewDungeon extends WndTextInput {
     @Override
     public void onSelect(boolean positive, String text) {
         if (positive && !text.isEmpty()) {
-            if (dungeonNames.contains(text) || text.equals(DEFAULT_DUNGEON)) showNameWarnig();
+            for (String dungeonN : dungeonNames) {
+                if (dungeonN.replace(' ', '_').equals(text.replace(' ', '_'))) {
+                    WndNewDungeon.showNameWarnig();
+                    return;
+                }
+            }
+            if (text.equals(DEFAULT_DUNGEON)) showNameWarnig();
             else createAndOpenNewCustomDungeon(text);
         }
     }

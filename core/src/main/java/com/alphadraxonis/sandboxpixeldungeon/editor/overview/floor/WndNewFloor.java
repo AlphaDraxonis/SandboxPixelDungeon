@@ -89,7 +89,13 @@ public class WndNewFloor extends WndTabbed {
         if (positive) {
             String name = newFloorComp.textBox.getText();
 
-            if (owner.getFloor(name) != null || name.equals(Level.SURFACE) || name.equals(Level.NONE)) {
+            for (String floors : owner.floorNames()) {
+                if (floors.replace(' ', '_').equals(name.replace(' ', '_'))) {
+                    WndNewDungeon.showNameWarnig();
+                    return;
+                }
+            }
+            if (name.equals(Level.SURFACE) || name.equals(Level.NONE)) {
                 WndNewDungeon.showNameWarnig();
                 return;
             }
