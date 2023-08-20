@@ -1,6 +1,5 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.util;
 
-import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -65,6 +64,6 @@ public final class EditorUtilies {
     }
 
     public static int getMaxWindowOffsetYForVisibleToolbar(){
-        return (int) (-200 * (SPDSettings.interfaceSize() + 0.05f));
+        return -11;
     }
 }
