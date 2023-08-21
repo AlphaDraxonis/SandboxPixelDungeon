@@ -35,6 +35,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GoldenMimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -222,9 +223,9 @@ public abstract class RegularLevel extends Level {
 
 	@Override
 	public int mobLimit() {
-		if (Dungeon.depth <= 1){
+		if ((CustomDungeon.isEditing() ? Dungeon.getSimulatedDepth() : Dungeon.depth) <= 1) {
 			if (!Statistics.amuletObtained) return 0;
-			else                            return 10;
+			else return 10;
 		}
 
 		int mobs = 3 + Dungeon.level.levelScheme.getNumInRegion()+ Random.Int(3);
