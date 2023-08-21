@@ -303,6 +303,20 @@ public class EditorScene extends PixelScene {
         }
     }
 
+    public static void revalidateHeaps() {
+        if (scene == null) return;
+        scene.heaps.parent.replaceWithNull(scene.heaps);
+        scene.heaps.destroy();
+        scene.heaps = new Group();
+        scene.add(scene.heaps);
+        for (Heap heap : customLevel().heaps.valueList()) {
+            heap.destroySubicons();
+            heap.initSubicons();
+            heap.seen = true;
+            scene.addHeapSprite(heap);
+        }
+    }
+
     private void addHeapSprite(Heap heap) {
         heap.sprite = (ItemSprite) heaps.recycle(ItemSprite.class);
         heap.sprite.revive();

@@ -21,6 +21,7 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndTabbed;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextInput;
+import com.watabou.utils.PathFinder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -137,7 +138,16 @@ public class WndNewFloor extends WndTabbed {
 
                 executor.shutdownNow();
                 if (Game.scene() instanceof EditorScene)
-                    EditorScene.show(new WndError(Messages.get(InterlevelScene.class, "could_not_generate", Dungeon.seed)));
+                    EditorScene.show(new WndError(Messages.get(InterlevelScene.class, "could_not_generate", Dungeon.seed)){
+                        @Override
+                        public void onBackPressed() {
+                            super.onBackPressed();
+                            if (EditorScene.customLevel() != null) {
+                                PathFinder.setMapSize(EditorScene.customLevel().width(), EditorScene.customLevel().height());
+                                EditorScene.revalidateHeaps();
+                            }
+                        }
+                    });
                 else
                     Game.scene().addToFront(new WndError(Messages.get(InterlevelScene.class, "could_not_generate", Dungeon.seed)));
                 return;
