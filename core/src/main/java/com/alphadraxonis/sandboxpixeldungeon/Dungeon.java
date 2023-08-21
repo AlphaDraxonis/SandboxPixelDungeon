@@ -573,11 +573,13 @@ public class Dungeon {
     private static final String VISITED = "visited";
     private static final String VISITED_DEPTHS = "visited_depths";
     private static final String CUSTOM_DUNGEON = "custom_dungeon";
+    private static final String TEST_GAME = "test_game";
 
     public static void saveGame(int save) {
         try {
             Bundle bundle = new Bundle();
 
+            bundle.put(TEST_GAME, isLevelTesting());
             bundle.put(INIT_VER, initialVersion);
             bundle.put(VERSION, version = Game.versionCode);
             bundle.put(SEED, seed);
@@ -840,7 +842,8 @@ public class Dungeon {
         GamesInProgress.delete(save);
     }
 
-    public static void preview(GamesInProgress.Info info, Bundle bundle) {
+    public static boolean preview(GamesInProgress.Info info, Bundle bundle) {
+        if (bundle.getBoolean(TEST_GAME)) return false;
         info.depth = bundle.getInt(DEPTH);
         info.levelName = bundle.getString(LEVEL_NAME);
         info.version = bundle.getInt(VERSION);
@@ -853,6 +856,8 @@ public class Dungeon {
 
         Hero.preview(info, bundle.getBundle(HERO));
         Statistics.preview(info, bundle);
+
+        return true;
     }
 
     public static void fail(Object cause) {

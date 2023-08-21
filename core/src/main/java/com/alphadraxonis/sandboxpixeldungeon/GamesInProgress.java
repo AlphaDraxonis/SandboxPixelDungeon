@@ -93,6 +93,7 @@ public class GamesInProgress {
 
         if (slotStates.containsKey(slot)) {
 
+            if (slotStates.get(slot) != null && slotStates.get(slot).testGame) return null;
             return slotStates.get(slot);
 
         } else if (!gameExists(slot)) {
@@ -108,7 +109,7 @@ public class GamesInProgress {
                 Bundle bundle = FileUtils.bundleFromFile(gameFile(slot));
                 info = new Info();
                 info.slot = slot;
-                Dungeon.preview(info, bundle);
+                if (!Dungeon.preview(info, bundle)) info = null;
 
             } catch (IOException e) {
                 info = null;
@@ -152,6 +153,8 @@ public class GamesInProgress {
         info.goldCollected = Statistics.goldCollected;
         info.maxDepth = Statistics.deepestFloor;
 
+        info.testGame = Dungeon.isLevelTesting();
+
         slotStates.put(slot, info);
     }
 
@@ -191,6 +194,8 @@ public class GamesInProgress {
 
         public int goldCollected;
         public int maxDepth;
+
+        public boolean testGame;
     }
 
     public static final Comparator<GamesInProgress.Info> scoreComparator = new Comparator<GamesInProgress.Info>() {
