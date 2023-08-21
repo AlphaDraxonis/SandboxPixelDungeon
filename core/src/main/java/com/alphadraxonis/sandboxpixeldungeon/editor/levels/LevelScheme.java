@@ -65,7 +65,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     private Class<? extends Level> type;
     private Level level;
-    private int numInRegion = 1;
+    private int numInRegion = 3;
     private Level.Feeling feeling;
     private int shopPriceMultiplier = 1;
 

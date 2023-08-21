@@ -129,7 +129,8 @@ public abstract class SpecialRoom extends Room {
         Random.shuffle(runConsSpecials);
 
         // TODO currently always a consumable special first as there's 1 more of them, adjust as needed if adding more
-        runSpecials.add(runConsSpecials.remove(0));
+        if (!Level.NONE.equals(Dungeon.levelName) || Dungeon.seedCurLevel() % 2 == 0)
+            runSpecials.add(runConsSpecials.remove(0));
 
         while (!runEquipSpecials.isEmpty() || !runConsSpecials.isEmpty()) {
             if (!runEquipSpecials.isEmpty()) runSpecials.add(runEquipSpecials.remove(0));
@@ -143,7 +144,7 @@ public abstract class SpecialRoom extends Room {
         floorSpecials = (ArrayList<Class<? extends Room>>) runSpecials.clone();
 
         //laboratory rooms spawn at set intervals every chapter
-        if (Dungeon.getSimulatedDepth() % 5 == (Dungeon.getSimulatedDepth() % 3 + 2)) {
+        if (Dungeon.getSimulatedDepth() % 5 == (Dungeon.seedCurLevel() % 3 + 2)) {
             floorSpecials.add(0, LaboratoryRoom.class);
         }
     }
