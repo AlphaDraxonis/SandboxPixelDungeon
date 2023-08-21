@@ -62,7 +62,7 @@ public class WndSelectDungeon extends Window {
 
             if(DeviceCompat.isDesktop() && Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)){
                 createNewDungeonBtn.setRect(0, height - 18, (width*9/16f)-2, 18);
-                openFileExplorer = new RedButton("Open File Explorer"){
+                openFileExplorer = new RedButton(Messages.get(WndSelectDungeon.class, "open_file_explorer")){
                     @Override
                     protected void onClick() {
                         Desktop desktop = Desktop.getDesktop();
