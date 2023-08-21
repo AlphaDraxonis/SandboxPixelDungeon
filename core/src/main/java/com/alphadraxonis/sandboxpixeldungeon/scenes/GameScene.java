@@ -44,6 +44,8 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Snake;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.SideControlPane;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.effects.BannerSprites;
 import com.alphadraxonis.sandboxpixeldungeon.effects.BlobEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.EmoIcon;
@@ -161,6 +163,7 @@ public class GameScene extends PixelScene {
     private HeroSprite hero;
 
     private MenuPane menu;
+    private SideControlPane sideControlPane;
     private StatusPane status;
 
     private BossHealthBar boss;
@@ -372,6 +375,13 @@ public class GameScene extends PixelScene {
         status.camera = uiCamera;
         status.setRect(0, uiSize > 0 ? uiCamera.height - 39 : 0, uiCamera.width, 0);
         add(status);
+
+        if (Dungeon.isLevelTesting()) {
+            sideControlPane = new SideControlPane(1, 8);
+            sideControlPane.camera = uiCamera;
+            sideControlPane.setPos(0, status.isLarge() ? 10 : status.bottom() + 10);
+            add(sideControlPane);
+        }
 
         boss = new BossHealthBar();
         boss.camera = uiCamera;
@@ -1313,7 +1323,14 @@ public class GameScene extends PixelScene {
         StyledButton restart = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(StartScene.class, "new"), 9) {
             @Override
             protected void onClick() {
-                StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass);
+                if (Dungeon.isLevelTesting()) {
+                    try {
+                        Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(Dungeon.customDungeon.getName());
+                        SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+                    } catch (IOException e) {
+                        SandboxPixelDungeon.reportException(e);
+                    }
+                } else StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass);
             }
 
             @Override

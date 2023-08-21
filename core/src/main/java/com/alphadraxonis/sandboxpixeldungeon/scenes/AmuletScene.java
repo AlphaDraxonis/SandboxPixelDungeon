@@ -25,6 +25,8 @@ import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.GamesInProgress;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.effects.BadgeBanner;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Flare;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
@@ -80,21 +82,27 @@ public class AmuletScene extends PixelScene {
 				btnExit.enable(false);
 				btnStay.enable(false);
 
-				AmuletScene.this.add(new Delayer(0.1f){
-					@Override
-					protected void onComplete() {
-						if (BadgeBanner.isShowingBadges()){
-							AmuletScene.this.add(new Delayer(3f){
-								@Override
-								protected void onComplete() {
-									Game.switchScene( RankingsScene.class );
-								}
-							});
-						} else {
-							Game.switchScene( RankingsScene.class );
+				if (!Dungeon.isLevelTesting()) {
+					AmuletScene.this.add(new Delayer(0.1f) {
+						@Override
+						protected void onComplete() {
+							if (BadgeBanner.isShowingBadges()) {
+								AmuletScene.this.add(new Delayer(3f) {
+									@Override
+									protected void onComplete() {
+										Game.switchScene(RankingsScene.class);
+									}
+								});
+							} else {
+								Game.switchScene(RankingsScene.class);
+							}
 						}
-					}
-				});
+					});
+				} else {
+					EditorScene.start();
+					EditorScene.openDifferentLevel = false;
+					WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
+				}
 			}
 		};
 		btnExit.icon(new ItemSprite(ItemSpriteSheet.AMULET));

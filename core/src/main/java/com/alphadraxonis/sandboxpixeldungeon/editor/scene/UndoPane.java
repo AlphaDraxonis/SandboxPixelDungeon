@@ -50,6 +50,9 @@ public class UndoPane extends Component {
 
         btnRedo.setPos(btnUndo.right() + 2, y + 2);
         PixelScene.align(btnRedo);
+
+        width = WIDTH;
+        height = btnRedo.bottom() + 3 - y;
     }
 
     public void updateStates() {

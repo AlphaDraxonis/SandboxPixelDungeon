@@ -136,7 +136,7 @@ public abstract class Char extends Actor {
 
 	public int damageReductionMax = 0;
 	
-	protected float baseSpeed	= 1;
+	public float baseSpeed	= 1;
 	protected PathFinder.Path path;
 
 	public int paralysed	    = 0;

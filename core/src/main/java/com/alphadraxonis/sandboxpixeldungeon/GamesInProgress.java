@@ -35,6 +35,7 @@ import java.util.HashMap;
 
 public class GamesInProgress {
 
+    public static final int TEST_SLOT = 99;//should always be larger than MAX_SLOTS !!!
     public static final int MAX_SLOTS = HeroClass.values().length;
 
     //null means we have loaded info and it is empty, no entry means unknown.

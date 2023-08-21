@@ -88,8 +88,10 @@ public class Invisibility extends FlavourBuff {
 
 	public static void dispel(Char ch){
 
-		for ( Buff invis : ch.buffs( Invisibility.class )){
-			invis.detach();
+		if (!Dungeon.customDungeon.permaInvis) {
+			for (Buff invis : ch.buffs(Invisibility.class)) {
+				invis.detach();
+			}
 		}
 		CloakOfShadows.cloakStealth cloakBuff = ch.buff( CloakOfShadows.cloakStealth.class );
 		if (cloakBuff != null) {

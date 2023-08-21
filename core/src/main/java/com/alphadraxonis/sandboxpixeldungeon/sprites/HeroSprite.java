@@ -82,6 +82,7 @@ public class HeroSprite extends CharSprite {
 		
 		operate = new Animation( 8, false );
 		operate.frames( film, 16, 17, 16, 17 );
+		if (Dungeon.isLevelTesting()) operate.delay = 0.04f;
 		
 		fly = new Animation( 1, true );
 		fly.frames( film, 18 );

@@ -142,15 +142,15 @@ public enum HeroClass {
             }
         }
 
-        if(Dungeon.customDungeon.opMode) {
-            Item item = new ScrollOfMagicMapping();
+        if (Dungeon.isLevelTesting()) {
+            Item item = new ScrollOfIdentify();
             item.quantity(100);
             item.collect();
 
             Weapon weapon = new Greataxe();
             weapon.identify();
             weapon.upgrade(300);
-            hero.belongings.weapon = weapon;
+            weapon.collect();
 
             Ring ring = new RingOfHaste();
             ring.identify();

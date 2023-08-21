@@ -80,6 +80,8 @@ public enum Rankings {
 
     public void submit(boolean win, Object cause) {
 
+        if (Dungeon.isLevelTesting()) return;
+
         load();
 
         Record rec = new Record();

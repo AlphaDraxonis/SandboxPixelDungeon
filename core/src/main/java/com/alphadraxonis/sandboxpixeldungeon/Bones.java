@@ -153,7 +153,7 @@ public class Bones {
 
     public static Item get() {
         //daily runs do not interact with remains
-        if (Dungeon.daily){
+        if (Dungeon.daily || Dungeon.isLevelTesting()){
             return null;
         }
 
@@ -187,7 +187,7 @@ public class Bones {
                 level = "0";
 
                 //challenged or seeded runs will always find 10 gold
-                if (Dungeon.challenges != 0 || !Dungeon.customSeedText.isEmpty()){
+                if (Dungeon.challenges != 0 || !Dungeon.customSeedText.isEmpty() || Dungeon.isLevelTesting()){
                     item = new Gold(10);
                 }
 

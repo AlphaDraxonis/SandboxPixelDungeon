@@ -18,6 +18,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.EditorCellSelector;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.SideControlPane;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.TerrainFeaturesTilemapEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.UndoPane;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
@@ -75,6 +76,7 @@ public class EditorScene extends PixelScene {
 
     private MenuPane menu;
     private UndoPane undo;
+    private SideControlPane sideControlPane;
     private EToolbar toolbar;
 
 
@@ -127,6 +129,7 @@ public class EditorScene extends PixelScene {
     }
 
     private static boolean firstTimeOpening = true;
+    public static boolean openDifferentLevel = true;
 
     public static void open(CustomLevel customLevel) {
         if (customLevel != EditorScene.customLevel) {
@@ -135,8 +138,11 @@ public class EditorScene extends PixelScene {
                 oldLvlName = customLevel.levelScheme.getCustomDungeon() == Dungeon.customDungeon ? EditorScene.customLevel.name : null;
                 EditorScene.customLevel.levelScheme.unloadLevel();
             } else oldLvlName = null;
-            mainCameraPos = null;
-            Undo.reset();
+            if (openDifferentLevel) {
+                mainCameraPos = null;
+                Undo.reset();
+            }
+            openDifferentLevel = true;
             if (!firstTimeOpening) Items.updateKeys(oldLvlName, customLevel.name);
         }
         EditorScene.customLevel = customLevel;
@@ -256,6 +262,11 @@ public class EditorScene extends PixelScene {
         undo.camera = uiCamera;
         undo.setPos(0, 0);
         add(undo);
+
+        sideControlPane = new SideControlPane(0,1);
+        sideControlPane.camera = uiCamera;
+        sideControlPane.setPos(0, undo.bottom() + 10);
+        add(sideControlPane);
 
         toolbar = new EToolbar();
         toolbar.camera = uiCamera;

@@ -474,11 +474,6 @@ public class Hero extends Char {
     @Override
     public int attackSkill(Char target) {
 
-        if(Dungeon.customDungeon.opMode){
-            float accuracy = INFINITE_ACCURACY;
-            return (int)(attackSkill * accuracy);
-        }
-
         KindOfWeapon wep = belongings.attackingWeapon();
 
         float accuracy = 1;
@@ -731,12 +726,22 @@ public class Hero extends Char {
     @Override
     public void spend(float time) {
         super.spend(time);
+        updatePermaBuffs(time);
     }
 
     @Override
     public void spendConstant(float time) {
         justMoved = false;
         super.spendConstant(time);
+        updatePermaBuffs(time);
+    }
+
+    private void updatePermaBuffs(float timeSpend){
+        if (Dungeon.customDungeon.permaMindVision) Buff.affect(this, MindVision.class, timeSpend);
+        if (Dungeon.customDungeon.permaInvis) {
+            Buff.affect(this, Invisibility.class, timeSpend);
+            invisible = (int) Math.ceil(timeSpend);
+        }
     }
 
     public void spendAndNextConstant(float time) {
@@ -753,11 +758,6 @@ public class Hero extends Char {
 
     @Override
     public boolean act() {
-
-        if (Dungeon.customDungeon.opMode) {
-            invisible++;
-            Buff.affect(this, MindVision.class, 1);
-        }
 
         //calls to dungeon.observe will also update hero's local FOV.
         fieldOfView = Dungeon.level.heroFOV;
@@ -1487,7 +1487,7 @@ public class Hero extends Char {
 
         int preHP = HP + shielding();
         if (src instanceof Hunger) preHP -= shielding();
-        super.damage(Dungeon.customDungeon.opMode ? 0 : dmg, src);
+        super.damage(Dungeon.customDungeon.damageImmune ? 0 : dmg, src);
         int postHP = HP + shielding();
         if (src instanceof Hunger) postHP -= shielding();
         int effectiveDamage = preHP - postHP;

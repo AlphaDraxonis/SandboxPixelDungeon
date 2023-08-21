@@ -1017,7 +1017,7 @@ public class Badges {
 	
 	private static void displayBadge( Badge badge ) {
 		
-		if (badge == null || !Dungeon.customSeedText.isEmpty()) {
+		if (badge == null || !Dungeon.customSeedText.isEmpty() || Dungeon.isLevelTesting()) {
 			return;
 		}
 		

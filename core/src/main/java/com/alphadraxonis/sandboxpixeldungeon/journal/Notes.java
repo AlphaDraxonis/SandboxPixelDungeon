@@ -220,7 +220,6 @@ public class Notes {
 	}
 	
 	public static boolean remove( Key key ){
-		if(Dungeon.customDungeon.opMode)return true;
 		KeyRecord k = new KeyRecord( key );
 		if (records.contains(k)){
 			k = (KeyRecord) records.get(records.indexOf(k));
@@ -230,11 +229,12 @@ public class Notes {
 			}
 			return true;
 		}
+		if (Dungeon.customDungeon.permaKey) return true;
 		return false;
 	}
 	
 	public static int keyCount( Key key ){
-		if(Dungeon.customDungeon.opMode)return 1;
+		if (Dungeon.customDungeon.permaKey) return 1;
 		KeyRecord k = new KeyRecord( key );
 		if (records.contains(k)){
 			k = (KeyRecord) records.get(records.indexOf(k));

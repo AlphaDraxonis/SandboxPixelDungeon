@@ -252,7 +252,7 @@ public class WndSelectDungeon extends Window {
 
     }
 
-    private static void openDungeon(String name) {
+    public static void openDungeon(String name) {
         try {
             Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(name);
         } catch (IOException e) {

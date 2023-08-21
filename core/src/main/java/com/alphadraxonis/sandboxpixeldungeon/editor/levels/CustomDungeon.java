@@ -67,15 +67,12 @@ import java.util.Set;
 
 public class CustomDungeon implements Bundlable {
 
-    public boolean opMode = DeviceCompat.isDebug();//TODO settings what to enable exactly (dont release for now) (maybe secure with password)
-    //Perks:
-    // - perma-invisiblility
-    // - perma-mindvision
-    // - take 0 dmg from all sources
-    // - infinite accuracy
-    // - see hidden traps and doors
-    // - infinite keys
-    // - maybe add ScrollOfDebug?
+    public boolean damageImmune, seeSecrets, permaMindVision, permaInvis, permaKey;// maybe add ScrollOfDebug?
+    {
+        if (DeviceCompat.isDebug() && false){
+            damageImmune = seeSecrets = permaMindVision = permaInvis = permaKey = true;
+        }
+    }
 
     //FIXME: Was noch zu tun ist  FIXME FIXME TODO System.err.println()
     //general floor overview stuff
@@ -84,6 +81,13 @@ public class CustomDungeon implements Bundlable {
     //select builder and painter
     //place blobs like fire
     //Category items/mobs/rooms
+
+
+    //Identify items
+    //Rename dungeons/floors
+    //UI rework
+    //play immediatly in editor (+opMode)
+    //mob stats editor
 
     private String name;
     private String lastEditedFloor;
@@ -404,7 +408,7 @@ public class CustomDungeon implements Bundlable {
     }
 
     public static boolean showHiddenDoors() {
-        return isEditing() || getDungeon().opMode;
+        return isEditing() || getDungeon().seeSecrets;
     }
 
 

@@ -21,6 +21,7 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings;
 
+import com.alphadraxonis.sandboxpixeldungeon.GamesInProgress;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -73,6 +74,7 @@ public class WndMenuEditor extends Window {
         addButton(curBtn = new RedButton(Messages.get(WndGame.class, "menu")) {
             @Override
             protected void onClick() {
+                if(GamesInProgress.curSlot == GamesInProgress.TEST_SLOT) GamesInProgress.curSlot = 0;
                 //no need to sve here bc EditorScene autosaves anyway
                 Game.switchScene(TitleScene.class);
             }

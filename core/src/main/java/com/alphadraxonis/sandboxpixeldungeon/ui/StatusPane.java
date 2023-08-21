@@ -339,4 +339,7 @@ public class StatusPane extends Component {
 		emitter.burst( Speck.factory( Speck.STAR ), 12 );
 	}
 
+	public boolean isLarge() {
+		return large;
+	}
 }

@@ -28,6 +28,9 @@ import com.alphadraxonis.sandboxpixeldungeon.GamesInProgress;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.SideControlPane;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Journal;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ActionIndicator;
@@ -128,6 +131,8 @@ public class HeroSelectScene extends PixelScene {
 				super.onClick();
 
 				if (GamesInProgress.selectedClass == null) return;
+
+				if (Dungeon.isLevelTesting()) SideControlPane.lastSelectedClass = GamesInProgress.selectedClass;
 
 				Dungeon.hero = null;
 				Dungeon.daily = Dungeon.dailyReplay = false;
@@ -314,7 +319,15 @@ public class HeroSelectScene extends PixelScene {
 			optionsPane.setPos(heroBtns.get(0).left(), 0);
 		}
 
-		btnExit = new ExitButton();
+		btnExit = new ExitButton(){
+			@Override
+			protected void onClick() {
+				if (Dungeon.isLevelTesting()) {
+					EditorScene.openDifferentLevel = false;
+					WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
+				} else super.onClick();
+			}
+		};
 		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
 		add( btnExit );
 		btnExit.visible = btnExit.active = !SPDSettings.intro();

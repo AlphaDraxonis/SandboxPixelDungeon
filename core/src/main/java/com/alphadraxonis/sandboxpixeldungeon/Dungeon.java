@@ -339,6 +339,10 @@ public class Dungeon {
         return (challenges & mask) != 0;
     }
 
+    public static boolean isLevelTesting(){
+        return GamesInProgress.curSlot == GamesInProgress.TEST_SLOT;
+    }
+
     public static Level newLevel() {
 
         Dungeon.level = null;

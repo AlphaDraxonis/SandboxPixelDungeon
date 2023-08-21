@@ -25,8 +25,10 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.GamesInProgress;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.HeroSelectScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.InterlevelScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.RankingsScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.StartScene;
@@ -92,7 +94,14 @@ public class WndGame extends Window {
 			addButton( curBtn = new RedButton( Messages.get(this, "start") ) {
 				@Override
 				protected void onClick() {
-					StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass);
+					if (Dungeon.isLevelTesting()) {
+						try {
+							Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(Dungeon.customDungeon.getName());
+							SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+						} catch (IOException e) {
+							SandboxPixelDungeon.reportException(e);
+						}
+					} else StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass);
 				}
 			} );
 			curBtn.icon(Icons.get(Icons.ENTER));
@@ -117,6 +126,7 @@ public class WndGame extends Window {
 				} catch (IOException e) {
 					SandboxPixelDungeon.reportException(e);
 				}
+				if (GamesInProgress.curSlot == GamesInProgress.TEST_SLOT) GamesInProgress.curSlot = 0;
 				Game.switchScene(TitleScene.class);
 			}
 		});
