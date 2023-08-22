@@ -316,7 +316,7 @@ public class EditorScene extends PixelScene {
 
     public static void revalidateHeaps() {
         if (scene == null) return;
-        scene.heaps.parent.replaceWithNull(scene.heaps);
+        scene.heaps.parent.erase(scene.heaps);
         scene.heaps.destroy();
         scene.heaps = new Group();
         scene.add(scene.heaps);

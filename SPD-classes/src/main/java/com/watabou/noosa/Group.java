@@ -95,10 +95,6 @@ public class Group extends Gizmo {
         return members.indexOf(g);
     }
 
-    public synchronized void replaceWithNull(Gizmo g) {
-        members.set(indexOf(g), null);
-    }
-
     public synchronized Gizmo add(Gizmo g) {
 
         if (g.parent == this) {

@@ -5,6 +5,9 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
+import com.watabou.noosa.Gizmo;
+import com.watabou.noosa.Group;
 
 import java.util.Map;
 
@@ -65,5 +68,13 @@ public final class EditorUtilies {
 
     public static int getMaxWindowOffsetYForVisibleToolbar(){
         return -11;
+    }
+
+    public static Window getParentWindow(Gizmo g){
+        Group w = g.parent;
+        while (w != null && !(w instanceof Window)) {
+            w = w.parent;
+        }
+        return (Window) w;
     }
 }

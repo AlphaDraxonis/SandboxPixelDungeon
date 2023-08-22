@@ -17,6 +17,8 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.BuffInd
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.LotusLevelSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.MobStateSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.QuestSpinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.WndEditStats;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Buffs;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
@@ -57,7 +59,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final ItemSelector statueWeapon, statueArmor;
     private final ItemSelector thiefItem;
     private final MobStateSpinner mobStateSpinner;
-    private final RedButton addBuffs;
+    private final RedButton addBuffs, editStats;
 
     private final ItemContainer<Item> mimicItems;
     private final LotusLevelSpinner lotusLevelSpinner;
@@ -315,8 +317,28 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(addBuffs);
         } else addBuffs = null;
 
+        Mob defaultStats = DefaultStatsCache.getDefaultObject(mob.getClass());
+        if (defaultStats != null) {
+            editStats = new RedButton(Messages.get(EditMobComp.class, "edit_stats")) {
+                @Override
+                protected void onClick() {
+                    Window w = new WndEditStats((int) Math.ceil(EditMobComp.this.width),
+                            EditorUtilies.getParentWindow(EditMobComp.this).getOffset().y, defaultStats, mob){
+                        @Override
+                        public void hide() {
+                            updateObj();
+                            super.hide();
+                        }
+                    };
+                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                    else Game.scene().addToFront(w);
+                }
+            };
+            add(editStats);
+        } else editStats = null;
+
         comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, sheepLifespan,
-                mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, addBuffs};
+                mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, addBuffs, editStats};
     }
 
     @Override
@@ -360,7 +382,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 ((StatueSprite) obj.sprite).setArmor(armor == null ? 0 : armor.tier);
             statueArmor.updateItem();
         }
-        if (obj instanceof Mimic ) {
+        if (obj instanceof Mimic) {
             if (obj.state != obj.PASSIVE) obj.sprite.idle();
             else ((MimicSprite) obj.sprite).hideMimic();
         }

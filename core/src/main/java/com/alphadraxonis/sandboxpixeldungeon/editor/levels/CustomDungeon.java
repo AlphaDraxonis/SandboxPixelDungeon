@@ -86,7 +86,7 @@ public class CustomDungeon implements Bundlable {
     //Identify items
     //Rename dungeons/floors
     //UI rework
-    //play immediatly in editor (+opMode)
+    //restore toolbar
     //mob stats editor
 
     private String name;

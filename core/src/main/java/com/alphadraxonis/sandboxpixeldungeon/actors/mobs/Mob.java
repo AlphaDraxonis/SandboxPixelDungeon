@@ -212,10 +212,10 @@ public abstract class Mob extends Char {
         firstAdded = false;
 
         if (bundle.contains(DEFENSE_SKILL)) {
-            bundle.put(DEFENSE_SKILL, defenseSkill);
-            bundle.put(ATTACK_SKILL, attackSkill);
-            bundle.put(DAMAGE_ROLL_MIN, damageRollMin);
-            bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
+            defenseSkill = bundle.getInt(DEFENSE_SKILL);
+            attackSkill = bundle.getInt(ATTACK_SKILL);
+            damageRollMin = bundle.getInt(DAMAGE_ROLL_MIN);
+            damageRollMax = bundle.getInt(DAMAGE_ROLL_MAX);
         }
     }
 
@@ -1009,13 +1009,6 @@ public abstract class Mob extends Char {
                     desc += "\n"+Messages.get(Mob.class, "dmg_max")+": " + defaultStats.damageRollMax + " -> _" + damageRollMax+"_";
             }
         }
-        baseSpeed = 2;
-        damageReductionMax = 5;
-        damageRollMin = 10;
-        damageRollMax = 15;
-        attackSkill = 4;
-        defenseSkill = 1000;
-        HT = 5000;
 
         return desc;
     }

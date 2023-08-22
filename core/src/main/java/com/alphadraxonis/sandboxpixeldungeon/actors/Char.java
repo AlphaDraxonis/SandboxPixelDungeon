@@ -642,6 +642,8 @@ public abstract class Char extends Actor {
 		needsShieldUpdate = false;
 		return cachedShield;
 	}
+
+	public static final int INFINITE_HP = 1_000_000;
 	
 	public void damage( int dmg, Object src ) {
 		
@@ -649,7 +651,7 @@ public abstract class Char extends Actor {
 			return;
 		}
 
-		if(isInvulnerable(src.getClass())){
+		if (isInvulnerable(src.getClass()) || HP == INFINITE_HP) {
 			sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
 			return;
 		}
