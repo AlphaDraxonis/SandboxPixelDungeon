@@ -21,6 +21,8 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.tiles;
 
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.watabou.utils.Random;
 import com.watabou.utils.SparseArray;
@@ -85,14 +87,29 @@ public class DungeonTileSheet {
 			Terrain.SIGN, Terrain.SIGN_SP, Terrain.WELL, Terrain.STATUE, Terrain.ALCHEMY,
 			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.LOCKED_DOOR, Terrain.CRYSTAL_DOOR
 	));
+	public static HashSet<Integer> waterStitcheableWithSecretDoor = new HashSet<>(Arrays.asList(
+			Terrain.EMPTY, Terrain.GRASS, Terrain.EMPTY_WELL,
+			Terrain.ENTRANCE, Terrain.EXIT, Terrain.EMBERS,
+			Terrain.BARRICADE, Terrain.HIGH_GRASS, Terrain.FURROWED_GRASS, Terrain.SECRET_TRAP,
+			Terrain.TRAP, Terrain.INACTIVE_TRAP, Terrain.EMPTY_DECO,
+			Terrain.SIGN, Terrain.SIGN_SP, Terrain.WELL, Terrain.STATUE, Terrain.ALCHEMY,
+			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.LOCKED_DOOR, Terrain.CRYSTAL_DOOR, Terrain.SECRET_DOOR
+	));
 
 	//+1 for ground above, +2 for ground right, +4 for ground below, +8 for ground left.
 	public static int stitchWaterTile(int top, int right, int bottom, int left){
 		int result = WATER;
-		if (waterStitcheable.contains(top))     result += 1;
-		if (waterStitcheable.contains(right))   result += 2;
-		if (waterStitcheable.contains(bottom))  result += 4;
-		if (waterStitcheable.contains(left))    result += 8;
+		if (Dungeon.customDungeon.seeSecrets) {
+			if (waterStitcheableWithSecretDoor.contains(top)) result += 1;
+			if (waterStitcheableWithSecretDoor.contains(right)) result += 2;
+			if (waterStitcheableWithSecretDoor.contains(bottom)) result += 4;
+			if (waterStitcheableWithSecretDoor.contains(left)) result += 8;
+		} else {
+			if (waterStitcheable.contains(top)) result += 1;
+			if (waterStitcheable.contains(right)) result += 2;
+			if (waterStitcheable.contains(bottom)) result += 4;
+			if (waterStitcheable.contains(left)) result += 8;
+		}
 		return result;
 	}
 
@@ -212,7 +229,7 @@ public class DungeonTileSheet {
 
 	//These tiles count as wall for the purposes of wall stitching
 	private static int[] wallStitcheable = new int[]{
-			Terrain.WALL, Terrain.WALL_DECO, Terrain.SECRET_DOOR,
+			Terrain.WALL, Terrain.WALL_DECO, /*Terrain.SECRET_DOOR,*/
 			Terrain.LOCKED_EXIT, Terrain.UNLOCKED_EXIT, Terrain.BOOKSHELF, NULL_TILE
 	};
 
@@ -220,7 +237,7 @@ public class DungeonTileSheet {
 		for (int i : wallStitcheable)
 			if (tile == i)
 				return true;
-		return false;
+		return tile == Terrain.SECRET_DOOR && !Dungeon.customDungeon.seeSecrets;
 	}
 
 	public static int getRaisedWallTile(int tile, int pos, int right, int below, int left){
@@ -245,6 +262,7 @@ public class DungeonTileSheet {
 	public static final int RAISED_DOOR_OPEN        = RAISED_DOORS+1;
 	public static final int RAISED_DOOR_LOCKED      = RAISED_DOORS+2;
 	public static final int RAISED_DOOR_CRYSTAL     = RAISED_DOORS+3;
+	public static final int RAISED_DOOR_SECRET		= RAISED_DOOR_CRYSTAL;
 	//floor tile that appears on a top/bottom doorway
 	public static final int RAISED_DOOR_SIDEWAYS    = RAISED_DOORS+4;
 
@@ -254,7 +272,8 @@ public class DungeonTileSheet {
 		else if (tile == Terrain.DOOR)          return DungeonTileSheet.RAISED_DOOR;
 		else if (tile == Terrain.OPEN_DOOR)     return DungeonTileSheet.RAISED_DOOR_OPEN;
 		else if (tile == Terrain.LOCKED_DOOR)   return DungeonTileSheet.RAISED_DOOR_LOCKED;
-		else if (tile == Terrain.CRYSTAL_DOOR)   return DungeonTileSheet.RAISED_DOOR_CRYSTAL;
+		else if (tile == Terrain.CRYSTAL_DOOR)  return DungeonTileSheet.RAISED_DOOR_CRYSTAL;
+		else if (tile == Terrain.SECRET_DOOR)   return DungeonTileSheet.RAISED_DOOR_SECRET;
 		else return -1;
 	}
 
@@ -266,7 +285,7 @@ public class DungeonTileSheet {
 		for (int i : doorTiles)
 			if (tile == i)
 				return true;
-		return false;
+		return tile == Terrain.SECRET_DOOR && CustomDungeon.showHiddenDoors();
 	}
 
 	private static final int RAISED_OTHER           =                       xy(1, 10);  //16 slots
@@ -324,6 +343,7 @@ public class DungeonTileSheet {
 	public static final int DOOR_SIDEWAYS_OVERHANG_CLOSED   = WALLS_OVERHANG+20;
 	public static final int DOOR_SIDEWAYS_OVERHANG_LOCKED   = WALLS_OVERHANG+24;
 	public static final int DOOR_SIDEWAYS_OVERHANG_CRYSTAL  = WALLS_OVERHANG+28;
+	public static final int DOOR_SIDEWAYS_OVERHANG_SECRET   = WALLS_OVERHANG+28;
 
 
 	public static int stitchWallOverhangTile(int tile, int rightBelow, int below, int leftBelow){
@@ -332,6 +352,8 @@ public class DungeonTileSheet {
 		else if (tile == Terrain.DOOR)                              visual = DOOR_SIDEWAYS_OVERHANG_CLOSED;
 		else if (tile == Terrain.LOCKED_DOOR)                       visual = DOOR_SIDEWAYS_OVERHANG_LOCKED;
 		else if (tile == Terrain.CRYSTAL_DOOR)                      visual = DOOR_SIDEWAYS_OVERHANG_CRYSTAL;
+		else if (tile == Terrain.SECRET_DOOR
+				&& Dungeon.customDungeon.seeSecrets)				visual = DOOR_SIDEWAYS_OVERHANG_SECRET;
 		else if (below == Terrain.WALL_DECO)                        visual = WALL_OVERHANG_DECO;
 		else if (below == Terrain.BOOKSHELF)                        visual = WALL_OVERHANG_WOODEN;
 		else                                                        visual = WALL_OVERHANG;
@@ -358,6 +380,8 @@ public class DungeonTileSheet {
 	public static final int DOOR_SIDEWAYS               = OTHER_OVERHANG+12;
 	public static final int DOOR_SIDEWAYS_LOCKED        = OTHER_OVERHANG+13;
 	public static final int DOOR_SIDEWAYS_CRYSTAL       = OTHER_OVERHANG+14;
+	public static final int DOOR_SIDEWAYS_SECRET        = OTHER_OVERHANG+14;
+	public static final int DOOR_OVERHANG_SECRET       = OTHER_OVERHANG+11;
 	//exit visuals are rendered flat atm, so they actually underhang
 	public static final int EXIT_UNDERHANG              =  OTHER_OVERHANG+15;
 

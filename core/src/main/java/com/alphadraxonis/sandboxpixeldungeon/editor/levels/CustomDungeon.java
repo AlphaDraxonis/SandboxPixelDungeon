@@ -408,7 +408,7 @@ public class CustomDungeon implements Bundlable {
     }
 
     public static boolean showHiddenDoors() {
-        return isEditing() || getDungeon().seeSecrets;
+        return isEditing() || Dungeon.customDungeon.seeSecrets;
     }
 
 
