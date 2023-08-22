@@ -262,7 +262,7 @@ public class DungeonTileSheet {
 	public static final int RAISED_DOOR_OPEN        = RAISED_DOORS+1;
 	public static final int RAISED_DOOR_LOCKED      = RAISED_DOORS+2;
 	public static final int RAISED_DOOR_CRYSTAL     = RAISED_DOORS+3;
-	public static final int RAISED_DOOR_SECRET		= RAISED_DOOR_CRYSTAL;
+	public static final int RAISED_DOOR_SECRET		= RAISED_DOORS+5;
 	//floor tile that appears on a top/bottom doorway
 	public static final int RAISED_DOOR_SIDEWAYS    = RAISED_DOORS+4;
 
@@ -339,11 +339,11 @@ public class DungeonTileSheet {
 	public static final int WALL_OVERHANG                   = WALLS_OVERHANG+0;
 	public static final int WALL_OVERHANG_DECO              = WALLS_OVERHANG+4;
 	public static final int WALL_OVERHANG_WOODEN            = WALLS_OVERHANG+8;
+	public static final int DOOR_SIDEWAYS_OVERHANG_SECRET   = WALLS_OVERHANG+12;
 	public static final int DOOR_SIDEWAYS_OVERHANG          = WALLS_OVERHANG+16;
 	public static final int DOOR_SIDEWAYS_OVERHANG_CLOSED   = WALLS_OVERHANG+20;
 	public static final int DOOR_SIDEWAYS_OVERHANG_LOCKED   = WALLS_OVERHANG+24;
 	public static final int DOOR_SIDEWAYS_OVERHANG_CRYSTAL  = WALLS_OVERHANG+28;
-	public static final int DOOR_SIDEWAYS_OVERHANG_SECRET   = WALLS_OVERHANG+28;
 
 
 	public static int stitchWallOverhangTile(int tile, int rightBelow, int below, int leftBelow){
@@ -380,8 +380,8 @@ public class DungeonTileSheet {
 	public static final int DOOR_SIDEWAYS               = OTHER_OVERHANG+12;
 	public static final int DOOR_SIDEWAYS_LOCKED        = OTHER_OVERHANG+13;
 	public static final int DOOR_SIDEWAYS_CRYSTAL       = OTHER_OVERHANG+14;
-	public static final int DOOR_SIDEWAYS_SECRET        = OTHER_OVERHANG+14;
-	public static final int DOOR_OVERHANG_SECRET       = OTHER_OVERHANG+11;
+	public static final int DOOR_SIDEWAYS_SECRET        = OTHER_OVERHANG+15;
+	public static final int DOOR_OVERHANG_SECRET       = OTHER_OVERHANG+8;
 	//exit visuals are rendered flat atm, so they actually underhang
 	public static final int EXIT_UNDERHANG              =  OTHER_OVERHANG+15;
 
