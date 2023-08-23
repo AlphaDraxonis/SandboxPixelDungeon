@@ -57,269 +57,266 @@ import java.util.ArrayList;
 
 public class MeleeWeapon extends Weapon {
 
-    public static String AC_ABILITY = "ABILITY";
+	public static String AC_ABILITY = "ABILITY";
 
-    @Override
-    public void activate(Char ch) {
-        super.activate(ch);
-        if (ch instanceof Hero && ((Hero) ch).heroClass == HeroClass.DUELIST) {
-            Buff.affect(ch, Charger.class);
-        }
-    }
+	@Override
+	public void activate(Char ch) {
+		super.activate(ch);
+		if (ch instanceof Hero && ((Hero) ch).heroClass == HeroClass.DUELIST){
+			Buff.affect(ch, Charger.class);
+		}
+	}
 
-    @Override
-    public String defaultAction() {
-        if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.DUELIST) {
-            return AC_ABILITY;
-        } else {
-            return super.defaultAction();
-        }
-    }
+	@Override
+	public String defaultAction() {
+		if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.DUELIST){
+			return AC_ABILITY;
+		} else {
+			return super.defaultAction();
+		}
+	}
 
-    @Override
-    public ArrayList<String> actions(Hero hero) {
-        ArrayList<String> actions = super.actions(hero);
-        if (isEquipped(hero) && hero.heroClass == HeroClass.DUELIST) {
-            actions.add(AC_ABILITY);
-        }
-        return actions;
-    }
+	@Override
+	public ArrayList<String> actions(Hero hero) {
+		ArrayList<String> actions = super.actions(hero);
+		if (isEquipped(hero) && hero.heroClass == HeroClass.DUELIST){
+			actions.add(AC_ABILITY);
+		}
+		return actions;
+	}
 
-    @Override
-    public String actionName(String action, Hero hero) {
-        if (action.equals(AC_ABILITY)) {
-            return Messages.upperCase(Messages.get(this, "ability_name"));
-        } else {
-            return super.actionName(action, hero);
-        }
-    }
+	@Override
+	public String actionName(String action, Hero hero) {
+		if (action.equals(AC_ABILITY)){
+			return Messages.upperCase(Messages.get(this, "ability_name"));
+		} else {
+			return super.actionName(action, hero);
+		}
+	}
 
-    @Override
-    public void execute(Hero hero, String action) {
-        super.execute(hero, action);
+	@Override
+	public void execute(Hero hero, String action) {
+		super.execute(hero, action);
 
-        if (action.equals(AC_ABILITY)) {
-            if (!isEquipped(hero)) {
-                if (hero.hasTalent(Talent.SWIFT_EQUIP)) {
-                    if (hero.buff(Talent.SwiftEquipCooldown.class) == null
-                            || hero.buff(Talent.SwiftEquipCooldown.class).hasSecondUse()) {
-                        execute(hero, AC_EQUIP);
-                    } else {
-                        GLog.w(Messages.get(this, "ability_need_equip"));
-                        usesTargeting = false;
-                    }
-                } else {
-                    GLog.w(Messages.get(this, "ability_need_equip"));
-                    usesTargeting = false;
-                }
-            } else if (STRReq() > hero.STR()) {
-                GLog.w(Messages.get(this, "ability_low_str"));
-                usesTargeting = false;
-            } else if (hero.belongings.weapon == this &&
-                    (Buff.affect(hero, Charger.class).charges + Buff.affect(hero, Charger.class).partialCharge) < abilityChargeUse(hero, null)) {
-                GLog.w(Messages.get(this, "ability_no_charge"));
-                usesTargeting = false;
-            } else if (hero.belongings.secondWep == this &&
-                    (Buff.affect(hero, Charger.class).secondCharges + Buff.affect(hero, Charger.class).secondPartialCharge) < abilityChargeUse(hero, null)) {
-                GLog.w(Messages.get(this, "ability_no_charge"));
-                usesTargeting = false;
-            } else {
+		if (action.equals(AC_ABILITY)){
+			if (!isEquipped(hero)) {
+				if (hero.hasTalent(Talent.SWIFT_EQUIP)){
+					if (hero.buff(Talent.SwiftEquipCooldown.class) == null
+						|| hero.buff(Talent.SwiftEquipCooldown.class).hasSecondUse()){
+						execute(hero, AC_EQUIP);
+					} else {
+						GLog.w(Messages.get(this, "ability_need_equip"));
+						usesTargeting = false;
+					}
+				} else {
+					GLog.w(Messages.get(this, "ability_need_equip"));
+					usesTargeting = false;
+				}
+			} else if (STRReq() > hero.STR()){
+				GLog.w(Messages.get(this, "ability_low_str"));
+				usesTargeting = false;
+			} else if (hero.belongings.weapon == this &&
+					(Buff.affect(hero, Charger.class).charges + Buff.affect(hero, Charger.class).partialCharge) < abilityChargeUse(hero, null)) {
+				GLog.w(Messages.get(this, "ability_no_charge"));
+				usesTargeting = false;
+			} else if (hero.belongings.secondWep == this &&
+					(Buff.affect(hero, Charger.class).secondCharges + Buff.affect(hero, Charger.class).secondPartialCharge) < abilityChargeUse(hero, null)) {
+				GLog.w(Messages.get(this, "ability_no_charge"));
+				usesTargeting = false;
+			} else {
 
-                if (targetingPrompt() == null) {
-                    duelistAbility(hero, hero.pos);
-                    updateQuickslot();
-                } else {
-                    usesTargeting = useTargeting();
-                    GameScene.selectCell(new CellSelector.Listener() {
-                        @Override
-                        public void onSelect(Integer cell) {
-                            if (cell != null) {
-                                duelistAbility(hero, cell);
-                                updateQuickslot();
-                            }
-                        }
+				if (targetingPrompt() == null){
+					duelistAbility(hero, hero.pos);
+					updateQuickslot();
+				} else {
+					usesTargeting = useTargeting();
+					GameScene.selectCell(new CellSelector.Listener() {
+						@Override
+						public void onSelect(Integer cell) {
+							if (cell != null) {
+								duelistAbility(hero, cell);
+								updateQuickslot();
+							}
+						}
 
-                        @Override
-                        public String prompt() {
-                            return targetingPrompt();
-                        }
-                    });
-                }
-            }
-        }
-    }
+						@Override
+						public String prompt() {
+							return targetingPrompt();
+						}
+					});
+				}
+			}
+		}
+	}
 
-    @Override
-    public boolean doEquip(Hero hero) {
-        if (super.doEquip(hero)) {
-            ActionIndicator.refresh();
-            return true;
-        }
-        return false;
-    }
+	@Override
+	public boolean doEquip(Hero hero) {
+		if (super.doEquip(hero)){
+			ActionIndicator.refresh();
+			return true;
+		}
+		return false;
+	}
 
-    @Override
-    public boolean equipSecondary(Hero hero) {
-        if (super.equipSecondary(hero)) {
-            ActionIndicator.refresh();
-            return true;
-        }
-        return false;
-    }
+	@Override
+	public boolean equipSecondary(Hero hero) {
+		if (super.equipSecondary(hero)){
+			ActionIndicator.refresh();
+			return true;
+		}
+		return false;
+	}
 
-    @Override
-    public boolean doUnequip(Hero hero, boolean collect, boolean single) {
-        if (super.doUnequip(hero, collect, single)) {
-            ActionIndicator.refresh();
-            return true;
-        }
-        return false;
-    }
+	@Override
+	public boolean doUnequip(Hero hero, boolean collect, boolean single) {
+		if (super.doUnequip(hero, collect, single)){
+			ActionIndicator.refresh();
+			return true;
+		}
+		return false;
+	}
 
-    //leave null for no targeting
-    public String targetingPrompt() {
-        return null;
-    }
+	//leave null for no targeting
+	public String targetingPrompt(){
+		return null;
+	}
 
-    public boolean useTargeting() {
-        return targetingPrompt() != null;
-    }
+	public boolean useTargeting(){
+		return targetingPrompt() != null;
+	}
 
-    @Override
-    public int targetingPos(Hero user, int dst) {
-        return dst; //weapon abilities do not use projectile logic, no autoaim
-    }
+	@Override
+	public int targetingPos(Hero user, int dst) {
+		return dst; //weapon abilities do not use projectile logic, no autoaim
+	}
 
-    protected void duelistAbility(Hero hero, Integer target) {
-        //do nothing by default
-    }
+	protected void duelistAbility( Hero hero, Integer target ){
+		//do nothing by default
+	}
 
-    protected void beforeAbilityUsed(Hero hero, Char target) {
-        hero.belongings.abilityWeapon = this;
-        Charger charger = Buff.affect(hero, Charger.class);
+	protected void beforeAbilityUsed(Hero hero, Char target){
+		hero.belongings.abilityWeapon = this;
+		Charger charger = Buff.affect(hero, Charger.class);
 
-        if (Dungeon.hero.belongings.weapon == this) {
-            charger.partialCharge -= abilityChargeUse(hero, target);
-            while (charger.partialCharge < 0 && charger.charges > 0) {
-                charger.charges--;
-                charger.partialCharge++;
-            }
-        } else {
-            charger.secondPartialCharge -= abilityChargeUse(hero, target);
-            while (charger.secondPartialCharge < 0 && charger.secondCharges > 0) {
-                charger.secondCharges--;
-                charger.secondPartialCharge++;
-            }
-        }
+		if (Dungeon.hero.belongings.weapon == this) {
+			charger.partialCharge -= abilityChargeUse(hero, target);
+			while (charger.partialCharge < 0 && charger.charges > 0) {
+				charger.charges--;
+				charger.partialCharge++;
+			}
+		} else {
+			charger.secondPartialCharge -= abilityChargeUse(hero, target);
+			while (charger.secondPartialCharge < 0 && charger.secondCharges > 0) {
+				charger.secondCharges--;
+				charger.secondPartialCharge++;
+			}
+		}
 
-        if (hero.heroClass == HeroClass.DUELIST
-                && hero.hasTalent(Talent.AGGRESSIVE_BARRIER)
-                && (hero.HP / (float) hero.HT) < 0.20f * (1 + hero.pointsInTalent(Talent.AGGRESSIVE_BARRIER))) {
-            Buff.affect(hero, Barrier.class).setShield(3);
-        }
+		if (hero.heroClass == HeroClass.DUELIST
+				&& hero.hasTalent(Talent.AGGRESSIVE_BARRIER)
+				&& (hero.HP / (float)hero.HT) < 0.20f*(1+hero.pointsInTalent(Talent.AGGRESSIVE_BARRIER))){
+			Buff.affect(hero, Barrier.class).setShield(3);
+		}
 
-        if (hero.buff(Talent.CombinedLethalityAbilityTracker.class) != null
-                && hero.buff(Talent.CombinedLethalityAbilityTracker.class).weapon != null
-                && hero.buff(Talent.CombinedLethalityAbilityTracker.class).weapon != this) {
-            Buff.affect(hero, Talent.CombinedLethalityTriggerTracker.class, 5f);
-        }
+		if (hero.buff(Talent.CombinedLethalityAbilityTracker.class) != null
+				&& hero.buff(Talent.CombinedLethalityAbilityTracker.class).weapon != null
+				&& hero.buff(Talent.CombinedLethalityAbilityTracker.class).weapon != this){
+			Buff.affect(hero, Talent.CombinedLethalityTriggerTracker.class, 5f);
+		}
 
-        updateQuickslot();
-    }
+		updateQuickslot();
+	}
 
-    protected void afterAbilityUsed(Hero hero) {
-        hero.belongings.abilityWeapon = null;
-        if (hero.hasTalent(Talent.PRECISE_ASSAULT)){
+	protected void afterAbilityUsed( Hero hero ){
+		hero.belongings.abilityWeapon = null;
+		if (hero.hasTalent(Talent.PRECISE_ASSAULT)){
 			Buff.prolong(hero, Talent.PreciseAssaultTracker.class, hero.cooldown()+4f);
 		}
 		if (hero.hasTalent(Talent.COMBINED_LETHALITY)) {
-            Talent.CombinedLethalityAbilityTracker tracker = hero.buff(Talent.CombinedLethalityAbilityTracker.class);
-            if (tracker == null || tracker.weapon == this || tracker.weapon == null) {
-                Buff.affect(hero, Talent.CombinedLethalityAbilityTracker.class, hero.cooldown()).weapon = this;
-            } else {
-                //we triggered the talent, so remove the tracker
-                tracker.detach();
-            }
-        }
-        if (hero.hasTalent(Talent.COMBINED_ENERGY)) {
-            Talent.CombinedEnergyAbilityTracker tracker = hero.buff(Talent.CombinedEnergyAbilityTracker.class);
-            if (tracker == null || tracker.energySpent == -1) {
-                Buff.prolong(hero, Talent.CombinedEnergyAbilityTracker.class, hero.cooldown()).wepAbilUsed = true;
-            } else {
-                tracker.wepAbilUsed = true;
-                Buff.affect(hero, MonkEnergy.class).processCombinedEnergy(tracker);
-            }
-        }
-        if (hero.buff(Talent.CounterAbilityTacker.class) != null) {
-            hero.buff(Talent.CounterAbilityTacker.class).detach();
-        }
-    }
+			Talent.CombinedLethalityAbilityTracker tracker = hero.buff(Talent.CombinedLethalityAbilityTracker.class);
+			if (tracker == null || tracker.weapon == this || tracker.weapon == null){
+				Buff.affect(hero, Talent.CombinedLethalityAbilityTracker.class, hero.cooldown()).weapon = this;
+			} else {
+				//we triggered the talent, so remove the tracker
+				tracker.detach();
+			}
+		}
+		if (hero.hasTalent(Talent.COMBINED_ENERGY)){
+			Talent.CombinedEnergyAbilityTracker tracker = hero.buff(Talent.CombinedEnergyAbilityTracker.class);
+			if (tracker == null || tracker.energySpent == -1){
+				Buff.prolong(hero, Talent.CombinedEnergyAbilityTracker.class, hero.cooldown()).wepAbilUsed = true;
+			} else {
+				tracker.wepAbilUsed = true;
+				Buff.affect(hero, MonkEnergy.class).processCombinedEnergy(tracker);
+			}
+		}
+		if (hero.buff(Talent.CounterAbilityTacker.class) != null){
+			hero.buff(Talent.CounterAbilityTacker.class).detach();
+		}
+	}
 
-    public static void onAbilityKill(Hero hero, Char killed) {
-        if (killed.alignment == Char.Alignment.ENEMY &&hero.hasTalent(Talent.LETHAL_HASTE)) {
-            //effectively 2/3 turns of haste
-            Buff.prolong(hero, Haste.class, 1.67f + hero.pointsInTalent(Talent.LETHAL_HASTE));
-        }
-    }
+	public static void onAbilityKill( Hero hero, Char killed ){
+		if (killed.alignment == Char.Alignment.ENEMY && hero.hasTalent(Talent.LETHAL_HASTE)){
+			//effectively 2/3 turns of haste
+			Buff.prolong(hero, Haste.class, 1.67f+hero.pointsInTalent(Talent.LETHAL_HASTE));
+		}
+	}
 
-    protected int baseChargeUse(Hero hero, Char target){
+	protected int baseChargeUse(Hero hero, Char target){
 		return 1; //abilities use 1 charge by default
 	}
 
-	public final float abilityChargeUse(Hero hero, Char target) {
-        float chargeUse = baseChargeUse(hero, target);
-        if (hero.buff(Talent.CounterAbilityTacker.class) != null) {
-            chargeUse = Math.max(0, chargeUse - 0.5f * hero.pointsInTalent(Talent.COUNTER_ABILITY));
+	public final float abilityChargeUse(Hero hero, Char target){
+		float chargeUse = baseChargeUse(hero, target);
+		if (hero.buff(Talent.CounterAbilityTacker.class) != null){
+			chargeUse = Math.max(0, chargeUse-0.5f*hero.pointsInTalent(Talent.COUNTER_ABILITY));
+		}
+		return chargeUse;
+	}
 
-        }
-        return chargeUse;
-    }
+	public int tier;
 
-    public int tier;
+	@Override
+	public int min(int lvl) {
+		return  tier +  //base
+				lvl;    //level scaling
+	}
 
-    @Override
-    public int min(int lvl) {
-        return tier +  //base
-                lvl;    //level scaling
-    }
+	@Override
+	public int max(int lvl) {
+		return  5*(tier+1) +    //base
+				lvl*(tier+1);   //level scaling
+	}
 
-    @Override
-    public int max(int lvl) {
-        return 5 * (tier + 1) +    //base
-                lvl * (tier + 1);   //level scaling
-    }
+	public int STRReq(int lvl){
+		return STRReq(tier, lvl);
+	}
 
-    public int STRReq(int lvl) {
-        return STRReq(tier, lvl);
-    }
+	private static boolean evaluatingTwinUpgrades = false;
+	@Override
+	public int buffedLvl() {
+		if (!evaluatingTwinUpgrades && isEquipped(Dungeon.hero) && Dungeon.hero.hasTalent(Talent.TWIN_UPGRADES)){
+			KindOfWeapon other = null;
+			if (Dungeon.hero.belongings.weapon() != this) other = Dungeon.hero.belongings.weapon();
+			if (Dungeon.hero.belongings.secondWep() != this) other = Dungeon.hero.belongings.secondWep();
 
-    private static boolean evaluatingTwinUpgrades = false;
+			if (other instanceof MeleeWeapon) {
+				evaluatingTwinUpgrades = true;
+				int otherLevel = other.buffedLvl();
+				evaluatingTwinUpgrades = false;
 
-    @Override
-    public int buffedLvl() {
-        if (Dungeon.hero != null && !evaluatingTwinUpgrades && isEquipped(Dungeon.hero) && Dungeon.hero.hasTalent(Talent.TWIN_UPGRADES)) {
-            KindOfWeapon other = null;
-            if (Dungeon.hero.belongings.weapon() != this) other = Dungeon.hero.belongings.weapon();
-            if (Dungeon.hero.belongings.secondWep() != this)
-                other = Dungeon.hero.belongings.secondWep();
+				//weaker weapon needs to be 2/1/0 tiers lower, based on talent level
+				if ((tier + (3 - Dungeon.hero.pointsInTalent(Talent.TWIN_UPGRADES))) <= ((MeleeWeapon) other).tier
+						&& otherLevel > super.buffedLvl()) {
+					return otherLevel;
+				}
 
-            if (other instanceof MeleeWeapon) {
-                evaluatingTwinUpgrades = true;
-                int otherLevel = other.buffedLvl();
-                evaluatingTwinUpgrades = false;
+			}
+		}
+		return super.buffedLvl();
+	}
 
-                //weaker weapon needs to be 2/1/0 tiers lower, based on talent level
-                if ((tier + (3 - Dungeon.hero.pointsInTalent(Talent.TWIN_UPGRADES))) <= ((MeleeWeapon) other).tier
-                        && otherLevel > super.buffedLvl()) {
-                    return otherLevel;
-                }
-
-            }
-        }
-        return super.buffedLvl();
-    }
-
-    @Override
+	@Override
 	public float accuracyFactor(Char owner, Char target) {
 		float ACC = super.accuracyFactor(owner, target);
 
@@ -343,297 +340,300 @@ public class MeleeWeapon extends Weapon {
 	}
 
 	@Override
-    public int damageRoll(Char owner) {
-        int damage = augment.damageFactor(super.damageRoll(owner));
+	public int damageRoll(Char owner) {
+		int damage = augment.damageFactor(super.damageRoll( owner ));
 
-        if (owner instanceof Hero) {
-            int exStr = ((Hero) owner).STR() - STRReq();
-            if (exStr > 0) {
-                damage += Random.IntRange(0, exStr);
-            }
-        }
+		if (owner instanceof Hero) {
+			int exStr = ((Hero)owner).STR() - STRReq();
+			if (exStr > 0) {
+				damage += Random.IntRange( 0, exStr );
+			}
+		}
+		
+		return damage;
+	}
+	
+	@Override
+	public String info() {
 
-        return damage;
-    }
+		String info = desc();
 
-    @Override
-    public String info() {
+		if (levelKnown) {
+			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_known", tier, augment.damageFactor(min()), augment.damageFactor(max()), STRReq());
+			if (Dungeon.hero != null) {
+				if (STRReq() > Dungeon.hero.STR()) {
+					info += " " + Messages.get(Weapon.class, "too_heavy");
+				} else if (Dungeon.hero.STR() > STRReq()) {
+					info += " " + Messages.get(Weapon.class, "excess_str", Dungeon.hero.STR() - STRReq());
+				}
+			}
+		} else {
+			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_unknown", tier, min(0), max(0), STRReq(0));
+			if (Dungeon.hero != null && STRReq(0) > Dungeon.hero.STR()) {
+				info += " " + Messages.get(MeleeWeapon.class, "probably_too_heavy");
+			}
+		}
 
-        String info = desc();
+		String statsInfo = statsInfo();
+		if (!statsInfo.equals("")) info += "\n\n" + statsInfo;
 
-        if (levelKnown()) {
-            info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_known", tier, augment.damageFactor(min()), augment.damageFactor(max()), STRReq());
-            if (Dungeon.hero != null) {
-                if (STRReq() > Dungeon.hero.STR()) {
-                    info += " " + Messages.get(Weapon.class, "too_heavy");
-                } else if (Dungeon.hero.STR() > STRReq()) {
-                    info += " " + Messages.get(Weapon.class, "excess_str", Dungeon.hero.STR() - STRReq());
-                }
-            }
-        } else {
-            info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_unknown", tier, min(0), max(0), STRReq(0));
-            if (Dungeon.hero != null && STRReq(0) > Dungeon.hero.STR()) {
-                info += " " + Messages.get(MeleeWeapon.class, "probably_too_heavy");
-            }
-        }
+		switch (augment) {
+			case SPEED:
+				info += " " + Messages.get(Weapon.class, "faster");
+				break;
+			case DAMAGE:
+				info += " " + Messages.get(Weapon.class, "stronger");
+				break;
+			case NONE:
+		}
 
-        String statsInfo = statsInfo();
-        if (!statsInfo.equals("")) info += "\n\n" + statsInfo;
+		if (enchantment != null && (cursedKnown() || !enchantment.curse())){
+			info += "\n\n" + Messages.capitalize(Messages.get(Weapon.class, "enchanted", enchantment.name()));
+			if (enchantHardened) info += " " + Messages.get(Weapon.class, "enchant_hardened");
+			info += " " + enchantment.desc();
+		} else if (enchantHardened){
+			info += "\n\n" + Messages.get(Weapon.class, "hardened_no_enchant");
+		}
 
-        switch (augment) {
-            case SPEED:
-                info += " " + Messages.get(Weapon.class, "faster");
-                break;
-            case DAMAGE:
-                info += " " + Messages.get(Weapon.class, "stronger");
-                break;
-            case NONE:
-        }
+		if (Dungeon.hero != null && cursed && isEquipped( Dungeon.hero )) {
+			info += "\n\n" + Messages.get(Weapon.class, "cursed_worn");
+		} else if (cursedKnown() && cursed) {
+			info += "\n\n" + Messages.get(Weapon.class, "cursed");
+		} else if (!isIdentified() && cursedKnown){
+			if (enchantment != null && enchantment.curse()) {
+				info += "\n\n" + Messages.get(Weapon.class, "weak_cursed");
+			} else {
+				info += "\n\n" + Messages.get(Weapon.class, "not_cursed");
+			}
+		}
 
-        if (enchantment != null && (cursedKnown() || !enchantment.curse())) {
-            info += "\n\n" + Messages.capitalize(Messages.get(Weapon.class, "enchanted", enchantment.name()));
-            info += " " + enchantment.desc();
-        }
+		//the mage's staff has no ability as it can only be gained by the mage
+		if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.DUELIST && !(this instanceof MagesStaff)){
+			info += "\n\n" + Messages.get(this, "ability_desc");
+		}
+		
+		return info;
+	}
+	
+	public String statsInfo(){
+		return Messages.get(this, "stats_desc");
+	}
 
-        if (Dungeon.hero != null && cursed && isEquipped(Dungeon.hero)) {
-            info += "\n\n" + Messages.get(Weapon.class, "cursed_worn");
-        } else if (cursedKnown() && cursed) {
-            info += "\n\n" + Messages.get(Weapon.class, "cursed");
-        } else if (!isIdentified() && cursedKnown()) {
-            if (enchantment != null && enchantment.curse()) {
-                info += "\n\n" + Messages.get(Weapon.class, "weak_cursed");
-            } else {
-                info += "\n\n" + Messages.get(Weapon.class, "not_cursed");
-            }
-        }
+	@Override
+	public String status() {
+		if (Dungeon.hero != null && isEquipped(Dungeon.hero)
+				&& Dungeon.hero.buff(Charger.class) != null) {
+			Charger buff = Dungeon.hero.buff(Charger.class);
+			if (Dungeon.hero.belongings.weapon == this) {
+				return buff.charges + "/" + buff.chargeCap();
+			} else {
+				return buff.secondCharges + "/" + buff.secondChargeCap();
+			}
+		} else {
+			return super.status();
+		}
+	}
 
-        //the mage's staff has no ability as it can only be gained by the mage
-        if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.DUELIST && !(this instanceof MagesStaff)) {
-            info += "\n\n" + Messages.get(this, "ability_desc");
-        }
+	@Override
+	public int value() {
+		int price = 20 * tier;
+		if (hasGoodEnchant()) {
+			price *= 1.5;
+		}
+		if (cursedKnown() && (cursed || hasCurseEnchant())) {
+			price /= 2;
+		}
+		if (levelKnown && level() > 0) {
+			price *= (level() + 1);
+		}
+		if (price < 1) {
+			price = 1;
+		}
+		return price;
+	}
 
-        return info;
-    }
+	public static class Charger extends Buff implements ActionIndicator.Action {
 
-    public String statsInfo() {
-        return Messages.get(this, "stats_desc");
-    }
+		public int charges = 3;
+		public float partialCharge;
+		//offhand charge as well?
 
-    @Override
-    public String status() {
-        if (Dungeon.hero != null && isEquipped(Dungeon.hero)
-                && Dungeon.hero.buff(Charger.class) != null) {
-            Charger buff = Dungeon.hero.buff(Charger.class);
-            if (Dungeon.hero.belongings.weapon == this) {
-                return buff.charges + "/" + buff.chargeCap();
-            } else {
-                return buff.secondCharges + "/" + buff.secondChargeCap();
-            }
-        } else {
-            return super.status();
-        }
-    }
+		//champion subclass
+		public int secondCharges = 3;
+		public float secondPartialCharge;
 
-    @Override
-    public int value() {
-        int price = 20 * tier;
-        if (hasGoodEnchant()) {
-            price *= 1.5;
-        }
-        if (cursedKnown() && (cursed || hasCurseEnchant())) {
-            price /= 2;
-        }
-        if (levelKnown() && level() > 0) {
-            price *= (level() + 1);
-        }
-        if (price < 1) {
-            price = 1;
-        }
-        return price;
-    }
+		@Override
+		public boolean act() {
+			if (charges < chargeCap()){
+				if (Regeneration.regenOn()){
+					partialCharge += 1/(40f-(chargeCap()-charges)); // 40 to 30 turns per charge
+				}
 
-    public static class Charger extends Buff implements ActionIndicator.Action {
+				int points = ((Hero)target).pointsInTalent(Talent.WEAPON_RECHARGING);
+				if (points > 0 && target.buff(Recharging.class) != null || target.buff(ArtifactRecharge.class) != null){
+					//1 every 10 turns at +1, 6 turns at +2
+					partialCharge += 1/(14f - 4f*points);
+				}
 
-        public int charges = 3;
-        public float partialCharge;
-        //offhand charge as well?
+				if (partialCharge >= 1){
+					charges++;
+					partialCharge--;
+					updateQuickslot();
+				}
+			} else {
+				partialCharge = 0;
+			}
 
-        //champion subclass
-        public int secondCharges = 3;
-        public float secondPartialCharge;
+			if (Dungeon.hero.subClass == HeroSubClass.CHAMPION
+					&& secondCharges < secondChargeCap()) {
+				if (Regeneration.regenOn()) {
+					// 80 to 60 turns per charge without talent
+					// up to 53.333 to 40 turns per charge at max talent level
+					secondPartialCharge += secondChargeMultiplier() / (40f-(secondChargeCap()-secondCharges));
+				}
 
-        @Override
-        public boolean act() {
-            if (charges < chargeCap()) {
-                if (Regeneration.regenOn()) {
-                    partialCharge += 1 / (40f - (chargeCap() - charges)); // 40 to 30 turns per charge
-                }
+				if (secondPartialCharge >= 1) {
+					secondCharges++;
+					secondPartialCharge--;
+					updateQuickslot();
+				}
 
-                int points = ((Hero) target).pointsInTalent(Talent.WEAPON_RECHARGING);
-                if (points > 0 && target.buff(Recharging.class) != null || target.buff(ArtifactRecharge.class) != null) {
-                    //1 every 10 turns at +1, 6 turns at +2
-                    partialCharge += 1 / (14f - 4f * points);
-                }
+			} else {
+				secondPartialCharge = 0;
+			}
 
-                if (partialCharge >= 1) {
-                    charges++;
-                    partialCharge--;
-                    updateQuickslot();
-                }
-            } else {
-                partialCharge = 0;
-            }
+			if (ActionIndicator.action != this && Dungeon.hero.subClass == HeroSubClass.CHAMPION) {
+				ActionIndicator.setAction(this);
+			}
 
-            if (Dungeon.hero.subClass == HeroSubClass.CHAMPION
-                    && secondCharges < secondChargeCap()) {
-                if (Regeneration.regenOn()) {
-                    // 80 to 60 turns per charge without talent
-                    // up to 53.333 to 40 turns per charge at max talent level
-                    secondPartialCharge += secondChargeMultiplier() / (40f - (secondChargeCap() - secondCharges));
-                }
+			spend(TICK);
+			return true;
+		}
 
-                if (secondPartialCharge >= 1) {
-                    secondCharges++;
-                    secondPartialCharge--;
-                    updateQuickslot();
-                }
+		@Override
+		public void fx(boolean on) {
+			if (on && Dungeon.hero.subClass == HeroSubClass.CHAMPION) {
+				ActionIndicator.setAction(this);
+			}
+		}
 
-            } else {
-                secondPartialCharge = 0;
-            }
+		@Override
+		public void detach() {
+			super.detach();
+			ActionIndicator.clearAction(this);
+		}
 
-            if (ActionIndicator.action != this && Dungeon.hero.subClass == HeroSubClass.CHAMPION) {
-                ActionIndicator.setAction(this);
-            }
+		public int chargeCap(){
+			return Math.min(10, 3 + (Dungeon.hero.lvl-1)/3);
+		}
 
-            spend(TICK);
-            return true;
-        }
+		public int secondChargeCap(){
+			return Math.round(chargeCap() * secondChargeMultiplier());
+		}
 
-        @Override
-        public void fx(boolean on) {
-            if (on && Dungeon.hero.subClass == HeroSubClass.CHAMPION) {
-                ActionIndicator.setAction(this);
-            }
-        }
+		public float secondChargeMultiplier(){
+			//50% - 75%, depending on talent
+			return 0.5f + 0.0834f*Dungeon.hero.pointsInTalent(Talent.SECONDARY_CHARGE);
+		}
 
-        @Override
-        public void detach() {
-            super.detach();
-            ActionIndicator.clearAction(this);
-        }
+		public void gainCharge( float charge ){
+			if (charges < chargeCap()) {
+				partialCharge += charge;
+				while (partialCharge >= 1f) {
+					charges++;
+					partialCharge--;
+				}
+				charges = Math.min(charges, chargeCap());
+				updateQuickslot();
+			}
+		}
 
-        public int chargeCap() {
-            return Math.min(10, 3 + (Dungeon.hero.lvl - 1) / 3);
-        }
+		public static final String CHARGES          = "charges";
+		private static final String PARTIALCHARGE   = "partialCharge";
 
-        public int secondChargeCap() {
-            return Math.round(chargeCap() * secondChargeMultiplier());
-        }
+		public static final String SECOND_CHARGES          = "second_charges";
+		private static final String SECOND_PARTIALCHARGE   = "second_partialCharge";
 
-        public float secondChargeMultiplier() {
-            //50% - 75%, depending on talent
-            return 0.5f + 0.0834f * Dungeon.hero.pointsInTalent(Talent.SECONDARY_CHARGE);
-        }
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(CHARGES, charges);
+			bundle.put(PARTIALCHARGE, partialCharge);
+			bundle.put(SECOND_CHARGES, secondCharges);
+			bundle.put(SECOND_PARTIALCHARGE, secondPartialCharge);
+		}
 
-        public void gainCharge(float charge) {
-            if (charges < chargeCap()) {
-                partialCharge += charge;
-                while (partialCharge >= 1f) {
-                    charges++;
-                    partialCharge--;
-                }
-                charges = Math.min(charges, chargeCap());
-                updateQuickslot();
-            }
-        }
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			charges = bundle.getInt(CHARGES);
+			partialCharge = bundle.getFloat(PARTIALCHARGE);
+			secondCharges = bundle.getInt(SECOND_CHARGES);
+			secondPartialCharge = bundle.getFloat(SECOND_PARTIALCHARGE);
+		}
 
-        public static final String CHARGES = "charges";
-        private static final String PARTIALCHARGE = "partialCharge";
+		@Override
+		public String actionName() {
+			return Messages.get(MeleeWeapon.class, "swap");
+		}
 
-        public static final String SECOND_CHARGES = "second_charges";
-        private static final String SECOND_PARTIALCHARGE = "second_partialCharge";
+		@Override
+		public int actionIcon() {
+			return HeroIcon.WEAPON_SWAP;
+		}
 
-        @Override
-        public void storeInBundle(Bundle bundle) {
-            super.storeInBundle(bundle);
-            bundle.put(CHARGES, charges);
-            bundle.put(PARTIALCHARGE, partialCharge);
-            bundle.put(SECOND_CHARGES, secondCharges);
-            bundle.put(SECOND_PARTIALCHARGE, secondPartialCharge);
-        }
+		@Override
+		public Visual primaryVisual() {
+			Image ico;
+			if (Dungeon.hero.belongings.weapon == null){
+				ico = new HeroIcon(this);
+ 			} else {
+				ico = new ItemSprite(Dungeon.hero.belongings.weapon);
+			}
+			ico.width += 4; //shift slightly to the left to separate from smaller icon
+			return ico;
+		}
 
-        @Override
-        public void restoreFromBundle(Bundle bundle) {
-            super.restoreFromBundle(bundle);
-            charges = bundle.getInt(CHARGES);
-            partialCharge = bundle.getFloat(PARTIALCHARGE);
-            secondCharges = bundle.getInt(SECOND_CHARGES);
-            secondPartialCharge = bundle.getFloat(SECOND_PARTIALCHARGE);
-        }
+		@Override
+		public Visual secondaryVisual() {
+			Image ico;
+			if (Dungeon.hero.belongings.secondWep == null){
+				ico = new HeroIcon(this);
+			} else {
+				ico = new ItemSprite(Dungeon.hero.belongings.secondWep);
+			}
+			ico.scale.set(PixelScene.align(0.51f));
+			ico.brightness(0.6f);
+			return ico;
+		}
 
-        @Override
-        public String actionName() {
-            return Messages.get(MeleeWeapon.class, "swap");
-        }
+		@Override
+		public int indicatorColor() {
+			return 0x5500BB;
+		}
 
-        @Override
-        public int actionIcon() {
-            return HeroIcon.WEAPON_SWAP;
-        }
+		@Override
+		public void doAction() {
+			if (Dungeon.hero.subClass != HeroSubClass.CHAMPION){
+				return;
+			}
 
-        @Override
-        public Visual primaryVisual() {
-            Image ico;
-            if (Dungeon.hero.belongings.weapon == null) {
-                ico = new HeroIcon(this);
-            } else {
-                ico = new ItemSprite(Dungeon.hero.belongings.weapon);
-            }
-            ico.width += 4; //shift slightly to the left to separate from smaller icon
-            return ico;
-        }
+			if (Dungeon.hero.belongings.secondWep == null && Dungeon.hero.belongings.backpack.items.size() >= Dungeon.hero.belongings.backpack.capacity()){
+				GLog.w(Messages.get(MeleeWeapon.class, "swap_full"));
+				return;
+			}
 
-        @Override
-        public Visual secondaryVisual() {
-            Image ico;
-            if (Dungeon.hero.belongings.secondWep == null) {
-                ico = new HeroIcon(this);
-            } else {
-                ico = new ItemSprite(Dungeon.hero.belongings.secondWep);
-            }
-            ico.scale.set(PixelScene.align(0.51f));
-            ico.brightness(0.6f);
-            return ico;
-        }
+			KindOfWeapon temp = Dungeon.hero.belongings.weapon;
+			Dungeon.hero.belongings.weapon = Dungeon.hero.belongings.secondWep;
+			Dungeon.hero.belongings.secondWep = temp;
 
-        @Override
-        public int indicatorColor() {
-            return 0x5500BB;
-        }
+			Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+			Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
 
-        @Override
-        public void doAction() {
-            if (Dungeon.hero.subClass != HeroSubClass.CHAMPION) {
-                return;
-            }
-
-            if (Dungeon.hero.belongings.secondWep == null && Dungeon.hero.belongings.backpack.items.size() >= Dungeon.hero.belongings.backpack.capacity()) {
-                GLog.w(Messages.get(MeleeWeapon.class, "swap_full"));
-                return;
-            }
-
-            KindOfWeapon temp = Dungeon.hero.belongings.weapon;
-            Dungeon.hero.belongings.weapon = Dungeon.hero.belongings.secondWep;
-            Dungeon.hero.belongings.secondWep = temp;
-
-            Dungeon.hero.sprite.operate(Dungeon.hero.pos);
-            Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
-
-            ActionIndicator.setAction(this);
-            Item.updateQuickslot();
-            AttackIndicator.updateState();
-        }
-    }
+			ActionIndicator.setAction(this);
+			Item.updateQuickslot();
+			AttackIndicator.updateState();
+		}
+	}
 
 }
