@@ -10,12 +10,15 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.TransitionTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.LevelListPane;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndNewDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
+import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
@@ -24,7 +27,9 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndGameInProgress;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndOptions;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTabbed;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTextInput;
 import com.watabou.noosa.ColorBlock;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -100,6 +105,8 @@ public class WndEditFloorInOverview extends WndTabbed {
         protected ChooseDestLevelComp passage, chasm;
         protected RedButton delete, open;
 
+        protected IconButton rename;
+
         public General() {
         }
 
@@ -110,6 +117,47 @@ public class WndEditFloorInOverview extends WndTabbed {
             title = PixelScene.renderTextBlock(levelScheme.getName() + " (" + levelScheme.getType().getSimpleName() + ")", 9);
             title.hardlight(Window.TITLE_COLOR);
             add(title);
+
+            rename = new IconButton(Icons.get(Icons.RENAME_ON)){
+                @Override
+                protected void onClick() {
+                    Window w = new WndTextInput(Messages.get(WndSelectDungeon.class, "rename_title"),
+                            "",
+                            levelScheme.getName(),
+                            50,
+                            false,
+                            Messages.get(WndSelectDungeon.class, "rename_yes"),
+                            Messages.get(WndSelectDungeon.class, "export_no")){
+                        @Override
+                        public void onSelect(boolean positive, String text) {
+                            if (positive && !text.isEmpty()) {
+                                for (String floorN : levelScheme.getCustomDungeon().floorNames()) {
+                                    if (!floorN.equals(levelScheme.getName()) && floorN.replace(' ', '_').equals(text.replace(' ', '_'))) {
+                                        WndNewDungeon.showNameWarnig();
+                                        return;
+                                    }
+                                }
+                                if (!text.equals(levelScheme.getName())) {
+                                    levelScheme.getCustomDungeon().renameLevel(levelScheme, text);
+                                    listPane.updateList();
+                                    WndEditFloorInOverview.this.hide();
+                                    Window w = new WndEditFloorInOverview(levelScheme, listItem, listPane);
+                                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                                    else Game.scene().addToFront(w);
+                                }
+                            }
+                        }
+                    };
+                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                    else Game.scene().addToFront(w);
+                }
+
+                @Override
+                protected String hoverText() {
+                    return Messages.get(WndSelectDungeon.class, "rename_yes");
+                }
+            };
+            add(rename);
 
             depth = new DepthSpinner(levelScheme.getDepth(), 8) {
                 @Override
@@ -210,9 +258,14 @@ public class WndEditFloorInOverview extends WndTabbed {
 
         @Override
         public void layout() {
-            title.maxWidth((int) width);
-            title.setPos((width - title.width()) * 0.5f, 2);
-            float titlePos = title.bottom() + 4;
+
+            float renameWidth = rename.icon().width;
+
+            title.maxWidth((int) ( width + renameWidth - 2));
+            title.setPos((title.maxWidth() - title.width()) * 0.5f, 3);
+
+            rename.setRect(width - renameWidth, title.top() + (title.height() - rename.icon().height) * 0.5f, renameWidth, rename.icon().height);
+            float titlePos = title.bottom() + 5;
 
             float pos = 0;
             depth.setRect(0, pos, width, WndEditorSettings.ITEM_HEIGHT);

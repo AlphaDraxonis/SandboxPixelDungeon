@@ -63,7 +63,7 @@ public class CustomDungeonSaves {
         Bundle bundleInfo = new Bundle();
         bundleInfo.put(INFO, dungeon.createInfo());
 
-        setCurDirectory(DUNGEON_FOLDER + dungeon.getName().replace(' ','_') + "/");
+        setCurDirectory(DUNGEON_FOLDER + dungeon.getName().replace(' ', '_') + "/");
         saveBundle(curDirectory + DUNGEON_DATA, bundle);
         saveBundle(curDirectory + DUNGEON_INFO, bundleInfo);
     }
@@ -71,7 +71,7 @@ public class CustomDungeonSaves {
     public static CustomDungeon loadDungeon(String name) throws IOException {
         Files.FileType oldFileType = fileType;
         fileType = defaultFileType;
-        setCurDirectory(DUNGEON_FOLDER + name.replace(' ','_') + "/");
+        setCurDirectory(DUNGEON_FOLDER + name.replace(' ', '_') + "/");
         FileHandle file = FileUtils.getFileHandle(fileType, curDirectory + DUNGEON_DATA);
         CustomDungeon dungeon = (CustomDungeon) FileUtils.bundleFromStream(file.read()).get(DUNGEON);
         fileType = oldFileType;
@@ -79,10 +79,11 @@ public class CustomDungeonSaves {
     }
 
     public static CustomLevel loadLevel(String name) throws IOException {
-        return loadLevel(name.replace(' ','_'),true);
+        return loadLevel(name.replace(' ', '_'), true);
     }
+
     public static CustomLevel loadLevel(String name, boolean removeInvalidTransitions) throws IOException {
-        FileHandle file = FileUtils.getFileHandle(fileType, curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name.replace(' ','_')));
+        FileHandle file = FileUtils.getFileHandle(fileType, curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name.replace(' ', '_')));
         CustomLevel customLevel = (CustomLevel) FileUtils.bundleFromStream(file.read()).get(FLOOR);
 
         //checks if all transitions are still valid, can even remove transitions AFTER the game was started if necessary
@@ -105,19 +106,35 @@ public class CustomDungeonSaves {
         Bundle bundle = new Bundle();
         bundle.put(FLOOR, level);
 
-        saveBundle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, level.name.replace(' ','_')), bundle);
+        saveBundle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, level.name.replace(' ', '_')), bundle);
     }
 
     public static boolean deleteLevelFile(String levelSchemeName) {
-        return deleteFile(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, levelSchemeName.replace(' ','_')));
+        return deleteFile(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, levelSchemeName.replace(' ', '_')));
     }
 
     private static boolean deleteFile(String name) {
-        return FileUtils.getFileHandle(fileType, name.replace(' ','_')).delete();
+        return FileUtils.getFileHandle(fileType, name.replace(' ', '_')).delete();
     }
 
     public static boolean deleteDungeonFile(String dungeonName) {
-        return FileUtils.getFileHandle(fileType, DUNGEON_FOLDER + dungeonName.replace(' ','_')).deleteDirectory();
+        return FileUtils.getFileHandle(fileType, DUNGEON_FOLDER + dungeonName.replace(' ', '_')).deleteDirectory();
+    }
+
+    public static CustomDungeon renameDungeon(String oldName, String newName) throws IOException {
+
+        FileHandle dungeonOld = FileUtils.getFileHandle(defaultFileType, DUNGEON_FOLDER + oldName.replace(' ', '_'));
+        FileHandle dungeonNew = FileUtils.getFileHandle(defaultFileType, DUNGEON_FOLDER + newName.replace(' ', '_'));
+        dungeonOld.moveTo(dungeonNew);
+
+        return (CustomDungeon) FileUtils.bundleFromStream(
+                FileUtils.getFileHandle(defaultFileType, DUNGEON_FOLDER + newName.replace(' ', '_')+"/"+DUNGEON_DATA).read()).get(DUNGEON);
+    }
+
+    public static void renameLevel(String oldName, String newName) throws IOException {
+        FileHandle fileOld = FileUtils.getFileHandle(defaultFileType, curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, oldName.replace(' ', '_')));
+        FileHandle fileNew = FileUtils.getFileHandle(defaultFileType, curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, newName.replace(' ', '_')));
+        fileOld.moveTo(fileNew);
     }
 
     private static List<String> getFilesInDir(String name) {
@@ -154,9 +171,9 @@ public class CustomDungeonSaves {
 
     public static void copyLevelsForNewGame(String dungeonName, String dirDestination) throws IOException {
         try {
-            FileHandle src = FileUtils.getFileHandle(defaultFileType, DUNGEON_FOLDER + dungeonName.replace(' ','_') + "/" + LEVEL_FOLDER);
+            FileHandle src = FileUtils.getFileHandle(defaultFileType, DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + LEVEL_FOLDER);
             if (!src.exists()) return;
-            FileHandle dest = FileUtils.getFileHandle(Files.FileType.Local, dirDestination.replace(' ','_'));
+            FileHandle dest = FileUtils.getFileHandle(Files.FileType.Local, dirDestination.replace(' ', '_'));
             src.copyTo(dest);
         } catch (GdxRuntimeException e) {
             throw new IOException(e);
@@ -165,11 +182,11 @@ public class CustomDungeonSaves {
 
     public static void writeClearText(String fileName, String text) throws IOException {
         try {
-            FileHandle file = FileUtils.getFileHandle(defaultFileType, ROOT_DIR + fileName.replace(' ','_'));
+            FileHandle file = FileUtils.getFileHandle(defaultFileType, ROOT_DIR + fileName.replace(' ', '_'));
             //write to a temp file, then move the files.
             // This helps prevent save corruption if writing is interrupted
             if (file.exists()) {
-                FileHandle temp = FileUtils.getFileHandle(fileName.replace(' ','_') + ".tmp");
+                FileHandle temp = FileUtils.getFileHandle(fileName.replace(' ', '_') + ".tmp");
                 write(temp.write(false), text);
                 file.delete();
                 temp.moveTo(file);
@@ -220,7 +237,7 @@ public class CustomDungeonSaves {
     }
 
     public static String getAbsolutePath(String fileName) {
-        String path = FileUtils.getFileHandle(defaultFileType, ROOT_DIR + fileName.replace(' ','_')).file().getAbsolutePath();
+        String path = FileUtils.getFileHandle(defaultFileType, ROOT_DIR + fileName.replace(' ', '_')).file().getAbsolutePath();
         if (DeviceCompat.isAndroid()) {
             path = path.substring(20);// /storage/emulated/0/ ->20chars
             path = path.replaceFirst("sandboxpd/", "sandboxpd/" + "\n");//does not work for .indev

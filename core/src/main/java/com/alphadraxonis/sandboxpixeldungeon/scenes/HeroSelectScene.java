@@ -323,6 +323,7 @@ public class HeroSelectScene extends PixelScene {
 			@Override
 			protected void onClick() {
 				if (Dungeon.isLevelTesting()) {
+					EditorScene.start();
 					EditorScene.openDifferentLevel = false;
 					WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
 				} else super.onClick();

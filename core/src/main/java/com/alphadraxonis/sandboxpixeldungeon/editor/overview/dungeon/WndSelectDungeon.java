@@ -1,5 +1,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon;
 
+import static com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndNewDungeon.DEFAULT_DUNGEON;
+
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
@@ -12,6 +14,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.util.DungeonToJsonConverter;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
+import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
@@ -19,6 +22,7 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndGameInProgress;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndOptions;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTextInput;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.utils.DeviceCompat;
@@ -134,7 +138,6 @@ public class WndSelectDungeon extends Window {
 
                 RenderedTextBlock title = PixelScene.renderTextBlock(info.name, 10);
                 title.hardlight(Window.TITLE_COLOR);
-                title.maxWidth(width);
                 add(title);
 
                 RedButton cont = new RedButton(Messages.get(WndGameInProgress.class, "continue")) {
@@ -208,12 +211,61 @@ public class WndSelectDungeon extends Window {
                 };
                 export.enable(info.numLevels > 0);
 
+                IconButton rename = new IconButton(Icons.get(Icons.RENAME_ON)){
+                    @Override
+                    protected void onClick() {
+                        Window w = new WndTextInput(Messages.get(WndSelectDungeon.class, "rename_title"),
+                                "",
+                                info.name,
+                                50,
+                                false,
+                                Messages.get(WndSelectDungeon.class, "rename_yes"),
+                                Messages.get(WndSelectDungeon.class, "export_no")){
+                            @Override
+                            public void onSelect(boolean positive, String text) {
+                                if (positive && !text.isEmpty()) {
+                                    for (String dungeonN : dungeonNames) {
+                                        if (!dungeonN.equals(info.name) && dungeonN.replace(' ', '_').equals(text.replace(' ', '_'))) {
+                                            WndNewDungeon.showNameWarnig();
+                                            return;
+                                        }
+                                    }
+                                    if (text.equals(DEFAULT_DUNGEON))
+                                        WndNewDungeon.showNameWarnig();
+                                    else if (!text.equals(info.name)) {
+                                        CustomDungeon.renameDungeon(info.name, text);
+                                        dungeonNames.remove(info.name);
+                                        info.name = text;
+                                        dungeonNames.add(info.name);
+                                        updateList();
+                                        WndInfoDungeon.this.hide();
+                                        Window w = new WndInfoDungeon(info);
+                                        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                                        else Game.scene().addToFront(w);
+                                    }
+                                }
+                            }
+                        };
+                        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                        else Game.scene().addToFront(w);
+                    }
 
-                float pos = 0;
-                title.setPos((width - title.width()) * 0.5f, pos);
+                    @Override
+                    protected String hoverText() {
+                        return Messages.get(WndSelectDungeon.class, "rename_yes");
+                    }
+                };
+                add(rename);
+                float iconWidth = rename.icon().width;
+
+                float pos = 2;
+                title.maxWidth((int) (width - iconWidth - 2));
+                title.setPos((title.maxWidth() - title.width()) * 0.5f, pos);
+
+                rename.setRect(width - iconWidth, title.top() + (title.height() - rename.icon().height) * 0.5f, iconWidth, rename.icon().height);
                 pos = title.bottom() + GAP;
 
-                pos = statSlot(Messages.get(WndSelectDungeon.class, "num_floors"), Integer.toString(info.numLevels), pos) + GAP * 2;
+                pos = statSlot(Messages.get(WndSelectDungeon.class, "num_floors"), Integer.toString(info.numLevels), pos) + GAP * 3;
 
                 cont.icon(Icons.get(Icons.ENTER));
                 cont.setRect(0, pos, width / 2 - 1, 20);

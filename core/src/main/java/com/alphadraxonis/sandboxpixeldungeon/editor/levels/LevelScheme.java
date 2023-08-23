@@ -56,7 +56,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     }
 
 
-    private String name;
+    String name;
     CustomDungeon customDungeon;
 
     private int depth;

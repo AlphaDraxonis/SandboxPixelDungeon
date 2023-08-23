@@ -22,7 +22,6 @@ public abstract class LevelListPane extends ScrollingListPane {
         List<LevelScheme> levels = filterLevels(Dungeon.customDungeon.levelSchemes());
         if (levels.isEmpty()) ;//TODO show that its empty
         Collections.sort(levels);
-        //TODO sort
         for (LevelScheme levelScheme : levels) {
             addItem(new ListItem(levelScheme) {
                 @Override
@@ -43,6 +42,7 @@ public abstract class LevelListPane extends ScrollingListPane {
                 }
             });
         }
+        scrollToCurrentView();
     }
 
     protected List<LevelScheme> filterLevels(Collection<LevelScheme> levels) {

@@ -68,8 +68,9 @@ import java.util.Set;
 public class CustomDungeon implements Bundlable {
 
     public boolean damageImmune, seeSecrets, permaMindVision, permaInvis, permaKey;// maybe add ScrollOfDebug?
+
     {
-        if (DeviceCompat.isDebug() && false){
+        if (DeviceCompat.isDebug() && false) {
             damageImmune = seeSecrets = permaMindVision = permaInvis = permaKey = true;
         }
     }
@@ -686,5 +687,142 @@ public class CustomDungeon implements Bundlable {
             Dungeon.customDungeon = null;
         CustomDungeonSaves.deleteDungeonFile(name);
     }
+
+    public static void renameDungeon(String oldName, String newName) {
+        try {
+            CustomDungeon dungeon = CustomDungeonSaves.renameDungeon(oldName, newName);
+            if (dungeon != null) dungeon.name = newName;
+            else throw new IOException("Renaming was not successful!");
+            CustomDungeonSaves.saveDungeon(dungeon);
+        } catch (IOException e) {
+            SandboxPixelDungeon.reportException(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void renameLevel(LevelScheme levelScheme, String newName) {
+
+        try {
+            String oldName = levelScheme.getName();
+
+            if (levelScheme.getType() == CustomLevel.class)
+                CustomDungeonSaves.renameLevel(oldName, newName);
+
+            if (ratKingLevels.contains(oldName)) {
+                ratKingLevels.remove(oldName);
+                ratKingLevels.add(newName);
+            }
+
+            if (oldName.equals(lastEditedFloor)) lastEditedFloor = newName;
+            if (oldName.equals(startFloor)) startFloor = newName;
+
+            //Change transitions and keys
+            for (LevelScheme ls : floors.values()) {
+                if (oldName.equals(ls.getChasm())) ls.setChasm(newName);
+                if (oldName.equals(ls.getPassage())) ls.setPassage(newName);
+
+                if (ls.getType() == CustomLevel.class) {
+                    boolean load = ls.getLevel() == null;
+                    Level level;
+                    if (load) level = ls.loadLevel();
+                    else level = ls.getLevel();
+                    for (LevelTransition transition : level.transitions.values()) {
+                        if (transition != null) {
+                            if (Objects.equals(transition.destLevel, oldName)) {
+                                transition.destLevel = newName;
+                            }
+                            if (Objects.equals(transition.departLevel, oldName)) {
+                                transition.departLevel = newName;
+                            }
+                        }
+                    }
+
+                    //Change invalid keys in heaps
+                    boolean changedItems = false;
+                    for (Heap h : level.heaps.valueList()) {
+                        if (renameInvalidKeys(h.items, oldName, newName)) {
+                            changedItems = true;
+                        }
+                    }
+                    //Change invalid keys in mob containers
+                    for (Mob m : level.mobs) {
+                        if (m instanceof Mimic && ((Mimic) m).items != null) {
+                            if (renameInvalidKeys(((Mimic) m).items, oldName, newName))
+                                changedItems = true;
+                        }
+                        if (m instanceof Thief && isInvalidKey(((Thief) m).item, oldName)) {
+                            ((Key) ((Thief) m).item).levelName = newName;
+                            changedItems = true;
+                        }
+                    }
+                    if (renameInvalidKeys(ls.itemsToSpawn, oldName, newName)) changedItems = true;
+
+                    if (changedItems) CustomDungeonSaves.saveLevel(level);
+                    if (load) ls.unloadLevel();
+                    else if (level == EditorScene.customLevel() && levelScheme != level.levelScheme) {
+                        if (changedItems) EditorScene.updateHeapImagesAndSubIcons();
+                    }
+                } else {
+                    if (Objects.equals(ls.getEntranceTransitionRegular().destLevel, oldName)) {
+                        ls.getEntranceTransitionRegular().destLevel = newName;
+                    } else if (Objects.equals(ls.getExitTransitionRegular().destLevel, oldName)) {
+                        ls.getExitTransitionRegular().destLevel = newName;
+                    }
+                    if (Objects.equals(ls.getEntranceTransitionRegular().departLevel, oldName)) {
+                        ls.getEntranceTransitionRegular().departLevel = newName;
+                    } else if (Objects.equals(ls.getExitTransitionRegular().departLevel, oldName)) {
+                        ls.getExitTransitionRegular().departLevel = newName;
+                    }
+                }
+            }
+
+            for (ItemDistribution<? extends Bundlable> distr : itemDistributions) {
+                if (distr instanceof ItemDistribution.Items) {
+                    renameInvalidKeys((List<Item>) distr.getObjectsToDistribute(), oldName, newName);
+                }
+                if (distr.getLevels().contains(oldName)) {
+                    distr.getLevels().remove(oldName);
+                    distr.getLevels().add(newName);
+                }
+            }
+
+            //Set level for keys in inv
+            Items.updateKeys(oldName, newName);
+
+            levelScheme.name = newName;
+            if (levelScheme.getLevel() != null) {
+                levelScheme.getLevel().name = newName;
+
+            }
+            if (EditorScene.customLevel() != null) {
+                Undo.reset();//TODO maybe not best solution to reset all, but UndoParts all store the old lvl name
+                for (LevelTransition t : EditorScene.customLevel().transitions.values())
+                    EditorScene.updateTransitionIndicator(t);
+            }
+            floors.remove(oldName);
+            floors.put(newName, levelScheme);
+
+            EditorScene.updateDepthIcon();
+
+            CustomDungeonSaves.saveDungeon(this);
+
+        } catch (IOException e) {
+            SandboxPixelDungeon.reportException(e);
+        }
+
+    }
+
+    private boolean renameInvalidKeys(List<Item> items, String invalidLevelName, String newName) {
+        if (items == null) return false;
+        boolean removedSth = false;
+        for (Item i : new ArrayList<>(items)) {
+            if (isInvalidKey(i, invalidLevelName)) {
+                ((Key) i).levelName = newName;
+                removedSth = true;
+            }
+        }
+        return removedSth;
+    }
+
 
 }
