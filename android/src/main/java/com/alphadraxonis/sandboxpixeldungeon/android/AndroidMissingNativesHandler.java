@@ -38,7 +38,7 @@ public class AndroidMissingNativesHandler extends Activity {
 		super.onCreate(savedInstanceState);
 
 		TextView text = new TextView(this);
-		text.setText("Shattered Pixel Dungeon cannot start because some of its code is missing!\n\n" +
+		text.setText("Sandbox Pixel Dungeon cannot start because some of its code is missing!\n\n" +
 				"This usually happens when the Google Play version of the game is installed from somewhere outside of Google Play.\n\n" +
 				"If you're unsure of how to fix this, please email the developer (AlphaDraxonis@gmail.com), and include this error message:\n\n" +
 				errorMsg);
