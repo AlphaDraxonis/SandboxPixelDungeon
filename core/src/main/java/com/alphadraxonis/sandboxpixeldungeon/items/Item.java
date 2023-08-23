@@ -86,6 +86,8 @@ public class Item implements Bundlable {
     public boolean cursed;
     private boolean cursedKnown;
 
+    public boolean identifyOnStart = false;
+
     // Unique items persist through revival
     public boolean unique = false;
 
@@ -560,6 +562,7 @@ public class Item implements Bundlable {
     private static final String LEVEL_KNOWN = "levelKnown";
     private static final String CURSED = "cursed";
     private static final String CURSED_KNOWN = "cursedKnown";
+    private static final String IDENTIFY_ON_START = "identify_on_start";
     private static final String QUICKSLOT = "quickslotpos";
     private static final String KEPT_LOST = "kept_lost";
 
@@ -570,6 +573,7 @@ public class Item implements Bundlable {
         bundle.put(LEVEL_KNOWN, levelKnown);
         bundle.put(CURSED, cursed);
         bundle.put(CURSED_KNOWN, cursedKnown);
+        bundle.put(IDENTIFY_ON_START, identifyOnStart);
         if (Dungeon.quickslot.contains(this)) {
             bundle.put(QUICKSLOT, Dungeon.quickslot.getSlot(this));
         }
@@ -581,6 +585,7 @@ public class Item implements Bundlable {
         quantity = bundle.getInt(QUANTITY);
         levelKnown = bundle.getBoolean(LEVEL_KNOWN);
         cursedKnown = bundle.getBoolean(CURSED_KNOWN);
+        identifyOnStart = bundle.getBoolean(IDENTIFY_ON_START);
 
         int level = bundle.getInt(LEVEL);
         if (level > 0) {

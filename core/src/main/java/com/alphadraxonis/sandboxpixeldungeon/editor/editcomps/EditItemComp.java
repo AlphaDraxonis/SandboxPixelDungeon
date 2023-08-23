@@ -16,11 +16,15 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Gold;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
+import com.alphadraxonis.sandboxpixeldungeon.items.armor.ClassArmor;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.Artifact;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
+import com.alphadraxonis.sandboxpixeldungeon.items.potions.Potion;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
+import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.Scroll;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.exotic.ScrollOfEnchantment;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
+import com.alphadraxonis.sandboxpixeldungeon.items.weapon.SpiritBow;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -45,7 +49,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
     protected final CurseButton curseBtn;
     protected final LevelSpinner levelSpinner;
-    protected final CheckBox levelKnown;
+    protected final CheckBox autoIdentify;
     protected final CheckBox cursedKnown;
     protected final CheckBox blessed;
     protected final AugumentationSpinner augumentationSpinner;
@@ -109,19 +113,22 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 }
             };
             add(levelSpinner);
-            levelKnown = new CheckBox(Messages.get(EditItemComp.class, "level_known")) {
+        } else levelSpinner = null;
+
+        if (item instanceof Potion || item instanceof Scroll || item instanceof Ring
+                || (item instanceof Weapon && !(item instanceof MissileWeapon || item instanceof SpiritBow))
+                || (item instanceof Armor && !(item instanceof ClassArmor))) {
+//      if (!DefaultStatsCache.getDefaultObject(item.getClass()).isIdentified()) { // always returns true while editing
+            autoIdentify = new CheckBox(Messages.get(EditItemComp.class, "auto_identify")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
-                    item.levelKnown = value;
+                    item.identifyOnStart = value;
                 }
             };
-            levelKnown.checked(item.levelKnown);
-            add(levelKnown);
-        } else {
-            levelSpinner = null;
-            levelKnown = null;
-        }
+            autoIdentify.checked(item.identifyOnStart);
+            add(autoIdentify);
+        } else autoIdentify = null;
 
         if (item instanceof Weapon || item instanceof Armor) {//Missiles support enchantments too
             enchantBtn = new RedButton(Messages.get(EditItemComp.class, "enchant")) {
@@ -182,7 +189,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(keylevel);
         } else keylevel = null;
 
-        comps = new Component[]{quantity, keylevel, levelSpinner, augumentationSpinner, curseBtn, cursedKnown, levelKnown, enchantBtn, blessed};
+        comps = new Component[]{quantity, keylevel, levelSpinner, augumentationSpinner, curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed};
     }
 
     @Override

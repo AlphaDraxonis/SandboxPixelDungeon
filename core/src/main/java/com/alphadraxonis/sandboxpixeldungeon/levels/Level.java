@@ -345,6 +345,9 @@ public abstract class Level implements Bundlable {
         }
         for (Heap h : heaps.valueList()) {
             h.seen = false;
+            for (Item i : h.items) {
+                if (i.identifyOnStart) i.identify();
+            }
         }
     }
 

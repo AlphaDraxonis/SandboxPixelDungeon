@@ -5,6 +5,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Brute;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Goo;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GreatCrab;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Piranha;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Pylon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
@@ -56,12 +57,13 @@ public class DefaultStatsCache {
         T ret = (T) cache.get(clazz);
         if (ret == null) {
 
-            if (NPC.class.isAssignableFrom(clazz) || Mimic.class.isAssignableFrom(clazz)
-                    || Brute.class.isAssignableFrom(clazz) || Piranha.class.isAssignableFrom(clazz)
-                    || Statue.class.isAssignableFrom(clazz) || Bee.class.isAssignableFrom(clazz)
-                    || Wraith.class.isAssignableFrom(clazz) || Goo.class.isAssignableFrom(clazz)
-                    || GreatCrab.class.isAssignableFrom(clazz) || Pylon.class.isAssignableFrom(clazz)
-                    || YogDzewa.class.isAssignableFrom(clazz) || YogFist.class.isAssignableFrom(clazz))
+            if (Mob.class.isAssignableFrom(clazz) &&
+                    (NPC.class.isAssignableFrom(clazz) || Mimic.class.isAssignableFrom(clazz)
+                            || Brute.class.isAssignableFrom(clazz) || Piranha.class.isAssignableFrom(clazz)
+                            || Statue.class.isAssignableFrom(clazz) || Bee.class.isAssignableFrom(clazz)
+                            || Wraith.class.isAssignableFrom(clazz) || Goo.class.isAssignableFrom(clazz)
+                            || GreatCrab.class.isAssignableFrom(clazz) || Pylon.class.isAssignableFrom(clazz)
+                            || YogDzewa.class.isAssignableFrom(clazz) || YogFist.class.isAssignableFrom(clazz)))
                 return null;
 
             ret = Reflection.newInstance(clazz);
@@ -70,12 +72,9 @@ public class DefaultStatsCache {
         return ret;
     }
 
-    public static boolean canModifyStats(Object obj){
+    public static boolean canModifyStats(Object obj) {
         return obj instanceof Weapon || obj instanceof Ring || obj instanceof Food;
     }
-
-
-
 
 
 //    final public boolean attack( Char enemy ){
