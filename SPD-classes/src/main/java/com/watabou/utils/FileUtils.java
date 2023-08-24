@@ -37,14 +37,28 @@ public class FileUtils {
 	// Helper methods for setting/using a default base path and file address mode
 	
 	private static Files.FileType defaultFileType = null;
+	private static Files.FileType originalFileType = null;
 	private static String defaultPath = "";
-	
-	public static void setDefaultFileProperties( Files.FileType type, String path ){
+
+	public static void setDefaultFileType(Files.FileType defaultFileType) {
+		FileUtils.defaultFileType = defaultFileType;
+	}
+	public static void resetDefaultFileType() {
+		setDefaultFileType(originalFileType);
+	}
+
+	public static Files.FileType getFileTypeForCustomDungeons(){
+		if(DeviceCompat.isDesktop())return originalFileType;
+		return Files.FileType.External;
+	}
+
+	public static void setDefaultFileProperties(Files.FileType type, String path ){
 		defaultFileType = type;
 		defaultPath = path;
+		originalFileType = type;
 	}
-	
-	public static FileHandle getFileHandle( String name ){
+
+	public static FileHandle getFileHandle(String name ){
 		return getFileHandle( defaultFileType, defaultPath, name );
 	}
 	

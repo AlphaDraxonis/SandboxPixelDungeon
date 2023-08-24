@@ -68,7 +68,6 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.Toolbar;
 import com.alphadraxonis.sandboxpixeldungeon.utils.BArray;
 import com.alphadraxonis.sandboxpixeldungeon.utils.DungeonSeed;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndResurrect;
-import com.badlogic.gdx.Files;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -208,7 +207,8 @@ public class Dungeon {
 
     public static void init() {
 
-        String levelDir = GamesInProgress.getCustomDungeonLevelFolder(GamesInProgress.curSlot);
+        String levelDir = GamesInProgress.gameFolder(GamesInProgress.curSlot) + "/";
+        FileUtils.deleteDir(levelDir);
         try {
             CustomDungeonSaves.copyLevelsForNewGame(customDungeon.getName(), levelDir);
         } catch (IOException e) {
@@ -216,7 +216,7 @@ public class Dungeon {
             SandboxPixelDungeon.reportException(e);
         }
         CustomDungeonSaves.setCurDirectory(levelDir);
-        CustomDungeonSaves.setFileType(Files.FileType.Local);
+        FileUtils.resetDefaultFileType();
 //
 //        if (customDungeon == null) {
 //            customDungeon = new CustomDungeon("DefaultDungeon");
@@ -806,8 +806,8 @@ public class Dungeon {
 
         }
 
-        CustomDungeonSaves.setFileType(Files.FileType.Local);
-        CustomDungeonSaves.setCurDirectory(GamesInProgress.getCustomDungeonLevelFolder(save));
+        FileUtils.resetDefaultFileType();
+        CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/");
     }
 
     public static Level loadLevel(int save) throws IOException {

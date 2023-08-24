@@ -89,6 +89,26 @@ public class CustomDungeon implements Bundlable {
     //test
     //write changelog
 
+    //to fix new save location with v0.7 on desktop
+    //delete "C:\Users\you\AppData\Roaming\.alphadraxonis\Sandbox Pixel Dungeon\Sandbox-Pixel-Dungeon" - there are only empty folders (NOT REQUIRED!)
+    //move "C:/Users/you/Sandbox-Pixel-Dungeon/custom_dungeons" into "C:\Users\you\AppData\Roaming\.alphadraxonis\Sandbox Pixel Dungeon"
+
+    //This affects everyone:
+    //replace ALL spaces ( ) in the dungeon folder names and all the level file names with an underscore (_). This does not change the names displayed in game.
+    //If 2 dungeons happen to have the same name after that, move one to a different location and only change the file name of the other dungeon.
+    // Then use the new renaming feature to rename the dungeon and the file. After that, just move the first dungeon back.
+    //If 2 levels in the same dungeon happen to have the same name after that, you can safely edit amd rename one of them as long as you don't try to enter the other one.
+    // The level you have last been working on will automatically be entered, but
+    // if you don't know which one it was, you can just try changing the file name of both levels one after the other.
+    //Games in progress are not affected
+    //Tested on Windows11 - everything worked fine
+
+
+    //DESKTOP ONLY: move files
+    //In the same directory as your jar file, there should be folders game1 to 5. Inside each is a folder "dungeon_levels" in which a folder "levels" is located.
+    //Move this folder called "levels" into C:\Users\you\AppData\Roaming\.alphadraxonis\Sandbox Pixel Dungeon\game1 (into folders 1 to 5 accordingly)
+
+
     private String name;
     private String lastEditedFloor;
 

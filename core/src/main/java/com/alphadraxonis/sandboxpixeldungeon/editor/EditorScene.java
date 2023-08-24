@@ -58,6 +58,7 @@ import com.watabou.noosa.NoosaScriptNoLighting;
 import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.FileUtils;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.PointF;
@@ -126,7 +127,7 @@ public class EditorScene extends PixelScene {
         Dungeon.quickslot.reset();
         QuickSlotButton.reset();
         Dungeon.hero = null;
-        CustomDungeonSaves.setFileType(CustomDungeonSaves.defaultFileType);
+        FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
     }
 
     private static boolean firstTimeOpening = true;

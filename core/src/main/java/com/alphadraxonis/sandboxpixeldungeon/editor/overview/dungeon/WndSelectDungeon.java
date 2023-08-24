@@ -71,8 +71,8 @@ public class WndSelectDungeon extends Window {
                     protected void onClick() {
                         Desktop desktop = Desktop.getDesktop();
                         desktop.isSupported(Desktop.Action.OPEN);
-                        File fileToOpen = FileUtils.getFileHandle(
-                                CustomDungeonSaves.defaultFileType, CustomDungeonSaves.DUNGEON_FOLDER).file();
+                        File fileToOpen = FileUtils.getFileHandleWithDefaultPath(
+                                FileUtils.getFileTypeForCustomDungeons(), CustomDungeonSaves.DUNGEON_FOLDER).file();
                         try {
                             desktop.open(fileToOpen);
                         } catch (IOException e) {
@@ -186,7 +186,7 @@ public class WndSelectDungeon extends Window {
                             protected void onSelect(int index) {
                                 if (index == 0) {
                                     try {
-                                        CustomDungeonSaves.setFileType(CustomDungeonSaves.defaultFileType);
+                                        FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
                                         CustomDungeonSaves.writeClearText(fileName,
                                                 DungeonToJsonConverter.getAsJson(CustomDungeonSaves.loadDungeon(info.name)));
 

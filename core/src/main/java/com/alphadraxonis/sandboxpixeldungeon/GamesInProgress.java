@@ -49,8 +49,6 @@ public class GamesInProgress {
     private static final String LEVEL_FILE = "level_%s.dat";
     private static final String DEPTH_BRANCH_FILE = "depth%d-branch%d.dat";
 
-    private static final String CUSTOM_DUNGEON_LEVEL_FOLDER = "dungeon_levels/";//For copy
-
     public static boolean gameExists(int slot) {
         return FileUtils.dirExists(gameFolder(slot))
                 && FileUtils.fileLength(gameFile(slot)) > 1;
@@ -66,10 +64,6 @@ public class GamesInProgress {
 
     public static String levelFile(int slot, String levelName) {
         return gameFolder(slot) + "/" + Messages.format(LEVEL_FILE, levelName);
-    }
-
-    public static String getCustomDungeonLevelFolder(int slot) {
-        return gameFolder(slot) + "/" + CUSTOM_DUNGEON_LEVEL_FOLDER;
     }
 
     public static int firstEmpty() {
