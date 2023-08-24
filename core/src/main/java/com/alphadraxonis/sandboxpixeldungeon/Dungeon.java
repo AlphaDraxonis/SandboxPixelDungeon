@@ -71,6 +71,7 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndResurrect;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -807,7 +808,10 @@ public class Dungeon {
         }
 
         FileUtils.resetDefaultFileType();
-        CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/");
+        new Exception("ff"+initialVersion+"  v = "+version).printStackTrace();
+        if (!DeviceCompat.isDesktop() && initialVersion < 743) {//v0.6 and older
+            CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/dungeon_levels/");
+        } else CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/");
     }
 
     public static Level loadLevel(int save) throws IOException {

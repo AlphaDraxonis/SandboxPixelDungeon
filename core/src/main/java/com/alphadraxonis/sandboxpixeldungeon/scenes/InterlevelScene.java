@@ -341,7 +341,7 @@ public class InterlevelScene extends PixelScene {
                         errorMsg = Messages.get(this, "io_error");
 
                     else
-                        throw new RuntimeException("fatal error occured while moving between floors. " +
+                        throw new RuntimeException("fatal error occurred while moving between floors. " +
                                 "Seed:" + Dungeon.seed + " depth:" + Dungeon.depth, error);
 
                     add(new WndError(errorMsg) {

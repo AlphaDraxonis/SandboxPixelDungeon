@@ -65,11 +65,13 @@ public class CustomDungeonSaves {
     }
 
     public static CustomLevel loadLevel(String name) throws IOException {
-        return loadLevel(name.replace(' ', '_'), true);
+        return loadLevel(name, true);
     }
 
     public static CustomLevel loadLevel(String name, boolean removeInvalidTransitions) throws IOException {
-        FileHandle file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name.replace(' ', '_')));
+        FileHandle file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name));
+        if (!file.exists())
+            file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name.replace(' ', '_')));
         CustomLevel customLevel = (CustomLevel) FileUtils.bundleFromStream(file.read()).get(FLOOR);
 
         //checks if all transitions are still valid, can even remove transitions AFTER the game was started if necessary
