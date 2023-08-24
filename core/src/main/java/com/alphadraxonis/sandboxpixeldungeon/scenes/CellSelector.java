@@ -631,7 +631,8 @@ public class CellSelector extends ScrollArea {
         } //do nothing by default
 
         public void onMiddleClick(Integer cell) {
-        } //do nothing by default
+            onSelect(cell);
+        }
 
         public abstract String prompt();
 

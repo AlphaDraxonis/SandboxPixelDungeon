@@ -177,7 +177,7 @@ public class CustomLevel extends Level {
             SecretRoom.initForRun();
             Random.popGenerator();
 
-            Dungeon.seed = seed + 4;
+            Dungeon.seed = seed + 12253;
             Level level = Reflection.newInstance(levelTemplate);
             temp.setLevel(level);
             level.name = Level.NONE;

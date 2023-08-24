@@ -26,6 +26,8 @@ import com.alphadraxonis.sandboxpixeldungeon.Badges;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.Ratmogrify;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.DriedRose;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfLivingEarth;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfWarding;
@@ -247,7 +249,11 @@ public class SurfaceScene extends PixelScene {
 
 		RedButton gameOver = new RedButton( Messages.get(this, "exit") ) {
 			protected void onClick() {
-				Game.switchScene( RankingsScene.class );
+				if (Dungeon.isLevelTesting()){
+					EditorScene.start();
+					EditorScene.openDifferentLevel = false;
+					WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
+				} else Game.switchScene( RankingsScene.class );
 			}
 		};
 		gameOver.setSize( SKY_WIDTH - FRAME_MARGIN_X * 2, BUTTON_HEIGHT );
