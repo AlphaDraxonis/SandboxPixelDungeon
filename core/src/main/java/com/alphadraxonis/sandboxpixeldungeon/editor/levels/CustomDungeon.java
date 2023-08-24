@@ -86,7 +86,6 @@ public class CustomDungeon implements Bundlable {
 
     //UI rework
     //restore toolbar
-    //check if all features are implemented
     //test
     //write changelog
 

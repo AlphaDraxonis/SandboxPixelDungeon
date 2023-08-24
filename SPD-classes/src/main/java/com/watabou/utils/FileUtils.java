@@ -51,6 +51,10 @@ public class FileUtils {
 	public static FileHandle getFileHandle( Files.FileType type, String name ){
 		return getFileHandle( type, "", name );
 	}
+
+	public static FileHandle getFileHandleWithDefaultPath( Files.FileType type, String name ){
+		return getFileHandle( type, defaultPath, name );
+	}
 	
 	public static FileHandle getFileHandle( Files.FileType type, String basePath, String name ){
 		switch (type){

@@ -175,10 +175,11 @@ public class WndSelectDungeon extends Window {
                 RedButton export = new RedButton(Messages.get(WndSelectDungeon.class, "export_label")) {
                     @Override
                     protected void onClick() {
+                        String exportedName = info.name.replace('_','-');
                         String fileName = "exports/" + info.name + ".json";
-                        String destLocation = CustomDungeonSaves.getAbsolutePath(fileName);
+                        String destLocation = CustomDungeonSaves.getAbsolutePath(fileName).replace('_','-');
                         Window w = new WndOptions(
-                                Messages.get(WndSelectDungeon.class, "export_title", info.name),
+                                Messages.get(WndSelectDungeon.class, "export_title", exportedName),
                                 Messages.get(WndSelectDungeon.class, "export_body", destLocation),
                                 Messages.get(WndSelectDungeon.class, "export_yes"), Messages.get(WndSelectDungeon.class, "export_no")) {
                             @Override
@@ -190,8 +191,8 @@ public class WndSelectDungeon extends Window {
                                                 DungeonToJsonConverter.getAsJson(CustomDungeonSaves.loadDungeon(info.name)));
 
                                         Window win = new WndOptions(
-                                                Messages.get(WndSelectDungeon.class, "export_confirm_title", info.name),
-                                                Messages.get(WndSelectDungeon.class, "export_confirm_body", info.name) +
+                                                Messages.get(WndSelectDungeon.class, "export_confirm_title", exportedName),
+                                                Messages.get(WndSelectDungeon.class, "export_confirm_body", exportedName) +
                                                         (info.name.equals("dungeon") ? "" : Messages.get(WndSelectDungeon.class, "export_confirm_rename_hint")),
                                                 Messages.get(WndSelectDungeon.class, "export_confirm_close"));
                                         if (Game.scene() instanceof EditorScene)
