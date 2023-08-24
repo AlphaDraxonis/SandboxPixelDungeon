@@ -14,6 +14,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndSelectDu
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.HeroSelectScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
@@ -80,18 +81,21 @@ public class SideControlPane extends Component {
                 }
                 return;
             case 1:
+                EditorScene.selectCell(pickObjCellListener);
+                return;
+            case 2:
                 EditorScene.start();
                 EditorScene.openDifferentLevel = false;
                 WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
                 return;
-            case 2:
+            case 3:
                 button.enable(Dungeon.customDungeon.damageImmune = !button.isEnabled());
                 return;
-            case 3:
+            case 4:
                 button.enable(Dungeon.customDungeon.seeSecrets = !button.isEnabled());
                 GameScene.updateMap();
                 return;
-            case 4:
+            case 5:
                 button.enable(Dungeon.customDungeon.permaMindVision = !button.isEnabled());
                 if (Dungeon.customDungeon.permaMindVision) {
                     Buff.affect(Dungeon.hero, MindVision.class, 1);
@@ -101,7 +105,7 @@ public class SideControlPane extends Component {
                     if (b != null) b.detach();
                 }
                 return;
-            case 5:
+            case 6:
                 new ScrollOfMagicMapping() {
                     {
                         final Hero oldUser = curUser;
@@ -112,16 +116,16 @@ public class SideControlPane extends Component {
                     }
                 };
                 return;
-            case 6:
+            case 7:
                 button.enable(Dungeon.customDungeon.permaKey = !button.isEnabled());
                 return;
-            case 7:
+            case 8:
                 boolean active = !button.isEnabled();
                 if (active) Dungeon.hero.baseSpeed *= 10f;
                 else Dungeon.hero.baseSpeed /= 10f;
                 button.enable(active);
                 return;
-            case 8:
+            case 9:
                 button.enable(Dungeon.customDungeon.permaInvis = !button.isEnabled());
                 if (Dungeon.customDungeon.permaInvis)
                     Buff.affect(Dungeon.hero, Invisibility.class, 1);
@@ -138,22 +142,22 @@ public class SideControlPane extends Component {
         switch (index) {
             case 0:
                 return Messages.titleCase(Messages.get(SideControlPane.class, "play"));
-            case 1:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "exit"));
             case 2:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "damage"));
+                return Messages.titleCase(Messages.get(SideControlPane.class, "exit"));
             case 3:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "secrets"));
+                return Messages.titleCase(Messages.get(SideControlPane.class, "damage"));
             case 4:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "mind_vision"));
+                return Messages.titleCase(Messages.get(SideControlPane.class, "secrets"));
             case 5:
+                return Messages.titleCase(Messages.get(SideControlPane.class, "mind_vision"));
+            case 6:
                 return Messages.titleCase(Messages.get(SideControlPane.class, "magic_mapping")
                         + " " + Messages.get(ScrollOfMagicMapping.class, "name"));
-            case 6:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "key"));
             case 7:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "speed"));
+                return Messages.titleCase(Messages.get(SideControlPane.class, "key"));
             case 8:
+                return Messages.titleCase(Messages.get(SideControlPane.class, "speed"));
+            case 9:
                 return Messages.titleCase(Messages.get(SideControlPane.class, "invis"));
         }
         return null;
@@ -161,17 +165,14 @@ public class SideControlPane extends Component {
 
 
     private class SideControlButton extends Button {
-        private Image bg, enabled, disabled;
+        private Image bg, icon;
         private final int num;
 
         public SideControlButton(int num) {
             this.num = num;
 
-            enabled = new Image(Assets.Interfaces.SIDE_CONTROL_BUTTONS, 0, 13 * num, 12, 13);
-            add(enabled);
-
-            disabled = new Image(Assets.Interfaces.SIDE_CONTROL_BUTTONS, 12, 13 * num, 12, 13);
-            add(disabled);
+            icon = new Image(Assets.Interfaces.SIDE_CONTROL_BUTTONS, 0, 13 * num, 12, 13);
+            add(icon);
 
             width = bg.width;
             height = bg.height;
@@ -190,34 +191,40 @@ public class SideControlPane extends Component {
             super.layout();
             bg.x = x;
             bg.y = y;
-            enabled.x = disabled.x = x + 2;
-            enabled.y = disabled.y = y + 2;
+            icon.x = x + 2;
+            icon.y = y + 2;
         }
 
         protected void updateState() {
-            enable(false);
+            enable(num == 0 || num == 1 || num == 2 || num == 6
+                    || num == 3 && Dungeon.customDungeon.damageImmune
+                    || num == 4 && Dungeon.customDungeon.seeSecrets
+                    || num == 5 && Dungeon.customDungeon.permaMindVision
+                    || num == 7 && Dungeon.customDungeon.permaKey
+                    || num == 8 && Dungeon.hero.baseSpeed >= 10
+                    || num == 9 && Dungeon.customDungeon.permaInvis);
         }
 
         @Override
         protected void onPointerDown() {
-            enabled.brightness(1.1f);
+            icon.brightness(1.1f);
             Sample.INSTANCE.play(Assets.Sounds.CLICK, 0.6f);
         }
 
         @Override
         protected void onPointerUp() {
-            enabled.resetColor();
-            disabled.resetColor();
+            float alpha = icon.alpha();
+            icon.resetColor();
+            icon.alpha(alpha);
         }
 
         protected void enable(boolean value) {
-            if (num == 0 || num == 1 || num == 5) value = true;
-            enabled.visible = value;
-            disabled.visible = !value;
+            if (num == 0 || num == 1 || num == 2 || num == 6) value = true;
+            icon.alpha(value ? 1f : 0.3f);
         }
 
         protected boolean isEnabled() {
-            return enabled.visible;
+            return icon.alpha() == 1f;
         }
 
         @Override
@@ -232,4 +239,23 @@ public class SideControlPane extends Component {
             SideControlPane.this.onClick(num, this);
         }
     }
+
+    private static final CellSelector.Listener pickObjCellListener = new CellSelector.Listener() {
+        @Override
+        public void onSelect(Integer cell) {
+            EditorScene.putInQuickslot(cell);
+        }
+
+        @Override
+        public void onRightClick(Integer cell) {
+            if (cell != null && cell >= 0 && cell < EditorScene.customLevel().length()) {
+                EditorScene.showEditCellWindow(cell);
+            }
+        }
+
+        @Override
+        public String prompt() {
+            return Messages.get(SideControlPane.class, "pick_obj_prompt");
+        }
+    };
 }

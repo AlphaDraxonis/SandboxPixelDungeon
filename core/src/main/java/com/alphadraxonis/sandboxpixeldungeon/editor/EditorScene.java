@@ -57,6 +57,7 @@ import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.NoosaScriptNoLighting;
 import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.particles.Emitter;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.PointF;
@@ -263,7 +264,7 @@ public class EditorScene extends PixelScene {
         undo.setPos(0, 0);
         add(undo);
 
-        sideControlPane = new SideControlPane(0,1);
+        sideControlPane = new SideControlPane(0, DeviceCompat.isDesktop() ? 1 : 2);
         sideControlPane.camera = uiCamera;
         sideControlPane.setPos(0, undo.bottom() + 10);
         add(sideControlPane);
@@ -696,9 +697,7 @@ public class EditorScene extends PixelScene {
 
         @Override
         public void onMiddleClick(Integer cell) {
-            if (cell != null && cell >= 0 && cell < customLevel.length()) {
-                QuickSlotButton.set(getObjAsInBag(getObjAtCell(cell)));
-            }
+            putInQuickslot(cell);
         }
 
         @Override
@@ -711,5 +710,11 @@ public class EditorScene extends PixelScene {
             return true;
         }
     };
+
+    public static void putInQuickslot(Integer cell){
+        if (cell != null && cell >= 0 && cell < customLevel.length()) {
+            QuickSlotButton.set(getObjAsInBag(getObjAtCell(cell)));
+        }
+    }
 
 }

@@ -84,9 +84,11 @@ public class CustomDungeon implements Bundlable {
     //Category items/mobs/rooms
 
 
-    //Rename dungeons/floors
     //UI rework
     //restore toolbar
+    //check if all features are implemented
+    //test
+    //write changelog
 
     private String name;
     private String lastEditedFloor;
