@@ -123,6 +123,7 @@ public class MenuPane extends Component {
         depthIcon =  Icons.get(EditorScene.customLevel().levelScheme.getFeeling());
         add(depthIcon);
         depthText.text(EditorScene.customLevel().name);
+        depthText.measure();
         layout();
     }
 

@@ -178,6 +178,8 @@ public class EditorScene extends PixelScene {
 
         super.create();
 
+        customLevel().playLevelMusic();
+
         Camera.main.zoom(GameMath.gate(minZoom, defaultZoom + SPDSettings.zoom(), maxZoom));
         Camera.main.edgeScroll.set(1);
         if (mainCameraPos != null) Camera.main.scroll = mainCameraPos;

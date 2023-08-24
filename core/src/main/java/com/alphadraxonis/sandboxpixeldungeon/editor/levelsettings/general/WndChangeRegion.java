@@ -83,7 +83,7 @@ public class WndChangeRegion extends Window {
                         f.setRegion(newValues[CAT_REGION]);
                         f.setWaterTexture(newValues[CAT_WATER]);
                         f.setMusic(newValues[CAT_MUSIC]);
-                        if (i != newValues.length - 1) Game.switchScene(EditorScene.class);
+                        Game.switchScene(EditorScene.class);
                         return;
                     }
                 }

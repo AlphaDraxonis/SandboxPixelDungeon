@@ -141,10 +141,10 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             pos = transitionEdit.bottom() + WndTitledMessage.GAP;
         } else if (addTransition != null) {
             addTransition.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
-            pos = addTransition.bottom() + WndTitledMessage.GAP;
+            pos = addTransition.bottom() + WndTitledMessage.GAP + 1;
         } else if (editSignText != null) {
             editSignText.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
-            pos = editSignText.bottom() + WndTitledMessage.GAP;
+            pos = editSignText.bottom() + WndTitledMessage.GAP + 1;
         } else return;
 
         height = pos - y - WndTitledMessage.GAP - 0.5f;

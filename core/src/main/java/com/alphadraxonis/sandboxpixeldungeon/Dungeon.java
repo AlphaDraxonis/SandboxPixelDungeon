@@ -210,6 +210,7 @@ public class Dungeon {
 
         String levelDir = GamesInProgress.gameFolder(GamesInProgress.curSlot) + "/";
         FileUtils.deleteDir(levelDir);
+        FileUtils.resetDefaultFileType();
         try {
             CustomDungeonSaves.copyLevelsForNewGame(customDungeon.getName(), levelDir);
         } catch (IOException e) {
@@ -217,7 +218,6 @@ public class Dungeon {
             SandboxPixelDungeon.reportException(e);
         }
         CustomDungeonSaves.setCurDirectory(levelDir);
-        FileUtils.resetDefaultFileType();
 //
 //        if (customDungeon == null) {
 //            customDungeon = new CustomDungeon("DefaultDungeon");
@@ -808,7 +808,6 @@ public class Dungeon {
         }
 
         FileUtils.resetDefaultFileType();
-        new Exception("ff"+initialVersion+"  v = "+version).printStackTrace();
         if (!DeviceCompat.isDesktop() && initialVersion < 743) {//v0.6 and older
             CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/dungeon_levels/");
         } else CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/");

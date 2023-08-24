@@ -725,6 +725,7 @@ public class CustomDungeon implements Bundlable {
 
         try {
             String oldName = levelScheme.getName();
+            boolean savedItself = false;
 
             if (levelScheme.getType() == CustomLevel.class)
                 CustomDungeonSaves.renameLevel(oldName, newName);
@@ -747,41 +748,50 @@ public class CustomDungeon implements Bundlable {
                     Level level;
                     if (load) level = ls.loadLevel();
                     else level = ls.getLevel();
+
+                    boolean needsSave = false;
                     for (LevelTransition transition : level.transitions.values()) {
                         if (transition != null) {
                             if (Objects.equals(transition.destLevel, oldName)) {
                                 transition.destLevel = newName;
+                                needsSave = true;
                             }
                             if (Objects.equals(transition.departLevel, oldName)) {
                                 transition.departLevel = newName;
+                                needsSave = true;
                             }
                         }
                     }
 
                     //Change invalid keys in heaps
-                    boolean changedItems = false;
                     for (Heap h : level.heaps.valueList()) {
                         if (renameInvalidKeys(h.items, oldName, newName)) {
-                            changedItems = true;
+                            needsSave = true;
                         }
                     }
                     //Change invalid keys in mob containers
                     for (Mob m : level.mobs) {
                         if (m instanceof Mimic && ((Mimic) m).items != null) {
                             if (renameInvalidKeys(((Mimic) m).items, oldName, newName))
-                                changedItems = true;
+                                needsSave = true;
                         }
                         if (m instanceof Thief && isInvalidKey(((Thief) m).item, oldName)) {
                             ((Key) ((Thief) m).item).levelName = newName;
-                            changedItems = true;
+                            needsSave = true;
                         }
                     }
-                    if (renameInvalidKeys(ls.itemsToSpawn, oldName, newName)) changedItems = true;
+                    if (renameInvalidKeys(ls.itemsToSpawn, oldName, newName)) needsSave = true;
 
-                    if (changedItems) CustomDungeonSaves.saveLevel(level);
+                    if (needsSave) {
+                        if (ls == levelScheme) {
+                            level.name = newName;
+                            savedItself = true;
+                        }
+                        CustomDungeonSaves.saveLevel(level);
+                    }
                     if (load) ls.unloadLevel();
                     else if (level == EditorScene.customLevel() && levelScheme != level.levelScheme) {
-                        if (changedItems) EditorScene.updateHeapImagesAndSubIcons();
+                        if (needsSave) EditorScene.updateHeapImagesAndSubIcons();
                     }
                 } else {
                     if (Objects.equals(ls.getEntranceTransitionRegular().destLevel, oldName)) {
@@ -811,10 +821,16 @@ public class CustomDungeon implements Bundlable {
             Items.updateKeys(oldName, newName);
 
             levelScheme.name = newName;
-            if (levelScheme.getLevel() != null) {
-                levelScheme.getLevel().name = newName;
-
+            if (!savedItself) {
+                boolean unload = levelScheme.getLevel() != null;
+                Level level;
+                if (unload) level = levelScheme.loadLevel();
+                else level = levelScheme.getLevel();
+                level.name = newName;
+                CustomDungeonSaves.saveLevel(level);
+                if (unload) levelScheme.unloadLevel();
             }
+
             if (EditorScene.customLevel() != null) {
                 Undo.reset();//TODO maybe not best solution to reset all, but UndoParts all store the old lvl name
                 for (LevelTransition t : EditorScene.customLevel().transitions.values())
