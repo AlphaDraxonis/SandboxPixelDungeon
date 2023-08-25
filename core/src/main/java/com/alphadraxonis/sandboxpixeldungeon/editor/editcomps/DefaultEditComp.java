@@ -70,12 +70,12 @@ public abstract class DefaultEditComp<T> extends Component {
             if (c != null) {
                 hasAtLeastOneComp = true;
                 c.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
-                posY = c.bottom() + WndTitledMessage.GAP;
                 PixelScene.align(c);
+                posY = c.bottom() + WndTitledMessage.GAP;
             }
         }
 
-        if (hasAtLeastOneComp) height = posY - y - WndTitledMessage.GAP - 0.5f;
+        if (hasAtLeastOneComp) height = (int)(posY - y - WndTitledMessage.GAP);
     }
 
     protected abstract Component createTitle();

@@ -997,7 +997,7 @@ public class Hero extends Char {
             ready();
 
             Sign sign = Dungeon.level.signs.get(dst);
-            if (sign == null || sign.text == null) {
+            if (sign == null || sign.text == null || sign.text.isEmpty()) {
                 GLog.w(Messages.get(this, "no_sign"));
                 return false;
             }

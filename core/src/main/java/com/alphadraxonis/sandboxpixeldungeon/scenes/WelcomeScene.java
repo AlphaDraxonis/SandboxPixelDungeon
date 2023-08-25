@@ -57,12 +57,14 @@ public class WelcomeScene extends PixelScene {
 
 	//used so that the game does not keep showing the window forever if cleaning fails
 	private static boolean triedCleaningTemp = false;
+	static boolean showFileLocationChangeWarning = false;
 
 	@Override
 	public void create() {
 		super.create();
 
-		final int previousVersion = SPDSettings.version();
+		int v = SPDSettings.version();
+		final int previousVersion = v == 0 ? 1 : v;
 
 		if (!triedCleaningTemp && FileUtils.cleanTempFiles()){
 			add(new WndHardNotification(Icons.get(Icons.WARNING),
@@ -80,7 +82,11 @@ public class WelcomeScene extends PixelScene {
 			return;
 		}
 
-		if (SandboxPixelDungeon.versionCode == previousVersion && !SPDSettings.intro()) {
+		if (SandboxPixelDungeon.versionCode != previousVersion && previousVersion > 0){
+			updateVersion(previousVersion);
+			showFileLocationChangeWarning = true;//TODO change this for v0.8 tzz WICHTIG
+		}
+		if (SandboxPixelDungeon.versionCode == previousVersion && !SPDSettings.intro() || true) {
 			SandboxPixelDungeon.switchNoFade(TitleScene.class);
 			return;
 		}

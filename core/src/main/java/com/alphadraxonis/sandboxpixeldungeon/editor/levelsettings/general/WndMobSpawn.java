@@ -99,21 +99,26 @@ class WndMobSpawn extends WndTitledMessage {
             float posY = y;
 
             disableSpawning.setRect(x, posY, width, BUTTON_HEIGHT);
+            PixelScene.align(disableSpawning);
             posY = disableSpawning.bottom() + GeneralTab.GAP;
 
             respawnTime.setRect(x, posY, width, BUTTON_HEIGHT);
+            PixelScene.align(respawnTime);
             posY = respawnTime.bottom() + GeneralTab.GAP;
 
             moblimit.setRect(x, posY, width, BUTTON_HEIGHT);
+            PixelScene.align(moblimit);
             posY = moblimit.bottom() + GeneralTab.GAP;
 
             enableMutations.setRect(x, posY, width, BUTTON_HEIGHT);
+            PixelScene.align(enableMutations);
             posY = enableMutations.bottom() + GeneralTab.GAP;
 
             openMobCycle.setRect(x, posY, width, BUTTON_HEIGHT);
+            PixelScene.align(openMobCycle);
             posY = openMobCycle.bottom() + GeneralTab.GAP;
 
-            height = posY - GeneralTab.GAP;
+            height = (int)(posY - GeneralTab.GAP);
         }
     }
 

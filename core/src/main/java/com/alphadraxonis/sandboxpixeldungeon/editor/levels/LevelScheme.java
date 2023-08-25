@@ -6,6 +6,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.ChampionEnemy;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
@@ -443,7 +444,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     private void spawnItemsAndMobs(long seed) {
         Random.pushGenerator(seed);
 
-        if (type == CustomLevel.class) {
+        if (!(level instanceof RegularLevel)) {
             for (Mob m : mobsToSpawn) {
                 if (m.pos <= 0) {
                     int tries = level.length();
@@ -452,20 +453,24 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
                         tries--;
                     } while (m.pos == -1 && tries > 0);
                     if (m.pos != -1) {
+                        if (!(m instanceof NPC) && m.buffs(ChampionEnemy.class).isEmpty()) {
+                            ChampionEnemy.rollForChampion(m);
+                        }
                         level.mobs.add(m);
                         if (level.map[m.pos] == Terrain.HIGH_GRASS)
                             level.map[m.pos] = Terrain.GRASS;
                     }
                 }
             }
-            itemsToSpawn.addAll(prizeItemsToSpawn);
         }
+        if (type == CustomLevel.class) itemsToSpawn.addAll(prizeItemsToSpawn);
 
         for (Item item : itemsToSpawn) {
             item.reset();//important for scroll runes being inited
             int cell;
             if (level instanceof CustomLevel) cell = ((CustomLevel) level).randomDropCell();
-            else cell = ((RegularLevel) level).randomDropCell();
+            else if (level instanceof RegularLevel) cell = ((RegularLevel) level).randomDropCell();
+            else cell = CustomLevel.randomDropCell(level);
             if (level.map[cell] == Terrain.HIGH_GRASS || level.map[cell] == Terrain.FURROWED_GRASS) {
                 level.map[cell] = Terrain.GRASS;
                 level.losBlocking[cell] = false;

@@ -17,6 +17,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.windows.IconTitle;
@@ -134,20 +135,23 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     protected void layout() {
         super.layout();
 
-        float pos = height + WndTitledMessage.GAP * 2 - 1;
+        float pos = y + height + WndTitledMessage.GAP * 2 - 1;
 
         if (transitionEdit != null) {
             transitionEdit.setRect(x, pos, width, -1);
-            pos = transitionEdit.bottom() + WndTitledMessage.GAP;
+            PixelScene.align(transitionEdit);
+            pos = transitionEdit.bottom() + WndTitledMessage.GAP + 1;
         } else if (addTransition != null) {
             addTransition.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(addTransition);
             pos = addTransition.bottom() + WndTitledMessage.GAP + 1;
         } else if (editSignText != null) {
             editSignText.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(editSignText);
             pos = editSignText.bottom() + WndTitledMessage.GAP + 1;
         } else return;
 
-        height = pos - y - WndTitledMessage.GAP - 0.5f;
+        height = (int)(pos - y - WndTitledMessage.GAP);
     }
 
 

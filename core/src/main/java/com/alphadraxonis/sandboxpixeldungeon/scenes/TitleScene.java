@@ -46,6 +46,7 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.StyledButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndOptions;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndSettings;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
@@ -55,6 +56,7 @@ import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.ColorMath;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.FileUtils;
 import com.watabou.utils.PointF;
 
 import java.util.HashSet;
@@ -127,6 +129,7 @@ public class TitleScene extends PixelScene {
         StyledButton btnPlay = new StyledButton(GREY_TR, Messages.get(this, "enter")) {
             @Override
             protected void onClick() {
+                FileUtils.resetDefaultFileType();
                 if (GamesInProgress.checkAll().size() == 0) {
                     StartScene.showWndSelectDungeon(1);
                 } else {
@@ -230,6 +233,32 @@ public class TitleScene extends PixelScene {
         }
 
         fadeIn();
+
+        Game.runOnRenderThread(()->{
+
+            if (WelcomeScene.showFileLocationChangeWarning) {//TODO remove this for v0.8 tzz WICHTIG
+                WelcomeScene.showFileLocationChangeWarning = false;
+                WndTitledMessage window;
+                if (DeviceCompat.isDesktop())
+                    window = new WndTitledMessage(Icons.WARNING.get(), "IMPORTANT",
+                            "This update changed the location of important game files. Please make sure to manually move them to the correct destination!\n" +
+                                    "Custom Dungeons: Move \"C:/Users/You/Sandbox-Pixel-Dungeon/custom_dungeons\" into \"C:/Users/You/AppData/Roaming/.alphadraxonis/Sandbox Pixel Dungeon\".\n" +
+                                    "Games in progess: In the same directory as your jar file, there should be folders game1 to 5. Inside each is a folder \"dungeon_levels\" in which a folder" +
+                                    " \"levels\" is located. Move this folder called \"levels\" into \"C:/Users/You/AppData/Roaming/.alphadraxonis/Sandbox Pixel Dungeon/game1" +
+                                    " (repeat this for all 5 slots, and place it inside the correct slot folder).\n\n" +
+                                    "There has also been a change to the file names itself:\n" +
+                                    "All spaces( ) in the custom dungeon folder names and the level files are replaced by underscores(_), and you have to manually replace every space with an underscore.\n" +
+                                    "You can find this folder here:\n" +
+                                    "  C:/Users/You/Sandbox-Pixel-Dungeon/custom_dungeons  (If you haven't already moved it)");
+                else window = new WndTitledMessage(Icons.WARNING.get(), "IMPORTANT",
+                        "There has been a change to the file names of custom dungeons:\n" +
+                                "All spaces( ) in the custom dungeon folder names and the level files are replaced by underscores(_), and you have to manually replace every space with an underscore.\n" +
+                                "You can find this folder here:\n" +
+                                "  Android/data/com.aphadraxonis.sandboxpixeldungeon/\nfiles/custom_dungeons");
+                window.setHighligtingEnabled(false);
+                Game.scene().addToFront(window);
+            }
+        });
     }
 
     private void placeTorch(float x, float y) {

@@ -61,16 +61,16 @@ public class CustomDungeonSaves {
         FileUtils.bundleToFile(curDirectory + DUNGEON_INFO, bundleInfo);
     }
 
-    public static class RenameRequiredException extends Exception{
-        public RenameRequiredException(FileHandle file, String name){
-            super( "PLEASE RENAME the FILE at "+file.file().getAbsolutePath()+" TO \""+name.replace(' ', '_')+FILE_EXTENSION+"\"\n" +
-                    "If this name is already taken, please read the Github release notes for version v0.7!");
+    public static class RenameRequiredException extends Exception {
+        public RenameRequiredException(FileHandle file, String name) {
+            super(Messages.get(CustomDungeonSaves.class, "file_rename", file.file().getAbsolutePath(), name.replace(' ', '_') + FILE_EXTENSION));
         }
-        public RenameRequiredException(FileHandle file, String name, Object ignoredMakeNotAmbigios){
-            super( "PLEASE RENAME the DIRECTORY at "+file.file().getAbsolutePath()+" TO \""+name.replace(' ', '_')+"\"\n" +
-                    "If this name is already taken, please read the Github release notes for version v0.7!");
+
+        public RenameRequiredException(FileHandle file, String name, Object ignoredMakeNotAmbiguous) {
+            super(Messages.get(CustomDungeonSaves.class, "dir_rename", file.file().getAbsolutePath(), name.replace(' ', '_')));
         }
-        public void showExceptionWindow(){
+
+        public void showExceptionWindow() {
             Game.runOnRenderThread(() -> {
                 WndTitledMessage w = new WndError(getMessage());
                 w.setHighligtingEnabled(false);
@@ -81,6 +81,7 @@ public class CustomDungeonSaves {
     }
 
     public static CustomDungeon loadDungeon(String name) throws IOException, RenameRequiredException {
+        FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
         setCurDirectory(DUNGEON_FOLDER + name.replace(' ', '_') + "/");
         FileHandle file = FileUtils.getFileHandle(curDirectory + DUNGEON_DATA);
         if (!file.exists()) throw new RenameRequiredException(FileUtils.getFileHandle(DUNGEON_FOLDER + name), name, null);

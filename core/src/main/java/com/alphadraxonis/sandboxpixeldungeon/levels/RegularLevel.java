@@ -35,6 +35,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.GoldenMimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
@@ -244,7 +245,7 @@ public abstract class RegularLevel extends Level {
 		for (Mob m : sortedMobsToSpawn) {
 			if (m instanceof QuestNPC) {
 				((QuestNPC<?>) m).place(this,rooms);
-			} else if (m.buffs(ChampionEnemy.class).isEmpty()) {
+			} else if (!(m instanceof NPC) && m.buffs(ChampionEnemy.class).isEmpty()) {
 				ChampionEnemy.rollForChampion(m);
 			}
 

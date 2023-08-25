@@ -61,13 +61,12 @@ public class WndEditFloorInOverview extends WndTabbed {
         if (listItem != lastListItem) lastIndex = 0;
         lastListItem = listItem;
 
-        if (levelScheme.getType() == CustomLevel.class && levelScheme.getLevel() == null)
-            levelScheme.loadLevel();
-
-        if(levelScheme.getLevel() == null){
-            hide();
-            ownTabs = null;
-            return;
+        if (levelScheme.getType() == CustomLevel.class && levelScheme.getLevel() == null) {
+            if (levelScheme.loadLevel() == null) {
+                hide();
+                ownTabs = null;
+                return;
+            }
         }
 
         resize(PixelScene.landscape() ? 210 : Math.min(155, (int) (PixelScene.uiCamera.width * 0.85)), (int) (PixelScene.uiCamera.height * 0.75f));

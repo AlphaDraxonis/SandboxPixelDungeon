@@ -180,7 +180,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             posY = itemContainer.bottom() + WndTitledMessage.GAP;
         }
 
-        height = posY - y - WndTitledMessage.GAP + 1;
+        height = (int)(posY - y - WndTitledMessage.GAP);
     }
 
     public static boolean areEqual(Heap a, Heap b) {

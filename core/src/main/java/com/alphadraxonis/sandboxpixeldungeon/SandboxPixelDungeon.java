@@ -24,6 +24,7 @@ package com.alphadraxonis.sandboxpixeldungeon;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.TitleScene;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.WelcomeScene;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
@@ -37,7 +38,7 @@ public class SandboxPixelDungeon extends Game {
 	public static final int _0_3_v2_1_0  = 723;
 	
 	public SandboxPixelDungeon(PlatformSupport platform ) {
-		super( sceneClass == null ? TitleScene.class : sceneClass, platform );
+		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
 	}
 	
 	@Override

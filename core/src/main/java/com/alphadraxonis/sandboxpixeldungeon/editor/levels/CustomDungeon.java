@@ -779,12 +779,11 @@ public class CustomDungeon implements Bundlable {
                             if (renameInvalidKeys(((Mimic) m).items, oldName, newName))
                                 needsSave = true;
                         }
-                        if (m instanceof Thief && isInvalidKey(((Thief) m).item, oldName)) {
+                        else if (m instanceof Thief && isInvalidKey(((Thief) m).item, oldName)) {
                             ((Key) ((Thief) m).item).levelName = newName;
                             needsSave = true;
                         }
                     }
-                    if (renameInvalidKeys(ls.itemsToSpawn, oldName, newName)) needsSave = true;
 
                     if (needsSave) {
                         if (ls == levelScheme) {
@@ -810,6 +809,7 @@ public class CustomDungeon implements Bundlable {
                         ls.getExitTransitionRegular().departLevel = newName;
                     }
                 }
+                renameInvalidKeys(ls.itemsToSpawn, oldName, newName);
             }
 
             for (ItemDistribution<? extends Bundlable> distr : itemDistributions) {
@@ -826,7 +826,7 @@ public class CustomDungeon implements Bundlable {
             Items.updateKeys(oldName, newName);
 
             levelScheme.name = newName;
-            if (!savedItself) {
+            if (!savedItself && levelScheme.getType() == CustomLevel.class) {
                 boolean unload = levelScheme.getLevel() != null;
                 Level level;
                 if (unload) level = levelScheme.loadLevel();

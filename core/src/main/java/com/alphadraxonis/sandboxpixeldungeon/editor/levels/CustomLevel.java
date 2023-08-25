@@ -563,6 +563,29 @@ public class CustomLevel extends Level {
         }
         return -1;
     }
+    public static int randomDropCell(Level level) {
+        int tries = level.length();
+        int lengthHalf = level.length() / 2;
+        while (tries-- > 0) {
+            int pos = Random.Int(level.length());
+            if (level.passable[pos] && !level.solid[pos] /*&& canSpawnThings[pos]*/
+                    && level.map[pos] != ENTRANCE
+                    && level.map[pos] != EXIT
+                    && (tries <= lengthHalf || (level.heaps.get(pos) == null && level.findMob(pos) == null))) {
+
+                Trap t = level.traps.get(pos);
+
+                //items cannot spawn on traps which destroy items
+                if (!(t instanceof BurningTrap || t instanceof BlazingTrap
+                        || t instanceof ChillingTrap || t instanceof FrostTrap
+                        || t instanceof ExplosiveTrap || t instanceof DisintegrationTrap
+                        || t instanceof PitfallTrap)) {
+                    return pos;
+                }
+            }
+        }
+        return -1;
+    }
 
     @Override
     public boolean isLevelExplored(String levelName) {

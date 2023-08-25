@@ -60,7 +60,7 @@ public class WndEditStats extends Window {
                     }
                 }
 
-                if (hasAtLeastOneComp) height = posY - y - WndTitledMessage.GAP - 0.5f;
+                if (hasAtLeastOneComp) height = (int)(posY - y - WndTitledMessage.GAP);
             }
         };
 

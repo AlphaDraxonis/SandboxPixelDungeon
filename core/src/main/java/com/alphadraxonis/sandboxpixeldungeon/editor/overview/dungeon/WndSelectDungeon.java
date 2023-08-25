@@ -64,7 +64,8 @@ public class WndSelectDungeon extends Window {
             };
             add(createNewDungeonBtn);
 
-            if(DeviceCompat.isDesktop() && Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)){
+            //this is commented out in the apk version
+            if (DeviceCompat.isDesktop() && Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)){
                 createNewDungeonBtn.setRect(0, height - 18, (width*9/16f)-2, 18);
                 openFileExplorer = new RedButton(Messages.get(WndSelectDungeon.class, "open_file_explorer")){
                     @Override
@@ -84,7 +85,7 @@ public class WndSelectDungeon extends Window {
                 };
                 add(openFileExplorer);
                 openFileExplorer.setRect(createNewDungeonBtn.right()+2, height - 18, width - createNewDungeonBtn.width() - 2, 18);
-            }else{
+            } else {
                 createNewDungeonBtn.setRect(0, height - 18, width, 18);
             }
         }
