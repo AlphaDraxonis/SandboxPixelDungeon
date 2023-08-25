@@ -193,6 +193,7 @@ public class Spinner extends Component {
             add(bg);
 
             textBlock = PixelScene.renderTextBlock(fontSize);
+            textBlock.setHightlighting(false);
             addToFront(textBlock);
         }
 

@@ -2,14 +2,12 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
-import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.LevelListPane;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndItemDistribution;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndNewDungeon;
-import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
@@ -18,8 +16,6 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
-
-import java.io.IOException;
 
 public class WndSwitchFloor extends Window {
 
@@ -105,13 +101,8 @@ public class WndSwitchFloor extends Window {
     public static void selectLevelScheme(LevelScheme levelScheme, LevelListPane.ListItem listItem, LevelListPane listPane) {
         if (levelScheme.getType() == CustomLevel.class) {
             CustomLevel f = (CustomLevel) levelScheme.getLevel();
-            if (f == null) {
-                try {
-                    f = CustomDungeonSaves.loadLevel(levelScheme.getName());
-                } catch (IOException e) {
-                    SandboxPixelDungeon.reportException(e);
-                }
-            }
+            if (f == null) f = (CustomLevel) levelScheme.loadLevel();
+            if (f == null) return;
             EditorScene.open(f);
         } else listPane.onEdit(levelScheme, listItem);
     }

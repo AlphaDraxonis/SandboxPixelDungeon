@@ -1327,7 +1327,7 @@ public class GameScene extends PixelScene {
                     try {
                         Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(Dungeon.customDungeon.getName());
                         SandboxPixelDungeon.switchScene(HeroSelectScene.class);
-                    } catch (IOException e) {
+                    } catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
                         SandboxPixelDungeon.reportException(e);
                     }
                 } else StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass);

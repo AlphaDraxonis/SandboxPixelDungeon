@@ -357,6 +357,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
                     level = CustomDungeonSaves.loadLevel(name);
                 } catch (IOException e) {
                     SandboxPixelDungeon.reportException(e);
+                } catch (CustomDungeonSaves.RenameRequiredException e) {
+                    throw new RuntimeException(e);//Caught by InterlevelScene
                 }
             } else
                 level = ((CustomLevel) level).createCopiedFloor();//make sure the levels are different objects? FIXME maybe not needed?? WICHTIG
@@ -653,6 +655,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
                 level.levelScheme = this;
             } catch (IOException e) {
                 SandboxPixelDungeon.reportException(e);
+            }
+            catch (CustomDungeonSaves.RenameRequiredException ex){
+                ex.showExceptionWindow();
             }
         }
         return level;

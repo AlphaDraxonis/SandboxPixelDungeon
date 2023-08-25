@@ -202,6 +202,8 @@ public class WndSelectDungeon extends Window {
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                         SandboxPixelDungeon.reportException(e);
+                                    } catch (CustomDungeonSaves.RenameRequiredException e) {
+                                        e.showExceptionWindow();
                                     }
                                 }
                             }
@@ -310,6 +312,9 @@ public class WndSelectDungeon extends Window {
             Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(name);
         } catch (IOException e) {
             SandboxPixelDungeon.reportException(e);
+        } catch (CustomDungeonSaves.RenameRequiredException e) {
+            e.showExceptionWindow();
+            return;
         }
         String lastEditedFloor = Dungeon.customDungeon.getLastEditedFloor();
         LevelScheme l;
@@ -320,7 +325,9 @@ public class WndSelectDungeon extends Window {
                 SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
             else {
                 l.loadLevel();
-                EditorScene.open((CustomLevel) l.getLevel());
+                if (l.getLevel() == null)
+                    SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
+                else EditorScene.open((CustomLevel) l.getLevel());
             }
         }
     }

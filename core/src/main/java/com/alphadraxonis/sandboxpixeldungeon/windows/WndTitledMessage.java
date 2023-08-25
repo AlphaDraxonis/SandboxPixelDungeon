@@ -156,6 +156,11 @@ public class WndTitledMessage extends Window {
         comp.setPos(0, (titlebar == null ? 0 : titlebar.bottom() + 2 * GAP));
     }
 
+    public void setHighligtingEnabled(boolean enableHighligthing){
+        if (body.c instanceof RenderedTextBlock)
+            ((RenderedTextBlock) body.c).setHightlighting(enableHighligthing);
+    }
+
     //Body factory seems messy, but is the only way for custom bodies to receive input events //lol maybe givePointerPriority() would work too??
     public interface BodyFactory {
         Body create();

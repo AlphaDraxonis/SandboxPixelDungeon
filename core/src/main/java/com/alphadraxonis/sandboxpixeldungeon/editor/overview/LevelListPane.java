@@ -66,6 +66,7 @@ public abstract class LevelListPane extends ScrollingListPane {
         public ListItem(LevelScheme levelScheme) {
             super(Icons.get(Icons.STAIRS), "");
             this.levelScheme = levelScheme;
+            label.setHightlighting(false);
             updateLevel();
         }
 

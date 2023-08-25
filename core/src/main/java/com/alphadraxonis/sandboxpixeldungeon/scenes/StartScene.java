@@ -335,6 +335,8 @@ public class StartScene extends PixelScene {
 					} catch (IOException e) {
 						e.printStackTrace();
 						SandboxPixelDungeon.reportException(e);
+					} catch (CustomDungeonSaves.RenameRequiredException e) {
+						e.showExceptionWindow();
 					}
 				}
 			});

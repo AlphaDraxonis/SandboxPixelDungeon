@@ -30,6 +30,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Statistics;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.LostBackpack;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
@@ -339,12 +340,17 @@ public class InterlevelScene extends PixelScene {
                     else if (error.getMessage() != null &&
                             error.getMessage().equals("old save"))
                         errorMsg = Messages.get(this, "io_error");
+                    else if (error.getCause() instanceof CustomDungeonSaves.RenameRequiredException)
+                        errorMsg = error.getCause().getMessage();
 
                     else
                         throw new RuntimeException("fatal error occurred while moving between floors. " +
                                 "Seed:" + Dungeon.seed + " depth:" + Dungeon.depth, error);
 
                     add(new WndError(errorMsg) {
+                        {
+                            setHighligtingEnabled(!(error.getCause() instanceof CustomDungeonSaves.RenameRequiredException));
+                        }
                         public void onBackPressed() {
                             super.onBackPressed();
                             Game.switchScene(StartScene.class);

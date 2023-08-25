@@ -2,12 +2,15 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.util;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndError;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.watabou.noosa.Game;
@@ -58,20 +61,42 @@ public class CustomDungeonSaves {
         FileUtils.bundleToFile(curDirectory + DUNGEON_INFO, bundleInfo);
     }
 
-    public static CustomDungeon loadDungeon(String name) throws IOException {
+    public static class RenameRequiredException extends Exception{
+        public RenameRequiredException(FileHandle file, String name){
+            super( "PLEASE RENAME the FILE at "+file.file().getAbsolutePath()+" TO \""+name.replace(' ', '_')+FILE_EXTENSION+"\"\n" +
+                    "If this name is already taken, please read the Github release notes for version v0.7!");
+        }
+        public RenameRequiredException(FileHandle file, String name, Object ignoredMakeNotAmbigios){
+            super( "PLEASE RENAME the DIRECTORY at "+file.file().getAbsolutePath()+" TO \""+name.replace(' ', '_')+"\"\n" +
+                    "If this name is already taken, please read the Github release notes for version v0.7!");
+        }
+        public void showExceptionWindow(){
+            Game.runOnRenderThread(() -> {
+                WndTitledMessage w = new WndError(getMessage());
+                w.setHighligtingEnabled(false);
+                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                else Game.scene().addToFront(w);
+            });
+        }
+    }
+
+    public static CustomDungeon loadDungeon(String name) throws IOException, RenameRequiredException {
         setCurDirectory(DUNGEON_FOLDER + name.replace(' ', '_') + "/");
         FileHandle file = FileUtils.getFileHandle(curDirectory + DUNGEON_DATA);
+        if (!file.exists()) throw new RenameRequiredException(FileUtils.getFileHandle(DUNGEON_FOLDER + name), name, null);
         return (CustomDungeon) FileUtils.bundleFromStream(file.read()).get(DUNGEON);
     }
 
-    public static CustomLevel loadLevel(String name) throws IOException {
+    public static CustomLevel loadLevel(String name) throws IOException, RenameRequiredException {
         return loadLevel(name, true);
     }
 
-    public static CustomLevel loadLevel(String name, boolean removeInvalidTransitions) throws IOException {
+    public static CustomLevel loadLevel(String name, boolean removeInvalidTransitions) throws IOException, RenameRequiredException {
         FileHandle file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name));
-        if (!file.exists())
+        if (!file.exists())//Still: it is important to rename old ones properly before or they might override other files
             file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name.replace(' ', '_')));
+        else if (name.contains(" ") && file.exists() && curDirectory.contains("custom_dungeons"))
+            throw new RenameRequiredException(file, name);
         CustomLevel customLevel = (CustomLevel) FileUtils.bundleFromStream(file.read()).get(FLOOR);
 
         //checks if all transitions are still valid, can even remove transitions AFTER the game was started if necessary
@@ -88,6 +113,18 @@ public class CustomDungeonSaves {
         }
 
         return customLevel;
+    }
+
+    public static CustomLevel loadLevelWithOgName(String name) throws IOException {
+        FileHandle file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name));
+        if (!file.exists())//Still: it is important to rename old ones properly before or they might override other files
+            file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name.replace(' ', '_')));
+        return  (CustomLevel) FileUtils.bundleFromStream(file.read()).get(FLOOR);
+    }
+    public static void saveLevelWithOgName(Level level) throws IOException {
+        Bundle bundle = new Bundle();
+        bundle.put(FLOOR, level);
+        FileUtils.bundleToFile(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, level.name), bundle);
     }
 
     public static void saveLevel(Level level) throws IOException {

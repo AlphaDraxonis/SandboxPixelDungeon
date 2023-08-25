@@ -115,7 +115,7 @@ public abstract class TransitionEditPart extends Component {
                 transition.type = LevelTransition.Type.REGULAR_ENTRANCE;
             else {
                 LevelScheme departLevel = Dungeon.customDungeon.getFloor(transition.departLevel);
-                if (departLevel != null && departLevel.getType() == CustomLevel.class) {
+                if (departLevel != null && departLevel.getType() == CustomLevel.class && EditorScene.customLevel() != null) {
                     if (TileItem.isExitTerrainCell(EditorScene.customLevel().map[transition.departCell]))
                         transition.type = LevelTransition.Type.REGULAR_EXIT;
                     else transition.type = LevelTransition.Type.REGULAR_ENTRANCE;
