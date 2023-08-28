@@ -66,7 +66,9 @@ import com.watabou.utils.PointF;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class EditorScene extends PixelScene {
 
@@ -714,10 +716,50 @@ public class EditorScene extends PixelScene {
         }
     };
 
-    public static void putInQuickslot(Integer cell){
+    public static void putInQuickslot(Integer cell) {
+        fillAllWithOnTerrain(cell);
+        if(true)return;
         if (cell != null && cell >= 0 && cell < customLevel.length()) {
             QuickSlotButton.set(getObjAsInBag(getObjAtCell(cell)));
         }
+    }
+
+    public static void fillAllWithOnTerrain(Integer cell){
+        if (cell != null && cell >= 0 && cell < customLevel.length()) {
+            Item selected = EToolbar.getSelectedItem();
+
+            if (selected instanceof EditorItem) {
+                changedCells.clear();
+                Undo.startAction();
+                if(TileItem.isTrapTerrainCell(customLevel().map[cell]))
+                    fillAllWithOneTerrainRecursiveTrap(cell, customLevel().map[cell], (EditorItem) selected, customLevel().map, customLevel().traps.get(cell).getClass());
+                else fillAllWithOneTerrainRecursive(cell, customLevel().map[cell], (EditorItem) selected, customLevel().map);
+                Undo.endAction();
+            }
+        }
+    }
+    private static Set<Integer> changedCells = new HashSet<>();
+    public static void fillAllWithOneTerrainRecursive(int cell, int terrainClick, EditorItem place, int[] map){
+
+        changedCells.add(cell);
+        for (int i : PathFinder.CIRCLE4){
+            int val = i + cell;
+            if (val >= 0 && val < map.length && !changedCells.contains(val) && map[val] == terrainClick) fillAllWithOneTerrainRecursive(val, terrainClick, place, map);
+        }
+        place.place(cell);
+
+    }
+    public static void fillAllWithOneTerrainRecursiveTrap(int cell, int terrainClick, EditorItem place, int[] map, Class<? extends Trap> onTrapClicked) {
+
+        changedCells.add(cell);
+        for (int i : PathFinder.CIRCLE4){
+            int val = i + cell;
+            if (val >= 0 && val < map.length && !changedCells.contains(val)
+                    && map[val] == terrainClick && customLevel().traps.get(val).getClass() == onTrapClicked)
+                fillAllWithOneTerrainRecursiveTrap(val, terrainClick, place, map, onTrapClicked);
+        }
+        place.place(cell);
+
     }
 
 }
