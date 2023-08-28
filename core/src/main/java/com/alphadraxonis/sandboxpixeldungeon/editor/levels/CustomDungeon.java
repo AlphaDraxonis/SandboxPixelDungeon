@@ -89,22 +89,23 @@ public class CustomDungeon implements Bundlable {
     //test
     //write changelog
 
-    //to fix new save location with v0.7 on desktop
-    //delete "C:\Users\you\AppData\Roaming\.alphadraxonis\Sandbox Pixel Dungeon\Sandbox-Pixel-Dungeon" - there are only empty folders (NOT REQUIRED!)
-    //move "C:/Users/you/Sandbox-Pixel-Dungeon/custom_dungeons" into "C:\Users\you\AppData\Roaming\.alphadraxonis\Sandbox Pixel Dungeon" (REQUIRED!)
+    //BossBar:
+    //override dmg and notice methods, static: only one mob per level can be boss
+    //store boolean if bossbar is visible
+    //
+    //custom mob drops was something i have been thinking about as well
+    //override rollToDropLoot, similar as mimic, set loot to null, always 100% chance
 
-    //This affects everyone:
-    //replace ALL spaces ( ) in the dungeon folder names and all the level file names with an underscore (_). This does not change the names displayed in game. (REQUIRED!)
-    //If 2 dungeons happen to have the same name after that, move one to a different location and only change the file name of the other dungeon.
-    // Then use the new renaming feature to rename the dungeon and the file. After that, just move the first dungeon back.
-    //If 2 levels in the same dungeon happen to have the same name after that, you can safely edit and rename one of them as long as you don't try to enter the other one.
-    //Games in progress are not affected
-    //Tested on Windows and Android
+    //restrict hero classes: override HeroClass#isUnlocked(), add ui for opening window in general settings where heros can be enabled/disabled
 
+    //edit character starting inventory: override heroClass#initHero(), in hero restriction window,
+    //      there will be an option for limited slots of starting items, as well as starting eq
 
-    //DESKTOP ONLY: move files
-    //In the same directory as your jar file, there should be folders game1 to 5. Inside each is a folder "dungeon_levels" in which a folder "levels" is located.
-    //Move this folder called "levels" into C:\Users\you\AppData\Roaming\.alphadraxonis\Sandbox Pixel Dungeon\game1 (into folders 1 to 5 accordingly)
+    //Custom mob attacks: externalise
+
+    //Fill: add proper button
+
+    //
 
 
     private String name;

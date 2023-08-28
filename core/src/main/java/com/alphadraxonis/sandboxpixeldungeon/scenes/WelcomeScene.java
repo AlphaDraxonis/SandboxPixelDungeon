@@ -57,7 +57,6 @@ public class WelcomeScene extends PixelScene {
 
 	//used so that the game does not keep showing the window forever if cleaning fails
 	private static boolean triedCleaningTemp = false;
-	static boolean showFileLocationChangeWarning = false;
 
 	@Override
 	public void create() {
@@ -84,7 +83,6 @@ public class WelcomeScene extends PixelScene {
 
 		if (SandboxPixelDungeon.versionCode != previousVersion && previousVersion > 0){
 			updateVersion(previousVersion);
-			showFileLocationChangeWarning = true;//TODO change this for v0.8 tzz WICHTIG
 		}
 		if (SandboxPixelDungeon.versionCode == previousVersion && !SPDSettings.intro() || true) {
 			SandboxPixelDungeon.switchNoFade(TitleScene.class);

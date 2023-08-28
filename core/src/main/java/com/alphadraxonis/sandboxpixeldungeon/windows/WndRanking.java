@@ -299,6 +299,7 @@ public class WndRanking extends WndTabbed {
 		private float statSlot( Group parent, String label, String value, float pos ) {
 			
 			RenderedTextBlock txt = PixelScene.renderTextBlock( label, 7 );
+			txt.setHightlighting(false);
 			txt.setPos(0, pos);
 			parent.add( txt );
 			

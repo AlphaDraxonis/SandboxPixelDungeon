@@ -45,7 +45,7 @@ public class Skeleton extends Mob {
 		attackSkill = 12;
 		damageRollMin = 2;
 		damageRollMax = 10;
-		defenseSkill = 5;
+		damageReductionMax = 5;
 		
 		EXP = 5;
 		maxLvl = 10;
