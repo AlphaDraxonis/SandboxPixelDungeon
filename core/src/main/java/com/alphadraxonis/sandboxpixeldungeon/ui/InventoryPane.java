@@ -299,7 +299,7 @@ public class InventoryPane extends Component {
         }
 
         Belongings stuff;
-        if (CustomDungeon.isEditing()) {
+        if (CustomDungeon.isEditing() || Dungeon.hero == null) {
 
             stuff = null;
 

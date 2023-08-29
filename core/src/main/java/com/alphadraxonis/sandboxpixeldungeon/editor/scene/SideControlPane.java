@@ -84,6 +84,7 @@ public class SideControlPane extends Component {
                 EditorScene.selectCell(pickObjCellListener);
                 return;
             case 2:
+//                GameScene.scene.destroy(); ???
                 EditorScene.start();
                 EditorScene.openDifferentLevel = false;
                 WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
