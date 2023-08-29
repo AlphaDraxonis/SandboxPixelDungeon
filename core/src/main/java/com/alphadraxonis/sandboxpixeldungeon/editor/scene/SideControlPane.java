@@ -29,20 +29,29 @@ public class SideControlPane extends Component {
 
 
     public static final int WIDTH = 16;
+    private Component[] buttons;
 
-    private SideControlButton[] buttons;
+    public SideControlPane(boolean editor) {
 
-    public SideControlPane(int indexFirstButton, int numButtons) {
-
-        buttons = new SideControlButton[numButtons];
-
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i] = new SideControlButton(indexFirstButton + i);
-            buttons[i].updateState();
-            add(buttons[i]);
+        if (editor) {
+            buttons = new Component[2];
+            buttons[0] = new StartBtn();
+            buttons[1] = new PipetteBtn();
+        } else {
+            buttons = new Component[8];
+            buttons[0] = new ExitBtn();
+            buttons[1] = new DamageBtn();
+            buttons[2] = new SecretsBtn();
+            buttons[3] = new MindVisionBtn();
+            buttons[4] = new MappingBtn();
+            buttons[5] = new KeyBtn();
+            buttons[6] = new SpeedBtn();
+            buttons[7] = new InvisBtn();
         }
 
-
+        for (Component button : buttons) {
+            add(button);
+        }
     }
 
     @Override
@@ -61,116 +70,12 @@ public class SideControlPane extends Component {
 
     public static HeroClass lastSelectedClass;
 
-    protected void onClick(int index, SideControlButton button) {
-        switch (index) {
-            case 0:
-                try {
-                    if (Dungeon.hero == null) {
-                        CustomDungeonSaves.saveLevel(EditorScene.customLevel());
-                        CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
-                    } else
-                        Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(Dungeon.customDungeon.getName());//restart
 
-                    GamesInProgress.selectedClass = lastSelectedClass;
-                    if (GamesInProgress.selectedClass == null)
-                        GamesInProgress.selectedClass = HeroClass.WARRIOR;
-                    GamesInProgress.curSlot = GamesInProgress.TEST_SLOT;
-                    SandboxPixelDungeon.switchScene(HeroSelectScene.class);
-                } catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
-                    SandboxPixelDungeon.reportException(e);
-                }
-                return;
-            case 1:
-                EditorScene.selectCell(pickObjCellListener);
-                return;
-            case 2:
-//                GameScene.scene.destroy(); ???
-                EditorScene.start();
-                EditorScene.openDifferentLevel = false;
-                WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
-                return;
-            case 3:
-                button.enable(Dungeon.customDungeon.damageImmune = !button.isEnabled());
-                return;
-            case 4:
-                button.enable(Dungeon.customDungeon.seeSecrets = !button.isEnabled());
-                GameScene.updateMap();
-                return;
-            case 5:
-                button.enable(Dungeon.customDungeon.permaMindVision = !button.isEnabled());
-                if (Dungeon.customDungeon.permaMindVision) {
-                    Buff.affect(Dungeon.hero, MindVision.class, 1);
-                    Dungeon.observe();
-                } else {
-                    Buff b = Dungeon.hero.buff(MindVision.class);
-                    if (b != null) b.detach();
-                }
-                return;
-            case 6:
-                new ScrollOfMagicMapping() {
-                    {
-                        final Hero oldUser = curUser;
-                        curUser = Dungeon.hero;
-                        anonymize();
-                        doRead();
-                        curUser = oldUser;
-                    }
-                };
-                return;
-            case 7:
-                button.enable(Dungeon.customDungeon.permaKey = !button.isEnabled());
-                return;
-            case 8:
-                boolean active = !button.isEnabled();
-                if (active) Dungeon.hero.baseSpeed *= 10f;
-                else Dungeon.hero.baseSpeed /= 10f;
-                button.enable(active);
-                return;
-            case 9:
-                button.enable(Dungeon.customDungeon.permaInvis = !button.isEnabled());
-                if (Dungeon.customDungeon.permaInvis)
-                    Buff.affect(Dungeon.hero, Invisibility.class, 1);
-                else {
-                    Buff b = Dungeon.hero.buff(Invisibility.class);
-                    if (b != null) b.detach();
-                }
-                return;
-        }
-
-    }
-
-    protected String createHoverText(int index) {
-        switch (index) {
-            case 0:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "play"));
-            case 2:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "exit"));
-            case 3:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "damage"));
-            case 4:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "secrets"));
-            case 5:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "mind_vision"));
-            case 6:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "magic_mapping")
-                        + " " + Messages.get(ScrollOfMagicMapping.class, "name"));
-            case 7:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "key"));
-            case 8:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "speed"));
-            case 9:
-                return Messages.titleCase(Messages.get(SideControlPane.class, "invis"));
-        }
-        return null;
-    }
-
-
-    private class SideControlButton extends Button {
+    private static abstract class SideControlButton extends Button {
         private Image bg, icon;
-        private final int num;
+        protected boolean btnEnabled;
 
         public SideControlButton(int num) {
-            this.num = num;
 
             icon = new Image(Assets.Interfaces.SIDE_CONTROL_BUTTONS, 0, 13 * num, 12, 13);
             add(icon);
@@ -196,16 +101,6 @@ public class SideControlPane extends Component {
             icon.y = y + 2;
         }
 
-        protected void updateState() {
-            enable(num == 0 || num == 1 || num == 2 || num == 6
-                    || num == 3 && Dungeon.customDungeon.damageImmune
-                    || num == 4 && Dungeon.customDungeon.seeSecrets
-                    || num == 5 && Dungeon.customDungeon.permaMindVision
-                    || num == 7 && Dungeon.customDungeon.permaKey
-                    || num == 8 && Dungeon.hero.baseSpeed >= 10
-                    || num == 9 && Dungeon.customDungeon.permaInvis);
-        }
-
         @Override
         protected void onPointerDown() {
             icon.brightness(1.1f);
@@ -219,25 +114,259 @@ public class SideControlPane extends Component {
             icon.alpha(alpha);
         }
 
-        protected void enable(boolean value) {
-            if (num == 0 || num == 1 || num == 2 || num == 6) value = true;
-            icon.alpha(value ? 1f : 0.3f);
-        }
-
-        protected boolean isEnabled() {
-            return icon.alpha() == 1f;
-        }
-
         @Override
-        protected String hoverText() {
-            String text = createHoverText(num);
-            if (text == null) return null;
-            return Messages.titleCase(text);
+        protected void onClick() {
+            enable(!isBtnEnabled());
+        }
+
+        protected void enable(boolean value) {
+            icon.alpha((btnEnabled = value) ? 1f : 0.3f);
+        }
+
+        public boolean isBtnEnabled() {
+            return btnEnabled;
+        }
+    }
+
+    private static class StartBtn extends SideControlButton {
+
+        public StartBtn() {
+            super(0);
+            enable(true);
         }
 
         @Override
         protected void onClick() {
-            SideControlPane.this.onClick(num, this);
+            try {
+                if (Dungeon.hero == null) {
+                    CustomDungeonSaves.saveLevel(EditorScene.customLevel());
+                    CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
+                } else
+                    Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(Dungeon.customDungeon.getName());//restart
+
+                GamesInProgress.selectedClass = lastSelectedClass;
+                if (GamesInProgress.selectedClass == null)
+                    GamesInProgress.selectedClass = HeroClass.WARRIOR;
+                GamesInProgress.curSlot = GamesInProgress.TEST_SLOT;
+                SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+            } catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
+                SandboxPixelDungeon.reportException(e);
+            }
+        }
+
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(SideControlPane.class, "play"));
+        }
+    }
+
+    private static class PipetteBtn extends SideControlButton {
+
+        public PipetteBtn() {
+            super(1);
+            enable(true);
+        }
+
+        @Override
+        protected void onClick() {
+            EditorScene.selectCell(pickObjCellListener);
+        }
+
+        @Override
+        protected String hoverText() {
+            return null;
+        }
+    }
+
+    private static class ExitBtn extends SideControlButton {
+
+        public ExitBtn() {
+            super(2);
+            enable(true);
+        }
+
+        @Override
+        protected void onClick() {
+//          GameScene.scene.destroy(); ???
+            EditorScene.start();
+            EditorScene.openDifferentLevel = false;
+            WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
+        }
+
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(SideControlPane.class, "exit"));
+        }
+    }
+
+    private static class DamageBtn extends SideControlButton {
+
+        private static boolean shouldBeEnabled;
+
+        public DamageBtn() {
+            super(3);
+            enable(shouldBeEnabled);
+        }
+
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(SideControlPane.class, "damage"));
+        }
+
+        @Override
+        protected void enable(boolean value) {
+            super.enable(value);
+            shouldBeEnabled = value;
+            Dungeon.customDungeon.damageImmune = value;
+        }
+    }
+
+    private static class SecretsBtn extends SideControlButton {
+
+        private static boolean shouldBeEnabled;
+
+        public SecretsBtn() {
+            super(4);
+            enable(shouldBeEnabled);
+        }
+
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(SideControlPane.class, "secrets"));
+        }
+
+        @Override
+        protected void enable(boolean value) {
+            super.enable(value);
+            shouldBeEnabled = value;
+            Dungeon.customDungeon.seeSecrets = value;
+            GameScene.updateMap();
+        }
+    }
+
+    private static class MindVisionBtn extends SideControlButton {
+        private static boolean shouldBeEnabled;
+
+        public MindVisionBtn() {
+            super(5);
+            enable(shouldBeEnabled);
+        }
+
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(SideControlPane.class, "mind_vision"));
+        }
+
+        @Override
+        protected void enable(boolean value) {
+            super.enable(value);
+            shouldBeEnabled = value;
+            if (Dungeon.customDungeon.permaMindVision = value) {
+                Buff.affect(Dungeon.hero, MindVision.class, 1);
+                Dungeon.observe();
+            } else {
+                Buff b = Dungeon.hero.buff(MindVision.class);
+                if (b != null) b.detach();
+            }
+        }
+    }
+
+    private static class MappingBtn extends SideControlButton {
+
+        public MappingBtn() {
+            super(6);
+            enable(true);
+        }
+
+        @Override
+        protected void onClick() {
+            new ScrollOfMagicMapping() {
+                {
+                    final Hero oldUser = curUser;
+                    curUser = Dungeon.hero;
+                    anonymize();
+                    doRead();
+                    curUser = oldUser;
+                }
+            };
+        }
+
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(SideControlPane.class, "magic_mapping")
+                    + " " + Messages.get(ScrollOfMagicMapping.class, "name"));
+        }
+    }
+
+    private static class KeyBtn extends SideControlButton {
+        private static boolean shouldBeEnabled;
+
+        public KeyBtn() {
+            super(7);
+            enable(shouldBeEnabled);
+        }
+
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(SideControlPane.class, "play"));
+        }
+
+
+        @Override
+        protected void enable(boolean value) {
+            super.enable(value);
+            shouldBeEnabled = value;
+            Dungeon.customDungeon.permaKey = value;
+        }
+    }
+
+    private static class SpeedBtn extends SideControlButton {
+        private static boolean shouldBeEnabled;
+
+        public SpeedBtn() {
+            super(8);
+            enable(shouldBeEnabled);
+        }
+
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(SideControlPane.class, "speed"));
+        }
+
+        @Override
+        protected void enable(boolean value) {
+            if (value != isBtnEnabled()) {
+                if (value) Dungeon.hero.baseSpeed *= 10;
+                else Dungeon.hero.baseSpeed /= 10;
+            }
+            super.enable(value);
+            shouldBeEnabled = value;
+        }
+    }
+
+    private static class InvisBtn extends SideControlButton {
+        private static boolean shouldBeEnabled;
+
+        public InvisBtn() {
+            super(9);
+            enable(shouldBeEnabled);
+        }
+
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(SideControlPane.class, "invis"));
+        }
+
+        @Override
+        protected void enable(boolean value) {
+            super.enable(value);
+            shouldBeEnabled = value;
+            if (Dungeon.customDungeon.permaInvis = value)
+                Buff.affect(Dungeon.hero, Invisibility.class, 1);
+            else {
+                Buff b = Dungeon.hero.buff(Invisibility.class);
+                if (b != null) b.detach();
+            }
         }
     }
 
@@ -259,4 +388,5 @@ public class SideControlPane extends Component {
             return Messages.get(SideControlPane.class, "pick_obj_prompt");
         }
     };
+
 }

@@ -57,7 +57,6 @@ import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.NoosaScriptNoLighting;
 import com.watabou.noosa.SkinnedBlock;
 import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
@@ -269,7 +268,7 @@ public class EditorScene extends PixelScene {
         undo.setPos(0, 0);
         add(undo);
 
-        sideControlPane = new SideControlPane(0, DeviceCompat.isDesktop() ? 1 : 2);
+        sideControlPane = new SideControlPane(true);
         sideControlPane.camera = uiCamera;
         sideControlPane.setPos(0, undo.bottom() + 10);
         add(sideControlPane);
