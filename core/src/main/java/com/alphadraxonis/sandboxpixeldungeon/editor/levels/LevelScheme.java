@@ -353,16 +353,13 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             spawnItemsAndMobs(Random.Long());
             Random.popGenerator();
         } else {
-            if (level == null) {
-                try {
-                    level = CustomDungeonSaves.loadLevel(name);
-                } catch (IOException e) {
-                    SandboxPixelDungeon.reportException(e);
-                } catch (CustomDungeonSaves.RenameRequiredException e) {
-                    throw new RuntimeException(e);//Caught by InterlevelScene
-                }
-            } else
-                level = ((CustomLevel) level).createCopiedFloor();//make sure the levels are different objects? FIXME maybe not needed?? WICHTIG
+            try {
+                level = CustomDungeonSaves.loadLevel(name);//make sure the levels are different objects
+            } catch (IOException e) {
+                SandboxPixelDungeon.reportException(e);
+            } catch (CustomDungeonSaves.RenameRequiredException e) {
+                throw new RuntimeException(e);//Caught by InterlevelScene
+            }
             level.levelScheme = this;
             level.name = name;
             Dungeon.level = level;

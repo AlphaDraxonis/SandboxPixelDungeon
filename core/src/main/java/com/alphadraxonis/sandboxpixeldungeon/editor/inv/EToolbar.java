@@ -457,8 +457,8 @@ public class EToolbar extends Component {
             }
         }
         QuickSlotButton.set(0, EditorItem.REMOVER_ITEM);
-        Item i = EditorItemBag.getFirstItem();
-        if (i != null) QuickSlotButton.set(1, i);
+//        Item i = EditorItemBag.getFirstItem();
+//        if (i != null) QuickSlotButton.set(1, i);
     }
 
     public static Item getSelectedItem() {

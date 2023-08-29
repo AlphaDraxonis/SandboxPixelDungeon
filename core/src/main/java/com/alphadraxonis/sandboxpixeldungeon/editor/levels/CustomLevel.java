@@ -312,6 +312,9 @@ public class CustomLevel extends Level {
 
         blobs = new HashMap<>();
         plants = new SparseArray<>();
+        for (Plant plant : customLevel.plants.valueList()) {
+            plants.put(plant.pos, plant.getCopy());
+        }
 
         traps = new SparseArray<>();
         for (Trap trap : customLevel.traps.valueList()) {
