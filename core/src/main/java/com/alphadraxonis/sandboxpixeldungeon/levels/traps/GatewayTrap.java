@@ -49,7 +49,7 @@ public class GatewayTrap extends Trap {
 		avoidsHallways = true;
 	}
 
-	private int telePos = -1;
+	public int telePos = -1;
 
 	@Override
 	public void activate() {

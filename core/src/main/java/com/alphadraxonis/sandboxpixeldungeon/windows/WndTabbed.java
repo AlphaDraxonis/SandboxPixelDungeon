@@ -161,6 +161,12 @@ public class WndTabbed extends Window {
         select(tab);
     }
 
+    public void setBlockLevelForTabs(int blockLevel){
+        for (Tab tab:tabs) {
+            tab.setBlockLevel(blockLevel);
+        }
+    }
+
     protected class Tab extends Button {
 
         protected final int CUT = 5;
@@ -170,7 +176,7 @@ public class WndTabbed extends Window {
         protected NinePatch bg;
 
         {
-            hotArea.blockLevel = PointerArea.ALWAYS_BLOCK;
+            hotArea.blockLevel = PointerArea.ALWAYS_BLOCK;//If this line changes, also check setBlockLevelForTabs() usages
         }
 
         public Tab() {
@@ -215,6 +221,10 @@ public class WndTabbed extends Window {
             Sample.INSTANCE.play(Assets.Sounds.CLICK, 0.7f, 0.7f, 1.2f);
             WndTabbed.this.onClick(this);
             hotArea.onConsumeCancelingClick();
+        }
+
+        private void setBlockLevel(int blockLevel){
+            hotArea.blockLevel = blockLevel;
         }
     }
 

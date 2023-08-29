@@ -1,20 +1,31 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
 
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TrapItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
+import com.alphadraxonis.sandboxpixeldungeon.levels.traps.GatewayTrap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.ui.CheckBox;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ItemSlot;
 import com.alphadraxonis.sandboxpixeldungeon.ui.QuickSlotButton;
+import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.IconTitle;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTabbed;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 
 public class EditTrapComp extends DefaultEditComp<Trap> {
 
 
     protected CheckBox visible, active;//TODO pitfalltrap and gatewaytrap!
+    protected RedButton gatewayTelePos;
+    private Window windowInstance;
 
     private final TrapItem trapItem;//used for linking the item with the sprite in the toolbar
 
@@ -56,7 +67,25 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         visible.checked(obj.visible);
         active.checked(obj.active);
 
-        comps = new Component[]{visible, active};
+        if (obj instanceof GatewayTrap && obj.pos != -1) {
+            int telePos = ((GatewayTrap) obj).telePos;
+            gatewayTelePos = new RedButton("") {
+                @Override
+                protected void onClick() {
+                    EditorScene.selectCell(gatewayTelePosListener);
+                    windowInstance = EditorUtilies.getParentWindow(gatewayTelePos);
+                    windowInstance.active = false;
+                    if (windowInstance instanceof WndTabbed)
+                        ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
+                    Game.scene().remove(windowInstance);
+                }
+            };
+            if (telePos == -1) gatewayTelePos.text(Messages.get(EditTrapComp.class, "gateway_trap_random"));
+            else gatewayTelePos.text(Messages.get(EditTrapComp.class, "gateway_trap_pos", EditorUtilies.cellToString(telePos)));
+            add(gatewayTelePos);
+        } else gatewayTelePos = null;
+
+        comps = new Component[]{visible, active, gatewayTelePos};
     }
 
     @Override
@@ -107,6 +136,34 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.visible != b.visible) return false;
+        if (a instanceof GatewayTrap && ((GatewayTrap) a).telePos != ((GatewayTrap) b).telePos)
+            return false;
         return a.active == b.active;
     }
+
+
+    private final CellSelector.Listener gatewayTelePosListener = new CellSelector.Listener() {
+        @Override
+        public void onSelect(Integer cell) {
+            if (cell != null) {
+                boolean validDest = Dungeon.level.passable[cell] && !Dungeon.level.secret[cell] && EditorScene.customLevel().findMob(cell) == null;
+                GatewayTrap trap = (GatewayTrap) obj;
+                if (!validDest) trap.telePos = -1;
+                else trap.telePos = cell;
+                if (trap.telePos == -1)
+                    gatewayTelePos.text(Messages.get(EditTrapComp.class, "gateway_trap_random"));
+                else
+                    gatewayTelePos.text(Messages.get(EditTrapComp.class, "gateway_trap_pos", EditorUtilies.cellToString(trap.telePos)));
+                windowInstance.active = true;
+                if (windowInstance instanceof WndTabbed)
+                    ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
+                EditorScene.show(windowInstance);
+            }
+        }
+
+        @Override
+        public String prompt() {
+            return Messages.get(EditTrapComp.class, "gateway_trap_prompt");
+        }
+    };
 }
