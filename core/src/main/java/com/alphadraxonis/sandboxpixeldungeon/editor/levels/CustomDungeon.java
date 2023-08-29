@@ -90,7 +90,6 @@ public class CustomDungeon implements Bundlable {
 
 
     //UI rework
-    //restore toolbar
     //test
     //write changelog
 
@@ -98,13 +97,13 @@ public class CustomDungeon implements Bundlable {
     //override dmg and notice methods, static: only one mob per level can be boss
     //store boolean if bossbar is visible
     //
-    //custom mob drops was something i have been thinking about as well
+    //custom mob drops:
     //override rollToDropLoot, similar as mimic, set loot to null, always 100% chance
 
     //restrict hero classes: override HeroClass#isUnlocked(), add ui for opening window in general settings where heros can be enabled/disabled
 
     //edit character starting inventory: override heroClass#initHero(), in hero restriction window,
-    //      there will be an option for limited slots of starting items, as well as starting eq
+    //      there will be an option for limited slots of starting items, as well as starting eq, unique for every hero
 
     //Custom mob attacks: externalise
 
@@ -112,6 +111,17 @@ public class CustomDungeon implements Bundlable {
 
     //Keys with uni level: add super identifer, look for occurences of key.levelName
 
+    //Scroll through hotbar using mouse wheel: edit editorcellselecelctor
+
+    //Remove if shift
+
+    //The dungeon entrance and exit should default to the previous and next rooms, as well as the chasm to the next room
+
+    //Gateway trap: an option to guarantee the end destination, because it can alter between each run, making puzzles using them impossible.
+
+    //Teleport/Warp traps with specific coordinate and ankh spawn point (if possible, the first one should be possible)
+
+    //Option to turn off either/both of health regen/hunger depletion
 
     private String name;
     private String lastEditedFloor;

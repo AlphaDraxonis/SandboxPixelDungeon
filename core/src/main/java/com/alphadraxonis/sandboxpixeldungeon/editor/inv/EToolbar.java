@@ -441,10 +441,12 @@ public class EToolbar extends Component {
         }
     }
 
+    private static int selectedSlot;
     public static void select(int slot) {
         if (instance == null) return;
+        selectedSlot = slot;
         for (int i = 0; i < instance.btnQuick.length; i++) {
-            if (instance.btnQuick[i].visible) instance.btnQuick[i].setSelected(i == slot);
+            if (instance.btnQuick[i].visible) instance.btnQuick[i].setSelected(i == selectedSlot);
         }
         EditorScene.cancel();
     }
@@ -467,6 +469,27 @@ public class EToolbar extends Component {
             if (instance.btnQuick[i].selected) return Dungeon.quickslot.getItem(i);
         }
         return null;
+    }
+
+    public static void scroll(float amount) {
+        if (instance == null) return;
+        int numVisibleSlots = getNumVisibleSlots();
+        int slot = (int) (selectedSlot - amount) % numVisibleSlots;
+        while (slot < 0) slot += numVisibleSlots;
+        select(slot);
+    }
+
+    private static int getNumVisibleSlots() {
+        if (instance == null) return -1;
+        for (int i = 0; i < instance.btnQuick.length; i++) {
+            if (!instance.btnQuick[i].visible) return i;
+        }
+        return instance.btnQuick.length;
+    }
+
+    public static int getSelectedSlot() {
+        if (instance == null) return -1;
+        return selectedSlot;
     }
 
     private static class QuickslotTileTool extends Toolbar.QuickslotTool {

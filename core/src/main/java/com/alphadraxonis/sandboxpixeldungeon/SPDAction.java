@@ -96,6 +96,9 @@ public class SPDAction extends GameAction {
 	public static final GameAction UNDO     = new SPDAction("undo");
 	public static final GameAction REDO     = new SPDAction("redo");
 
+	public static final GameAction CONTROL  = new SPDAction("control");
+	public static final GameAction SHIFT    = new SPDAction("shift");
+
 	private static final LinkedHashMap<Integer, GameAction> defaultBindings = new LinkedHashMap<>();
 	static {
 		defaultBindings.put( Input.Keys.ESCAPE,         SPDAction.BACK );
@@ -160,6 +163,11 @@ public class SPDAction extends GameAction {
 
 		defaultBindings.put( Input.Keys.G,              SPDAction.UNDO );
 		defaultBindings.put( Input.Keys.H,              SPDAction.REDO );
+
+		defaultBindings.put( Input.Keys.CONTROL_LEFT,   SPDAction.CONTROL );
+		defaultBindings.put( Input.Keys.CONTROL_RIGHT,  SPDAction.CONTROL );
+		defaultBindings.put( Input.Keys.SHIFT_LEFT,     SPDAction.SHIFT );
+		defaultBindings.put( Input.Keys.SHIFT_RIGHT,    SPDAction.SHIFT );
 	}
 
 	public static LinkedHashMap<Integer, GameAction> getDefaults() {

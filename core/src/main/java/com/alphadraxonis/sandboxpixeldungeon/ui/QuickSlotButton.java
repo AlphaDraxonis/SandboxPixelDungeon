@@ -311,8 +311,13 @@ public class QuickSlotButton extends Button {
     };
 
     public static void set(Item item) {
+        boolean containsItem = containsItem(item) != null;
+        if (EToolbar.getSelectedSlot() != -1 && select(EToolbar.getSelectedSlot()) == null && !containsItem) {
+            set(EToolbar.getSelectedSlot(), item);
+            return;
+        }
         for (int i = 0; i < instance.length; i++) {
-            if ((select(i) == null && (instance[i].active || (Toolbar.SWAP_INSTANCE != null && Toolbar.SWAP_INSTANCE.active))) || select(i) == item) {
+            if ((select(i) == null && (instance[i].active || (Toolbar.SWAP_INSTANCE != null && Toolbar.SWAP_INSTANCE.active))) && !containsItem || select(i) == item) {
                 set(i, item);
                 return;
             }

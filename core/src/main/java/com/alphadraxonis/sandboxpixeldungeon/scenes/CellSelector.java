@@ -357,10 +357,17 @@ public class CellSelector extends ScrollArea {
         }
     }
 
+
+    protected boolean controlHolding, shiftHolding;
+
     private Signal.Listener<KeyEvent> keyListener = new Signal.Listener<KeyEvent>() {
         @Override
         public boolean onSignal(KeyEvent event) {
             GameAction action = KeyBindings.getActionForKey(event);
+
+            if (action == SPDAction.CONTROL) controlHolding = event.pressed;
+            if (action == SPDAction.SHIFT) shiftHolding = event.pressed;
+
             if (!event.pressed) {
 
                 if (handleZoom(action)) return true;
