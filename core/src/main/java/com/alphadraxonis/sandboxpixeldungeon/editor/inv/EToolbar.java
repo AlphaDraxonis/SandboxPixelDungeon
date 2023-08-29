@@ -471,10 +471,15 @@ public class EToolbar extends Component {
         return null;
     }
 
+    private static int scrollUnits;
     public static void scroll(float amount) {
         if (instance == null) return;
+        scrollUnits += amount;
+        int actuallyScrolling = scrollUnits / 2;
+        if (actuallyScrolling != 0) scrollUnits = 0;
+        else return;
         int numVisibleSlots = getNumVisibleSlots();
-        int slot = (int) (selectedSlot - amount) % numVisibleSlots;
+        int slot = (int) (selectedSlot - actuallyScrolling) % numVisibleSlots;
         while (slot < 0) slot += numVisibleSlots;
         select(slot);
     }
