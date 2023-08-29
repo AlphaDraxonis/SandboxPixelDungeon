@@ -41,6 +41,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.bags.PotionBandolier;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.ScrollHolder;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.VelvetPouch;
 import com.alphadraxonis.sandboxpixeldungeon.items.bombs.ArcaneBomb;
+import com.alphadraxonis.sandboxpixeldungeon.items.bombs.Bomb;
 import com.alphadraxonis.sandboxpixeldungeon.items.bombs.Firebomb;
 import com.alphadraxonis.sandboxpixeldungeon.items.bombs.Flashbang;
 import com.alphadraxonis.sandboxpixeldungeon.items.bombs.FrostBomb;
@@ -625,6 +626,7 @@ public enum Items {
         };
 
         BOMB.classes = new Class[]{
+                Bomb.class,
                 FrostBomb.class,
                 Firebomb.class,
                 Flashbang.class,
