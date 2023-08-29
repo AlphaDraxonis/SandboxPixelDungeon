@@ -366,7 +366,10 @@ public class CellSelector extends ScrollArea {
             GameAction action = KeyBindings.getActionForKey(event);
 
             if (action == SPDAction.CONTROL) controlHolding = event.pressed;
-            if (action == SPDAction.SHIFT) shiftHolding = event.pressed;
+            if (action == SPDAction.SHIFT) {
+                shiftHolding = event.pressed;
+                if (shiftKeyAction()) return true;
+            }
 
             if (!event.pressed) {
 
@@ -447,6 +450,10 @@ public class CellSelector extends ScrollArea {
             mouseZoom = camera.zoom;
             return true;
         }
+        return false;
+    }
+
+    protected boolean shiftKeyAction(){
         return false;
     }
 

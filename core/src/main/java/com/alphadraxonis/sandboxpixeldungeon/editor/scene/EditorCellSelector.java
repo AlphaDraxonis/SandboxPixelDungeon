@@ -129,6 +129,13 @@ public class EditorCellSelector extends CellSelector {
     }
 
     @Override
+    protected boolean shiftKeyAction() {
+        if (shiftHolding) EToolbar.selectRemoverTemporarily();
+        else EToolbar.unselectTemporarilyRemover();
+        return true;
+    }
+
+    @Override
     protected void onPointerDown(PointerEvent event) {
         if (!EditorScene.interfaceBlockingHero()) Undo.startAction();
         super.onPointerDown(event);

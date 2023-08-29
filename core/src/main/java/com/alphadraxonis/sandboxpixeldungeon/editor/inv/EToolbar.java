@@ -492,6 +492,19 @@ public class EToolbar extends Component {
         return selectedSlot;
     }
 
+    private static int priorSelectedSlot;
+
+    public static void selectRemoverTemporarily() {
+        if (instance == null) return;
+        priorSelectedSlot = selectedSlot;
+        QuickSlotButton.set(EditorItem.REMOVER_ITEM);
+    }
+
+    public static void unselectTemporarilyRemover() {
+        if (instance == null) return;
+        select(priorSelectedSlot);
+    }
+
     private static class QuickslotTileTool extends Toolbar.QuickslotTool {
 
         private boolean selected = false;
