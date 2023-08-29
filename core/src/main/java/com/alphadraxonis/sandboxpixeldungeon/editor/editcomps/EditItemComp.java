@@ -115,7 +115,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(levelSpinner);
         } else levelSpinner = null;
 
-        if (item instanceof Potion || item instanceof Scroll || item instanceof Ring
+        if (item instanceof Potion || item instanceof Scroll || item instanceof Ring || item instanceof Wand
                 || (item instanceof Weapon && !(item instanceof MissileWeapon || item instanceof SpiritBow))
                 || (item instanceof Armor && !(item instanceof ClassArmor))) {
 //      if (!DefaultStatsCache.getDefaultObject(item.getClass()).isIdentified()) { // always returns true while editing
