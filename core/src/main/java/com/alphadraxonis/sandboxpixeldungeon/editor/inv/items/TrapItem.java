@@ -101,6 +101,11 @@ public class TrapItem extends EditorItem {
         return trap().name();
     }
 
+    @Override
+    public Object getObject() {
+        return trap();
+    }
+
     public Trap trap() {
         return trap;
     }

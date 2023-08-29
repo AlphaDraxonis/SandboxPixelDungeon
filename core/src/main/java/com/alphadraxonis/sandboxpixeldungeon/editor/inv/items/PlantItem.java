@@ -97,6 +97,11 @@ public class PlantItem extends EditorItem {
         return plant().name();
     }
 
+    @Override
+    public Object getObject() {
+        return plant();
+    }
+
     public Plant plant() {
         return plant;
     }

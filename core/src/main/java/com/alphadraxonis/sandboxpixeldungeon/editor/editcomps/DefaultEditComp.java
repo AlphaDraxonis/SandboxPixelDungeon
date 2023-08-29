@@ -75,7 +75,8 @@ public abstract class DefaultEditComp<T> extends Component {
             }
         }
 
-        if (hasAtLeastOneComp) height = (int)(posY - y - WndTitledMessage.GAP);
+//        if (hasAtLeastOneComp) height = (int)(posY - y - WndTitledMessage.GAP);
+        if (hasAtLeastOneComp) height = (posY - y - WndTitledMessage.GAP);
     }
 
     protected abstract Component createTitle();

@@ -134,6 +134,11 @@ public class RoomItem extends EditorItem {
         return getName(room().getClass());
     }
 
+    @Override
+    public Object getObject() {
+        return room();
+    }
+
     public Room room() {
         return room;
     }

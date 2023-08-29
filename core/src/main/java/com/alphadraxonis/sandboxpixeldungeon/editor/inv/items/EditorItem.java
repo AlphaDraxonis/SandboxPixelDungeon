@@ -52,6 +52,8 @@ public abstract class EditorItem extends Item {
 
     public abstract void place(int cell);
 
+    public abstract Object getObject();
+
 
     //Constant items
 
@@ -108,6 +110,11 @@ public abstract class EditorItem extends Item {
         }
 
         @Override
+        public Object getObject() {
+            return this;
+        }
+
+        @Override
         public String name() {
             return Messages.get(EditorItem.class, "nothing_name");
         }
@@ -118,7 +125,7 @@ public abstract class EditorItem extends Item {
         }
     }
 
-    public final static EditorItem REMOVER_ITEM = new EditorItem() {
+    public final static EditorItem REMOVER_ITEM = new EditorItem() {//WARNING! DO NOT CHANGE THE POSITION (NUMBER) OF THIS INNER CLASS!!
 
         @Override
         public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
@@ -157,6 +164,11 @@ public abstract class EditorItem extends Item {
             if (part == null)
                 part = TileItem.place(cell, level.feeling == Level.Feeling.CHASM ? Terrain.CHASM : Terrain.EMPTY);
             Undo.addActionPart(part);
+        }
+
+        @Override
+        public Object getObject() {
+            return this;
         }
 
         @Override

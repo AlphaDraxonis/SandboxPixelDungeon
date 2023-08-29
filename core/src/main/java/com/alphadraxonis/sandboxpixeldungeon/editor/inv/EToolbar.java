@@ -8,6 +8,7 @@ import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -324,6 +325,7 @@ public class EToolbar extends Component {
             }
         }
 
+        Dungeon.customDungeon.restoreToolbar();
         autoselect();
 
         if (SPDSettings.interfaceSize() > 0) {
@@ -454,8 +456,9 @@ public class EToolbar extends Component {
                 return;
             }
         }
+        QuickSlotButton.set(0, EditorItem.REMOVER_ITEM);
         Item i = EditorItemBag.getFirstItem();
-        if (i != null) QuickSlotButton.set(0, i);
+        if (i != null) QuickSlotButton.set(1, i);
     }
 
     public static Item getSelectedItem() {

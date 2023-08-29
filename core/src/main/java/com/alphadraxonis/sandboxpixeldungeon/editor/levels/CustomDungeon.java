@@ -1,6 +1,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.QuickSlot;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
@@ -10,8 +11,11 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.BlacksmithQuest;
@@ -44,6 +48,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
+import com.alphadraxonis.sandboxpixeldungeon.ui.QuickSlotButton;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
@@ -105,7 +110,7 @@ public class CustomDungeon implements Bundlable {
 
     //Fill: add proper button
 
-    //
+    //Keys with uni level: add super identifer, look for occurences of key.levelName
 
 
     private String name;
@@ -116,6 +121,8 @@ public class CustomDungeon implements Bundlable {
     private List<ItemDistribution<? extends Bundlable>> itemDistributions;
     private Map<String, LevelScheme> floors = new HashMap<>();
     private int startGold, startEnergy;
+
+    private final Object[] toolbarItems = new Object[QuickSlot.SIZE];
 
     private String password;
 
@@ -430,6 +437,26 @@ public class CustomDungeon implements Bundlable {
         return isEditing() || Dungeon.customDungeon.seeSecrets;
     }
 
+    public void setItemInToolbar(int slot, EditorItem item) {
+        if (item == null) toolbarItems[slot] = null;
+        else if (item instanceof TileItem) toolbarItems[slot] = ((TileItem) item).terrainType();
+        else toolbarItems[slot] = item.getObject().getClass();
+    }
+
+    public void restoreToolbar() {
+        EditorItemBag.callStaticInitializers();
+        for (int i = 0; i < toolbarItems.length; i++) {
+            if (toolbarItems[i] != null) {
+                if (toolbarItems[i] instanceof Integer)
+                    QuickSlotButton.set(i, EditorScene.getObjAsInBag(toolbarItems[i]));
+                else if (toolbarItems[i] == EditorItem.REMOVER_ITEM.getClass())
+                    QuickSlotButton.set(i, EditorItem.REMOVER_ITEM);
+                else
+                    QuickSlotButton.set(i, EditorScene.getObjAsInBagFromClass((Class<?>) toolbarItems[i]));
+            }
+        }
+    }
+
 
     private static final String NAME = "name";
     private static final String LAST_EDITED_FLOOR = "last_edited_floor";
@@ -448,6 +475,8 @@ public class CustomDungeon implements Bundlable {
     private static final String COLOR_CLASSES = "color_classes";
     private static final String GEM_LABELS = "gem_labels";
     private static final String GEM_CLASSES = "gem_classes";
+    private static final String TOOLBAR_ITEM = "toolbar_item_";
+    private static final String TOOLBAR_ITEM_INT = "toolbar_item_int_";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     @Override
@@ -509,6 +538,13 @@ public class CustomDungeon implements Bundlable {
             bundle.put(LEVEL_SCHEME + "_" + i, levelScheme);
             i++;
         }
+        for (int j = 0; j < toolbarItems.length; j++) {
+            if (toolbarItems[j] != null) {
+                if (toolbarItems[j] instanceof Integer)
+                    bundle.put(TOOLBAR_ITEM_INT + j, (int) toolbarItems[j]);
+                else bundle.put(TOOLBAR_ITEM + j, (Class<?>) toolbarItems[j]);
+            }
+        }
     }
 
     @Override
@@ -559,6 +595,12 @@ public class CustomDungeon implements Bundlable {
             levelScheme.customDungeon = this;
             floors.put(levelScheme.getName(), levelScheme);
             i++;
+        }
+        for (i = 0; i < toolbarItems.length; i++) {
+            if (bundle.contains(TOOLBAR_ITEM + i))
+                toolbarItems[i] = bundle.getClass(TOOLBAR_ITEM + i);
+            else if (bundle.contains(TOOLBAR_ITEM_INT + i))
+                toolbarItems[i] = bundle.getInt(TOOLBAR_ITEM_INT + i);
         }
     }
 
@@ -779,8 +821,7 @@ public class CustomDungeon implements Bundlable {
                         if (m instanceof Mimic && ((Mimic) m).items != null) {
                             if (renameInvalidKeys(((Mimic) m).items, oldName, newName))
                                 needsSave = true;
-                        }
-                        else if (m instanceof Thief && isInvalidKey(((Thief) m).item, oldName)) {
+                        } else if (m instanceof Thief && isInvalidKey(((Thief) m).item, oldName)) {
                             ((Key) ((Thief) m).item).levelName = newName;
                             needsSave = true;
                         }

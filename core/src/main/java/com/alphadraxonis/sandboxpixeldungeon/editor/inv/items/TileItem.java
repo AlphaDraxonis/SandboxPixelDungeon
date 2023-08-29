@@ -74,6 +74,11 @@ public class TileItem extends EditorItem {
         return getName(terrainType(), cell());
     }
 
+    @Override
+    public Object getObject() {
+        return terrainType();
+    }
+
     public int terrainType() {
         return terrainType;
     }

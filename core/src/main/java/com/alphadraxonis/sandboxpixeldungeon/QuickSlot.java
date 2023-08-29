@@ -21,6 +21,8 @@
 
 package com.alphadraxonis.sandboxpixeldungeon;
 
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -45,10 +47,16 @@ public class QuickSlot {
 	public void setSlot(int slot, Item item){
 		clearItem(item); //we don't want to allow the same item in multiple slots.
 		slots[slot] = item;
+		if (CustomDungeon.isEditing() && item instanceof EditorItem) {
+			Dungeon.customDungeon.setItemInToolbar(slot, (EditorItem) item);
+		}
 	}
 
 	public void clearSlot(int slot){
 		slots[slot] = null;
+		if (CustomDungeon.isEditing()) {
+			Dungeon.customDungeon.setItemInToolbar(slot, null);
+		}
 	}
 
 	public void reset(){

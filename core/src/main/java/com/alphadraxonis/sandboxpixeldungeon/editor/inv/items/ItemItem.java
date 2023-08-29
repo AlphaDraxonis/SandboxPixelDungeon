@@ -99,6 +99,11 @@ public class ItemItem extends EditorItem {
         //TODO remove highGrass?
     }
 
+    @Override
+    public Object getObject() {
+        return item();
+    }
+
     public Item item() {
         return item;
     }

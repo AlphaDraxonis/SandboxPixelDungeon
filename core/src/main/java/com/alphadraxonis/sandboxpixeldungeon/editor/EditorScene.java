@@ -604,12 +604,18 @@ public class EditorScene extends PixelScene {
         if (trap != null) return trap;
         return customLevel.map[cell];
     }
-    private static EditorItem getObjAsInBag(Object obj){
-        if(obj instanceof Item) return (EditorItem) Items.bag.findItem(obj.getClass());
-        if(obj instanceof Mob) return (EditorItem) Mobs.bag.findItem(obj.getClass());
-        if(obj instanceof Integer) return (EditorItem) Tiles.bag.findItem(obj);
-        if(obj instanceof Trap) return (EditorItem) Traps.bag.findItem(obj.getClass());
-        if(obj instanceof Plant) return (EditorItem) Plants.bag.findItem(obj.getClass());
+
+    public static EditorItem getObjAsInBag(Object obj) {
+        if (obj instanceof Integer) return (EditorItem) Tiles.bag.findItem(obj);
+        return getObjAsInBagFromClass(obj.getClass());
+    }
+
+    public static EditorItem getObjAsInBagFromClass(Class<?> clazz) {
+        if (Item.class.isAssignableFrom(clazz)) return (EditorItem) Items.bag.findItem(clazz);
+        if (Mob.class.isAssignableFrom(clazz)) return (EditorItem) Mobs.bag.findItem(clazz);
+//        if (obj instanceof Integer) return (EditorItem) Tiles.bag.findItem(obj);
+        if (Trap.class.isAssignableFrom(clazz)) return (EditorItem) Traps.bag.findItem(clazz);
+        if (Plant.class.isAssignableFrom(clazz)) return (EditorItem) Plants.bag.findItem(clazz);
         return null;
     }
 
@@ -717,8 +723,6 @@ public class EditorScene extends PixelScene {
     };
 
     public static void putInQuickslot(Integer cell) {
-        fillAllWithOnTerrain(cell);
-        if(true)return;
         if (cell != null && cell >= 0 && cell < customLevel.length()) {
             QuickSlotButton.set(getObjAsInBag(getObjAtCell(cell)));
         }

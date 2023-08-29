@@ -75,6 +75,11 @@ public class MobItem extends EditorItem {
         return mob().name();
     }
 
+    @Override
+    public Object getObject() {
+        return mob();
+    }
+
     public Mob mob() {
         return mob;
     }
