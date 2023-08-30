@@ -19,6 +19,7 @@ import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.HeroSelectScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
+import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
@@ -143,6 +144,8 @@ public class SideControlPane extends Component {
                     CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
                 } else
                     Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(Dungeon.customDungeon.getName());//restart
+
+                EditorScene.setCameraZoomWhenOpen = Camera.main.zoom;
 
                 GamesInProgress.selectedClass = lastSelectedClass;
                 if (GamesInProgress.selectedClass == null)

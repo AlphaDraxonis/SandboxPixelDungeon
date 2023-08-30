@@ -131,7 +131,7 @@ public class WndEditStats extends Window {
 
         float h = Math.min(content.height(), PixelScene.uiCamera.height * 0.9f - 10 - title.bottom() - 3 - WndMenuEditor.BTN_HEIGHT - WndTitledMessage.GAP - 2);
 
-        resize(this.width, (int) Math.ceil(h + title.bottom() + 3 + WndTitledMessage.GAP + WndMenuEditor.BTN_HEIGHT + 2));//Always call window.resize() before scrollPane.setRect()
+        resize(this.width, (int) Math.ceil(h + title.bottom() + 3 + WndTitledMessage.GAP + WndMenuEditor.BTN_HEIGHT + 1));//Always call window.resize() before scrollPane.setRect()
 
         scrollPane.setRect(0, title.bottom() + 3, this.width, h + 1);
 
@@ -157,6 +157,7 @@ public class WndEditStats extends Window {
 
         public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity) {
             super(new FloatSpinnerModel(minimum, maximum, value, false), name, 9);
+            setButtonWidth(12);
         }
 
         protected float getAsFloat() {
@@ -184,12 +185,18 @@ public class WndEditStats extends Window {
         public String getDisplayString() {
             return getValue() == null ? super.getDisplayString() : Float.toString(getAsFloat());
         }
+
+        @Override
+        public float getInputFieldWith(float height) {
+            return height * 1.4f;
+        }
     }
 
     private static class IntegerSpinner extends Spinner {
 
         public IntegerSpinner(String name, int minimum, int maximum, int value, boolean includeInfinity) {
             super(new IntegerSpinnerModel(minimum, maximum, value, false), name, 9);
+            setButtonWidth(12);
         }
 
         protected int getAsInt() {
@@ -212,6 +219,11 @@ public class WndEditStats extends Window {
         @Override
         public String getDisplayString() {
             return getValue() == null ? super.getDisplayString() : Integer.toString(getAsInt());
+        }
+
+        @Override
+        public float getInputFieldWith(float height) {
+            return height * 1.4f;
         }
     }
 }

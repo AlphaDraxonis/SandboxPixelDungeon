@@ -21,6 +21,7 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.journal;
 
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
@@ -60,7 +61,7 @@ public class Journal {
 	}
 
 	public static void saveGlobal(boolean force){
-		if (!force && !saveNeeded){
+		if (!force && !saveNeeded || Dungeon.isLevelTesting()){
 			return;
 		}
 		

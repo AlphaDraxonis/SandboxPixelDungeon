@@ -98,7 +98,8 @@ public class WndSelectDungeon extends Window {
     private void updateList() {
         listPane.clear();
         for (CustomDungeonSaves.Info info : allInfos) {
-            listPane.addItem(new ListItem(info));
+            if (createNewDungeonBtn != null || info.numLevels > 0)
+                listPane.addItem(new ListItem(info));
         }
     }
 
@@ -114,6 +115,12 @@ public class WndSelectDungeon extends Window {
         public ListItem(CustomDungeonSaves.Info info) {
             super(Icons.get(Icons.STAIRS), info.name);
             this.info = info;
+        }
+
+        @Override
+        protected void createChildren(Object... params) {
+            super.createChildren(params);
+            label.setHightlighting(false);
         }
 
         @Override

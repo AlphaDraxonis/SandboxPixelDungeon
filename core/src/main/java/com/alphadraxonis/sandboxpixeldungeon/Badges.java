@@ -295,12 +295,12 @@ public class Badges {
 		}
 	}
 
-	public static void saveGlobal(){
-		saveGlobal(false);
+	public static void saveGlobal() {
+		if (!Dungeon.isLevelTesting()) saveGlobal(false);
 	}
 
 	public static void saveGlobal(boolean force) {
-		if (saveNeeded || force) {
+		if ( !Dungeon.isLevelTesting() && (saveNeeded || force)) {
 			
 			Bundle bundle = new Bundle();
 			store( bundle, global );

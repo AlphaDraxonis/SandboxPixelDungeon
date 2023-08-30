@@ -84,7 +84,14 @@ public class CustomDungeonSaves {
         FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
         setCurDirectory(DUNGEON_FOLDER + name.replace(' ', '_') + "/");
         FileHandle file = FileUtils.getFileHandle(curDirectory + DUNGEON_DATA);
-        if (!file.exists()) throw new RenameRequiredException(FileUtils.getFileHandle(DUNGEON_FOLDER + name), name, null);
+        if (!file.exists()) {
+            for (String path : getFilesInDir(DUNGEON_FOLDER)) {
+                FileHandle datFile = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
+                if (datFile.exists() && ((Info) FileUtils.bundleFromStream(datFile.read()).get(INFO)).name.equals(name))
+                    throw new RenameRequiredException(FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path), name, null);
+            }
+            throw new RenameRequiredException(FileUtils.getFileHandle(DUNGEON_FOLDER + name), name, null);
+        }
         return (CustomDungeon) FileUtils.bundleFromStream(file.read()).get(DUNGEON);
     }
 
