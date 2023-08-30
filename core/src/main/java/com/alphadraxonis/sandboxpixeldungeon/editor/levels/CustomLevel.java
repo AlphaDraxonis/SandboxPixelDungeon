@@ -703,6 +703,10 @@ public class CustomLevel extends Level {
         mobRotation = Arrays.asList(bundle.getClassArray(MOB_ROTATION));
         mobRotation = new ArrayList<>(mobRotation);
         ignoreTerrainForExploringScore = bundle.getBoolean(IGNORE_TERRAIN_FOR_EXPLORING_SCORE);
+
+        for (Mob m : mobs) {
+            m.clearTime();//Fix wrong time caused by v0.7
+        }
     }
     //----------------------
 

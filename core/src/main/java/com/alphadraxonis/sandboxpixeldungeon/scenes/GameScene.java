@@ -379,7 +379,7 @@ public class GameScene extends PixelScene {
         if (Dungeon.isLevelTesting()) {
             sideControlPane = new SideControlPane(false);
             sideControlPane.camera = uiCamera;
-            sideControlPane.setPos(0, status.isLarge() ? 10 : status.bottom() + 10);
+            sideControlPane.setPos(0, status.isLarge() ? (PixelScene.landscape() ? 5 : 10) : status.bottom() + (PixelScene.landscape() ? 5 : 10));
             add(sideControlPane);
         }
 

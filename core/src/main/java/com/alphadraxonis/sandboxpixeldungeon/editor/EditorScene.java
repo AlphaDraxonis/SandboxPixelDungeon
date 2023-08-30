@@ -3,7 +3,6 @@ package com.alphadraxonis.sandboxpixeldungeon.editor;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
-import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
@@ -133,12 +132,13 @@ public class EditorScene extends PixelScene {
 
     private static boolean firstTimeOpening = true;
     public static boolean openDifferentLevel = true;
+    public static float setCameraZoomWhenOpen = -1;
 
     public static void open(CustomLevel customLevel) {
         if (customLevel != EditorScene.customLevel) {
             String oldLvlName;
             if (EditorScene.customLevel != null) {
-                oldLvlName = customLevel.levelScheme.getCustomDungeon() == Dungeon.customDungeon ? EditorScene.customLevel.name : null;
+                oldLvlName = EditorScene.customLevel.levelScheme.getCustomDungeon() == Dungeon.customDungeon ? EditorScene.customLevel.name : null;
                 EditorScene.customLevel.levelScheme.unloadLevel();
             } else oldLvlName = null;
             if (openDifferentLevel) {
@@ -181,7 +181,11 @@ public class EditorScene extends PixelScene {
 
         customLevel().playLevelMusic();
 
-        Camera.main.zoom(GameMath.gate(minZoom, defaultZoom + SPDSettings.zoom(), maxZoom));
+
+        if (setCameraZoomWhenOpen >= 0) {
+            Camera.main.zoom(GameMath.gate(minZoom, setCameraZoomWhenOpen, maxZoom));
+            setCameraZoomWhenOpen = -1;
+        } else Camera.main.zoom(GameMath.gate(minZoom, defaultZoom + SPDSettings.zoom(), maxZoom));
         Camera.main.edgeScroll.set(1);
         if (mainCameraPos != null) Camera.main.scroll = mainCameraPos;
         else {
@@ -270,7 +274,7 @@ public class EditorScene extends PixelScene {
 
         sideControlPane = new SideControlPane(true);
         sideControlPane.camera = uiCamera;
-        sideControlPane.setPos(0, undo.bottom() + 10);
+        sideControlPane.setPos(0, undo.bottom() + (PixelScene.landscape() ? 5 : 10));
         add(sideControlPane);
 
         toolbar = new EToolbar();
@@ -426,7 +430,6 @@ public class EditorScene extends PixelScene {
         customLevel().mobs.add(mob);
         if (scene != null) {
             scene.addMobSprite(mob);
-            Actor.add(mob);
         }
     }
 
