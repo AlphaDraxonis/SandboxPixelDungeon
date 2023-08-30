@@ -84,7 +84,7 @@ public class Ghost extends QuestNPC<GhostQuest> {
 	
 	@Override
 	public float speed() {
-		return quest != null && quest.type() >= 0 && quest.completed() ? 2f : 0.5f;
+		return 0.5f;
 	}
 	
 	@Override
