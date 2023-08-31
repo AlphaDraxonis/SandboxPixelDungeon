@@ -1,8 +1,10 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
 
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.Sign;
-import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.SignEditPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.WellWaterSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
@@ -12,6 +14,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.overview.WndItemDistribution
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndNewFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.SignEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.Consumer;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
@@ -34,6 +37,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     private TransitionEditPart transitionEdit;
     private RedButton addTransition;
     private RedButton editSignText;
+    private WellWaterSpinner wellWaterSpinner;
 
     public EditTileComp(TileItem item) {
         super(item);
@@ -67,7 +71,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                                 Messages.get(EditTileComp.class, "edit_sign_title"),
                                 Messages.get(EditTileComp.class, "edit_sign_body"),
                                 (oldSign == null || oldSign.text == null ? "" : oldSign.text), 30000,
-                                true,Messages.get( WndItemDistribution.class,"save"),
+                                true, Messages.get(WndItemDistribution.class, "save"),
                                 Messages.get(WndNewFloor.class, "cancel_label")) {
                             @Override
                             public void onSelect(boolean positive, String text) {
@@ -92,7 +96,12 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                     }
                 };
                 add(editSignText);
+            } else if (item.terrainType() == Terrain.WELL) {
+                wellWaterSpinner = new WellWaterSpinner(item.cell());
+                wellWaterSpinner.addChangeListener(this::updateObj);
+                add(wellWaterSpinner);
             }
+            //TODO make SacrificalFire and FireWall are available
         }
     }
 
@@ -149,9 +158,13 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             editSignText.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
             PixelScene.align(editSignText);
             pos = editSignText.bottom() + WndTitledMessage.GAP + 1;
+        } else if (wellWaterSpinner != null) {
+            wellWaterSpinner.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(wellWaterSpinner);
+            pos = wellWaterSpinner.bottom() + WndTitledMessage.GAP + 1;
         } else return;
 
-        height = (int)(pos - y - WndTitledMessage.GAP);
+        height = (int) (pos - y - WndTitledMessage.GAP);
     }
 
 
@@ -174,6 +187,13 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             if (sign == null || sign.text == null) desc = "";
             else desc = sign.text;
         } else desc = level.tileDesc(obj.terrainType(), obj.cell());
+
+        for (Blob blob : Dungeon.level.blobs.values()) {
+            if (blob.volume > 0 && blob.cur[obj.cell()] > 0 && blob.tileDesc() != null) {
+                if (desc.length() > 0) desc += "\n\n";
+                desc += blob.tileDesc();
+            }
+        }
 
         return desc.length() == 0 ? Messages.get(WndInfoCell.class, "nothing") : desc;
     }

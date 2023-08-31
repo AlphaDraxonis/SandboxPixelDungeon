@@ -71,7 +71,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -271,69 +270,69 @@ public class CustomLevel extends Level {
 
     }
 
-    public CustomLevel(CustomLevel customLevel) {
-        width = customLevel.width;
-        height = customLevel.height;
-        setSize(width, height);
-        terrains = new int[length];
-
-        region = customLevel.region;
-        waterTexture = customLevel.waterTexture;
-        music = customLevel.music;
-        enableRespawning = customLevel.enableRespawning;
-        respawnCooldown = customLevel.respawnCooldown;
-        swapForMutations = customLevel.swapForMutations;
-        mobLimit = customLevel.mobLimit;
-        viewDistance = customLevel.viewDistance;
-        System.arraycopy(customLevel.map, 0, terrains, 0, customLevel.map.length);
-        ignoreTerrainForExploringScore = customLevel.ignoreTerrainForExploringScore;
-        mobRotation = customLevel.mobRotation;
-        feeling = customLevel.feeling;
-        System.arraycopy(terrains, 0, map, 0, terrains.length);
-
-        transitions = new HashMap<>();
-        for (LevelTransition trans : customLevel.transitions.values()) {
-            transitions.put(trans.departCell, trans.getCopy());
-        }
-
-        mobs = new HashSet<>();
-        for (Mob m : customLevel.mobs) {
-            Mob clone = (Mob) m.getCopy();
-            if (clone instanceof Mimic) ((Mimic) clone).setLevel(Dungeon.depth);
-            mobs.add(clone);
-        }
-
-        heaps = new SparseArray<>();
-        for (Heap h : customLevel.heaps.valueList()) {
-            Heap nh = h.getCopy();
-            heaps.put(h.pos, nh);
-            for (Item item : nh.items) item.reset();//important for scroll runes being inited
-        }
-
-        blobs = new HashMap<>();
-        plants = new SparseArray<>();
-        for (Plant plant : customLevel.plants.valueList()) {
-            plants.put(plant.pos, plant.getCopy());
-        }
-
-        traps = new SparseArray<>();
-        for (Trap trap : customLevel.traps.valueList()) {
-            traps.put(trap.pos, trap.getCopy());
-        }
-
-        signs = new SparseArray<>();
-        for (Sign sign : customLevel.signs.valueList()) {
-            signs.put(sign.pos, sign.getCopy());
-        }
-
-        customTiles = new HashSet<>();
-        customWalls = new HashSet<>();
-
-        buildFlagMaps();
-        cleanWalls();
-
-        createItems();
-    }
+//    public CustomLevel(CustomLevel customLevel) {
+//        width = customLevel.width;
+//        height = customLevel.height;
+//        setSize(width, height);
+//        terrains = new int[length];
+//
+//        region = customLevel.region;
+//        waterTexture = customLevel.waterTexture;
+//        music = customLevel.music;
+//        enableRespawning = customLevel.enableRespawning;
+//        respawnCooldown = customLevel.respawnCooldown;
+//        swapForMutations = customLevel.swapForMutations;
+//        mobLimit = customLevel.mobLimit;
+//        viewDistance = customLevel.viewDistance;
+//        System.arraycopy(customLevel.map, 0, terrains, 0, customLevel.map.length);
+//        ignoreTerrainForExploringScore = customLevel.ignoreTerrainForExploringScore;
+//        mobRotation = customLevel.mobRotation;
+//        feeling = customLevel.feeling;
+//        System.arraycopy(terrains, 0, map, 0, terrains.length);
+//
+//        transitions = new HashMap<>();
+//        for (LevelTransition trans : customLevel.transitions.values()) {
+//            transitions.put(trans.departCell, trans.getCopy());
+//        }
+//
+//        mobs = new HashSet<>();
+//        for (Mob m : customLevel.mobs) {
+//            Mob clone = (Mob) m.getCopy();
+//            if (clone instanceof Mimic) ((Mimic) clone).setLevel(Dungeon.depth);
+//            mobs.add(clone);
+//        }
+//
+//        heaps = new SparseArray<>();
+//        for (Heap h : customLevel.heaps.valueList()) {
+//            Heap nh = h.getCopy();
+//            heaps.put(h.pos, nh);
+//            for (Item item : nh.items) item.reset();//important for scroll runes being inited
+//        }
+//
+//        blobs = new HashMap<>();
+//        plants = new SparseArray<>();
+//        for (Plant plant : customLevel.plants.valueList()) {
+//            plants.put(plant.pos, plant.getCopy());
+//        }
+//
+//        traps = new SparseArray<>();
+//        for (Trap trap : customLevel.traps.valueList()) {
+//            traps.put(trap.pos, trap.getCopy());
+//        }
+//
+//        signs = new SparseArray<>();
+//        for (Sign sign : customLevel.signs.valueList()) {
+//            signs.put(sign.pos, sign.getCopy());
+//        }
+//
+//        customTiles = new HashSet<>();
+//        customWalls = new HashSet<>();
+//
+//        buildFlagMaps();
+//        cleanWalls();
+//
+//        createItems();
+//    }
 
     @Override
     public String tilesTex() {
@@ -756,9 +755,9 @@ public class CustomLevel extends Level {
     }
 
 
-    public CustomLevel createCopiedFloor() {
-        return new CustomLevel(this);
-    }
+//    public CustomLevel createCopiedFloor() {
+//        return new CustomLevel(this);
+//    }
 
 
     public static void changeMapSize(Level level, int newWidth, int newHeight) {
@@ -779,7 +778,6 @@ public class CustomLevel extends Level {
 
         level.customWalls.clear();
         level.customTiles.clear();
-        level.blobs.clear();
 
 //        customTiles = level.customTiles;//change
 //        customWalls = level.customWalls;//change
@@ -814,7 +812,7 @@ public class CustomLevel extends Level {
         IntFunction<Integer> newPosition = old -> old + add;
         BiPredicate<Integer, Integer> isPositionValid = (old, neu) -> neu >= 0 && neu < newLength && level.insideMap(neu);
 
-        recalculateNewPositions(newPosition, isPositionValid, level);
+        recalculateNewPositions(newPosition, isPositionValid, level, newLength);
     }
 
     private static void changeMapWidth(Level level, int newWidth, int addLeft) {
@@ -843,10 +841,10 @@ public class CustomLevel extends Level {
         BiPredicate<Integer, Integer> isPositionValid = (old, neu) -> neu >= 0 && neu < newLength && level.insideMap(neu)
                 && old / levelWidth == neu / newWidth;
 
-        recalculateNewPositions(newPosition, isPositionValid, level);
+        recalculateNewPositions(newPosition, isPositionValid, level, newLength);
     }
 
-    private static void recalculateNewPositions(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid, Level level) {
+    private static void recalculateNewPositions(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid, Level level, int newLength) {
         List<Mob> removeEntities = new ArrayList<>();
         for (Mob m : level.mobs) {
             int nPos = newPosition.get(m.pos);
@@ -902,6 +900,23 @@ public class CustomLevel extends Level {
         }
         level.plants.clear();
         level.plants.putAll(nPlant);
+
+        for (Blob  b : level.blobs.values()) {
+            if (b != null) {
+                int[] nCur = new int[newLength];
+                b.volume = 0;
+                for (int i = 0; i < b.cur.length; i++) {
+                    int newIndex = newPosition.get(i);
+                    if (isPositionValid.test(i, newIndex)) {
+                        b.volume += b.cur[i];
+                        nCur[newIndex] = b.cur[i];
+                    }
+                }
+                b.cur = nCur;
+                b.changeSizeOfOffToNewMapSizeAndClearIt(newLength);
+                b.setupArea();
+            }
+        }
 
         List<Integer> cells = new ArrayList<>(level.levelScheme.entranceCells);
         level.levelScheme.entranceCells.clear();

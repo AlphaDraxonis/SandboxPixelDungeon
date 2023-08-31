@@ -19,7 +19,6 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.Sign;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditTileComp;
-import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.SignEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
@@ -27,10 +26,13 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartList;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.BlobEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.HeapActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.PlaceCellActionPart;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.SignEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
@@ -259,6 +261,11 @@ public class TileItem extends EditorItem {
                 addActionPart(signActionPart);
                 signActionPart.redo();
             }
+
+            ActionPartModify blobEditPart = new BlobEditPart.Modify(cell);
+            BlobEditPart.clearAtCell(cell);//TODO don't clear all!
+            blobEditPart.finish();
+            addActionPart(blobEditPart);
 
             EditorScene.updateMap(cell);
 

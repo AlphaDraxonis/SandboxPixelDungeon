@@ -107,17 +107,13 @@ public class CustomDungeon implements Bundlable {
 
     //Custom mob attacks: externalise
 
+    //Scale mobs if their normal stats editor is disabled
+
     //Fill: add proper button
 
     //Keys with uni level: add super identifer, look for occurences of key.levelName
 
-    //Scroll through hotbar using mouse wheel: edit editorcellselecelctor
-
-    //Remove if shift
-
     //The dungeon entrance and exit should default to the previous and next rooms, as well as the chasm to the next room
-
-    //Gateway trap: an option to guarantee the end destination, because it can alter between each run, making puzzles using them impossible.
 
     //Teleport/Warp traps with specific coordinate and ankh spawn point (if possible, the first one should be possible)
 

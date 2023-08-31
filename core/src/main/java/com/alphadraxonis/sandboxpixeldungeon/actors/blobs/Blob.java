@@ -102,6 +102,10 @@ public class Blob extends Actor {
 
 		}
 	}
+
+	public void changeSizeOfOffToNewMapSizeAndClearIt(int newLength){
+		off = new int[newLength];
+	}
 	
 	@Override
 	public boolean act() {

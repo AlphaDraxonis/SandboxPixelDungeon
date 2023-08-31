@@ -3,6 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
@@ -22,6 +23,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.TerrainFeaturesTilemap
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.UndoPane;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
+import com.alphadraxonis.sandboxpixeldungeon.effects.BlobEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.EmoIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -100,8 +102,6 @@ public class EditorScene extends PixelScene {
     private Group levelVisuals;
     private Group customWalls;
     private Group ripples;
-    private Group plants;
-    private Group traps;
     private Group heaps;
     private Group transitionIndicators;
     private Map<LevelTransition, BitmapText> transitionIndicatorsMap;
@@ -254,6 +254,14 @@ public class EditorScene extends PixelScene {
         }
 
         add(emitters);
+
+        gases = new Group();
+        add(gases);
+
+        for (Blob blob : Dungeon.level.blobs.values()) {
+            blob.emitter = null;
+            addBlobSprite(blob);
+        }
 
         emoicons = new Group();
         add(emoicons);
@@ -419,11 +427,23 @@ public class EditorScene extends PixelScene {
         heap.sprite.view(heap);
     }
 
+    private void addBlobSprite(final Blob gas) {
+        if (gas.emitter == null) {
+            gases.add(new BlobEmitter(gas));
+        }
+    }
+
     private void addMobSprite(Mob mob) {
         CharSprite sprite = mob.sprite();
         sprite.visible = true;
         mobs.add(sprite);
         sprite.link(mob);
+    }
+
+    public static void add(Blob gas) {
+        if (scene != null) {
+            scene.addBlobSprite(gas);
+        }
     }
 
     public static void add(Mob mob) {

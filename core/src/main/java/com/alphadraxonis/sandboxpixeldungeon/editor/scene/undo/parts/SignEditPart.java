@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts;
+package com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.Sign;

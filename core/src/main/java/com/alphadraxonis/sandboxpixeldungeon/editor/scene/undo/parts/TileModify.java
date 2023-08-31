@@ -11,6 +11,9 @@ public final class TileModify implements ActionPartModify {
     private final LevelTransition transitionBefore;
     private LevelTransition transitionAfter;
 
+    private final BlobEditPart.BlobData blobsBefore;
+    private BlobEditPart.BlobData blobsAfter;
+
     private final int cell;
 
     public TileModify(int cell) {
@@ -21,6 +24,7 @@ public final class TileModify implements ActionPartModify {
         if (transition != null) {
             transitionBefore = (LevelTransition) transition.getCopy();
         } else transitionBefore = null;
+        blobsBefore = new BlobEditPart.BlobData(cell);
         this.cell = cell;
     }
 
@@ -38,6 +42,8 @@ public final class TileModify implements ActionPartModify {
             EditorScene.customLevel().transitions.put(cell, transitionBefore);
             EditorScene.add(transitionBefore);
         }
+
+        blobsBefore.place(cell);
     }
 
     @Override
@@ -54,16 +60,19 @@ public final class TileModify implements ActionPartModify {
             EditorScene.customLevel().transitions.put(cell, transitionAfter);
             EditorScene.add(transitionAfter);
         }
+
+        blobsAfter.place(cell);
     }
 
     @Override
     public boolean hasContent() {
-        return !TransitionEditPart.areEqual(transitionBefore, transitionAfter);
+        return !TransitionEditPart.areEqual(transitionBefore, transitionAfter) || !BlobEditPart.BlobData.areEqual(blobsBefore, blobsAfter);
     }
 
     @Override
     public void finish() {
         LevelTransition newTrans = EditorScene.customLevel().transitions.get(cell);
         if (newTrans != null) transitionAfter = newTrans.getCopy();
+        blobsAfter = new BlobEditPart.BlobData(cell);
     }
 }
