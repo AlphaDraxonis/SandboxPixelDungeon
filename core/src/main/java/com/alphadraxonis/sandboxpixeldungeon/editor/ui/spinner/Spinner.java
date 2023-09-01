@@ -15,9 +15,9 @@ public class Spinner extends Component {
     public static final int SQUARE = -2;//Constant for buttonWidth to always have width = height
     public static final float ALIGNMENT_LEFT = 0, ALIGNMENT_CENTER = 0.5f, ALIGNMENT_RIGHT = 1;
 
-    private RedButton rightButton, leftButton;
-    private Component inputField;
-    private RenderedTextBlock title;
+    protected RedButton rightButton, leftButton;
+    protected Component inputField;
+    protected RenderedTextBlock label;
 
     private SpinnerModel model;//Determitesinput size
 
@@ -72,10 +72,10 @@ public class Spinner extends Component {
 
         model.setValue(model.getValue());
 
-        title = PixelScene.renderTextBlock((String) params[1], (int) params[2]);
+        label = PixelScene.renderTextBlock((String) params[1], (int) params[2]);
         add(rightButton);
         add(leftButton);
-        add(title);
+        add(label);
         addToBack(inputField);
         layout();
     }
@@ -83,22 +83,22 @@ public class Spinner extends Component {
     @Override
     protected void layout() {
 
-        int gap = title.text().isEmpty() ? 0 : GAP;
+        int gap = label.text().isEmpty() ? 0 : GAP;
 
-        height = Math.max(Math.max(title.height(), 10), height);
+        height = Math.max(Math.max(label.height(), 10), height);
 
         float bw = getButtonWidth();
         if (bw == SQUARE) bw = height;
         else bw = Math.max(bw, 6);
 
         float txtWidth = model.getInputFieldWith(height);
-        if (txtWidth == FILL) txtWidth = width - bw * 2 - 1 - title.width() - gap;
+        if (txtWidth == FILL) txtWidth = width - bw * 2 - 1 - label.width() - gap;
 
-        title.setRect(x, y + (height - title.height()) / 2, title.width(), height);
-        PixelScene.align(title);
+        label.setRect(x, y + (height - label.height()) / 2, label.width(), height);
+        PixelScene.align(label);
 
         float conW = bw * 2 + txtWidth - 1;
-        float startX = Math.max(width - title.width() - conW - gap, 0) * getAlignmentSpinnerX() + gap + title.right();
+        float startX = Math.max(width - label.width() - conW - gap, 0) * getAlignmentSpinnerX() + gap + label.right();
 
         leftButton.setRect(startX, y, bw, height);
         PixelScene.align(leftButton);
@@ -107,7 +107,7 @@ public class Spinner extends Component {
         rightButton.setRect(inputField.right() - 1, y, bw, height);
         PixelScene.align(rightButton);
 
-        width = Math.max(width, conW + title.width() + gap);
+        width = Math.max(width, conW + label.width() + gap);
     }
 
     public void enable(boolean value) {
@@ -115,7 +115,7 @@ public class Spinner extends Component {
         rightButton.enable(value);
         leftButton.enable(value);
         getModel().enable(value);
-        title.alpha(value ? 1.0f : 0.3f);
+        label.alpha(value ? 1.0f : 0.3f);
     }
 
     protected void afterClick() {

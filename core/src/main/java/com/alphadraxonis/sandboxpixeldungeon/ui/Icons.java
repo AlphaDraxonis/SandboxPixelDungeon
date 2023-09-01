@@ -81,6 +81,8 @@ public enum Icons {
     EXPAND,
     FOLD,
     MORE,
+    BACK,
+    RULER,
     ARROW,
     INFO,
     WARNING,
@@ -270,6 +272,12 @@ public enum Icons {
                 break;
             case MORE:
                 icon.frame(icon.texture.uvRectBySize(224, 80, 11, 11));
+                break;
+            case BACK:
+                icon.frame(icon.texture.uvRectBySize(236, 80, 20, 13));
+                break;
+            case RULER:
+                icon.frame(icon.texture.uvRectBySize(176, 64, 16, 16));
                 break;
             case ARROW:
                 icon.frame(icon.texture.uvRectBySize(64, 48, 11, 11));

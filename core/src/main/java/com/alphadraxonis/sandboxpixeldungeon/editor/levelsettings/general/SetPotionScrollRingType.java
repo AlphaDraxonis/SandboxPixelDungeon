@@ -20,7 +20,6 @@ import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.ui.QuickSlotButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
-import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Image;
@@ -30,26 +29,18 @@ import com.watabou.utils.Reflection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class WndSetPotionScrollRingType extends Window {
+public class SetPotionScrollRingType extends Component {
 
     private static final int GAP = 4;
     private static final float BH = 22.5f;
 
-    protected final RenderedTextBlock titleTextBlock;
+    private final Component outsideSp;
+
     private final Spinner[] spinners;
     private final Item[] items;
-    protected final RedButton save, cancel;
-    protected final ScrollPane sp;
-    private final Component content;
 
-    public WndSetPotionScrollRingType(Class<?>[] items, String title) {
+    public SetPotionScrollRingType(Class<?>[] items, Runnable onClose) {
         super();
-
-        titleTextBlock = PixelScene.renderTextBlock(title, 12);
-        titleTextBlock.hardlight(Window.TITLE_COLOR);
-        add(titleTextBlock);
-
-        content = new Component();
 
         spinners = new Spinner[items.length];
         this.items = new Item[items.length];
@@ -59,39 +50,51 @@ public class WndSetPotionScrollRingType extends Window {
             spinners[i] = new Spinner(createModel(this.items[i]), "", 10);
             spinners[i].setAlignmentSpinnerX(0.5f);
             spinners[i].setButtonWidth(14.4f);
-            content.add(spinners[i]);
+            add(spinners[i]);
         }
 
-        cancel = new RedButton(Messages.get(WndChangeRegion.class,"cancel")) {
+        outsideSp = new Component(){
+           private RedButton cancel, save;
             @Override
-            protected void onClick() {
-                hide();
+            protected void createChildren(Object... params) {
+                cancel = new RedButton(Messages.get(ChangeRegion.class,"cancel")) {
+                    @Override
+                    protected void onClick() {
+                        onClose.run();
+                    }
+                };
+                save = new RedButton(Messages.get(ChangeRegion.class,"close")) {
+                    @Override
+                    protected void onClick() {
+                        save();
+                        onClose.run();
+                    }
+                };
+                add(cancel);
+                add(save);
+            }
+
+            @Override
+            protected void layout() {
+                float w = width / 3f;
+                cancel.setRect(x, y, w, GeneralTab.BUTTON_HEIGHT);
+                save.setRect(cancel.right() + GeneralTab.GAP, y, width - w - GeneralTab.GAP, GeneralTab.BUTTON_HEIGHT);
+                height = GeneralTab.BUTTON_HEIGHT;
             }
         };
-        add(cancel);
-        save = new RedButton(Messages.get(WndChangeRegion.class,"close")) {
-            @Override
-            protected void onClick() {
-                save();
-                hide();
-            }
-        };
-        add(save);
+    }
 
-        sp = new ScrollPane(content);
-        add(sp);
+    public static Component createTitle(String title){
+        RenderedTextBlock titleTextBlock = PixelScene.renderTextBlock(title, 12);
+        titleTextBlock.hardlight(Window.TITLE_COLOR);
+        return titleTextBlock;
+    }
 
-        layout();
+    public Component getOutsideSp() {
+        return outsideSp;
     }
 
     protected void layout() {
-
-        width = PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : WndTitledMessage.WIDTH_MIN;
-        titleTextBlock.maxWidth(width);
-
-        float maxHeight = PixelScene.uiCamera.height * 0.9f;
-        float heightContent = (float) Math.ceil(spinners.length / (PixelScene.landscape() ? 3f : 2f)) * (BH + GeneralTab.GAP);
-        resize(width, (int) (titleTextBlock.height() + GeneralTab.BUTTON_HEIGHT + Math.min(maxHeight - titleTextBlock.height() - GeneralTab.GAP * 4 - GeneralTab.BUTTON_HEIGHT, heightContent)));
 
         float spY = 0;
         float spX = 0;
@@ -120,38 +123,19 @@ public class WndSetPotionScrollRingType extends Window {
                 }
             }
         }
-        content.setSize(width, spY);
-
-        float posY = 0;
-        titleTextBlock.maxWidth(width);
-        titleTextBlock.setPos((width - titleTextBlock.width()) * 0.5f, posY);
-        posY = titleTextBlock.bottom() + GeneralTab.GAP ;
-
-
-        sp.setRect(0, posY, width, Math.min(maxHeight - posY - GeneralTab.GAP * 1.5f - GeneralTab.BUTTON_HEIGHT, spY));
-        posY = sp.bottom() + GeneralTab.GAP * 2.5f;
-
-        float w = width / 3f;
-        cancel.setRect(0, posY, w, GeneralTab.BUTTON_HEIGHT);
-        save.setRect(cancel.right() + GeneralTab.GAP, posY, w * 2f - GeneralTab.GAP, GeneralTab.BUTTON_HEIGHT);
-
-        height = (int) Math.ceil((save.bottom() + WndTitledMessage.GAP * 0.5f));
-        resize(width, height);
+        height = spY;
     }
 
-    public static WndSetPotionScrollRingType createScrollWnd() {
-        return new WndSetPotionScrollRingType(Generator.Category.SCROLL.classes,
-                Messages.get(WndSetPotionScrollRingType.class,"title_scroll"));
+    public static SetPotionScrollRingType createScrollWnd(Runnable onClose) {
+        return new SetPotionScrollRingType(Generator.Category.SCROLL.classes, onClose);
     }
 
-    public static WndSetPotionScrollRingType createPotionWnd() {
-        return new WndSetPotionScrollRingType(Generator.Category.POTION.classes,
-                Messages.get(WndSetPotionScrollRingType.class,"title_potion"));
+    public static SetPotionScrollRingType createPotionWnd(Runnable onClose) {
+        return new SetPotionScrollRingType(Generator.Category.POTION.classes,onClose);
     }
 
-    public static WndSetPotionScrollRingType createRingWnd() {
-        return new WndSetPotionScrollRingType(Generator.Category.RING.classes,
-                Messages.get(WndSetPotionScrollRingType.class,"title_ring"));
+    public static SetPotionScrollRingType createRingWnd(Runnable onClose) {
+        return new SetPotionScrollRingType(Generator.Category.RING.classes, onClose);
     }
 
     protected void save() {
