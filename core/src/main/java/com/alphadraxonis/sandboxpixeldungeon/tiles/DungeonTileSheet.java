@@ -381,9 +381,9 @@ public class DungeonTileSheet {
 	public static final int DOOR_SIDEWAYS_LOCKED        = OTHER_OVERHANG+13;
 	public static final int DOOR_SIDEWAYS_CRYSTAL       = OTHER_OVERHANG+14;
 	public static final int DOOR_SIDEWAYS_SECRET        = OTHER_OVERHANG+15;
-	public static final int DOOR_OVERHANG_SECRET       = OTHER_OVERHANG+8;
+	public static final int DOOR_OVERHANG_SECRET        = OTHER_OVERHANG+8;
 	//exit visuals are rendered flat atm, so they actually underhang
-	public static final int EXIT_UNDERHANG              =  OTHER_OVERHANG+15;
+	public static final int EXIT_UNDERHANG              =  OTHER_OVERHANG+5;
 
 	/**********************************************************************
 	 * Logic for the selection of tile visuals
