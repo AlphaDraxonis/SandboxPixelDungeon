@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Ripple;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.SewerPainter;
@@ -58,7 +59,7 @@ public class SewerLevel extends RegularLevel {
 	}
 
 	public void playLevelMusic(){
-		if (Statistics.amuletObtained){
+		if (Ghost.Quest.active() || Statistics.amuletObtained){
 			Music.INSTANCE.play(Assets.Music.SEWERS_TENSE, true);
 		} else {
 			Music.INSTANCE.playTracks(
