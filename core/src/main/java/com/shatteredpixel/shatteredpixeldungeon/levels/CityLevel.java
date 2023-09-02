@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.CityPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BlazingTrap;
@@ -60,10 +61,14 @@ public class CityLevel extends RegularLevel {
 
 	@Override
 	public void playLevelMusic() {
-		Music.INSTANCE.playTracks(
-				new String[]{Assets.Music.CITY_1, Assets.Music.CITY_2, Assets.Music.CITY_2},
-				new float[]{1, 1, 0.5f},
-				false);
+		if (Statistics.amuletObtained){
+			Music.INSTANCE.play(Assets.Music.CITY_TENSE, true);
+		} else {
+			Music.INSTANCE.playTracks(
+					new String[]{Assets.Music.CITY_1, Assets.Music.CITY_2, Assets.Music.CITY_2},
+					new float[]{1, 1, 0.5f},
+					false);
+		}
 	}
 
 	@Override
@@ -113,7 +118,7 @@ public class CityLevel extends RegularLevel {
 				2, 2, 2, 2,
 				1, 1, 1, 1, 1, 1, 1, 1 };
 	}
-	
+
 	@Override
 	public String tileName( int tile ) {
 		switch (tile) {
