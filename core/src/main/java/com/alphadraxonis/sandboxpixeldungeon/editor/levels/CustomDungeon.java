@@ -3,6 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levels;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.QuickSlot;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
@@ -128,6 +129,8 @@ public class CustomDungeon implements Bundlable {
     private Map<String, LevelScheme> floors = new HashMap<>();
     private int startGold, startEnergy;
 
+    public boolean[] heroesEnabled = new boolean[HeroClass.values().length];
+
     private final Object[] toolbarItems = new Object[QuickSlot.SIZE];
 
     private String password;
@@ -136,6 +139,7 @@ public class CustomDungeon implements Bundlable {
         this.name = name;
         ratKingLevels = new HashSet<>();
         itemDistributions = new ArrayList<>(5);
+        Arrays.fill(heroesEnabled, true);
     }
 
     public CustomDungeon() {
@@ -483,6 +487,7 @@ public class CustomDungeon implements Bundlable {
     private static final String GEM_CLASSES = "gem_classes";
     private static final String TOOLBAR_ITEM = "toolbar_item_";
     private static final String TOOLBAR_ITEM_INT = "toolbar_item_int_";
+    private static final String HEROES_ENABLED = "heroes_enabled";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     @Override
@@ -496,6 +501,7 @@ public class CustomDungeon implements Bundlable {
         bundle.put(START_ENERGY, startEnergy);
         bundle.put(REMOVE_NEXT_SCROLL, removeNextScroll);
         bundle.put(PASSWORD, password);
+        bundle.put(HEROES_ENABLED, heroesEnabled);
 
         if (scrollRuneLabels != null) {
             String[] labels = new String[scrollRuneLabels.size()];
@@ -569,6 +575,8 @@ public class CustomDungeon implements Bundlable {
         removeNextScroll = bundle.getBoolean(REMOVE_NEXT_SCROLL);
         password = bundle.getString(PASSWORD);
         if (password.isEmpty()) password = null;
+        if (bundle.contains(HEROES_ENABLED)) heroesEnabled = bundle.getBooleanArray(HEROES_ENABLED);
+        else Arrays.fill(heroesEnabled, true);
 
         if (bundle.contains(RUNE_LABELS)) {
             scrollRuneLabels = new LinkedHashMap<>();

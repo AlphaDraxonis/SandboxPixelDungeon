@@ -83,6 +83,19 @@ public class HeroSelectScene extends PixelScene {
 	public void create() {
 		super.create();
 
+		if (GamesInProgress.selectedClass != null) {
+			if (!GamesInProgress.selectedClass.isUnlocked()) {
+				for (HeroClass hero : HeroClass.values()) {
+					if (hero.isUnlocked()) {
+						GamesInProgress.selectedClass = hero;
+						break;
+					}
+				}
+			}
+			if (!GamesInProgress.selectedClass.isUnlocked())
+				GamesInProgress.selectedClass = null;
+		}
+
 		Dungeon.hero = null;
 
 		Badges.loadGlobal();
@@ -379,6 +392,7 @@ public class HeroSelectScene extends PixelScene {
 	}
 
 	private void setSelectedHero(HeroClass cl){
+
 		GamesInProgress.selectedClass = cl;
 
 		background.texture( cl.splashArt() );
@@ -544,7 +558,7 @@ public class HeroSelectScene extends PixelScene {
 		protected void onClick() {
 			super.onClick();
 
-			if( !cl.isUnlocked() ){
+			if( !cl.isUnlocked()){
 				SandboxPixelDungeon.scene().addToFront( new WndMessage(cl.unlockMsg()));
 			} else if (GamesInProgress.selectedClass == cl) {
 				Window w = new WndHeroInfo(cl);

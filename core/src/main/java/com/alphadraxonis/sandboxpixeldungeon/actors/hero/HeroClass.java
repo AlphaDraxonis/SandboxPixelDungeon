@@ -76,7 +76,6 @@ import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.ThrowingKnife
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.ThrowingSpike;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
-import com.watabou.utils.DeviceCompat;
 
 public enum HeroClass {
 
@@ -132,6 +131,8 @@ public enum HeroClass {
                 initDuelist(hero);
                 break;
         }
+
+        //TODO collect items hero, don't need to identify
 
         if (SPDSettings.quickslotWaterskin()) {
             for (int s = 0; s < QuickSlot.SIZE; s++) {
@@ -312,26 +313,43 @@ public enum HeroClass {
     }
 
     public boolean isUnlocked() {
-        //always unlock on debug builds
-        if (DeviceCompat.isDebug() || true) return true;
+
+       if(this!=ROGUE)if(true) return Dungeon.customDungeon.getName().startsWith("b");
 
         switch (this) {
             case WARRIOR:
             default:
-                return true;
+                return Dungeon.customDungeon.heroesEnabled[0];
             case MAGE:
-                return Badges.isUnlocked(Badges.Badge.UNLOCK_MAGE);
+                return Dungeon.customDungeon.heroesEnabled[1];
             case ROGUE:
-                return Badges.isUnlocked(Badges.Badge.UNLOCK_ROGUE);
+                return Dungeon.customDungeon.heroesEnabled[2];
             case HUNTRESS:
-                return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
+                return Dungeon.customDungeon.heroesEnabled[3];
             case DUELIST:
-                return Badges.isUnlocked(Badges.Badge.UNLOCK_DUELIST);
+                return Dungeon.customDungeon.heroesEnabled[4];
         }
+
+//        //always unlock on debug builds
+//        if (DeviceCompat.isDebug()) return true;
+//
+//        switch (this) {
+//            case WARRIOR:
+//            default:
+//                return true;
+//            case MAGE:
+//                return Badges.isUnlocked(Badges.Badge.UNLOCK_MAGE);
+//            case ROGUE:
+//                return Badges.isUnlocked(Badges.Badge.UNLOCK_ROGUE);
+//            case HUNTRESS:
+//                return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
+//            case DUELIST:
+//                return Badges.isUnlocked(Badges.Badge.UNLOCK_DUELIST);
+//        }
     }
 
     public String unlockMsg() {
-        return shortDesc() + "\n\n" + Messages.get(HeroClass.class, name() + "_unlock");
+        return shortDesc()/* + "\n\n" + Messages.get(HeroClass.class, name() + "_unlock")*/;
     }
 
 }
