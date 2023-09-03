@@ -43,11 +43,18 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.rogue.SmokeBo
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.warrior.Endure;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.warrior.HeroicLeap;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.warrior.Shockwave;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.HeroSettings;
 import com.alphadraxonis.sandboxpixeldungeon.items.BrokenSeal;
+import com.alphadraxonis.sandboxpixeldungeon.items.EquipableItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.Waterskin;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.ClothArmor;
+import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.Artifact;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.CloakOfShadows;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.MagicalHolster;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.PotionBandolier;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.ScrollHolder;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.VelvetPouch;
 import com.alphadraxonis.sandboxpixeldungeon.items.food.Food;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfHealing;
@@ -56,7 +63,6 @@ import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfLiquidFlame;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfMindVision;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfStrength;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
-import com.alphadraxonis.sandboxpixeldungeon.items.rings.RingOfHaste;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfIdentify;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfLullaby;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfMagicMapping;
@@ -65,10 +71,8 @@ import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfRage;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfMagicMissile;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.SpiritBow;
-import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.Dagger;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.Gloves;
-import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.Greataxe;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.MagesStaff;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.Rapier;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.WornShortsword;
@@ -102,9 +106,6 @@ public enum HeroClass {
         i = new Food();
         if (!Challenges.isItemBlocked(i)) i.collect();
 
-        new VelvetPouch().collect();
-        Dungeon.LimitedDrops.VELVET_POUCH.drop();
-
         Waterskin waterskin = new Waterskin();
         waterskin.collect();
 
@@ -132,7 +133,25 @@ public enum HeroClass {
                 break;
         }
 
-        //TODO collect items hero, don't need to identify
+        HeroSettings.HeroStartItemsData generalItems = Dungeon.customDungeon.startItems[0].getCopy();
+        HeroSettings.HeroStartItemsData classItems = Dungeon.customDungeon.startItems[getIndex() + 1].getCopy();
+
+        collectStartEq(hero, generalItems);
+        collectStartEq(hero, classItems);
+
+        collectStartItems(hero, classItems);
+        collectStartItems(hero, generalItems);
+
+        if (hero.belongings.weapon != null && hero.belongings.weapon.identifyOnStart)
+            hero.belongings.weapon.identify();
+        if (hero.belongings.armor != null && hero.belongings.armor.identifyOnStart)
+            hero.belongings.armor.identify();
+        if (hero.belongings.ring != null && hero.belongings.ring.identifyOnStart)
+            hero.belongings.ring.identify();
+        if (hero.belongings.artifact != null && hero.belongings.artifact.identifyOnStart)
+            hero.belongings.artifact.identify();
+        if (hero.belongings.misc != null && hero.belongings.misc.identifyOnStart)
+            hero.belongings.misc.identify();
 
         if (SPDSettings.quickslotWaterskin()) {
             for (int s = 0; s < QuickSlot.SIZE; s++) {
@@ -143,21 +162,21 @@ public enum HeroClass {
             }
         }
 
-        if (Dungeon.isLevelTesting()) {
-            Item item = new ScrollOfIdentify();
-            item.quantity(100);
-            item.collect();
-
-            Weapon weapon = new Greataxe();
-            weapon.identify();
-            weapon.upgrade(300);
-            weapon.collect();
-
-            Ring ring = new RingOfHaste();
-            ring.identify();
-            ring.upgrade(50);
-            ring.collect();
-        }
+//        if (Dungeon.isLevelTesting()) {
+//            Item item = new ScrollOfIdentify();
+//            item.quantity(100);
+//            item.collect();
+//
+//            Weapon weapon = new Greataxe();
+//            weapon.identify();
+//            weapon.upgrade(300);
+//            weapon.collect();
+//
+//            Ring ring = new RingOfHaste();
+//            ring.identify();
+//            ring.upgrade(50);
+//            ring.collect();
+//        }
     }
 
     public Badges.Badge masteryBadge() {
@@ -248,6 +267,89 @@ public enum HeroClass {
         new ScrollOfMirrorImage().identify();
     }
 
+    private static void collectStartEq(Hero hero, HeroSettings.HeroStartItemsData startItems) {
+
+        if (startItems.weapon != null && !Challenges.isItemBlocked(startItems.weapon)) {
+            if (hero.belongings.weapon != null) overrideEq(hero, hero.belongings.weapon);
+            hero.belongings.weapon = startItems.weapon;
+            hero.belongings.weapon.activate(hero);
+        }
+        if (startItems.armor != null && !Challenges.isItemBlocked(startItems.weapon)) {
+            if (hero.belongings.armor != null) overrideEq(hero, hero.belongings.armor);
+            hero.belongings.armor = startItems.armor;
+            hero.belongings.armor.activate(hero);
+        }
+        if (startItems.ring != null && !Challenges.isItemBlocked(startItems.weapon)) {
+            if (hero.belongings.misc == null) {
+                hero.belongings.misc = startItems.ring;
+                hero.belongings.misc.activate(hero);
+            } else {
+                if (hero.belongings.ring != null) overrideEq(hero, hero.belongings.ring);
+                hero.belongings.ring = startItems.ring;
+                hero.belongings.ring.activate(hero);
+            }
+        }
+        if (startItems.artifact != null && !Challenges.isItemBlocked(startItems.weapon)) {
+            if (hero.belongings.misc == null) {
+                if (hero.belongings.artifact.getClass() != startItems.artifact.getClass()) {
+                    hero.belongings.misc = startItems.ring;
+                    hero.belongings.misc.activate(hero);
+                }
+            } else if (hero.belongings.misc.getClass() != startItems.artifact.getClass()) {
+                if (hero.belongings.artifact != null) overrideEq(hero, hero.belongings.armor);
+                hero.belongings.artifact = startItems.artifact;
+                hero.belongings.artifact.activate(hero);
+            }
+        }
+        if (startItems.misc != null && !Challenges.isItemBlocked(startItems.weapon)) {
+            if (startItems.misc instanceof Artifact) {
+                if (hero.belongings.artifact == null) {
+                    hero.belongings.artifact = (Artifact) startItems.misc;
+                    hero.belongings.artifact.activate(hero);
+                } else if (hero.belongings.artifact.getClass() != startItems.misc.getClass()) {
+                    if (hero.belongings.misc != null) overrideEq(hero, hero.belongings.misc);
+                    hero.belongings.misc = startItems.misc;
+                    hero.belongings.misc.activate(hero);
+                }
+            } else {
+                if (hero.belongings.ring == null) {
+                    hero.belongings.ring = (Ring) startItems.misc;
+                    hero.belongings.ring.activate(hero);
+                } else {
+                    if (hero.belongings.misc != null) overrideEq(hero, hero.belongings.misc);
+                    hero.belongings.misc = startItems.misc;
+                    hero.belongings.misc.activate(hero);
+                }
+            }
+        }
+
+        for (Bag b : startItems.bags) {
+            if (!Challenges.isItemBlocked(b)) {
+                b.collect();
+                if (b instanceof VelvetPouch) Dungeon.LimitedDrops.VELVET_POUCH.drop();
+                if (b instanceof ScrollHolder) Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
+                if (b instanceof PotionBandolier) Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
+                if (b instanceof MagicalHolster) Dungeon.LimitedDrops.MAGICAL_HOLSTER.drop();
+            }
+        }
+    }
+
+    private static void overrideEq(Hero hero, EquipableItem toRemove){
+        boolean cursed = toRemove.cursed;
+        toRemove.cursed = false;
+        toRemove.doUnequip(hero, false);
+        toRemove.cursed = cursed;
+    }
+
+    private static void collectStartItems(Hero hero, HeroSettings.HeroStartItemsData startItems) {
+        for (Item i : startItems.items) {
+            if (!Challenges.isItemBlocked(i)) {
+                if (i.identifyOnStart) i.identify();
+                i.collect();
+            }
+        }
+    }
+
     public String title() {
         return Messages.get(HeroClass.class, name());
     }
@@ -314,21 +416,7 @@ public enum HeroClass {
 
     public boolean isUnlocked() {
 
-       if(this!=ROGUE)if(true) return Dungeon.customDungeon.getName().startsWith("b");
-
-        switch (this) {
-            case WARRIOR:
-            default:
-                return Dungeon.customDungeon.heroesEnabled[0];
-            case MAGE:
-                return Dungeon.customDungeon.heroesEnabled[1];
-            case ROGUE:
-                return Dungeon.customDungeon.heroesEnabled[2];
-            case HUNTRESS:
-                return Dungeon.customDungeon.heroesEnabled[3];
-            case DUELIST:
-                return Dungeon.customDungeon.heroesEnabled[4];
-        }
+       return Dungeon.customDungeon.heroesEnabled[getIndex()];
 
 //        //always unlock on debug builds
 //        if (DeviceCompat.isDebug()) return true;
@@ -350,6 +438,17 @@ public enum HeroClass {
 
     public String unlockMsg() {
         return shortDesc()/* + "\n\n" + Messages.get(HeroClass.class, name() + "_unlock")*/;
+    }
+
+    public int getIndex(){
+        switch (this) {
+            case WARRIOR:  return 0;
+            case MAGE:     return 1;
+            case ROGUE:    return 2;
+            case HUNTRESS: return 3;
+            case DUELIST:  return 4;
+        }
+        return -1;
     }
 
 }

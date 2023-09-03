@@ -17,6 +17,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.HeroSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.BlacksmithQuest;
@@ -32,6 +33,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.ItemStatusHandler;
 import com.alphadraxonis.sandboxpixeldungeon.items.Stylus;
+import com.alphadraxonis.sandboxpixeldungeon.items.bags.VelvetPouch;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.Potion;
@@ -127,9 +129,9 @@ public class CustomDungeon implements Bundlable {
     private Set<String> ratKingLevels;
     private List<ItemDistribution<? extends Bundlable>> itemDistributions;
     private Map<String, LevelScheme> floors = new HashMap<>();
-    private int startGold, startEnergy;
 
-    public boolean[] heroesEnabled = new boolean[HeroClass.values().length];
+    public boolean[] heroesEnabled;
+    public HeroSettings.HeroStartItemsData[] startItems;
 
     private final Object[] toolbarItems = new Object[QuickSlot.SIZE];
 
@@ -139,7 +141,11 @@ public class CustomDungeon implements Bundlable {
         this.name = name;
         ratKingLevels = new HashSet<>();
         itemDistributions = new ArrayList<>(5);
+        heroesEnabled = new boolean[HeroClass.values().length];
         Arrays.fill(heroesEnabled, true);
+        startItems = new HeroSettings.HeroStartItemsData[heroesEnabled.length + 1];
+        for (int i = 0; i < startItems.length; i++)
+            startItems[i] = new HeroSettings.HeroStartItemsData();
     }
 
     public CustomDungeon() {
@@ -281,14 +287,6 @@ public class CustomDungeon implements Bundlable {
 
     public Collection<LevelScheme> levelSchemes() {
         return floors.values();
-    }
-
-    public int getStartGold() {
-        return startGold;
-    }
-
-    public int getStartAlchemicalEnergy() {
-        return startEnergy;
     }
 
     public void setLastEditedFloor(String lastEditedFloor) {
@@ -473,8 +471,6 @@ public class CustomDungeon implements Bundlable {
     private static final String START_FLOOR = "start_floor";
     private static final String RAT_KING_LEVELS = "rat_king_levels";
     private static final String ITEM_DISTRIBUTION = "item_distribution";
-    private static final String START_GOLD = "start_gold";
-    private static final String START_ENERGY = "start_energy";
     private static final String LEVEL_SCHEME = "level_scheme";
     private static final String REMOVE_NEXT_SCROLL = "remove_next_scroll";
     private static final String PASSWORD = "password";
@@ -488,6 +484,7 @@ public class CustomDungeon implements Bundlable {
     private static final String TOOLBAR_ITEM = "toolbar_item_";
     private static final String TOOLBAR_ITEM_INT = "toolbar_item_int_";
     private static final String HEROES_ENABLED = "heroes_enabled";
+    private static final String START_ITEMS = "start_items";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     @Override
@@ -497,11 +494,10 @@ public class CustomDungeon implements Bundlable {
         if (startFloor != null) bundle.put(START_FLOOR, startFloor);
         bundle.put(RAT_KING_LEVELS, ratKingLevels.toArray(EMPTY_STRING_ARRAY));
         bundle.put(ITEM_DISTRIBUTION, itemDistributions);
-        bundle.put(START_GOLD, startGold);
-        bundle.put(START_ENERGY, startEnergy);
         bundle.put(REMOVE_NEXT_SCROLL, removeNextScroll);
         bundle.put(PASSWORD, password);
         bundle.put(HEROES_ENABLED, heroesEnabled);
+        bundle.put(START_ITEMS, Arrays.asList(startItems));
 
         if (scrollRuneLabels != null) {
             String[] labels = new String[scrollRuneLabels.size()];
@@ -570,13 +566,26 @@ public class CustomDungeon implements Bundlable {
             Collection<?> col = bundle.getCollection(ITEM_DISTRIBUTION);
             itemDistributions.addAll((Collection<? extends ItemDistribution<? extends Bundlable>>) col);
         }
-        startGold = bundle.getInt(START_GOLD);
-        startEnergy = bundle.getInt(START_ENERGY);
         removeNextScroll = bundle.getBoolean(REMOVE_NEXT_SCROLL);
         password = bundle.getString(PASSWORD);
         if (password.isEmpty()) password = null;
         if (bundle.contains(HEROES_ENABLED)) heroesEnabled = bundle.getBooleanArray(HEROES_ENABLED);
-        else Arrays.fill(heroesEnabled, true);
+        else {
+            heroesEnabled = new boolean[HeroClass.values().length];
+            Arrays.fill(heroesEnabled, true);
+        }
+        startItems = new HeroSettings.HeroStartItemsData[heroesEnabled.length + 1];
+        if (bundle.contains(START_ITEMS)) {
+            int i = 0;
+            for (Bundlable heroStartItemsData : bundle.getCollection(START_ITEMS)) {
+                startItems[i] = (HeroSettings.HeroStartItemsData) heroStartItemsData;
+                i++;
+            }
+        } else {
+            for (int i = 0; i < startItems.length; i++)
+                startItems[i] = new HeroSettings.HeroStartItemsData();
+            startItems[0].bags.add(new VelvetPouch());
+        }
 
         if (bundle.contains(RUNE_LABELS)) {
             scrollRuneLabels = new LinkedHashMap<>();

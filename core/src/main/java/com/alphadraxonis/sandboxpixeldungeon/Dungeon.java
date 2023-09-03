@@ -292,8 +292,9 @@ public class Dungeon {
         branch = 0;
         generatedLevels.clear();
 
-        gold = CustomDungeon.getDungeon().getStartGold();
-        energy = CustomDungeon.getDungeon().getStartAlchemicalEnergy();
+        int indexCurHero =  GamesInProgress.selectedClass.getIndex();
+        gold = Dungeon.customDungeon.startItems[0].gold + Dungeon.customDungeon.startItems[indexCurHero + 1].gold;
+        energy = Dungeon.customDungeon.startItems[0].energy + Dungeon.customDungeon.startItems[indexCurHero + 1].energy;
 
         droppedItems = new HashMap<>();
 
