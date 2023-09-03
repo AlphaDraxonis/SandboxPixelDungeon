@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.tweeners.Delayer;
 import com.watabou.utils.Random;
 
@@ -77,8 +78,8 @@ public class AmuletScene extends PixelScene {
 		btnExit = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "exit") ) {
 			@Override
 			protected void onClick() {
-				Dungeon.win( Amulet.class );
-				Dungeon.deleteGame( GamesInProgress.curSlot, true );
+				Dungeon.win(Amulet.class);
+				Dungeon.deleteGame(GamesInProgress.curSlot, true);
 				btnExit.enable(false);
 				btnStay.enable(false);
 
@@ -98,6 +99,10 @@ public class AmuletScene extends PixelScene {
 							}
 						}
 					});
+					Music.INSTANCE.playTracks(
+							new String[]{Assets.Music.THEME_2, Assets.Music.THEME_1},
+							new float[]{1, 1},
+							false);
 				} else {
 					EditorScene.start();
 					EditorScene.openDifferentLevel = false;
