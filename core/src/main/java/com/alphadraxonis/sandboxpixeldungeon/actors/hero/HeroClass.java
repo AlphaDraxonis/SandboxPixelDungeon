@@ -146,12 +146,18 @@ public enum HeroClass {
             hero.belongings.weapon.identify();
         if (hero.belongings.armor != null && hero.belongings.armor.identifyOnStart)
             hero.belongings.armor.identify();
-        if (hero.belongings.ring != null && hero.belongings.ring.identifyOnStart)
-            hero.belongings.ring.identify();
-        if (hero.belongings.artifact != null && hero.belongings.artifact.identifyOnStart)
-            hero.belongings.artifact.identify();
-        if (hero.belongings.misc != null && hero.belongings.misc.identifyOnStart)
-            hero.belongings.misc.identify();
+        if (hero.belongings.ring != null){
+            hero.belongings.ring.reset();
+            if( hero.belongings.ring.identifyOnStart) hero.belongings.ring.identify();
+        }
+        if (hero.belongings.artifact != null){
+            hero.belongings.artifact.reset();
+            if( hero.belongings.artifact.identifyOnStart) hero.belongings.artifact.identify();
+        }
+        if (hero.belongings.misc != null){
+            hero.belongings.misc.reset();
+            if( hero.belongings.misc.identifyOnStart) hero.belongings.misc.identify();
+        }
 
         if (SPDSettings.quickslotWaterskin()) {
             for (int s = 0; s < QuickSlot.SIZE; s++) {
@@ -296,7 +302,7 @@ public enum HeroClass {
                     hero.belongings.misc.activate(hero);
                 }
             } else if (hero.belongings.misc.getClass() != startItems.artifact.getClass()) {
-                if (hero.belongings.artifact != null) overrideEq(hero, hero.belongings.armor);
+                if (hero.belongings.artifact != null) overrideEq(hero, hero.belongings.artifact);
                 hero.belongings.artifact = startItems.artifact;
                 hero.belongings.artifact.activate(hero);
             }
@@ -344,8 +350,9 @@ public enum HeroClass {
     private static void collectStartItems(Hero hero, HeroSettings.HeroStartItemsData startItems) {
         for (Item i : startItems.items) {
             if (!Challenges.isItemBlocked(i)) {
+                i.reset();
                 if (i.identifyOnStart) i.identify();
-                i.collect();
+                i.doPickUp(hero);
             }
         }
     }

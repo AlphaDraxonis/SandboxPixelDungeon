@@ -1,5 +1,6 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.ui;
 
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditCompWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
@@ -19,6 +20,9 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndBag;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 public class ItemSelector extends Component {
 
     public enum NullTypeSelector {
@@ -35,7 +39,7 @@ public class ItemSelector extends Component {
     protected IconButton changeBtn;
     private final NullTypeSelector nullTypeSelector;
 
-    private boolean showQuestionmarkIfNull;
+    private int showWhenNull = -1;
 
     public ItemSelector(String text, Class<? extends Item> itemClasses, Item startItem, NullTypeSelector nullTypeSelector) {
         this.itemClasses = itemClasses;
@@ -94,20 +98,24 @@ public class ItemSelector extends Component {
 
     public void setSelectedItem(Item selectedItem) {
         this.selectedItem = selectedItem;
-        if (isShowQuestionmarkIfNull() && selectedItem == null) {
+        if (showWhenNull != -1 && selectedItem == null) {
             selectedItem = new Item();
-            selectedItem.image = 0;
+            selectedItem.image = showWhenNull;
             itemSlot.item(selectedItem);
             itemSlot.active = false;
-        } else itemSlot.item(selectedItem);
+        } else {
+            if (selectedItem != null)
+                selectedItem.image = Dungeon.customDungeon.getItemSpriteOnSheet(selectedItem);
+            itemSlot.item(selectedItem);
+        }
     }
 
-    public boolean isShowQuestionmarkIfNull() {
-        return showQuestionmarkIfNull;
+    public int getShowWhenNull() {
+        return showWhenNull;
     }
 
-    public void setShowQuestionmarkIfNull(boolean showQuestionmarkIfNull) {
-        this.showQuestionmarkIfNull = showQuestionmarkIfNull;
+    public void setShowWhenNull(int showWhenNull) {
+        this.showWhenNull = showWhenNull;
         if (getSelectedItem() == null) setSelectedItem(getSelectedItem());
     }
 
@@ -121,10 +129,20 @@ public class ItemSelector extends Component {
 
     public void change() {
 
+        showSelectWindow(selector, nullTypeSelector, itemClasses, new HashSet<>(0));
+    }
+
+    private static void addItem(ScrollingListPane sp, Item i, EditorInventoryWindow w, Class<? extends Item> itemClasses, Collection<Class<? extends Item>> excludeItems) {
+        if (i instanceof ItemItem && itemClasses.isAssignableFrom(((ItemItem) i).item().getClass()) && !excludeItems.contains(((ItemItem) i).item().getClass())) {
+            sp.addItem(((ItemItem) i).createListItem(w));
+        }
+    }
+
+    public static EditorInventoryWindow showSelectWindow(WndBag.ItemSelectorInterface selector, NullTypeSelector nullTypeSelector, Class<? extends Item> itemClasses, Collection<Class<? extends Item>> excludeItems) {
         final int WIDTH = Math.min(160, (int) (PixelScene.uiCamera.width * 0.9));
         final int HEIGHT = (int) (PixelScene.uiCamera.height * 0.8f);
 
-        Win w = new Win();
+        Win w = new Win(selector);
         w.resize(WIDTH, HEIGHT);
         ScrollingListPane sp = new ScrollingListPane();
         w.add(sp);
@@ -137,12 +155,15 @@ public class ItemSelector extends Component {
         for (Item bagitem : Items.bag.items) {
             if (bagitem instanceof Bag) {
                 for (Item i : (Bag) bagitem) {
-                    addItem(sp, i, w);
+                    addItem(sp, i, w, itemClasses, excludeItems);
                 }
-            } else addItem(sp, bagitem, w);
+            } else addItem(sp, bagitem, w, itemClasses, excludeItems);
         }
         Component[] comps = sp.getItems();
-        if (comps.length == 0) return;
+        if (comps.length == 0) {
+            w.destroy();
+            return null;
+        }
         if (comps[comps.length - 1].bottom() < HEIGHT) {
             w.resize(WIDTH, (int) comps[comps.length - 1].bottom());
             sp.setSize(WIDTH, (int) comps[comps.length - 1].bottom());
@@ -150,21 +171,22 @@ public class ItemSelector extends Component {
 
         if (Game.scene() instanceof EditorScene) EditorScene.show(w);
         else Game.scene().addToFront(w);
-    }
-
-    private void addItem(ScrollingListPane sp, Item i, EditorInventoryWindow w) {
-        if (i instanceof ItemItem && itemClasses.isAssignableFrom(((ItemItem) i).item().getClass())) {
-            sp.addItem(((ItemItem) i).createListItem(w));
-        }
+        return w;
     }
 
 
     protected final ItemChange selector = new ItemChange();
 
-    private class Win extends Window implements EditorInventoryWindow {
+    public static class Win extends Window implements EditorInventoryWindow {
+
+        private final WndBag.ItemSelectorInterface selector;
+
+        public Win(WndBag.ItemSelectorInterface selector) {
+            this.selector = selector;
+        }
 
         @Override
-        public WndBag.ItemSelector selector() {
+        public WndBag.ItemSelectorInterface selector() {
             return selector;
         }
     }

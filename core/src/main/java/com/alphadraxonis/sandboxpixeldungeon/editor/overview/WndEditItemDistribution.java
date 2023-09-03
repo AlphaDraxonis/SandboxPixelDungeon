@@ -62,7 +62,7 @@ public class WndEditItemDistribution<T extends Item> extends Window {
             }
 
             @Override
-            protected Class<? extends Bag> getPreferredBag() {
+            public Class<? extends Bag> preferredBag() {
                 return itemDistribution.getPreferredBag();
             }
         };

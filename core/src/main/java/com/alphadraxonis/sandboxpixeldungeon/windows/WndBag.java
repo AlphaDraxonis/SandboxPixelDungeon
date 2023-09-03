@@ -486,21 +486,32 @@ public class WndBag extends WndTabbed {
         }
     }
 
-    public abstract static class ItemSelector {
-        public abstract String textPrompt();
+    public interface ItemSelectorInterface {
+        String textPrompt();
+
+        Class<? extends Bag> preferredBag();
+
+        boolean itemSelectable(Item item);
+
+        void onSelect(Item item);
+
+        boolean addOtherTabs();
+
+        boolean acceptsNull();
+    }
+
+    public abstract static class ItemSelector implements ItemSelectorInterface {
+
 
         public Class<? extends Bag> preferredBag() {
             return null; //defaults to last bag opened
         }
 
-        public abstract boolean itemSelectable(Item item);
-
-        public abstract void onSelect(Item item);
-
-        public boolean addOtherTabs(){
+        public boolean addOtherTabs() {
             return true;
         }
-        public boolean acceptsNull(){
+
+        public boolean acceptsNull() {
             return true;
         }
     }

@@ -132,10 +132,12 @@ public abstract class EquipableItem extends Item {
 			return false;
 		}
 
-		if (single) {
-			hero.spendAndNext( time2equip( hero ) );
-		} else {
-			hero.spend( time2equip( hero ) );
+		if (hero.sprite != null) {
+			if (single) {
+				hero.spendAndNext(time2equip(hero));
+			} else {
+				hero.spend(time2equip(hero));
+			}
 		}
 
 		slotOfUnequipped = Dungeon.quickslot.getSlot(this);

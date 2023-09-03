@@ -34,6 +34,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.MimicSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.StatueSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIcon;
@@ -224,8 +225,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
                 };
                 add(questItem2);
-                questItem1.setShowQuestionmarkIfNull(true);
-                questItem2.setShowQuestionmarkIfNull(true);
+                questItem1.setShowWhenNull(ItemSpriteSheet.SOMETHING);
+                questItem2.setShowWhenNull(ItemSpriteSheet.SOMETHING);
 
             } else if (mob instanceof Ghost) {
                 questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "weapon") + ":",
@@ -248,8 +249,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
                 };
                 add(questItem2);
-                questItem1.setShowQuestionmarkIfNull(true);
-                questItem2.setShowQuestionmarkIfNull(true);
+                questItem1.setShowWhenNull(ItemSpriteSheet.SOMETHING);
+                questItem2.setShowWhenNull(ItemSpriteSheet.SOMETHING);
                 spawnQuestRoom = null;
             } else if (mob instanceof Imp) {
                 questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "ring") + ":", Ring.class,
@@ -262,7 +263,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
                 };
                 add(questItem1);
-                questItem1.setShowQuestionmarkIfNull(true);
+                questItem1.setShowWhenNull(ItemSpriteSheet.SOMETHING);
                 questItem2 = null;
                 spawnQuestRoom = null;
             } else {

@@ -7,6 +7,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Plants;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Traps;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.ItemItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.PlantItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TrapItem;
@@ -52,7 +53,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
     private final static Map<Bag, Integer> lastSelected = new HashMap<>(5);
     private static EditorItemBag lastBag, curBag;
 
-    protected WndBag.ItemSelector selector;
+    protected WndBag.ItemSelectorInterface selector;
 
     private CategoryScroller body;
 
@@ -63,7 +64,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         this(bag, null, true);
     }
 
-    public WndEditorInv(EditorItemBag bag, WndBag.ItemSelector selector, boolean addTabs) {
+    public WndEditorInv(EditorItemBag bag, WndBag.ItemSelectorInterface selector, boolean addTabs) {
 
         super();
 
@@ -119,6 +120,14 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                     List<Item> ret = new ArrayList<>(b.items);
                     if (selector == null || selector().acceptsNull())
                         ret.add(0, addTabs ? EditorItem.REMOVER_ITEM : EditorItem.NULL_ITEM);
+
+                    if (selector != null) {
+                        for (Item i : b.items) {
+                            if (i instanceof ItemItem && !selector.itemSelectable(((ItemItem) i).item()))
+                                ret.remove(i);
+                        }
+                    }
+
                     return ret;
                 }
 
@@ -258,7 +267,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
     }
 
     @Override
-    public WndBag.ItemSelector selector() {
+    public WndBag.ItemSelectorInterface selector() {
         return selector;
     }
 
@@ -276,7 +285,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         }
     }
 
-    public static WndEditorInv getBag(WndBag.ItemSelector selector) {
+    public static WndEditorInv getBag(WndBag.ItemSelectorInterface selector) {
         if (selector.preferredBag() != null) {
             EditorItemBag bag = (EditorItemBag) EditorItemBag.getBag(selector.preferredBag());
             if (bag != null) return new WndEditorInv(bag, selector, selector.addOtherTabs());

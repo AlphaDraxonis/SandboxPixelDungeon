@@ -268,7 +268,7 @@ public class Armor extends EquipableItem {
         if (super.doUnequip(hero, collect, single)) {
 
             hero.belongings.armor = null;
-            ((HeroSprite) hero.sprite).updateArmor();
+            if (hero.sprite != null) ((HeroSprite) hero.sprite).updateArmor();
 
             BrokenSeal.WarriorShield sealBuff = hero.buff(BrokenSeal.WarriorShield.class);
             if (sealBuff != null) sealBuff.setArmor(null);

@@ -75,6 +75,10 @@ public class WndEditorSettings extends WndTabbed {
         select(last_index);
     }
 
+    public GeneralTab getGeneralTab(){
+        return generalTab;
+    }
+
     @Override
     public void offset(int xOffset, int yOffset) {
         super.offset(xOffset, yOffset);

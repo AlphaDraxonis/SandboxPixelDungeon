@@ -521,7 +521,7 @@ public class EditorScene extends PixelScene {
         DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, plant, cell);
     }
 
-    public static WndEditorInv selectItem(WndBag.ItemSelector listener) {
+    public static WndEditorInv selectItem(WndBag.ItemSelectorInterface listener) {
         cancel();
 
         WndEditorInv wnd = WndEditorInv.getBag(listener);

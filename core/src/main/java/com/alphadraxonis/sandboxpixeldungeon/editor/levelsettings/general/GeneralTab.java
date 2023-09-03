@@ -8,6 +8,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.GnollSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
@@ -31,8 +32,9 @@ public class GeneralTab extends WndEditorSettings.TabComp {
     //DecorationPainter (floor only)
 
     private boolean layoutOwnMenu = true;
-    private Component otherTitle, otherBody, spForOtherBody, outsideSp;
-    private float alignmentOther;
+    private Component otherTitle, otherBody, outsideSp;
+    private ScrollPane spForOtherBody;
+    private float alignmentOther, titleAlignmentOther;
     private ButtonBack buttonBack;
 
     private IconTitle title;
@@ -44,6 +46,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
     private StyledButton mobSpawn;
     private Spinner viewDistance, depth, shopPrice;
     private StyledButton changeSize;
+    private StyledButton heroes;
 
 
     @Override
@@ -152,6 +155,14 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         shopPrice.addChangeListener(() -> EditorScene.customLevel().levelScheme.setShopPriceMultiplier((int) shopPrice.getValue()));
         content.add(shopPrice);
 
+        heroes = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, "GeneralTab158 Heroes", 8) {
+            @Override
+            protected void onClick() {
+                HeroSettings heroSettings = new HeroSettings();
+                changeContent(heroSettings.createTitle(), heroSettings, heroSettings.getOutsideSp(), 0.5f, 0f);
+            }
+        };
+        content.add(heroes);
 
         sp.givePointerPriority();
         add(sp);
@@ -167,46 +178,23 @@ public class GeneralTab extends WndEditorSettings.TabComp {
 
             Component[] components = {potionColors, scrollRunes, ringGems,
                     region, mobSpawn, changeSize,
-                    depth, viewDistance, shopPrice};
+                    depth, viewDistance, shopPrice,
+                    heroes};
 
-            float oneThirdWidth = (width() - GAP * 2) / 3f;
+            EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, components);
 
-            for (Component c : components) {
-                if (c != null) c.setSize(oneThirdWidth, -1);
-            }
-            float maxCompHeight = 0;
-            for (Component c : components) {
-                if (c != null && c.height() > maxCompHeight) maxCompHeight = c.height();
-            }
-            for (Component c : components) {
-                if (c != null) c.setSize(oneThirdWidth, maxCompHeight);
-            }
-
-            posY = 0;
-            float posX = x;
-            for (int i = 0; i < components.length; i++) {
-                if (components[i] != null) {
-                    components[i].setPos(posX, posY);
-                    if ((i + 1) % 3 == 0) {
-                        posY += GAP + maxCompHeight;
-                        posX = x;
-                    } else posX = components[i].right() + GAP;
-                }
-            }
-
-            content.setSize(width, posY - BIG_GAP);
             sp.setRect(x, title.bottom() + GAP, width, height - title.bottom() - GAP - 1);
 
         } else {
             posY += GAP * 2;
             float backW = buttonBack.width();
             float backH = buttonBack.height();
-            otherTitle.setRect(x + Math.max(backW + GAP, (width - otherTitle.width()) * 0.5f), posY,
+            otherTitle.setRect(x + Math.max(backW + GAP, (width - otherTitle.width()) * titleAlignmentOther), posY,
                     width - GAP - backW, Math.max(otherTitle.height(), backH));
             buttonBack.setPos(x, posY + (otherTitle.height() - backH) * 0.5f);
             posY = otherTitle.bottom() + GAP * 3;
 
-            otherBody.setSize( width, -1);
+            otherBody.setSize(width, -1);
 
             float normalSpHeight;
             if (outsideSp != null) {
@@ -220,6 +208,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
             float makeSpSmaller = Math.max(0, (normalSpHeight - otherBody.height()) * alignmentOther);
             spForOtherBody.setRect(x, posY + makeSpSmaller, width, normalSpHeight - makeSpSmaller);
 
+            spForOtherBody.scrollToCurrentView();
         }
     }
 
@@ -235,15 +224,16 @@ public class GeneralTab extends WndEditorSettings.TabComp {
 
 
     protected void changeContent(Component titleBar, Component body, Component outsideSp) {
-        changeContent(titleBar, body, outsideSp, 0.5f);
+        changeContent(titleBar, body, outsideSp, 0.5f, 0.5f);
     }
 
-    protected void changeContent(Component titleBar, Component body, Component outsideSp, float alignment) {
+    protected void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
         title.visible = title.active = false;
         content.visible = content.active = false;
         sp.visible = sp.active = false;
 
         alignmentOther = alignment;
+        titleAlignmentOther = titleAlignmentX;
 
         buttonBack = new ButtonBack();
         add(buttonBack);

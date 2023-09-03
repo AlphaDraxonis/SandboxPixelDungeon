@@ -52,6 +52,7 @@ public enum Icons {
     ROGUE,
     HUNTRESS,
     DUELIST,
+    ANY_HERO,
 
     //grey icons, mainly used for buttons, spacing for 16x16
     EXIT,
@@ -192,6 +193,9 @@ public enum Icons {
                 break;
             case DUELIST:
                 icon.frame(icon.texture.uvRectBySize(80, 16, 13, 14));
+                break;
+            case ANY_HERO:
+                icon.frame(icon.texture.uvRectBySize(93, 16, 16, 16));
                 break;
 
             case EXIT:
@@ -450,7 +454,7 @@ public enum Icons {
             case DUELIST:
                 return get(Icons.DUELIST);
             default:
-                return null;
+                return get(Icons.ANY_HERO);
         }
     }
 

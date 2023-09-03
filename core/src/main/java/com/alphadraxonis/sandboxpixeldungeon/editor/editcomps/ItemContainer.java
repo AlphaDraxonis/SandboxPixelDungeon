@@ -22,20 +22,20 @@ import com.watabou.noosa.ui.Component;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class ItemContainer<T extends Item> extends Component { // needs access to protected methods
+public class ItemContainer<T extends Item> extends Component implements WndBag.ItemSelectorInterface { // needs access to protected methods
 
     private final DefaultEditComp<?> editComp;
     protected final boolean reverseUiOrder;
 
     public final Class<T> typeParameterClass;
     protected List<T> itemList;
-    protected List<Slot> slots;
+    protected LinkedList<Slot> slots;
     protected final IconButton addBtn;
 
     {
@@ -61,46 +61,12 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
         this.itemList = itemList;
         this.editComp = editComp;
         this.reverseUiOrder = reverseUiOrder;
-        slots = new ArrayList<>();
+        slots = new LinkedList<>();
 
         addBtn = new IconButton(Icons.get(Icons.PLUS)) {
             @Override
             protected void onClick() {
-                EditorScene.selectItem(new WndBag.ItemSelector() {
-                    @Override
-                    public String textPrompt() {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean itemSelectable(Item item) {
-                        return ItemContainer.this.itemSelectable(item);
-                    }
-
-                    @Override
-                    public boolean addOtherTabs() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean acceptsNull() {
-                        return false;
-                    }
-
-                    @Override
-                    public Class<? extends Bag> preferredBag() {
-                        return getPreferredBag();
-                    }
-
-                    @Override
-                    public void onSelect(Item item) {
-                        if (item == null || typeParameterClass != null && !typeParameterClass.isInstance(item))
-                            return;
-                        if (item instanceof ItemItem) item = ((ItemItem) item).item();
-                        item = item.getCopy();
-                        addNewItem((T) item);
-                    }
-                });
+                showSelectWindow();
             }
         };
         add(addBtn);
@@ -144,10 +110,36 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
         updatePointerPriorityForSp();
     }
 
+    @Override
+    public void onSelect(Item item) {
+        if (item == null || typeParameterClass != null &&
+                (!typeParameterClass.isAssignableFrom(item.getClass())
+                        && (!(item instanceof ItemItem) ||!typeParameterClass.isAssignableFrom(((ItemItem) item).item().getClass())  )))
+            return;
+        if (item instanceof ItemItem) item = ((ItemItem) item).item();
+        item = item.getCopy();
+        addNewItem((T) item);
+    }
+
+    @Override
+    public boolean addOtherTabs() {
+        return false;
+    }
+
+    @Override
+    public boolean acceptsNull() {
+        return false;
+    }
+
+    @Override
+    public String textPrompt() {
+        return null;
+    }
 
     //IMPORTANT METHODS
     //IMPORTANT METHODS
-    protected boolean itemSelectable(Item item) {
+    @Override
+    public boolean itemSelectable(Item item) {
         return true;
     }
 
@@ -158,7 +150,13 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
     protected void onUpdateItem() {//nur dafür gedacht, wenn sich bestehende Items ändern
     }
 
-    protected Class<? extends Bag> getPreferredBag() {
+    protected void showSelectWindow() {
+        EditorScene.selectItem(this);
+    }
+
+
+    @Override
+    public Class<? extends Bag> preferredBag() {
         return Items.bag.getClass();
     }
     //IMPORTANT METHODS
@@ -182,8 +180,13 @@ public class ItemContainer<T extends Item> extends Component { // needs access t
                 posX = x + GAP;
             }
         }
-        addBtn.setRect(posX, posY, WndMenuEditor.BTN_HEIGHT, WndMenuEditor.BTN_HEIGHT);
-        posY = addBtn.bottom() + WndTitledMessage.GAP;
+        if (addBtn.visible) {
+            addBtn.setRect(posX, posY, WndMenuEditor.BTN_HEIGHT, WndMenuEditor.BTN_HEIGHT);
+            posY = addBtn.bottom() + WndTitledMessage.GAP;
+        } else {
+            Slot lastSlot = slots.getLast();
+            if (lastSlot != null) posY = lastSlot.bottom() + WndTitledMessage.GAP;
+        }
 
         height = posY - y;
     }

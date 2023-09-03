@@ -152,7 +152,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                 }
 
                 @Override
-                protected Class<? extends Bag> getPreferredBag() {
+                public Class<? extends Bag> preferredBag() {
                     return Mobs.bag.getClass();
                 }
 
@@ -219,7 +219,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                 }
 
                 @Override
-                protected Class<? extends Bag> getPreferredBag() {
+                public Class<? extends Bag> preferredBag() {
                     return Mobs.bag.getClass();
                 }
 
@@ -267,7 +267,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                 }
 
                 @Override
-                protected Class<? extends Bag> getPreferredBag() {
+                public Class<? extends Bag> preferredBag() {
                     return Rooms.bag.getClass();
                 }
 

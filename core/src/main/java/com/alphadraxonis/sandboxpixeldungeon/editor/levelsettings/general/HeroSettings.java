@@ -1,8 +1,21 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general;
 
+import static com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings.ITEM_HEIGHT;
+
+import com.alphadraxonis.sandboxpixeldungeon.Chrome;
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
+import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.ItemContainer;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.StyledItemSelector;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
+import com.alphadraxonis.sandboxpixeldungeon.effects.BadgeBanner;
+import com.alphadraxonis.sandboxpixeldungeon.items.EnergyCrystal;
+import com.alphadraxonis.sandboxpixeldungeon.items.Gold;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.KindofMisc;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
@@ -10,65 +23,350 @@ import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.Artifact;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
-import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
+import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
 import com.alphadraxonis.sandboxpixeldungeon.ui.CheckBox;
-import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
+import com.alphadraxonis.sandboxpixeldungeon.ui.StyledButton;
+import com.alphadraxonis.sandboxpixeldungeon.windows.IconTitle;
+import com.watabou.input.GameAction;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Signal;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class HeroSettings extends Component {
 
-    private static final int[] scrollPos = new int[HeroClass.values().length + 1];
+    private static class StyldeButton extends StyledButton {
+
+        public StyldeButton(Chrome.Type type, String label) {
+            super(type, label);
+        }
+
+        public NinePatch getBg() {
+            return bg;
+        }
+    }
 
     private static int currentIndex = 0;
 
-    private Component outsideSp;//TODO key listener for switching tabs
+    private final Component outsideSp;
+    private IconTitle title;
 
-    private HeroTab[] heroTabs;
+    private StyldeButton[] switchTabs;
+
+    private final HeroTab[] heroTabs;
 
 
     public HeroSettings() {
 
-        heroTabs = new HeroTab[scrollPos.length];
+        heroTabs = new HeroTab[HeroClass.values().length + 1];
 
-        int i = 0;
-        heroTabs[i] = new HeroTab(null, i);
-        i++;
-        for (HeroClass hero : HeroClass.values()) {
-            heroTabs[i] = new HeroTab(hero, i);
-            i++;
+        for (int i = 0; i < heroTabs.length; i++) {
+            heroTabs[i] = new HeroTab(i);
+            heroTabs[i].visible = heroTabs[i].active = false;
+            add(heroTabs[i]);
+        }
+
+        outsideSp = new Component() {
+            private Signal.Listener<KeyEvent> keyListener;
+            private GameAction curAction;
+            private float time;
+            private static final float INTERVAL = 0.3f;// 3 cps
+            private boolean isHolding;
+
+            @Override
+            protected void createChildren(Object... params) {
+                switchTabs = new StyldeButton[HeroClass.values().length + 1];
+                for (int j = 0; j < switchTabs.length; j++) {
+                    final int index = j;
+                    switchTabs[j] = new StyldeButton(Chrome.Type.GREY_BUTTON_TR, "") {
+                        @Override
+                        protected void onClick() {
+                            selectTab(index);
+                        }
+
+                        @Override
+                        protected String hoverText() {
+                            return getTabName(index);
+                        }
+                    };
+                    switchTabs[j].icon(createTabIcon(index));
+                    add(switchTabs[j]);
+
+                    KeyEvent.addKeyListener(keyListener = keyEvent -> {
+                        GameAction action = KeyBindings.getActionForKey(keyEvent);
+
+                        if (keyEvent.pressed) {
+                            curAction = action;
+                            return processKey();
+                        }
+                        curAction = null;
+                        time = 0;
+                        isHolding = false;
+                        return false;
+                    });
+                }
+
+                selectTab(currentIndex);
+            }
+
+            @Override
+            protected void layout() {
+                float buttonWidth = width() / switchTabs.length;
+                for (int i = 0; i < switchTabs.length; i++) {
+                    switchTabs[i].setRect(x + i * buttonWidth, y, buttonWidth, ITEM_HEIGHT);
+                    PixelScene.align(switchTabs[i]);
+                }
+                height = ITEM_HEIGHT;
+            }
+
+            private boolean processKey() {
+                if (curAction == SPDAction.E) {
+                    selectTab((currentIndex + 1) % switchTabs.length);
+                    return true;
+                }
+                if (curAction == SPDAction.W) {
+                    int index = currentIndex - 1;
+                    if (index < 0) index = switchTabs.length - 1;
+                    selectTab(index);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public synchronized void update() {
+                super.update();
+                if (curAction != null) {
+                    time += Game.elapsed;
+                    if (!isHolding) {
+                        if (time >= Button.longClick) {
+                            isHolding = true;
+                            time -= Button.longClick;
+                            SandboxPixelDungeon.vibrate(50);
+                        }
+                    } else {
+                        if (time >= INTERVAL) {
+                            time -= INTERVAL;
+                            processKey();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public synchronized void destroy() {
+                super.destroy();
+                KeyEvent.removeKeyListener(keyListener);
+            }
+        };
+    }
+
+    public void selectTab(int index) {
+        heroTabs[currentIndex].visible = heroTabs[currentIndex].active = false;
+        heroTabs[index].visible = heroTabs[index].active = true;
+        currentIndex = index;
+
+        for (int i = 0; i < switchTabs.length; i++) {
+            if (i == index) {
+                switchTabs[i].getBg().hardlight(index * 0.1f + 0.7f, index * 0.1f + 0.7f, 0);
+//                switchTabs[i].getBg().lightness(index*0.2f);
+            } else switchTabs[i].getBg().resetColor();
+        }
+
+        if (title != null) {
+
+            title.icon(createTabIcon(index));
+            title.label(getTabName(index));
+
+            ((WndEditorSettings) EditorUtilies.getParentWindow(this)).getGeneralTab().layout();
         }
     }
 
+    @Override
+    protected void layout() {
+        for (HeroTab tab : heroTabs) {
+            if (tab.visible) {
+                tab.setRect(x, y, width, -1);
+                height = tab.height();
+                break;
+            }
+        }
+    }
 
-    public static Component createTitle() {
-        return WndTitledMessage.createTitleNoIcon(Messages.titleCase(Messages.get(HeroSettings.class, "title")));
+    public Component createTitle() {
+        return title = new IconTitle(createTabIcon(currentIndex), getTabName(currentIndex));
     }
 
     public Component getOutsideSp() {
         return outsideSp;
     }
 
+    public static Image createTabIcon(int index) {
+        if (index == 0) return Icons.ANY_HERO.get();
+        return BadgeBanner.image(index - 1);
+    }
+
+    public static String getTabName(int index) {
+        if (index > 0) return HeroClass.values()[index - 1].title();
+        return "General";
+    }
 
     private static class HeroTab extends Component {
 
-        private final HeroClass hero;
-        private final int index;
-
         private CheckBox heroEnabled;
-        private ItemContainer<Item> startItems;//TODO extract gold and energy, own spinner for each  and exclude bags
-        private ItemContainer<Bag> startBags;
-        private ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
+        private final ItemContainer<Item> startItems;
+        private final ItemContainer<Bag> startBags;
+        private final ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
 
-        public HeroTab(HeroClass hero, int index) {
-            this.hero = hero;
-            this.index = index;
+//        private final  StyledSpinner gold, energy; TODO!!
+
+        private final Component itemSelectorParent;
+
+        public HeroTab(int index) {
+
+            if (index >= 1) {
+                heroEnabled = new CheckBox("HERO ENABLED" + index) {
+                    @Override
+                    public void checked(boolean value) {
+                        super.checked(value);
+                        Dungeon.customDungeon.heroesEnabled[index - 1] = value;
+                    }
+                };
+                heroEnabled.checked(Dungeon.customDungeon.heroesEnabled[index - 1]);
+                add(heroEnabled);
+            }
+
+            HeroStartItemsData data = Dungeon.customDungeon.startItems[index];
+
+            itemSelectorParent = new Component();
+
+            startWeapon = new StyledItemSelector("WEAPON", MeleeWeapon.class, data.weapon, ItemSelector.NullTypeSelector.NOTHING) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    data.weapon = (Weapon) selectedItem;
+                }
+            };
+            startWeapon.setShowWhenNull(ItemSpriteSheet.WEAPON_HOLDER);
+            itemSelectorParent.add(startWeapon);
+            startArmor = new StyledItemSelector("ARMOR", Armor.class, data.armor, ItemSelector.NullTypeSelector.NOTHING) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    data.armor = (Armor) selectedItem;
+                }
+            };
+            startArmor.setShowWhenNull(ItemSpriteSheet.ARMOR_HOLDER);
+            itemSelectorParent.add(startArmor);
+            startRing = new StyledItemSelector("RING", Ring.class, data.ring, ItemSelector.NullTypeSelector.NOTHING) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    data.ring = (Ring) selectedItem;
+                }
+            };
+            startRing.setShowWhenNull(ItemSpriteSheet.RING_HOLDER);
+            itemSelectorParent.add(startRing);
+            startArti = new StyledItemSelector("ARTIFACT", Artifact.class, data.artifact, ItemSelector.NullTypeSelector.NOTHING) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    data.artifact = (Artifact) selectedItem;
+                }
+            };
+            startArti.setShowWhenNull(ItemSpriteSheet.ARTIFACT_HOLDER);
+            itemSelectorParent.add(startArti);
+            startMisc = new StyledItemSelector("MISC", KindofMisc.class, data.misc, ItemSelector.NullTypeSelector.NOTHING) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    data.misc = (KindofMisc) selectedItem;
+                }
+            };
+            startMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
+            itemSelectorParent.add(startMisc);
+            add(itemSelectorParent);
+
+            //TODO title
+            startBags = new ItemContainer<Bag>(data.bags) {
+                @Override
+                public boolean itemSelectable(Item item) {
+                    return item instanceof Bag;
+                }
+
+                @Override
+                protected void onSlotNumChange() {
+                    if (startItems != null) HeroTab.this.layout();
+//                    boolean wasVisible = addBtn.visible;
+//                    addBtn.visible = addBtn.active = getNumSlots() < 4;
+//                    if (addBtn.visible != wasVisible) {
+//                        WndEditorSettings wnd = (WndEditorSettings) EditorUtilies.getParentWindow(this);
+//                        if (wnd != null) wnd.getGeneralTab().layout();
+//                    }
+                }
+
+                @Override
+                protected void showSelectWindow() {
+                    Set<Class<? extends Item>> exclude = new HashSet<>(5);
+//                    for (Bag b : data.bags) exclude.add(b.getClass());
+                    ItemSelector.showSelectWindow(startBags, ItemSelector.NullTypeSelector.NONE, Bag.class, exclude);
+                }
+            };
+            add(startBags);
+            startItems = new ItemContainer<Item>(data.items) {
+
+                @Override
+                public boolean itemSelectable(Item item) {
+                    return !(item instanceof Gold || item instanceof EnergyCrystal || item instanceof Bag);
+                }
+
+                @Override
+                protected void onSlotNumChange() {
+                    if (startItems != null) HeroTab.this.layout();
+                }
+            };
+            add(startItems);
         }
 
+        @Override
+        protected void layout() {
+
+            int gap = 2;
+
+            float posY = y;
+
+            if (heroEnabled != null) {
+                heroEnabled.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+                PixelScene.align(heroEnabled);
+                posY = heroEnabled.bottom() + gap;
+            }
+            itemSelectorParent.setPos(x, posY);
+            EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent, new Component[]{startWeapon, startArmor, startRing, startArti, startMisc});
+            PixelScene.align(itemSelectorParent);
+            posY = itemSelectorParent.bottom() + gap;
+            startBags.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(startBags);
+            posY = startBags.bottom() + gap;
+            startItems.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(startItems);
+            posY = startItems.bottom() + gap;
+
+            height = (posY - y - gap);
+        }
     }
 
     public static class HeroStartItemsData implements Bundlable {

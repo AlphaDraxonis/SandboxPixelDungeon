@@ -3,7 +3,6 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.HeapActionPart;
@@ -61,22 +60,7 @@ public abstract class DefaultEditComp<T> extends Component {
     }
 
     protected final void layoutCompsLinear(Component... comps) {
-        if (comps == null) return;
-
-        float posY = y + height + WndTitledMessage.GAP * 2 - 1;
-
-        boolean hasAtLeastOneComp = false;
-        for (Component c : comps) {
-            if (c != null) {
-                hasAtLeastOneComp = true;
-                c.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
-                PixelScene.align(c);
-                posY = c.bottom() + WndTitledMessage.GAP;
-            }
-        }
-
-//        if (hasAtLeastOneComp) height = (int)(posY - y - WndTitledMessage.GAP);
-        if (hasAtLeastOneComp) height = (posY - y - WndTitledMessage.GAP);
+        height = EditorUtilies.layoutCompsLinear(WndTitledMessage.GAP, this, comps);
     }
 
     protected abstract Component createTitle();
