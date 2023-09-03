@@ -85,12 +85,7 @@ public class CustomDungeonSaves {
         setCurDirectory(DUNGEON_FOLDER + name.replace(' ', '_') + "/");
         FileHandle file = FileUtils.getFileHandle(curDirectory + DUNGEON_DATA);
         if (!file.exists()) {
-            for (String path : getFilesInDir(DUNGEON_FOLDER)) {
-                FileHandle datFile = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
-                if (datFile.exists() && ((Info) FileUtils.bundleFromStream(datFile.read()).get(INFO)).name.equals(name))
-                    throw new RenameRequiredException(FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path), name, null);
-            }
-            throw new RenameRequiredException(FileUtils.getFileHandle(DUNGEON_FOLDER + name), name, null);
+            throw new RenameRequiredException(FileUtils.getFileHandle(DUNGEON_FOLDER + findActualDungeonFolderName(name)), name, null);
         }
         return (CustomDungeon) FileUtils.bundleFromStream(file.read()).get(DUNGEON);
     }
@@ -127,8 +122,9 @@ public class CustomDungeonSaves {
         FileHandle file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name));
         if (!file.exists())//Still: it is important to rename old ones properly before or they might override other files
             file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name.replace(' ', '_')));
-        return  (CustomLevel) FileUtils.bundleFromStream(file.read()).get(FLOOR);
+        return (CustomLevel) FileUtils.bundleFromStream(file.read()).get(FLOOR);
     }
+
     public static void saveLevelWithOgName(Level level) throws IOException {
         Bundle bundle = new Bundle();
         bundle.put(FLOOR, level);
@@ -146,7 +142,11 @@ public class CustomDungeonSaves {
     }
 
     public static boolean deleteDungeonFile(String dungeonName) {
-        return FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + dungeonName.replace(' ', '_')).deleteDirectory();
+        try {
+            return FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + findActualDungeonFolderName(dungeonName)).deleteDirectory();
+        } catch (IOException e) {
+            return FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + dungeonName.replace(' ', '_')).deleteDirectory();
+        }
     }
 
     public static CustomDungeon renameDungeon(String oldName, String newName) throws IOException {
@@ -163,6 +163,15 @@ public class CustomDungeonSaves {
         FileHandle fileOld = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, oldName.replace(' ', '_')));
         FileHandle fileNew = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, newName.replace(' ', '_')));
         fileOld.moveTo(fileNew);
+    }
+
+    private static String findActualDungeonFolderName(String dungeonName) throws IOException {
+        for (String path : getFilesInDir(DUNGEON_FOLDER)) {
+            FileHandle datFile = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
+            if (datFile.exists() && ((Info) FileUtils.bundleFromStream(datFile.read()).get(INFO)).name.equals(dungeonName))
+                return path;
+        }
+        return dungeonName;
     }
 
     private static List<String> getFilesInDir(String name) {

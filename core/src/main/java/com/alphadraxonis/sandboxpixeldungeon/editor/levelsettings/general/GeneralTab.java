@@ -60,7 +60,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
             protected void onClick() {
                 SetPotionScrollRingType change = SetPotionScrollRingType.createPotionWnd(() -> closeCurrentSubMenu());
                 changeContent(SetPotionScrollRingType.createTitle(Messages.get(SetPotionScrollRingType.class, "title_potion")),
-                        change, change.getOutsideSp(), 0.5f);
+                        change, change.getOutsideSp());
             }
         };
         potionColors.icon(new ItemSprite(ItemSpriteSheet.POTION_AMBER));
@@ -71,7 +71,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
             protected void onClick() {
                 SetPotionScrollRingType change = SetPotionScrollRingType.createScrollWnd(() -> closeCurrentSubMenu());
                 changeContent(SetPotionScrollRingType.createTitle(Messages.get(SetPotionScrollRingType.class, "title_scroll")),
-                        change, change.getOutsideSp(), 0.5f);
+                        change, change.getOutsideSp());
             }
         };
         scrollRunes.icon(new ItemSprite(ItemSpriteSheet.SCROLL_BERKANAN));
@@ -82,7 +82,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
             protected void onClick() {
                 SetPotionScrollRingType change = SetPotionScrollRingType.createRingWnd(() -> closeCurrentSubMenu());
                 changeContent(SetPotionScrollRingType.createTitle(Messages.get(SetPotionScrollRingType.class, "title_ring")),
-                        change, change.getOutsideSp(), 0.5f);
+                        change, change.getOutsideSp());
             }
         };
         ringGems.icon(new ItemSprite(ItemSpriteSheet.RING_AMETHYST));
@@ -235,7 +235,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
 
 
     protected void changeContent(Component titleBar, Component body, Component outsideSp) {
-        changeContent(titleBar, body, outsideSp, 0);
+        changeContent(titleBar, body, outsideSp, 0.5f);
     }
 
     protected void changeContent(Component titleBar, Component body, Component outsideSp, float alignment) {

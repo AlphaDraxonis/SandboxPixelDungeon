@@ -101,6 +101,7 @@ public class WndSelectDungeon extends Window {
             if (createNewDungeonBtn != null || info.numLevels > 0)
                 listPane.addItem(new ListItem(info));
         }
+        listPane.scrollToCurrentView();
     }
 
     protected void select(String customDungeonName) {
