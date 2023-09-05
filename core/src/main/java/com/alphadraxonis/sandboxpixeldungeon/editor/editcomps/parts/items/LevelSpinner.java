@@ -3,6 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 
 public class LevelSpinner extends Spinner {
@@ -12,6 +13,7 @@ public class LevelSpinner extends Spinner {
         super(new LevelSpinnerModel(item.level()), " "+ Messages.get(LevelSpinner.class,"label") + ":", 10);
         addChangeListener(() -> {
             item.level((int) getValue());
+            if (item instanceof Wand) ((Wand) item).curCharges = ((Wand) item).maxCharges;
             onChange();
         });
     }
