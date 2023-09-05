@@ -22,6 +22,7 @@
 package com.watabou.input;
 
 import com.badlogic.gdx.Input;
+import com.watabou.noosa.Game;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -63,7 +64,9 @@ public class KeyBindings {
 	public static boolean bindingKey = false;
 
 	public static boolean isKeyBound(int keyCode){
-		if (keyCode < 0 || (keyCode > 255 && keyCode < 1000)){
+		if (keyCode == Input.Keys.H)
+			keyCode = (Game.scene().getClass().getName().contains(".editor.") ? 593291 : 593292);
+		else if (keyCode < 0 || (keyCode > 255 && keyCode < 1000)){
 			return false;
 		}
 		return bindingKey
@@ -73,6 +76,10 @@ public class KeyBindings {
 	}
 	
 	public static GameAction getActionForKey(KeyEvent event){
+
+		if (event.code == Input.Keys.H)
+			event.code = (Game.scene().getClass().getName().contains(".editor.") ? 593291 : 593292);
+
 		if (bindings.containsKey( event.code )) {
 			return bindings.get( event.code );
 		} else if (controllerBindings.containsKey( event.code )){
@@ -151,6 +158,7 @@ public class KeyBindings {
 //				return keyCode+" "+Input.Keys.toString(keyCode);
 			}
 
+			if (keyCode >= 593291) keyCode = Input.Keys.H;
 			return Input.Keys.toString(keyCode);
 		}
 	}

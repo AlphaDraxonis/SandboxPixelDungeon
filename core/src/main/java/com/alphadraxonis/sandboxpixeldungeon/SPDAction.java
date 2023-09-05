@@ -154,7 +154,7 @@ public class SPDAction extends GameAction {
 		defaultBindings.put( Input.Keys.ENTER,          SPDAction.TAG_LOOT );
 		defaultBindings.put( Input.Keys.R,              SPDAction.TAG_RESUME );
 
-		defaultBindings.put( Input.Keys.H,              SPDAction.HERO_INFO );
+		defaultBindings.put( 593292,                    SPDAction.HERO_INFO );
 		defaultBindings.put( Input.Keys.J,              SPDAction.JOURNAL );
 
 		defaultBindings.put( Input.Keys.PLUS,           SPDAction.ZOOM_IN );
@@ -162,7 +162,7 @@ public class SPDAction extends GameAction {
 		defaultBindings.put( Input.Keys.MINUS,          SPDAction.ZOOM_OUT );
 
 		defaultBindings.put( Input.Keys.G,              SPDAction.UNDO );
-		defaultBindings.put( Input.Keys.H,              SPDAction.REDO );
+		defaultBindings.put( 593291,                    SPDAction.REDO );
 
 		defaultBindings.put( Input.Keys.CONTROL_LEFT,   SPDAction.CONTROL );
 		defaultBindings.put( Input.Keys.CONTROL_RIGHT,  SPDAction.CONTROL );
