@@ -25,6 +25,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseOneInCategoriesBody
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.WndChooseOneInCategories;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -33,6 +34,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.SentryRoom;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.MimicSprite;
@@ -68,6 +70,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final QuestSpinner questSpinner;
     private final ItemSelector questItem1, questItem2;
     private final CheckBox spawnQuestRoom;
+
+    private final Spinner sentryRange, sentryDelay;
 
     private final Component[] comps;
 
@@ -278,6 +282,25 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             questItem2 = null;
         }
 
+        if (mob instanceof SentryRoom.Sentry) {
+            sentryRange = new Spinner(new SpinnerIntegerModel(1, 100, ((SentryRoom.Sentry) mob).range, 1, false, null){
+                @Override
+                public float getInputFieldWith(float height) {
+                    return height * 1.4f;
+                }
+            },
+                    " " + Messages.get(EditMobComp.class, "range") + ":", 9);
+            sentryRange.addChangeListener(() -> ((SentryRoom.Sentry) mob).range = (int) sentryRange.getValue());
+            add(sentryRange);
+            sentryDelay = new Spinner(new SpinnerFloatModel(0f, 100f,((SentryRoom.Sentry) mob).getInitialChargeDelay() - 1, false),
+                    " " + Messages.get(EditMobComp.class, "delay") + ":", 9);
+            sentryDelay.addChangeListener(() -> ((SentryRoom.Sentry) mob).setInitialChargeDelay(((SpinnerFloatModel) sentryDelay.getModel()).getAsFloat() + 1));
+            add(sentryDelay);
+        } else {
+            sentryRange = null;
+            sentryDelay = null;
+        }
+
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
                 mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper)) {
             addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
@@ -339,7 +362,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         } else editStats = null;
 
         comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, sheepLifespan,
-                mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, addBuffs, editStats};
+                mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, sentryRange, sentryDelay,
+                addBuffs, editStats};
     }
 
     @Override

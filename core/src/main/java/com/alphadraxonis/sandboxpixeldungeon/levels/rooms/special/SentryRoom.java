@@ -41,6 +41,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.painters.Painter;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.EmptyRoom;
+import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.MobSprite;
@@ -78,6 +79,7 @@ public class SentryRoom extends SpecialRoom {
 
 		//length of dangerous path from entrance to treasure and back
 		int dangerDist = 0;
+		int sentryRange = 0;
 
 		//determine position of sentry, treasure, and paint safe tiles / statues
 		if (entrance.x == left){
@@ -96,6 +98,7 @@ public class SentryRoom extends SpecialRoom {
 				} else {
 					Painter.set(level, x, center.y, Terrain.STATUE);
 				}
+				sentryRange++;
 			}
 			dangerDist = 2*(width()-5);
 		} else if (entrance.x == right){
@@ -114,6 +117,7 @@ public class SentryRoom extends SpecialRoom {
 				} else {
 					Painter.set(level, x, center.y, Terrain.STATUE);
 				}
+				sentryRange++;
 			}
 			dangerDist = 2*(width()-5);
 		} else if (entrance.y == top){
@@ -132,6 +136,7 @@ public class SentryRoom extends SpecialRoom {
 				} else {
 					Painter.set(level, center.x, y, Terrain.STATUE);
 				}
+				sentryRange++;
 			}
 			dangerDist = 2*(height()-5);
  		} else  if (entrance.y == bottom){
@@ -150,6 +155,7 @@ public class SentryRoom extends SpecialRoom {
 				} else {
 					Painter.set(level, center.x, y, Terrain.STATUE);
 				}
+				sentryRange++;
 			}
 			dangerDist = 2*(height()-5);
 		}
@@ -159,7 +165,8 @@ public class SentryRoom extends SpecialRoom {
 		sentry.pos = level.pointToCell(sentryPos);
 		sentry.room = new EmptyRoom();
 		sentry.room.set((Rect)this);
-		sentry.initialChargeDelay = sentry.curChargeDelay = dangerDist / 3f + 0.1f;
+		sentry.range = sentryRange;
+		sentry.setInitialChargeDelay(dangerDist / 3f + 0.1f);
 		level.mobs.add( sentry );
 
 		Painter.set(level, treasurePos, Terrain.PEDESTAL);
@@ -225,7 +232,8 @@ public class SentryRoom extends SpecialRoom {
 		private float initialChargeDelay;
 		private float curChargeDelay;
 
-		private EmptyRoom room;
+		public EmptyRoom room;
+		public int range = 5;//only room OR range is used
 
 		@Override
 		protected boolean act() {
@@ -241,7 +249,7 @@ public class SentryRoom extends SpecialRoom {
 			if (Dungeon.hero != null){
 				if (fieldOfView[Dungeon.hero.pos]
 						&& Dungeon.level.map[Dungeon.hero.pos] == Terrain.EMPTY_SP
-						&& room.inside(Dungeon.level.cellToPoint(Dungeon.hero.pos))
+						&& isInRange(Dungeon.hero.pos)
 						&& Dungeon.hero.buff(LostInventory.class) == null){
 
 					if (curChargeDelay > 0.001f){ //helps prevent rounding errors
@@ -289,6 +297,22 @@ public class SentryRoom extends SpecialRoom {
 			}
 		}
 
+		private boolean isInRange(int pos) {
+			if (room == null) {
+				Ballistica b = new Ballistica(this.pos, pos, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET);
+				return b.collisionPos == pos && b.dist <= range;
+			}
+			return room.inside(Dungeon.level.cellToPoint(pos));
+		}
+
+		public void setInitialChargeDelay(float initialChargeDelay) {
+			this.initialChargeDelay = curChargeDelay = initialChargeDelay;
+		}
+
+		public float getInitialChargeDelay() {
+			return initialChargeDelay;
+		}
+
 		@Override
 		public int attackSkill(Char target) {
 			return 20 + Dungeon.depth * 2;
@@ -322,6 +346,7 @@ public class SentryRoom extends SpecialRoom {
 		private static final String INITIAL_DELAY = "initial_delay";
 		private static final String CUR_DELAY = "cur_delay";
 		private static final String ROOM = "room";
+		private static final String RANGE = "range";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
@@ -329,6 +354,7 @@ public class SentryRoom extends SpecialRoom {
 			bundle.put(INITIAL_DELAY, initialChargeDelay);
 			bundle.put(CUR_DELAY, curChargeDelay);
 			bundle.put(ROOM, room);
+			bundle.put(RANGE, range);
 		}
 
 		@Override
@@ -337,6 +363,7 @@ public class SentryRoom extends SpecialRoom {
 			initialChargeDelay = bundle.getFloat(INITIAL_DELAY);
 			curChargeDelay = bundle.getFloat(CUR_DELAY);
 			room = (EmptyRoom) bundle.get(ROOM);
+			range = bundle.getInt(RANGE);
 		}
 	}
 

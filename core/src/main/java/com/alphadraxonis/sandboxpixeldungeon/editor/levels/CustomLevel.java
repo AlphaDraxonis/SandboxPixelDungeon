@@ -44,6 +44,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.painters.Painter;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MagicalFireRoom;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.SentryRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.BlazingTrap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.BurningTrap;
@@ -261,6 +262,10 @@ public class CustomLevel extends Level {
 
             Dungeon.customDungeon.removeFloor(temp);
             Dungeon.levelName = name;
+
+            for (Mob m : mobs) {
+                if (m instanceof SentryRoom.Sentry) ((SentryRoom.Sentry) m).room = null;
+            }
 
 //            changeMapSize(this, 85, 85);
         } else {

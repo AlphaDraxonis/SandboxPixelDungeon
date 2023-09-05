@@ -5,6 +5,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditMobComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.items.stones.StoneOfAugmentation;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -144,7 +145,7 @@ public class WndEditStats extends Window {
             Mob def = (Mob) defaultStats;
 
             hp.setValue(def.HT);
-            speed.setValue(FloatSpinnerModel.convertToInt(def.baseSpeed));
+            speed.setValue(SpinnerFloatModel.convertToInt(def.baseSpeed));
             attackSkill.setValue(def.attackSkill);
             defenseSkill.setValue(def.defenseSkill);
             armor.setValue(def.damageReductionMax);
@@ -156,41 +157,15 @@ public class WndEditStats extends Window {
     private static class FloatSpinner extends Spinner {
 
         public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity) {
-            super(new FloatSpinnerModel(minimum, maximum, value, false), name, 9);
+            super(new SpinnerFloatModel(minimum, maximum, value, false), name, 9);
             setButtonWidth(12);
         }
 
         protected float getAsFloat() {
-            return ((FloatSpinnerModel) getModel()).getAsFloat();
+            return ((SpinnerFloatModel) getModel()).getAsFloat();
         }
     }
 
-
-    private static class FloatSpinnerModel extends SpinnerIntegerModel {
-
-        public FloatSpinnerModel(float minimum, float maximum, float value, boolean includeInfinity) {
-            super(convertToInt(minimum), convertToInt(maximum), convertToInt(value), 1, includeInfinity, includeInfinity ? INFINITY : null);
-        }
-
-        public static int convertToInt(float val) {
-            return (int) (val * 10 + 0.01f);
-        }
-
-        protected float getAsFloat() {
-            if (getValue() == null) return -1;
-            return ((int) getValue()) / 10f;
-        }
-
-        @Override
-        public String getDisplayString() {
-            return getValue() == null ? super.getDisplayString() : Float.toString(getAsFloat());
-        }
-
-        @Override
-        public float getInputFieldWith(float height) {
-            return height * 1.4f;
-        }
-    }
 
     private static class IntegerSpinner extends Spinner {
 

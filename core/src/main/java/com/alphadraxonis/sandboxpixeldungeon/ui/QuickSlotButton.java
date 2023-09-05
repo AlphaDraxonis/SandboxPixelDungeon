@@ -266,7 +266,7 @@ public class QuickSlotButton extends Button {
     @Override
     protected void onClick() {
         if (CustomDungeon.isEditing()) {
-            EditorScene.selectItem(itemSelector);
+            EditorScene.selectItem(editorItemSelector);
             return;
         }
         if (Dungeon.hero.ready && !GameScene.cancel()) {
@@ -300,6 +300,26 @@ public class QuickSlotButton extends Button {
         @Override
         public boolean itemSelectable(Item item) {
             return item.defaultAction() != null;
+        }
+
+        @Override
+        public void onSelect(Item item) {
+            if (item != null) {
+                set(slotNum, item);
+            }
+        }
+    };
+
+    private WndBag.ItemSelector editorItemSelector = new WndBag.ItemSelector() {
+
+        @Override
+        public String textPrompt() {
+            return Messages.get(QuickSlotButton.class, "select_item");
+        }
+
+        @Override
+        public boolean itemSelectable(Item item) {
+            return true;
         }
 
         @Override

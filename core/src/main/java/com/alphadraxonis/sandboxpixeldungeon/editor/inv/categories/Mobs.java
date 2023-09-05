@@ -66,6 +66,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.SentryRoom;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.BatSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.GnollSprite;
@@ -202,7 +203,8 @@ public enum Mobs {
                 Bee.class,
                 Mimic.class,
                 GoldenMimic.class,
-                CrystalMimic.class
+                CrystalMimic.class,
+                SentryRoom.Sentry.class
         };
 
         SEWER.classes = new Class[]{
