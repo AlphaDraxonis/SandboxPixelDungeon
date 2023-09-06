@@ -23,6 +23,7 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.PointF;
 
 import java.io.IOException;
 
@@ -35,9 +36,10 @@ public class SideControlPane extends Component {
     public SideControlPane(boolean editor) {
 
         if (editor) {
-            buttons = new Component[2];
+            buttons = new Component[3];
             buttons[0] = new StartBtn();
             buttons[1] = new PipetteBtn();
+            buttons[2] = new FillBtn();
         } else {
             buttons = new Component[8];
             buttons[0] = new ExitBtn();
@@ -77,8 +79,17 @@ public class SideControlPane extends Component {
         protected boolean btnEnabled;
 
         public SideControlButton(int num) {
+            this(num, false);
+        }
 
-            icon = new Image(Assets.Interfaces.SIDE_CONTROL_BUTTONS, 0, 13 * num, 12, 13);
+        public SideControlButton(int num, boolean large) {
+
+            if(large){
+                icon = new Image(Assets.Interfaces.SIDE_CONTROL_BUTTONS_LARGE, 0, 26 * num, 24,26);
+                icon.scale = new PointF(0.5f, 0.5f);
+            }else {
+                icon = new Image(Assets.Interfaces.SIDE_CONTROL_BUTTONS, 0, 13 * num, 12,13);
+            }
             add(icon);
 
             width = bg.width;
@@ -173,6 +184,24 @@ public class SideControlPane extends Component {
         @Override
         protected void onClick() {
             EditorScene.selectCell(pickObjCellListener);
+        }
+
+        @Override
+        protected String hoverText() {
+            return null;
+        }
+    }
+
+    private static class FillBtn extends SideControlButton {
+
+        public FillBtn() {
+            super(1, true);
+            enable(true);
+        }
+
+        @Override
+        protected void onClick() {
+            EditorScene.selectCell(fillAllCellListener);
         }
 
         @Override
@@ -389,6 +418,24 @@ public class SideControlPane extends Component {
         @Override
         public String prompt() {
             return Messages.get(SideControlPane.class, "pick_obj_prompt");
+        }
+    };
+    private static final CellSelector.Listener fillAllCellListener = new CellSelector.Listener() {
+        @Override
+        public void onSelect(Integer cell) {
+            EditorScene.fillAllWithOnTerrain(cell);
+        }
+
+        @Override
+        public void onRightClick(Integer cell) {
+            if (cell != null && cell >= 0 && cell < EditorScene.customLevel().length()) {
+                EditorScene.showEditCellWindow(cell);
+            }
+        }
+
+        @Override
+        public String prompt() {
+            return Messages.get(SideControlPane.class, "fill_all_prompt");
         }
     };
 
