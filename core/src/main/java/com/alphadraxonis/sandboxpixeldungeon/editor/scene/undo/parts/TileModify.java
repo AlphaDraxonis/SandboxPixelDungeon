@@ -11,7 +11,7 @@ public final class TileModify implements ActionPartModify {
     private final LevelTransition transitionBefore;
     private LevelTransition transitionAfter;
 
-    private final BlobEditPart.BlobData blobsBefore;
+    private final BlobEditPart.BlobData blobsBefore;//This is basically only BlobEditPart-Modify...
     private BlobEditPart.BlobData blobsAfter;
 
     private final int cell;

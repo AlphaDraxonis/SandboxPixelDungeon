@@ -263,7 +263,7 @@ public class TileItem extends EditorItem {
             }
 
             ActionPartModify blobEditPart = new BlobEditPart.Modify(cell);
-            BlobEditPart.clearAtCell(cell);//TODO don't clear all!
+            BlobEditPart.clearWellWaterAtCell(cell);
             blobEditPart.finish();
             addActionPart(blobEditPart);
 

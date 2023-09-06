@@ -158,6 +158,7 @@ public abstract class EditorItem extends Item {
             CustomLevel level = EditorScene.customLevel();
             ActionPart part = MobItem.remove(level.getMobAtCell(cell));
             //would be better if the if-statements were nested...
+            if (part == null) part = BlobItem.remove(cell);
             if (part == null) part = ItemItem.remove(cell, level);
             if (part == null) part = PlantItem.remove(cell, level);
             if (part == null) part = TrapItem.remove(level.traps.get(cell));

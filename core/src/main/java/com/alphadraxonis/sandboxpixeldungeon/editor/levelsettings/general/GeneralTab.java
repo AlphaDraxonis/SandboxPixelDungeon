@@ -208,9 +208,6 @@ public class GeneralTab extends WndEditorSettings.TabComp {
             float makeSpSmaller = Math.max(0, (normalSpHeight - otherBody.height()) * alignmentOther);
             spForOtherBody.setRect(x, posY + makeSpSmaller, width, normalSpHeight - makeSpSmaller);
 
-            if (outsideSp != null)
-                spForOtherBody.setControllerSize(spForOtherBody.width(), spForOtherBody.height() + outsideSp.height() + GAP);
-
             spForOtherBody.scrollToCurrentView();
         }
     }

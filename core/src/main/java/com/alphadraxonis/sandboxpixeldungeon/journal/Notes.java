@@ -63,6 +63,7 @@ public class Notes {
 	public enum Landmark {
 		WELL_OF_HEALTH,
 		WELL_OF_AWARENESS,
+		WELL_OF_TRANSMUTATION,
 		ALCHEMY,
 		GARDEN,
 		STATUE,

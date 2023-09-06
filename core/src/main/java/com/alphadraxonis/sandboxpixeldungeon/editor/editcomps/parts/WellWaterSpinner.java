@@ -5,6 +5,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.WaterOfAwareness;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.WaterOfHealth;
+import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.WaterOfTransmutation;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.BlobEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
@@ -25,7 +26,7 @@ public class WellWaterSpinner extends Spinner {
     }
 
     private void apply() {
-        BlobEditPart.clearAtCell(cell);
+        BlobEditPart.clearAllAtCell(cell);
         switch ((WellWaters) getValue()) {
             case HEALTH:
                 EditorScene.add(Blob.seed(cell, 1, WaterOfHealth.class));
@@ -33,13 +34,17 @@ public class WellWaterSpinner extends Spinner {
             case AWARENESS:
                 EditorScene.add(Blob.seed(cell, 1, WaterOfAwareness.class));
                 break;
+            case TRANSMUTATION:
+                EditorScene.add(Blob.seed(cell, 1, WaterOfTransmutation.class));
+                break;
         }
     }
 
     public enum WellWaters {
         NONE,
         HEALTH,
-        AWARENESS;
+        AWARENESS,
+        TRANSMUTATION;
 
         public int getIndex() {
             switch (this) {
@@ -50,6 +55,8 @@ public class WellWaterSpinner extends Spinner {
                     return 1;
                 case AWARENESS:
                     return 2;
+                case TRANSMUTATION:
+                    return 3;
             }
             return -1;
         }
@@ -63,6 +70,8 @@ public class WellWaterSpinner extends Spinner {
         if (b != null && b.cur != null && b.cur[cell] > 0) return WellWaters.HEALTH;
         b = Dungeon.level.blobs.get(WaterOfAwareness.class);
         if (b != null && b.cur != null && b.cur[cell] > 0) return WellWaters.AWARENESS;
+        b = Dungeon.level.blobs.get(WaterOfTransmutation.class);
+        if (b != null && b.cur != null && b.cur[cell] > 0) return WellWaters.TRANSMUTATION;
         return WellWaters.NONE;
     }
 
@@ -90,6 +99,12 @@ public class WellWaterSpinner extends Spinner {
                     icon = new Image(Assets.Sprites.ITEM_ICONS);
                     icon.frame(r);
                     return icon;
+                case TRANSMUTATION:
+                    r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_TRANSMUTE);
+                    if (r == null) return new Image();
+                    icon = new Image(Assets.Sprites.ITEM_ICONS);
+                    icon.frame(r);
+                    return icon;
             }
         }
 
@@ -103,6 +118,8 @@ public class WellWaterSpinner extends Spinner {
                     return " " + Messages.get(WellWaterSpinner.class, "health");
                 case AWARENESS:
                     return " " + Messages.get(WellWaterSpinner.class, "awareness");
+                case TRANSMUTATION:
+                    return " " + Messages.get(WellWaterSpinner.class, "transmutation");
             }
         }
     }
