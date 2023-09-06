@@ -8,6 +8,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.ItemItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
@@ -166,7 +167,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         return slots.size();
     }
 
-    private static final int GAP = 2;
+    protected static final int GAP = 2;
 
     @Override
     protected void layout() {
@@ -174,6 +175,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         float posX = x + GAP;
         for (Slot slot : slots) {
             slot.setRect(posX, posY, WndMenuEditor.BTN_HEIGHT, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(slot);
             posX = slot.right() + GAP;
             if (posX + WndMenuEditor.BTN_HEIGHT > width + x) {
                 posY = slot.bottom() + GAP;
@@ -182,6 +184,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         }
         if (addBtn.visible) {
             addBtn.setRect(posX, posY, WndMenuEditor.BTN_HEIGHT, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(addBtn);
             posY = addBtn.bottom() + WndTitledMessage.GAP;
         } else {
             Slot lastSlot = slots.getLast();

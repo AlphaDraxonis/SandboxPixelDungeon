@@ -2,16 +2,19 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general;
 
 import static com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings.ITEM_HEIGHT;
 
+import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
-import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.ItemContainer;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.StyledItemSelector;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.effects.BadgeBanner;
 import com.alphadraxonis.sandboxpixeldungeon.items.EnergyCrystal;
@@ -24,6 +27,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
@@ -40,6 +44,7 @@ import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PointF;
 import com.watabou.utils.Signal;
 
 import java.util.ArrayList;
@@ -49,23 +54,12 @@ import java.util.Set;
 
 public class HeroSettings extends Component {
 
-    private static class StyldeButton extends StyledButton {
-
-        public StyldeButton(Chrome.Type type, String label) {
-            super(type, label);
-        }
-
-        public NinePatch getBg() {
-            return bg;
-        }
-    }
-
     private static int currentIndex = 0;
 
     private final Component outsideSp;
     private IconTitle title;
 
-    private StyldeButton[] switchTabs;
+    private TabControlButton[] switchTabs;
 
     private final HeroTab[] heroTabs;
 
@@ -89,21 +83,10 @@ public class HeroSettings extends Component {
 
             @Override
             protected void createChildren(Object... params) {
-                switchTabs = new StyldeButton[HeroClass.values().length + 1];
+                switchTabs = new TabControlButton[HeroClass.values().length + 1];
                 for (int j = 0; j < switchTabs.length; j++) {
-                    final int index = j;
-                    switchTabs[j] = new StyldeButton(Chrome.Type.GREY_BUTTON_TR, "") {
-                        @Override
-                        protected void onClick() {
-                            selectTab(index);
-                        }
-
-                        @Override
-                        protected String hoverText() {
-                            return getTabName(index);
-                        }
-                    };
-                    switchTabs[j].icon(createTabIcon(index));
+                    switchTabs[j] = new TabControlButton(j);
+                    switchTabs[j].icon(createTabIcon(j));
                     add(switchTabs[j]);
 
                     KeyEvent.addKeyListener(keyListener = keyEvent -> {
@@ -181,10 +164,7 @@ public class HeroSettings extends Component {
         currentIndex = index;
 
         for (int i = 0; i < switchTabs.length; i++) {
-            if (i == index) {
-                switchTabs[i].getBg().hardlight(index * 0.1f + 0.7f, index * 0.1f + 0.7f, 0);
-//                switchTabs[i].getBg().lightness(index*0.2f);
-            } else switchTabs[i].getBg().resetColor();
+            switchTabs[i].setSelected(i == index);
         }
 
         if (title != null) {
@@ -228,18 +208,17 @@ public class HeroSettings extends Component {
     private static class HeroTab extends Component {
 
         private CheckBox heroEnabled;
-        private final ItemContainer<Item> startItems;
-        private final ItemContainer<Bag> startBags;
+        private final ItemContainerWithLabel<Item> startItems;
+        private final ItemContainerWithLabel<Bag> startBags;
         private final ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
-
-//        private final  StyledSpinner gold, energy; TODO!!
+        private final StyledSpinner startGold, startEnergy;
 
         private final Component itemSelectorParent;
 
         public HeroTab(int index) {
 
             if (index >= 1) {
-                heroEnabled = new CheckBox("HERO ENABLED" + index) {
+                heroEnabled = new CheckBox(Messages.get(HeroSettings.class, "unlocked")) {
                     @Override
                     public void checked(boolean value) {
                         super.checked(value);
@@ -254,7 +233,7 @@ public class HeroSettings extends Component {
 
             itemSelectorParent = new Component();
 
-            startWeapon = new StyledItemSelector("WEAPON", MeleeWeapon.class, data.weapon, ItemSelector.NullTypeSelector.NOTHING) {
+            startWeapon = new StyledItemSelector(Messages.get(HeroSettings.class, "weapon"), MeleeWeapon.class, data.weapon, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -263,7 +242,7 @@ public class HeroSettings extends Component {
             };
             startWeapon.setShowWhenNull(ItemSpriteSheet.WEAPON_HOLDER);
             itemSelectorParent.add(startWeapon);
-            startArmor = new StyledItemSelector("ARMOR", Armor.class, data.armor, ItemSelector.NullTypeSelector.NOTHING) {
+            startArmor = new StyledItemSelector(Messages.get(HeroSettings.class, "armor"), Armor.class, data.armor, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -272,7 +251,7 @@ public class HeroSettings extends Component {
             };
             startArmor.setShowWhenNull(ItemSpriteSheet.ARMOR_HOLDER);
             itemSelectorParent.add(startArmor);
-            startRing = new StyledItemSelector("RING", Ring.class, data.ring, ItemSelector.NullTypeSelector.NOTHING) {
+            startRing = new StyledItemSelector(Messages.get(HeroSettings.class, "ring"), Ring.class, data.ring, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -281,7 +260,7 @@ public class HeroSettings extends Component {
             };
             startRing.setShowWhenNull(ItemSpriteSheet.RING_HOLDER);
             itemSelectorParent.add(startRing);
-            startArti = new StyledItemSelector("ARTIFACT", Artifact.class, data.artifact, ItemSelector.NullTypeSelector.NOTHING) {
+            startArti = new StyledItemSelector(Messages.get(HeroSettings.class, "artifact"), Artifact.class, data.artifact, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -290,7 +269,7 @@ public class HeroSettings extends Component {
             };
             startArti.setShowWhenNull(ItemSpriteSheet.ARTIFACT_HOLDER);
             itemSelectorParent.add(startArti);
-            startMisc = new StyledItemSelector("MISC", KindofMisc.class, data.misc, ItemSelector.NullTypeSelector.NOTHING) {
+            startMisc = new StyledItemSelector(Messages.get(HeroSettings.class, "misc"), KindofMisc.class, data.misc, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -299,10 +278,39 @@ public class HeroSettings extends Component {
             };
             startMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
             itemSelectorParent.add(startMisc);
+
+            startGold = new StyledSpinner(new SpinnerIntegerModel(0, 10000, data.gold, 1, false, null) {
+                @Override
+                public float getInputFieldWith(float height) {
+                    return height * 1.2f;
+                }
+
+                @Override
+                public int getClicksPerSecondWhileHolding() {
+                    return 150;
+                }
+            }, Messages.get(HeroSettings.class, "gold"), 8, Icons.GOLD.get());
+            startGold.icon().scale = new PointF(0.5f, 0.5f);
+            startGold.addChangeListener(() -> data.gold = (int) startGold.getValue());
+            itemSelectorParent.add(startGold);
+            startEnergy = new StyledSpinner(new SpinnerIntegerModel(0, 1000, data.energy, 1, false, null) {
+                @Override
+                public float getInputFieldWith(float height) {
+                    return height * 1.2f;
+                }
+
+                @Override
+                public int getClicksPerSecondWhileHolding() {
+                    return 15;
+                }
+            }, Messages.get(HeroSettings.class, "energy"), 8, Icons.ENERGY.get());
+            startEnergy.icon().scale = new PointF(0.5f, 0.5f);
+            startEnergy.addChangeListener(() -> data.energy = (int) startEnergy.getValue());
+            itemSelectorParent.add(startEnergy);
+
             add(itemSelectorParent);
 
-            //TODO title
-            startBags = new ItemContainer<Bag>(data.bags) {
+            startBags = new ItemContainerWithLabel<Bag>(data.bags, Messages.get(HeroSettings.class, "bags")) {
                 @Override
                 public boolean itemSelectable(Item item) {
                     return item instanceof Bag;
@@ -310,7 +318,9 @@ public class HeroSettings extends Component {
 
                 @Override
                 protected void onSlotNumChange() {
-                    if (startItems != null) HeroTab.this.layout();
+                    if (startItems != null) {
+                        ((WndEditorSettings) EditorUtilies.getParentWindow(this)).getGeneralTab().layout();
+                    }
 //                    boolean wasVisible = addBtn.visible;
 //                    addBtn.visible = addBtn.active = getNumSlots() < 4;
 //                    if (addBtn.visible != wasVisible) {
@@ -327,7 +337,7 @@ public class HeroSettings extends Component {
                 }
             };
             add(startBags);
-            startItems = new ItemContainer<Item>(data.items) {
+            startItems = new ItemContainerWithLabel<Item>(data.items, Messages.get(HeroSettings.class, "items")) {
 
                 @Override
                 public boolean itemSelectable(Item item) {
@@ -336,10 +346,15 @@ public class HeroSettings extends Component {
 
                 @Override
                 protected void onSlotNumChange() {
-                    if (startItems != null) HeroTab.this.layout();
+                    if (startItems != null) {
+                        ((WndEditorSettings) EditorUtilies.getParentWindow(this)).getGeneralTab().layout();
+                    }
                 }
             };
             add(startItems);
+            if (startItems.getStartColumnPos() > startBags.getStartColumnPos())
+                startBags.setStartColumnPos(startItems.getStartColumnPos());
+            else startItems.setStartColumnPos(startBags.getStartColumnPos());
         }
 
         @Override
@@ -355,7 +370,8 @@ public class HeroSettings extends Component {
                 posY = heroEnabled.bottom() + gap;
             }
             itemSelectorParent.setPos(x, posY);
-            EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent, new Component[]{startWeapon, startArmor, startRing, startArti, startMisc});
+            EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
+                    new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, startGold, startEnergy});
             PixelScene.align(itemSelectorParent);
             posY = itemSelectorParent.bottom() + gap;
             startBags.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
@@ -366,6 +382,54 @@ public class HeroSettings extends Component {
             posY = startItems.bottom() + gap;
 
             height = (posY - y - gap);
+        }
+    }
+
+    private class TabControlButton extends StyledButton {
+
+        private static final float SELECTED_R = 2f, SELECTED_G = 2f, SELECTED_B = 2f;
+
+        private boolean selected;
+
+        private final int index;
+
+        public TabControlButton(int index) {
+            super(Chrome.Type.GREY_BUTTON_TR, "");
+            this.index = index;
+
+            bg.remove();
+            bg.destroy();
+            bg = new NinePatch(Assets.Interfaces.CHROME, 20, 9, 9, 9, 4) {//Chrome.Type.GREY_BUTTON_TR
+
+                @Override
+                public void resetColor() {
+                    super.resetColor();
+                    if (selected) hardlight(SELECTED_R, SELECTED_G, SELECTED_B);
+                }
+
+                @Override
+                public void brightness(float value) {
+                    rm += value - 1f;
+                    gm += value - 1f;
+                    bm += value - 1f;
+                }
+            };
+            addToBack(bg);
+        }
+
+        @Override
+        protected void onClick() {
+            selectTab(index);
+        }
+
+        @Override
+        protected String hoverText() {
+            return getTabName(index);
+        }
+
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+            bg.resetColor();
         }
     }
 
