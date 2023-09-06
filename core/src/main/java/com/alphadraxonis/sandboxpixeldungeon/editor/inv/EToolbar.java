@@ -12,6 +12,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
@@ -19,6 +20,7 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
 import com.alphadraxonis.sandboxpixeldungeon.ui.QuickSlotButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Toolbar;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndKeyBindings;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndOptions;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
@@ -194,6 +196,22 @@ public class EToolbar extends Component {
                 if (!EditorScene.cancel()) {
                     EditorScene.show(new WndEditorInv(EditorItemBag.getLastBag()));
                 }
+            }
+
+            @Override
+            protected boolean onLongClick() {
+                EditorScene.show(new WndOptions(Messages.get(EToolbar.class, "clear_toolbar_title"),
+                        Messages.get(EToolbar.class, "clear_toolbar_body"),
+                        Messages.get(ExoticPotion.class, "yes"), Messages.get(ExoticPotion.class, "no")) {
+                    @Override
+                    protected void onSelect(int index) {
+                        if (index == 0) {
+                            clearToolbar();
+                            autoselect();
+                        }
+                    }
+                });
+                return true;
             }
 
             @Override
@@ -508,6 +526,18 @@ public class EToolbar extends Component {
     public static void unselectTemporarilyRemover() {
         if (instance == null) return;
         select(priorSelectedSlot);
+    }
+
+    public static void clearToolbar(){
+        try {
+            //couldn't find a better way...
+            for (int i = 0; i < instance.btnQuick.length; i++) {
+                QuickSlotButton.set(i, EditorItem.REMOVER_ITEM);
+            }
+            QuickSlotButton.set(0, EditorItem.REMOVER_ITEM);
+            CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
+        } catch (IOException ignored) {
+        }
     }
 
     private static class QuickslotTileTool extends Toolbar.QuickslotTool {
