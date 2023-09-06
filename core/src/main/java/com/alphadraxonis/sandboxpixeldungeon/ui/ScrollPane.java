@@ -184,6 +184,11 @@ public class ScrollPane extends Component {
         controller.givePointerPriority();
     }
 
+    public void setControllerSize(float width, float height) {
+        controller.width = width;
+        controller.height = height;
+    }
+
     public class PointerController extends ScrollArea {
 
         private float dragThreshold;
