@@ -40,6 +40,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Dread;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Haste;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Hunger;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Invisibility;
+import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LockedFloor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.MindVision;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.MonkEnergy;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Preparation;
@@ -78,6 +79,7 @@ import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Swiftthistle;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
+import com.alphadraxonis.sandboxpixeldungeon.ui.BossHealthBar;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -119,10 +121,12 @@ public abstract class Mob extends Char {
     public int attackSkill = 0;//accuracy
     public int damageRollMin = 0, damageRollMax = 0;
 
+    public boolean isBossMob;//only real value while playing, use level.bossmobAt instead!, not meant for shattered bosses except goo!
+
     public int EXP = 1;
     public int maxLvl = Hero.MAX_LEVEL - 1;
 
-    protected Char enemy;
+    public Char enemy;//protected!!!
     protected int enemyID = -1; //used for save/restore
     protected boolean enemySeen;
     protected boolean alerted = false;
@@ -149,6 +153,7 @@ public abstract class Mob extends Char {
     private static final String ATTACK_SKILL = "attack_skill";
     private static final String DAMAGE_ROLL_MIN = "damage_roll_min";
     private static final String DAMAGE_ROLL_MAX = "damage_roll_max";
+    private static final String IS_BOSS_MOB = "is_boss_mob";
 
     private static final String ENEMY_ID = "enemy_id";
 
@@ -175,6 +180,7 @@ public abstract class Mob extends Char {
         bundle.put(ATTACK_SKILL, attackSkill);
         bundle.put(DAMAGE_ROLL_MIN, damageRollMin);
         bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
+        bundle.put(IS_BOSS_MOB, isBossMob);
 
         if (enemy != null) {
             bundle.put(ENEMY_ID, enemy.id());
@@ -217,6 +223,14 @@ public abstract class Mob extends Char {
             damageRollMin = bundle.getInt(DAMAGE_ROLL_MIN);
             damageRollMax = bundle.getInt(DAMAGE_ROLL_MAX);
         }
+        if (bundle.contains(IS_BOSS_MOB)) {
+            isBossMob = bundle.getBoolean(IS_BOSS_MOB);
+            if (isBossMob) {
+                Dungeon.level.bossMob = this;
+                if (Dungeon.level.bossFound) BossHealthBar.assignBoss(this);
+                if ((HP*2 <= HT)) BossHealthBar.bleed(true);
+            }
+        }
     }
 
     //mobs need to remember their targets after every actor is added
@@ -230,6 +244,11 @@ public abstract class Mob extends Char {
 
     @Override
     protected boolean act() {
+
+        if (isBossMob && HP*2 > HT) {
+            BossHealthBar.bleed(false);
+//            ((GooSprite)sprite).spray(false);
+        }
 
         super.act();
 
@@ -774,6 +793,13 @@ public abstract class Mob extends Char {
     @Override
     public void damage(int dmg, Object src) {
 
+        boolean bleeding;
+        if (isBossMob && !BossHealthBar.isAssigned()){
+            BossHealthBar.assignBoss( this );
+            Dungeon.level.seal();
+            bleeding = (HP*2 <= HT);
+        } else bleeding = false;
+
         if (state == SLEEPING) {
             state = WANDERING;
         }
@@ -782,6 +808,19 @@ public abstract class Mob extends Char {
         }
 
         super.damage(dmg, src);
+
+        if (isBossMob) {
+            if ((HP * 2 <= HT) && !bleeding) {
+                BossHealthBar.bleed(true);
+                sprite.showStatus(CharSprite.NEGATIVE, Messages.get(this, "enraged"));
+//                ((GooSprite) sprite).spray(true);
+            }
+            LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+            if (lock != null) {
+                if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) lock.addTime(dmg);
+                else lock.addTime(dmg * 1.5f);
+            }
+        }
     }
 
 
@@ -874,6 +913,11 @@ public abstract class Mob extends Char {
                     Sample.INSTANCE.play(Assets.Sounds.CURSED);
                 }
             }
+        }
+
+        if (isBossMob) {
+            Dungeon.level.unseal();
+            GameScene.bossSlain();
         }
     }
 
@@ -1015,6 +1059,18 @@ public abstract class Mob extends Char {
 
     public void notice() {
         sprite.showAlert();
+        if (isBossMob) {
+            if (!BossHealthBar.isAssigned()) {
+                BossHealthBar.assignBoss(this);
+                Dungeon.level.seal();
+//                yell(Messages.get(this, "notice"));
+//                for (Char ch : Actor.chars()) {
+//                    if (ch instanceof DriedRose.GhostHero) {
+//                        ((DriedRose.GhostHero) ch).sayBoss();
+//                    }
+//                }
+            }
+        }
     }
 
     public void yell(String str) {

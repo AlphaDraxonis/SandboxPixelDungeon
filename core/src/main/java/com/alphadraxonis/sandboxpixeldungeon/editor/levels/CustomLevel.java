@@ -859,6 +859,12 @@ public class CustomLevel extends Level {
         level.mobs.removeAll(removeEntities);
         removeEntities.clear();
 
+        if (level.bossmobAt != -1) {
+            int old = level.bossmobAt;
+            level.bossmobAt = newPosition.get(old);
+            if (!isPositionValid.test(old, level.bossmobAt)) level.bossmobAt = -1;
+        }
+
         //Cant avoid some copy paste because Shattered has really good code
         SparseArray<Heap> nHeaps = new SparseArray<>();
         for (Heap h : level.heaps.valueList()) {

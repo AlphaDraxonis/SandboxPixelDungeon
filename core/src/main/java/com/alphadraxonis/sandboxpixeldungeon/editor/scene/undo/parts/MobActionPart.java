@@ -10,12 +10,14 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartModify;
 public /*sealed*/ abstract class MobActionPart implements ActionPart {
 
     private Mob mob, copyForUndo;
-    private final int cell;
+    protected final boolean bossMobBefore;//can ony restore if mob was removed, newly placed mobs can never be boss
+    protected final int cell;
 
     private MobActionPart(Mob mob) {
         this.mob = mob;
         this.cell = mob.pos;
         copyForUndo = (Mob) mob.getCopy();
+        bossMobBefore = Dungeon.level.bossmobAt == cell;
 
         redo();
     }
@@ -42,6 +44,7 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
         mob.destroy();
         mob.sprite.hideEmo();
         mob.sprite.killAndErase();
+        if (mob.pos == Dungeon.level.bossmobAt) Dungeon.level.bossmobAt = -1;
     }
 
     @Override
@@ -74,6 +77,7 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
         @Override
         public void undo() {
             place();
+            if (bossMobBefore) Dungeon.level.bossmobAt = cell;
         }
 
         @Override

@@ -47,6 +47,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Bestiary;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Goo;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Piranha;
@@ -176,6 +177,10 @@ public abstract class Level implements Bundlable {
 
     public LevelScheme levelScheme;
 
+    public int bossmobAt = -1;//store as pos so we don't have problems with undo, only for CustomLevel
+    public Mob bossMob;//after initForPlay
+    public boolean bossFound;
+
     private static final String VERSION = "version";
     private static final String WIDTH = "width";
     private static final String HEIGHT = "height";
@@ -195,6 +200,8 @@ public abstract class Level implements Bundlable {
     private static final String BLOBS = "blobs";
     private static final String FEELING = "feeling";
     private static final String VIEW_DISTANCE = "view_distance";
+    private static final String BOSS_MOB_AT = "boss_mob_at";
+    private static final String BOSS_FOUND = "boss_found";
 
     public void create() {
 
@@ -342,6 +349,12 @@ public abstract class Level implements Bundlable {
     public void initForPlay() {
         for (Mob m : mobs) {
             if (m instanceof Mimic) ((Mimic) m).setLevel(Dungeon.depth);
+            if (m.pos == bossmobAt) {
+                bossMob = m;
+                bossMob.isBossMob = !(m instanceof Goo);
+                //TODO add boss property
+            }
+//            throw new RuntimeException(""+bossmobAt+"=="+m.pos);
         }
         for (Heap h : heaps.valueList()) {
             h.seen = false;
@@ -439,6 +452,10 @@ public abstract class Level implements Bundlable {
         }
 
         feeling = bundle.getEnum(FEELING, Feeling.class);
+        if (bundle.contains(BOSS_MOB_AT)) {
+            bossmobAt = bundle.getInt(BOSS_MOB_AT);
+            bossFound = bundle.getBoolean(BOSS_FOUND);
+        }
 
         if (bundle.contains("mobs_to_spawn")) {
             for (Class<? extends Mob> mob : bundle.getClassArray("mobs_to_spawn")) {
@@ -475,6 +492,8 @@ public abstract class Level implements Bundlable {
         bundle.put(MOBS, mobs);
         bundle.put(BLOBS, blobs.values());
         bundle.put(FEELING, feeling);
+        bundle.put(BOSS_MOB_AT, bossmobAt);
+        bundle.put(BOSS_FOUND, bossFound);
         bundle.put("mobs_to_spawn", mobsToSpawn.toArray(new Class[0]));
         bundle.put("respawner", respawner);
         bundle.put(VIEW_DISTANCE, viewDistance);
