@@ -166,7 +166,7 @@ public class SentryRoom extends SpecialRoom {
 		sentry.room = new EmptyRoom();
 		sentry.room.set((Rect)this);
 		sentry.range = sentryRange;
-		sentry.setInitialChargeDelay(dangerDist / 3f + 0.1f);
+		sentry.setInitialChargeDelay(Math.max(1, dangerDist / 3f + 0.1f));
 		level.mobs.add( sentry );
 
 		Painter.set(level, treasurePos, Terrain.PEDESTAL);
@@ -229,8 +229,8 @@ public class SentryRoom extends SpecialRoom {
 			properties.add(Property.IMMOVABLE);
 		}
 
-		private float initialChargeDelay;
-		private float curChargeDelay;
+		private float initialChargeDelay = 1f;
+		private float curChargeDelay = 1f;
 
 		public EmptyRoom room;
 		public int range = 5;//only room OR range is used
