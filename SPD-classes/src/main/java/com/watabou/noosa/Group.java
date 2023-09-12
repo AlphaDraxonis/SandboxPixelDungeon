@@ -315,7 +315,13 @@ public class Group extends Gizmo {
 	}
 
 	public synchronized void sort(Comparator c){
-		Collections.sort(members, c);
+		//only sort if we aren't already sorted
+		for (int i=0; i < length-1; i++) {
+			if (c.compare(members.get(i), members.get(i+1)) > 0) {
+				Collections.sort(members, c);
+				return;
+			}
+		}
 	}
 
 	//Important for scrollpane fix: add scrollpane last (first add the buttons to the sp, then the sp to the window)
