@@ -169,7 +169,10 @@ public class QuickSlotButton extends Button {
             }
             if (item instanceof EditorItem) sprite = ((EditorItem) item).getSprite();
             else sprite = new ItemSprite(item);
-            if (sprite != null) addToBack(sprite);
+            if (sprite != null) {
+                sprite.originToCenter();
+                addToBack(sprite);
+            }
         }
 
         @Override

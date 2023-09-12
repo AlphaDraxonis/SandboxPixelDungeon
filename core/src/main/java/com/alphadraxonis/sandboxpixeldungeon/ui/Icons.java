@@ -120,6 +120,8 @@ public enum Icons {
     DEPTH_SECRETS,
     RANDOM_FEELING,
     CHAL_COUNT,
+    ETERNAL_FIRE,
+    SACRIFICIAL_FIRE,
 
     //icons that appear in the about screen, variable spacing
     LIBGDX,
@@ -358,6 +360,12 @@ public enum Icons {
                 break;
             case LOST:
                 icon.frame(icon.texture.uvRectBySize(40, 72, 8, 8));
+                break;
+            case SACRIFICIAL_FIRE:
+                icon.frame(icon.texture.uvRectBySize(32, 80, 5, 7));
+                break;
+            case ETERNAL_FIRE:
+                icon.frame(icon.texture.uvRectBySize(37, 80, 5, 7));
                 break;
             case DEPTH:
                 icon.frame(icon.texture.uvRectBySize(48, 64 + runTypeOfs(), 6, 7));

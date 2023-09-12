@@ -4,6 +4,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
+import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.WellWater;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
@@ -22,6 +23,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.SideControlPane;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.TerrainFeaturesTilemapEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.UndoPane;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.BlobEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.effects.BlobEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.EmoIcon;
@@ -624,6 +626,10 @@ public class EditorScene extends PixelScene {
         if (plant != null) return plant;
         Trap trap = customLevel.traps.get(cell);
         if (trap != null) return trap;
+        for (int i = 0; i < BlobEditPart.BlobData.BLOB_CLASSES.length; i++) {
+            Blob b = Dungeon.level.blobs.get(BlobEditPart.BlobData.BLOB_CLASSES[i]);
+            if (b != null && !(b instanceof WellWater) && b.cur != null && b.cur[cell] > 0 ) return b;
+        }
         return customLevel.map[cell];
     }
 
@@ -638,6 +644,7 @@ public class EditorScene extends PixelScene {
 //        if (obj instanceof Integer) return (EditorItem) Tiles.bag.findItem(obj);
         if (Trap.class.isAssignableFrom(clazz)) return (EditorItem) Traps.bag.findItem(clazz);
         if (Plant.class.isAssignableFrom(clazz)) return (EditorItem) Plants.bag.findItem(clazz);
+        if (Blob.class.isAssignableFrom(clazz)) return (EditorItem) Tiles.bag.findItem(clazz);//Blobs
         return null;
     }
 

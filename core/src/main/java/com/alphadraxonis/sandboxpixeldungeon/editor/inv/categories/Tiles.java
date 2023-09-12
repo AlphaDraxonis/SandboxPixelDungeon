@@ -29,10 +29,13 @@ import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.WALL_DECO;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.WATER;
 import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.WELL;
 
+import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.SacrificialFire;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.BlobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTileSheet;
@@ -90,6 +93,14 @@ public enum Tiles {
     public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class,"tiles"),0){
         @Override
         public Item findItem(Object src) {
+            if (src instanceof Class<?>) {//for blobs
+                for (Item bag : items) {
+                    for (Item i : ((Bag) bag).items) {
+                        if (i instanceof BlobItem && ((BlobItem) i).blob() == src) return i;
+                    }
+                }
+                return null;
+            }
             int val = (int) src;
             for (Item bag : items) {
                 for (Item i : ((Bag) bag).items) {
@@ -122,7 +133,10 @@ public enum Tiles {
         bag.items.add(new TileBag(Messages.get(Tiles.class,"empty"), EMPTY.terrains));
         bag.items.add(new TileBag(Messages.get(Tiles.class,"wall"), WALL.terrains));
         bag.items.add(new TileBag(Messages.get(Tiles.class,"door"), DOOR.terrains));
-        bag.items.add(new TileBag(Messages.get(Tiles.class,"special"), SPECIAL.terrains));
+        TileBag specialTiles = new TileBag(Messages.get(Tiles.class,"special"), SPECIAL.terrains);
+        specialTiles.items.add(new BlobItem(MagicalFireRoom.EternalFire.class));
+        specialTiles.items.add(new BlobItem(SacrificialFire.class));
+        bag.items.add(specialTiles);
     }
 
 }

@@ -48,7 +48,7 @@ public class BlobEditPart {
 
     public static class BlobData {
 
-        private static final Class<? extends Blob>[] BLOB_CLASSES = new Class[]{
+        public static final Class<? extends Blob>[] BLOB_CLASSES = new Class[]{
                 MagicalFireRoom.EternalFire.class,
                 SacrificialFire.class,
                 WaterOfHealth.class,

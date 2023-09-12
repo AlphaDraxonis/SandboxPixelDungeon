@@ -101,7 +101,6 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 wellWaterSpinner.addChangeListener(this::updateObj);
                 add(wellWaterSpinner);
             }
-            //TODO make SacrificalFire and FireWall are available
         }
     }
 
@@ -188,10 +187,12 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             else desc = sign.text;
         } else desc = level.tileDesc(obj.terrainType(), obj.cell());
 
-        for (Blob blob : Dungeon.level.blobs.values()) {
-            if (blob.volume > 0 && blob.cur[obj.cell()] > 0 && blob.tileDesc() != null) {
-                if (desc.length() > 0) desc += "\n\n";
-                desc += blob.tileDesc();
+        if (obj.cell() >= 0) {
+            for (Blob blob : Dungeon.level.blobs.values()) {
+                if (blob.volume > 0 && blob.cur[obj.cell()] > 0 && blob.tileDesc() != null) {
+                    if (desc.length() > 0) desc += "\n\n";
+                    desc += blob.tileDesc();
+                }
             }
         }
 

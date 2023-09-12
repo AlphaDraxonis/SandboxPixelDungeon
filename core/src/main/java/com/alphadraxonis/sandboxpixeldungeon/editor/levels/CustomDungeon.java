@@ -14,6 +14,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.BlobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
@@ -102,8 +103,7 @@ public class CustomDungeon implements Bundlable {
     //
     //custom mob drops:
     //override rollToDropLoot, similar as mimic, set loot to null, always 100% chance
-
-    //restrict hero classes: override HeroClass#isUnlocked(), add ui for opening window in general settings where heros can be enabled/disabled
+    //and change exp
 
     //edit character starting inventory: override heroClass#initHero(), in hero restriction window,
     //      there will be an option for limited slots of starting items, as well as starting eq, unique for every hero
@@ -117,8 +117,6 @@ public class CustomDungeon implements Bundlable {
     //Keys with uni level: add super identifer, look for occurences of key.levelName
 
     //The dungeon entrance and exit should default to the previous and next rooms, as well as the chasm to the next room
-
-    //Teleport/Warp traps with specific coordinate and ankh spawn point (if possible, the first one should be possible)
 
     //Option to turn off either/both of health regen/hunger depletion
 
@@ -448,6 +446,7 @@ public class CustomDungeon implements Bundlable {
     public void setItemInToolbar(int slot, EditorItem item) {
         if (item == null) toolbarItems[slot] = null;
         else if (item instanceof TileItem) toolbarItems[slot] = ((TileItem) item).terrainType();
+        else if (item instanceof BlobItem) toolbarItems[slot] = ((BlobItem) item).blob();
         else toolbarItems[slot] = item.getObject().getClass();
     }
 
