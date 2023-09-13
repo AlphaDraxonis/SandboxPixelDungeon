@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
@@ -58,6 +59,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
@@ -91,7 +93,7 @@ public class Heap implements Bundlable {
 	public boolean haunted = false;
 	public boolean autoExplored = false; //used to determine if this heap should count for exploration bonus
 	public float priceMultiplier = 1f;
-	
+
 	public LinkedList<Item> items = new LinkedList<>();
 	
 	public void open( Hero hero ) {
@@ -110,6 +112,10 @@ public class Heap implements Bundlable {
 			if (Wraith.spawnAt( pos, true ) == null) {
 				hero.sprite.emitter().burst( ShadowParticle.CURSE, 6 );
 				hero.damage( hero.HP / 2, this );
+				if (!hero.isAlive()){
+					Dungeon.fail(Wraith.class);
+					GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", Messages.get(Wraith.class, "name"))));
+				}
 			}
 			Sample.INSTANCE.play( Assets.Sounds.CURSED );
 		}
@@ -459,7 +465,7 @@ public class Heap implements Bundlable {
 	private static final String HAUNTED	= "haunted";
 	private static final String AUTO_EXPLORED	= "auto_explored";
 	private static final String PRICE_MULTIPLIER = "price_multiplier";
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
