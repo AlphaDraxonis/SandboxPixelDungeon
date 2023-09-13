@@ -55,6 +55,7 @@ public class Ghost extends QuestNPC<GhostQuest> {
 		
 		flying = true;
 
+		WANDERING = new Wandering();
 		state = WANDERING;
 
 		//not actually large of course, but this makes the ghost stick to the exit room
@@ -66,6 +67,18 @@ public class Ghost extends QuestNPC<GhostQuest> {
 
 	public Ghost(GhostQuest quest) {
 		super(quest);
+	}
+
+	protected class Wandering extends Mob.Wandering{
+		@Override
+		protected int randomDestination() {
+			int pos = super.randomDestination();
+			//cannot wander onto heaps or the level exit
+			if (Dungeon.level.heaps.get(pos) != null || pos == Dungeon.level.exit()){
+				return -1;
+			}
+			return pos;
+		}
 	}
 
 	@Override
