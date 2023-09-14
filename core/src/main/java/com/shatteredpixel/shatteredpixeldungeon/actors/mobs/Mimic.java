@@ -189,7 +189,14 @@ public class Mimic extends Mob implements MobBasedOnDepth {
         super.damage(dmg, src);
     }
 
-    public void stopHiding() {
+    @Override
+	public void die(Object cause) {
+		if (state == PASSIVE){
+			alignment = Alignment.ENEMY;
+			stopHiding();
+		}
+		super.die(cause);
+	}public void stopHiding() {
         state = HUNTING;
         if (sprite != null) sprite.idle();
         if (Actor.chars().contains(this) && Dungeon.level.heroFOV[pos]) {
