@@ -34,6 +34,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.watabou.glscripts.Script;
 import com.watabou.glwrap.Blending;
@@ -43,6 +44,8 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.Point;
+
+import java.util.Objects;
 
 //essentially contains a libGDX text input field, plus a PD-rendered background
 public class TextInput extends Component {
@@ -54,6 +57,12 @@ public class TextInput extends Component {
 	private Skin skin;
 
 	private NinePatch bg;
+
+	public Function<String, String> convertStringToValidString;
+
+	public interface Function<T, R> {
+		R apply(T t);
+	}
 
 	public TextInput( NinePatch bg, boolean multiline, int size ){
 		super();
@@ -135,6 +144,8 @@ public class TextInput extends Component {
 		textField.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
+				setText(textField.getText());
+
 				BitmapFont f = Game.platform.getFont(size, textField.getText(), false, false);
 				TextField.TextFieldStyle style = textField.getStyle();
 				if (f != style.font){
@@ -171,9 +182,15 @@ public class TextInput extends Component {
 		//do nothing by default
 	};
 
-	public void setText(String text){
-		textField.setText(text);
-		textField.setCursorPosition(textField.getText().length());
+	public void setText(String text) {
+		if (convertStringToValidString != null) {
+			text = convertStringToValidString.apply(text);
+			if (text == null) return;
+		}
+		if (!Objects.equals(text, textField.getText())) {
+			textField.setText(text);
+			textField.setCursorPosition(textField.getText().length());
+		}
 	}
 
 	public void setMaxLength(int maxLength){
@@ -272,7 +289,12 @@ public class TextInput extends Component {
 		}
 	}
 
-	protected TextField getTextField() {
-		return textField;
+	public void setTextFieldFilter(TextField.TextFieldFilter filter) {
+		textField.setTextFieldFilter(filter);
+	}
+
+	@Null
+	public TextField.TextFieldFilter getTextFieldFilter() {
+		return textField.getTextFieldFilter();
 	}
 }

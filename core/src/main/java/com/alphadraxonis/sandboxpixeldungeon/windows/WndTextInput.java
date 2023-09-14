@@ -28,6 +28,8 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.utils.Null;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.TextInput;
 
@@ -220,5 +222,19 @@ public class WndTextInput extends Window {
 	@Override
 	public void onBackPressed() {
 		//Do nothing, prevents accidentally losing writing
+	}
+
+
+	public void setTextFieldFilter(TextField.TextFieldFilter filter) {
+		textBox.setTextFieldFilter(filter);
+	}
+
+	@Null
+	public TextField.TextFieldFilter getTextFieldFilter() {
+		return textBox.getTextFieldFilter();
+	}
+
+	public TextInput getTextBox() {
+		return textBox;
 	}
 }

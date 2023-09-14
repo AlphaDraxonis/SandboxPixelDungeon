@@ -1,6 +1,12 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner;
 
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
+import com.alphadraxonis.sandboxpixeldungeon.windows.WndTextInput;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
 public class SpinnerIntegerModel extends AbstractSpinnerModel {
@@ -11,7 +17,6 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     private int stepSize;
     private boolean cycle;
     private String showWhenNull;
-
 
     public SpinnerIntegerModel() {
         this(0);
@@ -45,8 +50,33 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
 
     @Override
     public Component createInputField(int fontSize) {
-        inputField = new Spinner.SpinnerTextBlock(Chrome.get(Chrome.Type.TOAST_WHITE), fontSize);
+        inputField = new Spinner.SpinnerTextBlock(Chrome.get(Chrome.Type.TOAST_WHITE), fontSize) {
+            private Button button;
+
+            @Override
+            protected void createChildren(Object... params) {
+                super.createChildren(params);
+                button = new Button() {
+                    @Override
+                    protected boolean onLongClick() {
+                        return SpinnerIntegerModel.this.onLongClick();
+                    }
+                };
+                add(button);
+            }
+
+            @Override
+            protected void layout() {
+                super.layout();
+                button.setRect(bg.x, bg.y, bg.width, bg.height);
+            }
+        };
         return inputField;
+    }
+
+    protected boolean onLongClick() {
+        displayInputAnyNumberDialog();
+        return true;
     }
 
     @Override
@@ -92,7 +122,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         if (value == null) return cycle ? minimum : goToNull(minimum);
         if (value.equals(maximum)) return cycle ? goToNull(minimum) : value;
         long newValue = value + stepSize;
-        if (newValue > (long) maximum) return maximum;
+        if (newValue == (long) maximum + stepSize) return maximum;
         return (int) newValue;
     }
 
@@ -101,7 +131,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         if (value == null) return cycle ? maximum : goToNull(maximum);
         if (value.equals(minimum)) return goToNull(cycle ? maximum : value);
         long newValue = value - stepSize;
-        if (newValue < (long) minimum) return minimum;
+        if (newValue == (long) minimum - stepSize) return minimum;
         return (int) newValue;
     }
 
@@ -174,5 +204,77 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     public void enable(boolean value) {
         if (inputField instanceof Spinner.SpinnerTextBlock)
             ((Spinner.SpinnerTextBlock) inputField).enable(value);
+    }
+
+    public void displayInputAnyNumberDialog() {
+        displayInputAnyNumberDialog(0f, Integer.MAX_VALUE);
+    }
+
+    protected void displayInputAnyNumberDialog(float min, float max) {
+        WndTextInput w = new WndTextInput(
+                Messages.get(this, "input_dialog_title"),
+                Messages.get(this, "input_dialog_body"),
+                getValue().toString(), 11, false,
+                Messages.get(this, "input_dialog_yes"),
+                Messages.get(this, "input_dialog_no")
+        ) {
+            @Override
+            public void onSelect(boolean positive, String text) {
+                if (positive) {
+                    try {
+                        int val = Integer.parseInt(text);
+                        if (val < min || val > max) return;
+                        setValue(val);
+                    } catch (NumberFormatException ex) {
+                        //just ignore value
+                    }
+                }
+            }
+        };
+        w.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {
+            @Override
+            public boolean acceptChar(TextField textField, char c) {
+                if (super.acceptChar(textField, c)) return true;
+                if (!isVorzeichen(c, min, max)) return false;
+                String txt = textField.getText();
+                return txt.length() == 0 || textField.getCursorPosition() == 0 && !isVorzeichen(txt.charAt(0), min, max);
+            }
+        });
+
+        w.getTextBox().convertStringToValidString = s -> {
+            try {
+                int val = Integer.parseInt(s);
+                if (val < min) return Integer.toString((int) min);
+                if (val > max) return Integer.toString((int) max);
+                return s;
+            } catch (NumberFormatException ex) {
+                char[] cs = s.toCharArray();
+                if (cs.length == 0) return "";
+                StringBuilder b = new StringBuilder();
+                for (int i = 0; i < cs.length; i++) {
+                    if (Character.isDigit(cs[i])
+                            || i == 0 && isVorzeichen(cs[i], min, max)) b.append(cs[i]);
+                }
+                s = b.toString();
+                while (true) {
+                    try {
+                        int val = Integer.parseInt(s);
+                        if (val < min) return Integer.toString((int) min);
+                        if (val > max) return Integer.toString((int) max);
+                        return s;
+                    } catch (NumberFormatException ex2) {
+                        if (s.length() <= 1) return "";
+                        s = s.substring(0, s.length() - 1);
+                    }
+                }
+            }
+        };
+
+        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+        else Game.scene().addToFront(w);
+    }
+
+    protected static boolean isVorzeichen(char c, float min, float max) {
+        return c == '-' && min < 0 || c == '+' && max > 0;
     }
 }
