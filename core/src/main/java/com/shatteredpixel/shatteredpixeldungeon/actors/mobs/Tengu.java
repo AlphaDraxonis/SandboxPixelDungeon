@@ -644,10 +644,16 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		
 		int targetCell = -1;
 		
-		//Targets closest cell which is adjacent to target
+		//Targets closest cell which is adjacent to target and has no existing bombs
 		for (int i : PathFinder.NEIGHBOURS8){
 			int cell = target.pos + i;
-			if (!Dungeon.level.solid[cell] &&
+			boolean bombHere = false;
+			for (BombAbility b : thrower.buffs(BombAbility.class)){
+				if (b.bombPos == cell){
+					bombHere = true;
+				}
+			}
+			if (!bombHere && !Dungeon.level.solid[cell] &&
 					(targetCell == -1 || Dungeon.level.trueDistance(cell, thrower.pos) < Dungeon.level.trueDistance(targetCell, thrower.pos))){
 				targetCell = cell;
 			}
