@@ -58,8 +58,8 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
                 super.createChildren(params);
                 button = new Button() {
                     @Override
-                    protected boolean onLongClick() {
-                        return SpinnerIntegerModel.this.onLongClick();
+                    protected void onClick() {
+                        SpinnerIntegerModel.this.onClick();
                     }
                 };
                 add(button);
@@ -74,9 +74,9 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         return inputField;
     }
 
-    protected boolean onLongClick() {
+
+    protected void onClick() {//if textfield is clicked
         displayInputAnyNumberDialog();
-        return true;
     }
 
     @Override
@@ -213,7 +213,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     protected void displayInputAnyNumberDialog(float min, float max) {
         WndTextInput w = new WndTextInput(
                 Messages.get(this, "input_dialog_title"),
-                Messages.get(this, "input_dialog_body"),
+                Messages.get(this, "input_dialog_body", (int) min, (int) max),
                 getValue().toString(), 11, false,
                 Messages.get(this, "input_dialog_yes"),
                 Messages.get(this, "input_dialog_no")
@@ -222,9 +222,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
             public void onSelect(boolean positive, String text) {
                 if (positive) {
                     try {
-                        int val = Integer.parseInt(text);
-                        if (val < min || val > max) return;
-                        setValue(val);
+                        setValue(Integer.parseInt(text));
                     } catch (NumberFormatException ex) {
                         //just ignore value
                     }

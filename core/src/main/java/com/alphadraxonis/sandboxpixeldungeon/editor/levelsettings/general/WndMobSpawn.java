@@ -66,6 +66,11 @@ class WndMobSpawn extends WndTitledMessage {
                 public float getInputFieldWith(float height) {
                     return height * 1.1f;
                 }
+
+                @Override
+                public void displayInputAnyNumberDialog() {
+                    displayInputAnyNumberDialog(1, Integer.MAX_VALUE);
+                }
             }, " " + Messages.get(WndMobSpawn.class, "respawn_time") + ":", 9);
             respawnTime.addChangeListener(() -> f.setRespawnCooldown((int) respawnTime.getValue()));
             add(respawnTime);

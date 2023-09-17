@@ -139,6 +139,11 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
             public int getClicksPerSecondWhileHolding() {
                 return 5;
             }
+
+            @Override
+            protected void displayInputAnyNumberDialog(float min, float max) {
+                //do nothing
+            }
         }, Messages.get(WndNewFloor.class, "num_region") + ":", 8);
         numInRegion.setButtonWidth(13);
         numInRegion.addChangeListener(()->newLevelScheme.setNumInRegion((Integer) numInRegion.getValue()));

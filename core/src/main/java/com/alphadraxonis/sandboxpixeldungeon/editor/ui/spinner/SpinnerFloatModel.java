@@ -43,7 +43,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
     public void displayInputAnyNumberDialog(float min, float max) {
         WndTextInput w = new WndTextInput(
                 Messages.get(this, "input_dialog_title"),
-                Messages.get(this, "input_dialog_body"),
+                Messages.get(this, "input_dialog_body", min, max),
                 Float.toString(getAsFloat()), 10, false,
                 Messages.get(this, "input_dialog_yes"),
                 Messages.get(this, "input_dialog_no")
@@ -52,9 +52,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
             public void onSelect(boolean positive, String text) {
                 if (positive) {
                     try {
-                        float val = Float.parseFloat(text);
-                        if (val < min || val > max) return;
-                        setValue(convertToInt(val));
+                        setValue(convertToInt(Float.parseFloat(text)));
                     } catch (NumberFormatException ex) {
                         //just ignore value
                     }

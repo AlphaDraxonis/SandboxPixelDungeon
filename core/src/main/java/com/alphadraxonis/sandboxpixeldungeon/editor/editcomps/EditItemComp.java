@@ -74,6 +74,11 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 public int getClicksPerSecondWhileHolding() {
                     return 15 * quantityMultiplierForGold;
                 }
+
+                @Override
+                public void displayInputAnyNumberDialog() {
+                    displayInputAnyNumberDialog(1, 1_000_000);
+                }
             }, " " + Messages.get(EditItemComp.class, "quantity") + ":", 10);
             quantity.setButtonWidth(14);
             quantity.addChangeListener(() -> {
