@@ -33,7 +33,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-public class Wraith extends Mob {
+public class Wraith extends MobBasedOnDepth {
 
 	private static final float SPAWN_DELAY	= 2f;
 	
@@ -63,21 +63,21 @@ public class Wraith extends Mob {
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
-		level = bundle.getInt( LEVEL );
-		adjustStats( level );
+		setLevel( bundle.getInt( LEVEL ) );
 	}
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 1 + level/2, 2 + level );
+		return (int) (Random.NormalIntRange( 1 + level/2, 2 + level ) * statsScale);
 	}
 	
 	@Override
 	public int attackSkill( Char target ) {
-		return 10 + level;
+		return (int) ((10 + level) * statsScale);
 	}
-	
-	public void adjustStats( int level ) {
+
+	@Override
+	public void setLevel( int level ) {
 		this.level = level;
 		defenseSkill = attackSkill( null ) * 5;
 		enemySeen = true;
@@ -109,7 +109,7 @@ public class Wraith extends Mob {
 			} else {
 				w = new Wraith();
 			}
-			w.adjustStats( Dungeon.scalingDepth() );
+			w.setLevel( Dungeon.scalingDepth() );
 			w.pos = pos;
 			w.state = w.HUNTING;
 			GameScene.add( w, SPAWN_DELAY );

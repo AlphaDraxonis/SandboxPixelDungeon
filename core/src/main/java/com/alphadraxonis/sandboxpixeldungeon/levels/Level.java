@@ -48,8 +48,8 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Bestiary;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Goo;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.MobBasedOnDepth;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Piranha;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogFist;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
@@ -348,7 +348,7 @@ public abstract class Level implements Bundlable {
 
     public void initForPlay() {
         for (Mob m : mobs) {
-            if (m instanceof Mimic) ((Mimic) m).setLevel(Dungeon.depth);
+            if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
             if (m.pos == bossmobAt) {
                 bossMob = m;
                 bossMob.isBossMob = !(m instanceof Goo);

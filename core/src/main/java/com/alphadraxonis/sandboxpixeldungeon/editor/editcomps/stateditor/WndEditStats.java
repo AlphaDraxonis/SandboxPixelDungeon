@@ -1,6 +1,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Brute;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditMobComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
@@ -29,7 +30,7 @@ public class WndEditStats extends Window {
 
 
     private IntegerSpinner hp, attackSkill, defenseSkill, armor, dmgMin, dmgMax;
-    private FloatSpinner speed;
+    private FloatSpinner speed, statsScale;
 
     public WndEditStats(int width, int offsetY, Object defaultStats, Object editStats) {
         this.defaultStats = defaultStats;
@@ -61,7 +62,7 @@ public class WndEditStats extends Window {
                     }
                 }
 
-                if (hasAtLeastOneComp) height = (int)(posY - y - WndTitledMessage.GAP);
+                if (hasAtLeastOneComp) height = (int) (posY - y - WndTitledMessage.GAP);
             }
         };
 
@@ -77,52 +78,36 @@ public class WndEditStats extends Window {
             Mob def = (Mob) defaultStats;
             Mob current = (Mob) editStats;
 
-            hp = new IntegerSpinner(Messages.get(Mob.class, "hp") + ":",
-                    1, def.HT * 10, current.HT, true);
-            hp.addChangeListener(() -> {
-                int val = hp.getAsInt();
-                if (val == -1) val = Char.INFINITE_HP;
-                current.HT = current.HP = val;
-            });
-            content.add(hp);
 
-            speed = new FloatSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "speed") + ":",
-                    0.1f, def.baseSpeed * 10, current.baseSpeed, false);
-            speed.addChangeListener(() -> current.baseSpeed = speed.getAsFloat());
-            content.add(speed);
+            if (DefaultStatsCache.useStatsScale(current)) {
 
-            attackSkill = new IntegerSpinner(Messages.get(Mob.class, "accuracy") + ":",
-                    0, def.attackSkill * 10, current.attackSkill, true);
-            attackSkill.addChangeListener(() -> {
-                int val = attackSkill.getAsInt();
-                if (val == -1) val = Char.INFINITE_ACCURACY;
-                current.attackSkill = val;
-            });
-            content.add(attackSkill);
+                statsScale = new FloatSpinner(Messages.get(Mob.class, "stats_scale") + ":",
+                        0.1f, def.statsScale * 10, current.statsScale, false);
+                statsScale.addChangeListener(() -> current.statsScale = statsScale.getAsFloat());
+                content.add(statsScale);
 
-            defenseSkill = new IntegerSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "evasion") + ":",
-                    0, def.defenseSkill * 10, current.defenseSkill, true);
-            defenseSkill.addChangeListener(() -> {
-                int val = defenseSkill.getAsInt();
-                if (val == -1) val = Char.INFINITE_EVASION;
-                current.defenseSkill = val;
-            });
-            content.add(defenseSkill);
+                addSpeedSpinner(def, current);
 
-            armor = new IntegerSpinner(Messages.get(Mob.class, "armor") + ":",
-                    0, def.damageReductionMax * 10, current.damageReductionMax, false);
-            armor.addChangeListener(() -> current.damageReductionMax = armor.getAsInt());
-            content.add(armor);
+                if (current instanceof Brute) {
+                    addHPAccuracyEvasionArmorSpinner(def, current);
+                }
 
-            dmgMin = new IntegerSpinner(Messages.get(Mob.class, "dmg_min") + ":",
-                    0, def.damageRollMin * 10, current.damageRollMin, false);
-            dmgMin.addChangeListener(() -> current.damageRollMin = dmgMin.getAsInt());
-            content.add(dmgMin);
+            } else {
 
-            dmgMax = new IntegerSpinner(Messages.get(Mob.class, "dmg_max") + ":",
-                    0, def.damageRollMax * 10, current.damageRollMax, false);
-            dmgMax.addChangeListener(() -> current.damageRollMax = dmgMax.getAsInt());
-            content.add(dmgMax);
+                addSpeedSpinner(def, current);
+
+                addHPAccuracyEvasionArmorSpinner(def, current);
+
+                dmgMin = new IntegerSpinner(Messages.get(Mob.class, "dmg_min") + ":",
+                        0, def.damageRollMin * 10, current.damageRollMin, false);
+                dmgMin.addChangeListener(() -> current.damageRollMin = dmgMin.getAsInt());
+                content.add(dmgMin);
+
+                dmgMax = new IntegerSpinner(Messages.get(Mob.class, "dmg_max") + ":",
+                        0, def.damageRollMax * 10, current.damageRollMax, false);
+                dmgMax.addChangeListener(() -> current.damageRollMax = dmgMax.getAsInt());
+                content.add(dmgMax);
+            }
         }
 
         content.setSize(this.width, -1);
@@ -140,17 +125,65 @@ public class WndEditStats extends Window {
 
     }
 
+    private void addSpeedSpinner(Mob def, Mob current) {
+        speed = new FloatSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "speed") + ":",
+                0.1f, def.baseSpeed * 10, current.baseSpeed, false);
+        speed.addChangeListener(() -> current.baseSpeed = speed.getAsFloat());
+        content.add(speed);
+    }
+
+    private void addHPAccuracyEvasionArmorSpinner(Mob def, Mob current) {
+
+        hp = new IntegerSpinner(Messages.get(Mob.class, "hp") + ":",
+                1, def.HT * 10, current.HT, true);
+        hp.addChangeListener(() -> {
+            int val = hp.getAsInt();
+            if (val == -1) val = Char.INFINITE_HP;
+            current.HT = current.HP = val;
+        });
+        content.add(hp);
+
+        attackSkill = new IntegerSpinner(Messages.get(Mob.class, "accuracy") + ":",
+                0, def.attackSkill * 10, current.attackSkill, true);
+        attackSkill.addChangeListener(() -> {
+            int val = attackSkill.getAsInt();
+            if (val == -1) val = Char.INFINITE_ACCURACY;
+            current.attackSkill = val;
+        });
+        content.add(attackSkill);
+
+        defenseSkill = new IntegerSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "evasion") + ":",
+                0, def.defenseSkill * 10, current.defenseSkill, true);
+        defenseSkill.addChangeListener(() -> {
+            int val = defenseSkill.getAsInt();
+            if (val == -1) val = Char.INFINITE_EVASION;
+            current.defenseSkill = val;
+        });
+        content.add(defenseSkill);
+
+        armor = new IntegerSpinner(Messages.get(Mob.class, "armor") + ":",
+                0, def.damageReductionMax * 10, current.damageReductionMax, false);
+        armor.addChangeListener(() -> current.damageReductionMax = armor.getAsInt());
+        content.add(armor);
+    }
+
     protected void restoreDefaults() {
         if (defaultStats instanceof Mob) {
             Mob def = (Mob) defaultStats;
 
-            hp.setValue(def.HT);
             speed.setValue(SpinnerFloatModel.convertToInt(def.baseSpeed));
-            attackSkill.setValue(def.attackSkill);
-            defenseSkill.setValue(def.defenseSkill);
-            armor.setValue(def.damageReductionMax);
-            dmgMin.setValue(def.damageRollMin);
-            dmgMax.setValue(def.damageRollMax);
+            if (statsScale != null)
+                statsScale.setValue(SpinnerFloatModel.convertToInt(def.statsScale));
+            if (hp != null) {
+                hp.setValue(def.HT);
+                attackSkill.setValue(def.attackSkill);
+                defenseSkill.setValue(def.defenseSkill);
+                armor.setValue(def.damageReductionMax);
+            }
+            if (dmgMin != null) {
+                dmgMin.setValue(def.damageRollMin);
+                dmgMax.setValue(def.damageRollMax);
+            }
         }
     }
 

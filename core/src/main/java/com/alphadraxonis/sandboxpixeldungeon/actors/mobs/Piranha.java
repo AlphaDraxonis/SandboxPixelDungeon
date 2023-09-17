@@ -35,7 +35,7 @@ import com.alphadraxonis.sandboxpixeldungeon.sprites.PiranhaSprite;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-public class Piranha extends Mob {
+public class Piranha extends MobBasedOnDepth {
 	
 	{
 		spriteClass = PiranhaSprite.class;
@@ -58,10 +58,15 @@ public class Piranha extends Mob {
 	public Piranha() {
 		super();
 		
-		HP = HT = 10 + Dungeon.depth * 5;
-		defenseSkill = 10 + Dungeon.depth * 2;
+		setLevel(Dungeon.depth);
 	}
-	
+
+	@Override
+	public void setLevel(int depth) {
+		HP = HT = (int) (10 + depth * 5 * statsScale);
+		defenseSkill = 10 + depth * 2;
+	}
+
 	@Override
 	protected boolean act() {
 		
@@ -75,17 +80,17 @@ public class Piranha extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( Dungeon.depth, 4 + Dungeon.depth * 2 );
+		return (int) (Random.NormalIntRange( Dungeon.depth, 4 + Dungeon.depth * 2 ) * statsScale);
 	}
 	
 	@Override
 	public int attackSkill( Char target ) {
-		return 20 + Dungeon.depth * 2;
+		return (int) ((20 + Dungeon.depth * 2) * statsScale);
 	}
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, Dungeon.depth);
+		return (int) (super.drRoll() + Random.NormalIntRange(0, Dungeon.depth) * statsScale);
 	}
 
 	@Override

@@ -85,17 +85,17 @@ public class Goo extends Mob {
 		int attack = 10;
 		if (HP*2 <= HT) attack = 15;
 		if (pumpedUp > 0) attack *= 2;
-		return attack;
+		return (int) (attack * statsScale);
 	}
 
 	@Override
 	public int defenseSkill(Char enemy) {
-		return (int)(super.defenseSkill(enemy) * ((HP*2 <= HT)? 1.5 : 1));
+		return (int)(super.defenseSkill(enemy) * ((HP*2 <= HT)? 1.5 : 1) * statsScale);
 	}
 
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 2);
+		return (int) (super.drRoll() + Random.NormalIntRange(0, 2) * statsScale);
 	}
 
 	@Override

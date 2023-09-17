@@ -35,7 +35,7 @@ import com.watabou.utils.Random;
 import java.util.HashSet;
 
 //FIXME the AI for these things is becoming a complete mess, should refactor
-public class Bee extends Mob {
+public class Bee extends MobBasedOnDepth {
 	
 	{
 		spriteClass = BeeSprite.class;
@@ -75,13 +75,14 @@ public class Bee extends Mob {
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
-		spawn( bundle.getInt( LEVEL ) );
+		setLevel( bundle.getInt( LEVEL ) );
 		potPos = bundle.getInt( POTPOS );
 		potHolder = bundle.getInt( POTHOLDER );
 		if (bundle.contains(ALIGMNENT)) alignment = bundle.getEnum( ALIGMNENT, Alignment.class);
 	}
-	
-	public void spawn( int level ) {
+
+	@Override
+	public void setLevel( int level ) {
 		this.level = level;
 		
 		HT = (2 + level) * 4;
@@ -106,12 +107,12 @@ public class Bee extends Mob {
 	
 	@Override
 	public int attackSkill( Char target ) {
-		return defenseSkill;
+		return (int) (defenseSkill * statsScale);
 	}
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( HT / 10, HT / 4 );
+		return (int) (Random.NormalIntRange( HT / 10, HT / 4 ) * statsScale);
 	}
 	
 	@Override

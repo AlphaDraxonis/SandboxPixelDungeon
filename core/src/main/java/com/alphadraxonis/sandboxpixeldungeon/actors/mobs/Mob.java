@@ -120,13 +120,14 @@ public abstract class Mob extends Char {
     public int defenseSkill = 0;//evasion
     public int attackSkill = 0;//accuracy
     public int damageRollMin = 0, damageRollMax = 0;
+    public float statsScale = 1f;//only used in subclasses!
 
     public boolean isBossMob;//only real value while playing, use level.bossmobAt instead!, not meant for shattered bosses except goo!
 
     public int EXP = 1;
     public int maxLvl = Hero.MAX_LEVEL - 1;
 
-    public Char enemy;//protected!!!
+    protected Char enemy;
     protected int enemyID = -1; //used for save/restore
     protected boolean enemySeen;
     protected boolean alerted = false;
@@ -153,6 +154,7 @@ public abstract class Mob extends Char {
     private static final String ATTACK_SKILL = "attack_skill";
     private static final String DAMAGE_ROLL_MIN = "damage_roll_min";
     private static final String DAMAGE_ROLL_MAX = "damage_roll_max";
+    private static final String STATS_SCALE = "stats_scale";
     private static final String IS_BOSS_MOB = "is_boss_mob";
 
     private static final String ENEMY_ID = "enemy_id";
@@ -180,6 +182,7 @@ public abstract class Mob extends Char {
         bundle.put(ATTACK_SKILL, attackSkill);
         bundle.put(DAMAGE_ROLL_MIN, damageRollMin);
         bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
+        bundle.put(STATS_SCALE, statsScale);
         bundle.put(IS_BOSS_MOB, isBossMob);
 
         if (enemy != null) {
@@ -230,6 +233,7 @@ public abstract class Mob extends Char {
                 if (Dungeon.level.bossFound) BossHealthBar.assignBoss(this);
                 if ((HP*2 <= HT)) BossHealthBar.bleed(true);
             }
+            statsScale = bundle.getFloat(STATS_SCALE);
         }
     }
 
@@ -1033,28 +1037,56 @@ public abstract class Mob extends Char {
 
         Mob defaultStats = DefaultStatsCache.getDefaultObject(getClass());
         if (defaultStats != null) {
-            if (defaultStats.HT != HT || defaultStats.baseSpeed != baseSpeed
-                    || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
-                    || defaultStats.damageRollMin != damageRollMin || defaultStats.damageRollMax != damageRollMax
-                    || defaultStats.damageReductionMax != damageReductionMax) {
-                desc += "\n\n"+Messages.get(Mob.class, "base_stats_changed");
-                if (defaultStats.HT != HT) desc += "\n\n"+Messages.get(Mob.class, "hp")+": " + defaultStats.HT + " -> _" + HT+"_";
-                if (defaultStats.baseSpeed != baseSpeed)
-                    desc += "\n"+Messages.get(StoneOfAugmentation.WndAugment.class, "speed")+": " + defaultStats.baseSpeed + " -> _" + baseSpeed+"_";
-                if (defaultStats.attackSkill != attackSkill)
-                    desc += "\n"+Messages.get(Mob.class, "accuracy")+": " + defaultStats.attackSkill + " -> _" + attackSkill+"_";
-                if (defaultStats.defenseSkill != defenseSkill)
-                    desc += "\n"+Messages.get(StoneOfAugmentation.WndAugment.class,"evasion")+": " + defaultStats.defenseSkill + " -> _" + defenseSkill+"_";
-                if (defaultStats.damageReductionMax != damageReductionMax)
-                    desc += "\n"+Messages.get(Mob.class, "armor")+": " + defaultStats.damageReductionMax + " -> _" + damageReductionMax+"_";
-                if (defaultStats.damageRollMin != damageRollMin)
-                    desc += "\n"+Messages.get(Mob.class, "dmg_min")+": " + defaultStats.damageRollMin + " -> _" + damageRollMin+"_";
-                if (defaultStats.damageRollMax != damageRollMax)
-                    desc += "\n"+Messages.get(Mob.class, "dmg_max")+": " + defaultStats.damageRollMax + " -> _" + damageRollMax+"_";
+
+            if (DefaultStatsCache.useStatsScale(this)) {
+                if (defaultStats.baseSpeed != baseSpeed || defaultStats.statsScale != statsScale
+                        || this instanceof Brute && (
+                        defaultStats.HT != HT || defaultStats.damageReductionMax != damageReductionMax
+                                || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
+                )){
+                    desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
+                    if (defaultStats.statsScale != statsScale)
+                        desc += "\n" + Messages.get(Mob.class, "stats_scale") + ": " + defaultStats.statsScale + " -> _" + statsScale + "_";
+                    if (defaultStats.baseSpeed != baseSpeed)
+                        desc += "\n" + Messages.get(StoneOfAugmentation.WndAugment.class, "speed") + ": " + defaultStats.baseSpeed + " -> _" + baseSpeed + "_";
+                    if (this instanceof Brute) {
+                        desc += infoStatsChangedHPAccuracyEvasionArmor(defaultStats);
+                    }
+                }
+            } else {
+
+                if (defaultStats.HT != HT || defaultStats.baseSpeed != baseSpeed
+                        || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
+                        || defaultStats.damageRollMin != damageRollMin || defaultStats.damageRollMax != damageRollMax
+                        || defaultStats.damageReductionMax != damageReductionMax) {
+                    desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
+
+                    if (defaultStats.baseSpeed != baseSpeed)
+                        desc += "\n" + Messages.get(StoneOfAugmentation.WndAugment.class, "speed") + ": " + defaultStats.baseSpeed + " -> _" + baseSpeed + "_";
+                    desc += infoStatsChangedHPAccuracyEvasionArmor(defaultStats);
+                    if (defaultStats.damageRollMin != damageRollMin)
+                        desc += "\n" + Messages.get(Mob.class, "dmg_min") + ": " + defaultStats.damageRollMin + " -> _" + damageRollMin + "_";
+                    if (defaultStats.damageRollMax != damageRollMax)
+                        desc += "\n" + Messages.get(Mob.class, "dmg_max") + ": " + defaultStats.damageRollMax + " -> _" + damageRollMax + "_";
+                }
+
             }
         }
 
         return desc;
+    }
+
+    private String infoStatsChangedHPAccuracyEvasionArmor(Mob defaultStats) {
+        String ret = "";
+        if (defaultStats.HT != HT)
+            ret += "\n\n" + Messages.get(Mob.class, "hp") + ": " + defaultStats.HT + " -> _" + HT + "_";
+        if (defaultStats.attackSkill != attackSkill)
+            ret += "\n" + Messages.get(Mob.class, "accuracy") + ": " + defaultStats.attackSkill + " -> _" + attackSkill + "_";
+        if (defaultStats.defenseSkill != defenseSkill)
+            ret += "\n" + Messages.get(StoneOfAugmentation.WndAugment.class, "evasion") + ": " + defaultStats.defenseSkill + " -> _" + defenseSkill + "_";
+        if (defaultStats.damageReductionMax != damageReductionMax)
+            ret += "\n" + Messages.get(Mob.class, "armor") + ": " + defaultStats.damageReductionMax + " -> _" + damageReductionMax + "_";
+        return ret;
     }
 
     public void notice() {

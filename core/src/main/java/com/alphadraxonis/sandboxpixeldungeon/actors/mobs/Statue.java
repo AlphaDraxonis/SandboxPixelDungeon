@@ -37,7 +37,7 @@ import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-public class Statue extends Mob {
+public class Statue extends MobBasedOnDepth {
 
     {
         spriteClass = StatueSprite.class;
@@ -61,8 +61,13 @@ public class Statue extends Mob {
 
         weapon.enchant(Enchantment.random());
 
-        HP = HT = 15 + Dungeon.depth * 5;
-        defenseSkill = 4 + Dungeon.depth;
+        setLevel(Dungeon.depth);
+    }
+
+    @Override
+    public void setLevel(int depth) {
+        HP = HT = (int) (15 + depth * 5 * statsScale);
+        defenseSkill = 4 + depth;
     }
 
     private static final String WEAPON = "weapon";
@@ -89,12 +94,12 @@ public class Statue extends Mob {
 
     @Override
     public int damageRoll() {
-        return weapon.damageRoll(this);
+        return (int) (weapon.damageRoll(this) * statsScale);
     }
 
     @Override
     public int attackSkill(Char target) {
-        return (int) ((9 + Dungeon.depth) * weapon.accuracyFactor(this, target));
+        return (int) ((int) ((9 + Dungeon.depth) * weapon.accuracyFactor(this, target)) * statsScale);
     }
 
     @Override
@@ -109,7 +114,7 @@ public class Statue extends Mob {
 
     @Override
     public int drRoll() {
-        return super.drRoll() + Random.NormalIntRange(0, Dungeon.depth + weapon.defenseFactor(this));
+        return (int) (super.drRoll() + Random.NormalIntRange(0, Dungeon.depth + weapon.defenseFactor(this)) * statsScale);
     }
 
     @Override

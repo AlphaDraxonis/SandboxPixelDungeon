@@ -49,7 +49,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class Mimic extends Mob {
+public class Mimic extends MobBasedOnDepth {
 
     private int level;
 
@@ -204,15 +204,15 @@ public class Mimic extends Mob {
     @Override
     public int damageRoll() {
         if (alignment == Alignment.NEUTRAL) {
-            return Random.NormalIntRange(2 + 2 * level, 2 + 2 * level);
+            return (int) (Random.NormalIntRange(2 + 2 * level, 2 + 2 * level) * statsScale);
         } else {
-            return Random.NormalIntRange(1 + level, 2 + 2 * level);
+            return (int) (Random.NormalIntRange(1 + level, 2 + 2 * level) * statsScale);
         }
     }
 
     @Override
     public int drRoll() {
-        return super.drRoll() + Random.NormalIntRange(0, 1 + level / 2);
+        return (int) (super.drRoll() + Random.NormalIntRange(0, 1 + level / 2) * statsScale);
     }
 
     @Override
@@ -225,17 +225,18 @@ public class Mimic extends Mob {
         if (target != null && alignment == Alignment.NEUTRAL && target.invisible <= 0) {
             return INFINITE_ACCURACY;
         } else {
-            return 6 + level;
+            return (int) ((6 + level) * statsScale);
         }
     }
 
+    @Override
     public void setLevel(int level) {
         this.level = level;
         adjustStats(level);
     }
 
     public void adjustStats(int level) {
-        HP = HT = (1 + level) * 6;
+        HP = HT = (int) ((1 + level) * 6 * statsScale);
         defenseSkill = 2 + level / 2;
 
         enemySeen = true;
