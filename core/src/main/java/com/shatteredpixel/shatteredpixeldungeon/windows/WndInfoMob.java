@@ -103,10 +103,10 @@ public class WndInfoMob extends WndTitledMessage {
 
             buffs.setPos(name.right(), hasHealth ? name.bottom() - BuffIndicator.SIZE_SMALL - 2 : name.bottom() - BuffIndicator.SIZE_SMALL - 1);
 
-            height = hasHealth ? health.bottom() : name.bottom() + 2 * GAP;
-        }
-
-    }
+			height = hasHealth ? Math.max(image.y + image.height(), health.bottom()) : name.bottom() + 2 * GAP;
+		}
+	}
+}
 
 
 }
