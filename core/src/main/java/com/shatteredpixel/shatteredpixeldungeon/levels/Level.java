@@ -1601,6 +1601,7 @@ public abstract class Level implements Bundlable {
 			case Terrain.EMPTY:
 			case Terrain.EMPTY_SP:
 			case Terrain.EMPTY_DECO:
+			case Terrain.CUSTOM_DECO_EMPTY:
 			case Terrain.SECRET_TRAP:
 				return Messages.get(Level.class, "floor_name");
 			case Terrain.GRASS:

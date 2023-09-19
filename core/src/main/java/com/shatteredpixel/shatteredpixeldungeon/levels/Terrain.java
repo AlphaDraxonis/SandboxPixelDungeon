@@ -54,6 +54,7 @@ public class Terrain {
 	public static final int BOOKSHELF		= 27;
 	public static final int ALCHEMY			= 28;
 
+	public static final int CUSTOM_DECO_EMPTY = 32; //regular empty tile that can't be overridden, used for custom visuals mainly
 	//solid environment decorations
 	public static final int SIGN			= 23;
 	public static final int SIGN_SP			= 32;
@@ -110,11 +111,15 @@ public class Terrain {
 		flags[BOOKSHELF]	= flags[BARRICADE];
 		flags[ALCHEMY]		= SOLID;
 
+		flags[CUSTOM_DECO_EMPTY] = flags[EMPTY];
 		flags[CUSTOM_DECO] = SOLID;
 		flags[STATUE] = SOLID;
 		flags[STATUE_SP] = flags[STATUE];
 		flags[SIGN]			= SOLID;
 		flags[SIGN_SP]		= flags[SIGN];
+
+		flags[MINE_CRYSTAL] = SOLID;
+		flags[MINE_BOULDER] = SOLID;
 
 	}
 
