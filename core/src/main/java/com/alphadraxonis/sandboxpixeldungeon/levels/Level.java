@@ -109,7 +109,7 @@ import java.util.Map;
 
 public abstract class Level implements Bundlable {
 
-    public static final String SURFACE = "surface", NONE = "none";
+    public static final String SURFACE = "surface", NONE = "none", ANY = "any" + (char) 30 + (char) 31;
 
     public enum Feeling {
         NONE,

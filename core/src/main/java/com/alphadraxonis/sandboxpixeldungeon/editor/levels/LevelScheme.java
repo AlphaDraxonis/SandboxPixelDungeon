@@ -13,6 +13,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.Torch;
@@ -50,10 +51,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public static final LevelScheme SURFACE_LEVEL_SCHEME = new LevelScheme();//Placeholder for selecting levels
     public static final LevelScheme NO_LEVEL_SCHEME = new LevelScheme();//Placeholder for selecting levels
+    public static final LevelScheme ANY_LEVEL_SCHEME = new LevelScheme();//Placeholder for key working on any level
 
     static {
-        SURFACE_LEVEL_SCHEME.name = Level.SURFACE;
-        NO_LEVEL_SCHEME.name = Level.NONE;
+        SURFACE_LEVEL_SCHEME.name = EditorUtilies.getDispayName(Level.SURFACE);
+        NO_LEVEL_SCHEME.name = EditorUtilies.getDispayName(Level.NONE);
+        ANY_LEVEL_SCHEME.name = EditorUtilies.getDispayName(Level.ANY);
     }
 
 
@@ -227,6 +230,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     public int getDepth() {

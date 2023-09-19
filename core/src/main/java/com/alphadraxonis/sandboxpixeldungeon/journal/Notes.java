@@ -23,9 +23,11 @@ package com.alphadraxonis.sandboxpixeldungeon.journal;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
+import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
@@ -221,27 +223,51 @@ public class Notes {
 	}
 	
 	public static boolean remove( Key key ){
+		int keyQuantityToRemove = key.quantity();
 		KeyRecord k = new KeyRecord( key );
 		if (records.contains(k)){
 			k = (KeyRecord) records.get(records.indexOf(k));
-			k.quantity(k.quantity() - key.quantity());
+			k.quantity(k.quantity() - keyQuantityToRemove);
 			if (k.quantity() <= 0){
 				records.remove(k);
 			}
 			return true;
 		}
+
+		Key anyKey = Reflection.newInstance(key.getClass());
+		anyKey.levelName = Level.ANY;
+		k = new KeyRecord( anyKey );
+		if (records.contains(k)){
+			k = (KeyRecord) records.get(records.indexOf(k));
+			k.quantity(k.quantity() - keyQuantityToRemove);
+			if (k.quantity() <= 0){
+				records.remove(k);
+			}
+			return true;
+		}
+
 		if (Dungeon.customDungeon.permaKey) return true;
 		return false;
 	}
 	
 	public static int keyCount( Key key ){
 		if (Dungeon.customDungeon.permaKey) return 1;
-		KeyRecord k = new KeyRecord( key );
+		int quantity = 0;
+
+		Key anyKey = Reflection.newInstance(key.getClass());
+		anyKey.levelName = Level.ANY;
+		KeyRecord k = new KeyRecord( anyKey );
 		if (records.contains(k)){
 			k = (KeyRecord) records.get(records.indexOf(k));
-			return k.quantity();
+			quantity += k.quantity();
+		}
+
+		k = new KeyRecord( key );
+		if (records.contains(k)){
+			k = (KeyRecord) records.get(records.indexOf(k));
+			return k.quantity() + quantity;
 		} else {
-			return 0;
+			return quantity;
 		}
 	}
 	

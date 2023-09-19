@@ -1,7 +1,10 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.util;
 
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
@@ -56,6 +59,29 @@ public final class EditorUtilies {
         return formatTitle(item.item().title(), item.pos());
     }
 
+    public static String getDispayName(String specialLevelSchemeName) {
+        if (Level.NONE.equals(specialLevelSchemeName))
+            return Messages.get(ChooseDestLevelComp.class, "none_level");
+        if (Level.SURFACE.equals(specialLevelSchemeName))
+            return Messages.get(ChooseDestLevelComp.class, "surface_level");
+        if (Level.ANY.equals(specialLevelSchemeName))
+            return Messages.get(ChooseDestLevelComp.class, "any_level");
+        return specialLevelSchemeName;
+    }
+
+    public static String getCodeName(LevelScheme specialLevelScheme) {
+        if (specialLevelScheme == LevelScheme.NO_LEVEL_SCHEME) return null;
+        if (specialLevelScheme == LevelScheme.SURFACE_LEVEL_SCHEME) return Level.SURFACE;
+        if (specialLevelScheme == LevelScheme.ANY_LEVEL_SCHEME) return Level.ANY;
+        return specialLevelScheme.getName();
+    }
+
+    public static LevelScheme getLevelScheme(String name) {
+        if (Level.SURFACE.equals(name)) return LevelScheme.SURFACE_LEVEL_SCHEME;
+        if (Level.ANY.equals(name)) return LevelScheme.ANY_LEVEL_SCHEME;
+        if (Level.NONE.equals(name)) return LevelScheme.NO_LEVEL_SCHEME;
+        return Dungeon.customDungeon.getFloor(name);
+    }
 
 //    public static int getWindowWidth(){
 //
@@ -69,11 +95,11 @@ public final class EditorUtilies {
         return val == null ? defaultValue : val;
     }
 
-    public static int getMaxWindowOffsetYForVisibleToolbar(){
+    public static int getMaxWindowOffsetYForVisibleToolbar() {
         return -11;
     }
 
-    public static Window getParentWindow(Gizmo g){
+    public static Window getParentWindow(Gizmo g) {
         Group w = g.parent;
         while (w != null && !(w instanceof Window)) {
             w = w.parent;
@@ -97,11 +123,11 @@ public final class EditorUtilies {
         }
 
 //        if (hasAtLeastOneComp) height = (int)(posY - y - WndTitledMessage.GAP);
-        if (hasAtLeastOneComp) return  (posY - parent.top() - gap);
+        if (hasAtLeastOneComp) return (posY - parent.top() - gap);
         return parent.height();
     }
 
-    public static void layoutStyledCompsInRectangles(int gap, float width, Component parent, Component[] comps){
+    public static void layoutStyledCompsInRectangles(int gap, float width, Component parent, Component[] comps) {
 
         float oneThirdWidth = (width - gap * 2) / 3f;
 

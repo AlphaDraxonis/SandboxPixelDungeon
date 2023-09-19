@@ -23,6 +23,7 @@ package com.alphadraxonis.sandboxpixeldungeon.windows;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.ClassArmor;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.Potion;
@@ -31,6 +32,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.Scroll;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Catalog;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
+import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
@@ -410,9 +412,9 @@ public class WndJournal extends WndTabbed {
 
 				for(Notes.Record rec : keys){
 					ScrollingListPane.ListItem item = new ScrollingListPane.ListItem( Icons.get(Icons.STAIRS),
-							rec.levelName(),
+							EditorUtilies.getDispayName(rec.levelName()),
 							Messages.titleCase(rec.desc()),0.7f);
-					if (Dungeon.levelName.equals(rec.levelName())) item.hardlight(TITLE_COLOR);
+					if (Dungeon.levelName.equals(rec.levelName()) || Level.ANY.equals(rec.levelName())) item.hardlight(TITLE_COLOR);
 					list.addItem(item);
 				}
 			}

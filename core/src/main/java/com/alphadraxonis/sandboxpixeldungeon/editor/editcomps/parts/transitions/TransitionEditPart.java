@@ -6,6 +6,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -28,7 +29,7 @@ public abstract class TransitionEditPart extends Component {
 
     private final int targetDepth;
 
-    public TransitionEditPart(LevelTransition transition, String suggestion, boolean showEntrances, int targetDepth) {
+    public TransitionEditPart(LevelTransition transition, LevelScheme suggestion, boolean showEntrances, int targetDepth) {
         super();
         this.transition = transition;
         this.showEntrances = showEntrances;
@@ -62,7 +63,7 @@ public abstract class TransitionEditPart extends Component {
         destCell.setValue(transition.destCell);
         add(destCell);
 
-        if (suggestion != null && !suggestion.isEmpty())
+        if (suggestion != null)
             destLevel.selectObject(suggestion);//already includes updateTransition()
         else updateTransition();
     }
@@ -82,21 +83,24 @@ public abstract class TransitionEditPart extends Component {
     }
 
     protected void updateTransition() {
-        String destL = (String) destLevel.getObject();
-        transition.destLevel = destL;
-        if (destL == null || destL.isEmpty() || destL.equals(Level.SURFACE) || Dungeon.customDungeon.getFloor(destL) == null) {
+        LevelScheme destL = (LevelScheme) destLevel.getObject();
+        if (destL == null) {
+            transition.destLevel = null;
+            destCell.enable(false);
+            destCell.setData(new ArrayList<>(2), -1, null);
+            return;
+        }
+        String destN = EditorUtilies.getCodeName(destL);
+        transition.destLevel = destN;
+        if (destN == null || destN.isEmpty() || destN.equals(Level.SURFACE) || Dungeon.customDungeon.getFloor(destN) == null) {
             destCell.enable(false);
             destCell.setData(new ArrayList<>(2), -1, null);
         } else {
             destCell.enable(true);
-//            List<Integer> data = new ArrayList<>(Dungeon.customDungeon.getFloor(destL).entranceCells);
-//            data.addAll(Dungeon.customDungeon.getFloor(destL).exitCells);
-//            destCell.setData(data);
-            LevelScheme levelScheme = Dungeon.customDungeon.getFloor(destL);
             if (showEntrances) {
-                destCell.setData(levelScheme.entranceCells, levelScheme.getSizeIfUnloaded().x, transition.destCell);
+                destCell.setData(destL.entranceCells, destL.getSizeIfUnloaded().x, transition.destCell);
             } else
-                destCell.setData(levelScheme.exitCells, levelScheme.getSizeIfUnloaded().x, transition.destCell);
+                destCell.setData(destL.exitCells, destL.getSizeIfUnloaded().x, transition.destCell);
         }
         EditorScene.updateTransitionIndicator(transition);
     }

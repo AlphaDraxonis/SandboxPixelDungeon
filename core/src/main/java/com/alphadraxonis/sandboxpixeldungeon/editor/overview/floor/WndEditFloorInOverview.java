@@ -14,6 +14,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndNewDunge
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
@@ -124,7 +125,7 @@ public class WndEditFloorInOverview extends WndTabbed {
             title.setHightlighting(false);
             add(title);
 
-            rename = new IconButton(Icons.get(Icons.RENAME_ON)){
+            rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
                 @Override
                 protected void onClick() {
                     Window w = new WndTextInput(Messages.get(WndSelectDungeon.class, "rename_title"),
@@ -133,7 +134,7 @@ public class WndEditFloorInOverview extends WndTabbed {
                             50,
                             false,
                             Messages.get(WndSelectDungeon.class, "rename_yes"),
-                            Messages.get(WndSelectDungeon.class, "export_no")){
+                            Messages.get(WndSelectDungeon.class, "export_no")) {
                         @Override
                         public void onSelect(boolean positive, String text) {
                             if (positive && !text.isEmpty()) {
@@ -181,7 +182,8 @@ public class WndEditFloorInOverview extends WndTabbed {
                 @Override
                 public void selectObject(Object object) {
                     super.selectObject(object);
-                    levelScheme.setPassage((String) object);
+                    if (object instanceof LevelScheme)
+                        levelScheme.setPassage(EditorUtilies.getCodeName((LevelScheme) object));
                 }
             };
             content.add(passage);
@@ -190,7 +192,8 @@ public class WndEditFloorInOverview extends WndTabbed {
                 @Override
                 public void selectObject(Object object) {
                     super.selectObject(object);
-                    levelScheme.setChasm((String) object);
+                    if (object instanceof LevelScheme)
+                        levelScheme.setChasm(EditorUtilies.getCodeName((LevelScheme) object));
                 }
 
                 @Override
@@ -267,7 +270,7 @@ public class WndEditFloorInOverview extends WndTabbed {
 
             float renameWidth = rename.icon().width;
 
-            title.maxWidth((int) ( width + renameWidth - 2));
+            title.maxWidth((int) (width + renameWidth - 2));
             title.setPos((title.maxWidth() - title.width()) * 0.5f, 3);
 
             rename.setRect(width - renameWidth, title.top() + (title.height() - rename.icon().height) * 0.5f, renameWidth, rename.icon().height);
@@ -310,7 +313,7 @@ public class WndEditFloorInOverview extends WndTabbed {
             for (int cell : cells) {
                 TransitionCompRow comp = transitionCompMap.get(cell);
                 if (comp == null) {
-                    comp = new TransitionCompRow(cell, levelScheme, false){
+                    comp = new TransitionCompRow(cell, levelScheme, false) {
                         @Override
                         protected void layoutParent() {
                             General.this.layout();

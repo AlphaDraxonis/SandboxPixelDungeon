@@ -112,10 +112,6 @@ public class CustomDungeon implements Bundlable {
 
     //Scale mobs if their normal stats editor is disabled
 
-    //Fill: add proper button
-
-    //Keys with uni level: add super identifer, look for occurences of key.levelName
-
     //The dungeon entrance and exit should default to the previous and next rooms, as well as the chasm to the next room
 
     //Option to turn off either/both of health regen/hunger depletion

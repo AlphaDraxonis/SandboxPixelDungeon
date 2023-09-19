@@ -404,7 +404,7 @@ public class DungeonToJsonConverter {
         //TODO identified
         if (i.cursed)
             appendParam(b, "cursed", true);//TODO can override randomly generated curses if set to false
-        if (i instanceof Key) {
+        if (i instanceof Key && !Level.ANY.equals(((Key) i).levelName)) {//maybe also look inside mob containers?
             appendParam(b, "level_name", ((Key) i).levelName);
         }
         removeLastChars(b, 2);

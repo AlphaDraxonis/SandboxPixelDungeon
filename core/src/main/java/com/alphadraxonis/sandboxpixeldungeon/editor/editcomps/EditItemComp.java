@@ -11,6 +11,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Ankh;
 import com.alphadraxonis.sandboxpixeldungeon.items.Gold;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
@@ -180,13 +181,17 @@ public class EditItemComp extends DefaultEditComp<Item> {
             keylevel = new ChooseDestLevelComp(Messages.get(EditItemComp.class, "floor")) {
                 @Override
                 protected List<LevelScheme> filterLevels(Collection<LevelScheme> levels) {
-                    return new ArrayList<>(levels);
+                    List<LevelScheme> ret = new ArrayList<>(levels);
+                    ret.add(0, LevelScheme.ANY_LEVEL_SCHEME);
+                    return ret;
                 }
 
                 @Override
                 public void selectObject(Object object) {
                     super.selectObject(object);
-                    ((Key) item).levelName = (String) object;
+                    if (object instanceof LevelScheme) {
+                        ((Key) item).levelName = EditorUtilies.getCodeName((LevelScheme) object);
+                    }
                     updateObj();
                 }
             };

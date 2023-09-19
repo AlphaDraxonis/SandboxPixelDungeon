@@ -16,6 +16,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.SignEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.Consumer;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
@@ -130,7 +131,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             suggestion = levelScheme.getDefaultAbove();
         else suggestion = levelScheme.getChasm();
         if (transition.destLevel != null) suggestion = transition.destLevel;
-        return new TransitionEditPart(transition, suggestion, terrainType != Terrain.ENTRANCE,
+        return new TransitionEditPart(transition, EditorUtilies.getLevelScheme(suggestion), terrainType != Terrain.ENTRANCE,
                 levelScheme.getDepth()) {
             @Override
             protected void deleteTransition(LevelTransition transition) {

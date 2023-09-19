@@ -5,6 +5,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionCompRow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
@@ -44,7 +45,8 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
-                Dungeon.customDungeon.setStart((String) object);
+                if (object instanceof LevelScheme)
+                    Dungeon.customDungeon.setStart(EditorUtilies.getCodeName((LevelScheme) object));
             }
 
             @Override
@@ -60,7 +62,8 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
-                EditorScene.customLevel().levelScheme.setPassage((String) object);
+                if (object instanceof LevelScheme)
+                    EditorScene.customLevel().levelScheme.setPassage(EditorUtilies.getCodeName((LevelScheme) object));
             }
 
             @Override
@@ -74,7 +77,8 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
-                EditorScene.customLevel().levelScheme.setChasm((String) object);
+                if (object instanceof LevelScheme)
+                    EditorScene.customLevel().levelScheme.setChasm(EditorUtilies.getCodeName((LevelScheme) object));
             }
 
             @Override
@@ -92,11 +96,10 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         content.add(chasm);
 
         LevelScheme levelScheme = EditorScene.customLevel().levelScheme;
-        if (Dungeon.customDungeon.getStart() != null)
-            startfloor.selectObject(Dungeon.customDungeon.getStart());
-        if (levelScheme.getPassage() != null && !levelScheme.getPassage().equals(Dungeon.customDungeon.getStart()))
-            passage.selectObject(levelScheme.getPassage());
-        if (levelScheme.getChasm() != null) chasm.selectObject(levelScheme.getChasm());
+        startfloor.selectObject(Dungeon.customDungeon.getStart());
+        passage.selectObject(levelScheme.getPassage() != null && !levelScheme.getPassage().equals(Dungeon.customDungeon.getStart())
+                ? levelScheme.getPassage() : null);
+        chasm.selectObject(levelScheme.getChasm());
 
 
         line = new ColorBlock(1, 1, 0xFF222222);

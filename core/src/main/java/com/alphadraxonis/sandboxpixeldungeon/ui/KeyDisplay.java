@@ -29,6 +29,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.keys.IronKey;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.Key;
 import com.alphadraxonis.sandboxpixeldungeon.items.keys.SkeletonKey;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
+import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Quad;
@@ -73,7 +74,7 @@ public class KeyDisplay extends Visual {
 		keys = new int[keyMap.size()+1];
 		
 		for (Notes.KeyRecord rec : Notes.getRecords(Notes.KeyRecord.class)){
-			if (!rec.levelName().equals(Dungeon.levelName)){
+			if (!rec.levelName().equals(Level.ANY) && !rec.levelName().equals(Dungeon.levelName)){
 				//only ever 1 black key
 				keys[0] = 1;
 			} else {

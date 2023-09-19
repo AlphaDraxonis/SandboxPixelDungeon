@@ -663,7 +663,7 @@ public class Heap implements Bundlable {
                 keyLevel.scale.set(0.45f);
 
                 keyLevel.hardlight(Window.TITLE_COLOR);
-                keyLevel.text(((Key) i).levelName);
+                keyLevel.text(EditorUtilies.getDispayName(((Key) i).levelName));
                 keyLevel.measure();
 
                 keyLevel.point(sprite.point());
