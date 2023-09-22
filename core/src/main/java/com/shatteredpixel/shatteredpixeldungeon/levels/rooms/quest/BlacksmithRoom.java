@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -76,11 +75,10 @@ public class BlacksmithRoom extends StandardRoom {
 			Painter.drawInside( level, this, door, 1, Terrain.EMPTY );
 		}
 
-		Random.pushGenerator(Dungeon.seedCurLevel()+1);
-//			do {
-				entrancePos = level.pointToCell(random( 2 ));
-//			} while (level.heaps.get( npc.pos ) != null);
-		Random.popGenerator();
+		int entrancePos;
+//		do {
+			entrancePos = level.pointToCell(random( 2 ));
+//		} while (level.heaps.get( npc.pos ) != null || entrancePos == npc.pos);
 
 		QuestEntrance vis = new QuestEntrance();
 		vis.pos(entrancePos, level);
