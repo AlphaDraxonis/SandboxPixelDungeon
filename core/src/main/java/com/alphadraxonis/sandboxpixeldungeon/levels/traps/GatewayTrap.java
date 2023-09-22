@@ -123,7 +123,7 @@ public class GatewayTrap extends Trap {
 						telePositions.remove((Integer)newPos);
 						largeCharPositions.remove((Integer)newPos);
 
-						if (ScrollOfTeleportation.teleportToLocation(ch, newPos)){
+						if (ScrollOfTeleportation.teleportToLocation(ch, newPos, false)){
 							if (ch instanceof Mob && ((Mob) ch).state == ((Mob) ch).HUNTING) {
 								((Mob) ch).state = ((Mob) ch).WANDERING;
 							}
