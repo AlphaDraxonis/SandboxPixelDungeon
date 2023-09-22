@@ -47,7 +47,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
         WndTextInput w = new WndTextInput(
                 Messages.get(this, "input_dialog_title"),
                 Messages.get(this, "input_dialog_body", min, max, getAsFloat(getMinimum()), getAsFloat(getMaximum())),
-                Float.toString(getAsFloat()), 10, false,
+                Float.toString(getAsFloat()), 11, false,
                 Messages.get(this, "input_dialog_yes"),
                 Messages.get(this, "input_dialog_no")
         ) {

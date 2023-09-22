@@ -132,7 +132,7 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
         numInRegion = new Spinner(new SpinnerIntegerModel(1, 5, newLevelScheme.getNumInRegion(), 1, true, null) {
             @Override
             public float getInputFieldWith(float height) {
-                return height * 1.2f;
+                return height * 1.3f;
             }
 
             @Override

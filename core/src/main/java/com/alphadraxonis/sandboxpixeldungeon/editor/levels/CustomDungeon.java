@@ -105,12 +105,9 @@ public class CustomDungeon implements Bundlable {
     //override rollToDropLoot, similar as mimic, set loot to null, always 100% chance
     //and change exp
 
-    //edit character starting inventory: override heroClass#initHero(), in hero restriction window,
-    //      there will be an option for limited slots of starting items, as well as starting eq, unique for every hero
-
     //Custom mob attacks: externalise
 
-    //Scale mobs if their normal stats editor is disabled
+    //Scale mobs if their normal stats editor is disabled: not just everything!
 
     //The dungeon entrance and exit should default to the previous and next rooms, as well as the chasm to the next room
 

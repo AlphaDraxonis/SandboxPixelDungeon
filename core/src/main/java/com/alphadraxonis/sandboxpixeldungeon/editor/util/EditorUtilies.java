@@ -152,8 +152,10 @@ public final class EditorUtilies {
         for (Component c : comps) {
             if (c != null) {
 
-                if (c instanceof ParagraphIndicator) indexInRow = compsPerRow;
-                else {
+                if (c instanceof ParagraphIndicator) {
+                    if (indexInRow == 0) continue;
+                    indexInRow = compsPerRow;
+                } else {
                     c.setPos(posX, posY);
                     indexInRow++;
                 }

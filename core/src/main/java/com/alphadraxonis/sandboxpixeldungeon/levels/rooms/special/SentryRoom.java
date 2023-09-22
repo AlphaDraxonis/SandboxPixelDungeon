@@ -31,6 +31,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LostInventory;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Eye;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Beam;
 import com.alphadraxonis.sandboxpixeldungeon.effects.MagicMissile;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -286,7 +287,7 @@ public class SentryRoom extends SpecialRoom {
 
 		public void onZapComplete(){
 			if (hit(this, Dungeon.hero, true)) {
-				Dungeon.hero.damage(Random.NormalIntRange(2 + Dungeon.depth / 2, 4 + Dungeon.depth), new Eye.DeathGaze());
+				Dungeon.hero.damage((int) (Random.NormalIntRange(2 + Dungeon.depth / 2, 4 + Dungeon.depth) * statsScale), new Eye.DeathGaze());
 				if (!Dungeon.hero.isAlive()) {
 					Badges.validateDeathFromEnemyMagic();
 					Dungeon.fail(this);
@@ -315,7 +316,7 @@ public class SentryRoom extends SpecialRoom {
 
 		@Override
 		public int attackSkill(Char target) {
-			return 20 + Dungeon.depth * 2;
+			return (int) ((attackSkill = 20 + Dungeon.depth * 2) * statsScale);
 		}
 
 		@Override
@@ -341,6 +342,11 @@ public class SentryRoom extends SpecialRoom {
 		@Override
 		public boolean interact(Char c) {
 			return true;
+		}
+
+		@Override
+		public String description() {
+			return super.description() + (CustomDungeon.isEditing() ? Messages.get(this, "desc_add") : "");
 		}
 
 		private static final String INITIAL_DELAY = "initial_delay";

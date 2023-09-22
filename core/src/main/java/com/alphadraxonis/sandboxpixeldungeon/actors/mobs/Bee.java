@@ -35,7 +35,7 @@ import com.watabou.utils.Random;
 import java.util.HashSet;
 
 //FIXME the AI for these things is becoming a complete mess, should refactor
-public class Bee extends MobBasedOnDepth {
+public class Bee extends Mob implements MobBasedOnDepth {
 	
 	{
 		spriteClass = BeeSprite.class;

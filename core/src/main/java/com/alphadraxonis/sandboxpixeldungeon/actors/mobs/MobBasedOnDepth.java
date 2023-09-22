@@ -1,7 +1,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
-public abstract class MobBasedOnDepth extends Mob {
+public interface MobBasedOnDepth {
 
-    public abstract void setLevel(int depth);
+    void setLevel(int depth);
 
 }

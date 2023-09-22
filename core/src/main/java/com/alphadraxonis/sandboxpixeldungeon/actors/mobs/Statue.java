@@ -37,7 +37,7 @@ import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-public class Statue extends MobBasedOnDepth {
+public class Statue extends Mob implements MobBasedOnDepth {
 
     {
         spriteClass = StatueSprite.class;

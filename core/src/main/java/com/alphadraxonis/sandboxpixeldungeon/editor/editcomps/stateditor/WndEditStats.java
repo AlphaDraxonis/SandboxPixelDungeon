@@ -8,7 +8,10 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.StyledSpinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.stones.StoneOfAugmentation;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.SentryRoom;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
@@ -16,7 +19,6 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
-import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.ui.Component;
 
 public class WndEditStats extends Window {
@@ -45,26 +47,7 @@ public class WndEditStats extends Window {
         title.maxWidth(this.width);
         title.setPos((width - title.width()) * 0.5f, WndTitledMessage.GAP);
 
-        content = new Component() {
-            @Override
-            protected void layout() {
-
-                float posY = y + WndTitledMessage.GAP * 2 - 1;
-
-                boolean hasAtLeastOneComp = false;
-                for (Gizmo g : members) {
-                    if (g instanceof Component) {
-                        Component c = (Component) g;
-                        hasAtLeastOneComp = true;
-                        c.setRect(left(), posY, width, WndMenuEditor.BTN_HEIGHT);
-                        posY = c.bottom() + WndTitledMessage.GAP;
-                        PixelScene.align(c);
-                    }
-                }
-
-                if (hasAtLeastOneComp) height = (int) (posY - y - WndTitledMessage.GAP);
-            }
-        };
+        content = new Component();
 
         restoreDefaults = new RedButton(Messages.get(WndEditStats.class, "restore_default")) {
             @Override
@@ -81,12 +64,12 @@ public class WndEditStats extends Window {
 
             if (DefaultStatsCache.useStatsScale(current)) {
 
-                statsScale = new FloatSpinner(Messages.get(Mob.class, "stats_scale") + ":",
+                statsScale = new FloatSpinner(Messages.get(Mob.class, "stats_scale"),
                         0.1f, def.statsScale * 10, current.statsScale, false);
                 statsScale.addChangeListener(() -> current.statsScale = statsScale.getAsFloat());
                 content.add(statsScale);
 
-                addSpeedSpinner(def, current);
+                if (!(current instanceof SentryRoom.Sentry)) addSpeedSpinner(def, current);
 
                 if (current instanceof Brute) {
                     addHPAccuracyEvasionArmorSpinner(def, current);
@@ -98,19 +81,23 @@ public class WndEditStats extends Window {
 
                 addHPAccuracyEvasionArmorSpinner(def, current);
 
-                dmgMin = new IntegerSpinner(Messages.get(Mob.class, "dmg_min") + ":",
+                dmgMin = new IntegerSpinner(Messages.get(Mob.class, "dmg_min"),
                         0, def.damageRollMin * 10, current.damageRollMin, false);
                 dmgMin.addChangeListener(() -> current.damageRollMin = dmgMin.getAsInt());
                 content.add(dmgMin);
 
-                dmgMax = new IntegerSpinner(Messages.get(Mob.class, "dmg_max") + ":",
+                dmgMax = new IntegerSpinner(Messages.get(Mob.class, "dmg_max"),
                         0, def.damageRollMax * 10, current.damageRollMax, false);
                 dmgMax.addChangeListener(() -> current.damageRollMax = dmgMax.getAsInt());
                 content.add(dmgMax);
             }
         }
 
-        content.setSize(this.width, -1);
+        EditorUtilies.layoutStyledCompsInRectangles( WndTitledMessage.GAP, this.width, content, new Component[]{
+                statsScale, speed, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                hp, attackSkill, defenseSkill, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                armor, dmgMin, dmgMax
+        });
 
         scrollPane = new ScrollPane(content);
         add(scrollPane);
@@ -134,7 +121,7 @@ public class WndEditStats extends Window {
 
     private void addHPAccuracyEvasionArmorSpinner(Mob def, Mob current) {
 
-        hp = new IntegerSpinner(Messages.get(Mob.class, "hp") + ":",
+        hp = new IntegerSpinner(Messages.get(Mob.class, "hp"),
                 1, def.HT * 10, current.HT, true);
         hp.addChangeListener(() -> {
             int val = hp.getAsInt();
@@ -143,7 +130,7 @@ public class WndEditStats extends Window {
         });
         content.add(hp);
 
-        attackSkill = new IntegerSpinner(Messages.get(Mob.class, "accuracy") + ":",
+        attackSkill = new IntegerSpinner(Messages.get(Mob.class, "accuracy"),
                 0, def.attackSkill * 10, current.attackSkill, true);
         attackSkill.addChangeListener(() -> {
             int val = attackSkill.getAsInt();
@@ -152,7 +139,7 @@ public class WndEditStats extends Window {
         });
         content.add(attackSkill);
 
-        defenseSkill = new IntegerSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "evasion") + ":",
+        defenseSkill = new IntegerSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "evasion"),
                 0, def.defenseSkill * 10, current.defenseSkill, true);
         defenseSkill.addChangeListener(() -> {
             int val = defenseSkill.getAsInt();
@@ -161,7 +148,7 @@ public class WndEditStats extends Window {
         });
         content.add(defenseSkill);
 
-        armor = new IntegerSpinner(Messages.get(Mob.class, "armor") + ":",
+        armor = new IntegerSpinner(Messages.get(Mob.class, "armor"),
                 0, def.damageReductionMax * 10, current.damageReductionMax, false);
         armor.addChangeListener(() -> current.damageReductionMax = armor.getAsInt());
         content.add(armor);
@@ -171,9 +158,8 @@ public class WndEditStats extends Window {
         if (defaultStats instanceof Mob) {
             Mob def = (Mob) defaultStats;
 
-            speed.setValue(SpinnerFloatModel.convertToInt(def.baseSpeed));
-            if (statsScale != null)
-                statsScale.setValue(SpinnerFloatModel.convertToInt(def.statsScale));
+            if (speed != null) speed.setValue(SpinnerFloatModel.convertToInt(def.baseSpeed));
+            if (statsScale != null) statsScale.setValue(SpinnerFloatModel.convertToInt(def.statsScale));
             if (hp != null) {
                 hp.setValue(def.HT);
                 attackSkill.setValue(def.attackSkill);
@@ -187,10 +173,15 @@ public class WndEditStats extends Window {
         }
     }
 
-    private static class FloatSpinner extends Spinner {
+    private static class FloatSpinner extends StyledSpinner {
 
         public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity) {
-            super(new SpinnerFloatModel(minimum, maximum, value, false), name, 9);
+            super(new SpinnerFloatModel(minimum, maximum, value, false){
+                @Override
+                public float getInputFieldWith(float height) {
+                    return Spinner.FILL;
+                }
+            }, name, 9);
             setButtonWidth(12);
         }
 
@@ -200,7 +191,7 @@ public class WndEditStats extends Window {
     }
 
 
-    private static class IntegerSpinner extends Spinner {
+    private static class IntegerSpinner extends StyledSpinner {
 
         public IntegerSpinner(String name, int minimum, int maximum, int value, boolean includeInfinity) {
             super(new IntegerSpinnerModel(minimum, maximum, value, false), name, 9);
@@ -231,7 +222,7 @@ public class WndEditStats extends Window {
 
         @Override
         public float getInputFieldWith(float height) {
-            return height * 1.4f;
+            return Spinner.FILL;
         }
     }
 }

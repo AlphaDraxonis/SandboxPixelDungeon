@@ -13,6 +13,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.StyledItemSelector;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
@@ -282,7 +283,7 @@ public class HeroSettings extends Component {
             startGold = new StyledSpinner(new SpinnerIntegerModel(0, 10000, data.gold, 1, false, null) {
                 @Override
                 public float getInputFieldWith(float height) {
-                    return height * 1.2f;
+                    return Spinner.FILL;
                 }
 
                 @Override
@@ -296,7 +297,7 @@ public class HeroSettings extends Component {
             startEnergy = new StyledSpinner(new SpinnerIntegerModel(0, 1000, data.energy, 1, false, null) {
                 @Override
                 public float getInputFieldWith(float height) {
-                    return height * 1.2f;
+                    return Spinner.FILL;
                 }
 
                 @Override

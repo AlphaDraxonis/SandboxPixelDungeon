@@ -35,7 +35,7 @@ import com.alphadraxonis.sandboxpixeldungeon.sprites.PiranhaSprite;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-public class Piranha extends MobBasedOnDepth {
+public class Piranha extends Mob implements MobBasedOnDepth {
 	
 	{
 		spriteClass = PiranhaSprite.class;

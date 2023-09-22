@@ -15,6 +15,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
 import com.alphadraxonis.sandboxpixeldungeon.items.food.Food;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.SentryRoom;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Reflection;
 
@@ -58,7 +59,8 @@ public class DefaultStatsCache {
 
             //Acthung Brute kann manche stats setzten, auch speed ändern!
             if (Mob.class.isAssignableFrom(clazz) &&
-                    (NPC.class.isAssignableFrom(clazz) || Pylon.class.isAssignableFrom(clazz)
+                    (NPC.class.isAssignableFrom(clazz) && !SentryRoom.Sentry.class.isAssignableFrom(clazz)
+                            || Pylon.class.isAssignableFrom(clazz)
                             || YogDzewa.class.isAssignableFrom(clazz) || YogFist.class.isAssignableFrom(clazz)))
                 return null;
 
@@ -74,6 +76,7 @@ public class DefaultStatsCache {
                 || mob instanceof Brute
                 || mob instanceof Bee
                 || mob instanceof Wraith
+                || mob instanceof SentryRoom.Sentry
                 || mob instanceof Goo;
     }
 

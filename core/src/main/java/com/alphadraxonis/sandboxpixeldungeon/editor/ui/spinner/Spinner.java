@@ -10,7 +10,7 @@ import com.watabou.noosa.ui.Component;
 
 public class Spinner extends Component {
 
-    public static final int GAP = 5;
+    public static final int GAP = 0;
     public static final int FILL = -1;//Constant for SpinnerModel#getWidth(int height)
     public static final int SQUARE = -2;//Constant for buttonWidth to always have width = height
     public static final float ALIGNMENT_LEFT = 0, ALIGNMENT_CENTER = 0.5f, ALIGNMENT_RIGHT = 1;

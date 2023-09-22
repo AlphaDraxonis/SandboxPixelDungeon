@@ -134,10 +134,10 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         content.add(changeSize);
 
 
-        viewDistance = new StyledSpinner(new SpinnerIntegerModel(1, 30, EditorScene.customLevel().viewDistance, 1, false, null) {
+        viewDistance = new StyledSpinner(new SpinnerIntegerModel(1, 20, EditorScene.customLevel().viewDistance, 1, false, null) {
             @Override
             public float getInputFieldWith(float height) {
-                return height * 1.2f;
+                return Spinner.FILL;
             }
 
             @Override
@@ -148,14 +148,15 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         viewDistance.addChangeListener(() -> EditorScene.customLevel().viewDistance = (int) viewDistance.getValue());
         content.add(viewDistance);
 
-        depth = new StyledSpinner(DepthSpinner.createModel(EditorScene.customLevel().levelScheme.getDepth()), DepthSpinner.createLabel(), 8);
+        depth = new StyledSpinner(DepthSpinner.createModel(EditorScene.customLevel().levelScheme.getDepth(), height -> (float) Spinner.FILL),
+                DepthSpinner.createLabel(), 8);
         depth.addChangeListener(() -> EditorScene.customLevel().levelScheme.setDepth((Integer) depth.getValue()));
         content.add(depth);
 
         shopPrice = new StyledSpinner(new SpinnerIntegerModel(1, 10, EditorScene.customLevel().levelScheme.getPriceMultiplier(), 1, false, null) {
             @Override
             public float getInputFieldWith(float height) {
-                return height * 1.2f;
+                return Spinner.FILL;
             }
 
             @Override
@@ -181,7 +182,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
             Component[] components = {potionColors, scrollRunes, ringGems,
                     region, mobSpawn, changeSize,
                     heroes, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                    depth, viewDistance,shopPrice
+                    depth, viewDistance, shopPrice
             };
 
             EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, components);

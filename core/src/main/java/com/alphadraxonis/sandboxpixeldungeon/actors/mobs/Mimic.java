@@ -49,7 +49,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class Mimic extends MobBasedOnDepth {
+public class Mimic extends Mob implements MobBasedOnDepth {
 
     private int level;
 

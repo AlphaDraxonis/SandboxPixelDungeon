@@ -33,7 +33,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-public class Wraith extends MobBasedOnDepth {
+public class Wraith extends Mob implements MobBasedOnDepth {
 
 	private static final float SPAWN_DELAY	= 2f;
 	

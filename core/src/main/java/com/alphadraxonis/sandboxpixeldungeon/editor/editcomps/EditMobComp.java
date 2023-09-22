@@ -173,7 +173,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     new SpinnerIntegerModel(0, 600, (int) ((Sheep) mob).lifespan, 1, false, null) {
                         @Override
                         public float getInputFieldWith(float height) {
-                            return height * 1.2f;
+                            return height * 1.3f;
                         }
 
                         @Override

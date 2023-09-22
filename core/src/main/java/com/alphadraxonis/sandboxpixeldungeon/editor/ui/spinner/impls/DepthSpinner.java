@@ -4,6 +4,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndNewFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerModel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.Function;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 
 public abstract class DepthSpinner extends Spinner {
@@ -22,15 +23,24 @@ public abstract class DepthSpinner extends Spinner {
     }
 
     public static SpinnerModel createModel(int depth) {
+        return createModel(depth, height -> height * 1.2f);
+    }
+
+    public static SpinnerModel createModel(int depth, Function<Float, Float> getInputFieldWith) {
         return new SpinnerIntegerModel(0, 26, depth, 1, true, null) {
             @Override
             public float getInputFieldWith(float height) {
-                return height * 1.2f;
+                return getInputFieldWith.apply(height);
             }
 
             @Override
             public int getClicksPerSecondWhileHolding() {
                 return 15;
+            }
+
+            @Override
+            public void displayInputAnyNumberDialog() {
+                super.displayInputAnyNumberDialog(0, 10000);
             }
         };
     }

@@ -214,7 +214,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         WndTextInput w = new WndTextInput(
                 Messages.get(this, "input_dialog_title"),
                 Messages.get(this, "input_dialog_body", (int) min, (int) max, getMinimum(), getMaximum()),
-                getValue().toString(), 11, false,
+                getValue().toString(), 12, false,
                 Messages.get(this, "input_dialog_yes"),
                 Messages.get(this, "input_dialog_no")
         ) {

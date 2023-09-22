@@ -59,9 +59,8 @@ public class StyledSpinner extends Spinner {
         if (bw == SQUARE) bw = spinnerHeight;
         else bw = Math.max(bw, 6);
 
-        float txtWidth = getModel().getInputFieldWith(height);
-        if (txtWidth == FILL) txtWidth = width - bw * 2 - 1;
-        txtWidth = 23;
+        float txtWidth = getModel().getInputFieldWith(spinnerHeight);
+        if (txtWidth == FILL) txtWidth = width - bw * 2 - bg.marginHor();
 
         float conW = bw * 2 - 1;
         float startX = x + (width - conW - txtWidth) * getAlignmentSpinnerX() + 1;
