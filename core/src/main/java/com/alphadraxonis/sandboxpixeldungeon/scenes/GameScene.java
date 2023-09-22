@@ -940,7 +940,7 @@ public class GameScene extends PixelScene {
         }
 
         if (text != null) {
-            prompt = new Toast(text) {
+            prompt = new Toast(text, uiCamera.width) {
                 @Override
                 protected void onClose() {
                     cancel();

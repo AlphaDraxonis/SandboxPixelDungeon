@@ -36,12 +36,31 @@ public class Toast extends Component {
 	protected IconButton close;
 	protected RenderedTextBlock text;
 
+	protected float maxWidth;
+
 	public Toast( String text ) {
+		this(text, Float.MAX_VALUE);
+	}
+	public Toast( String text, float maxWidth ) {
 		super();
 		text( text );
 
+		setMaxWidth(maxWidth);
+	}
+
+	public void setMaxWidth(float maxWidth) {
+		this.maxWidth = maxWidth;
+
 		width = this.text.width() + close.width() + bg.marginHor() + MARGIN_HOR * 3;
+		if (maxWidth < width) {
+			width = maxWidth;
+			this.text.maxWidth((int) (maxWidth - close.width() - bg.marginHor() - MARGIN_HOR * 3));
+		}
 		height = Math.max( this.text.height(), close.height() ) + bg.marginVer() + MARGIN_VER * 2;
+	}
+
+	public float getMaxWidth() {
+		return maxWidth;
 	}
 
 	@Override
