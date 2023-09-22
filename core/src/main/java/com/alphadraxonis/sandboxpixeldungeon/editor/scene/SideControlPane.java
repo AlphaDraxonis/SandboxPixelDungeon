@@ -423,7 +423,7 @@ public class SideControlPane extends Component {
     private static final CellSelector.Listener fillAllCellListener = new CellSelector.Listener() {
         @Override
         public void onSelect(Integer cell) {
-            EditorScene.fillAllWithOnTerrain(cell);
+            EditorScene.fillAllWithOneTerrain(cell);
         }
 
         @Override

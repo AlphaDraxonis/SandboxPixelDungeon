@@ -621,7 +621,7 @@ public class EditorScene extends PixelScene {
         Mob mob = customLevel.getMobAtCell(cell);
         if (mob != null) return mob;
         Heap heap = customLevel.heaps.get(cell);
-        if (heap != null && heap.peek() != null)return heap.peek();
+        if (heap != null && heap.peek() != null) return heap.peek();
         Plant plant = customLevel.plants.get(cell);
         if (plant != null) return plant;
         Trap trap = customLevel.traps.get(cell);
@@ -757,39 +757,66 @@ public class EditorScene extends PixelScene {
         }
     }
 
-    public static void fillAllWithOnTerrain(Integer cell){
+    public static void fillAllWithOneTerrain(Integer cell) {
         if (cell != null && cell >= 0 && cell < customLevel.length()) {
             Item selected = EToolbar.getSelectedItem();
 
             if (selected instanceof EditorItem) {
+
+                queue.add(cell);
+
+                CustomLevel level = customLevel();
+                EditorItem item = (EditorItem) selected;
+                int lvlWidth = level.width();
+
+                if (TileItem.isTrapTerrainCell(level.map[cell])) {
+
+                    while (!queue.isEmpty()) {
+                        int c = queue.iterator().next();
+                        queue.remove(c);
+                        fillAllWithOneTerrainQueue(c, level.map[c], item, level.map, level.traps.get(c).getClass(), lvlWidth);
+                    }
+                } else {
+                    while (!queue.isEmpty()) {
+                        int c = queue.iterator().next();
+                        queue.remove(c);
+                        fillAllWithOneTerrainQueue(c, level.map[c], item, level.map, lvlWidth);
+                    }
+                }
                 changedCells.clear();
-                Undo.startAction();
-                if(TileItem.isTrapTerrainCell(customLevel().map[cell]))
-                    fillAllWithOneTerrainRecursiveTrap(cell, customLevel().map[cell], (EditorItem) selected, customLevel().map, customLevel().traps.get(cell).getClass());
-                else fillAllWithOneTerrainRecursive(cell, customLevel().map[cell], (EditorItem) selected, customLevel().map);
-                Undo.endAction();
             }
         }
     }
+
     private static Set<Integer> changedCells = new HashSet<>();
-    public static void fillAllWithOneTerrainRecursive(int cell, int terrainClick, EditorItem place, int[] map){
+    private static Set<Integer> queue = new HashSet<>();
+
+    public static void fillAllWithOneTerrainQueue(int cell, int terrainClick, EditorItem place, int[] map, int lvlWidth) {
 
         changedCells.add(cell);
-        for (int i : PathFinder.CIRCLE4){
-            int val = i + cell;
-            if (val >= 0 && val < map.length && !changedCells.contains(val) && map[val] == terrainClick) fillAllWithOneTerrainRecursive(val, terrainClick, place, map);
+        for (int i : PathFinder.CIRCLE4) {
+            int neighbor = i + cell;
+            int xCoord = cell % lvlWidth;
+            if (neighbor >= 0 && neighbor < map.length && !changedCells.contains(neighbor)
+                    && (Math.abs(neighbor % lvlWidth - xCoord) <= 1) && map[neighbor] == terrainClick) {
+                queue.add(neighbor);
+            }
         }
         place.place(cell);
 
     }
-    public static void fillAllWithOneTerrainRecursiveTrap(int cell, int terrainClick, EditorItem place, int[] map, Class<? extends Trap> onTrapClicked) {
+
+    public static void fillAllWithOneTerrainQueue(int cell, int terrainClick, EditorItem place, int[] map, Class<? extends Trap> onTrapClicked, int lvlWidth) {
 
         changedCells.add(cell);
-        for (int i : PathFinder.CIRCLE4){
-            int val = i + cell;
-            if (val >= 0 && val < map.length && !changedCells.contains(val)
-                    && map[val] == terrainClick && customLevel().traps.get(val).getClass() == onTrapClicked)
-                fillAllWithOneTerrainRecursiveTrap(val, terrainClick, place, map, onTrapClicked);
+        for (int i : PathFinder.CIRCLE4) {
+            int neighbor = i + cell;
+            int xCoord = cell % lvlWidth;
+            if (neighbor >= 0 && neighbor < map.length && !changedCells.contains(neighbor)
+                    && map[neighbor] == terrainClick
+                    && (Math.abs(neighbor % lvlWidth - xCoord) <= 1)
+                    && customLevel().traps.get(neighbor).getClass() == onTrapClicked)
+                queue.add(neighbor);
         }
         place.place(cell);
 
