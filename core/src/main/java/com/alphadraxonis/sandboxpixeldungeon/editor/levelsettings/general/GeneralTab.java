@@ -9,6 +9,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerMod
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
+import com.alphadraxonis.sandboxpixeldungeon.effects.BadgeBanner;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.GnollSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
@@ -111,6 +112,16 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         mobSpawn.icon(new GnollSprite());
         content.add(mobSpawn);
 
+        heroes = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(GeneralTab.class, "heroes"), 8) {
+            @Override
+            protected void onClick() {
+                HeroSettings heroSettings = new HeroSettings();
+                changeContent(heroSettings.createTitle(), heroSettings, heroSettings.getOutsideSp(), 0.5f, 0f);
+            }
+        };
+        heroes.icon(BadgeBanner.image(0));
+        content.add(heroes);
+
         changeSize = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(ChangeMapSize.class, "title"), 8) {
 
             @Override
@@ -155,15 +166,6 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         shopPrice.addChangeListener(() -> EditorScene.customLevel().levelScheme.setShopPriceMultiplier((int) shopPrice.getValue()));
         content.add(shopPrice);
 
-        heroes = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, "GeneralTab158 Heroes", 8) {
-            @Override
-            protected void onClick() {
-                HeroSettings heroSettings = new HeroSettings();
-                changeContent(heroSettings.createTitle(), heroSettings, heroSettings.getOutsideSp(), 0.5f, 0f);
-            }
-        };
-        content.add(heroes);
-
         sp.givePointerPriority();
         add(sp);
     }
@@ -178,8 +180,9 @@ public class GeneralTab extends WndEditorSettings.TabComp {
 
             Component[] components = {potionColors, scrollRunes, ringGems,
                     region, mobSpawn, changeSize,
-                    depth, viewDistance, shopPrice,
-                    heroes};
+                    heroes, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                    depth, viewDistance,shopPrice
+            };
 
             EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, components);
 

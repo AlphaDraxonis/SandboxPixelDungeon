@@ -17,8 +17,11 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
     }
 
     public float getAsFloat() {
-        if (getValue() == null) return -1;
-        return ((int) getValue()) / 10f;
+        return getAsFloat((Integer) getValue());
+    }
+    public float getAsFloat(Integer value){
+        if (value == null) return -1;
+        return value / 10f;
     }
 
     @Override
@@ -43,7 +46,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
     public void displayInputAnyNumberDialog(float min, float max) {
         WndTextInput w = new WndTextInput(
                 Messages.get(this, "input_dialog_title"),
-                Messages.get(this, "input_dialog_body", min, max),
+                Messages.get(this, "input_dialog_body", min, max, getAsFloat(getMinimum()), getAsFloat(getMaximum())),
                 Float.toString(getAsFloat()), 10, false,
                 Messages.get(this, "input_dialog_yes"),
                 Messages.get(this, "input_dialog_no")

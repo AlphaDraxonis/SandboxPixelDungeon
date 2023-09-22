@@ -4,6 +4,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Plants;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Traps;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
@@ -15,6 +16,11 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.ui.CategoryScroller;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
+import com.alphadraxonis.sandboxpixeldungeon.items.potions.Potion;
+import com.alphadraxonis.sandboxpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
+import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.Scroll;
+import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -176,9 +182,11 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
     protected void onClick(Tab tab) {
         Trap tempTrapSave = lastTrapForImage;
         Plant tempPlantSave = lastPlantForImage;
+        Item tempItemSave = lastItemForImage;
         hide();
         lastTrapForImage = tempTrapSave;
         lastPlantForImage = tempPlantSave;
+        lastItemForImage = tempItemSave;
         Window w = new WndEditorInv((EditorItemBag) ((BagTab) tab).bag, selector, true);
         if (Game.scene() instanceof EditorScene) {
             EditorScene.show(w);
@@ -230,6 +238,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
     private static Trap lastTrapForImage;
     private static Plant lastPlantForImage;
+    private static Item lastItemForImage;
 
     private static Image createIcon(int indexTab) {
         switch (indexTab) {
@@ -237,6 +246,21 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                 return new ItemSprite(new TileItem(Terrain.EMPTY, -1));
             case 2:
                 return new SkeletonSprite();
+            case 3:
+                if (lastItemForImage == null) {
+                    lastItemForImage = Reflection.newInstance(Items.getRandomItem(null));
+                    lastItemForImage.image = Dungeon.customDungeon.getItemSpriteOnSheet(lastItemForImage);
+                    if (lastItemForImage.image == ItemSpriteSheet.SCROLL_HOLDER) {
+                        lastItemForImage.image = ItemSpriteSheet.SCROLLS + (int) (Math.random() * Scroll.runes.size())
+                                + (lastItemForImage instanceof ExoticScroll ? 16 : 0);
+                    } else if (lastItemForImage.image == ItemSpriteSheet.POTION_HOLDER) {
+                        lastItemForImage.image = ItemSpriteSheet.POTIONS + (int) (Math.random() * Potion.colors.size())
+                                + (lastItemForImage instanceof ExoticPotion ? 16 : 0);
+                    } else if (lastItemForImage.image == ItemSpriteSheet.RING_HOLDER) {
+                        lastItemForImage.image = ItemSpriteSheet.RINGS + (int) (Math.random() * Ring.gems.size());
+                    }
+                }
+                return new ItemSprite(lastItemForImage.image());
             case 4:
                 if (lastTrapForImage == null) {
                     lastTrapForImage = Reflection.newInstance(Traps.getRandomTrap(null));
@@ -244,9 +268,8 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                 }
                 return TrapItem.getTrapImage(lastTrapForImage);
             case 5:
-                if (lastPlantForImage == null) {
+                if (lastPlantForImage == null)
                     lastPlantForImage = Reflection.newInstance(Plants.getRandomPlant(null));
-                }
                 return PlantItem.getPlantImage(lastPlantForImage);
         }
         Image img = new ItemSprite(ItemSpriteSheet.SOMETHING);
@@ -260,6 +283,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         lastScrollPos.put(curBag, body.getCurrentViewY());
         lastTrapForImage = null;
         lastPlantForImage = null;
+        lastItemForImage = null;
         super.hide();
         if (INSTANCE == this) {
             INSTANCE = null;

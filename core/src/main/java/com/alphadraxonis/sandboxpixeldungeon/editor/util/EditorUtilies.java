@@ -129,33 +129,48 @@ public final class EditorUtilies {
 
     public static void layoutStyledCompsInRectangles(int gap, float width, Component parent, Component[] comps) {
 
-        float oneThirdWidth = (width - gap * 2) / 3f;
+        final int compsPerRow = PixelScene.landscape() ? 3 : 2;
 
-        //TODO take logic from heroselectscene!
+        float widthOnePart = (width - gap * (compsPerRow - 1)) / compsPerRow;
+
+        //TODO take logic from heroselectscene to center remaining
 
         for (Component c : comps) {
-            if (c != null) c.setSize(oneThirdWidth, -1);
+            if (c != null) c.setSize(widthOnePart, -1);
         }
         float maxCompHeight = 0;
         for (Component c : comps) {
             if (c != null && c.height() > maxCompHeight) maxCompHeight = c.height();
         }
         for (Component c : comps) {
-            if (c != null) c.setSize(oneThirdWidth, maxCompHeight);
+            if (c != null) c.setSize(widthOnePart, maxCompHeight);
         }
 
         float posY = parent.top();
         float posX = parent.left();
-        for (int i = 0; i < comps.length; i++) {
-            if (comps[i] != null) {
-                comps[i].setPos(posX, posY);
-                if ((i + 1) % 3 == 0) {
+        int indexInRow = 0;
+        for (Component c : comps) {
+            if (c != null) {
+
+                if (c instanceof ParagraphIndicator) indexInRow = compsPerRow;
+                else {
+                    c.setPos(posX, posY);
+                    indexInRow++;
+                }
+
+                if (indexInRow == compsPerRow) {
                     posY += gap + maxCompHeight;
                     posX = parent.left();
-                } else posX = comps[i].right() + gap;
+                    indexInRow = 0;
+                } else posX += widthOnePart + gap;
             }
         }
 
-        parent.setSize(width, posY + (comps.length % 3 == 0 ? -gap : maxCompHeight) - parent.top());
+        parent.setSize(width, posY + (indexInRow == 0 ? -gap : maxCompHeight) - parent.top());
     }
+
+    public static class ParagraphIndicator extends Component {
+    }
+
+    public static final ParagraphIndicator PARAGRAPH_INDICATOR_INSTANCE = new ParagraphIndicator();
 }

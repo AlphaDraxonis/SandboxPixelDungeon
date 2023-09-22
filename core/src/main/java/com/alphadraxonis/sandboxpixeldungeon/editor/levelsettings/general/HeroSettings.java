@@ -202,7 +202,7 @@ public class HeroSettings extends Component {
 
     public static String getTabName(int index) {
         if (index > 0) return HeroClass.values()[index - 1].title();
-        return "General";
+        return Messages.get(HeroSettings.class, "general");
     }
 
     private static class HeroTab extends Component {
@@ -289,7 +289,7 @@ public class HeroSettings extends Component {
                 public int getClicksPerSecondWhileHolding() {
                     return 150;
                 }
-            }, Messages.get(HeroSettings.class, "gold"), 8, Icons.GOLD.get());
+            }, Messages.get(HeroSettings.class, "gold"), 10, Icons.GOLD.get());
             startGold.icon().scale = new PointF(0.5f, 0.5f);
             startGold.addChangeListener(() -> data.gold = (int) startGold.getValue());
             itemSelectorParent.add(startGold);
@@ -303,7 +303,7 @@ public class HeroSettings extends Component {
                 public int getClicksPerSecondWhileHolding() {
                     return 15;
                 }
-            }, Messages.get(HeroSettings.class, "energy"), 8, Icons.ENERGY.get());
+            }, Messages.get(HeroSettings.class, "energy"), 10, Icons.ENERGY.get());
             startEnergy.icon().scale = new PointF(0.5f, 0.5f);
             startEnergy.addChangeListener(() -> data.energy = (int) startEnergy.getValue());
             itemSelectorParent.add(startEnergy);
@@ -371,7 +371,8 @@ public class HeroSettings extends Component {
             }
             itemSelectorParent.setPos(x, posY);
             EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
-                    new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, startGold, startEnergy});
+                    new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                            startGold, startEnergy});
             PixelScene.align(itemSelectorParent);
             posY = itemSelectorParent.bottom() + gap;
             startBags.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);

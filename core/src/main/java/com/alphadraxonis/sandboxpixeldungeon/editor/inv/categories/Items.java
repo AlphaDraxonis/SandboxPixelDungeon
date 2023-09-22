@@ -233,6 +233,7 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -461,6 +462,28 @@ public enum Items {
         return sortedItems;
     }
 
+    private static final Class<?>[] EMPTY_ITEM_CLASS_ARRAY = new Class[0];
+
+    public static Class<?>[][] getAllItems(Set<Class<? extends Item>> itemsToIgnore) {
+        Items[] all = values();
+        Class<?>[][] ret = new Class[all.length][];
+        for (int i = 0; i < all.length; i++) {
+            List<Class<?>> items = new ArrayList<>(Arrays.asList(all[i].classes()));
+            if (itemsToIgnore != null) items.removeAll(itemsToIgnore);
+            ret[i] = items.toArray(EMPTY_ITEM_CLASS_ARRAY);
+        }
+        return ret;
+    }
+    public static Class<? extends Item> getRandomItem(Set<Class<? extends Item>> itemsToIgnore) {
+        Class<? extends Item>[][] items = (Class<? extends Item>[][]) getAllItems(itemsToIgnore);
+        List<Class<? extends Item>> itemList = new ArrayList<>();
+        for (Class<? extends Item>[] item : items) {
+            itemList.addAll(Arrays.asList(item));
+        }
+        int length = itemList.size();
+        if (length == 0) return null;
+        return itemList.get((int) (Math.random() * length));
+    }
 
     static {
 
