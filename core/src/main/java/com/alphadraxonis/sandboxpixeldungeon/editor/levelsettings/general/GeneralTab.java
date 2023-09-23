@@ -1,9 +1,12 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general;
 
+import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.StyledButtonWithIconAndText;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.StyledCheckbox;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.StyledSpinner;
@@ -23,6 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.windows.WndKeyBindings;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.RectF;
 
 public class GeneralTab extends WndEditorSettings.TabComp {
 
@@ -48,6 +52,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
     private Spinner viewDistance, depth, shopPrice;
     private StyledButton changeSize;
     private StyledButton heroes;
+    private StyledCheckbox hungerDepletion, naturalRegen;
 
 
     @Override
@@ -58,6 +63,8 @@ public class GeneralTab extends WndEditorSettings.TabComp {
 
         content = new Component();
         sp = new ScrollPane(content);
+
+        final CustomLevel level = EditorScene.customLevel();
 
         potionColors = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(GeneralTab.class, "set_pot"), 7) {
             @Override
@@ -122,6 +129,32 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         heroes.icon(BadgeBanner.image(0));
         content.add(heroes);
 
+        hungerDepletion = new StyledCheckbox(Chrome.Type.GREY_BUTTON_TR, Messages.get(GeneralTab.class, "hunger"), 8, level.levelScheme.hungerDepletion) {
+            @Override
+            public void checked(boolean value) {
+                super.checked(value);
+                level.levelScheme.hungerDepletion = value;
+            }
+        };
+        hungerDepletion.icon(new ItemSprite(ItemSpriteSheet.RATION));
+        content.add(hungerDepletion);
+
+        naturalRegen = new StyledCheckbox(Chrome.Type.GREY_BUTTON_TR, Messages.get(GeneralTab.class, "regeneration"), 8, level.levelScheme.naturalRegeneration) {
+            @Override
+            public void checked(boolean value) {
+                super.checked(value);
+                level.levelScheme.naturalRegeneration = value;
+            }
+        };
+        RectF r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.POTION_HEALING);
+        if (r != null) {
+            Image icon = new Image(Assets.Sprites.ITEM_ICONS);
+            icon.frame(r);
+            icon.scale.set(10 / Math.max(icon.width(), icon.height()));
+            naturalRegen.icon(icon);
+        }
+        content.add(naturalRegen);
+
         changeSize = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(ChangeMapSize.class, "title"), 8) {
 
             @Override
@@ -134,7 +167,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         content.add(changeSize);
 
 
-        viewDistance = new StyledSpinner(new SpinnerIntegerModel(1, 20, EditorScene.customLevel().viewDistance, 1, false, null) {
+        viewDistance = new StyledSpinner(new SpinnerIntegerModel(1, 20, level.viewDistance, 1, false, null) {
             @Override
             public float getInputFieldWith(float height) {
                 return Spinner.FILL;
@@ -145,15 +178,15 @@ public class GeneralTab extends WndEditorSettings.TabComp {
                 return 13;
             }
         }, Messages.get(GeneralTab.class, "view_distance"), 8);
-        viewDistance.addChangeListener(() -> EditorScene.customLevel().viewDistance = (int) viewDistance.getValue());
+        viewDistance.addChangeListener(() -> level.viewDistance = (int) viewDistance.getValue());
         content.add(viewDistance);
 
-        depth = new StyledSpinner(DepthSpinner.createModel(EditorScene.customLevel().levelScheme.getDepth(), height -> (float) Spinner.FILL),
+        depth = new StyledSpinner(DepthSpinner.createModel(level.levelScheme.getDepth(), height -> (float) Spinner.FILL),
                 DepthSpinner.createLabel(), 8);
-        depth.addChangeListener(() -> EditorScene.customLevel().levelScheme.setDepth((Integer) depth.getValue()));
+        depth.addChangeListener(() -> level.levelScheme.setDepth((Integer) depth.getValue()));
         content.add(depth);
 
-        shopPrice = new StyledSpinner(new SpinnerIntegerModel(1, 10, EditorScene.customLevel().levelScheme.getPriceMultiplier(), 1, false, null) {
+        shopPrice = new StyledSpinner(new SpinnerIntegerModel(1, 10, level.levelScheme.getPriceMultiplier(), 1, false, null) {
             @Override
             public float getInputFieldWith(float height) {
                 return Spinner.FILL;
@@ -164,7 +197,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
                 return 8;
             }
         }, Messages.get(GeneralTab.class, "shop_price"), 8);
-        shopPrice.addChangeListener(() -> EditorScene.customLevel().levelScheme.setShopPriceMultiplier((int) shopPrice.getValue()));
+        shopPrice.addChangeListener(() -> level.levelScheme.setShopPriceMultiplier((int) shopPrice.getValue()));
         content.add(shopPrice);
 
         sp.givePointerPriority();
@@ -181,7 +214,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
 
             Component[] components = {potionColors, scrollRunes, ringGems,
                     region, mobSpawn, changeSize,
-                    heroes, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                    heroes, hungerDepletion, naturalRegen, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                     depth, viewDistance, shopPrice
             };
 

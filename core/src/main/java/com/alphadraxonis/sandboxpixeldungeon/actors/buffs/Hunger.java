@@ -66,6 +66,7 @@ public class Hunger extends Buff implements Hero.Doom {
 	public boolean act() {
 
 		if (Dungeon.level.locked
+				|| !Dungeon.curLvlScheme().hungerDepletion
 				|| target.buff(WellFed.class) != null
 				|| SPDSettings.intro()
 				|| target.buff(ScrollOfChallenge.ChallengeArena.class) != null

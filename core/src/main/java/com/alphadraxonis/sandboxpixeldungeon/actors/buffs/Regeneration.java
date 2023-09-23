@@ -41,7 +41,7 @@ public class Regeneration extends Buff {
 	public boolean act() {
 		if (target.isAlive()) {
 
-			if (target.HP < regencap() && !((Hero)target).isStarving()) {
+			if (target.HP < regencap() && !((Hero)target).isStarving() && Dungeon.curLvlScheme().naturalRegeneration) {
 				if (regenOn()) {
 					target.HP += 1;
 					if (target.HP == regencap()) {

@@ -89,7 +89,6 @@ public class CustomDungeon implements Bundlable {
     //settings für EditorScene
     //custom tiles wichtig
     //select builder and painter
-    //place blobs like fire
     //Category items/mobs/rooms
 
 
@@ -111,7 +110,7 @@ public class CustomDungeon implements Bundlable {
 
     //The dungeon entrance and exit should default to the previous and next rooms, as well as the chasm to the next room
 
-    //Option to turn off either/both of health regen/hunger depletion
+    //Debug: wrong language in destlevelcomp if surface or none
 
     private String name;
     private String lastEditedFloor;

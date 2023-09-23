@@ -33,7 +33,7 @@ public class StyledButtonWithIconAndText extends StyledButton {
         float contentHeight = height();
 
         if (text != null && !text.text().equals("")) {
-            if (multiline) text.maxWidth((int) width());
+            if (multiline) text.maxWidth((int) width() - bg.marginHor());
             text.setPos(
                     x + (width() + text.width()) / 2f - text.width(),
                     (icon == null ? y + (contentHeight - text.height()) / 2f :
@@ -53,7 +53,7 @@ public class StyledButtonWithIconAndText extends StyledButton {
     }
 
     public float getMinimumHeight(float width) {
-        if (multiline) text.maxWidth((int) width);
+        if (multiline) text.maxWidth((int) width - bg.marginHor());
         if (icon == null) return text.height() + 2 + bg.marginVer();
         return icon.height() + text.height() + 3 + bg.marginVer();
     }

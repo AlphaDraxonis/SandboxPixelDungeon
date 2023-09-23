@@ -106,7 +106,7 @@ public class ChangeMapSize extends Component {
     }
 
     public static Component createTitle() {
-        RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(ChangeMapSize.class, "title"), 12);
+        RenderedTextBlock title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(ChangeMapSize.class, "title")), 12);
         title.hardlight(Window.TITLE_COLOR);
         return title;
     }
