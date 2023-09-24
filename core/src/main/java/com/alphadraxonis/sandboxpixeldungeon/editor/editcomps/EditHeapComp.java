@@ -132,7 +132,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
 
     @Override
     protected void updateObj() {
-        obj.sprite.view(obj);
+        obj.sprite.view(obj).place(obj.pos);
         if (title instanceof IconTitle) {
             ((IconTitle) title).label(getTitle());
             ((IconTitle) title).icon(getIcon());
