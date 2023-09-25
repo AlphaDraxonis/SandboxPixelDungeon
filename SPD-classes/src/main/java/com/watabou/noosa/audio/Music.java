@@ -27,12 +27,8 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.Random;
 
-import java.awt.MediaTracker;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public enum Music {
 	
@@ -197,6 +193,8 @@ public enum Music {
 
 	private synchronized void play(String track, com.badlogic.gdx.audio.Music.OnCompletionListener listener){
 		try {
+			fadeTime = fadeTotal = -1;
+
 			player = Gdx.audio.newMusic(Gdx.files.internal(track));
 			player.setLooping(looping);
 			player.setVolume(volumeWithFade());
