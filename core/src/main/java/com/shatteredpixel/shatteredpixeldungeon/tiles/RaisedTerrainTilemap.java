@@ -36,6 +36,10 @@ public class RaisedTerrainTilemap extends DungeonTilemap {
 		
 		if (flat) return -1;
 
+		if (DungeonWallsTilemap.skipCells.contains(pos)){
+			return -1;
+		}
+
 		if (tile == Terrain.HIGH_GRASS){
 			return DungeonTileSheet.getVisualWithAlts(
 					DungeonTileSheet.HIGH_GRASS_UNDERHANG,
@@ -45,7 +49,6 @@ public class RaisedTerrainTilemap extends DungeonTilemap {
 					DungeonTileSheet.FURROWED_UNDERHANG,
 					pos);
 		}
-		
 		
 		return -1;
 	}
