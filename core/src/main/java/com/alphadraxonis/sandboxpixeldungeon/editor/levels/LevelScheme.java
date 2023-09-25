@@ -54,6 +54,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     public static final LevelScheme ANY_LEVEL_SCHEME = new LevelScheme();//Placeholder for key working on any level
 
     static {
+        initSpecialLevelSchemeNames();
+    }
+
+    public static void initSpecialLevelSchemeNames() {
         SURFACE_LEVEL_SCHEME.name = EditorUtilies.getDispayName(Level.SURFACE);
         NO_LEVEL_SCHEME.name = EditorUtilies.getDispayName(Level.NONE);
         ANY_LEVEL_SCHEME.name = EditorUtilies.getDispayName(Level.ANY);

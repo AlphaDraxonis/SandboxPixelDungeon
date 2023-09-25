@@ -110,8 +110,6 @@ public class CustomDungeon implements Bundlable {
 
     //The dungeon entrance and exit should default to the previous and next rooms, as well as the chasm to the next room
 
-    //Debug: wrong language in destlevelcomp if surface or none
-
     private String name;
     private String lastEditedFloor;
 

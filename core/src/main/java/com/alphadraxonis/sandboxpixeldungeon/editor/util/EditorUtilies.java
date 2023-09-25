@@ -83,6 +83,12 @@ public final class EditorUtilies {
         return Dungeon.customDungeon.getFloor(name);
     }
 
+    public static String replaceInvalidChars(String s){
+        return s.replace("ä","Ã¤").replace("ö","Ã¶").replace("ü","Ã¼")
+                .replace("Ä","Ã\u0084").replace("Ö","Ã\u0096").replace("Ü","Ã\u009C")
+                .replace("ß","Ã\u009F");
+    }
+
 //    public static int getWindowWidth(){
 //
 //    }

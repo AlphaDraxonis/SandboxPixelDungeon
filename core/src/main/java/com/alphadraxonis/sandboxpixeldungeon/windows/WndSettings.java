@@ -26,6 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Languages;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
@@ -214,6 +215,7 @@ public class WndSettings extends WndTabbed {
 				//do nothing
 			}
 		});
+		LevelScheme.initSpecialLevelSchemeNames();
 	}
 
 	private static class DisplayTab extends Component {

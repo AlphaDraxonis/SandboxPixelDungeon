@@ -25,6 +25,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.UndoPane;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.BlobEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.effects.BlobEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.EmoIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
@@ -32,6 +33,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Plant;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
@@ -387,7 +389,7 @@ public class EditorScene extends PixelScene {
         if (scene == null || transition == null) return;
         BitmapText text = scene.transitionIndicatorsMap.get(transition);
         if (text == null) return;
-        text.text("To: " + (transition.destLevel == null ? "" : transition.destLevel));
+        text.text(Messages.get(LevelTransition.class, "to") + ": " + (transition.destLevel == null ? "" : EditorUtilies.getDispayName(transition.destLevel)));
         text.hardlight(Window.TITLE_COLOR);
         text.scale.set(0.55f);
         text.measure();
@@ -416,6 +418,7 @@ public class EditorScene extends PixelScene {
             heap.updateSubicon();
         }
     }
+
     public static void updateHeapImages() {
         if (scene == null) return;
         for (Heap heap : customLevel().heaps.valueList()) {
@@ -628,7 +631,7 @@ public class EditorScene extends PixelScene {
         if (trap != null) return trap;
         for (int i = 0; i < BlobEditPart.BlobData.BLOB_CLASSES.length; i++) {
             Blob b = Dungeon.level.blobs.get(BlobEditPart.BlobData.BLOB_CLASSES[i]);
-            if (b != null && !(b instanceof WellWater) && b.cur != null && b.cur[cell] > 0 ) return b;
+            if (b != null && !(b instanceof WellWater) && b.cur != null && b.cur[cell] > 0) return b;
         }
         return customLevel.map[cell];
     }
