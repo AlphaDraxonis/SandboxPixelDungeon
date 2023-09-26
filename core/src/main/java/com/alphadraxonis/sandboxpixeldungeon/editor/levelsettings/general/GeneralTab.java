@@ -110,10 +110,11 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         region.icon(Icons.get(Icons.CHANGES));
         content.add(region);
 
-        mobSpawn = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(GeneralTab.class, "mob_spawn"), 8) {
+        mobSpawn = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(GeneralTab.class, "mobs"), 8) {
             @Override
             protected void onClick() {
-                EditorScene.show(new WndMobSpawn());
+                MobSettings ms = new MobSettings();
+                changeContent(ms.createTitle(), ms, ms.getOutsideSp(), -1f, 0f);
             }
         };
         mobSpawn.icon(new GnollSprite());
@@ -196,6 +197,11 @@ public class GeneralTab extends WndEditorSettings.TabComp {
             public int getClicksPerSecondWhileHolding() {
                 return 8;
             }
+
+            @Override
+            public void displayInputAnyNumberDialog() {
+                super.displayInputAnyNumberDialog(0, 10000);
+            }
         }, Messages.get(GeneralTab.class, "shop_price"), 8);
         shopPrice.addChangeListener(() -> level.levelScheme.setShopPriceMultiplier((int) shopPrice.getValue()));
         content.add(shopPrice);
@@ -239,6 +245,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
                 float outsideSpH = outsideSp.height();
                 outsideSp.setPos(x, y + height - outsideSpH);
                 normalSpHeight = height - outsideSpH - posY - GAP;
+                if (outsideSpH == 0) normalSpHeight++;
             } else {
                 normalSpHeight = height - posY - 1;
             }
@@ -246,7 +253,12 @@ public class GeneralTab extends WndEditorSettings.TabComp {
             spForOtherBody.setRect(x, posY + makeSpSmaller, width, normalSpHeight - makeSpSmaller);
 
             spForOtherBody.scrollToCurrentView();
+            spForOtherBody.givePointerPriority();
         }
+    }
+
+    public static void updateLayout() {
+        WndEditorSettings.getInstance().getGeneralTab().layout();
     }
 
     @Override
@@ -269,7 +281,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         content.visible = content.active = false;
         sp.visible = sp.active = false;
 
-        alignmentOther = alignment;
+        if (alignment != -1f) alignmentOther = alignment;
         titleAlignmentOther = titleAlignmentX;
 
         buttonBack = new ButtonBack();
@@ -284,6 +296,11 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         layoutOwnMenu = false;
 
         layout();
+    }
+
+    //Update layout manually!!!
+    public void setAlignmentOther(float alignmentOther) {
+        this.alignmentOther = alignmentOther;
     }
 
     public void closeCurrentSubMenu() {
@@ -308,6 +325,10 @@ public class GeneralTab extends WndEditorSettings.TabComp {
         layout();
     }
 
+    public interface BackPressImplemented {
+        boolean onBackPressed();
+    }
+
     private class ButtonBack extends IconButton {
         public ButtonBack() {
             super(Icons.BACK.get());
@@ -318,7 +339,7 @@ public class GeneralTab extends WndEditorSettings.TabComp {
 
         @Override
         protected void onClick() {
-            closeCurrentSubMenu();
+            if (!(otherBody instanceof BackPressImplemented) || !((BackPressImplemented) otherBody).onBackPressed()) closeCurrentSubMenu();
         }
 
         @Override

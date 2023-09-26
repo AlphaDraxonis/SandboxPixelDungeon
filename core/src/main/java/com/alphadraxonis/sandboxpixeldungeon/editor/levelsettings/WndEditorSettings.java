@@ -4,7 +4,6 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.GeneralTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items.ItemTab;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.mobs.EnemyTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.LevelGenComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
@@ -32,7 +31,6 @@ public class WndEditorSettings extends WndTabbed {
 
     public static final int ITEM_HEIGHT = 18;
 
-    private final EnemyTab enemyTab;
     private final ItemTab itemTab = null;
     private final GeneralTab generalTab;
     private final TransitionTab transitionTab;
@@ -40,8 +38,14 @@ public class WndEditorSettings extends WndTabbed {
     private final TabComp[] ownTabs;
 
     public static int last_index = 0;
+    private static WndEditorSettings instance;
 
     public WndEditorSettings() {
+
+        if (instance != null) {
+            instance.hide();
+        }
+        instance = this;
 
         Undo.startAction();
 
@@ -49,10 +53,8 @@ public class WndEditorSettings extends WndTabbed {
         resize(calclulateWidth(), calclulateHeight() - 50 - yOffset);
 
         ownTabs = new TabComp[]{
-                enemyTab = new EnemyTab(),
-//                itemTab = new ItemTab(),
-                transitionTab = new TransitionTab(),
                 generalTab = new GeneralTab(),
+                transitionTab = new TransitionTab(),
                 levelGenTab = new LevelGenComp(EditorScene.customLevel().levelScheme)};
 
         Tab[] tabs = new Tab[ownTabs.length];
@@ -88,6 +90,15 @@ public class WndEditorSettings extends WndTabbed {
         }
     }
 
+    @Override
+    public void hide() {
+        super.hide();
+        instance = null;
+    }
+
+    public static WndEditorSettings getInstance() {
+        return instance;
+    }
 
     public static abstract class TabComp extends Component {
 

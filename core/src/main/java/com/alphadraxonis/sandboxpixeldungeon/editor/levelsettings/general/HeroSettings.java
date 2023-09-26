@@ -1,14 +1,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general;
 
-import static com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings.ITEM_HEIGHT;
-
-import com.alphadraxonis.sandboxpixeldungeon.Assets;
-import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
-import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
-import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
@@ -31,22 +24,14 @@ import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
-import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
 import com.alphadraxonis.sandboxpixeldungeon.ui.CheckBox;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
-import com.alphadraxonis.sandboxpixeldungeon.ui.StyledButton;
 import com.alphadraxonis.sandboxpixeldungeon.windows.IconTitle;
-import com.watabou.input.GameAction;
-import com.watabou.input.KeyBindings;
-import com.watabou.input.KeyEvent;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PointF;
-import com.watabou.utils.Signal;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,12 +40,8 @@ import java.util.Set;
 
 public class HeroSettings extends Component {
 
-    private static int currentIndex = 0;
-
-    private final Component outsideSp;
+    private final OutsideSpSwitchTabs outsideSp;
     private IconTitle title;
-
-    private TabControlButton[] switchTabs;
 
     private final HeroTab[] heroTabs;
 
@@ -75,105 +56,46 @@ public class HeroSettings extends Component {
             add(heroTabs[i]);
         }
 
-        outsideSp = new Component() {
-            private Signal.Listener<KeyEvent> keyListener;
-            private GameAction curAction;
-            private float time;
-            private static final float INTERVAL = 0.3f;// 3 cps
-            private boolean isHolding;
+        outsideSp = new OutsideSpSwitchTabs() {
 
             @Override
             protected void createChildren(Object... params) {
-                switchTabs = new TabControlButton[HeroClass.values().length + 1];
-                for (int j = 0; j < switchTabs.length; j++) {
-                    switchTabs[j] = new TabControlButton(j);
-                    switchTabs[j].icon(createTabIcon(j));
-                    add(switchTabs[j]);
-
-                    KeyEvent.addKeyListener(keyListener = keyEvent -> {
-                        GameAction action = KeyBindings.getActionForKey(keyEvent);
-
-                        if (keyEvent.pressed) {
-                            curAction = action;
-                            return processKey();
-                        }
-                        curAction = null;
-                        time = 0;
-                        isHolding = false;
-                        return false;
-                    });
+                tabs = new TabControlButton[HeroClass.values().length + 1];
+                for (int j = 0; j < tabs.length; j++) {
+                    tabs[j] = new OutsideSpSwitchTabs.TabControlButton(j);
+                    tabs[j].icon(createTabIcon(j));
+                    add(tabs[j]);
                 }
 
-                selectTab(currentIndex);
+                super.createChildren(params);
+
+                select(currentIndex);
             }
 
             @Override
-            protected void layout() {
-                float buttonWidth = width() / switchTabs.length;
-                for (int i = 0; i < switchTabs.length; i++) {
-                    switchTabs[i].setRect(x + i * buttonWidth, y, buttonWidth, ITEM_HEIGHT);
-                    PixelScene.align(switchTabs[i]);
-                }
-                height = ITEM_HEIGHT;
-            }
-
-            private boolean processKey() {
-                if (curAction == SPDAction.E) {
-                    selectTab((currentIndex + 1) % switchTabs.length);
-                    return true;
-                }
-                if (curAction == SPDAction.W) {
-                    int index = currentIndex - 1;
-                    if (index < 0) index = switchTabs.length - 1;
-                    selectTab(index);
-                    return true;
-                }
-                return false;
+            public void select(int index) {
+                HeroSettings.this.selectTab(index);
+                super.select(index);
             }
 
             @Override
-            public synchronized void update() {
-                super.update();
-                if (curAction != null) {
-                    time += Game.elapsed;
-                    if (!isHolding) {
-                        if (time >= Button.longClick) {
-                            isHolding = true;
-                            time -= Button.longClick;
-                            SandboxPixelDungeon.vibrate(50);
-                        }
-                    } else {
-                        if (time >= INTERVAL) {
-                            time -= INTERVAL;
-                            processKey();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public synchronized void destroy() {
-                super.destroy();
-                KeyEvent.removeKeyListener(keyListener);
+            public String getTabName(int index) {
+                return HeroSettings.getTabName(index);
             }
         };
     }
 
     public void selectTab(int index) {
+        int currentIndex = outsideSp == null ? 0 : outsideSp.currentIndex;
         heroTabs[currentIndex].visible = heroTabs[currentIndex].active = false;
         heroTabs[index].visible = heroTabs[index].active = true;
-        currentIndex = index;
-
-        for (int i = 0; i < switchTabs.length; i++) {
-            switchTabs[i].setSelected(i == index);
-        }
 
         if (title != null) {
 
             title.icon(createTabIcon(index));
             title.label(getTabName(index));
 
-            ((WndEditorSettings) EditorUtilies.getParentWindow(this)).getGeneralTab().layout();
+            GeneralTab.updateLayout();
         }
     }
 
@@ -189,7 +111,8 @@ public class HeroSettings extends Component {
     }
 
     public Component createTitle() {
-        return title = new IconTitle(createTabIcon(currentIndex), getTabName(currentIndex));
+        int index = outsideSp == null ? 0 : outsideSp.currentIndex;
+        return title = new IconTitle(createTabIcon(index), getTabName(index));
     }
 
     public Component getOutsideSp() {
@@ -290,7 +213,7 @@ public class HeroSettings extends Component {
                 public int getClicksPerSecondWhileHolding() {
                     return 150;
                 }
-            }, Messages.get(HeroSettings.class, "gold"), 10, Icons.GOLD.get());
+            }, Messages.get(Gold.class, "name"), 10, Icons.GOLD.get());
             startGold.icon().scale = new PointF(0.5f, 0.5f);
             startGold.addChangeListener(() -> data.gold = (int) startGold.getValue());
             itemSelectorParent.add(startGold);
@@ -304,7 +227,7 @@ public class HeroSettings extends Component {
                 public int getClicksPerSecondWhileHolding() {
                     return 15;
                 }
-            }, Messages.get(HeroSettings.class, "energy"), 10, Icons.ENERGY.get());
+            }, Messages.get(EnergyCrystal.class, "name"), 10, Icons.ENERGY.get());
             startEnergy.icon().scale = new PointF(0.5f, 0.5f);
             startEnergy.addChangeListener(() -> data.energy = (int) startEnergy.getValue());
             itemSelectorParent.add(startEnergy);
@@ -320,7 +243,7 @@ public class HeroSettings extends Component {
                 @Override
                 protected void onSlotNumChange() {
                     if (startItems != null) {
-                        ((WndEditorSettings) EditorUtilies.getParentWindow(this)).getGeneralTab().layout();
+                        GeneralTab.updateLayout();
                     }
 //                    boolean wasVisible = addBtn.visible;
 //                    addBtn.visible = addBtn.active = getNumSlots() < 4;
@@ -348,7 +271,7 @@ public class HeroSettings extends Component {
                 @Override
                 protected void onSlotNumChange() {
                     if (startItems != null) {
-                        ((WndEditorSettings) EditorUtilies.getParentWindow(this)).getGeneralTab().layout();
+                        GeneralTab.updateLayout();
                     }
                 }
             };
@@ -384,54 +307,6 @@ public class HeroSettings extends Component {
             posY = startItems.bottom() + gap;
 
             height = (posY - y - gap);
-        }
-    }
-
-    private class TabControlButton extends StyledButton {
-
-        private static final float SELECTED_R = 2f, SELECTED_G = 2f, SELECTED_B = 2f;
-
-        private boolean selected;
-
-        private final int index;
-
-        public TabControlButton(int index) {
-            super(Chrome.Type.GREY_BUTTON_TR, "");
-            this.index = index;
-
-            bg.remove();
-            bg.destroy();
-            bg = new NinePatch(Assets.Interfaces.CHROME, 20, 9, 9, 9, 4) {//Chrome.Type.GREY_BUTTON_TR
-
-                @Override
-                public void resetColor() {
-                    super.resetColor();
-                    if (selected) hardlight(SELECTED_R, SELECTED_G, SELECTED_B);
-                }
-
-                @Override
-                public void brightness(float value) {
-                    rm += value - 1f;
-                    gm += value - 1f;
-                    bm += value - 1f;
-                }
-            };
-            addToBack(bg);
-        }
-
-        @Override
-        protected void onClick() {
-            selectTab(index);
-        }
-
-        @Override
-        protected String hoverText() {
-            return getTabName(index);
-        }
-
-        public void setSelected(boolean selected) {
-            this.selected = selected;
-            bg.resetColor();
         }
     }
 

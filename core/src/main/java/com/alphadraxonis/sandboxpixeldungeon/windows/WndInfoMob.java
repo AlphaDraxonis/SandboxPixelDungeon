@@ -22,6 +22,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.windows;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
@@ -51,7 +52,7 @@ public class WndInfoMob extends WndTitledMessage {
         private BuffIndicator buffs;
 
         public MobTitle(Mob mob, boolean includeHealthBar) {
-            name = PixelScene.renderTextBlock(createTitle(mob), 9);
+            name = PixelScene.renderTextBlock(createTitle(mob) + EditorUtilies.appendBoss(mob), 9);
             name.hardlight(TITLE_COLOR);
             add(name);
 

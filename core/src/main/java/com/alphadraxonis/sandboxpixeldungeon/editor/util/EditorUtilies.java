@@ -1,11 +1,14 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.util;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSelectLevelType;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -59,6 +62,11 @@ public final class EditorUtilies {
         return formatTitle(item.item().title(), item.pos());
     }
 
+    public static String appendBoss(Mob maybeBoss) {
+        return (maybeBoss.isBossMob || CustomDungeon.isEditing() && Dungeon.level.bossmobAt == maybeBoss.pos
+                ? " - " + Messages.get(WndSelectLevelType.class, "type_boss") : "");
+    }
+
     public static String getDispayName(String specialLevelSchemeName) {
         if (Level.NONE.equals(specialLevelSchemeName))
             return Messages.get(ChooseDestLevelComp.class, "none_level");
@@ -83,10 +91,10 @@ public final class EditorUtilies {
         return Dungeon.customDungeon.getFloor(name);
     }
 
-    public static String replaceInvalidChars(String s){
-        return s.replace("ä","Ã¤").replace("ö","Ã¶").replace("ü","Ã¼")
-                .replace("Ä","Ã\u0084").replace("Ö","Ã\u0096").replace("Ü","Ã\u009C")
-                .replace("ß","Ã\u009F");
+    public static String replaceInvalidChars(String s) {
+        return s.replace("ä", "Ã¤").replace("ö", "Ã¶").replace("ü", "Ã¼")
+                .replace("Ä", "Ã\u0084").replace("Ö", "Ã\u0096").replace("Ü", "Ã\u009C")
+                .replace("ß", "Ã\u009F");
     }
 
 //    public static int getWindowWidth(){

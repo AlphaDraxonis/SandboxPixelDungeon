@@ -419,7 +419,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.state.getClass() != b.state.getClass()) return false;
-        if (!a.buffs().equals(b.buffs())) return false;
+        if (!DefaultStatsCache.areStatsEqual(a, b)) return false;
+        Set<Class<? extends Buff>> aBuffs = new HashSet<>(4);
+        Set<Class<? extends Buff>> bBuffs = new HashSet<>(4);
+        for (Buff buff : a.buffs()) aBuffs.add(buff.getClass());
+        for (Buff buff : b.buffs()) bBuffs.add(buff.getClass());
+        if (!bBuffs.equals(aBuffs)) return false;//only very simple, does not compare any values, just the types!!
         if (a instanceof Statue) {
             if (!EditItemComp.areEqual(((Statue) a).weapon, ((Statue) b).weapon)) return false;
             return !(a instanceof ArmoredStatue)

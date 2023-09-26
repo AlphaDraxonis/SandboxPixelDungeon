@@ -80,6 +80,17 @@ public class DefaultStatsCache {
                 || mob instanceof Goo;
     }
 
+    public static boolean areStatsEqual(Mob a, Mob b){
+        return a.statsScale == b.statsScale
+                && a.baseSpeed == b.baseSpeed
+                && a.HT == b.HT
+                && a.attackSkill == b.attackSkill
+                && a.defenseSkill == b.defenseSkill
+                && a.damageRollMin == b.damageRollMin
+                && a.damageRollMax == b.damageRollMax
+                && a.damageReductionMax == b.damageReductionMax;
+    }
+
     public static boolean canModifyStats(Object obj) {
         return obj instanceof Weapon || obj instanceof Ring || obj instanceof Food;
     }

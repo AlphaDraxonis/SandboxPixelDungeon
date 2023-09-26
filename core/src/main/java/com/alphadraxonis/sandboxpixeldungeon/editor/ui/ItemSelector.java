@@ -74,6 +74,21 @@ public class ItemSelector extends Component {
                 super.item(item);
                 bg.visible = true;//gold and bags should have bg
             }
+
+            @Override
+            protected void viewSprite(Item item) {
+                if (!EditorItem.class.isAssignableFrom(item.getClass())) {
+                    super.viewSprite(item);
+                    return;
+                }
+                if (sprite != null) {
+                    remove(sprite);
+                    sprite.destroy();
+                }
+                sprite = ((EditorItem) item).getSprite();
+                if (sprite != null) addToBack(sprite);
+                sendToBack(bg);
+            }
         };
         add(itemSlot);
 
@@ -128,7 +143,6 @@ public class ItemSelector extends Component {
     }
 
     public void change() {
-
         showSelectWindow(selector, nullTypeSelector, itemClasses, new HashSet<>(0));
     }
 
