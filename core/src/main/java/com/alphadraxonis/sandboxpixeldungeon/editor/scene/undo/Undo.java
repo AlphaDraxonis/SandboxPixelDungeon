@@ -14,23 +14,24 @@ public final class Undo {
 
     private static final Deque<ActionPartList> undoStack = new ArrayDeque<>();
     private static final Deque<ActionPartList> redoStack = new ArrayDeque<>();
+    private static final Deque<ActionPartList> actionsInProgress = new ArrayDeque<>(3);
 
     private Undo() {
     }
 
     public static void startAction() {
-        undoStack.push(new ActionPartList());
+        actionsInProgress.push(new ActionPartList());
     }
 
     public static void endAction() {
-        if (!undoStack.isEmpty()) {
-            addAction(undoStack.pop());
+        if (!actionsInProgress.isEmpty()) {
+            addAction(actionsInProgress.pop());
         }
     }
 
     public static void addActionPart(ActionPart part) {
-        if (part != null && part.hasContent() && !undoStack.isEmpty()) {
-            ActionPartList currentAction = undoStack.peek();
+        if (part != null && part.hasContent() && !actionsInProgress.isEmpty()) {
+            ActionPartList currentAction = actionsInProgress.peek();
             currentAction.addActionPart(part);
         }
     }

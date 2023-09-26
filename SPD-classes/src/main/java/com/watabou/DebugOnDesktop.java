@@ -22,7 +22,7 @@ public class DebugOnDesktop {
     public static void prepare() {
         if (f == null) init();
         try {
-            out = new BufferedWriter(new FileWriter(f,true));
+            out = new BufferedWriter(new FileWriter(f, true));
         } catch (IOException e) {
         }
     }
@@ -36,6 +36,21 @@ public class DebugOnDesktop {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static void printException(Exception ex) {
+        DebugOnDesktop.prepare();
+        try {
+            out.write("START: " + ex.getClass().getSimpleName() + ": " + ex.getMessage() + "\n");
+        } catch (IOException e) {
+        }
+        for (StackTraceElement st : ex.getStackTrace()) {
+            try {
+                DebugOnDesktop.out.write(st.getFileName() + " at " + st.getLineNumber() + "\n");
+            } catch (IOException e) {
+            }
+        }
+        DebugOnDesktop.stop();
     }
 
 }
