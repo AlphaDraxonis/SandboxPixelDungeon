@@ -109,7 +109,7 @@ public class MassGraveRoom extends SpecialRoom {
 			Tilemap v = super.create();
 			int[] data = new int[tileW*tileH];
 			for (int i = 0; i < data.length; i++){
-				if (i < tileW)  data[i] = WALL_OVERLAP;
+				if (i < tileW && tileW > 1)  data[i] = WALL_OVERLAP;
 				else            data[i] = FLOOR;
 			}
 			v.map( data, tileW );

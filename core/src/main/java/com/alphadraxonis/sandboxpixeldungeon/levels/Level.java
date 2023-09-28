@@ -352,9 +352,8 @@ public abstract class Level implements Bundlable {
             if (m.pos == bossmobAt) {
                 bossMob = m;
                 bossMob.isBossMob = !(m instanceof Goo);
-                //TODO add boss property
+                bossMob.addBossProperty();
             }
-//            throw new RuntimeException(""+bossmobAt+"=="+m.pos);
         }
         for (Heap h : heaps.valueList()) {
             h.seen = false;
@@ -1124,7 +1123,7 @@ public abstract class Level implements Bundlable {
             Point custPoint = new Point(p);
             custPoint.x -= cust.tileX;
             custPoint.y -= cust.tileY;
-            if (custPoint.x >= 0 && custPoint.y >= 0
+            if (custPoint.x >= 0 && custPoint.y >= 0 // If some code here is modified, also change CustomTileItem.findCustomTileAt()!!
                     && custPoint.x < cust.tileW && custPoint.y < cust.tileH) {
                 if (cust.image(custPoint.x, custPoint.y) != null) {
                     return false;

@@ -57,7 +57,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
                     return true;
                 }
             };
-            addActionPart(part);
+            moreActions.addActionPart(part);
             part.redo();
             EditorScene.updateMap(trap.pos);
         }
@@ -82,7 +82,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
                     return true;
                 }
             };
-            addActionPart(part);
+            moreActions.addActionPart(part);
             part.redo();
             EditorScene.updateMap(trap.pos);
         }
@@ -135,7 +135,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
         @Override
         public void finish() {
             after = after.getCopy();
-            placeCellActionPart = new PlaceCellActionPart(oldTerrain, TrapItem.getTerrain(after), after.pos, null, null);
+            placeCellActionPart = new PlaceCellActionPart(oldTerrain, TrapItem.getTerrain(after), after.pos, null, null, null);
         }
     }
 }

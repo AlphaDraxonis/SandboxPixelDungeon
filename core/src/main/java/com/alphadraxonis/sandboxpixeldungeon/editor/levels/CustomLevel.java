@@ -55,6 +55,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.traps.FrostTrap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.PitfallTrap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Plant;
+import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.utils.DungeonSeed;
 import com.watabou.noosa.Group;
@@ -72,9 +73,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class CustomLevel extends Level {
 
@@ -570,6 +573,7 @@ public class CustomLevel extends Level {
         }
         return -1;
     }
+
     public static int randomDropCell(Level level) {
         int tries = level.length();
         int lengthHalf = level.length() / 2;
@@ -781,12 +785,6 @@ public class CustomLevel extends Level {
         if (newHeight != level.height()) changeMapHeight(level, newHeight, addTop);
         if (newWidth != level.width()) changeMapWidth(level, newWidth, addLeft);
 
-        level.customWalls.clear();
-        level.customTiles.clear();
-
-//        customTiles = level.customTiles;//change
-//        customWalls = level.customWalls;//change
-
         PathFinder.setMapSize(newWidth, newHeight);
 
         level.buildFlagMaps();
@@ -813,6 +811,21 @@ public class CustomLevel extends Level {
         changeArrayForMapSizeHeight(level.discoverable, nDiscoverable, add, levelWidth, width);
 
         level.discoverable = nDiscoverable;
+
+        Set<CustomTilemap> removeCustomTiles = new HashSet<>(5);
+        for (CustomTilemap customTile : level.customTiles) {
+            customTile.tileY += addTop;
+            if (customTile.tileY < 0 || customTile.tileY + customTile.tileH > newHeight)
+                removeCustomTiles.add(customTile);
+        }
+        level.customTiles.removeAll(removeCustomTiles);
+        removeCustomTiles.clear();
+        for (CustomTilemap customTile : level.customWalls) {
+            customTile.tileY += addTop;
+            if (customTile.tileY < 0 || customTile.tileY + customTile.tileH > newHeight)
+                removeCustomTiles.add(customTile);
+        }
+        level.customWalls.removeAll(removeCustomTiles);
 
         IntFunction<Integer> newPosition = old -> old + add;
         BiPredicate<Integer, Integer> isPositionValid = (old, neu) -> neu >= 0 && neu < newLength && level.insideMap(neu);
@@ -841,6 +854,21 @@ public class CustomLevel extends Level {
         changeArrayForMapSizeWidth(level.discoverable, nDiscoverable, addLeft, levelWidth, newWidth);
 
         level.discoverable = nDiscoverable;
+
+        Set<CustomTilemap> removeCustomTiles = new HashSet<>(5);
+        for (CustomTilemap customTile : level.customTiles) {
+            customTile.tileX += addLeft;
+            if (customTile.tileX < 0 || customTile.tileX + customTile.tileW > newWidth)
+                removeCustomTiles.add(customTile);
+        }
+        level.customTiles.removeAll(removeCustomTiles);
+        removeCustomTiles.clear();
+        for (CustomTilemap customTile : level.customWalls) {
+            customTile.tileX += addLeft;
+            if (customTile.tileX < 0 || customTile.tileX + customTile.tileW > newWidth)
+                removeCustomTiles.add(customTile);
+        }
+        level.customWalls.removeAll(removeCustomTiles);
 
         IntFunction<Integer> newPosition = old -> old + addLeft + diffW * (old / levelWidth);
         BiPredicate<Integer, Integer> isPositionValid = (old, neu) -> neu >= 0 && neu < newLength && level.insideMap(neu)
@@ -912,7 +940,7 @@ public class CustomLevel extends Level {
         level.plants.clear();
         level.plants.putAll(nPlant);
 
-        for (Blob  b : level.blobs.values()) {
+        for (Blob b : level.blobs.values()) {
             if (b != null) {
                 int[] nCur = new int[newLength];
                 b.volume = 0;

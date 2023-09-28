@@ -29,9 +29,12 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.painters.Painter;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Tilemap;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
 
 public class RitualSiteRoom extends StandardRoom {
+
+	private int ownRitualPos;
 	
 	@Override
 	public int minWidth() {
@@ -54,7 +57,7 @@ public class RitualSiteRoom extends StandardRoom {
 
 		RitualMarker vis = new RitualMarker();
 		Point c = center();
-		vis.pos(c.x - 1, c.y - 1);
+		vis.pos(c.x, c.y);
 
 		level.customTiles.add(vis);
 		
@@ -65,17 +68,17 @@ public class RitualSiteRoom extends StandardRoom {
 		level.addItemToSpawn(new CeremonialCandle());
 		level.addItemToSpawn(new CeremonialCandle());
 
-		CeremonialCandle.ritualPos = c.x + (level.width() * c.y);
+		ownRitualPos = c.x + (level.width() * c.y);
 	}
 
 	@Override
 	public boolean canPlaceItem(Point p, Level l) {
-		return super.canPlaceItem(p, l) && l.distance(CeremonialCandle.ritualPos, l.pointToCell(p)) >= 2;
+		return super.canPlaceItem(p, l) && l.distance(ownRitualPos, l.pointToCell(p)) >= 2;
 	}
 
 	@Override
 	public boolean canPlaceCharacter(Point p, Level l) {
-		return super.canPlaceItem(p, l) && l.distance(CeremonialCandle.ritualPos, l.pointToCell(p)) >= 2;
+		return super.canPlaceItem(p, l) && l.distance(ownRitualPos, l.pointToCell(p)) >= 2;
 	}
 
 	public static class RitualMarker extends CustomTilemap {
@@ -84,9 +87,13 @@ public class RitualSiteRoom extends StandardRoom {
 			texture = Assets.Environment.PRISON_QUEST;
 			
 			tileW = tileH = 3;
+
+			offsetCenterX = offsetCenterY = 1;
 		}
 		
 		final int TEX_WIDTH = 64;
+
+		public boolean used;//only one summon per ritual site
 
 		@Override
 		public Tilemap create() {
@@ -103,6 +110,20 @@ public class RitualSiteRoom extends StandardRoom {
 		@Override
 		public String desc(int tileX, int tileY) {
 			return Messages.get(this, "desc");
+		}
+
+		private static final String USED = "used";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(USED, used);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			used = bundle.getBoolean(USED);
 		}
 	}
 

@@ -27,6 +27,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Elemental;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.ElmoParticle;
@@ -36,6 +37,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.RegularLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.RitualSiteRoom;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
+import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
@@ -48,7 +50,7 @@ import java.util.ArrayList;
 public class CeremonialCandle extends Item {
 
 	//generated with the wandmaker quest
-	public static int ritualPos;
+	public static int ritualPos_UNUSED;
 
 	{
 		image = ItemSpriteSheet.CANDLE;
@@ -121,14 +123,20 @@ public class CeremonialCandle extends Item {
 	}
 
 	private static void checkCandles(){
-		if (!(Dungeon.level instanceof RegularLevel)){
+		if (!(Dungeon.level instanceof RegularLevel || Dungeon.level instanceof CustomLevel)){
 			return;
 		}
 
-		if (!(((RegularLevel) Dungeon.level).room(ritualPos) instanceof RitualSiteRoom)){
-			return;
+		for (CustomTilemap ritualMarker : Dungeon.level.customTiles) {
+			if (ritualMarker instanceof RitualSiteRoom.RitualMarker && !((RitualSiteRoom.RitualMarker) ritualMarker).used) {
+				((RitualSiteRoom.RitualMarker) ritualMarker).used =
+						checkRitualPosition((ritualMarker.tileX + 1) + (ritualMarker.tileY + 1) * Dungeon.level.width());
+			}
 		}
 
+	}
+
+	private static boolean checkRitualPosition(int ritualPos){
 		Heap[] candleHeaps = new Heap[4];
 
 		candleHeaps[0] = Dungeon.level.heaps.get(ritualPos - Dungeon.level.width());
@@ -160,13 +168,18 @@ public class CeremonialCandle extends Item {
 		if (allCandles){
 
 			for (Heap h : candleHeaps) {
-				for (Item i : h.items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)){
-					if (i instanceof CeremonialCandle){
-						h.remove(i);
+				for (Item i : h.items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
+					if (i instanceof CeremonialCandle) {
+						i.quantity(i.quantity() - 1);
+						if (i.quantity() == 0) h.remove(i);
+						else {
+							((CeremonialCandle) i).aflame = false;
+							h.sprite.view(h).place(h.pos);
+						}
 					}
 				}
 			}
-				
+
 			Elemental.NewbornFireElemental elemental = new Elemental.NewbornFireElemental();
 			Char ch = Actor.findChar( ritualPos );
 			if (ch != null) {
@@ -192,7 +205,8 @@ public class CeremonialCandle extends Item {
 				CellEmitter.get(ritualPos+i).burst(ElmoParticle.FACTORY, 10);
 			}
 			Sample.INSTANCE.play(Assets.Sounds.BURNING);
+			return true;
 		}
-
+		return false;
 	}
 }

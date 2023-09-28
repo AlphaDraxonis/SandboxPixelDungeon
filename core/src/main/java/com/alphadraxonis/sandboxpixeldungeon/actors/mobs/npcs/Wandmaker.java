@@ -54,8 +54,6 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
         properties.add(Property.IMMOVABLE);
     }
 
-    //FIXME WARNING getCopy() for quest will not work for quest type 2!!!! (bc candles)
-
     public Wandmaker() {
     }
 

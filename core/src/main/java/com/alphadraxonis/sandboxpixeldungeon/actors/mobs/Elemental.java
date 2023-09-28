@@ -241,7 +241,7 @@ public abstract class Elemental extends Mob {
 	}
 	
 	//used in wandmaker quest
-	public static class NewbornFireElemental extends FireElemental {
+	public static class NewbornFireElemental extends FireElemental implements MobBasedOnDepth{
 		
 		{
 			spriteClass = ElementalSprite.NewbornFire.class;
@@ -272,7 +272,11 @@ public abstract class Elemental extends Mob {
 		public boolean reset() {
 			return true;
 		}
-		
+
+		@Override
+		public void setLevel(int depth) {//not based on depth, but this method is called when game is inited
+			HP = HT / 2;
+		}
 	}
 
 	//not a miniboss, fully HP, otherwise a newborn elemental

@@ -63,7 +63,7 @@ public final class EditorUtilies {
     }
 
     public static String appendBoss(Mob maybeBoss) {
-        return (maybeBoss.isBossMob || CustomDungeon.isEditing() && Dungeon.level.bossmobAt == maybeBoss.pos
+        return (maybeBoss.isBossMob || Dungeon.level != null && CustomDungeon.isEditing() && Dungeon.level.bossmobAt == maybeBoss.pos
                 ? " - " + Messages.get(WndSelectLevelType.class, "type_boss") : "");
     }
 

@@ -36,6 +36,7 @@ public abstract class CustomTilemap implements Bundlable {
 
 	public int tileX, tileY;   //x and y coords for texture within a level
 	public int tileW = 1, tileH = 1; //width and height in tiles
+	public int offsetCenterX = 0, offsetCenterY = 0;//tile coordinates
 
 	protected Object texture;
 	protected Tilemap vis = null;
@@ -49,8 +50,8 @@ public abstract class CustomTilemap implements Bundlable {
 	}
 
 	public void pos(int tileX, int tileY){
-		this.tileX = tileX;
-		this.tileY = tileY;
+		this.tileX = tileX - offsetCenterX;
+		this.tileY = tileY - offsetCenterY;
 	}
 
 	public void setRect(int topLeft, int bottomRight){
@@ -62,8 +63,8 @@ public abstract class CustomTilemap implements Bundlable {
 	}
 
 	public void setRect(int tileX, int tileY, int tileW, int tileH){
-		this.tileX = tileX;
-		this.tileY = tileY;
+		this.tileX = tileX - offsetCenterX;
+		this.tileY = tileY - offsetCenterY;
 		this.tileW = tileW;
 		this.tileH = tileH;
 	}
@@ -97,6 +98,11 @@ public abstract class CustomTilemap implements Bundlable {
 		};
 		vis.x = tileX*SIZE;
 		vis.y = tileY*SIZE;
+		return vis;
+	}
+
+	public Tilemap killVisual(){
+		vis.killAndErase();
 		return vis;
 	}
 
@@ -139,5 +145,11 @@ public abstract class CustomTilemap implements Bundlable {
 
 		bundle.put(TILE_W, tileW);
 		bundle.put(TILE_H, tileH);
+	}
+
+	public CustomTilemap getCopy(){
+		Bundle bundle = new Bundle();
+		bundle.put("CustomTileMap", this);
+		return (CustomTilemap) bundle.get("CustomTileMap");
 	}
 }

@@ -58,7 +58,7 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
                     return true;
                 }
             };
-            addActionPart(part);
+            moreActions.addActionPart(part);
             part.redo();
             EditorScene.updateMap(plant.pos);
         }
@@ -83,7 +83,7 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
                     return true;
                 }
             };
-            addActionPart(part);
+            moreActions.addActionPart(part);
             part.redo();
             EditorScene.updateMap(plant.pos);
         }

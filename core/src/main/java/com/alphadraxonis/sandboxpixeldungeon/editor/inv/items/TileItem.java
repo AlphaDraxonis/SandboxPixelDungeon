@@ -113,7 +113,7 @@ public class TileItem extends EditorItem {
         Undo.addActionPart(place(cell, terrainType()));
     }
 
-    public static ActionPartList place(int cell, int terrainType) {
+    public static ActionPart place(int cell, int terrainType) {
         return new PlaceTileActionPart(cell, terrainType, false);
     }
 
@@ -139,26 +139,27 @@ public class TileItem extends EditorItem {
     }
 
 
-    public static class PlaceTileActionPart extends ActionPartList {
+    public static class PlaceTileActionPart extends PlaceCellActionPart {
+        protected final ActionPartList moreActions;
 
-        private final int cell;
-        private final PlaceCellActionPart placeCell;
+        protected PlaceTileActionPart(int cell, int terrainType, boolean forceChange) {
 
-        public PlaceTileActionPart(int cell, int terrainType, boolean forceChange) {
+            super();
 
             CustomLevel level = EditorScene.customLevel();
-
-            this.cell = cell;
             int oldTerrain = level.map[cell];
 
             if (oldTerrain == terrainType) {
                 if (forceChange)
-                    addActionPart(placeCell = new PlaceCellActionPart(oldTerrain, terrainType, cell, level.traps.get(cell), level.plants.get(cell)));
-                else placeCell = null;
-                return;//no need to continue bc nothing changes at all
+                    init(oldTerrain, terrainType, cell,
+                            level.traps.get(cell), level.plants.get(cell), CustomTileItem.findCustomTileAt(cell));
+                moreActions = null;
+                return; //no need to continue bc nothing changes at all
             }
+            init(oldTerrain, terrainType, cell,
+                    level.traps.get(cell), level.plants.get(cell), CustomTileItem.findCustomTileAt(cell));
 
-            addActionPart(placeCell = new PlaceCellActionPart(oldTerrain, terrainType, cell, level.traps.get(cell), level.plants.get(cell)));
+            moreActions = new ActionPartList();
 
             //Transition logic
             final boolean wasExit = TileItem.isExitTerrainCell(oldTerrain);
@@ -250,7 +251,7 @@ public class TileItem extends EditorItem {
                         return true;//already checked when adding this (nowExit||wasExit)
                     }
                 };
-                addActionPart(transPart);
+                moreActions.addActionPart(transPart);
                 transPart.redo();
             }
             if (isSignTerrainCell(oldTerrain) || isSignTerrainCell(terrainType)) {
@@ -258,14 +259,14 @@ public class TileItem extends EditorItem {
                 Sign oldSign = level.signs.get(cell);
                 newSign.pos = cell;
                 ActionPart signActionPart = new SignEditPart.ActionPart(cell, oldSign, newSign);
-                addActionPart(signActionPart);
+                moreActions.addActionPart(signActionPart);
                 signActionPart.redo();
             }
 
             ActionPartModify blobEditPart = new BlobEditPart.Modify(cell);
             BlobEditPart.clearWellWaterAtCell(cell);
             blobEditPart.finish();
-            addActionPart(blobEditPart);
+            moreActions.addActionPart(blobEditPart);
 
             EditorScene.updateMap(cell);
 
@@ -273,7 +274,7 @@ public class TileItem extends EditorItem {
                 Mob m = level.getMobAtCell(i + cell);
                 if (m != null && MobItem.invalidPlacement(m, level, m.pos)) {
                     ActionPart p = new MobActionPart.Remove(m);
-                    addActionPart(p);
+                    moreActions.addActionPart(p);
                     p.redo();
                 }
             }
@@ -282,7 +283,7 @@ public class TileItem extends EditorItem {
                 Heap h = level.heaps.get(cell);
                 if (h != null) {
                     ActionPart p = new HeapActionPart.Remove(h);
-                    addActionPart(p);
+                    moreActions.addActionPart(p);
                     p.redo();
                 }
             }
@@ -306,29 +307,24 @@ public class TileItem extends EditorItem {
                             return true;
                         }
                     };
-                    addActionPart(part);
+                    moreActions.addActionPart(part);
                     part.redo();
                 }
             }
-
         }
 
         @Override
         public void undo() {
-            placeCell.undo();//always change terrain first
             super.undo();
-            EditorScene.updateMap(cell);
+            if (moreActions != null) moreActions.undo();
+            EditorScene.updateMap(cell());
         }
 
         @Override
         public void redo() {
             super.redo();
-            EditorScene.updateMap(cell);
-        }
-
-        @Override
-        protected void undoAction(ActionPart action) {
-            if (action != placeCell) super.undoAction(action);
+            if (moreActions != null) moreActions.redo();
+            EditorScene.updateMap(cell());
         }
     }
 

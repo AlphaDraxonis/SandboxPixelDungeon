@@ -40,6 +40,7 @@ import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.DiscardedItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
+import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTileSheet;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
@@ -227,6 +228,13 @@ public class EditorScene extends PixelScene {
         tiles = new DungeonTerrainTilemap();
         terrain.add(tiles);
 
+        customTiles = new Group();
+        terrain.add(customTiles);
+
+        for (CustomTilemap visual : customLevel().customTiles) {
+            addCustomTile(visual);
+        }
+
         visualGrid = new GridTileMap();
         terrain.add(visualGrid);
 
@@ -255,6 +263,13 @@ public class EditorScene extends PixelScene {
 
         for (Mob mob : customLevel().mobs) {
             addMobSprite(mob);
+        }
+
+        customWalls = new Group();
+        add(customWalls);
+
+        for (CustomTilemap visual : Dungeon.level.customWalls) {
+            addCustomWall(visual);
         }
 
         add(emitters);
@@ -347,6 +362,29 @@ public class EditorScene extends PixelScene {
             heap.seen = true;
             scene.addHeapSprite(heap);
         }
+    }
+
+    public void addCustomTile(CustomTilemap visual) {
+        customTiles.add(visual.create());
+    }
+
+    public void addCustomWall(CustomTilemap visual) {
+        customWalls.add(visual.create());
+    }
+
+    public static void add(CustomTilemap t, boolean wall) {
+        if (scene == null) return;
+        if (wall) {
+            scene.addCustomWall(t);
+        } else {
+            scene.addCustomTile(t);
+        }
+    }
+
+    public static void remove(CustomTilemap t, boolean wall) {
+        if (scene == null) return;
+        if (wall) scene.customWalls.remove(t.killVisual());
+        else scene.customTiles.remove(t.killVisual());
     }
 
     private void addHeapSprite(Heap heap) {

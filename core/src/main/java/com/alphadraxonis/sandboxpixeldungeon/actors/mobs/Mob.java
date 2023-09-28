@@ -1089,6 +1089,10 @@ public abstract class Mob extends Char {
         return ret;
     }
 
+    public void addBossProperty() {
+        if (isBossMob) properties.add(Property.BOSS);
+    }
+
     public void notice() {
         sprite.showAlert();
         if (isBossMob) {

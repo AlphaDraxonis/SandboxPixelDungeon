@@ -7,6 +7,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Plants;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Traps;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.CustomTileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.ItemItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.PlantItem;
@@ -22,6 +23,8 @@ import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.Scroll;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MassGraveRoom;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.RitualSiteRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Plant;
@@ -133,6 +136,9 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                                 ret.remove(i);
                         }
                     }
+
+                    ret.add(0, new CustomTileItem(new MassGraveRoom.Bones(),false, -1));
+                    ret.add(1, new CustomTileItem(new RitualSiteRoom.RitualMarker(),false, -1));
 
                     return ret;
                 }

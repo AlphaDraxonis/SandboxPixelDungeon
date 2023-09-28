@@ -231,7 +231,8 @@ public enum Mobs {
                 SpectralNecromancer.class,
                 Guard.class,
                 RotLasher.class,
-                RotHeart.class
+                RotHeart.class,
+                Elemental.NewbornFireElemental.class
         };
 
         CAVES.classes = new Class[]{

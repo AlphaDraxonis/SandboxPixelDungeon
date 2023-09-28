@@ -2,7 +2,6 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.quests;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
-import com.alphadraxonis.sandboxpixeldungeon.items.quest.CeremonialCandle;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MassGraveRoom;
@@ -16,7 +15,7 @@ import com.watabou.utils.Random;
 
 public class WandmakerQuest extends Quest {
 
-    public static final int NUM_QUESTS = 2;//no candle for now
+    public static final int NUM_QUESTS = 3;
     public static final int ASH = 0, SEED = 1, CANDLE = 2;
 
     public Wand wand1;
@@ -82,7 +81,6 @@ public class WandmakerQuest extends Quest {
 
     private static final String WAND1 = "wand1";
     private static final String WAND2 = "wand2";
-    private static final String RITUALPOS = "ritualpos";
     private static final String SPAWN_QUEST_ROOM = "spawn_quest_room";
 
     @Override
@@ -91,9 +89,6 @@ public class WandmakerQuest extends Quest {
         bundle.put(WAND1, wand1);
         bundle.put(WAND2, wand2);
         bundle.put(SPAWN_QUEST_ROOM, spawnQuestRoom);
-        if (type == CANDLE) {
-            bundle.put(RITUALPOS, CeremonialCandle.ritualPos);
-        }
     }
 
     @Override
@@ -102,9 +97,6 @@ public class WandmakerQuest extends Quest {
         wand1 = (Wand) bundle.get(WAND1);
         wand2 = (Wand) bundle.get(WAND2);
         spawnQuestRoom = bundle.getBoolean(SPAWN_QUEST_ROOM);
-        if (type == CANDLE) {
-            CeremonialCandle.ritualPos = bundle.getInt(RITUALPOS);//TODO doesn't work for multiple
-        }
     }
 
     @Override
