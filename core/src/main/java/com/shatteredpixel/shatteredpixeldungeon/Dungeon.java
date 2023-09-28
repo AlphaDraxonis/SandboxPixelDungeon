@@ -1052,7 +1052,7 @@ public class Dungeon {
 	public static int findStep(Char ch, int to, boolean[] pass, boolean[] visible, boolean chars ) {
 
 		if (Dungeon.level.adjacent( ch.pos, to )) {
-			return Actor.findChar( to ) == null && (pass[to] || Dungeon.level.avoid[to]) ? to : -1;
+			return Actor.findChar( to ) == null && pass[to] ? to : -1;
 		}
 
         setupPassable();
