@@ -21,6 +21,8 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.messages;
 
+import com.alphadraxonis.sandboxpixeldungeon.SPDSettings;
+
 import java.util.Locale;
 
 public enum Languages {
@@ -102,6 +104,10 @@ public enum Languages {
 				return lang;
 		}
 		return ENGLISH;
+	}
+
+	public static Locale getCurrentLocale(){
+		return new Locale(SPDSettings.language().code());
 	}
 
 }
