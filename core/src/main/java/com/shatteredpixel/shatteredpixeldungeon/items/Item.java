@@ -92,7 +92,8 @@ public class Item implements Bundlable {
     public boolean unique = false;
 
     // These items are preserved even if the hero's inventory is lost via unblessed ankh
-    public boolean keptThoughLostInvent = false;
+    // this is largely set by the resurrection window, items can override this to always be kept
+	public boolean keptThoughLostInvent = false;
 
     // whether an item can be included in heroes remains
     public boolean bones = false;
@@ -145,7 +146,9 @@ public class Item implements Bundlable {
         keptThoughLostInvent = false;
     }
 
-    public void doThrow(Hero hero) {
+    public boolean keptThroughLostInventory(){
+		return keptThoughLostInvent;
+	}public void doThrow(Hero hero) {
         GameScene.selectCell(thrower);
     }
 
