@@ -137,8 +137,8 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                         }
                     }
 
-                    ret.add(0, new CustomTileItem(new MassGraveRoom.Bones(),false, -1));
-                    ret.add(1, new CustomTileItem(new RitualSiteRoom.RitualMarker(),false, -1));
+                    ret.add(0, new CustomTileItem(new MassGraveRoom.Bones(), -1));
+                    ret.add(1, new CustomTileItem(new RitualSiteRoom.RitualMarker(), -1));
 
                     return ret;
                 }

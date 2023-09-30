@@ -23,6 +23,7 @@ package com.alphadraxonis.sandboxpixeldungeon.tiles;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
+import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.TextureFilm;
@@ -36,6 +37,7 @@ public abstract class CustomTilemap implements Bundlable {
 
 	public int tileX, tileY;   //x and y coords for texture within a level
 	public int tileW = 1, tileH = 1; //width and height in tiles
+	public /*final*/ int terrain = Terrain.EMPTY;//should NOT change
 	public int offsetCenterX = 0, offsetCenterY = 0;//tile coordinates
 
 	protected Object texture;

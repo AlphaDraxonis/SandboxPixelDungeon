@@ -25,13 +25,11 @@ public class CustomTileItem extends EditorItem {
 
     private final int cell;
     private final CustomTilemap customTile;
-    private final boolean wall;
 
 
-    public CustomTileItem(CustomTilemap customTile, boolean wall, int cell) {
+    public CustomTileItem(CustomTilemap customTile, int cell) {
         this.cell = cell;
         this.customTile = customTile;
-        this.wall = wall;
     }
 
 //    public CustomTileItem(int terrainFeature, int image, int cell) {
@@ -58,10 +56,6 @@ public class CustomTileItem extends EditorItem {
         return cell;
     }
 
-    public boolean wall() {
-        return wall;
-    }
-
     @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
         Level level = EditorScene.customLevel();
@@ -86,11 +80,11 @@ public class CustomTileItem extends EditorItem {
     @Override
     public void place(int cell) {
         if (isPositionValid(cell, customTile()))
-            Undo.addActionPart(place(cell, wall(), customTile().getCopy()));
+            Undo.addActionPart(place(cell, customTile().getCopy()));
     }
 
-    public static ActionPart place(int cell, boolean wall, CustomTilemap customTile) {
-        return new CustomTileItem.Place(cell, wall, customTile);
+    public static ActionPart place(int cell, CustomTilemap customTile) {
+        return new CustomTileItem.Place(cell, customTile.terrain, customTile);
     }
 
     public static ActionPart remove(int cell) {
@@ -98,15 +92,15 @@ public class CustomTileItem extends EditorItem {
         CustomTilemap cust = findCustomTileAt(p, Dungeon.level.customTiles);
         boolean wall = cust == null;
         if (wall) cust = findCustomTileAt(p, Dungeon.level.customWalls);
-        if (cust != null) return new CustomTileItem.Remove(cell, wall, cust);
+        if (cust != null) return new CustomTileItem.Remove(cell, wall ? Terrain.WALL : cust.terrain, cust);
         return null;
     }
 
     public static boolean isPositionValid(int cell, CustomTilemap customTile) {
         int x = cell % Dungeon.level.width();
         int y = cell / Dungeon.level.width();
-        return x >= 0 && x + customTile.tileW <= Dungeon.level.width()
-                && y >= 0 && y + customTile.tileH <= Dungeon.level.height();
+        return x >= customTile.offsetCenterX && x + customTile.tileW - customTile.offsetCenterX <= Dungeon.level.width()
+                && y >= customTile.offsetCenterY && y + customTile.tileH - customTile.offsetCenterY <= Dungeon.level.height();
 
     }
 
@@ -152,25 +146,25 @@ public class CustomTileItem extends EditorItem {
     public static class PlaceCustomTileActionPart extends TileItem.PlaceTileActionPart {
 
         protected final CustomTilemap customTile;
-        protected final boolean wall;
+        protected final int terrain;
 
-        protected PlaceCustomTileActionPart(int cell, boolean wall, CustomTilemap customTile) {
-            super(cell, wall ? Terrain.WALL : Terrain.EMPTY, true);
+        protected PlaceCustomTileActionPart(int cell, int terrain, CustomTilemap customTile) {
+            super(cell, terrain, true);
             this.customTile = customTile;
-            this.wall = wall;
+            this.terrain = terrain;
         }
 
-        public static void place(CustomTilemap customTile, int cell, boolean wall) {
+        public static void place(CustomTilemap customTile, int cell, int terrain) {
             customTile.setRect(cell % Dungeon.level.width(), cell / Dungeon.level.width(),
                     customTile.tileW, customTile.tileH);
             Dungeon.level.customTiles.add(customTile);
-            EditorScene.add(customTile, wall);
+            EditorScene.add(customTile, terrain == Terrain.WALL);
         }
 
-        public static void remove(CustomTilemap customTile, boolean wall) {
-            if (wall) Dungeon.level.customWalls.remove(customTile);
+        public static void remove(CustomTilemap customTile, int terrain) {
+            if (terrain == Terrain.WALL) Dungeon.level.customWalls.remove(customTile);
             else Dungeon.level.customTiles.remove(customTile);
-            EditorScene.remove(customTile, wall);
+            EditorScene.remove(customTile, terrain == Terrain.WALL);
         }
     }
 
@@ -178,20 +172,22 @@ public class CustomTileItem extends EditorItem {
 
         private ActionPartList otherTerrainChanges;//for customTiles larger than 1x1
 
-        public Place(int cell, boolean wall, CustomTilemap customTile) {
-            super(cell, wall, customTile);
+        public Place(int cell, int terrain, CustomTilemap customTile) {
+            super(cell, terrain, customTile);
             if (customTile.tileW > 1 || customTile.tileH > 1) {
                 otherTerrainChanges = new ActionPartList();
                 int startPos = cell - customTile.offsetCenterX - customTile.offsetCenterY * Dungeon.level.width();
                 for (int i = 0; i < customTile.tileH; i++) {
                     for (int j = 0; j < customTile.tileW; j++) {
-                        int pos = startPos + j + i * Dungeon.level.width();
-                        if (pos != cell) otherTerrainChanges.addActionPart(TileItem.place(pos, newTerrain()));
+                        if (customTile.image(j, i) != null) {
+                            int pos = startPos + j + i * Dungeon.level.width();
+                            if (pos != cell) otherTerrainChanges.addActionPart(TileItem.place(pos, newTerrain()));
+                        }
                     }
                 }
                 otherTerrainChanges.redo();
             }
-            place(customTile, cell(), wall);
+            place(customTile, cell(), terrain);
         }
 
         @Override
@@ -203,7 +199,7 @@ public class CustomTileItem extends EditorItem {
         @Override
         public void redo() {
             super.redo();
-            if (customTile != null) place(customTile, cell(), wall);
+            if (customTile != null) place(customTile, cell(), terrain);
             if (otherTerrainChanges != null) otherTerrainChanges.redo();
         }
 
@@ -215,22 +211,22 @@ public class CustomTileItem extends EditorItem {
 
     public static class Remove extends PlaceCustomTileActionPart {
 
-        public Remove(int cell, boolean wall, CustomTilemap customTile) {
-            super(cell, wall, customTile);
-            remove(customTile, wall);
+        public Remove(int cell, int terrain, CustomTilemap customTile) {
+            super(cell, terrain, customTile);
+            remove(customTile, terrain);
         }
 
         @Override
         public void undo() {
             super.undo();
 
-            place(customTile, cell(), wall);
+            place(customTile, cell(), terrain);
         }
 
         @Override
         public void redo() {
             super.redo();
-            if (customTile != null) remove(customTile, wall);
+            if (customTile != null) remove(customTile, terrain);
         }
 
         @Override
