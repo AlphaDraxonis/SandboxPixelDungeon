@@ -32,6 +32,7 @@ import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.WELL;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.SacrificialFire;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.BlobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
@@ -40,6 +41,9 @@ import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTileSheet;
 import com.watabou.noosa.Image;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public enum Tiles {
 
@@ -90,7 +94,7 @@ public enum Tiles {
     //TODO Icon zeige in inv an, ob brennbar, oder Schlüssel?? -> muss über ListItem gemacht werden!
 
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class,"tiles"),0){
+    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "tiles"), 0) {
         @Override
         public Item findItem(Object src) {
             if (src instanceof Class<?>) {//for blobs
@@ -114,13 +118,15 @@ public enum Tiles {
     public static class TileBag extends EditorItemBag {
 
         private final int[] terrains;
-        public TileBag(String name,int... terrainCategory) {
-            super(name,terrainCategory[0]);
+
+        public TileBag(String name, int... terrainCategory) {
+            super(name, terrainCategory[0]);
             for (int i : terrainCategory) {
                 items.add(new TileItem(i, -1));
             }
             this.terrains = terrainCategory;
         }
+
         @Override
         public Image getCategoryImage() {
             TileItem t = new TileItem(image, -1);
@@ -130,13 +136,14 @@ public enum Tiles {
     }
 
     static {
-        bag.items.add(new TileBag(Messages.get(Tiles.class,"empty"), EMPTY.terrains));
-        bag.items.add(new TileBag(Messages.get(Tiles.class,"wall"), WALL.terrains));
-        bag.items.add(new TileBag(Messages.get(Tiles.class,"door"), DOOR.terrains));
-        TileBag specialTiles = new TileBag(Messages.get(Tiles.class,"special"), SPECIAL.terrains);
+        bag.items.add(new TileBag(Messages.get(Tiles.class, "empty"), EMPTY.terrains));
+        bag.items.add(new TileBag(Messages.get(Tiles.class, "wall"), WALL.terrains));
+        bag.items.add(new TileBag(Messages.get(Tiles.class, "door"), DOOR.terrains));
+        TileBag specialTiles = new TileBag(Messages.get(Tiles.class, "special"), SPECIAL.terrains);
         specialTiles.items.add(new BlobItem(MagicalFireRoom.EternalFire.class));
         specialTiles.items.add(new BlobItem(SacrificialFire.class));
         bag.items.add(specialTiles);
     }
 
+    public static final Map<String, CustomTileLoader.OwnCustomTile> ownCustomTiles = new HashMap<>();
 }

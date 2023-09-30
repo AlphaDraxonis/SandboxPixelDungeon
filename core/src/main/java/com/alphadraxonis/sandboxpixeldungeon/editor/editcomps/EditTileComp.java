@@ -22,6 +22,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
+import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.windows.IconTitle;
@@ -181,12 +182,35 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     protected String createDescription() {
         CustomLevel level = EditorScene.customLevel();
 
+        CustomTilemap customTile = null;
+        int x = -1, y = -1;
+        if (obj.cell() != -1) {
+            x = obj.cell() % Dungeon.level.width();
+            y = obj.cell() / Dungeon.level.width();
+            for (CustomTilemap i : Dungeon.level.customTiles) {
+                if ((x >= i.tileX && x < i.tileX + i.tileW) &&
+                        (y >= i.tileY && y < i.tileY + i.tileH)) {
+                    if (i.image(x - i.tileX, y - i.tileY) != null) {
+                        x -= i.tileX;
+                        y -= i.tileY;
+                        customTile = i;
+                        break;
+                    }
+                }
+            }
+        }
+
         String desc;
         if (TileItem.isSignTerrainCell(obj.terrainType())) {
             Sign sign = level.signs.get(obj.cell());
             if (sign == null || sign.text == null) desc = "";
             else desc = sign.text;
-        } else desc = level.tileDesc(obj.terrainType(), obj.cell());
+        } else {
+            if (customTile != null) {
+                String customDesc = customTile.desc(x, y);
+                desc = customDesc != null ? customDesc + Dungeon.level.appendNoTransWarning(obj.cell()) : level.tileDesc(obj.terrainType(), obj.cell());
+            } else desc = level.tileDesc(obj.terrainType(), obj.cell());
+        }
 
         if (obj.cell() >= 0) {
             for (Blob blob : Dungeon.level.blobs.values()) {
@@ -202,7 +226,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
     @Override
     public Image getIcon() {
-        return createImage(obj.terrainType(), EditorScene.customLevel(), obj.image());
+        return createImage(obj.terrainType(), EditorScene.customLevel(), obj.image(), obj.cell());
     }
 
     @Override
@@ -216,15 +240,34 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     }
 
 
-    private static Image createImage(int terrainFeature, Level level, int image) {
-        if (terrainFeature == Terrain.WATER) {
-            Image water = new Image(level.waterTex());
-            water.frame(0, 0, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
-            return water;
+    private static Image createImage(int terrainFeature, Level level, int image, int cell) {
+
+        Image customImage = null;
+        if (cell != -1) {
+            int x = cell % Dungeon.level.width();
+            int y = cell / Dungeon.level.width();
+            for (CustomTilemap i : Dungeon.level.customTiles) {
+                if ((x >= i.tileX && x < i.tileX + i.tileW) &&
+                        (y >= i.tileY && y < i.tileY + i.tileH)) {
+                    if ((customImage = i.image(x - i.tileX, y - i.tileY)) != null) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (customImage != null) {
+            return customImage;
         } else {
-            Image img = new Image(TextureCache.get(level.tilesTex()));
-            img.frame(CustomLevel.getTextureFilm(EditorScene.customLevel().tilesTex()).get(image));
-            return img;
+            if (terrainFeature == Terrain.WATER) {
+                Image water = new Image(Dungeon.level.waterTex());
+                water.frame(0, 0, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
+                return water;
+            } else {
+                Image img = new Image(TextureCache.get(level.tilesTex()));
+                img.frame(CustomLevel.getTextureFilm(EditorScene.customLevel().tilesTex()).get(image));
+                return img;
+            }
         }
     }
 }

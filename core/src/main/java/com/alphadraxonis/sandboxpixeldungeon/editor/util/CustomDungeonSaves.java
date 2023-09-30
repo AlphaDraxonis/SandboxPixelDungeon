@@ -42,7 +42,7 @@ public class CustomDungeonSaves {
     private static final String INFO = "info";
     private static final String FLOOR = "floor";
 
-    private static String curDirectory;
+    static String curDirectory;
 
     public static void setCurDirectory(String curDirectory) {
         CustomDungeonSaves.curDirectory = curDirectory;
@@ -175,7 +175,10 @@ public class CustomDungeonSaves {
     }
 
     private static List<String> getFilesInDir(String name) {
-        FileHandle dir = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), name);
+        return getFilesInDir(FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), name));
+    }
+
+    public static List<String> getFilesInDir(FileHandle dir) {
         List<String> result = new ArrayList<>();
         if (dir.isDirectory()) {
             for (FileHandle file : dir.list()) {
@@ -208,9 +211,18 @@ public class CustomDungeonSaves {
         try {
             FileHandle src = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(),
                     DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + LEVEL_FOLDER);
-            if (!src.exists()) return;
-            FileHandle dest = FileUtils.getFileHandle(dirDestination.replace(' ', '_'));
-            src.copyTo(dest);
+            if (src.exists()) {
+                FileHandle dest = FileUtils.getFileHandle(dirDestination.replace(' ', '_'));
+                src.copyTo(dest);
+            }
+
+            src = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(),
+                    DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + CustomTileLoader.CUSTOM_TILES);
+            if (src.exists()) {
+                FileHandle dest = FileUtils.getFileHandle(dirDestination.replace(' ', '_'));
+                src.copyTo(dest);
+            }
+
         } catch (GdxRuntimeException e) {
             throw new IOException(e);
         }

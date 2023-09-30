@@ -99,7 +99,7 @@ public class FloorOverviewScene extends PixelScene {
 
         updateList();
 
-        EditorItemBag.callStaticInitializers();;
+        EditorItemBag.callStaticInitializers();
     }
 
     public static void updateList() {

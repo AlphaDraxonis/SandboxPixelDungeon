@@ -119,6 +119,7 @@ public class CustomTileItem extends EditorItem {
             Point custPoint = new Point(p);
             custPoint.x -= cust.tileX;
             custPoint.y -= cust.tileY;
+//            if (custPoint.x == 0 && custPoint.y == 0 && cust.image(0, 0) != null) return cust;//only top left
             if (custPoint.x >= 0 && custPoint.y >= 0
                     && custPoint.x < cust.tileW && custPoint.y < cust.tileH) {
                 if (cust.image(custPoint.x, custPoint.y) != null) {
@@ -177,11 +178,13 @@ public class CustomTileItem extends EditorItem {
             if (customTile.tileW > 1 || customTile.tileH > 1) {
                 otherTerrainChanges = new ActionPartList();
                 int startPos = cell - customTile.offsetCenterX - customTile.offsetCenterY * Dungeon.level.width();
+                customTile.create();//Need to render image first so we know the blank spots
                 for (int i = 0; i < customTile.tileH; i++) {
                     for (int j = 0; j < customTile.tileW; j++) {
                         if (customTile.image(j, i) != null) {
                             int pos = startPos + j + i * Dungeon.level.width();
-                            if (pos != cell) otherTerrainChanges.addActionPart(TileItem.place(pos, newTerrain()));
+                            if (pos != cell) otherTerrainChanges.addActionPart(TileItem.place(pos, newTerrain(),
+                                    CustomTileItem.findCustomTileAt(pos) != null));
                         }
                     }
                 }
@@ -199,8 +202,8 @@ public class CustomTileItem extends EditorItem {
         @Override
         public void redo() {
             super.redo();
-            if (customTile != null) place(customTile, cell(), terrain);
             if (otherTerrainChanges != null) otherTerrainChanges.redo();
+            if (customTile != null) place(customTile, cell(), terrain);
         }
 
         @Override
@@ -211,8 +214,12 @@ public class CustomTileItem extends EditorItem {
 
     public static class Remove extends PlaceCustomTileActionPart {
 
+        protected final int offset;//can be removed from anywhere on the customTile, but placed only at one specific position
+
         public Remove(int cell, int terrain, CustomTilemap customTile) {
             super(cell, terrain, customTile);
+            offset = cell - customTile.tileX - customTile.tileY * Dungeon.level.width()
+                    - customTile.offsetCenterX - customTile.offsetCenterY * Dungeon.level.width();
             remove(customTile, terrain);
         }
 
@@ -220,7 +227,7 @@ public class CustomTileItem extends EditorItem {
         public void undo() {
             super.undo();
 
-            place(customTile, cell(), terrain);
+            place(customTile, cell() - offset, terrain);
         }
 
         @Override

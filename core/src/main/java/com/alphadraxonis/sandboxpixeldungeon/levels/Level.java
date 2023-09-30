@@ -58,6 +58,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.FlowParticle;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.WindParticle;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
@@ -427,13 +428,15 @@ public abstract class Level implements Bundlable {
         collection = bundle.getCollection(CUSTOM_TILES);
         for (Bundlable p : collection) {
             CustomTilemap vis = (CustomTilemap) p;
-            customTiles.add(vis);
+           if(!(vis instanceof CustomTileLoader.OwnCustomTile) || ((CustomTileLoader.OwnCustomTile) vis).fileName != null)
+               customTiles.add(vis);
         }
 
         collection = bundle.getCollection(CUSTOM_WALLS);
         for (Bundlable p : collection) {
             CustomTilemap vis = (CustomTilemap) p;
-            customWalls.add(vis);
+            if(!(vis instanceof CustomTileLoader.OwnCustomTile) || ((CustomTileLoader.OwnCustomTile) vis).fileName != null)
+                customWalls.add(vis);
         }
 
         collection = bundle.getCollection(MOBS);
@@ -1633,7 +1636,7 @@ public abstract class Level implements Bundlable {
         }
     }
 
-    protected String appendNoTransWarning(int cell) {
+    public String appendNoTransWarning(int cell) {
         return cell >= 0 && transitions.get(cell) == null ? "\n" + Messages.get(Hero.class, "no_trans_warning") : "";
     }
 

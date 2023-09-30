@@ -41,6 +41,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Plant;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
+import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.PathFinder;
@@ -114,7 +115,11 @@ public class TileItem extends EditorItem {
     }
 
     public static ActionPart place(int cell, int terrainType) {
-        return new PlaceTileActionPart(cell, terrainType, false);
+        return place(cell, terrainType, false);
+    }
+
+    public static ActionPart place(int cell, int terrainType, boolean forceChange) {
+        return new PlaceTileActionPart(cell, terrainType, forceChange);
     }
 
 
@@ -135,6 +140,26 @@ public class TileItem extends EditorItem {
     }
 
     public static String getName(int terrainType, int cell) {
+
+        if (cell != -1) {
+            CustomTilemap customTile = null;
+            int x = cell % Dungeon.level.width();
+            int y = cell / Dungeon.level.width();
+            for (CustomTilemap i : Dungeon.level.customTiles) {
+                if ((x >= i.tileX && x < i.tileX + i.tileW) &&
+                        (y >= i.tileY && y < i.tileY + i.tileH)) {
+                    if (i.image(x - i.tileX, y - i.tileY) != null) {
+                        x -= i.tileX;
+                        y -= i.tileY;
+                        customTile = i;
+                        break;
+                    }
+                }
+            }
+            if (customTile != null && customTile.name(x, y) != null) {
+                return customTile.name(x, y) + EditorUtilies.appendCellToString(cell);
+            }
+        }
         return Messages.titleCase(EditorScene.customLevel().tileName(terrainType)) + EditorUtilies.appendCellToString(cell);
     }
 

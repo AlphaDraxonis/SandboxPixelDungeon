@@ -126,7 +126,7 @@ public class WndInfoCell extends Window {
 		if (customTile != null){
 			String customDesc = customTile.desc(x, y);
 			if (customDesc != null) {
-				desc += customDesc;
+				desc += customDesc + Dungeon.level.appendNoTransWarning(cell);
 			} else {
 				desc += Dungeon.level.tileDesc(Dungeon.level.map[cell], cell);
 			}

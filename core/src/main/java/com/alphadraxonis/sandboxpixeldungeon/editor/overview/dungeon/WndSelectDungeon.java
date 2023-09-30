@@ -10,6 +10,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.DungeonToJsonConverter;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -325,6 +326,7 @@ public class WndSelectDungeon extends Window {
             e.showExceptionWindow();
             return;
         }
+        CustomTileLoader.loadTiles();
         String lastEditedFloor = Dungeon.customDungeon.getLastEditedFloor();
         LevelScheme l;
         if (Dungeon.customDungeon.getNumFloors() == 0 || lastEditedFloor == null || (l = Dungeon.customDungeon.getFloor(lastEditedFloor)) == null)

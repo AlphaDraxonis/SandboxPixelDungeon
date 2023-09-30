@@ -39,6 +39,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
 import com.alphadraxonis.sandboxpixeldungeon.items.Amulet;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
@@ -218,6 +219,8 @@ public class Dungeon {
             SandboxPixelDungeon.reportException(e);
         }
         CustomDungeonSaves.setCurDirectory(levelDir);
+
+        CustomTileLoader.loadTiles();
 //
 //        if (customDungeon == null) {
 //            customDungeon = new CustomDungeon("DefaultDungeon");
@@ -812,6 +815,8 @@ public class Dungeon {
         if (!DeviceCompat.isDesktop() && initialVersion < 743) {//v0.6 and older
             CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/dungeon_levels/");
         } else CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/");
+
+        CustomTileLoader.loadTiles();
     }
 
     public static Level loadLevel(int save) throws IOException {
