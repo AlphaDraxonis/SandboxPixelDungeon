@@ -3,16 +3,17 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.inv.items;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditCustomTileComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.DefaultListItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPartList;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
-import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
@@ -32,15 +33,9 @@ public class CustomTileItem extends EditorItem {
         this.customTile = customTile;
     }
 
-//    public CustomTileItem(int terrainFeature, int image, int cell) {
-//        this.terrainType = terrainFeature;
-//        this.cell = cell;
-//        this.image = image;
-//    }
-
     @Override
     public String name() {
-        return "TESTNAME";
+        return customTile.name(0, 0) + EditorUtilies.appendCellToString(cell);
     }
 
     @Override
@@ -58,23 +53,24 @@ public class CustomTileItem extends EditorItem {
 
     @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        Level level = EditorScene.customLevel();
-        return new DefaultListItem(this, window, "TTN", getSprite());
+        return new DefaultListItem(this, window, name(), getSprite());
     }
 
 
     @Override
     public DefaultEditComp<?> createEditComponent() {
-        return null;
-//        return new EditTileComp(this);
+        return new EditCustomTileComp(customTile(), cell());
     }
 
     @Override
     public Image getSprite() {
-        return new ItemSprite();
-//        if (image() == Terrain.WATER)
-//            return new ItemSprite(EditorScene.customLevel().waterTex(), this);
-//        return image() < 0 ? new Image() : new ItemSprite(this);
+        return createImage(customTile());
+    }
+
+    public static Image createImage(CustomTilemap cust){
+        Image img = cust instanceof CustomTileLoader.OwnCustomTile ? new Image(cust.getTexture()) : cust.fullImage();
+        img.scale.set(Math.min(1f / cust.tileW, 1f / cust.tileH));
+        return img;
     }
 
     @Override
@@ -104,8 +100,8 @@ public class CustomTileItem extends EditorItem {
 
     }
 
-    public static String getName(int terrainType, int cell) {
-        return Messages.titleCase(EditorScene.customLevel().tileName(terrainType)) + EditorUtilies.appendCellToString(cell);
+    public static String getName(CustomTilemap customTile, int cell) {
+        return Messages.titleCase(customTile.name(0, 0)) + EditorUtilies.appendCellToString(cell);
     }
 
     public static CustomTilemap findCustomTileAt(int cell) {
@@ -208,7 +204,7 @@ public class CustomTileItem extends EditorItem {
 
         @Override
         public boolean hasContent() {
-            return customTile != oldCustomTile() || super.hasContent();
+            return !EditCustomTileComp.areEqual(customTile, oldCustomTile()) || super.hasContent();
         }
     }
 

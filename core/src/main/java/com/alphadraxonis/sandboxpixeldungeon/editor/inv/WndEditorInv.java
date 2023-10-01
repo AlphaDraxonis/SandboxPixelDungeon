@@ -6,9 +6,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Plants;
-import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Traps;
-import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.CustomTileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.ItemItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.PlantItem;
@@ -135,10 +133,6 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                                 ret.remove(i);
                         }
                     }
-
-//                    ret.add(0, new CustomTileItem(new MassGraveRoom.Bones(), -1));
-//                    ret.add(1, new CustomTileItem(new RitualSiteRoom.RitualMarker(), -1));
-                    ret.add(0, new CustomTileItem(Tiles.ownCustomTiles.get("test.dat"),-1));
 
                     return ret;
                 }

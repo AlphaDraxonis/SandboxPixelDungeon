@@ -15,6 +15,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.BlobItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.CustomTileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
@@ -29,6 +30,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -52,6 +54,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.LevelTransition;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
+import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.ui.QuickSlotButton;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -437,14 +440,18 @@ public class CustomDungeon implements Bundlable {
         if (item == null) toolbarItems[slot] = null;
         else if (item instanceof TileItem) toolbarItems[slot] = ((TileItem) item).terrainType();
         else if (item instanceof BlobItem) toolbarItems[slot] = ((BlobItem) item).blob();
-        else toolbarItems[slot] = item.getObject().getClass();
+        else if (item instanceof CustomTileItem) {
+            CustomTilemap cust = ((CustomTileItem) item).customTile();
+            if (cust instanceof CustomTileLoader.OwnCustomTile) toolbarItems[slot] = ((CustomTileLoader.OwnCustomTile) cust).fileName;
+            else toolbarItems[slot] = item.getObject().getClass();
+        } else toolbarItems[slot] = item.getObject().getClass();
     }
 
     public void restoreToolbar() {
         EditorItemBag.callStaticInitializers();
         for (int i = 0; i < toolbarItems.length; i++) {
             if (toolbarItems[i] != null) {
-                if (toolbarItems[i] instanceof Integer)
+                if (toolbarItems[i] instanceof Integer || toolbarItems[i] instanceof String)
                     QuickSlotButton.set(i, EditorScene.getObjAsInBag(toolbarItems[i]));
                 else if (toolbarItems[i] == EditorItem.REMOVER_ITEM.getClass())
                     QuickSlotButton.set(i, EditorItem.REMOVER_ITEM);
@@ -472,6 +479,7 @@ public class CustomDungeon implements Bundlable {
     private static final String GEM_CLASSES = "gem_classes";
     private static final String TOOLBAR_ITEM = "toolbar_item_";
     private static final String TOOLBAR_ITEM_INT = "toolbar_item_int_";
+    private static final String TOOLBAR_ITEM_STRING = "toolbar_item_string_";
     private static final String HEROES_ENABLED = "heroes_enabled";
     private static final String START_ITEMS = "start_items";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
@@ -539,6 +547,8 @@ public class CustomDungeon implements Bundlable {
             if (toolbarItems[j] != null) {
                 if (toolbarItems[j] instanceof Integer)
                     bundle.put(TOOLBAR_ITEM_INT + j, (int) toolbarItems[j]);
+                else if (toolbarItems[j] instanceof String)
+                    bundle.put(TOOLBAR_ITEM_STRING + j, (String) toolbarItems[j]);
                 else bundle.put(TOOLBAR_ITEM + j, (Class<?>) toolbarItems[j]);
             }
         }
@@ -613,6 +623,8 @@ public class CustomDungeon implements Bundlable {
                 toolbarItems[i] = bundle.getClass(TOOLBAR_ITEM + i);
             else if (bundle.contains(TOOLBAR_ITEM_INT + i))
                 toolbarItems[i] = bundle.getInt(TOOLBAR_ITEM_INT + i);
+            else if (bundle.contains(TOOLBAR_ITEM_STRING + i))
+                toolbarItems[i] = bundle.getString(TOOLBAR_ITEM_STRING + i);
         }
     }
 

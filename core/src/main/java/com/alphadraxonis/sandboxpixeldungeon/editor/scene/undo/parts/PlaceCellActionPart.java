@@ -2,6 +2,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditCustomTileComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.CustomTileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.ActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
@@ -56,7 +57,7 @@ public class PlaceCellActionPart implements ActionPart {
 
     @Override
     public boolean hasContent() {
-        return oldTerrain != newTerrain;
+        return oldTerrain != newTerrain || !EditCustomTileComp.areEqual(oldCustomTile(),CustomTileItem.findCustomTileAt(cell()));
     }
 
     protected CustomTilemap oldCustomTile() {

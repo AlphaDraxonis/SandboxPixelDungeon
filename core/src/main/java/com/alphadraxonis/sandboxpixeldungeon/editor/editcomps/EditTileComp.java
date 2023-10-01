@@ -168,6 +168,36 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         height = (int) (pos - y - WndTitledMessage.GAP);
     }
 
+    protected static final class CustomTilemapAndPosWrapper {
+        private final int x, y;
+        private final CustomTilemap customTilemap;
+
+        public CustomTilemapAndPosWrapper(int x, int y, CustomTilemap customTile) {
+            this.x = x;
+            this.y = y;
+            this.customTilemap = customTile;
+        }
+    }
+
+    protected CustomTilemapAndPosWrapper findCustomTile() {
+        int x, y;
+        if (obj.cell() != -1) {
+            x = obj.cell() % Dungeon.level.width();
+            y = obj.cell() / Dungeon.level.width();
+            for (CustomTilemap i : Dungeon.level.customTiles) {
+                if ((x >= i.tileX && x < i.tileX + i.tileW) &&
+                        (y >= i.tileY && y < i.tileY + i.tileH)) {
+                    if (i.image(x - i.tileX, y - i.tileY) != null) {
+                        x -= i.tileX;
+                        y -= i.tileY;
+                        return new CustomTilemapAndPosWrapper(x, y, i);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 
     @Override
     protected Component createTitle() {
@@ -182,23 +212,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     protected String createDescription() {
         CustomLevel level = EditorScene.customLevel();
 
-        CustomTilemap customTile = null;
-        int x = -1, y = -1;
-        if (obj.cell() != -1) {
-            x = obj.cell() % Dungeon.level.width();
-            y = obj.cell() / Dungeon.level.width();
-            for (CustomTilemap i : Dungeon.level.customTiles) {
-                if ((x >= i.tileX && x < i.tileX + i.tileW) &&
-                        (y >= i.tileY && y < i.tileY + i.tileH)) {
-                    if (i.image(x - i.tileX, y - i.tileY) != null) {
-                        x -= i.tileX;
-                        y -= i.tileY;
-                        customTile = i;
-                        break;
-                    }
-                }
-            }
-        }
+        CustomTilemapAndPosWrapper customTileWr = findCustomTile();
 
         String desc;
         if (TileItem.isSignTerrainCell(obj.terrainType())) {
@@ -206,8 +220,8 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             if (sign == null || sign.text == null) desc = "";
             else desc = sign.text;
         } else {
-            if (customTile != null) {
-                String customDesc = customTile.desc(x, y);
+            if (customTileWr != null) {
+                String customDesc = customTileWr.customTilemap.desc(customTileWr.x, customTileWr.y);
                 desc = customDesc != null ? customDesc + Dungeon.level.appendNoTransWarning(obj.cell()) : level.tileDesc(obj.terrainType(), obj.cell());
             } else desc = level.tileDesc(obj.terrainType(), obj.cell());
         }

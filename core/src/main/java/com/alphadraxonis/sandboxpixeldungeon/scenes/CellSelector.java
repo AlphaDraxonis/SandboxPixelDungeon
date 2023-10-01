@@ -245,10 +245,13 @@ public class CellSelector extends ScrollArea {
     private float startZoom;
     private float startSpan;
 
+    private boolean dragClickEnabled;
+
     @Override
     protected void onPointerDown(PointerEvent event) {
         isPointerDown = true;
         camera.edgeScroll.set(-1);
+        dragClickEnabled = listener.dragClickEnabled();
         if (event != curEvent && another == null) {
 
             if (curEvent.type == PointerEvent.Type.UP) {
@@ -315,7 +318,7 @@ public class CellSelector extends ScrollArea {
 
             if (!dragging && PointF.distance(event.current, event.start) > dragThreshold) {
 
-                if (dragClicking && listener.dragClickEnabled()) {
+                if (dragClicking && dragClickEnabled) {
                     handleDragClick(event);
                 } else {
                     dragging = true;
@@ -496,7 +499,7 @@ public class CellSelector extends ScrollArea {
             time += Game.elapsed;
             if (time >= Button.longClick) {
                 dragClicking = true;
-                if (listener.dragClickEnabled() && !pinching && !dragging) {
+                if (dragClickEnabled && !pinching && !dragging) {
                     SandboxPixelDungeon.vibrate(50);
                     handleDragClick(curEvent);
                 }

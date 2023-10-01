@@ -117,6 +117,11 @@ public abstract class CustomTilemap implements Bundlable {
 		}
 	}
 
+	public Image fullImage(){
+		if (vis == null) create();
+		return vis.biggerImage(tileW, tileH);
+	}
+
 	public String name(int tileX, int tileY){
 		return null;
 	}
@@ -151,7 +156,11 @@ public abstract class CustomTilemap implements Bundlable {
 
 	public CustomTilemap getCopy(){
 		Bundle bundle = new Bundle();
-		bundle.put("CustomTileMap", this);
-		return (CustomTilemap) bundle.get("CustomTileMap");
+		bundle.put("CustomTilemap", this);
+		return (CustomTilemap) bundle.get("CustomTilemap");
+	}
+
+	public Object getTexture() {
+		return texture;
 	}
 }

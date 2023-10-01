@@ -7,6 +7,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
@@ -64,6 +65,7 @@ public class WndNewDungeon extends WndTextInput {
             SandboxPixelDungeon.reportException(e);
         }
         EditorScene.start();
+        CustomTileLoader.loadTiles();
         SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
     }
 

@@ -201,7 +201,8 @@ public class SideControlPane extends Component {
 
         @Override
         protected void onClick() {
-            EditorScene.selectCell(fillAllCellListener);
+            if (EditorScene.dragClickEnabled())
+                EditorScene.selectCell(fillAllCellListener);
         }
 
         @Override

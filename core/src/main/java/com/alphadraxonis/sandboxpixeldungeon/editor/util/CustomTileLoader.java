@@ -25,7 +25,7 @@ public final class CustomTileLoader {
     public static void loadTiles() {
 
         EditorItemBag.callStaticInitializers();
-        Tiles.ownCustomTiles.clear();
+        Tiles.clearCustomTiles();
 
         FileHandle dir = FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CUSTOM_TILES);
         if (!dir.exists()) {
@@ -100,7 +100,7 @@ public final class CustomTileLoader {
                 ownCustomTile.offsetCenterX = ownCustomTile.offsetCenterY = 0;
             }
             ownCustomTile.fileName = file.name();
-            Tiles.ownCustomTiles.put(ownCustomTile.fileName, ownCustomTile);
+            Tiles.addCustomTile(ownCustomTile);
         } catch (Exception ignored) {
             throw new RuntimeException(ignored);
         }
@@ -113,10 +113,6 @@ public final class CustomTileLoader {
 
         private void setTexture(Pixmap texture) {
             this.texture = texture;
-        }
-
-        private Pixmap getTexture() {
-            return (Pixmap) texture;
         }
 
         @Override
@@ -152,7 +148,7 @@ public final class CustomTileLoader {
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
             fileName = bundle.getString(FILE_NAME);
-            OwnCustomTile template = Tiles.ownCustomTiles.get(fileName);
+            OwnCustomTile template = Tiles.getCustomTile(fileName);
             if (template == null) fileName = null;
             else setValuesTo(template);
         }
@@ -170,9 +166,7 @@ public final class CustomTileLoader {
 
         @Override
         public CustomTilemap getCopy() {
-            Bundle bundle = new Bundle();
-            bundle.put("CustomTileMap", this);
-            OwnCustomTile ret = (OwnCustomTile) bundle.get("CustomTileMap");
+            OwnCustomTile ret = (OwnCustomTile) super.getCopy();
             ret.setValuesTo(this);
             return ret;
         }

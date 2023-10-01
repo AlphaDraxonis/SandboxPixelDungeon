@@ -109,7 +109,7 @@ public class MassGraveRoom extends SpecialRoom {
 			Tilemap v = super.create();
 			int[] data = new int[tileW*tileH];
 			for (int i = 0; i < data.length; i++){
-				if (i < tileW && tileW > 1)  data[i] = WALL_OVERLAP;
+				if (i < tileW && tileH > 1)  data[i] = WALL_OVERLAP;
 				else            data[i] = FLOOR;
 			}
 			v.map( data, tileW );
@@ -118,8 +118,8 @@ public class MassGraveRoom extends SpecialRoom {
 
 		@Override
 		public Image image(int tileX, int tileY) {
-			if (tileY == 0) return null;
-			else            return super.image(tileX, tileY);
+			if (tileY == 0 && tileH > 1) return null;
+			else            			 return super.image(tileX, tileY);
 		}
 
 		@Override

@@ -97,11 +97,18 @@ public class Tilemap extends Visual {
 		}
 	}
 
-	//forces a full update, including new buffer
-	public synchronized void updateMap(){
-		updated.set( 0, 0, mapWidth, mapHeight );
-		fullUpdate = true;
-	}
+    public Image biggerImage(int width, int height) {
+        Image img = new Image(texture);
+        int cols = (int) (texture.width / cellW);
+        img.frame( (int) (data[0] % cols * cellW), (int) (data[0] / cols * cellH), (int) (width * cellW), (int) (height * cellH));
+        return img;
+    }
+
+    //forces a full update, including new buffer
+    public synchronized void updateMap() {
+        updated.set(0, 0, mapWidth, mapHeight);
+        fullUpdate = true;
+    }
 
 	public synchronized void updateMapCell(int cell){
 		updated.union( cell % mapWidth, cell / mapWidth );

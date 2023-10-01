@@ -14,6 +14,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Mobs;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Plants;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Traps;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.CustomTileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
@@ -25,6 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.UndoPane;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.BlobEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.effects.BlobEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.EmoIcon;
@@ -671,11 +673,14 @@ public class EditorScene extends PixelScene {
             Blob b = Dungeon.level.blobs.get(BlobEditPart.BlobData.BLOB_CLASSES[i]);
             if (b != null && !(b instanceof WellWater) && b.cur != null && b.cur[cell] > 0) return b;
         }
+        CustomTilemap customTile = CustomTileItem.findCustomTileAt(cell);
+        if (customTile != null) return customTile;
         return customLevel.map[cell];
     }
 
     public static EditorItem getObjAsInBag(Object obj) {
-        if (obj instanceof Integer) return (EditorItem) Tiles.bag.findItem(obj);
+        if (obj instanceof Integer || obj instanceof String) return (EditorItem) Tiles.bag.findItem(obj);
+        if (obj instanceof CustomTileLoader.OwnCustomTile) return (EditorItem) Tiles.bag.findItem(((CustomTileLoader.OwnCustomTile) obj).fileName);
         return getObjAsInBagFromClass(obj.getClass());
     }
 
@@ -686,6 +691,7 @@ public class EditorScene extends PixelScene {
         if (Trap.class.isAssignableFrom(clazz)) return (EditorItem) Traps.bag.findItem(clazz);
         if (Plant.class.isAssignableFrom(clazz)) return (EditorItem) Plants.bag.findItem(clazz);
         if (Blob.class.isAssignableFrom(clazz)) return (EditorItem) Tiles.bag.findItem(clazz);//Blobs
+        if (CustomTilemap.class.isAssignableFrom(clazz)) return (EditorItem) Tiles.bag.findItem(clazz);//CustomTiles
         return null;
     }
 
@@ -788,9 +794,22 @@ public class EditorScene extends PixelScene {
 
         @Override
         protected boolean dragClickEnabled() {
-            return true;
+            return EditorScene.dragClickEnabled();
         }
     };
+
+    public static boolean dragClickEnabled() {
+        Item selected = EToolbar.getSelectedItem();
+
+        if (selected instanceof EditorItem) {
+            if (selected instanceof CustomTileItem) {
+                CustomTilemap customTile = ((CustomTileItem) selected).customTile();
+                return customTile.tileW == 1 && customTile.tileH == 1;
+            }
+            return true;
+        }
+        return false;
+    }
 
     public static void putInQuickslot(Integer cell) {
         if (cell != null && cell >= 0 && cell < customLevel.length()) {

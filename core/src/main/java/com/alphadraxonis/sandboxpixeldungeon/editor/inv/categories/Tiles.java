@@ -31,15 +31,20 @@ import static com.alphadraxonis.sandboxpixeldungeon.levels.Terrain.WELL;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.SacrificialFire;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.BlobItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.CustomTileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MagicalFireRoom;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MassGraveRoom;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.RitualSiteRoom;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
+import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTileSheet;
+import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
 import com.watabou.noosa.Image;
 
 import java.util.HashMap;
@@ -97,10 +102,21 @@ public enum Tiles {
     public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "tiles"), 0) {
         @Override
         public Item findItem(Object src) {
-            if (src instanceof Class<?>) {//for blobs
+            if (src instanceof Class<?>) {//for blobs and customTiles
                 for (Item bag : items) {
                     for (Item i : ((Bag) bag).items) {
                         if (i instanceof BlobItem && ((BlobItem) i).blob() == src) return i;
+                        if (i instanceof CustomTileItem && ((CustomTileItem) i).customTile().getClass() == src) return i;
+                    }
+                }
+                return null;
+            }
+            if (src instanceof String) {
+                for (Item i : customTileBag.items) {
+                    if (i instanceof CustomTileItem) {
+                        CustomTilemap customTile = ((CustomTileItem) i).customTile();
+                        if (customTile instanceof CustomTileLoader.OwnCustomTile
+                                && src.equals(((CustomTileLoader.OwnCustomTile) customTile).fileName)) return i;
                     }
                 }
                 return null;
@@ -135,6 +151,19 @@ public enum Tiles {
         }
     }
 
+    public static class CustomTileBag extends EditorItemBag {
+        public CustomTileBag() {
+            super("CUSTOM_TILES", -1);
+        }
+
+        @Override
+        public Image getCategoryImage() {
+            return Icons.TALENT.get();
+        }
+    }
+
+    private static CustomTileBag customTileBag;
+
     static {
         bag.items.add(new TileBag(Messages.get(Tiles.class, "empty"), EMPTY.terrains));
         bag.items.add(new TileBag(Messages.get(Tiles.class, "wall"), WALL.terrains));
@@ -143,7 +172,25 @@ public enum Tiles {
         specialTiles.items.add(new BlobItem(MagicalFireRoom.EternalFire.class));
         specialTiles.items.add(new BlobItem(SacrificialFire.class));
         bag.items.add(specialTiles);
+        customTileBag = new CustomTileBag();
+        bag.items.add(customTileBag);
     }
 
-    public static final Map<String, CustomTileLoader.OwnCustomTile> ownCustomTiles = new HashMap<>();
+    private static final Map<String, CustomTileLoader.OwnCustomTile> ownCustomTiles = new HashMap<>();
+
+    public static CustomTileLoader.OwnCustomTile getCustomTile(String fileName) {
+        return ownCustomTiles.get(fileName);
+    }
+
+    public static void clearCustomTiles() {
+        ownCustomTiles.clear();
+        customTileBag.items.clear();
+        customTileBag.items.add(new CustomTileItem(new RitualSiteRoom.RitualMarker(), -1));
+        customTileBag.items.add(new CustomTileItem(new MassGraveRoom.Bones(), -1));
+    }
+
+    public static void addCustomTile(CustomTileLoader.OwnCustomTile customTile) {
+        ownCustomTiles.put(customTile.fileName, customTile);
+        customTileBag.items.add(new CustomTileItem(customTile, -1));
+    }
 }
