@@ -35,7 +35,7 @@ public class CustomTileItem extends EditorItem {
 
     @Override
     public String name() {
-        return customTile.name(0, 0) + EditorUtilies.appendCellToString(cell);
+        return getName(customTile(), cell());
     }
 
     @Override
@@ -67,7 +67,7 @@ public class CustomTileItem extends EditorItem {
         return createImage(customTile());
     }
 
-    public static Image createImage(CustomTilemap cust){
+    public static Image createImage(CustomTilemap cust) {
         Image img = cust instanceof CustomTileLoader.OwnCustomTile ? new Image(cust.getTexture()) : cust.fullImage();
         img.scale.set(Math.min(1f / cust.tileW, 1f / cust.tileH));
         return img;
@@ -101,7 +101,9 @@ public class CustomTileItem extends EditorItem {
     }
 
     public static String getName(CustomTilemap customTile, int cell) {
-        return Messages.titleCase(customTile.name(0, 0)) + EditorUtilies.appendCellToString(cell);
+        String defaultName = customTile.name(0, 0);
+        if (defaultName != null) return Messages.titleCase(defaultName)+ EditorUtilies.appendCellToString(cell);
+        return TileItem.getName(customTile.terrain, cell);
     }
 
     public static CustomTilemap findCustomTileAt(int cell) {

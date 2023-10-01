@@ -77,6 +77,7 @@ public class WeakFloorRoom extends SpecialRoom {
 		{
 			texture = Assets.Environment.WEAK_FLOOR;
 			tileW = tileH = 1;
+			terrain = Terrain.CHASM;
 		}
 
 		@Override

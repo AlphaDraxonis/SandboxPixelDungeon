@@ -23,6 +23,7 @@ package com.alphadraxonis.sandboxpixeldungeon.windows;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
@@ -126,7 +127,9 @@ public class WndInfoCell extends Window {
 		if (customTile != null){
 			String customDesc = customTile.desc(x, y);
 			if (customDesc != null) {
-				desc += customDesc + Dungeon.level.appendNoTransWarning(cell);
+				desc += customDesc +
+						(TileItem.isExitTerrainCell(customTile.terrain) || customTile.terrain == Terrain.ENTRANCE
+								? Dungeon.level.appendNoTransWarning(cell) : "");
 			} else {
 				desc += Dungeon.level.tileDesc(Dungeon.level.map[cell], cell);
 			}

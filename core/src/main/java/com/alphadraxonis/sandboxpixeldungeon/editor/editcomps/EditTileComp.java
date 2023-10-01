@@ -222,7 +222,9 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         } else {
             if (customTileWr != null) {
                 String customDesc = customTileWr.customTilemap.desc(customTileWr.x, customTileWr.y);
-                desc = customDesc != null ? customDesc + Dungeon.level.appendNoTransWarning(obj.cell()) : level.tileDesc(obj.terrainType(), obj.cell());
+                desc = customDesc != null ? customDesc + (TileItem.isExitTerrainCell(obj.terrainType()) || obj.terrainType() == Terrain.ENTRANCE
+                        ? Dungeon.level.appendNoTransWarning(obj.cell()) : "")
+                        : level.tileDesc(obj.terrainType(), obj.cell());
             } else desc = level.tileDesc(obj.terrainType(), obj.cell());
         }
 

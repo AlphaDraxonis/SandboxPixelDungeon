@@ -98,9 +98,9 @@ public class DemonSpawnerRoom extends SpecialRoom {
 				}
 
 				if (Dungeon.level.findMob(cell) instanceof DemonSpawner){
-					data[i-1] = 5 + 4*8;
-					data[i] = 6 + 4*8;
-					data[i+1] = 7 + 4*8;
+					if (i - 1 >= 0) data[i - 1] = 5 + 4 * 8;
+					data[i] = 6 + 4 * 8;
+					if (i + 1 < data.length) data[i + 1] = 7 + 4 * 8;
 					i++;
 					cell++;
 				} else if (map[cell] == Terrain.EMPTY_DECO) {
