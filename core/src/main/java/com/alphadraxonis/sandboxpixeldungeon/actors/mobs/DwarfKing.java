@@ -52,6 +52,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfTeleportation
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfLightning;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CityBossLevel;
+import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
@@ -68,13 +69,15 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class DwarfKing extends Mob {
+public class DwarfKing extends Mob implements MobBasedOnDepth{
 
 	{
 		spriteClass = KingSprite.class;
 
-		HP = HT = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 450 : 300;
+		HP = HT = 300;
 		EXP = 40;
 		defenseSkill = 22;
 		attackSkill = 26;
@@ -114,12 +117,16 @@ public class DwarfKing extends Mob {
 	private static final int LINK = 1;
 	private static final int TELE = 2;
 
+	private int initialThrone;
+	private boolean yelledWavePhase2;
+
 	private static final String PHASE = "phase";
 	private static final String SUMMONS_MADE = "summons_made";
 
 	private static final String SUMMON_CD = "summon_cd";
 	private static final String ABILITY_CD = "ability_cd";
 	private static final String LAST_ABILITY = "last_ability";
+	private static final String YELLED = "yelled";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
@@ -129,6 +136,7 @@ public class DwarfKing extends Mob {
 		bundle.put( SUMMON_CD, summonCooldown );
 		bundle.put( ABILITY_CD, abilityCooldown );
 		bundle.put( LAST_ABILITY, lastAbility );
+		bundle.put( YELLED, yelledWavePhase2 );
 	}
 
 	@Override
@@ -139,6 +147,7 @@ public class DwarfKing extends Mob {
 		summonCooldown = bundle.getFloat( SUMMON_CD );
 		abilityCooldown = bundle.getFloat( ABILITY_CD );
 		lastAbility = bundle.getInt( LAST_ABILITY );
+		yelledWavePhase2 = bundle.getBoolean(YELLED);
 
 		if (phase == 2) properties.add(Property.IMMOVABLE);
 
@@ -147,8 +156,16 @@ public class DwarfKing extends Mob {
 	}
 
 	@Override
+	public void setLevel(int depth) {
+		initialThrone = pos;
+		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) HP = HT = (int) (HP * 1.5f);
+		if (!(Dungeon.level instanceof CityBossLevel)) Dungeon.level.passable[initialThrone] = false;
+	}
+
+	@Override
 	protected boolean act() {
-		if (pos == CityBossLevel.throne){
+
+		if (pos == thronePosition()){
 			throwItems();
 		}
 
@@ -199,47 +216,62 @@ public class DwarfKing extends Mob {
 			if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
 				//challenge logic
 				if (summonsMade < 6){
-					if (summonsMade == 0) {
+					if (!yelledWavePhase2) {
+						yelledWavePhase2 = true;
 						sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
 						Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
 						yell(Messages.get(this, "wave_1"));
 					}
-					summonSubject(3, DKGhoul.class);
-					summonSubject(3, DKGhoul.class);
+					if (summonSubject(3, DKGhoul.class)) summonsMade++;
+					if (summonsMade < 6)
+						if (summonSubject(3, DKGhoul.class)) summonsMade++;
 					spend(3 * TICK);
-					summonsMade += 2;
+					if (summonsMade == 6) yelledWavePhase2 = false;
 					return true;
 				} else if (shielding() <= 300 && summonsMade < 12){
-					if (summonsMade == 6) {
+					if (!yelledWavePhase2) {
+						yelledWavePhase2 = true;
 						sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
 						Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
 						yell(Messages.get(this, "wave_2"));
 					}
-					summonSubject(3, DKGhoul.class);
-					summonSubject(3, DKGhoul.class);
-					if (summonsMade == 6) {
-						summonSubject(3, DKMonk.class);
-					} else {
-						summonSubject(3, DKWarlock.class);
+					if (summonsMade == 6 || summonsMade == 9) {
+						if (summonSubject(3, DKGhoul.class)) summonsMade++;
 					}
-					summonsMade += 3;
+					if (summonsMade == 7 || summonsMade == 10) {
+						if (summonSubject(3, DKGhoul.class)) summonsMade++;
+					}
+					if (summonsMade == 8) {
+						if (summonSubject(3, DKMonk.class)) summonsMade++;
+					} else if (summonsMade == 11) {
+						if (summonSubject(3, DKWarlock.class)) summonsMade++;
+					}
+					if (summonsMade == 12) yelledWavePhase2 = false;
 					spend(3*TICK);
 					return true;
 				} else if (shielding() <= 150 && summonsMade < 18) {
-					if (summonsMade == 12) {
+					if (!yelledWavePhase2) {
+						yelledWavePhase2 = true;
 						sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
 						Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
 						yell(Messages.get(this, "wave_3"));
-						summonSubject(3, DKWarlock.class);
-						summonSubject(3, DKMonk.class);
-						summonSubject(3, DKGhoul.class);
-						summonSubject(3, DKGhoul.class);
-						summonsMade += 4;
-						spend(3*TICK);
+					}
+					if (summonsMade < 16) {
+						if (summonsMade == 12)
+							if (summonSubject(3, DKWarlock.class)) summonsMade++;
+						if (summonsMade == 13)
+							if (summonSubject(3, DKMonk.class)) summonsMade++;
+						if (summonsMade == 14)
+							if (summonSubject(3, DKGhoul.class)) summonsMade++;
+						if (summonsMade == 15)
+							if (summonSubject(3, DKGhoul.class)) summonsMade++;
+						spend(3 * TICK);
 					} else {
-						summonSubject(3, DKGolem.class);
-						summonSubject(3, DKGolem.class);
-						summonsMade += 2;
+						if (summonsMade == 16)
+							if (summonSubject(3, DKGhoul.class)) summonsMade++;
+						if (summonsMade == 17)
+							if (summonSubject(3, DKGhoul.class)) summonsMade++;
+						if (summonsMade == 18) yelledWavePhase2 = false;
 						spend(TICK);
 					}
 					return true;
@@ -250,38 +282,48 @@ public class DwarfKing extends Mob {
 			} else {
 				//non-challenge logic
 				if (summonsMade < 4) {
-					if (summonsMade == 0) {
+					if (!yelledWavePhase2) {
+						yelledWavePhase2 = true;
 						sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
 						Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
 						yell(Messages.get(this, "wave_1"));
 					}
-					summonSubject(3, DKGhoul.class);
+					if (summonSubject(3, DKGhoul.class)) summonsMade++;
+					if (summonsMade == 4) yelledWavePhase2 = false;
 					spend(3 * TICK);
-					summonsMade++;
 					return true;
 				} else if (shielding() <= 200 && summonsMade < 8) {
-					if (summonsMade == 4) {
+					if (!yelledWavePhase2) {
+						yelledWavePhase2 = true;
 						sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
 						Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
 						yell(Messages.get(this, "wave_2"));
 					}
 					if (summonsMade == 7) {
-						summonSubject(3, Random.Int(2) == 0 ? DKMonk.class : DKWarlock.class);
+						if (summonSubject(3, Random.Int(2) == 0 ? DKMonk.class : DKWarlock.class)) summonsMade++;
 					} else {
-						summonSubject(3, DKGhoul.class);
+						if (summonSubject(3, DKGhoul.class)) summonsMade++;
 					}
-					summonsMade++;
+					if (summonsMade == 8) yelledWavePhase2 = false;
 					spend(TICK);
 					return true;
 				} else if (shielding() <= 100 && summonsMade < 12) {
-					sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
-					Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
-					yell(Messages.get(this, "wave_3"));
-					summonSubject(4, DKWarlock.class);
-					summonSubject(4, DKMonk.class);
-					summonSubject(4, DKGhoul.class);
-					summonSubject(4, DKGhoul.class);
-					summonsMade = 12;
+					if (!yelledWavePhase2) {
+						yelledWavePhase2 = true;
+						sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
+						Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
+						yell(Messages.get(this, "wave_3"));
+					}
+					if (summonsMade == 8)
+						if (summonSubject(4, DKWarlock.class)) summonsMade++;
+					if (summonsMade == 9)
+						if (summonSubject(4, DKMonk.class)) summonsMade++;
+					if (summonsMade == 10)
+						if (summonSubject(4, DKGhoul.class)) summonsMade++;
+					if (summonsMade == 11)
+						if (summonSubject(4, DKGhoul.class)) summonsMade++;
+					if (summonsMade == 12) yelledWavePhase2 = false;
+
 					spend(TICK);
 					return true;
 				} else {
@@ -320,20 +362,87 @@ public class DwarfKing extends Mob {
 		}
 	}
 
-	private boolean summonSubject( int delay, Class<?extends Mob> type ){
-		Summoning s = new Summoning();
-		s.pos = ((CityBossLevel)Dungeon.level).getSummoningPos();
-		if (s.pos == -1) return false;
+	private boolean summonSubject( int delay, Class<?extends DwarfKingMob> type ){
+		Summoning s = new Summoning(id());
+		s.pos = getSummoningPos();
+		if (s.pos == -1) {
+			return false;
+		}
 		s.summon = type;
 		s.delay = delay;
 		s.attachTo(this);
 		return true;
 	}
 
+	private List<Integer> getPedestalsInRange(){//range=3; add pos to the values!
+		if (Dungeon.level instanceof CityBossLevel) return null;
+		int width = Dungeon.level.width();
+		int width2 = width * 2;
+		int width3 = width * 3;
+		int[] possiblePos = {
+				-3 - width3,-2 - width3, -1 - width3, -width3, 1 - width3, 2 - width3, 3 - width3,
+				-3 - width2,-2 - width2, -1 - width2, -width2, 1 - width2, 2 - width2, 3 - width2,
+				-3 - width , -2 - width, 								   2 - width,  3 - width,
+				-3         , -2        , 								   2,		   3,
+				-3 + width , -2 + width, 								   2 + width,  3 + width,
+				-3 + width2,-2 + width2, -1 + width2,  width2, 1 + width2, 2 + width2, 3 + width2,
+				-3 + width3,-2 + width3, -1 + width3,  width3, 1 + width3, 2 + width3, 3 + width3,
+		};
+		List<Integer> actualPedestals = new ArrayList<>();
+		for (int i : possiblePos) {
+			if (i + pos >= 0 && i + pos < Dungeon.level.map.length
+					&& Dungeon.level.map[i + pos] == Terrain.PEDESTAL) actualPedestals.add(i);
+		}
+		return actualPedestals;
+	}
+
+	private int getSummoningPos(){
+		if (Dungeon.level instanceof CityBossLevel) return ((CityBossLevel) Dungeon.level).getSummoningPos();
+
+		List<Integer> actualPedestals = getPedestalsInRange();
+//		if (actualPedestals.isEmpty()) {
+//			for (int i : possiblePos) actualPedestals.add(i);
+//		}
+
+		Set<Summoning> summons = new HashSet<>();
+		for (Mob m : Dungeon.level.mobs) {
+			if (m instanceof DwarfKing) {
+				summons.addAll(m.buffs(DwarfKing.Summoning.class));
+			}
+		}
+		ArrayList<Integer> positions = new ArrayList<>();
+		for (int i : actualPedestals) {
+			boolean clear = true;
+			int pedestal = i + pos;
+			for (DwarfKing.Summoning s : summons) {
+				if (s.getPos() == pedestal) {
+					clear = false;
+					break;
+				}
+			}
+			if (clear && Dungeon.level.passable[pedestal] && Actor.findChar(pedestal) == null) {
+				positions.add(pedestal);
+			}
+		}
+		if (positions.isEmpty()) return -1;
+		else return Random.element(positions);
+	}
+
+	private boolean skipPhase2(){
+		List<Integer> actualPedestals = getPedestalsInRange();
+		return actualPedestals != null && actualPedestals.isEmpty();
+	}
+
+	private int thronePosition(){
+		return Dungeon.level instanceof CityBossLevel ? CityBossLevel.throne : initialThrone;
+	}
+
 	private HashSet<Mob> getSubjects(){
 		HashSet<Mob> subjects = new HashSet<>();
 		for (Mob m : Dungeon.level.mobs){
-			if (m.alignment == alignment && (m instanceof Ghoul || m instanceof Monk || m instanceof Warlock || m instanceof Golem)){
+			if (m.alignment == alignment
+					//&& (m instanceof Ghoul || m instanceof Monk || m instanceof Warlock || m instanceof Golem)
+					&& m instanceof DwarfKingMob && ((DwarfKingMob) m).getKingId() == id()) {
 				subjects.add(m);
 			}
 		}
@@ -484,20 +593,22 @@ public class DwarfKing extends Mob {
 			int dmgTaken = preHP - HP;
 			abilityCooldown -= dmgTaken/8f;
 			summonCooldown -= dmgTaken/8f;
-			if (HP <= (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 100 : 50)) {
-				HP = (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 100 : 50);
-				sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
-				ScrollOfTeleportation.appear(this, CityBossLevel.throne);
-				properties.add(Property.IMMOVABLE);
-				phase = 2;
+			if (HP <= (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? HT/4.5f : HT/6f)) {
+				HP = (int) (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? HT/4.5f : HT/6f);
+				phase = skipPhase2() ? 3 : 2;
 				summonsMade = 0;
 				sprite.idle();
-				Buff.affect(this, DKBarrior.class).setShield(HT);
-				for (Summoning s : buffs(Summoning.class)) {
-					s.detach();
+				if (phase == 2) {
+					sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
+					ScrollOfTeleportation.appear(this, thronePosition());
+					properties.add(Property.IMMOVABLE);
+					Buff.affect(this, DKBarrior.class).setShield(HT);
+					for (Summoning s : buffs(Summoning.class)) {
+						s.detach();
+					}
 				}
 				for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
-					if (m instanceof Ghoul || m instanceof Monk || m instanceof Warlock || m instanceof Golem) {
+					if (m instanceof DwarfKingMob && ((DwarfKingMob) m).getKingId() == id()) {
 						m.die(null);
 					}
 				}
@@ -526,10 +637,12 @@ public class DwarfKing extends Mob {
 
 		super.die( cause );
 
-		Heap h = Dungeon.level.heaps.get(CityBossLevel.throne);
+		if (!(Dungeon.level instanceof CityBossLevel)) Dungeon.level.passable[initialThrone] = true;
+
+		Heap h = Dungeon.level.heaps.get(thronePosition());
 		if (h != null) {
 			for (Item i : h.items) {
-				Dungeon.level.drop(i, CityBossLevel.throne + Dungeon.level.width());
+				Dungeon.level.drop(i, thronePosition() + Dungeon.level.width());
 			}
 			h.destroy();
 		}
@@ -564,7 +677,23 @@ public class DwarfKing extends Mob {
 		return super.isImmune(effect);
 	}
 
-	public static class DKGhoul extends Ghoul {
+	protected static final String KING_ID = "king_id";
+
+	protected static DwarfKing findKingById(int id) {
+		if (id == 0) {
+			for (Mob m : Dungeon.level.mobs) if (m instanceof DwarfKing) return (DwarfKing) m;
+		}
+		Actor c = Actor.findById(id);
+		if (c instanceof DwarfKing) return (DwarfKing) c;
+		return null;
+	}
+
+	protected interface DwarfKingMob{
+		void setKingId(int id);
+		int getKingId();
+	}
+
+	public static class DKGhoul extends Ghoul implements DwarfKingMob{
 		{
 			properties.add(Property.BOSS_MINION);
 			state = HUNTING;
@@ -575,16 +704,64 @@ public class DwarfKing extends Mob {
 			partnerID = -2; //no partners
 			return super.act();
 		}
+
+		private int kingID;
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(KING_ID, kingID);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			kingID = bundle.getInt(KING_ID);
+		}
+
+		@Override
+		public void setKingId(int id) {
+			kingID = id;
+		}
+
+		@Override
+		public int getKingId() {
+			return kingID;
+		}
 	}
 
-	public static class DKMonk extends Monk {
+	public static class DKMonk extends Monk implements DwarfKingMob {
 		{
 			properties.add(Property.BOSS_MINION);
 			state = HUNTING;
 		}
+
+		private int kingID;
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(KING_ID, kingID);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			kingID = bundle.getInt(KING_ID);
+		}
+
+		@Override
+		public void setKingId(int id) {
+			kingID = id;
+		}
+
+		@Override
+		public int getKingId() {
+			return kingID;
+		}
 	}
 
-	public static class DKWarlock extends Warlock {
+	public static class DKWarlock extends Warlock implements DwarfKingMob {
 		{
 			properties.add(Property.BOSS_MINION);
 			state = HUNTING;
@@ -597,12 +774,60 @@ public class DwarfKing extends Mob {
 			}
 			super.zap();
 		}
+
+		private int kingID;
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(KING_ID, kingID);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			kingID = bundle.getInt(KING_ID);
+		}
+
+		@Override
+		public void setKingId(int id) {
+			kingID = id;
+		}
+
+		@Override
+		public int getKingId() {
+			return kingID;
+		}
 	}
 
-	public static class DKGolem extends Golem {
+	public static class DKGolem extends Golem implements DwarfKingMob {
 		{
 			properties.add(Property.BOSS_MINION);
 			state = HUNTING;
+		}
+
+		private int kingID;
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(KING_ID, kingID);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			kingID = bundle.getInt(KING_ID);
+		}
+
+		@Override
+		public void setKingId(int id) {
+			kingID = id;
+		}
+
+		@Override
+		public int getKingId() {
+			return kingID;
 		}
 	}
 
@@ -610,9 +835,18 @@ public class DwarfKing extends Mob {
 
 		private int delay;
 		private int pos;
-		private Class<?extends Mob> summon;
+		private Class<?extends DwarfKingMob> summon;
 
 		private Emitter particles;
+
+		private int kingID;
+
+		public Summoning(){
+			kingID = -1;
+		}
+		public Summoning(int kingID){
+			this.kingID = kingID;
+		}
 
 		public int getPos() {
 			return pos;
@@ -657,24 +891,22 @@ public class DwarfKing extends Mob {
 				}
 
 				if (Actor.findChar(pos) == null) {
-					Mob m = Reflection.newInstance(summon);
+					Mob m = (Mob) Reflection.newInstance(summon);
+					((DwarfKingMob) m).setKingId(kingID);
 					m.pos = pos;
 					m.maxLvl = -2;
 					GameScene.add(m);
 					Dungeon.level.occupyCell(m);
 					m.state = m.HUNTING;
 					if (((DwarfKing)target).phase == 2){
-						Buff.affect(m, KingDamager.class);
+						Buff.affect(m, KingDamager.class).kingID = kingID;
 					}
 				} else {
 					Char ch = Actor.findChar(pos);
 					ch.damage(Random.NormalIntRange(20, 40), target);
 					if (((DwarfKing)target).phase == 2){
-						if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
-							target.damage(target.HT/18, new KingDamager());
-						} else {
-							target.damage(target.HT/12, new KingDamager());
-						}
+						target.damage((int) Math.ceil(target.HT/(Dungeon.isChallenged(Challenges.STRONGER_BOSSES)? 18d : 12d)),
+								new KingDamager(kingID));
 					}
 					if (!ch.isAlive() && ch == Dungeon.hero) {
 						Dungeon.fail(DwarfKing.class);
@@ -726,10 +958,20 @@ public class DwarfKing extends Mob {
 			delay = bundle.getInt(DELAY);
 			pos = bundle.getInt(POS);
 			summon = bundle.getClass(SUMMON);
+			if (target != null) kingID = target.id();
 		}
 	}
 
 	public static class KingDamager extends Buff {
+
+		private int kingID;
+
+		public KingDamager(){
+			kingID = -1;
+		}
+		public KingDamager(int kingId){
+			this.kingID = kingId;
+		}
 
 		@Override
 		public boolean act() {
@@ -743,12 +985,23 @@ public class DwarfKing extends Mob {
 		@Override
 		public void detach() {
 			super.detach();
-			for (Mob m : Dungeon.level.mobs){
-				if (m instanceof DwarfKing){
-					int damage = m.HT / (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 18 : 12);
-					m.damage(damage, this);
-				}
+			DwarfKing king = findKingById(kingID);
+			if (king != null) {
+				int damage = (int) Math.ceil(king.HT / (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 18d : 12d));
+				king.damage(damage, this);
 			}
+		}
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(KING_ID, kingID);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			kingID = bundle.getInt(KING_ID);
 		}
 	}
 

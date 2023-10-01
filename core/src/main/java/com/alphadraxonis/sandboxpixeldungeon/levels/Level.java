@@ -47,6 +47,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Bestiary;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DwarfKing;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Goo;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.MobBasedOnDepth;
@@ -352,7 +353,7 @@ public abstract class Level implements Bundlable {
             if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
             if (m.pos == bossmobAt) {
                 bossMob = m;
-                bossMob.isBossMob = !(m instanceof Goo);
+                bossMob.isBossMob = !(m instanceof Goo || m instanceof DwarfKing);
                 bossMob.addBossProperty();
             }
         }

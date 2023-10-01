@@ -192,7 +192,7 @@ public class BossHealthBar extends Component {
 	}
 
 	public static void assignBoss(Mob boss){
-		Dungeon.level.bossFound = true;
+		if (Dungeon.level != null) Dungeon.level.bossFound = true;//null while editing
 		if (BossHealthBar.boss == boss) {
 			return;
 		}

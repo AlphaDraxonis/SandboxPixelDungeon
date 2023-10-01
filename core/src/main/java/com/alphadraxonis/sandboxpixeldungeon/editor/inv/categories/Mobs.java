@@ -15,6 +15,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DM100;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DM200;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DM201;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DemonSpawner;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DwarfKing;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Elemental;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Eye;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.FetidRat;
@@ -257,6 +258,7 @@ public enum Mobs {
                 Monk.class,
                 Senior.class,
                 Golem.class,
+                DwarfKing.class
         };
 
         HALLS.classes = new Class[]{
