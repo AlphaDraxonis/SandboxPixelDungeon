@@ -57,8 +57,6 @@ import java.util.Set;
 public class EditMobComp extends DefaultEditComp<Mob> {
 
 
-    //TODO instant update after state change of mimics
-
     private final ItemSelector statueWeapon, statueArmor;
     private final ItemSelector thiefItem;
     private final MobStateSpinner mobStateSpinner;

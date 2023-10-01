@@ -112,8 +112,6 @@ public abstract class DefaultEditComp<T> extends Component {
             return;
         }
 
-        float newWidth = PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : WndTitledMessage.WIDTH_MIN;
-
         DefaultEditComp<?> content;
         ActionPartModify actionPart;
         if (tileItem != null) {
@@ -133,6 +131,13 @@ public abstract class DefaultEditComp<T> extends Component {
             actionPart = new PlantActionPart.Modify(plant);
         }
 
+        showSingleWindow(content, actionPart);
+    }
+
+    public static void showSingleWindow(DefaultEditComp<?> content, ActionPartModify actionPart) {
+        float newWidth = PixelScene.landscape() ? WndTitledMessage.WIDTH_MAX : WndTitledMessage.WIDTH_MIN;
+
+
         content.setRect(0, 0, newWidth, -1);
         ScrollPane sp = new ScrollPane(content);
 
@@ -140,7 +145,7 @@ public abstract class DefaultEditComp<T> extends Component {
             @Override
             public void hide() {
                 super.hide();
-                actionPart.finish();
+                if (actionPart != null) actionPart.finish();
                 Undo.startAction();
                 Undo.addActionPart(actionPart);
                 Undo.endAction();
@@ -180,7 +185,6 @@ public abstract class DefaultEditComp<T> extends Component {
 
         if (Game.scene() instanceof EditorScene) EditorScene.show(w);
         else Game.scene().addToFront(w);
-
     }
 
 

@@ -2,7 +2,8 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
-import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.DefaultEditComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditBuffComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditMobComp;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
 
@@ -35,7 +36,7 @@ public class BuffIndicatorEditor extends BuffIndicator {
 
         protected void onClick() {
             if (buff.icon() != NONE)
-                EditorScene.show(new WndInfoBuffEditor(buff, buffIndicator));
+                DefaultEditComp.showSingleWindow(new EditBuffComp(buff, buffIndicator), null);
         }
 
     }

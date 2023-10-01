@@ -251,6 +251,7 @@ public class CellSelector extends ScrollArea {
     protected void onPointerDown(PointerEvent event) {
         isPointerDown = true;
         camera.edgeScroll.set(-1);
+        if (listener == null) return;
         dragClickEnabled = listener.dragClickEnabled();
         if (event != curEvent && another == null) {
 

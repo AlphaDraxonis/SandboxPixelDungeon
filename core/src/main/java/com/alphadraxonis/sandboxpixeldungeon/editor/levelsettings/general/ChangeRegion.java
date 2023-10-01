@@ -11,7 +11,6 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.CheckBox;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
-import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
@@ -155,7 +154,9 @@ public class ChangeRegion extends Component {
     }
 
     public static Component createTitle() {
-        return WndTitledMessage.createTitleNoIcon(Messages.titleCase(Messages.get(GeneralTab.class, "region")));
+        RenderedTextBlock textBlock = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(GeneralTab.class, "region")),12);
+        textBlock.hardlight(Window.TITLE_COLOR);
+        return textBlock;
     }
 
     public Component getOutsideSp() {
