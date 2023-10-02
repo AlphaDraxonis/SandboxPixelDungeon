@@ -171,6 +171,8 @@ public class CustomLevel extends Level {
             levelScheme.itemsToSpawn.clear();
             levelScheme.prizeItemsToSpawn.clear();
 
+            temp.setDepth(depth);
+
             Dungeon.customDungeon.addFloor(temp);
             Dungeon.levelName = Level.NONE;
 
@@ -265,6 +267,14 @@ public class CustomLevel extends Level {
 
             Dungeon.customDungeon.removeFloor(temp);
             Dungeon.levelName = name;
+
+
+            for (LevelTransition t : transitions.values()) {
+                if (t.destCell == -1 && t.type == LevelTransition.Type.REGULAR_ENTRANCE) {
+                    LevelScheme destLevelScheme = Dungeon.customDungeon.getFloor(t.destLevel);
+                    if (destLevelScheme != null && !destLevelScheme.exitCells.isEmpty()) t.destCell = destLevelScheme.exitCells.get(0);
+                }
+            }
 
             for (Mob m : mobs) {
                 if (m instanceof SentryRoom.Sentry) ((SentryRoom.Sentry) m).room = null;
@@ -518,7 +528,17 @@ public class CustomLevel extends Level {
         levelScheme.exitCells.clear();
         for (int i = 0; i < map.length; i++) {
             int terrain = map[i];
-            if (terrain == ENTRANCE) levelScheme.entranceCells.add(i);
+            if (terrain == ENTRANCE) {
+                levelScheme.entranceCells.add(i);
+                String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
+                if (Level.SURFACE.equals(dest)) {
+                    transitions.put(i, new LevelTransition(this, i, LevelTransition.Type.SURFACE));
+                } else {
+                    LevelScheme destLevelScheme = Dungeon.customDungeon.getFloor(dest);
+                    if (destLevelScheme != null && !destLevelScheme.exitCells.isEmpty())
+                        transitions.put(i, new LevelTransition(this, i, destLevelScheme.exitCells.get(0), dest));
+                }
+            }
             else if (TileItem.isExitTerrainCell(terrain)) levelScheme.exitCells.add(i);
         }
         Collections.sort(levelScheme.entranceCells);

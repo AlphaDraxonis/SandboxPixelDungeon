@@ -130,7 +130,10 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         String suggestion;
         if (terrainType == Terrain.ENTRANCE)
             suggestion = levelScheme.getDefaultAbove();
-        else suggestion = levelScheme.getChasm();
+        else {
+            suggestion = levelScheme.getChasm();
+            if (suggestion == null) suggestion = levelScheme.getDefaultBelow();
+        }
         if (transition.destLevel != null) suggestion = transition.destLevel;
         return new TransitionEditPart(transition, EditorUtilies.getLevelScheme(suggestion), terrainType != Terrain.ENTRANCE,
                 levelScheme.getDepth()) {

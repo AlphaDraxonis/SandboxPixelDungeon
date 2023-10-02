@@ -90,18 +90,9 @@ public class CustomDungeon implements Bundlable {
     //FIXME: Was noch zu tun ist  FIXME FIXME TODO System.err.println()
     //general floor overview stuff
     //settings für EditorScene
-    //custom tiles wichtig
     //select builder and painter
     //Category items/mobs/rooms
 
-
-    //UI rework
-    //test
-    //write changelog
-
-    //BossBar:
-    //override dmg and notice methods, static: only one mob per level can be boss
-    //store boolean if bossbar is visible
     //
     //custom mob drops:
     //override rollToDropLoot, similar as mimic, set loot to null, always 100% chance
@@ -110,8 +101,6 @@ public class CustomDungeon implements Bundlable {
     //Custom mob attacks: externalise
 
     //Scale mobs if their normal stats editor is disabled: not just everything!
-
-    //The dungeon entrance and exit should default to the previous and next rooms, as well as the chasm to the next room
 
     private String name;
     private String lastEditedFloor;
@@ -261,11 +250,40 @@ public class CustomDungeon implements Bundlable {
 
     public void addFloor(LevelScheme levelScheme) {
         levelScheme.customDungeon = this;
+        for (LevelScheme ls : floors.values()) {
+            if (ls.levelCreatedAfter == null) {
+                ls.levelCreatedAfter = levelScheme.getName();
+                levelScheme.levelCreatedBefore = ls.getName();
+                break;
+            }
+        }
         floors.put(levelScheme.getName(), levelScheme);
     }
 
     public void removeFloor(LevelScheme levelScheme) {
         floors.remove(levelScheme.getName());
+
+        LevelScheme levelSchemeWithDeletedLevelCreatedBefore = null;
+        LevelScheme levelSchemeWithDeletedLevelCreatedAfter = null;
+
+        String remove = levelScheme.getName();
+        for (LevelScheme ls : floors.values()) {
+            if (remove.equals(ls.levelCreatedBefore)) levelSchemeWithDeletedLevelCreatedBefore = ls;
+            if (remove.equals(ls.levelCreatedAfter)) levelSchemeWithDeletedLevelCreatedAfter = ls;
+        }
+        //   1 -> 2 -> 3
+        // after n before
+        if (levelSchemeWithDeletedLevelCreatedBefore != null) levelSchemeWithDeletedLevelCreatedBefore.levelCreatedBefore =
+                levelSchemeWithDeletedLevelCreatedAfter == null ? null : levelSchemeWithDeletedLevelCreatedAfter.getName();
+        if (levelSchemeWithDeletedLevelCreatedAfter != null) levelSchemeWithDeletedLevelCreatedAfter.levelCreatedAfter =
+                levelSchemeWithDeletedLevelCreatedBefore == null ? null : levelSchemeWithDeletedLevelCreatedBefore.getName();
+    }
+
+    public void initExitsFromPreviousFloor(LevelScheme newlyCreatedFloor){
+        LevelScheme current = getFloor(newlyCreatedFloor.levelCreatedBefore);
+        if (current != null) {
+            current.setToDefaultExits();
+        }
     }
 
     public int getNumFloors() {
@@ -613,10 +631,13 @@ public class CustomDungeon implements Bundlable {
 
         int i = 0;
         while (bundle.contains(LEVEL_SCHEME + "_" + i)) {
-            LevelScheme levelScheme = (LevelScheme) bundle.get(LEVEL_SCHEME + "_" + i);
-            levelScheme.customDungeon = this;
-            floors.put(levelScheme.getName(), levelScheme);
+            LevelScheme ls = (LevelScheme) bundle.get(LEVEL_SCHEME + "_" + i);
+            ls.customDungeon = this;
+            floors.put(ls.getName(), ls);
             i++;
+
+            if ("".equals(ls.levelCreatedBefore) && name.equals(getStart())) ls.levelCreatedBefore = null;
+            if ("".equals(ls.levelCreatedAfter) && name.equals(getLastEditedFloor())) ls.levelCreatedAfter = null;
         }
         for (i = 0; i < toolbarItems.length; i++) {
             if (bundle.contains(TOOLBAR_ITEM + i))
@@ -646,7 +667,7 @@ public class CustomDungeon implements Bundlable {
         String n = levelScheme.getName();
         ratKingLevels.remove(n);
 
-        floors.remove(n);
+        removeFloor(levelScheme);
         List<LevelScheme> fs = new ArrayList<>(levelSchemes());
         if (n.equals(startFloor)) {
             Collections.sort(fs);
@@ -807,6 +828,9 @@ public class CustomDungeon implements Bundlable {
             for (LevelScheme ls : floors.values()) {
                 if (oldName.equals(ls.getChasm())) ls.setChasm(newName);
                 if (oldName.equals(ls.getPassage())) ls.setPassage(newName);
+
+                if (oldName.equals(ls.levelCreatedBefore)) ls.levelCreatedBefore = newName;
+                if (oldName.equals(ls.levelCreatedAfter)) ls.levelCreatedAfter = newName;
 
                 if (ls.getType() == CustomLevel.class) {
                     boolean load = ls.getLevel() == null;

@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
@@ -66,6 +67,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
     String name;
     CustomDungeon customDungeon;
+
+    String levelCreatedBefore, levelCreatedAfter;
 
     private int depth;
     private String chasm = null, passage;
@@ -118,8 +121,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
         if (type == CustomLevel.class) {
             level = new CustomLevel(name, levelTemplate, feeling, seedSet ? seed : null, numInRegion, depth, this);
-        } else {
-            initExitEntranceCellsForRandomLevel();
         }
         shopPriceMultiplier = Dungeon.getSimulatedDepth(this) / 5 + 1;
 
@@ -224,13 +225,57 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         exitTransitionRegular.destLevel = Integer.toString(depth + 1);
     }
 
-    private void initExitEntranceCellsForRandomLevel() {
+    public void initExitEntranceCellsForRandomLevel() {
         if (type != DeadEndLevel.class && type != LastLevel.class)
             exitCells.add(TransitionEditPart.DEFAULT);
         else exitCells.add(TransitionEditPart.NONE);
         entranceCells.add(TransitionEditPart.DEFAULT);
-        entranceTransitionRegular = new LevelTransition(Level.SURFACE, -1);
         exitTransitionRegular = new LevelTransition(null, -1);
+
+        entranceTransitionRegular = new LevelTransition(getDefaultAbove(), -1);
+        LevelScheme entranceTrans = customDungeon.getFloor(entranceTransitionRegular.destLevel);
+        if (entranceTrans != null && !entranceTrans.exitCells.isEmpty()) entranceTransitionRegular.destCell = entranceTrans.exitCells.get(0);
+    }
+
+    /**
+     * All unassign exits get defaultBelow as dest level, sets chasm if null
+     */
+    public void setToDefaultExits() {
+        String defaultBelow = getDefaultBelow();
+        if (customDungeon.getFloor(defaultBelow) == null) return;
+//        if (Objects.equals(getDefaultAbove(),defaultBelow)) return;
+        if (getChasm() == null) setChasm(defaultBelow);
+
+        if (type == CustomLevel.class) {
+            List<Integer> possibleEntrances = customDungeon.getFloor(defaultBelow).entranceCells;
+            if (!possibleEntrances.isEmpty()) {
+                boolean load = level == null;
+                if (load) loadLevel();
+                boolean save = false;
+                int destCell = possibleEntrances.get(0);
+                for (int i : exitCells) {
+                    if (!level.transitions.containsKey(i)) {
+                        LevelTransition t = new LevelTransition(level, i, destCell, defaultBelow);
+                        t.type = LevelTransition.Type.REGULAR_EXIT;
+                        level.transitions.put(i, t);
+                        save = true;
+                    }
+                }
+                if (exitCells.size() > 0 && save) {
+                    try {
+                        saveLevel();//Need to always save because otherwise, it will be unloaded without any additional checks
+                    } catch (IOException ignored) {
+                    }
+                }
+                if (load) unloadLevel();
+            }
+        } else {
+            exitTransitionRegular.destLevel = defaultBelow;
+            List<Integer> possibleEntrances = customDungeon.getFloor(defaultBelow).entranceCells;
+            if (!possibleEntrances.isEmpty()) {
+                exitTransitionRegular.destCell = possibleEntrances.get(0);
+            }
+        }
     }
 
     public String getName() {
@@ -247,16 +292,33 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     }
 
     public String getChasm() {
+        if (chasm == null) {
+            String below = getDefaultBelow();
+            if (Objects.equals(below, getDefaultAbove())) return null;
+            return below;
+        }
         return chasm;
     }
 
     public String getDefaultAbove() {
-        if (entranceTransitionRegular == null) return Level.SURFACE;
+        if (entranceTransitionRegular == null || entranceTransitionRegular.destLevel == null) {
+            LevelScheme suggestion = customDungeon.getFloor(levelCreatedBefore);
+            if (suggestion != null && suggestion.depth <= depth) return suggestion.getName();
+            suggestion = customDungeon.getFloor(levelCreatedAfter);
+            if (suggestion != null && suggestion.depth < depth) return suggestion.getName();
+            return Level.SURFACE;
+        }
         return entranceTransitionRegular.destLevel;
     }
 
     public String getDefaultBelow() {
-        if (exitTransitionRegular == null) return null;
+        if (exitTransitionRegular == null || exitTransitionRegular.destLevel == null) {
+            LevelScheme suggestion = customDungeon.getFloor(levelCreatedAfter);
+            if (suggestion != null && suggestion.depth >= depth) return suggestion.getName();
+            suggestion = customDungeon.getFloor(levelCreatedBefore);
+            if (suggestion != null && suggestion.depth > depth) return suggestion.getName();
+            return null;
+        }
         return exitTransitionRegular.destLevel;
     }
 
@@ -517,6 +579,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
 
     private static final String NAME = "name";
+    private static final String LEVEL_CREATED_BEFORE = "level_created_before";
+    private static final String LEVEL_CREATED_AFTER = "level_created_after";
     private static final String ENTRANCE_CELLS = "entrance_cells";
     private static final String EXIT_CELLS = "exit_cells";
     private static final String CHASM = "chasm";
@@ -551,7 +615,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     @Override
     public void storeInBundle(Bundle bundle) {
         bundle.put(NAME, name);
-        bundle.put(CHASM, chasm);
+        if (chasm != null) bundle.put(CHASM, chasm);
+        if (levelCreatedBefore != null) bundle.put(LEVEL_CREATED_BEFORE, levelCreatedBefore);
+        if (levelCreatedAfter != null) bundle.put(LEVEL_CREATED_AFTER, levelCreatedAfter);
         if (entranceTransitionRegular != null)
             bundle.put(DEST_ENTRANCE_REGULAR, entranceTransitionRegular);
         if (exitTransitionRegular != null) bundle.put(DEST_EXIT_REGULAR, exitTransitionRegular);
@@ -600,7 +666,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     @Override
     public void restoreFromBundle(Bundle bundle) {
         name = bundle.getString(NAME);
-        chasm = bundle.getString(CHASM);
+        if (bundle.contains(CHASM)) chasm = bundle.getString(CHASM);
+
+        levelCreatedBefore = bundle.getString(LEVEL_CREATED_BEFORE);
+        levelCreatedAfter = bundle.getString(LEVEL_CREATED_AFTER);
+
         if (bundle.contains(DEST_ENTRANCE_REGULAR))
             entranceTransitionRegular = (LevelTransition) bundle.get(DEST_ENTRANCE_REGULAR);
         if (bundle.contains(DEST_EXIT_REGULAR))
