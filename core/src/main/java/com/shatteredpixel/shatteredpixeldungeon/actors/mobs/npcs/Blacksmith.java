@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
@@ -206,7 +207,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 				}
 			});
 
-		} else if (Quest.favor > 0) {
+		} else if (Quest.favor > 0 || Quest.pickaxe != null && Statistics.questScores[2] >= 2500) {
 
 			tell("You got " + Quest.favor + " favor. Here's some gold.");
 			new Gold(Quest.favor).doPickUp(Dungeon.hero, Dungeon.hero.pos);
