@@ -289,6 +289,9 @@ public abstract class RegularPainter extends Painter {
 					case CRYSTAL:
 						l.map[door] = Terrain.CRYSTAL_DOOR;
 						break;
+					case WALL:
+						l.map[door] = Terrain.WALL;
+						break;
 				}
 			}
 		}
