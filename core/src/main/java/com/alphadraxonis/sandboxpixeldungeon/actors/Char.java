@@ -79,6 +79,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Elemental;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Tengu;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.PrismaticImage;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.ShadowParticle;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -300,8 +301,13 @@ public abstract class Char extends Actor {
 		bundle.put( TAG_HP, HP );
 		bundle.put( TAG_HT, HT );
 		bundle.put( BUFFS, buffs );
-		bundle.put( DAMAGE_REDUCTION_MAX, damageReductionMax );
-		bundle.put( SPEED, baseSpeed );
+
+		Char defaultChar = DefaultStatsCache.getDefaultObject(getClass());
+		if (defaultChar != null) {
+			if (defaultChar.damageReductionMax != damageReductionMax) bundle.put(DAMAGE_REDUCTION_MAX, damageReductionMax);
+			if (defaultChar.baseSpeed != baseSpeed) bundle.put(SPEED, baseSpeed);
+		}
+
 	}
 	
 	@Override
@@ -312,10 +318,9 @@ public abstract class Char extends Actor {
 		pos = bundle.getInt( POS );
 		HP = bundle.getInt( TAG_HP );
 		HT = bundle.getInt( TAG_HT );
-		if (bundle.contains(DAMAGE_REDUCTION_MAX)) {
-			damageReductionMax = bundle.getInt(DAMAGE_REDUCTION_MAX);
-			baseSpeed = bundle.getFloat(SPEED);
-		}
+
+		if (bundle.contains(DAMAGE_REDUCTION_MAX)) damageReductionMax = bundle.getInt(DAMAGE_REDUCTION_MAX);
+		if (bundle.contains(SPEED)) baseSpeed = bundle.getFloat(SPEED);
 
 		for (Bundlable b : bundle.getCollection( BUFFS )) {
 			if (b != null) {

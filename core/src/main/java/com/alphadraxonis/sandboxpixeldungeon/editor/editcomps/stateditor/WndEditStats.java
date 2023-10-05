@@ -31,7 +31,7 @@ public class WndEditStats extends Window {
     private Object defaultStats, editStats;
 
 
-    private IntegerSpinner hp, attackSkill, defenseSkill, armor, dmgMin, dmgMax;
+    private IntegerSpinner hp, attackSkill, defenseSkill, armor, dmgMin, dmgMax, xp;
     private FloatSpinner speed, statsScale;
 
     public WndEditStats(int width, int offsetY, Object defaultStats, Object editStats) {
@@ -91,12 +91,17 @@ public class WndEditStats extends Window {
                 dmgMax.addChangeListener(() -> current.damageRollMax = dmgMax.getAsInt());
                 content.add(dmgMax);
             }
+            xp = new IntegerSpinner(Messages.get(Mob.class, "xp"),
+                    0, def.EXP * 10, current.EXP, false);
+            xp.addChangeListener(() -> current.EXP = xp.getAsInt());
+            content.add(xp);
         }
 
-        EditorUtilies.layoutStyledCompsInRectangles( WndTitledMessage.GAP, this.width, content, new Component[]{
+        EditorUtilies.layoutStyledCompsInRectangles(WndTitledMessage.GAP, this.width, content, new Component[]{
                 statsScale, speed, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 hp, attackSkill, defenseSkill, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                armor, dmgMin, dmgMax
+                armor, dmgMin, dmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                xp
         });
 
         scrollPane = new ScrollPane(content);
@@ -170,13 +175,14 @@ public class WndEditStats extends Window {
                 dmgMin.setValue(def.damageRollMin);
                 dmgMax.setValue(def.damageRollMax);
             }
+            if (xp != null) xp.setValue(def.EXP);
         }
     }
 
     private static class FloatSpinner extends StyledSpinner {
 
         public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity) {
-            super(new SpinnerFloatModel(minimum, maximum, value, false){
+            super(new SpinnerFloatModel(minimum, maximum, value, false) {
                 @Override
                 public float getInputFieldWith(float height) {
                     return Spinner.FILL;

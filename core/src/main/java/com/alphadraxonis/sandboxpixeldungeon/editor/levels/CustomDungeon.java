@@ -96,7 +96,6 @@ public class CustomDungeon implements Bundlable {
     //
     //custom mob drops:
     //override rollToDropLoot, similar as mimic, set loot to null, always 100% chance
-    //and change exp
 
     //Custom mob attacks: externalise
 

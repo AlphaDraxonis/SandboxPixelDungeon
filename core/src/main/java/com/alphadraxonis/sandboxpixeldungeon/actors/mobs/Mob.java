@@ -154,6 +154,7 @@ public abstract class Mob extends Char {
     private static final String ATTACK_SKILL = "attack_skill";
     private static final String DAMAGE_ROLL_MIN = "damage_roll_min";
     private static final String DAMAGE_ROLL_MAX = "damage_roll_max";
+    private static final String XP = "xp";
     private static final String STATS_SCALE = "stats_scale";
     private static final String IS_BOSS_MOB = "is_boss_mob";
 
@@ -178,11 +179,17 @@ public abstract class Mob extends Char {
         bundle.put(SEEN, enemySeen);
         bundle.put(TARGET, target);
         bundle.put(MAX_LVL, maxLvl);
-        bundle.put(DEFENSE_SKILL, defenseSkill);
-        bundle.put(ATTACK_SKILL, attackSkill);
-        bundle.put(DAMAGE_ROLL_MIN, damageRollMin);
-        bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
-        bundle.put(STATS_SCALE, statsScale);
+
+        Mob defaultMob = DefaultStatsCache.getDefaultObject(getClass());
+        if (defaultMob != null) {
+            if (defaultMob.defenseSkill != defenseSkill) bundle.put(DEFENSE_SKILL, defenseSkill);
+            if (defaultMob.attackSkill != attackSkill) bundle.put(ATTACK_SKILL, attackSkill);
+            if (defaultMob.damageRollMin != damageRollMin) bundle.put(DAMAGE_ROLL_MIN, damageRollMin);
+            if (defaultMob.damageRollMax != damageRollMax) bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
+            if (defaultMob.EXP != EXP) bundle.put(XP, EXP);
+            if (defaultMob.statsScale != statsScale) bundle.put(STATS_SCALE, statsScale);
+        }
+
         bundle.put(IS_BOSS_MOB, isBossMob);
 
         if (enemy != null) {
@@ -220,12 +227,13 @@ public abstract class Mob extends Char {
         //no need to actually save this, must be false
         firstAdded = false;
 
-        if (bundle.contains(DEFENSE_SKILL)) {
-            defenseSkill = bundle.getInt(DEFENSE_SKILL);
-            attackSkill = bundle.getInt(ATTACK_SKILL);
-            damageRollMin = bundle.getInt(DAMAGE_ROLL_MIN);
-            damageRollMax = bundle.getInt(DAMAGE_ROLL_MAX);
-        }
+        if (bundle.contains(DEFENSE_SKILL)) defenseSkill = bundle.getInt(DEFENSE_SKILL);
+        if (bundle.contains(ATTACK_SKILL)) attackSkill = bundle.getInt(ATTACK_SKILL);
+        if (bundle.contains(DAMAGE_ROLL_MIN)) damageRollMin = bundle.getInt(DAMAGE_ROLL_MIN);
+        if (bundle.contains(DAMAGE_ROLL_MAX)) damageRollMax = bundle.getInt(DAMAGE_ROLL_MAX);
+        if (bundle.contains(XP)) EXP = bundle.getInt(XP);
+        if (bundle.contains(STATS_SCALE)) statsScale = bundle.getInt(STATS_SCALE);
+
         if (bundle.contains(IS_BOSS_MOB)) {
             isBossMob = bundle.getBoolean(IS_BOSS_MOB);
             if (isBossMob) {
@@ -233,7 +241,6 @@ public abstract class Mob extends Char {
                 if (Dungeon.level.bossFound) BossHealthBar.assignBoss(this);
                 if ((HP*2 <= HT)) BossHealthBar.bleed(true);
             }
-            statsScale = bundle.getFloat(STATS_SCALE);
         }
     }
 
@@ -1043,6 +1050,7 @@ public abstract class Mob extends Char {
                         || this instanceof Brute && (
                         defaultStats.HT != HT || defaultStats.damageReductionMax != damageReductionMax
                                 || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
+                                || defaultStats.EXP != EXP
                 )){
                     desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
                     if (defaultStats.statsScale != statsScale)
@@ -1052,13 +1060,16 @@ public abstract class Mob extends Char {
                     if (this instanceof Brute) {
                         desc += infoStatsChangedHPAccuracyEvasionArmor(defaultStats);
                     }
+
+                    if (defaultStats.EXP != EXP)
+                        desc += "\n" + Messages.get(Mob.class, "xp") + ": " + defaultStats.EXP + " -> _" + EXP + "_";
                 }
             } else {
 
                 if (defaultStats.HT != HT || defaultStats.baseSpeed != baseSpeed
                         || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
                         || defaultStats.damageRollMin != damageRollMin || defaultStats.damageRollMax != damageRollMax
-                        || defaultStats.damageReductionMax != damageReductionMax) {
+                        || defaultStats.damageReductionMax != damageReductionMax || defaultStats.EXP != EXP) {
                     desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
 
                     if (defaultStats.baseSpeed != baseSpeed)
@@ -1068,6 +1079,9 @@ public abstract class Mob extends Char {
                         desc += "\n" + Messages.get(Mob.class, "dmg_min") + ": " + defaultStats.damageRollMin + " -> _" + damageRollMin + "_";
                     if (defaultStats.damageRollMax != damageRollMax)
                         desc += "\n" + Messages.get(Mob.class, "dmg_max") + ": " + defaultStats.damageRollMax + " -> _" + damageRollMax + "_";
+
+                    if (defaultStats.EXP != EXP)
+                        desc += "\n" + Messages.get(Mob.class, "xp") + ": " + defaultStats.EXP + " -> _" + EXP + "_";
                 }
 
             }
