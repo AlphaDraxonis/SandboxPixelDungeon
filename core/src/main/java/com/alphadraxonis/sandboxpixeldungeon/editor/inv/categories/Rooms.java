@@ -64,6 +64,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.PillarsRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.PlantsRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.PlatformRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.RingRoom;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.RitualSiteRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.RuinsRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.SegmentedLibraryRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.SegmentedRoom;
@@ -159,7 +160,7 @@ public enum Rooms {
                 PillarsRoom.class,
                 CellBlockRoom.class,
                 RotGardenRoom.class,
-//                RitualSiteRoom.class,
+                RitualSiteRoom.class,
                 MassGraveRoom.class
 
         };
