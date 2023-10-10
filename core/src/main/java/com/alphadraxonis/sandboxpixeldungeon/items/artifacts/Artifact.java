@@ -26,7 +26,6 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.MagicImmune;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.KindofMisc;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -108,12 +107,6 @@ public class Artifact extends KindofMisc {
 			return false;
 
 		}
-	}
-
-	@Override
-	public void level(int value) {
-		super.level(value);
-		if (CustomDungeon.isEditing() && chargeCap > 0) charge = chargeCap;
 	}
 
 	@Override
@@ -272,5 +265,17 @@ public class Artifact extends KindofMisc {
 
 	public final int levelCap() {
 		return levelCap;
+	}
+
+	public final int charge() {
+		return charge;
+	}
+
+	public final void charge(int charge) {
+		this.charge = charge;
+	}
+
+	public final int chargeCap() {
+		return chargeCap;
 	}
 }

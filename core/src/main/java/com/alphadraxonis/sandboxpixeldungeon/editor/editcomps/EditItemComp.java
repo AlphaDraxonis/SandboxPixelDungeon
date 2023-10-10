@@ -2,6 +2,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.ChargeSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.CurseButton;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.WndChooseEnchant;
@@ -50,6 +51,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
     protected final CurseButton curseBtn;
     protected final LevelSpinner levelSpinner;
+    protected final ChargeSpinner chargeSpinner;
+
     protected final CheckBox autoIdentify;
     protected final CheckBox cursedKnown;
     protected final CheckBox blessed;
@@ -111,13 +114,29 @@ public class EditItemComp extends DefaultEditComp<Item> {
             cursedKnown = null;
         }
 
-        if (item.isUpgradable()
-                || item instanceof Artifact && !(false)
-        ) {
+        if (item instanceof Wand) {
+            chargeSpinner = new ChargeSpinner((Wand) item) {
+                @Override
+                protected void onChange() {
+                    updateObj();
+                }
+            };
+        } else if (item instanceof Artifact) {
+            chargeSpinner = new ChargeSpinner((Artifact) item) {
+                @Override
+                protected void onChange() {
+                    updateObj();
+                }
+            };
+        } else chargeSpinner = null;
+        if (chargeSpinner != null) add(chargeSpinner);
+
+        if (item.isUpgradable() || item instanceof Artifact) {
             levelSpinner = new LevelSpinner(item) {
                 @Override
                 protected void onChange() {
                     updateObj();
+                    if (chargeSpinner != null) chargeSpinner.adjustMaximum(item);
                 }
             };
             add(levelSpinner);
@@ -201,7 +220,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(keylevel);
         } else keylevel = null;
 
-        comps = new Component[]{quantity, keylevel, levelSpinner, augumentationSpinner, curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed};
+        comps = new Component[]{quantity, keylevel, chargeSpinner, levelSpinner, augumentationSpinner, curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed};
     }
 
     @Override
