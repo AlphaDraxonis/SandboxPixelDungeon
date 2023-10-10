@@ -111,7 +111,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
             cursedKnown = null;
         }
 
-        if (item.isUpgradable()) {
+        if (item.isUpgradable()
+                || item instanceof Artifact && !(false)
+        ) {
             levelSpinner = new LevelSpinner(item) {
                 @Override
                 protected void onChange() {
@@ -121,7 +123,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(levelSpinner);
         } else levelSpinner = null;
 
-        if (item instanceof Potion || item instanceof Scroll || item instanceof Ring || item instanceof Wand
+        if (item instanceof Potion || item instanceof Scroll || item instanceof Ring || item instanceof Wand || item instanceof Artifact
                 || (item instanceof Weapon && !(item instanceof MissileWeapon || item instanceof SpiritBow))
                 || (item instanceof Armor && !(item instanceof ClassArmor))) {
 //      if (!DefaultStatsCache.getDefaultObject(item.getClass()).isIdentified()) { // always returns true while editing

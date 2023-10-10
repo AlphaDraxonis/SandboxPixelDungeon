@@ -133,11 +133,23 @@ public class ChaliceOfBlood extends Artifact {
 
 	@Override
 	public Item upgrade() {
-		if (level() >= 6)
-			image = ItemSpriteSheet.ARTIFACT_CHALICE3;
-		else if (level() >= 2)
-			image = ItemSpriteSheet.ARTIFACT_CHALICE2;
+		updateSprite(level());
 		return super.upgrade();
+	}
+
+	@Override
+	public void level(int value) {
+		updateSprite(value - 1);
+		super.level(value);
+	}
+
+	private void updateSprite(int level){
+		if (level >= 6)
+			image = ItemSpriteSheet.ARTIFACT_CHALICE3;
+		else if (level >= 2)
+			image = ItemSpriteSheet.ARTIFACT_CHALICE2;
+		else
+			image = ItemSpriteSheet.ARTIFACT_CHALICE1;
 	}
 
 	@Override
