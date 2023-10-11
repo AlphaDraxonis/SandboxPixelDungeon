@@ -65,7 +65,7 @@ import java.util.HashMap;
 
 public class ShopRoom extends SpecialRoom {
 
-	private ArrayList<Item> itemsToSpawn;
+	protected ArrayList<Item> itemsToSpawn;
 	
 	@Override
 	public int minWidth() {
