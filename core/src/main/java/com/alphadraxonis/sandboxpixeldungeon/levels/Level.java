@@ -69,6 +69,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.Stylus;
 import com.alphadraxonis.sandboxpixeldungeon.items.Torch;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.TalismanOfForesight;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.TimekeepersHourglass;
+import com.alphadraxonis.sandboxpixeldungeon.items.bombs.Bomb;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfStrength;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
@@ -87,6 +88,7 @@ import com.alphadraxonis.sandboxpixeldungeon.plants.Swiftthistle;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.InterlevelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
+import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.utils.BArray;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
@@ -361,6 +363,7 @@ public abstract class Level implements Bundlable {
             h.seen = false;
             for (Item i : h.items) {
                 if (i.identifyOnStart) i.identify();
+                if (i.getClass() == Bomb.class && i.quantity() >= 2) i.image = ItemSpriteSheet.DBL_BOMB;
             }
         }
     }
