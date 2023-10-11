@@ -140,7 +140,7 @@ public abstract class Level implements Bundlable {
 	protected int length;
 
 	public String name;
-	
+
 	protected static final float TIME_TO_RESPAWN	= 50;
 
 	public int version;
@@ -233,11 +233,6 @@ public abstract class Level implements Bundlable {
 
 			addItemToSpawn(Generator.random(Generator.Category.FOOD));
 
-			if (Dungeon.isChallenged(Challenges.DARKNESS)){
-				if (levelScheme.spawnTorchIfDarkness) addItemToSpawn( new Torch() );
-			}
-
-				//xxxNeeded only used when generating templates
 			if (Dungeon.posNeeded()) {
 				addItemToSpawn( new PotionOfStrength() );
 				Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
