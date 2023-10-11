@@ -39,162 +39,165 @@ import com.watabou.utils.Random;
 
 public class Statue extends Mob implements MobBasedOnDepth {
 
-    {
-        spriteClass = StatueSprite.class;
+	{
+		spriteClass = StatueSprite.class;
 
-        EXP = 0;
-        state = PASSIVE;
+		EXP = 0;
+		state = PASSIVE;
 
-        properties.add(Property.INORGANIC);
-    }
+		properties.add(Property.INORGANIC);
+	}
 
-    public Weapon weapon;
+	protected Weapon weapon;
 
-    public boolean levelGenStatue = true;
+	public boolean levelGenStatue = true;
+	
+	public Statue() {
+		super();
 
-    public Statue() {
-        super();
+		weapon = createWeapon();
 
-        do {
-            weapon = (MeleeWeapon) Generator.random(Generator.Category.WEAPON);
-        } while (weapon.cursed);
+		setLevel(Dungeon.depth);
+	}
 
-        weapon.enchant(Enchantment.random());
+	@Override
+	public void setLevel(int depth) {
+		HP = HT = (int) (15 + depth * 5 * statsScale);
+		defenseSkill = 4 + depth;
+	}
 
-        setLevel(Dungeon.depth);
-    }
+	public Weapon createWeapon(){
+		Weapon weapon = (MeleeWeapon) Generator.random(Generator.Category.WEAPON);
+		weapon.cursed = false;
+		weapon.enchant( Enchantment.random() );
+		return weapon;
+	}
 
-    @Override
-    public void setLevel(int depth) {
-        HP = HT = (int) (15 + depth * 5 * statsScale);
-        defenseSkill = 4 + depth;
-    }
+	private static final String WEAPON	= "weapon";
+	
+	@Override
+	public void storeInBundle( Bundle bundle ) {
+		super.storeInBundle( bundle );
+		bundle.put( WEAPON, weapon );
+	}
+	
+	@Override
+	public void restoreFromBundle( Bundle bundle ) {
+		super.restoreFromBundle( bundle );
+		weapon = (Weapon)bundle.get( WEAPON );
+	}
+	
+	@Override
+	protected boolean act() {
+		if (levelGenStatue && Dungeon.level.visited[pos]) {
+			Notes.add( Notes.Landmark.STATUE );
+		}
+		return super.act();
+	}
+	
+	@Override
+	public int damageRoll() {
+		return (int) (weapon.damageRoll(this) * statsScale);
+	}
+	
+	@Override
+	public int attackSkill( Char target ) {
+		return (int) ((int) ((9 + Dungeon.depth) * weapon.accuracyFactor(this, target)) * statsScale);
+	}
+	
+	@Override
+	public float attackDelay() {
+		return super.attackDelay()*weapon.delayFactor( this );
+	}
 
-    private static final String WEAPON = "weapon";
+	@Override
+	protected boolean canAttack(Char enemy) {
+		return super.canAttack(enemy) || weapon.canReach(this, enemy.pos);
+	}
 
-    @Override
-    public void storeInBundle(Bundle bundle) {
-        super.storeInBundle(bundle);
-        bundle.put(WEAPON, weapon);
-    }
+	@Override
+	public int drRoll() {
+		return super.drRoll() + Random.NormalIntRange(0, Dungeon.depth + weapon.defenseFactor(this));
+	}
 
-    @Override
-    public void restoreFromBundle(Bundle bundle) {
-        super.restoreFromBundle(bundle);
-        weapon = (Weapon) bundle.get(WEAPON);
-    }
+	@Override
+	public boolean add(Buff buff) {
+		if (super.add(buff)) {
+			if (state == PASSIVE && buff.type == Buff.buffType.NEGATIVE) {
+				state = HUNTING;
+			}
+			return true;
+		}
+		return false;
+	}
 
-    @Override
-    protected boolean act() {
-        if (levelGenStatue && Dungeon.level.visited[pos]) {
-            Notes.add(Notes.Landmark.STATUE);
-        }
-        return super.act();
-    }
+	@Override
+	public void damage( int dmg, Object src ) {
 
-    @Override
-    public int damageRoll() {
-        return (int) (weapon.damageRoll(this) * statsScale);
-    }
+		if (state == PASSIVE) {
+			state = HUNTING;
+		}
 
-    @Override
-    public int attackSkill(Char target) {
-        return (int) ((int) ((9 + Dungeon.depth) * weapon.accuracyFactor(this, target)) * statsScale);
-    }
+		super.damage( dmg, src );
+	}
 
-    @Override
-    public float attackDelay() {
-        return super.attackDelay() * weapon.delayFactor(this);
-    }
+	@Override
+	public int attackProc( Char enemy, int damage ) {
+		damage = super.attackProc( enemy, damage );
+		damage = weapon.proc( this, enemy, damage );
+		if (!enemy.isAlive() && enemy == Dungeon.hero){
+			Dungeon.fail(this);
+			GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );
+		}
+		return damage;
+	}
 
-    @Override
-    protected boolean canAttack(Char enemy) {
-        return super.canAttack(enemy) || weapon.canReach(this, enemy.pos);
-    }
+	@Override
+	public void beckon( int cell ) {
+		// Do nothing
+	}
 
-    @Override
-    public int drRoll() {
-        return (int) (super.drRoll() + Random.NormalIntRange(0, Dungeon.depth + weapon.defenseFactor(this)) * statsScale);
-    }
+	@Override
+	public void die( Object cause ) {
+		weapon.identify(false);
+		Dungeon.level.drop( weapon, pos ).sprite.drop();
+		super.die( cause );
+	}
 
-    @Override
-    public boolean add(Buff buff) {
-        if (super.add(buff)) {
-            if (state == PASSIVE && buff.type == Buff.buffType.NEGATIVE) {
-                state = HUNTING;
-            }
-            return true;
-        }
-        return false;
-    }
+	@Override
+	public void destroy() {
+		if (levelGenStatue && !CustomDungeon.isEditing()) {
+			Notes.remove( Notes.Landmark.STATUE );
+		}
+		super.destroy();
+	}
 
-    @Override
-    public void damage(int dmg, Object src) {
+	@Override
+	public float spawningWeight() {
+		return 0f;
+	}
 
-        if (state == PASSIVE) {
-            state = HUNTING;
-        }
+	@Override
+	public boolean reset() {
+		state = PASSIVE;
+		return true;
+	}
 
-        super.damage(dmg, src);
-    }
+	@Override
+	public String description() {
+		return Messages.get(this, "desc", weapon.name());
+	}
 
-    @Override
-    public int attackProc(Char enemy, int damage) {
-        damage = super.attackProc(enemy, damage);
-        damage = weapon.proc(this, enemy, damage);
-        if (!enemy.isAlive() && enemy == Dungeon.hero) {
-            Dungeon.fail(this);
-            GLog.n(Messages.capitalize(Messages.get(Char.class, "kill", name())));
-        }
-        return damage;
-    }
+	{
+		resistances.add(Grim.class);
+	}
 
-    @Override
-    public void beckon(int cell) {
-        // Do nothing
-    }
-
-    @Override
-    public void die(Object cause) {
-        weapon.identify(false);
-        Dungeon.level.drop(weapon, pos).sprite.drop();
-        super.die(cause);
-    }
-
-    @Override
-    public void destroy() {
-        if (levelGenStatue && !CustomDungeon.isEditing()) {
-            Notes.remove(Notes.Landmark.STATUE);
-        }
-        super.destroy();
-    }
-
-    @Override
-    public float spawningWeight() {
-        return 0f;
-    }
-
-    @Override
-    public boolean reset() {
-        state = PASSIVE;
-        return true;
-    }
-
-    @Override
-    public String description() {
-        return Messages.get(this, "desc", weapon.name());
-    }
-
-    {
-        resistances.add(Grim.class);
-    }
-
-    public static Statue random() {
-        if (Random.Int(10) == 0) {
-            return new ArmoredStatue();
-        } else {
-            return new Statue();
-        }
-    }
+	public static Statue random(){
+		if (Random.Int(10) == 0){
+			return new ArmoredStatue();
+		} else {
+			return new Statue();
+		}
+	}
 
 }
