@@ -1,8 +1,8 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general;
+package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.level;
 
 import static com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndEditorSettings.ITEM_HEIGHT;
-import static com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.GeneralTab.BUTTON_HEIGHT;
-import static com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.GeneralTab.GAP;
+import static com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.level.LevelTab.BUTTON_HEIGHT;
+import static com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.level.LevelTab.GAP;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
@@ -19,6 +19,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.Consumer;
@@ -54,7 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class MobSettings extends Component implements GeneralTab.BackPressImplemented {
+class MobSettings extends Component implements LevelTab.BackPressImplemented {
 
 
     private final Component outsideSp;
@@ -92,7 +93,7 @@ class MobSettings extends Component implements GeneralTab.BackPressImplemented {
 
             @Override
             public float bottom() {
-                return super.bottom() - GeneralTab.GAP * 3;
+                return super.bottom() - LevelTab.GAP * 3;
             }
 
             @Override
@@ -104,7 +105,7 @@ class MobSettings extends Component implements GeneralTab.BackPressImplemented {
             }
         };
 
-        outsideSp = new OutsideSpSwitchTabs() {
+        outsideSp = new MultiWindowTabComp.OutsideSpSwitchTabs() {
             @Override
             protected void createChildren(Object... params) {
                 tabs = new TabControlButton[2];
@@ -195,7 +196,7 @@ class MobSettings extends Component implements GeneralTab.BackPressImplemented {
                     add(mobSpawning);
                 }
                 select(mobSpawning);
-                WndEditorSettings.getInstance().getGeneralTab().setAlignmentOther(0.5f);
+                WndEditorSettings.getInstance().getLevelTab().setAlignmentOther(0.5f);
                 break;
             case 1:
                 titleText = PixelScene.renderTextBlock(Messages.get(MobSettings.class, "overview"), 11);
@@ -207,7 +208,7 @@ class MobSettings extends Component implements GeneralTab.BackPressImplemented {
                 }
                 select(mobOverview);
 
-                WndEditorSettings.getInstance().getGeneralTab().setAlignmentOther(0f);
+                WndEditorSettings.getInstance().getLevelTab().setAlignmentOther(0f);
                 break;
             case 2:
                 titleText = PixelScene.renderTextBlock(Messages.get(MobSettings.class, "mob_rot"), 11);
@@ -232,10 +233,10 @@ class MobSettings extends Component implements GeneralTab.BackPressImplemented {
                 };
                 title.add(buttonInTitle);
 
-                WndEditorSettings.getInstance().getGeneralTab().setAlignmentOther(0f);
+                WndEditorSettings.getInstance().getLevelTab().setAlignmentOther(0f);
                 break;
         }
-        GeneralTab.updateLayout();
+        LevelTab.updateLayout();
     }
 
     private void select(Component comp) {
@@ -371,29 +372,29 @@ class MobSettings extends Component implements GeneralTab.BackPressImplemented {
 
             disableSpawning.setRect(x, posY, width, BUTTON_HEIGHT);
             PixelScene.align(disableSpawning);
-            posY = disableSpawning.bottom() + GeneralTab.GAP;
+            posY = disableSpawning.bottom() + LevelTab.GAP;
 
             respawnTime.setRect(x, posY, width, BUTTON_HEIGHT);
             PixelScene.align(respawnTime);
-            posY = respawnTime.bottom() + GeneralTab.GAP;
+            posY = respawnTime.bottom() + LevelTab.GAP;
 
             moblimit.setRect(x, posY, width, BUTTON_HEIGHT);
             PixelScene.align(moblimit);
-            posY = moblimit.bottom() + GeneralTab.GAP;
+            posY = moblimit.bottom() + LevelTab.GAP;
 
             enableMutations.setRect(x, posY, width, BUTTON_HEIGHT);
             PixelScene.align(enableMutations);
-            posY = enableMutations.bottom() + GeneralTab.GAP;
+            posY = enableMutations.bottom() + LevelTab.GAP;
 
             openMobCycle.setRect(x, posY, width, BUTTON_HEIGHT);
             PixelScene.align(openMobCycle);
-            posY = openMobCycle.bottom() + GeneralTab.GAP * 3;
+            posY = openMobCycle.bottom() + LevelTab.GAP * 3;
 
             boss.setRect(x, posY, width, BUTTON_HEIGHT);
             PixelScene.align(boss);
-            posY = boss.bottom() + GeneralTab.GAP;
+            posY = boss.bottom() + LevelTab.GAP;
 
-            height = (int) (posY - GeneralTab.GAP);
+            height = (int) (posY - LevelTab.GAP);
         }
 
         private void selectBoss(Consumer<Mob> callBack) {
@@ -538,7 +539,7 @@ class MobSettings extends Component implements GeneralTab.BackPressImplemented {
             }
             height = posY;
             isInInit = false;
-            if (updateParent) GeneralTab.updateLayout();
+            if (updateParent) LevelTab.updateLayout();
         }
 
         private void addRotItem(Class<? extends Mob> mobClass) {

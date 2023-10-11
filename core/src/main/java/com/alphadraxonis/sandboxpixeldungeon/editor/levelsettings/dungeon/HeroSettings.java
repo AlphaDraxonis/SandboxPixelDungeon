@@ -1,10 +1,11 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general;
+package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.MultiWindowTabComp.OutsideSpSwitchTabs;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.StyledItemSelector;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -86,7 +87,7 @@ public class HeroSettings extends Component {
     }
 
     public void selectTab(int index) {
-        int currentIndex = outsideSp == null ? 0 : outsideSp.currentIndex;
+        int currentIndex = outsideSp == null ? 0 : outsideSp.getCurrentIndex();
         heroTabs[currentIndex].visible = heroTabs[currentIndex].active = false;
         heroTabs[index].visible = heroTabs[index].active = true;
 
@@ -95,7 +96,7 @@ public class HeroSettings extends Component {
             title.icon(createTabIcon(index));
             title.label(getTabName(index));
 
-            GeneralTab.updateLayout();
+            DungeonTab.updateLayout();
         }
     }
 
@@ -111,7 +112,7 @@ public class HeroSettings extends Component {
     }
 
     public Component createTitle() {
-        int index = outsideSp == null ? 0 : outsideSp.currentIndex;
+        int index = outsideSp == null ? 0 : outsideSp.getCurrentIndex();
         return title = new IconTitle(createTabIcon(index), getTabName(index));
     }
 
@@ -243,7 +244,7 @@ public class HeroSettings extends Component {
                 @Override
                 protected void onSlotNumChange() {
                     if (startItems != null) {
-                        GeneralTab.updateLayout();
+                        DungeonTab.updateLayout();
                     }
 //                    boolean wasVisible = addBtn.visible;
 //                    addBtn.visible = addBtn.active = getNumSlots() < 4;
@@ -271,7 +272,7 @@ public class HeroSettings extends Component {
                 @Override
                 protected void onSlotNumChange() {
                     if (startItems != null) {
-                        GeneralTab.updateLayout();
+                        DungeonTab.updateLayout();
                     }
                 }
             };

@@ -19,7 +19,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.CustomTileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.HeroSettings;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.BlacksmithQuest;
@@ -96,6 +96,15 @@ public class CustomDungeon implements Bundlable {
     //
     //custom mob drops:
     //override rollToDropLoot, similar as mimic, set loot to null, always 100% chance
+
+    //Also option to change the status effect lengths from potions/scrolls etc
+    //Option to set the stats of (wands) and artifacts so they can start off at full charge for example. Also artifacts cannot be given a custom level.
+    //Setting levels for artifacts is also useful
+
+    //In addition it would be good to have an infinite charge feature for wands and artifacts.
+    // This could also be applied to regular items (scrolls, potions, consumables etc) so you never run out of them
+
+    //Add Yog
 
     //Custom mob attacks: externalise
 

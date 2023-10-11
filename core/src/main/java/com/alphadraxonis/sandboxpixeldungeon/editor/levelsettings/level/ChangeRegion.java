@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general;
+package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.level;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
@@ -96,10 +96,10 @@ public class ChangeRegion extends Component {
             @Override
             protected void layout() {
                 float pos = y;
-                float w = (width - GeneralTab.GAP) / 3f;
+                float w = (width - LevelTab.GAP) / 3f;
                 cancel.setRect(0, pos, w, ChooseOneInCategoriesBody.BUTTON_HEIGHT);
                 PixelScene.align(cancel);
-                save.setRect(cancel.right() + GeneralTab.GAP, pos, w * 2, ChooseOneInCategoriesBody.BUTTON_HEIGHT);
+                save.setRect(cancel.right() + LevelTab.GAP, pos, w * 2, ChooseOneInCategoriesBody.BUTTON_HEIGHT);
                 PixelScene.align(save);
 
                 height =  ChooseOneInCategoriesBody.BUTTON_HEIGHT;
@@ -154,7 +154,7 @@ public class ChangeRegion extends Component {
     }
 
     public static Component createTitle() {
-        RenderedTextBlock textBlock = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(GeneralTab.class, "region")),12);
+        RenderedTextBlock textBlock = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(LevelTab.class, "region")),12);
         textBlock.hardlight(Window.TITLE_COLOR);
         return textBlock;
     }

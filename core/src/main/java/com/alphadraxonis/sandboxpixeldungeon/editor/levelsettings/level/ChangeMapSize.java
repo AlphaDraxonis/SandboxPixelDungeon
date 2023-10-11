@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general;
+package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.level;
 
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
@@ -50,9 +50,9 @@ public class ChangeMapSize extends Component {
             @Override
             protected void layout() {
                 float w = width / 3f;
-                cancel.setRect(x, y, w, GeneralTab.BUTTON_HEIGHT);
-                save.setRect(cancel.right() + GeneralTab.GAP, y, width - w - GeneralTab.GAP, GeneralTab.BUTTON_HEIGHT);
-                height = GeneralTab.BUTTON_HEIGHT;
+                cancel.setRect(x, y, w, LevelTab.BUTTON_HEIGHT);
+                save.setRect(cancel.right() + LevelTab.GAP, y, width - w - LevelTab.GAP, LevelTab.BUTTON_HEIGHT);
+                height = LevelTab.BUTTON_HEIGHT;
             }
         };
     }

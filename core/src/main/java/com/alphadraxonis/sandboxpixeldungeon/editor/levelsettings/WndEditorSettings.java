@@ -2,8 +2,9 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings;
 
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.GeneralTab;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.DungeonTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items.ItemTab;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.level.LevelTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.LevelGenComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
@@ -32,7 +33,8 @@ public class WndEditorSettings extends WndTabbed {
     public static final int ITEM_HEIGHT = 18;
 
     private final ItemTab itemTab = null;
-    private final GeneralTab generalTab;
+    private final LevelTab levelTab;
+    private final DungeonTab dungeonTab;
     private final TransitionTab transitionTab;
     private final LevelGenComp levelGenTab;
     private final TabComp[] ownTabs;
@@ -53,9 +55,10 @@ public class WndEditorSettings extends WndTabbed {
         resize(calclulateWidth(), calclulateHeight() - 50 - yOffset);
 
         ownTabs = new TabComp[]{
-                generalTab = new GeneralTab(),
-                transitionTab = new TransitionTab(),
-                levelGenTab = new LevelGenComp(EditorScene.customLevel().levelScheme)};
+                levelTab = new LevelTab(),
+                dungeonTab = new DungeonTab(),
+                levelGenTab = new LevelGenComp(EditorScene.customLevel().levelScheme),
+                transitionTab = new TransitionTab()};
 
         Tab[] tabs = new Tab[ownTabs.length];
         for (int i = 0; i < ownTabs.length; i++) {
@@ -77,14 +80,18 @@ public class WndEditorSettings extends WndTabbed {
         select(last_index);
     }
 
-    public GeneralTab getGeneralTab(){
-        return generalTab;
+    public LevelTab getLevelTab() {
+        return levelTab;
+    }
+
+    public DungeonTab getDungeonTab() {
+        return dungeonTab;
     }
 
     @Override
     public void offset(int xOffset, int yOffset) {
         super.offset(xOffset, yOffset);
-        if(ownTabs==null)return;
+        if (ownTabs == null) return;
         for (TabComp tab : ownTabs) {
             tab.layout();
         }

@@ -1,9 +1,11 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general;
+package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon;
 
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.items.ItemTab;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.level.ChangeRegion;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.level.LevelTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerModel;
@@ -77,9 +79,9 @@ public class SetPotionScrollRingType extends Component {
             @Override
             protected void layout() {
                 float w = width / 3f;
-                cancel.setRect(x, y, w, GeneralTab.BUTTON_HEIGHT);
-                save.setRect(cancel.right() + GeneralTab.GAP, y, width - w - GeneralTab.GAP, GeneralTab.BUTTON_HEIGHT);
-                height = GeneralTab.BUTTON_HEIGHT;
+                cancel.setRect(x, y, w, LevelTab.BUTTON_HEIGHT);
+                save.setRect(cancel.right() + LevelTab.GAP, y, width - w - LevelTab.GAP, LevelTab.BUTTON_HEIGHT);
+                height = LevelTab.BUTTON_HEIGHT;
             }
         };
     }
@@ -107,7 +109,7 @@ public class SetPotionScrollRingType extends Component {
                     spX = spinners[i].right() + GAP;
                 } else {
                     spX = 0;
-                    spY = spinners[i].bottom() + GeneralTab.GAP;
+                    spY = spinners[i].bottom() + LevelTab.GAP;
                 }
             }
         } else {
@@ -119,7 +121,7 @@ public class SetPotionScrollRingType extends Component {
                     spX = spinners[i].right() + GAP;
                 } else {
                     spX = 0;
-                    spY = spinners[i].bottom() + GeneralTab.GAP;
+                    spY = spinners[i].bottom() + LevelTab.GAP;
                 }
             }
         }

@@ -43,7 +43,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.rogue.SmokeBo
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.warrior.Endure;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.warrior.HeroicLeap;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.warrior.Shockwave;
-import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general.HeroSettings;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.alphadraxonis.sandboxpixeldungeon.items.BrokenSeal;
 import com.alphadraxonis.sandboxpixeldungeon.items.EquipableItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;

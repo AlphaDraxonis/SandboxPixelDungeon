@@ -1,4 +1,4 @@
-package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.general;
+package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.level;
 
 import com.alphadraxonis.sandboxpixeldungeon.Challenges;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomLevel;
