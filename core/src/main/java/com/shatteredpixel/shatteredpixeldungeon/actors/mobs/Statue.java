@@ -57,7 +57,7 @@ public class Statue extends Mob implements MobBasedOnDepth {
 	public Statue() {
 		super();
 
-		weapon = createWeapon();
+
 
 		setLevel(Dungeon.depth);
 	}
@@ -68,8 +68,7 @@ public class Statue extends Mob implements MobBasedOnDepth {
 		defenseSkill = 4 + depth;
 	}
 
-	public Weapon createWeapon(){
-		Weapon weapon = null;
+	public void createWeapon(){
 		//this is a bit of a hack. I'm strongly considering redesigning this system code-wise though
 		if (ShatteredPixelDungeon.scene() instanceof InterlevelScene) {
 			weapon = (MeleeWeapon) Generator.random(Generator.Category.WEAPON);
@@ -78,7 +77,6 @@ public class Statue extends Mob implements MobBasedOnDepth {
 		}
 		weapon.cursed = false;
 		weapon.enchant( Enchantment.random() );
-		return weapon;
 	}
 
 	private static final String WEAPON	= "weapon";
@@ -201,11 +199,14 @@ public class Statue extends Mob implements MobBasedOnDepth {
 	}
 
 	public static Statue random(){
+		Statue statue = null;
 		if (Random.Int(10) == 0){
-			return new ArmoredStatue();
+			statue = new ArmoredStatue();
 		} else {
-			return new Statue();
+			statue = new Statue();
 		}
+		statue.createWeapon();
+		return statue;
 	}
 
 }
