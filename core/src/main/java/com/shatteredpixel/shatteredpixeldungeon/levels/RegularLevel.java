@@ -242,7 +242,7 @@ public abstract class RegularLevel extends Level {
 	public int mobLimit() {
 		if ((CustomDungeon.isEditing() ? Dungeon.getSimulatedDepth() : Dungeon.depth) <= 1) {
 			if (!Statistics.amuletObtained) return 0;
-			else return 10;
+			else                            return 10;
 		}
 
 		int mobs = 3 + Dungeon.level.levelScheme.getNumInRegion()+ Random.Int(3);
@@ -465,7 +465,7 @@ public abstract class RegularLevel extends Level {
 						(toDrop.isUpgradable() && Random.Int(4 - toDrop.level()) == 0)) {
 
 					if (simulatedDepth > 1 && Random.Int(10) == 0 && findMob(cell) == null) {
-						mobs.add(Mimic.spawnAt(cell, toDrop, GoldenMimic.class));
+						mobs.add(Mimic.spawnAt(cell, GoldenMimic.class, toDrop));
 					} else {
 						Heap dropped = drop(toDrop, cell);
 						if (heaps.get(cell) == dropped) {
@@ -497,23 +497,23 @@ public abstract class RegularLevel extends Level {
 		//we can use a random long for these as they will be the same longs every time
 
 		Random.pushGenerator( Random.Long() );
-		if (Dungeon.isChallenged(Challenges.DARKNESS)){
-			int cell = randomDropCell();
-			if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
-				map[cell] = Terrain.GRASS;
-				losBlocking[cell] = false;
-			}
-			if (levelScheme.spawnTorchIfDarkness) drop( new Torch(), cell );
-			//add a second torch to help with the larger floor
-			if (feeling == Feeling.LARGE){
-				cell = randomDropCell();
+			if (Dungeon.isChallenged(Challenges.DARKNESS)){
+				int cell = randomDropCell();
 				if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
 					map[cell] = Terrain.GRASS;
 					losBlocking[cell] = false;
 				}
 				if (levelScheme.spawnTorchIfDarkness) drop( new Torch(), cell );
+				//add a second torch to help with the larger floor
+				if (feeling == Feeling.LARGE){
+					cell = randomDropCell();
+					if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
+						map[cell] = Terrain.GRASS;
+						losBlocking[cell] = false;
+					}
+					if (levelScheme.spawnTorchIfDarkness) drop( new Torch(), cell );
+				}
 			}
-		}
 		Random.popGenerator();
 
 		Random.pushGenerator( Random.Long() );
