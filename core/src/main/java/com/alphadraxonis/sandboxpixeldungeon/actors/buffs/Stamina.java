@@ -21,12 +21,13 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.actors.buffs;
 
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 
 public class Stamina extends FlavourBuff {
 
-	public static final float DURATION = 100f;
+	private static final float DURATION = 100f;
 	
 	{
 		type = buffType.POSITIVE;
@@ -44,7 +45,15 @@ public class Stamina extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		return Math.max(0, (DURATION() - visualcooldown()) / DURATION());
+	}
+
+	public static float DURATION(){
+		return EffectDuration.get(Stamina.class, DURATION);
+	}
+
+	public static float defaultDuration() {
+		return DURATION;
 	}
 
 }

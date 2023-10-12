@@ -26,7 +26,7 @@ public class DungeonTab extends MultiWindowTabComp {
         add(title);
 
         StyledButton potionColors, scrollRunes, ringGems;
-        StyledButton heroes;
+        StyledButton heroes, durationSettings;
 
         potionColors = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_pot"), 7) {
             @Override
@@ -71,8 +71,18 @@ public class DungeonTab extends MultiWindowTabComp {
         heroes.icon(BadgeBanner.image(0));
         content.add(heroes);
 
+        durationSettings = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "heroes"), 8){
+            @Override
+            protected void onClick() {
+                DurationSettings ds = new DurationSettings();
+                changeContent(ds.createTitle(), ds, ds.getOutsideSp(), 0f, 0.5f);
+            }
+        };
+        durationSettings.icon(new ItemSprite(ItemSpriteSheet.POTION_JADE));
+        content.add(durationSettings);
+
         mainWindowComps = new Component[]{potionColors, scrollRunes, ringGems,EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                heroes
+                heroes, durationSettings
         };
     }
 

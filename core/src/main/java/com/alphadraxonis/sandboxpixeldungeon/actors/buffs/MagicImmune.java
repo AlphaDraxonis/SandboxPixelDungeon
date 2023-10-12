@@ -23,13 +23,14 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.buffs;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 
 public class MagicImmune extends FlavourBuff {
 
-	public static final float DURATION = 20f;
+	private static final float DURATION = 20f;
 	
 	{
 		type = buffType.POSITIVE;
@@ -80,6 +81,14 @@ public class MagicImmune extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		return Math.max(0, (DURATION() - visualcooldown()) / DURATION());
+	}
+
+	public static float DURATION(){
+		return EffectDuration.get(MagicImmune.class, DURATION);
+	}
+
+	public static float defaultDuration() {
+		return DURATION;
 	}
 }

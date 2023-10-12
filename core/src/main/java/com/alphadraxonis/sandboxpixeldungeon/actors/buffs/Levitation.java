@@ -24,6 +24,7 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.buffs;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Swiftthistle;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
@@ -37,7 +38,7 @@ public class Levitation extends FlavourBuff {
 		type = buffType.POSITIVE;
 	}
 
-	public static final float DURATION	= 20f;
+	private static final float DURATION	= 20f;
 	
 	@Override
 	public boolean attachTo( Char target ) {
@@ -85,12 +86,20 @@ public class Levitation extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		return Math.max(0, (DURATION() - visualcooldown()) / DURATION());
 	}
 	
 	@Override
 	public void fx(boolean on) {
 		if (on) target.sprite.add(CharSprite.State.LEVITATING);
 		else target.sprite.remove(CharSprite.State.LEVITATING);
+	}
+
+	public static float DURATION(){
+		return EffectDuration.get(Levitation.class, DURATION);
+	}
+
+	public static float defaultDuration() {
+		return DURATION;
 	}
 }

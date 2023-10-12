@@ -19,6 +19,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.CustomTileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.FloorOverviewScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.overview.floor.WndSwitchFloor;
@@ -97,10 +98,6 @@ public class CustomDungeon implements Bundlable {
     //custom mob drops:
     //override rollToDropLoot, similar as mimic, set loot to null, always 100% chance
 
-    //Also option to change the status effect lengths from potions/scrolls etc
-    //Option to set the stats of (wands) and artifacts so they can start off at full charge for example. Also artifacts cannot be given a custom level.
-    //Setting levels for artifacts is also useful
-
     //In addition it would be good to have an infinite charge feature for wands and artifacts.
     // This could also be applied to regular items (scrolls, potions, consumables etc) so you never run out of them
 
@@ -120,6 +117,8 @@ public class CustomDungeon implements Bundlable {
 
     public boolean[] heroesEnabled;
     public HeroSettings.HeroStartItemsData[] startItems;
+
+    public EffectDuration effectDuration = new EffectDuration();
 
     private final Object[] toolbarItems = new Object[QuickSlot.SIZE];
 
@@ -507,6 +506,7 @@ public class CustomDungeon implements Bundlable {
     private static final String TOOLBAR_ITEM_INT = "toolbar_item_int_";
     private static final String TOOLBAR_ITEM_STRING = "toolbar_item_string_";
     private static final String HEROES_ENABLED = "heroes_enabled";
+    private static final String EFFECT_DURATION = "effect_duration";
     private static final String START_ITEMS = "start_items";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
@@ -520,6 +520,7 @@ public class CustomDungeon implements Bundlable {
         bundle.put(REMOVE_NEXT_SCROLL, removeNextScroll);
         bundle.put(PASSWORD, password);
         bundle.put(HEROES_ENABLED, heroesEnabled);
+        bundle.put(EFFECT_DURATION, effectDuration);
         bundle.put(START_ITEMS, Arrays.asList(startItems));
 
         if (scrollRuneLabels != null) {
@@ -592,6 +593,7 @@ public class CustomDungeon implements Bundlable {
             itemDistributions.addAll((Collection<? extends ItemDistribution<? extends Bundlable>>) col);
         }
         removeNextScroll = bundle.getBoolean(REMOVE_NEXT_SCROLL);
+        effectDuration.load((EffectDuration) bundle.get(EFFECT_DURATION));
         password = bundle.getString(PASSWORD);
         if (password.isEmpty()) password = null;
         if (bundle.contains(HEROES_ENABLED)) heroesEnabled = bundle.getBooleanArray(HEROES_ENABLED);

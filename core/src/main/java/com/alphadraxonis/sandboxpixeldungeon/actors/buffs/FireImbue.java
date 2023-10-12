@@ -23,6 +23,7 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.buffs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.FlameParticle;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
@@ -39,7 +40,7 @@ public class FireImbue extends Buff {
 		announced = true;
 	}
 
-	public static final float DURATION	= 50f;
+	private static final float DURATION	= 50f;
 
 	protected float left;
 
@@ -97,7 +98,15 @@ public class FireImbue extends Buff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - left) / DURATION);
+		return Math.max(0, (DURATION() - left) / DURATION());
+	}
+
+	public static float DURATION(){
+		return EffectDuration.get(FireImbue.class, DURATION);
+	}
+
+	public static float defaultDuration() {
+		return DURATION;
 	}
 
 	@Override

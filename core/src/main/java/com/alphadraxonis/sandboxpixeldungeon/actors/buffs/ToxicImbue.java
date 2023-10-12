@@ -24,6 +24,7 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.buffs;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.ToxicGas;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
@@ -37,7 +38,7 @@ public class ToxicImbue extends Buff {
 		announced = true;
 	}
 
-	public static final float DURATION	= 50f;
+	private static final float DURATION	= 50f;
 
 	protected float left;
 
@@ -85,7 +86,15 @@ public class ToxicImbue extends Buff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - left) / DURATION);
+		return Math.max(0, (DURATION() - left) / DURATION());
+	}
+
+	public static float DURATION(){
+		return EffectDuration.get(ToxicImbue.class, DURATION);
+	}
+
+	public static float defaultDuration() {
+		return DURATION;
 	}
 
 	@Override

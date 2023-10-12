@@ -31,6 +31,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.FlavourBuff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Hunger;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.LostInventory;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Flare;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
@@ -69,7 +70,7 @@ public class PotionOfCleansing extends ExoticPotion {
 	}
 
 	public static void cleanse(Char ch){
-		cleanse(ch, Cleanse.DURATION);
+		cleanse(ch, Cleanse.DURATION());
 	}
 
 	public static void cleanse(Char ch, float duration){
@@ -92,7 +93,7 @@ public class PotionOfCleansing extends ExoticPotion {
 			type = buffType.POSITIVE;
 		}
 
-		public static final float DURATION = 5f;
+		private static final float DURATION = 5f;
 
 		@Override
 		public int icon() {
@@ -106,7 +107,15 @@ public class PotionOfCleansing extends ExoticPotion {
 
 		@Override
 		public float iconFadePercent() {
-			return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+			return Math.max(0, (DURATION() - visualcooldown()) / DURATION());
+		}
+
+		public static float DURATION(){
+			return EffectDuration.get(Cleanse.class, DURATION);
+		}
+
+		public static float defaultDuration() {
+			return DURATION;
 		}
 
 	}

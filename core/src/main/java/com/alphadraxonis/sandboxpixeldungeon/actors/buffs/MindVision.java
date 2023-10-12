@@ -22,12 +22,13 @@
 package com.alphadraxonis.sandboxpixeldungeon.actors.buffs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
 
 public class MindVision extends FlavourBuff {
 
-	public static final float DURATION = 20f;
+	private static final float DURATION = 20f;
 	
 	public int distance = 2;
 
@@ -42,7 +43,7 @@ public class MindVision extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		return Math.max(0, (DURATION() - visualcooldown()) / DURATION());
 	}
 
 	@Override
@@ -50,5 +51,13 @@ public class MindVision extends FlavourBuff {
 		super.detach();
 		Dungeon.observe();
 		GameScene.updateFog();
+	}
+
+	public static float DURATION(){
+		return EffectDuration.get(MindVision.class, DURATION);
+	}
+
+	public static float defaultDuration() {
+		return DURATION;
 	}
 }

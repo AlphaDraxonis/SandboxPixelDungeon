@@ -35,7 +35,7 @@ public class ScrollOfAntiMagic extends ExoticScroll {
 	@Override
 	public void doRead() {
 		
-		Buff.affect( curUser, MagicImmune.class, MagicImmune.DURATION );
+		Buff.affect( curUser, MagicImmune.class, MagicImmune.DURATION() );
 		new Flare( 5, 32 ).color( 0x00FF00, true ).show( curUser.sprite, 2f );
 
 		identify();

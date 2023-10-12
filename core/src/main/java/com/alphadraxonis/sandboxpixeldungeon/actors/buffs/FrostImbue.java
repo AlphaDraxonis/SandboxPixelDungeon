@@ -22,6 +22,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.actors.buffs;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.SnowParticle;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
@@ -33,7 +34,7 @@ public class FrostImbue extends FlavourBuff {
 		announced = true;
 	}
 	
-	public static final float DURATION	= 50f;
+	private static final float DURATION	= 50f;
 	
 	public void proc(Char enemy){
 		Buff.affect(enemy, Chill.class, 2f);
@@ -52,7 +53,15 @@ public class FrostImbue extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		return Math.max(0, (DURATION() - visualcooldown()) / DURATION());
+	}
+
+	public static float DURATION(){
+		return EffectDuration.get(FrostImbue.class, DURATION);
+	}
+
+	public static float defaultDuration() {
+		return DURATION;
 	}
 	
 	{

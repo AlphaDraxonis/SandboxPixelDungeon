@@ -54,7 +54,7 @@ public class FrozenCarpaccio extends Food {
 		switch (Random.Int( 5 )) {
 			case 0:
 				GLog.i( Messages.get(FrozenCarpaccio.class, "invis") );
-				Buff.affect( hero, Invisibility.class, Invisibility.DURATION );
+				Buff.affect( hero, Invisibility.class, Invisibility.DURATION() );
 				break;
 			case 1:
 				GLog.i( Messages.get(FrozenCarpaccio.class, "hard") );

@@ -37,7 +37,7 @@ public class ScrollOfForesight extends ExoticScroll {
 	public void doRead() {
 		Sample.INSTANCE.play( Assets.Sounds.READ );
 		
-		Buff.affect(curUser, Foresight.class, Foresight.DURATION);
+		Buff.affect(curUser, Foresight.class, Foresight.DURATION());
 
 		identify();
 		

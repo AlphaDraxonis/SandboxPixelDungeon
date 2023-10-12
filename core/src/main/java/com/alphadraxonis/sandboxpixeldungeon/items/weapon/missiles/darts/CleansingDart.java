@@ -43,7 +43,7 @@ public class CleansingDart extends TippedDart {
 		if (processingChargedShot && defender == attacker) {
 			//do nothing to the hero when processing charged shot
 		} else if (attacker.alignment == defender.alignment){
-			PotionOfCleansing.cleanse(defender, PotionOfCleansing.Cleanse.DURATION*2f);
+			PotionOfCleansing.cleanse(defender, PotionOfCleansing.Cleanse.DURATION()*2f);
 			return 0;
 		} else {
 			for (Buff b : defender.buffs()){

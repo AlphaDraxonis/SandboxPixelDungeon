@@ -21,6 +21,7 @@
 
 package com.alphadraxonis.sandboxpixeldungeon.actors.buffs;
 
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 
@@ -30,7 +31,7 @@ public class Haste extends FlavourBuff {
 		type = buffType.POSITIVE;
 	}
 	
-	public static final float DURATION	= 20f;
+	private static final float DURATION	= 20f;
 	
 	@Override
 	public int icon() {
@@ -44,7 +45,15 @@ public class Haste extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		return Math.max(0, (DURATION() - visualcooldown()) / DURATION());
+	}
+
+	public static float DURATION(){
+		return EffectDuration.get(Haste.class, DURATION);
+	}
+
+	public static float defaultDuration() {
+		return DURATION;
 	}
 
 }

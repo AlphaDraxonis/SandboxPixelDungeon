@@ -11,7 +11,11 @@ import com.watabou.utils.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class CustomTileLoader {
@@ -40,7 +44,9 @@ public final class CustomTileLoader {
         for (FileHandle file : files) {
             fileMap.put(file.name(), file);
         }
-        for (FileHandle file : files) {
+        List<FileHandle> sorted = new ArrayList<>(Arrays.asList(files));
+        Collections.sort(sorted, (o1, o2) -> o1.name().compareTo(o2.name()));
+        for (FileHandle file : sorted) {
             if (file.name().endsWith(DESC_FILE_EXTENSION)) {
                 readDescFile(file, fileMap);
             }

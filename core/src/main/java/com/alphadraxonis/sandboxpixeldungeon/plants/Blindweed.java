@@ -46,7 +46,7 @@ public class Blindweed extends Plant {
 		
 		if (ch != null) {
 			if (ch instanceof Hero && ((Hero) ch).subClass == HeroSubClass.WARDEN){
-				Buff.affect(ch, Invisibility.class, Invisibility.DURATION/2f);
+				Buff.affect(ch, Invisibility.class, Invisibility.DURATION()/2f);
 			} else {
 				Buff.prolong(ch, Blindness.class, Blindness.DURATION);
 				Buff.prolong(ch, Cripple.class, Cripple.DURATION);

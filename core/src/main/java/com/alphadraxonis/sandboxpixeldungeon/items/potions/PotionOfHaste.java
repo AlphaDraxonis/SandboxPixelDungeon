@@ -40,7 +40,7 @@ public class PotionOfHaste extends Potion {
 		identify();
 		
 		GLog.w( Messages.get(this, "energetic") );
-		Buff.prolong( hero, Haste.class, Haste.DURATION);
+		Buff.prolong( hero, Haste.class, Haste.DURATION());
 		SpellSprite.show(hero, SpellSprite.HASTE, 1, 1, 0);
 	}
 	

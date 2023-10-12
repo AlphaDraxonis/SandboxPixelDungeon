@@ -36,6 +36,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.StormCloud;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.ToxicGas;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Web;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Tengu;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
 
@@ -45,7 +46,7 @@ public class BlobImmunity extends FlavourBuff {
 		type = buffType.POSITIVE;
 	}
 	
-	public static final float DURATION	= 20f;
+	private static final float DURATION	= 20f;
 	
 	@Override
 	public int icon() {
@@ -54,7 +55,15 @@ public class BlobImmunity extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		return Math.max(0, (DURATION() - visualcooldown()) / DURATION());
+	}
+
+	public static float DURATION(){
+		return EffectDuration.get(BlobImmunity.class, DURATION);
+	}
+
+	public static float defaultDuration() {
+		return DURATION;
 	}
 
 	{

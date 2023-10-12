@@ -61,7 +61,7 @@ public class HeroSettings extends Component {
 
             @Override
             protected void createChildren(Object... params) {
-                tabs = new TabControlButton[HeroClass.values().length + 1];
+                tabs = new TabControlButton[heroTabs.length];
                 for (int j = 0; j < tabs.length; j++) {
                     tabs[j] = new OutsideSpSwitchTabs.TabControlButton(j);
                     tabs[j].icon(createTabIcon(j));

@@ -26,6 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.CloakOfShadows;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Swiftthistle;
@@ -34,7 +35,7 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
 
 public class Invisibility extends FlavourBuff {
 
-	public static final float DURATION	= 20f;
+	private static final float DURATION	= 20f;
 
 	{
 		type = buffType.POSITIVE;
@@ -71,13 +72,21 @@ public class Invisibility extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		return Math.max(0, (DURATION() - visualcooldown()) / DURATION());
 	}
 
 	@Override
 	public void fx(boolean on) {
 		if (on) target.sprite.add( CharSprite.State.INVISIBLE );
 		else if (target.invisible == 0) target.sprite.remove( CharSprite.State.INVISIBLE );
+	}
+
+	public static float DURATION(){
+		return EffectDuration.get(Invisibility.class, DURATION);
+	}
+
+	public static float defaultDuration() {
+		return DURATION;
 	}
 
 	public static void dispel() {

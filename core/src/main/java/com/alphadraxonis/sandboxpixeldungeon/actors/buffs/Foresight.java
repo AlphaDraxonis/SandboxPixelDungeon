@@ -23,11 +23,12 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.buffs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BuffIndicator;
 
 public class Foresight extends FlavourBuff {
 
-	public static final float DURATION = 400f;
+	private static final float DURATION = 400f;
 
 	public static final int DISTANCE = 8;
 
@@ -56,7 +57,15 @@ public class Foresight extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		return Math.max(0, (DURATION() - visualcooldown()) / DURATION());
+	}
+
+	public static float DURATION(){
+		return EffectDuration.get(Foresight.class, DURATION);
+	}
+
+	public static float defaultDuration() {
+		return DURATION;
 	}
 
 }
