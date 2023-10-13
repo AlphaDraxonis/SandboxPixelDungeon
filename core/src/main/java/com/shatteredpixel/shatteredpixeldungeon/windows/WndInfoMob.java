@@ -95,7 +95,7 @@ public class WndInfoMob extends WndTitledMessage {
                 extraBuffSpace += 8;
             } while (extraBuffSpace <= 40 && !buffs.allBuffsVisible());
 
-            name.setPos(x + image.width + GAP,
+            name.setPos(x + image.width() + GAP,
                     image.height() > name.height() ? y + (image.height() - name.height()) / 2 : y);
 
             if (hasHealth)
