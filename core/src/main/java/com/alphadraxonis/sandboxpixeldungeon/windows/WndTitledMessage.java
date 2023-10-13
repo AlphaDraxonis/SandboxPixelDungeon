@@ -46,20 +46,22 @@ public class WndTitledMessage extends Window {
 
         int width = WIDTH_MIN;
 
-        titlebar.setRect( 0, 0, width, 0 );
-        add(titlebar);
+        if (titlebar != null) {
+            titlebar.setRect(0, 0, width, 0);
+            add(titlebar);
+        }
 
         text = PixelScene.renderTextBlock( 6 );
         text.text( message, width );
-        text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
+        text.setPos( titlebar == null ? 0 : titlebar.left(), titlebar == null ? 0 : titlebar.bottom() + 2*GAP );
         add( text );
 
         while (PixelScene.landscape()
                 && text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
                 && width < WIDTH_MAX){
             width += 20;
-            titlebar.setRect(0, 0, width, 0);
-            text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
+            if (titlebar != null) titlebar.setRect(0, 0, width, 0);
+            text.setPos( titlebar == null ? 0 : titlebar.left(), titlebar == null ? 0 : titlebar.bottom() + 2*GAP );
             text.maxWidth(width);
         }
 

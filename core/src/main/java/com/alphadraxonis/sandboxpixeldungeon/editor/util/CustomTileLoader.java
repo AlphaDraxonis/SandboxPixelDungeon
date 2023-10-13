@@ -2,6 +2,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.util;
 
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -123,12 +124,14 @@ public final class CustomTileLoader {
 
         @Override
         public String desc(int tileX, int tileY) {
-            return desc == null ? super.desc(tileX, tileY) : desc;
+            String ret;
+            return desc == null ? super.desc(tileX, tileY) : ((ret = Messages.get(desc)).equals(Messages.NO_TEXT_FOUND) ? desc : ret);
         }
 
         @Override
         public String name(int tileX, int tileY) {
-            return name == null ? super.name(tileX, tileY) : name;
+            String ret;
+            return name == null ? super.name(tileX, tileY) : ((ret = Messages.get(name)).equals(Messages.NO_TEXT_FOUND) ? name : ret);
         }
 
         @Override
