@@ -175,9 +175,10 @@ public class TileItem extends EditorItem {
             int oldTerrain = level.map[cell];
 
             if (oldTerrain == terrainType) {
-                if (forceChange)
+                CustomTilemap customTilemap;
+                if ((customTilemap = CustomTileItem.findCustomTileAt(cell)) != null || forceChange)
                     init(oldTerrain, terrainType, cell,
-                            level.traps.get(cell), level.plants.get(cell), CustomTileItem.findCustomTileAt(cell));
+                            level.traps.get(cell), level.plants.get(cell), customTilemap);
                 moreActions = null;
                 return; //no need to continue bc nothing changes at all
             }

@@ -36,7 +36,6 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
-import com.alphadraxonis.sandboxpixeldungeon.levels.LastLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MassGraveRoom;
@@ -190,7 +189,7 @@ public enum Tiles {
         customTileBag.items.add(new CustomTileItem(new MassGraveRoom.Bones(), -1));
         customTileBag.items.add(new CustomTileItem(new RitualSiteRoom.RitualMarker(), -1));
 //        customTileBag.items.add(new CustomTileItem(new DemonSpawnerRoom.CustomFloor(), -1));
-        customTileBag.items.add(new CustomTileItem(new LastLevel.CustomFloor(), -1));
+//        customTileBag.items.add(new CustomTileItem(new LastLevel.CustomFloor(), -1));
         customTileBag.items.add(new CustomTileItem(new WeakFloorRoom.HiddenWell(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExit(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExitOverhang(), -1));

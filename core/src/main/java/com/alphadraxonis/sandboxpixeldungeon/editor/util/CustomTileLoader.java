@@ -1,8 +1,10 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.util;
 
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Tiles;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -13,7 +15,6 @@ import com.watabou.utils.FileUtils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,16 +41,28 @@ public final class CustomTileLoader {
             dir.mkdirs();
         }
 
-        FileHandle[] files = dir.list("");
+
         Map<String, FileHandle> fileMap = new HashMap<>();
-        for (FileHandle file : files) {
-            fileMap.put(file.name(), file);
-        }
-        List<FileHandle> sorted = new ArrayList<>(Arrays.asList(files));
+        fillWithFilesInDirectory(dir, fileMap);
+
+        List<FileHandle> sorted = new ArrayList<>(fileMap.values());
         Collections.sort(sorted, (o1, o2) -> o1.name().compareTo(o2.name()));
         for (FileHandle file : sorted) {
             if (file.name().endsWith(DESC_FILE_EXTENSION)) {
                 readDescFile(file, fileMap);
+            }
+        }
+    }
+
+    private static void fillWithFilesInDirectory(FileHandle dir, Map<String, FileHandle> fileMap){
+        FileHandle[] files = dir.list("");
+        for (FileHandle file : files) {
+            if (file.isDirectory()) fillWithFilesInDirectory(file, fileMap);
+            else {
+                String n;
+                if (fileMap.containsKey(n = file.name()))
+                    GameScene.errorMsg.add("Duplicate custom tile name detected: >>>" + n + "<<< (in dungeon " + Dungeon.customDungeon.getName() + ")");
+                else fileMap.put(n, file);
             }
         }
     }
