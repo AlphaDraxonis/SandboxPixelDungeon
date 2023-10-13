@@ -660,7 +660,7 @@ public class CustomDungeon implements Bundlable {
     }
 
     public CustomDungeonSaves.Info createInfo() {
-        return new CustomDungeonSaves.Info(getName(), 1, getNumFloors());
+        return new CustomDungeonSaves.Info(getName(), 1, getNumFloors(), 0/*hashCode()*/);
     }
 
     void addRatKingLevel(String name) {
@@ -967,4 +967,32 @@ public class CustomDungeon implements Bundlable {
     }
 
 
+    @Override
+    public int hashCode() {
+        Bundle bundle = new Bundle();
+        bundle.put("Dungeon", this);
+
+        List<LevelScheme> sortedFloors = new ArrayList<>(floors.values());
+        Collections.sort(sortedFloors);
+        int i = 0;
+        for (LevelScheme floor : sortedFloors) {
+            if (floor.getType() == CustomLevel.class) {
+                boolean load = floor.getLevel() == null;
+                if (load) floor.loadLevel();
+                bundle.put(Integer.toString(i), floor.getLevel());
+                if (load) floor.unloadLevel();
+                i++;
+            }
+        }
+
+        return bundle.toString().hashCode();
+    }
+
+    public static String calculateHash(String dungeonName){
+        try {
+            return Integer.toHexString(CustomDungeonSaves.loadDungeon(dungeonName).hashCode());
+        } catch (Exception e) {
+            return "ERROR";
+        }
+    }
 }

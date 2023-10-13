@@ -281,13 +281,16 @@ public class CustomDungeonSaves {
 
         public int numLevels;
 
+        public int hashcode;
+
         public Info() {
         }
 
-        public Info(String name, int version, int numLevels) {
+        public Info(String name, int version, int numLevels, int hashcode) {
             this.name = name;
             this.version = version;
             this.numLevels = numLevels;
+            this.hashcode = hashcode;
         }
 
         @Override
@@ -298,12 +301,14 @@ public class CustomDungeonSaves {
         private static final String NAME = "name";
         private static final String VERSION = "version";
         private static final String NUM_LEVLES = "num_levels";
+        private static final String HASHCODE = "hashcode";
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             name = bundle.getString(NAME);
             version = bundle.getInt(VERSION);
             numLevels = bundle.getInt(NUM_LEVLES);
+            hashcode = bundle.getInt(HASHCODE);
         }
 
         @Override
@@ -311,6 +316,7 @@ public class CustomDungeonSaves {
             bundle.put(NAME, name);
             bundle.put(VERSION, version);
             bundle.put(NUM_LEVLES, numLevels);
+            bundle.put(HASHCODE, hashcode);
         }
     }
 

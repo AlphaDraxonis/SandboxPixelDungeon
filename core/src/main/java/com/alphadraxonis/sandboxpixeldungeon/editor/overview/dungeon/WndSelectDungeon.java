@@ -280,6 +280,8 @@ public class WndSelectDungeon extends Window {
 
                 pos = statSlot(Messages.get(WndSelectDungeon.class, "num_floors"), Integer.toString(info.numLevels), pos) + GAP * 3;
 
+//                pos += statSlot(Messages.get(WndSelectDungeon.class, "hashcode"), Integer.toHexString(info.hashcode), pos);
+
                 cont.icon(Icons.get(Icons.ENTER));
                 cont.setRect(0, pos, width / 2 - 1, 20);
                 add(cont);
