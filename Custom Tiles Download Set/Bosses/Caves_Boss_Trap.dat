@@ -1,0 +1,4 @@
+image="Caves_Boss_Trap.png"
+name="levels.cavesbosslevel.wires_name"
+desc="levels.cavesbosslevel.wires_desc"
+terrain="19"

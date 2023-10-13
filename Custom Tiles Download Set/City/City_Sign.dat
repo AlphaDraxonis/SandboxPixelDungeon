@@ -1,0 +1,4 @@
+image="City_Sign.png"
+name="levels.level.sign_name"
+desc="levels.level.sign_desc"
+terrain="23"

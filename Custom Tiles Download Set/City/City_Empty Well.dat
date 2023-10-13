@@ -1,0 +1,4 @@
+image="City_Empty Well.png"
+name="levels.level.empty_well_name"
+desc="levels.level.empty_well_desc"
+terrain="3"

@@ -1,0 +1,4 @@
+image="City_Exit.png"
+name="levels.level.exit_name"
+desc="levels.citylevel.exit_desc"
+terrain="8"

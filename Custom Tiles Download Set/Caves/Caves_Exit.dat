@@ -1,0 +1,4 @@
+image="Caves_Exit.png"
+name="levels.level.exit_name"
+desc="levels.caveslevel.exit_desc"
+terrain="8"
