@@ -195,10 +195,33 @@ public class TileItem extends EditorItem {
                 final LevelTransition transition = level.transitions.get(cell);
                 final LevelScheme levelScheme = level.levelScheme;
 
+
+                String defaultBelowOrAbove;
+
+
+                LevelTransition defaultTransition; //only if new exit or entrance was placed
+                LevelScheme defaultDestlevelScheme;
+                if (nowExit) {
+                    defaultBelowOrAbove = levelScheme.getDefaultBelow();
+                    defaultTransition = Level.SURFACE.equals(defaultBelowOrAbove) ? new LevelTransition(level, cell, LevelTransition.Type.SURFACE)
+                            : ((defaultDestlevelScheme = (Dungeon.customDungeon.getFloor(defaultBelowOrAbove))) == null
+                            || defaultDestlevelScheme.exitCells.isEmpty() ? null
+                            : new LevelTransition(level, cell, defaultDestlevelScheme.entranceCells.get(0), defaultBelowOrAbove));
+                } else if (terrainType == ENTRANCE) {
+                    defaultBelowOrAbove = levelScheme.getDefaultAbove();
+                    defaultTransition = Level.SURFACE.equals(defaultBelowOrAbove) ? new LevelTransition(level, cell, LevelTransition.Type.SURFACE)
+                            : ((defaultDestlevelScheme = (Dungeon.customDungeon.getFloor(defaultBelowOrAbove))) == null
+                            || defaultDestlevelScheme.entranceCells.isEmpty() ? null
+                            : new LevelTransition(level, cell, defaultDestlevelScheme.entranceCells.get(0), defaultBelowOrAbove));
+                } else defaultTransition = null;
+
                 ActionPart transPart = new ActionPart() {
 
                     @Override
                     public void undo() {
+
+                        level.transitions.remove(cell);
+                        EditorScene.remove(defaultTransition);
 
                         if (oldTerrain == Terrain.ENTRANCE) {
                             levelScheme.entranceCells.add((Integer) cell);
@@ -244,6 +267,11 @@ public class TileItem extends EditorItem {
                                 level.transitions.remove(cell);
                                 EditorScene.remove(transition);
                             }
+                            //add default transition:
+                            if (defaultTransition != null) {
+                                level.transitions.put(cell, defaultTransition);
+                                EditorScene.add(defaultTransition);
+                            }
                         } else {
 
                             //es wird hier kein entrance sein (da terraintype verschieden sein muss)
@@ -264,6 +292,11 @@ public class TileItem extends EditorItem {
                                     }
                                 } else {//bei neuem exit: füge exit hinzu (falls es vorher entrance war, wurde zelle+transition schon entfernt)
                                     levelScheme.exitCells.add((Integer) cell);
+                                    //add default transition:
+                                    if (defaultTransition != null) {
+                                        level.transitions.put(cell, defaultTransition);
+                                        EditorScene.add(defaultTransition);
+                                    }
                                 }
                             }
 

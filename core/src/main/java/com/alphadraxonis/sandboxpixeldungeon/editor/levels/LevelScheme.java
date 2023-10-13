@@ -668,8 +668,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         name = bundle.getString(NAME);
         if (bundle.contains(CHASM)) chasm = bundle.getString(CHASM);
 
-        levelCreatedBefore = bundle.getString(LEVEL_CREATED_BEFORE);
-        levelCreatedAfter = bundle.getString(LEVEL_CREATED_AFTER);
+        if (bundle.contains(LEVEL_CREATED_BEFORE)) levelCreatedBefore = bundle.getString(LEVEL_CREATED_BEFORE);
+        if (bundle.contains(LEVEL_CREATED_AFTER)) levelCreatedAfter = bundle.getString(LEVEL_CREATED_AFTER);
 
         if (bundle.contains(DEST_ENTRANCE_REGULAR))
             entranceTransitionRegular = (LevelTransition) bundle.get(DEST_ENTRANCE_REGULAR);
