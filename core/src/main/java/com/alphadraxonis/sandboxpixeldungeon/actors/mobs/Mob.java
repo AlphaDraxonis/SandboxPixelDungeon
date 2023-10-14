@@ -1093,7 +1093,7 @@ public abstract class Mob extends Char {
     private String infoStatsChangedHPAccuracyEvasionArmor(Mob defaultStats) {
         String ret = "";
         if (defaultStats.HT != HT)
-            ret += "\n\n" + Messages.get(Mob.class, "hp") + ": " + defaultStats.HT + " -> _" + HT + "_";
+            ret += "\n" + Messages.get(Mob.class, "hp") + ": " + defaultStats.HT + " -> _" + HT + "_";
         if (defaultStats.attackSkill != attackSkill)
             ret += "\n" + Messages.get(Mob.class, "accuracy") + ": " + defaultStats.attackSkill + " -> _" + attackSkill + "_";
         if (defaultStats.defenseSkill != defenseSkill)

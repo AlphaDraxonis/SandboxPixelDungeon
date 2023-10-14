@@ -7,6 +7,7 @@ import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.ChampionEnemy;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
@@ -505,9 +506,17 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         for (Mob m : mobsToSpawn) {
             if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
         }
+        for (Item i : itemsToSpawn) {
+            AugumentationSpinner.assignRandomAugumentation(i);
+        }
         if (type == CustomLevel.class) {
             for (Mob m : level.mobs) {
                 if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
+            }
+            for (Heap h : level.heaps.valueList()) {
+                for (Item i : h.items) {
+                    AugumentationSpinner.assignRandomAugumentation(i);
+                }
             }
         }
         Random.popGenerator();

@@ -83,7 +83,8 @@ public class Armor extends EquipableItem {
     public enum Augment {
         EVASION(2f, -1f),
         DEFENSE(-2f, 1f),
-        NONE(0f, 0f);
+        NONE(0f, 0f),
+        RANDOM(0f, 0f);
 
         private float evasionFactor;
         private float defenceFactor;

@@ -34,6 +34,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
@@ -277,6 +278,12 @@ public class Dungeon {
 
         Generator.fullReset();
 
+        int indexCurHero =  GamesInProgress.selectedClass.getIndex();
+        AugumentationSpinner.assignRandomAugumentation(Dungeon.customDungeon.startItems[0].weapon);
+        AugumentationSpinner.assignRandomAugumentation(Dungeon.customDungeon.startItems[0].armor);
+        AugumentationSpinner.assignRandomAugumentation(Dungeon.customDungeon.startItems[indexCurHero + 1].weapon);
+        AugumentationSpinner.assignRandomAugumentation(Dungeon.customDungeon.startItems[indexCurHero + 1].armor);
+
         Scroll.initLabels();
         Potion.initColors();
         Ring.initGems();
@@ -295,7 +302,6 @@ public class Dungeon {
         branch = 0;
         generatedLevels.clear();
 
-        int indexCurHero =  GamesInProgress.selectedClass.getIndex();
         gold = Dungeon.customDungeon.startItems[0].gold + Dungeon.customDungeon.startItems[indexCurHero + 1].gold;
         energy = Dungeon.customDungeon.startItems[0].energy + Dungeon.customDungeon.startItems[indexCurHero + 1].energy;
 

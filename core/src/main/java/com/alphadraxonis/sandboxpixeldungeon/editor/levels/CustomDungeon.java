@@ -98,10 +98,10 @@ public class CustomDungeon implements Bundlable {
     //custom mob drops:
     //override rollToDropLoot, similar as mimic, set loot to null, always 100% chance
 
-    //In addition it would be good to have an infinite charge feature for wands and artifacts.
-    // This could also be applied to regular items (scrolls, potions, consumables etc) so you never run out of them
-
     //Add Yog
+
+    //add random option to weapon Augs
+    //change randomize option to randomize everytime the level regenerates
 
     //Custom mob attacks: externalise
 

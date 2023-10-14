@@ -57,11 +57,13 @@ public class EffectDuration implements Bundlable {
     @Override
     public void restoreFromBundle(Bundle bundle) {
         durationMap = new HashMap<>();
-        float[] values = bundle.getFloatArray(KEYS);
-        if (values == null) return;
-        Class<?>[] classes = bundle.getClassArray(VALUES);
-        for (int i = 0; i < values.length; i++) {
-            durationMap.put(classes[i], values[i]);
+        if (bundle.contains(KEYS)) {
+            float[] values = bundle.getFloatArray(KEYS);
+            if (values == null) return;
+            Class<?>[] classes = bundle.getClassArray(VALUES);
+            for (int i = 0; i < values.length; i++) {
+                durationMap.put(classes[i], values[i]);
+            }
         }
     }
 }
