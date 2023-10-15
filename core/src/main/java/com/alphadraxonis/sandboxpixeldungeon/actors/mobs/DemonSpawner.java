@@ -31,6 +31,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Paralysis;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Sleep;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Terror;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Vertigo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Pushing;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfHealing;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Notes;
@@ -64,6 +65,14 @@ public class DemonSpawner extends Mob {
 		properties.add(Property.IMMOVABLE);
 		properties.add(Property.MINIBOSS);
 		properties.add(Property.DEMONIC);
+	}
+
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		customLootInfo.addItem(new PotionOfHealing(), 1);
+		return super.convertToCustomLootInfo();
 	}
 
 //	@Override

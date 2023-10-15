@@ -26,11 +26,13 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Cripple;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Chains;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Effects;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Pushing;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
 import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
@@ -151,9 +153,21 @@ public class Guard extends Mob {
 	}
 
 	@Override
-	public Item createLoot() {
-		Dungeon.LimitedDrops.GUARD_ARM.count++;
-		return super.createLoot();
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		int set;
+		if (Dungeon.level == null || Dungeon.level.levelScheme == null) set = (int) (Math.random() * 5);
+		else set = Dungeon.level.levelScheme.getRegion() - 1;
+		Generator.convertRandomArmorToCustomLootInfo(customLootInfo, set);
+		customLootInfo.setLootChance(customLootInfo.calculateSum() * 4);
+		return customLootInfo;
+	}
+
+	@Override
+	public void increaseLimitedDropCount(Item generatedLoot) {
+		if (generatedLoot instanceof Armor)
+			Dungeon.LimitedDrops.DM200_EQUIP.count++;
+		super.increaseLimitedDropCount(generatedLoot);
 	}
 
 	private final String CHAINSUSED = "chainsused";

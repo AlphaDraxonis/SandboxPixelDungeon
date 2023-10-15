@@ -2,6 +2,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.quests;
 
 import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
@@ -75,6 +76,9 @@ public class GhostQuest extends Quest {
                 }
                 armor.upgrade(itemLevel);
                 if (doEnchant) glyph = Armor.Glyph.random();
+            } else{
+                if (armor.identifyOnStart) armor.identify();
+                AugumentationSpinner.assignRandomAugumentation(armor);
             }
             if (weapon == null) {
                 //50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
@@ -87,6 +91,9 @@ public class GhostQuest extends Quest {
                 weapon.cursed = false;
                 weapon.upgrade(itemLevel);
                 if (doEnchant) enchant = Weapon.Enchantment.random();
+            } else{
+                if (weapon.identifyOnStart) weapon.identify();
+                AugumentationSpinner.assignRandomAugumentation(weapon);
             }
         }
 

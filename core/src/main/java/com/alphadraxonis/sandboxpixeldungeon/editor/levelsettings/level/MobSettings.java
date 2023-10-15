@@ -649,6 +649,11 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
                 hotArea.width = countSpinner.left() - x - 2;
             }
 
+            @Override
+            protected int getLabelMaxWidth() {
+                return (int) (super.getLabelMaxWidth() - countSpinner.width() + 4.1f - height());
+            }
+
             public Class<? extends Mob> mobClass() {
                 return mob.getClass();
             }

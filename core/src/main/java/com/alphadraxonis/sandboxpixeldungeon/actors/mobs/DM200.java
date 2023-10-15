@@ -24,8 +24,11 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.Blob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.ToxicGas;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
+import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.DM200Sprite;
@@ -81,13 +84,28 @@ public class DM200 extends Mob {
 	}
 
 	public Item createLoot() {
-		Dungeon.LimitedDrops.DM200_EQUIP.count++;
 		//uses probability tables for dwarf city
 		if (loot == Generator.Category.WEAPON){
 			return Generator.randomWeapon(4, true);
 		} else {
 			return Generator.randomArmor(4);
 		}
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		Generator.convertRandomArmorToCustomLootInfo(customLootInfo, 4);
+		Generator.convertRandomWeaponToCustomLootInfo(customLootInfo, 4);
+		customLootInfo.setLootChance(customLootInfo.calculateSum() * 7);
+		return customLootInfo;
+	}
+
+	@Override
+	public void increaseLimitedDropCount(Item generatedLoot) {
+		if (generatedLoot instanceof MeleeWeapon || generatedLoot instanceof Armor)
+			Dungeon.LimitedDrops.DM200_EQUIP.count++;
+		super.increaseLimitedDropCount(generatedLoot);
 	}
 
 	private int ventCooldown = 0;

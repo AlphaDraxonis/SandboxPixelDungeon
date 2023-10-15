@@ -27,6 +27,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.blobs.ToxicGas;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Burning;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Cripple;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.RotLasherSprite;
 
@@ -91,6 +92,14 @@ public class RotLasher extends Mob {
 	@Override
 	protected boolean getFurther(int target) {
 		return true;
+	}
+
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		Generator.convertGeneratorToCustomLootInfo(customLootInfo, Generator.Category.SEED, 1);
+		return customLootInfo;
 	}
 
 //	@Override

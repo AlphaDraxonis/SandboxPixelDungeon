@@ -25,8 +25,10 @@ import com.alphadraxonis.sandboxpixeldungeon.Assets;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.alphadraxonis.sandboxpixeldungeon.levels.features.Chasm;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.SkeletonSprite;
@@ -100,13 +102,26 @@ public class Skeleton extends Mob {
 		return super.lootChance() * (float)Math.pow(1/2f, Dungeon.LimitedDrops.SKELE_WEP.count);
 	}
 
+
 	@Override
-	public Item createLoot() {
-		Dungeon.LimitedDrops.SKELE_WEP.count++;
-		return super.createLoot();
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		int set;
+		if (Dungeon.level == null || Dungeon.level.levelScheme == null) set = (int) (Math.random() * 5);
+		else set = Dungeon.level.levelScheme.getRegion() - 1;
+		Generator.convertRandomWeaponToCustomLootInfo(customLootInfo, set);
+		customLootInfo.setLootChance(customLootInfo.calculateSum() * 5);
+		return customLootInfo;
 	}
 
-//	@Override
+	@Override
+	public void increaseLimitedDropCount(Item generatedLoot) {
+		if (generatedLoot instanceof MeleeWeapon)
+			Dungeon.LimitedDrops.SKELE_WEP.count++;
+		super.increaseLimitedDropCount(generatedLoot);
+	}
+
+	//	@Override
 //	public int attackSkill( Char target ) {
 //		return 12;
 //	}

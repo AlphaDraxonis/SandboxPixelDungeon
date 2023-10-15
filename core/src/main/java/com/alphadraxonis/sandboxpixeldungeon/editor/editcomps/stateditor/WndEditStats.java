@@ -1,10 +1,14 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor;
 
+import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Brute;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditMobComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.MultiWindowTabComp;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -16,46 +20,84 @@ import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RedButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
-import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
-import com.alphadraxonis.sandboxpixeldungeon.windows.WndTitledMessage;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
-public class WndEditStats extends Window {
+public class WndEditStats extends MultiWindowTabComp {
 
-    private RenderedTextBlock title;
-    private Component content;
+    public static Window createWindow(int width, int offsetY, Object defaultStats, Object editStats, Runnable onHide) {
+        Window w = new Window() {
+            @Override
+            public void hide() {
+                if (onHide != null) onHide.run();
+                super.hide();
+            }
+        };
+
+        final int offset = offsetY;
+        WndEditStats wndEditStats = new WndEditStats(width - 10, defaultStats, editStats) {
+            @Override
+            public void layout() {
+                super.layout();
+                w.offset(0, offsetY);
+            }
+        };
+
+        float height = wndEditStats.preferredHeight();
+
+        w.add(wndEditStats);
+        w.resize(width - 10, (int) Math.ceil(height));
+        w.offset(0, offsetY);
+        wndEditStats.setSize(width - 10, height);
+
+        return w;
+    }
+
+
     private RedButton restoreDefaults;
-    private ScrollPane scrollPane;
-
-    private Object defaultStats, editStats;
-
 
     private IntegerSpinner hp, attackSkill, defenseSkill, armor, dmgMin, dmgMax, xp;
     private FloatSpinner speed, statsScale;
+    private StyledButtonWithIconAndText loot;
 
-    public WndEditStats(int width, int offsetY, Object defaultStats, Object editStats) {
+    protected Object defaultStats;
+
+    public WndEditStats(int myWidth, Object defaultStats, Object editStats) {
+
+        super();
+
+        this.width = myWidth;
         this.defaultStats = defaultStats;
-        this.editStats = editStats;
 
-        resize(width - 10, 100);
-        offset(0, offsetY);
+        title = new Component() {
+            RenderedTextBlock t;
 
-        title = PixelScene.renderTextBlock(Messages.get(EditMobComp.class, "edit_stats"), 10);
-        title.hardlight(Window.TITLE_COLOR);
-        add(title);
-        title.maxWidth(this.width);
-        title.setPos((width - title.width()) * 0.5f, WndTitledMessage.GAP);
-
-        content = new Component();
-
-        restoreDefaults = new RedButton(Messages.get(WndEditStats.class, "restore_default")) {
             @Override
-            protected void onClick() {
-                restoreDefaults();
+            protected void createChildren(Object... params) {
+                super.createChildren(params);
+                t = PixelScene.renderTextBlock(Messages.get(EditMobComp.class, "edit_stats"), 10);
+                t.hardlight(Window.TITLE_COLOR);
+                t.maxWidth(myWidth);
+                add(t);
+            }
+
+            @Override
+            public float height() {
+                return t.height() + GAP * 2;
+            }
+
+            @Override
+            public float width() {
+                return t.width();
+            }
+
+            @Override
+            protected void layout() {
+                t.setPos(x + (width - title.width()) * 0.5f, y + GAP);
             }
         };
-        add(restoreDefaults);
+        add(title);
 
         if (defaultStats instanceof Mob) {
             Mob def = (Mob) defaultStats;
@@ -65,7 +107,7 @@ public class WndEditStats extends Window {
             if (DefaultStatsCache.useStatsScale(current)) {
 
                 statsScale = new FloatSpinner(Messages.get(Mob.class, "stats_scale"),
-                        0.1f, def.statsScale * 10, current.statsScale, false);
+                        0.1f, def.statsScale * 10, current.statsScale, false, 0.1f);
                 statsScale.addChangeListener(() -> current.statsScale = statsScale.getAsFloat());
                 content.add(statsScale);
 
@@ -95,30 +137,91 @@ public class WndEditStats extends Window {
                     0, def.EXP * 10, current.EXP, false);
             xp.addChangeListener(() -> current.EXP = xp.getAsInt());
             content.add(xp);
+
+            if (!(current instanceof Mimic)) {
+
+                loot = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndEditStats.class, "loot"), 9){
+                    @Override
+                    protected void onClick() {
+                        LootTableComp lootTable = new LootTableComp(current);
+                        changeContent(lootTable.createTitle(), lootTable, lootTable.getOutsideSp(), 0f, 0.5f);
+                    }
+                };
+                content.add(loot);
+            }
+
         }
 
-        EditorUtilies.layoutStyledCompsInRectangles(WndTitledMessage.GAP, this.width, content, new Component[]{
+        restoreDefaults = new RedButton(Messages.get(WndEditStats.class, "restore_default")) {
+            @Override
+            protected void onClick() {
+                restoreDefaults();
+            }
+        };
+        add(restoreDefaults);
+
+        mainWindowComps = new Component[]{
                 statsScale, speed, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 hp, attackSkill, defenseSkill, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 armor, dmgMin, dmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                xp
-        });
+                xp, loot
+        };
+    }
 
-        scrollPane = new ScrollPane(content);
-        add(scrollPane);
+    @Override
+    protected void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
+        restoreDefaults.visible = restoreDefaults.active = false;
+        super.changeContent(titleBar, body, outsideSp, alignment, titleAlignmentX);
+    }
 
-        float h = Math.min(content.height(), PixelScene.uiCamera.height * 0.9f - 10 - title.bottom() - 3 - WndMenuEditor.BTN_HEIGHT - WndTitledMessage.GAP - 2);
+    @Override
+    public void closeCurrentSubMenu() {
+        restoreDefaults.visible = restoreDefaults.active = true;
+        super.closeCurrentSubMenu();
+    }
 
-        resize(this.width, (int) Math.ceil(h + title.bottom() + 3 + WndTitledMessage.GAP + WndMenuEditor.BTN_HEIGHT + 1));//Always call window.resize() before scrollPane.setRect()
+    //    public WndEditStats(int width, int offsetY, Object defaultStats, Object editStats) {
+//        this.defaultStats = defaultStats;
+//        this.editStats = editStats;
+//
+//        resize(width - 10, 100);
+//        offset(0, offsetY);
+//
+//
+//        content = new Component();
+//
+//
+//        scrollPane = new ScrollPane(content);
+//        add(scrollPane);
+//
+//        float h = Math.min(content.height(), -10 - title.bottom() - 3 - WndMenuEditor.BTN_HEIGHT - WndTitledMessage.GAP - 2);
+//
+//        resize(this.width, (int) Math.ceil(h + title.bottom() + 3 + WndTitledMessage.GAP + WndMenuEditor.BTN_HEIGHT + 1));//Always call window.resize() before scrollPane.setRect()
+//
+//        scrollPane.setRect(0, title.bottom() + 3, this.width, h + 1);
+//
+//        restoreDefaults.setRect(0, scrollPane.bottom() + WndTitledMessage.GAP, this.width, WndMenuEditor.BTN_HEIGHT);
+//
+//    }
 
-        scrollPane.setRect(0, title.bottom() + 3, this.width, h + 1);
 
-        restoreDefaults.setRect(0, scrollPane.bottom() + WndTitledMessage.GAP, this.width, WndMenuEditor.BTN_HEIGHT);
+    @Override
+    public float preferredHeight() {
+        return Math.min(super.preferredHeight(), PixelScene.uiCamera.height * 0.73f)
+                + (layoutOwnMenu ? WndMenuEditor.BTN_HEIGHT + GAP - 1 : 0);
+    }
 
+    @Override
+    public void layout() {
+        super.layout();
+        if (layoutOwnMenu) {
+            sp.setRect(sp.left(), sp.top(), width, height - title.bottom() - GAP * 2 - WndMenuEditor.BTN_HEIGHT);
+            restoreDefaults.setRect(x, sp.bottom() + GAP, width, WndMenuEditor.BTN_HEIGHT);
+        }
     }
 
     private void addSpeedSpinner(Mob def, Mob current) {
-        speed = new FloatSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "speed") + ":",
+        speed = new FloatSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "speed"),
                 0.1f, def.baseSpeed * 10, current.baseSpeed, false);
         speed.addChangeListener(() -> current.baseSpeed = speed.getAsFloat());
         content.add(speed);
@@ -127,7 +230,7 @@ public class WndEditStats extends Window {
     private void addHPAccuracyEvasionArmorSpinner(Mob def, Mob current) {
 
         hp = new IntegerSpinner(Messages.get(Mob.class, "hp"),
-                1, def.HT * 10, current.HT, true);
+                1, def.HT * 10, current.HT, true, 1);
         hp.addChangeListener(() -> {
             int val = hp.getAsInt();
             if (val == -1) val = Char.INFINITE_HP;
@@ -191,6 +294,16 @@ public class WndEditStats extends Window {
             setButtonWidth(12);
         }
 
+        public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity, float realMin) {
+            super(new SpinnerFloatModel(minimum, maximum, value, false){
+                @Override
+                public void displayInputAnyNumberDialog() {
+                    displayInputAnyNumberDialog(realMin, 9_999_999f);
+                }
+            }, name, 9);
+            setButtonWidth(12);
+        }
+
         protected float getAsFloat() {
             return ((SpinnerFloatModel) getModel()).getAsFloat();
         }
@@ -201,6 +314,16 @@ public class WndEditStats extends Window {
 
         public IntegerSpinner(String name, int minimum, int maximum, int value, boolean includeInfinity) {
             super(new IntegerSpinnerModel(minimum, maximum, value, false), name, 9);
+            setButtonWidth(12);
+        }
+
+        public IntegerSpinner(String name, int minimum, int maximum, int value, boolean includeInfinity, int realMin) {
+            super(new IntegerSpinnerModel(minimum, maximum, value, false){
+                @Override
+                public void displayInputAnyNumberDialog() {
+                    displayInputAnyNumberDialog(realMin, Integer.MAX_VALUE);
+                }
+            }, name, 9);
             setButtonWidth(12);
         }
 
@@ -230,5 +353,10 @@ public class WndEditStats extends Window {
         public float getInputFieldWith(float height) {
             return Spinner.FILL;
         }
+    }
+
+    @Override
+    public Image createIcon() {
+        return null;
     }
 }

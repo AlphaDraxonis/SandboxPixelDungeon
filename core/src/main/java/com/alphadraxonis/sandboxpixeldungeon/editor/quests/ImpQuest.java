@@ -35,7 +35,7 @@ public class ImpQuest extends Quest {
             } while (reward.cursed);
             reward.upgrade(2);
             reward.cursed = true;
-        }
+        } else if (reward.identifyOnStart) reward.identify();
     }
 
 

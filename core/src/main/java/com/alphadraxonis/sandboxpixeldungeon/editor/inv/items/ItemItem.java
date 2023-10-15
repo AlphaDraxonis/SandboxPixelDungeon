@@ -14,11 +14,6 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.parts.ItemActionP
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
-import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
-import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
-import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
-import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
-import com.alphadraxonis.sandboxpixeldungeon.ui.ItemSlot;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 
@@ -38,30 +33,7 @@ public class ItemItem extends EditorItem {
         return new DefaultListItem(this, window, item().name(), getSprite()) {
             @Override
             public void onUpdate() {
-                if (item == null) return;
-                Item i = item();
-                bg.visible = i.cursed;
-                label.text(Messages.titleCase(i.title()));
-
-                if (icon != null) remove(icon);
-                icon = CustomDungeon.getDungeon().getItemImage(i);
-                addToBack(icon);
-                remove(bg);
-                addToBack(bg);
-
-                int lvl = i.level();
-                if (lvl != 0) {
-                    lvlLabel.text(Messages.format(ItemSlot.TXT_LEVEL, lvl));
-                    lvlLabel.measure();
-                    if ((i instanceof Weapon && ((Weapon) i).curseInfusionBonus)
-                            || (i instanceof Armor && ((Armor) i).curseInfusionBonus)
-                            || (i instanceof Wand && ((Wand) i).curseInfusionBonus)) {
-                        lvlLabel.hardlight(ItemSlot.CURSE_INFUSED);
-                    } else {
-                        lvlLabel.hardlight(ItemSlot.UPGRADED);
-                    }
-                } else lvlLabel.text(null);
-
+                onUpdateIfUsedForItem(item());
                 super.onUpdate();
             }
         };

@@ -31,8 +31,10 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Hex;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Invisibility;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Vulnerable;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Weakness;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
 import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
@@ -86,10 +88,20 @@ public abstract class Shaman extends Mob {
 		return super.lootChance() * (float)Math.pow(1/3f, Dungeon.LimitedDrops.SHAMAN_WAND.count);
 	}
 
+
 	@Override
-	public Item createLoot() {
-		Dungeon.LimitedDrops.SHAMAN_WAND.count++;
-		return super.createLoot();
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		Generator.convertGeneratorToCustomLootInfo(customLootInfo, Generator.Category.WAND, 1);
+		customLootInfo.setLootChance((int) (customLootInfo.calculateSum() / lootChance - 1));
+		return customLootInfo;
+	}
+
+	@Override
+	public void increaseLimitedDropCount(Item generatedLoot) {
+		if (generatedLoot instanceof Wand)
+			Dungeon.LimitedDrops.SHAMAN_WAND.count++;
+		super.increaseLimitedDropCount(generatedLoot);
 	}
 
 	protected boolean doAttack(Char enemy ) {

@@ -147,10 +147,11 @@ public class Swarm extends Mob {
 		lootChance = 1f/(6 * (generation+1) );
 		return super.lootChance() * (5f - Dungeon.LimitedDrops.SWARM_HP.count) / 5f;
 	}
-	
+
 	@Override
-	public Item createLoot(){
-		Dungeon.LimitedDrops.SWARM_HP.count++;
-		return super.createLoot();
+	public void increaseLimitedDropCount(Item generatedLoot) {
+		if (generatedLoot instanceof PotionOfHealing)
+			Dungeon.LimitedDrops.SWARM_HP.count++;
+		super.increaseLimitedDropCount(generatedLoot);
 	}
 }

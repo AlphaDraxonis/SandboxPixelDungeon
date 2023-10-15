@@ -223,7 +223,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
             public void onSelect(boolean positive, String text) {
                 if (positive) {
                     try {
-                        setValue(Integer.parseInt(text));
+                        setValue(Math.max(min, Integer.parseInt(text)));
                     } catch (NumberFormatException ex) {
                         //just ignore value
                     }
@@ -243,7 +243,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         w.getTextBox().convertStringToValidString = s -> {
             try {
                 int val = Integer.parseInt(s);
-                if (val < min) return Integer.toString((int) min);
+//                if (val < min) return Integer.toString((int) min);
                 if (val > max) return Integer.toString((int) max);
                 return s;
             } catch (NumberFormatException ex) {

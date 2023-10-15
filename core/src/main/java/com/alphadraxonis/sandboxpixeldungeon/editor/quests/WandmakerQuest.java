@@ -31,14 +31,14 @@ public class WandmakerQuest extends Quest {
             wand1 = (Wand) Generator.randomUsingDefaults(Generator.Category.WAND);
             wand1.cursed = false;
             wand1.upgrade();
-        }
+        } else if (wand1.identifyOnStart) wand1.identify();
         if (wand2 == null) {
             do {
                 wand2 = (Wand) Generator.randomUsingDefaults(Generator.Category.WAND);
             } while (wand2.getClass().equals(wand1.getClass()));
             wand2.cursed = false;
             wand2.upgrade();
-        }
+        } else if (wand2.identifyOnStart) wand2.identify();
 
         if (type == BASED_ON_DEPTH) type = levelScheme.generateWandmakerQuest();
         else if (type == RANDOM) type = Random.Int(NUM_QUESTS);

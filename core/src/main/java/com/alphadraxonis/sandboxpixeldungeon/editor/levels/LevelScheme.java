@@ -5,7 +5,9 @@ import com.alphadraxonis.sandboxpixeldungeon.Challenges;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.ChampionEnemy;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
@@ -15,9 +17,11 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.WandmakerQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
+import com.alphadraxonis.sandboxpixeldungeon.items.EquipableItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.Torch;
+import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CavesLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.CityBossLevel;
@@ -504,14 +508,14 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         Random.pushGenerator(seed);
 
         for (Mob m : mobsToSpawn) {
-            if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
+            initRandStatsForMob(m);
         }
         for (Item i : itemsToSpawn) {
             AugumentationSpinner.assignRandomAugumentation(i);
         }
         if (type == CustomLevel.class) {
             for (Mob m : level.mobs) {
-                if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
+                initRandStatsForMob(m);
             }
             for (Heap h : level.heaps.valueList()) {
                 for (Item i : h.items) {
@@ -520,6 +524,20 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
             }
         }
         Random.popGenerator();
+    }
+
+    private void initRandStatsForMob(Mob m){
+        if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
+        if (m instanceof Mimic) {
+            for (Item i : ((Mimic) m).items) {
+                if (i.identifyOnStart && (i instanceof EquipableItem || i instanceof Wand)) i.identify();
+                AugumentationSpinner.assignRandomAugumentation(i);
+            }
+        } else if (m instanceof Thief){
+            Item i = ((Thief) m).item;
+            if (i.identifyOnStart && (i instanceof EquipableItem || i instanceof Wand)) i.identify();
+            AugumentationSpinner.assignRandomAugumentation(i);
+        }
     }
 
     private void spawnItemsAndMobs(long seed) {

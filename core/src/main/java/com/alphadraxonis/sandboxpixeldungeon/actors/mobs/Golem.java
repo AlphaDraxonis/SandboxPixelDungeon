@@ -26,10 +26,13 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Actor;
 import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.MagicImmune;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.GolemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.utils.BArray;
@@ -91,13 +94,29 @@ public class Golem extends Mob {
 	}
 
 	public Item createLoot() {
-		Dungeon.LimitedDrops.GOLEM_EQUIP.count++;
 		//uses probability tables for demon halls
 		if (loot == Generator.Category.WEAPON){
 			return Generator.randomWeapon(5, true);
 		} else {
 			return Generator.randomArmor(5);
 		}
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		Generator.convertRandomArmorToCustomLootInfo(customLootInfo, 5);
+		Generator.convertRandomWeaponToCustomLootInfo(customLootInfo, 5);
+		customLootInfo.setLootChance(customLootInfo.calculateSum() * 7);
+		return customLootInfo;
+	}
+
+
+	@Override
+	public void increaseLimitedDropCount(Item generatedLoot) {
+		if (generatedLoot instanceof MeleeWeapon || generatedLoot instanceof Armor)
+			Dungeon.LimitedDrops.GOLEM_EQUIP.count++;
+		super.increaseLimitedDropCount(generatedLoot);
 	}
 
 	private boolean teleporting = false;

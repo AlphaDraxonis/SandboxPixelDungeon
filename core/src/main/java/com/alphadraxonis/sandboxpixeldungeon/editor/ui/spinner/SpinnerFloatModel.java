@@ -64,7 +64,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
             public void onSelect(boolean positive, String text) {
                 if (positive) {
                     try {
-                        setValue(convertToInt(Float.parseFloat(text.replace(NUMBER_DECIMAL_SEPARATOR,'.'))));
+                        setValue(convertToInt(Math.max(min, Float.parseFloat(text.replace(NUMBER_DECIMAL_SEPARATOR,'.')))));
                     } catch (NumberFormatException ex) {
                         //just ignore value
                     }
@@ -87,7 +87,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
         w.getTextBox().convertStringToValidString = s -> {
             try {
                 float val = Float.parseFloat(s.replace(NUMBER_DECIMAL_SEPARATOR,'.'));
-                if (val < min) return String.format(Languages.getCurrentLocale(), "%.1f", min);
+//                if (val < min) return String.format(Languages.getCurrentLocale(), "%.1f", min);
                 if (val > max) return String.format(Languages.getCurrentLocale(), "%.1f", max);
                 return s;
             } catch (NumberFormatException ex) {

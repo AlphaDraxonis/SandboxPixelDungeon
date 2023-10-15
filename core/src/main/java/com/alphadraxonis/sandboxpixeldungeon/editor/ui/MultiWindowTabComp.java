@@ -13,9 +13,9 @@ import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Button;
 import com.alphadraxonis.sandboxpixeldungeon.ui.IconButton;
 import com.alphadraxonis.sandboxpixeldungeon.ui.Icons;
+import com.alphadraxonis.sandboxpixeldungeon.ui.RenderedTextBlock;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollPane;
 import com.alphadraxonis.sandboxpixeldungeon.ui.StyledButton;
-import com.alphadraxonis.sandboxpixeldungeon.windows.IconTitle;
 import com.alphadraxonis.sandboxpixeldungeon.windows.WndKeyBindings;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
@@ -30,14 +30,14 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
     public static final int GAP = 2, BIG_GAP = GAP * 3, BUTTON_HEIGHT = 18;
 
-    private boolean layoutOwnMenu = true;
+    protected boolean layoutOwnMenu = true;
     private Component otherTitle, otherBody, outsideSp;
     private ScrollPane spForOtherBody;
     private float alignmentOther, titleAlignmentOther;
     private ButtonBack buttonBack;
 
-    protected IconTitle title;
-    private ScrollPane sp;
+    protected Component title;
+    protected ScrollPane sp;
     protected Component content;
 
     protected Component[] mainWindowComps;
@@ -64,6 +64,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
         float posY = y;
 
         if (layoutOwnMenu) {
+            if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth((int) width);
             title.setRect(x, posY, width, title.height());
 
             EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, mainWindowComps);
@@ -86,8 +87,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
                 outsideSp.setSize(width, -1);
                 float outsideSpH = outsideSp.height();
                 outsideSp.setPos(x, y + height - outsideSpH);
-                normalSpHeight = height - outsideSpH - posY - GAP;
-                if (outsideSpH == 0) normalSpHeight++;
+                normalSpHeight = height - posY - (outsideSpH == 0 ? 1 : outsideSpH + GAP);
             } else {
                 normalSpHeight = height - posY - 1;
             }
@@ -97,6 +97,28 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
             spForOtherBody.scrollToCurrentView();
             spForOtherBody.givePointerPriority();
         }
+    }
+
+    public float preferredHeight(){
+        float result;
+        if (layoutOwnMenu) {
+            result = title.height() + GAP + 1;//+1 is gap to bottom
+            EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, mainWindowComps);
+            result += content.height();
+        } else {
+            otherBody.setSize(width, -1);
+            result = GAP * 5 + Math.max(otherTitle.height(), buttonBack.height())
+            + otherBody.height() + 1;
+
+            if (outsideSp != null) {
+                outsideSp.setSize(width, -1);
+                float outsideSpH = outsideSp.height();
+                if (outsideSpH != 0) {
+                    result += outsideSpH + GAP - 1;
+                }
+            }
+        }
+        return result;
     }
 
     protected void changeContent(Component titleBar, Component body, Component outsideSp) {

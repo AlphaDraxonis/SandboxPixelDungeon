@@ -82,11 +82,10 @@ public class Bat extends Mob {
 	public float lootChance(){
 		return super.lootChance() * ((7f - Dungeon.LimitedDrops.BAT_HP.count) / 7f);
 	}
-	
+
 	@Override
-	public Item createLoot(){
-		Dungeon.LimitedDrops.BAT_HP.count++;
-		return super.createLoot();
+	public void increaseLimitedDropCount(Item generatedLoot) {
+		if (generatedLoot instanceof PotionOfHealing) Dungeon.LimitedDrops.BAT_HP.count++;
+		super.increaseLimitedDropCount(generatedLoot);
 	}
-	
 }

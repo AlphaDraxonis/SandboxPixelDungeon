@@ -26,6 +26,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Cripple;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Light;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.Potion;
@@ -114,6 +115,20 @@ public class Scorpio extends Mob {
 		} while (loot == PotionOfHealing.class || loot == PotionOfStrength.class);
 
 		return Reflection.newInstance(loot);
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+
+		for (Class<?> cl : Generator.Category.POTION.classes) {
+			if (cl != PotionOfHealing.class && cl != PotionOfStrength.class) {
+				Potion p = (Potion) Reflection.newInstance(cl);
+				customLootInfo.addItem(p, 1);
+			}
+		}
+		customLootInfo.setLootChance(customLootInfo.calculateSum());
+		return customLootInfo;
 	}
 	
 }

@@ -27,12 +27,15 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AllyBuff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Dread;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Terror;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Hero;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Gold;
 import com.alphadraxonis.sandboxpixeldungeon.items.Honeypot;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.Artifact;
+import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ThiefSprite;
@@ -116,12 +119,22 @@ public class Thief extends Mob {
     }
 
     @Override
-    public Item createLoot() {
-        Dungeon.LimitedDrops.THEIF_MISC.count++;
-        return super.createLoot();
+    public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+        LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+        Generator.convertGeneratorToCustomLootInfo(customLootInfo, Generator.Category.ARTIFACT, 3);
+        Generator.convertGeneratorToCustomLootInfo(customLootInfo, Generator.Category.RING, 1);
+        customLootInfo.setLootChance((int) (customLootInfo.calculateSum() / lootChance - 1));
+        return customLootInfo;
     }
 
-//    @Override
+    @Override
+    public void increaseLimitedDropCount(Item generatedLoot) {
+        if (generatedLoot instanceof Ring || generatedLoot instanceof Artifact)
+            Dungeon.LimitedDrops.THEIF_MISC.count++;
+        super.increaseLimitedDropCount(generatedLoot);
+    }
+
+    //    @Override
 //    public int attackSkill(Char target) {
 //        return 12;
 //    }

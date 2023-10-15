@@ -62,6 +62,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.levels.LevelScheme;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.FlowParticle;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.WindParticle;
+import com.alphadraxonis.sandboxpixeldungeon.items.EquipableItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -72,6 +73,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.TimekeepersHourglas
 import com.alphadraxonis.sandboxpixeldungeon.items.bombs.Bomb;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfStrength;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfWarding;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.HeavyBoomerang;
@@ -362,7 +364,7 @@ public abstract class Level implements Bundlable {
         for (Heap h : heaps.valueList()) {
             h.seen = false;
             for (Item i : h.items) {
-                if (i.identifyOnStart) i.identify();
+                if (i.identifyOnStart && (i instanceof EquipableItem || i instanceof Wand)) i.identify();
                 if (i.getClass() == Bomb.class && i.quantity() >= 2) i.image = ItemSpriteSheet.DBL_BOMB;
             }
         }

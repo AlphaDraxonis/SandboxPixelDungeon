@@ -200,6 +200,8 @@ public class Item implements Bundlable {
 
     public boolean collect(Bag container) {
 
+        if (identifyOnStart) identify();
+
         if (quantity <= 0) {
             return true;
         }

@@ -79,6 +79,11 @@ public abstract class EditorItem extends Item {
         }
 
         @Override
+        public String title() {
+            return Messages.titleCase(name());
+        }
+
+        @Override
         public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
             return new DefaultListItem(this, window, title(), getSprite());
         }

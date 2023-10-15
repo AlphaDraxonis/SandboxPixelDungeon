@@ -89,13 +89,14 @@ public class Necromancer extends Mob {
 	public float lootChance() {
 		return super.lootChance() * ((6f - Dungeon.LimitedDrops.NECRO_HP.count) / 6f);
 	}
-	
+
 	@Override
-	public Item createLoot(){
-		Dungeon.LimitedDrops.NECRO_HP.count++;
-		return super.createLoot();
+	public void increaseLimitedDropCount(Item generatedLoot) {
+		if (generatedLoot instanceof PotionOfHealing)
+			Dungeon.LimitedDrops.NECRO_HP.count++;
+		super.increaseLimitedDropCount(generatedLoot);
 	}
-	
+
 	@Override
 	public void die(Object cause) {
 		if (storedSkeletonID != -1){

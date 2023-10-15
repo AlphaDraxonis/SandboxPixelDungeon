@@ -22,6 +22,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Badges;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.journal.Guidebook;
 import com.alphadraxonis.sandboxpixeldungeon.journal.Document;
@@ -70,5 +71,13 @@ public class Snake extends Mob {
 			dodges = 0;
 		}
 		return super.defenseVerb();
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		Generator.convertGeneratorToCustomLootInfo(customLootInfo, Generator.Category.SEED, 1);
+		customLootInfo.setLootChance(customLootInfo.calculateSum() * 5);
+		return customLootInfo;
 	}
 }

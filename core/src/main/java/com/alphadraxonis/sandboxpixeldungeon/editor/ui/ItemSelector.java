@@ -39,11 +39,23 @@ public class ItemSelector extends Component {
     protected IconButton changeBtn;
     private final NullTypeSelector nullTypeSelector;
 
+    protected final AnyItemSelectorWnd selector;
+
     private int showWhenNull = -1;
 
     public ItemSelector(String text, Class<? extends Item> itemClasses, Item startItem, NullTypeSelector nullTypeSelector) {
         this.itemClasses = itemClasses;
         this.nullTypeSelector = nullTypeSelector;
+
+        selector = new AnyItemSelectorWnd(itemClasses) {
+            @Override
+            public void onSelect(Item item) {
+                if (item == null) return;//if window is canceled
+                if (item == EditorItem.NULL_ITEM) setSelectedItem(null);
+                else
+                    setSelectedItem(item instanceof ItemItem ? ((ItemItem) item).item().getCopy() : item.getCopy());
+            }
+        };
 
         renderedTextBlock = PixelScene.renderTextBlock(text, 10);
         add(renderedTextBlock);
@@ -189,8 +201,6 @@ public class ItemSelector extends Component {
     }
 
 
-    protected final ItemChange selector = new ItemChange();
-
     public static class Win extends Window implements EditorInventoryWindow {
 
         private final WndBag.ItemSelectorInterface selector;
@@ -205,7 +215,12 @@ public class ItemSelector extends Component {
         }
     }
 
-    private class ItemChange extends WndBag.ItemSelector {
+    public static abstract class AnyItemSelectorWnd  extends WndBag.ItemSelector {
+        protected final Class<? extends Item> itemClasses;
+
+        public AnyItemSelectorWnd(Class<? extends Item> itemClasses) {
+            this.itemClasses = itemClasses;
+        }
 
         @Override
         public String textPrompt() {
@@ -215,14 +230,6 @@ public class ItemSelector extends Component {
         @Override
         public boolean itemSelectable(Item item) {
             return itemClasses.isAssignableFrom(item.getClass());
-        }
-
-        @Override
-        public void onSelect(Item item) {
-            if (item == null) return;//if window is canceled
-            if (item == EditorItem.NULL_ITEM) setSelectedItem(null);
-            else
-                setSelectedItem(item instanceof ItemItem ? ((ItemItem) item).item().getCopy() : item.getCopy());
         }
 
         @Override

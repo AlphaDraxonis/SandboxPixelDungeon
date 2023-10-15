@@ -53,7 +53,9 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroSubClass;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.Talent;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.abilities.duelist.Feint;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.DirectableAlly;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
@@ -61,6 +63,7 @@ import com.alphadraxonis.sandboxpixeldungeon.effects.Surprise;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Wound;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.ShadowParticle;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
+import com.alphadraxonis.sandboxpixeldungeon.items.Gold;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.MasterThievesArmband;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.TimekeepersHourglass;
@@ -82,6 +85,7 @@ import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BossHealthBar;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -157,6 +161,7 @@ public abstract class Mob extends Char {
     private static final String XP = "xp";
     private static final String STATS_SCALE = "stats_scale";
     private static final String IS_BOSS_MOB = "is_boss_mob";
+    private static final String LOOT = "loot";
 
     private static final String ENEMY_ID = "enemy_id";
 
@@ -191,6 +196,8 @@ public abstract class Mob extends Char {
         }
 
         bundle.put(IS_BOSS_MOB, isBossMob);
+
+        if (loot instanceof LootTableComp.CustomLootInfo) bundle.put(LOOT, (Bundlable) loot);
 
         if (enemy != null) {
             bundle.put(ENEMY_ID, enemy.id());
@@ -232,7 +239,7 @@ public abstract class Mob extends Char {
         if (bundle.contains(DAMAGE_ROLL_MIN)) damageRollMin = bundle.getInt(DAMAGE_ROLL_MIN);
         if (bundle.contains(DAMAGE_ROLL_MAX)) damageRollMax = bundle.getInt(DAMAGE_ROLL_MAX);
         if (bundle.contains(XP)) EXP = bundle.getInt(XP);
-        if (bundle.contains(STATS_SCALE)) statsScale = bundle.getInt(STATS_SCALE);
+        if (bundle.contains(STATS_SCALE)) statsScale = bundle.getFloat(STATS_SCALE);
 
         if (bundle.contains(IS_BOSS_MOB)) {
             isBossMob = bundle.getBoolean(IS_BOSS_MOB);
@@ -242,6 +249,8 @@ public abstract class Mob extends Char {
                 if ((HP*2 <= HT)) BossHealthBar.bleed(true);
             }
         }
+
+        if (bundle.contains(LOOT)) loot = bundle.get(LOOT);
     }
 
     //mobs need to remember their targets after every actor is added
@@ -954,11 +963,18 @@ public abstract class Mob extends Char {
     public void rollToDropLoot() {
         if (Dungeon.hero.lvl > maxLvl + 2) return;
 
+        if (loot instanceof LootTableComp.CustomLootInfo) {
+            this.lootChance = ((LootTableComp.CustomLootInfo) loot).lootChance();
+        }
+
         MasterThievesArmband.StolenTracker stolen = buff(MasterThievesArmband.StolenTracker.class);
         if (stolen == null || !stolen.itemWasStolen()) {
             if (Random.Float() < lootChance()) {
-                Item loot = createLoot();
+                Item loot = createActualLoot();
                 if (loot != null) {
+                    if (loot.identifyOnStart) loot.identify();
+                    AugumentationSpinner.assignRandomAugumentation(loot);
+                    increaseLimitedDropCount(loot);
                     Dungeon.level.drop(loot, pos).sprite.drop();
                 }
             }
@@ -990,11 +1006,16 @@ public abstract class Mob extends Char {
 
     }
 
-    protected Object loot = null;
+    public Object loot = null;
     protected float lootChance = 0;
 
+    public Item createActualLoot() {
+        if (loot instanceof LootTableComp.CustomLootInfo) return ((LootTableComp.CustomLootInfo) loot).generateLoot();
+        else return createLoot();
+    }
+
     @SuppressWarnings("unchecked")
-    public Item createLoot() {
+    protected Item createLoot() {
         Item item;
         if (loot instanceof Generator.Category) {
 
@@ -1010,6 +1031,20 @@ public abstract class Mob extends Char {
 
         }
         return item;
+    }
+
+    public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+        LootTableComp.CustomLootInfo customLootInfo = new LootTableComp.CustomLootInfo();
+        if (loot instanceof Item || loot == Gold.class) {
+            customLootInfo.addItem(createLoot(), 1);
+            int noLoot = (int) (1f / lootChance - 1);
+            if (noLoot > 0) customLootInfo.setLootChance(noLoot);
+        }
+        return customLootInfo;
+    }
+
+    public void increaseLimitedDropCount(Item generatedLoot) {
+
     }
 
     //how many mobs this one should count as when determining spawning totals
@@ -1051,7 +1086,8 @@ public abstract class Mob extends Char {
                         defaultStats.HT != HT || defaultStats.damageReductionMax != damageReductionMax
                                 || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
                                 || defaultStats.EXP != EXP
-                )){
+                                || loot instanceof LootTableComp.CustomLootInfo
+                )) {
                     desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
                     if (defaultStats.statsScale != statsScale)
                         desc += "\n" + Messages.get(Mob.class, "stats_scale") + ": " + defaultStats.statsScale + " -> _" + statsScale + "_";
@@ -1069,7 +1105,8 @@ public abstract class Mob extends Char {
                 if (defaultStats.HT != HT || defaultStats.baseSpeed != baseSpeed
                         || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
                         || defaultStats.damageRollMin != damageRollMin || defaultStats.damageRollMax != damageRollMax
-                        || defaultStats.damageReductionMax != damageReductionMax || defaultStats.EXP != EXP) {
+                        || defaultStats.damageReductionMax != damageReductionMax || defaultStats.EXP != EXP
+                        || loot instanceof LootTableComp.CustomLootInfo) {
                     desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
 
                     if (defaultStats.baseSpeed != baseSpeed)
@@ -1085,6 +1122,8 @@ public abstract class Mob extends Char {
                 }
 
             }
+            if (loot instanceof LootTableComp.CustomLootInfo)
+                desc += "\n" + Messages.get(Mob.class, "loot");
         }
 
         return desc;

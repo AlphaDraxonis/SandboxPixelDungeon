@@ -22,6 +22,7 @@
 package com.alphadraxonis.sandboxpixeldungeon.items;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.ClothArmor;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.DuelistArmor;
@@ -610,7 +611,56 @@ public class Generator {
 			return ((Item) Reflection.newInstance(cat.classes[Random.chances(cat.defaultProbs)])).random();
 		}
 	}
-	
+
+	public static void convertGeneratorToCustomLootInfo(LootTableComp.CustomLootInfo customLootInfo, Category cat, int multiplier) {
+		if (cat == Category.WEAPON) {
+			return;//TODO
+		} else if (cat == Category.MISSILE) {
+			return;//TODO
+//		} else if (cat.defaultProbs == null || cat == Category.ARTIFACT) {
+//			return;
+		} else {
+			int i = 0;
+			for (Class<?> cl : cat.classes) {
+				if (cat.defaultProbs[i] > 0)
+					customLootInfo.addItem(((Item) Reflection.newInstance(cl)).random(), (int) cat.defaultProbs[i] * multiplier);
+				i++;
+			}
+		}
+	}
+
+	public static void convertRandomArmorToCustomLootInfo(LootTableComp.CustomLootInfo customLootInfo, int floorSet) {
+		floorSet = (int) GameMath.gate(0, floorSet, floorSetTierProbs.length - 1);
+		int i = 0;
+		for (Class<?> cl : Category.ARMOR.classes) {
+			if (floorSetTierProbs[floorSet][i] > 0)
+				customLootInfo.addItem(((Item) Reflection.newInstance(cl)).random(), (int) floorSetTierProbs[floorSet][i]);
+			if (i == 4) break;//don't do class armors
+			i++;
+		}
+	}
+
+	public static void convertRandomWeaponToCustomLootInfo(LootTableComp.CustomLootInfo customLootInfo, int floorSet) {
+		floorSet = (int) GameMath.gate(0, floorSet, floorSetTierProbs.length - 1);
+
+		int i = 0;
+		for (Category cat : wepTiers) {
+			if (floorSetTierProbs[floorSet][i] > 0) convertGeneratorToCustomLootInfo(customLootInfo, cat, (int) floorSetTierProbs[floorSet][i]);
+			i++;
+		}
+	}
+
+	public static void convertRandomMissileWeaponToCustomLootInfo(LootTableComp.CustomLootInfo customLootInfo) {
+
+		int floorSet = (int) GameMath.gate(0, Dungeon.depth / 5, floorSetTierProbs.length - 1);
+
+		int i = 0;
+		for (Category cat : misTiers) {
+			if (floorSetTierProbs[floorSet][i] > 0) convertGeneratorToCustomLootInfo(customLootInfo, cat, (int) floorSetTierProbs[floorSet][i]);
+			i++;
+		}
+	}
+
 	public static Item random( Class<? extends Item> cl ) {
 		return Reflection.newInstance(cl).random();
 	}

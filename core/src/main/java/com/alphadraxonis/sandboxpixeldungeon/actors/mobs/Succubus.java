@@ -29,6 +29,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Barrier;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Charm;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Light;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Speck;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
@@ -174,6 +175,20 @@ public class Succubus extends Mob {
 		} while (loot == ScrollOfIdentify.class || loot == ScrollOfUpgrade.class);
 
 		return Reflection.newInstance(loot);
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+
+		for (Class<?> cl : Generator.Category.SCROLL.classes) {
+			if (cl != ScrollOfIdentify.class && cl != ScrollOfUpgrade.class) {
+				Scroll s = (Scroll) Reflection.newInstance(cl);
+				customLootInfo.addItem(s, 1);
+			}
+		}
+		customLootInfo.setLootChance(customLootInfo.calculateSum() * 2);
+		return customLootInfo;
 	}
 
 	{

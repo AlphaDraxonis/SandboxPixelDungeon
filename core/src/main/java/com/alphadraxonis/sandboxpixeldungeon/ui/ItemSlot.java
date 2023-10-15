@@ -247,6 +247,8 @@ public class ItemSlot extends Button {
             itemIcon = null;
         }
 
+        //IMPORTANT: any change made here should also be made in AdvancedListPaneItem#onUpdateIfUsedForItem()
+
         if (item == null) {
             status.visible = extra.visible = level.visible = false;
             return;
@@ -298,6 +300,8 @@ public class ItemSlot extends Button {
             extra.text(null);
 
         }
+
+        //IMPORTANT: any change made here should also be made in AdvancedListPaneItem#onUpdateIfUsedForItem()
 
         int trueLvl = item.visiblyUpgraded();
         int buffedLvl = item.buffedVisiblyUpgraded();

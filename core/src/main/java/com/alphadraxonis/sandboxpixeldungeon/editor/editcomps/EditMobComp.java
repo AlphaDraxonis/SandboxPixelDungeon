@@ -18,6 +18,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.LotusLe
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.MobStateSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.QuestSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.WndEditStats;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Buffs;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
@@ -344,14 +345,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             editStats = new RedButton(Messages.get(EditMobComp.class, "edit_stats")) {
                 @Override
                 protected void onClick() {
-                    Window w = new WndEditStats((int) Math.ceil(EditMobComp.this.width),
-                            EditorUtilies.getParentWindow(EditMobComp.this).getOffset().y, defaultStats, mob){
-                        @Override
-                        public void hide() {
-                            updateObj();
-                            super.hide();
-                        }
-                    };
+                    Window w = WndEditStats.createWindow((int) Math.ceil(EditMobComp.this.width),
+                            EditorUtilies.getParentWindow(EditMobComp.this).getOffset().y, defaultStats, mob, () -> updateObj());
                     if (Game.scene() instanceof EditorScene) EditorScene.show(w);
                     else Game.scene().addToFront(w);
                 }
@@ -432,7 +427,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         } else if (a instanceof Mimic) {
             return DefaultEditComp.isItemListEqual(((Mimic) a).items, ((Mimic) b).items);
         }
-        return true;
+        if (a.loot instanceof LootTableComp.CustomLootInfo) {
+            return a.loot.equals(b.loot);
+        }
+        return !(b.loot instanceof LootTableComp.CustomLootInfo);
     }
 
     private class MobTitleEditor extends WndInfoMob.MobTitle {

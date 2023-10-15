@@ -1,7 +1,14 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.ui;
 
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.items.Item;
+import com.alphadraxonis.sandboxpixeldungeon.items.armor.Armor;
+import com.alphadraxonis.sandboxpixeldungeon.items.wands.Wand;
+import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
+import com.alphadraxonis.sandboxpixeldungeon.ui.ItemSlot;
 import com.alphadraxonis.sandboxpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;
@@ -54,6 +61,37 @@ public abstract class AdvancedListPaneItem extends ScrollingListPane.ListItem {
 
     public void onUpdate() {
         layout();
+    }
+
+    public void onUpdateIfUsedForItem(Item item){
+        if (item == null) return;
+
+        //IMPORTANT: any change made here should also be made in ItemSlot#updateText()
+
+        bg.visible = item.cursed;
+        label.text(Messages.titleCase(item.title()));
+
+        if (icon != null) remove(icon);
+        icon = CustomDungeon.getDungeon().getItemImage(item);
+        addToBack(icon);
+        remove(bg);
+        addToBack(bg);
+
+        //IMPORTANT: any change made here should also be made in ItemSlot#updateText()
+
+        int lvl = item.level();
+        if (lvl != 0) {
+            lvlLabel.text(Messages.format(ItemSlot.TXT_LEVEL, lvl));
+            lvlLabel.measure();
+            if ((item instanceof Weapon && ((Weapon) item).curseInfusionBonus)
+                    || (item instanceof Armor && ((Armor) item).curseInfusionBonus)
+                    || (item instanceof Wand && ((Wand) item).curseInfusionBonus)) {
+                lvlLabel.hardlight(ItemSlot.CURSE_INFUSED);
+            } else {
+                lvlLabel.hardlight(ItemSlot.UPGRADED);
+            }
+        } else lvlLabel.text(null);
+
     }
 
 }

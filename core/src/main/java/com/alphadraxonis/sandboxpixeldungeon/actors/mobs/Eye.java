@@ -28,6 +28,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Invisibility;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Light;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.PurpleParticle;
 import com.alphadraxonis.sandboxpixeldungeon.items.Dewdrop;
@@ -240,6 +241,11 @@ public class Eye extends Mob {
 				break;
 		}
 		return loot;
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		return new LootTableComp.CustomLootInfo();
 	}
 
 	private static final String BEAM_TARGET     = "beamTarget";

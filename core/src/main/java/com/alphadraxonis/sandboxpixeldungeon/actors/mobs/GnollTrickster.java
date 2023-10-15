@@ -30,6 +30,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Burning;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Poison;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -128,6 +129,16 @@ public class GnollTrickster extends Gnoll {
 		//half quantity, rounded up
 		drop.quantity((drop.quantity()+1)/2);
 		return drop;
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		Generator.convertRandomMissileWeaponToCustomLootInfo(customLootInfo);
+		for (LootTableComp.ItemWithCount item : customLootInfo.lootList) {
+			item.item.quantity((item.item.quantity() + 1) / 2);
+		}
+		return customLootInfo;
 	}
 	
 	@Override

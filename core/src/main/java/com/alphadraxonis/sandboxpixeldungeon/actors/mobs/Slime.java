@@ -23,6 +23,7 @@ package com.alphadraxonis.sandboxpixeldungeon.actors.mobs;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.MeleeWeapon;
@@ -76,10 +77,27 @@ public class Slime extends Mob {
 	
 	@Override
 	public Item createLoot() {
-		Dungeon.LimitedDrops.SLIME_WEP.count++;
 		Generator.Category c = Generator.Category.WEP_T2;
 		MeleeWeapon w = (MeleeWeapon)Generator.randomUsingDefaults(Generator.Category.WEP_T2);
 		w.level(0);
 		return w;
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		Generator.convertGeneratorToCustomLootInfo(customLootInfo, Generator.Category.WEP_T2, 1);
+		for (LootTableComp.ItemWithCount item : customLootInfo.lootList) {
+			item.item.level(0);
+		}
+		customLootInfo.setLootChance(customLootInfo.calculateSum() * 4);
+		return customLootInfo;
+	}
+
+	@Override
+	public void increaseLimitedDropCount(Item generatedLoot) {
+		if (generatedLoot instanceof MeleeWeapon)
+			Dungeon.LimitedDrops.SLIME_WEP.count++;
+		super.increaseLimitedDropCount(generatedLoot);
 	}
 }

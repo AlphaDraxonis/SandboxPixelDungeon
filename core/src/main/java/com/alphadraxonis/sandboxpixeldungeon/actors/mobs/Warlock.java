@@ -29,6 +29,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.AscensionChallenge;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Degrade;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Invisibility;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.potions.PotionOfHealing;
@@ -170,5 +171,17 @@ public class Warlock extends Mob implements Callback {
 			return i;
 		}
 
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		return new LootTableComp.CustomLootInfo();
+	}
+
+	@Override
+	public void increaseLimitedDropCount(Item generatedLoot) {
+		if (generatedLoot instanceof PotionOfHealing)
+			Dungeon.LimitedDrops.WARLOCK_HP.count++;
+		super.increaseLimitedDropCount(generatedLoot);
 	}
 }
