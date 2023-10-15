@@ -27,7 +27,7 @@ public class LevelSpinner extends Spinner {
             this(level, 100);
         }
         public LevelSpinnerModel(int level, int max) {
-            super(0, max, level, 1, false, null);
+            super(-10, max, level, 1, false, null);
         }
 
         @Override
@@ -42,8 +42,8 @@ public class LevelSpinner extends Spinner {
 
         @Override
         public void displayInputAnyNumberDialog() {
-            if (getMaximum() == 100) super.displayInputAnyNumberDialog();
-            else super.displayInputAnyNumberDialog(getMinimum(), getMaximum());
+            if (getMaximum() == 100) displayInputAnyNumberDialog(-100, Integer.MAX_VALUE);
+            else displayInputAnyNumberDialog(getMinimum(), getMaximum());
         }
     }
 }

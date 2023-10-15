@@ -79,16 +79,26 @@ public abstract class AdvancedListPaneItem extends ScrollingListPane.ListItem {
 
         //IMPORTANT: any change made here should also be made in ItemSlot#updateText()
 
-        int lvl = item.level();
-        if (lvl != 0) {
-            lvlLabel.text(Messages.format(ItemSlot.TXT_LEVEL, lvl));
+        //Code from ItemSlot
+        int trueLvl = item.trueLevel();
+        int buffedLvl = item.buffedLvl();
+        if (trueLvl != 0 || buffedLvl != 0) {
+            lvlLabel.text(Messages.format(ItemSlot.TXT_LEVEL, buffedLvl));
             lvlLabel.measure();
-            if ((item instanceof Weapon && ((Weapon) item).curseInfusionBonus)
-                    || (item instanceof Armor && ((Armor) item).curseInfusionBonus)
-                    || (item instanceof Wand && ((Wand) item).curseInfusionBonus)) {
-                lvlLabel.hardlight(ItemSlot.CURSE_INFUSED);
+            if (trueLvl == buffedLvl || buffedLvl <= 0) {
+                if (buffedLvl > 0) {
+                    if ((item instanceof Weapon && ((Weapon) item).curseInfusionBonus)
+                            || (item instanceof Armor && ((Armor) item).curseInfusionBonus)
+                            || (item instanceof Wand && ((Wand) item).curseInfusionBonus)) {
+                        lvlLabel.hardlight(ItemSlot.CURSE_INFUSED);
+                    } else {
+                        lvlLabel.hardlight(ItemSlot.UPGRADED);
+                    }
+                } else {
+                    lvlLabel.hardlight(ItemSlot.DEGRADED);
+                }
             } else {
-                lvlLabel.hardlight(ItemSlot.UPGRADED);
+                lvlLabel.hardlight(buffedLvl > trueLvl ? ItemSlot.ENHANCED : ItemSlot.WARNING);
             }
         } else lvlLabel.text(null);
 

@@ -121,7 +121,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     updateObj();
                 }
             };
-        } else if (item instanceof Artifact) {
+        } else if (item instanceof Artifact && ((Artifact) item).chargeCap() > 0) {
             chargeSpinner = new ChargeSpinner((Artifact) item) {
                 @Override
                 protected void onChange() {
