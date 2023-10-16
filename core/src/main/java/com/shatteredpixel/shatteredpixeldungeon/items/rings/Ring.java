@@ -324,7 +324,7 @@ public class Ring extends KindofMisc {
         return bonus;
     }
 
-    public int soloBonus() {
+    //just used for ring descriptionspublic int soloBonus() {
         if (cursed) {
             return Math.min(0, Ring.this.level() - 2);
         } else {
@@ -332,7 +332,7 @@ public class Ring extends KindofMisc {
         }
     }
 
-    public int soloBuffedBonus() {
+    //just used for ring descriptionspublic int soloBuffedBonus() {
         if (cursed) {
             return Math.min(0, Ring.this.buffedLvl() - 2);
         } else {
@@ -340,7 +340,16 @@ public class Ring extends KindofMisc {
         }
     }
 
-    public class RingBuff extends Buff {
+    //just used for ring descriptions
+	public static int combinedBuffedBonus(Char target, Class<?extends RingBuff> type){
+		int bonus = 0;
+		for (RingBuff buff : target.buffs(type)) {
+			bonus += buff.buffedLvl();
+		}
+		return bonus;
+	}
+
+	public class RingBuff extends Buff {
 
         @Override
         public boolean attachTo(Char target) {
