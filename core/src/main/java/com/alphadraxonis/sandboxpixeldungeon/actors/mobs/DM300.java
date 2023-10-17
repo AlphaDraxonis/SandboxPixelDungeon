@@ -76,12 +76,12 @@ import com.watabou.utils.Rect;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DM300 extends Mob {
+public class DM300 extends Mob implements MobBasedOnDepth {
 
 	{
 		spriteClass = DM300Sprite.class;
 
-		HP = HT = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 400 : 300;
+		HP = HT = 300;
 		EXP = 30;
 		defenseSkill = 15;
 		attackSkill = 20;
@@ -113,6 +113,8 @@ public class DM300 extends Mob {
 	public boolean supercharged = false;
 	public boolean chargeAnnounced = false;
 
+	public boolean destroyWalls = true;
+
 	private final int MIN_COOLDOWN = 5;
 	private final int MAX_COOLDOWN = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 7 : 9;
 
@@ -127,6 +129,7 @@ public class DM300 extends Mob {
 	private static final String PYLONS_ACTIVATED = "pylons_activated";
 	private static final String SUPERCHARGED = "supercharged";
 	private static final String CHARGE_ANNOUNCED = "charge_announced";
+	private static final String DESTROY_WALLS = "destroy_walls";
 
 	private static final String TURNS_SINCE_LAST_ABILITY = "turns_since_last_ability";
 	private static final String ABILITY_COOLDOWN = "ability_cooldown";
@@ -139,6 +142,7 @@ public class DM300 extends Mob {
 		bundle.put(PYLONS_ACTIVATED, pylonsActivated);
 		bundle.put(SUPERCHARGED, supercharged);
 		bundle.put(CHARGE_ANNOUNCED, chargeAnnounced);
+		bundle.put(DESTROY_WALLS, destroyWalls);
 		bundle.put(TURNS_SINCE_LAST_ABILITY, turnsSinceLastAbility);
 		bundle.put(ABILITY_COOLDOWN, abilityCooldown);
 		bundle.put(LAST_ABILITY, lastAbility);
@@ -150,6 +154,7 @@ public class DM300 extends Mob {
 		pylonsActivated = bundle.getInt(PYLONS_ACTIVATED);
 		supercharged = bundle.getBoolean(SUPERCHARGED);
 		chargeAnnounced = bundle.getBoolean(CHARGE_ANNOUNCED);
+		destroyWalls = bundle.getBoolean(DESTROY_WALLS);
 		turnsSinceLastAbility = bundle.getInt(TURNS_SINCE_LAST_ABILITY);
 		abilityCooldown = bundle.getInt(ABILITY_COOLDOWN);
 		lastAbility = bundle.getInt(LAST_ABILITY);
@@ -158,6 +163,13 @@ public class DM300 extends Mob {
 			BossHealthBar.assignBoss(this);
 			if (!supercharged && pylonsActivated == totalPylonsToActivate()) BossHealthBar.bleed(true);
 		}
+	}
+
+	@Override
+	public void setLevel(int depth) {
+		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) HP = HT = (int) (HP * 4 / 3f);
+//		((DM300Sprite)sprite).updateChargeState(true);
+//		((DM300Sprite)sprite).charge();
 	}
 
 	@Override
@@ -328,7 +340,7 @@ public class DM300 extends Mob {
 
 		if (travelling) PixelScene.shake( supercharged ? 3 : 1, 0.25f );
 
-		if (Dungeon.level.map[step] == Terrain.INACTIVE_TRAP && state == HUNTING) {
+		if (Dungeon.level.map[step] == Terrain.INACTIVE_TRAP && Dungeon.level instanceof CavesBossLevel && state == HUNTING) {
 
 			//don't gain energy from cells that are energized
 			if (CavesBossLevel.PylonEnergy.volumeAt(pos, CavesBossLevel.PylonEnergy.class) > 0){
@@ -487,22 +499,25 @@ public class DM300 extends Mob {
 			}
 		}
 
-		int threshold;
-		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
-			threshold = HT / 4 * (3 - pylonsActivated);
-		} else {
-			threshold = HT / 3 * (2 - pylonsActivated);
-		}
+		if (Dungeon.level instanceof CavesBossLevel) {
 
-		if (HP < threshold){
-			HP = threshold;
-			supercharge();
+			int threshold;
+			if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) {
+				threshold = HT / 4 * (3 - pylonsActivated);
+			} else {
+				threshold = HT / 3 * (2 - pylonsActivated);
+			}
+
+			if (HP < threshold) {
+				HP = threshold;
+				supercharge();
+			}
 		}
 
 	}
 
 	public int totalPylonsToActivate(){
-		return Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 3 : 2;
+		return Dungeon.level instanceof CavesBossLevel ? Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 3 : 2 : 0;
 	}
 
 	@Override
@@ -581,8 +596,10 @@ public class DM300 extends Mob {
 		if (super.getCloser(target)){
 			return true;
 		} else {
+			boolean isCavesBossLevel = Dungeon.level instanceof CavesBossLevel;
 
-			if (!supercharged || state != HUNTING || rooted || target == pos || Dungeon.level.adjacent(pos, target)) {
+			if (state != HUNTING || rooted || target == pos || Dungeon.level.adjacent(pos, target)
+					|| ((!supercharged || !isCavesBossLevel) && (!destroyWalls || isCavesBossLevel))) {
 				return false;
 			}
 
@@ -593,18 +610,25 @@ public class DM300 extends Mob {
 					bestpos = pos+i;
 				}
 			}
-			if (bestpos != pos){
+			if (bestpos != pos && (destroyWalls || isCavesBossLevel)) {
+
 				Sample.INSTANCE.play( Assets.Sounds.ROCKS );
 
 				Rect gate = CavesBossLevel.gate;
 				for (int i : PathFinder.NEIGHBOURS9){
 					if (Dungeon.level.map[pos+i] == Terrain.WALL || Dungeon.level.map[pos+i] == Terrain.WALL_DECO){
-						Point p = Dungeon.level.cellToPoint(pos+i);
-						if (p.y < gate.bottom && p.x >= gate.left-2 && p.x < gate.right+2){
-							continue; //don't break the gate or walls around the gate
-						}
-						if (!CavesBossLevel.diggableArea.inside(p)){
-							continue; //Don't break any walls out of the boss arena
+
+						if (isCavesBossLevel) {
+							Point p = Dungeon.level.cellToPoint(pos + i);
+							if (p.y < gate.bottom && p.x >= gate.left-2 && p.x < gate.right+2){
+								continue; //don't break the gate or walls around the gate
+							}
+							if (!CavesBossLevel.diggableArea.inside(p)) {
+								continue; //Don't break any walls out of the boss arena
+							}
+						} else {
+							if (!Dungeon.level.insideMap(pos + i))
+								continue;
 						}
 						Level.set(pos+i, Terrain.EMPTY_DECO);
 						GameScene.updateMap(pos+i);

@@ -82,12 +82,12 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class Tengu extends Mob implements MobBasedOnDepth{
+public class Tengu extends Mob implements MobBasedOnDepth {
 	
 	{
 		spriteClass = TenguSprite.class;
 		
-		HP = HT = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 250 : 200;
+		HP = HT = 200;
 		EXP = 20;
 		defenseSkill = 15;
 		attackSkill = 20;
@@ -126,6 +126,7 @@ public class Tengu extends Mob implements MobBasedOnDepth{
 	public void setLevel(int depth) {
 		initialPos = pos;
 		if (Dungeon.level instanceof PrisonBossLevel) phase = 0;
+		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) HP = HT = (int) (HP * 1.25f);
 	}
 
 	//	@Override

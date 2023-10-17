@@ -571,7 +571,7 @@ public class EToolbar extends Component {
     }
 
 
-    private static final CellSelector.Listener informerEditCell = new CellSelector.Listener() {
+    public static final CellSelector.Listener informerEditCell = new CellSelector.Listener() {
         @Override
         public void onSelect(Integer cell) {
             if (cell != null) EditorScene.showEditCellWindow(cell);

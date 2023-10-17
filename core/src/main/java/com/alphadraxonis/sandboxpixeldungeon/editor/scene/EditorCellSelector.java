@@ -1,15 +1,20 @@
 package com.alphadraxonis.sandboxpixeldungeon.editor.scene;
 
+import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.SPDAction;
+import com.alphadraxonis.sandboxpixeldungeon.actors.Char;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EToolbar;
 import com.alphadraxonis.sandboxpixeldungeon.editor.scene.undo.Undo;
+import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.CellSelector;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.input.GameAction;
 import com.watabou.input.PointerEvent;
 import com.watabou.input.ScrollEvent;
 import com.watabou.noosa.Camera;
+import com.watabou.utils.PointF;
 
 public class EditorCellSelector extends CellSelector {
 
@@ -19,7 +24,10 @@ public class EditorCellSelector extends CellSelector {
 
     @Override
     protected void handleClick(PointerEvent event) {
-//        PointF p = Camera.main.screenToCamera((int) event.current.x, (int) event.current.y);
+
+        if (event.button == PointerEvent.RIGHT || listener == EToolbar.informerEditCell) {
+
+            PointF p = Camera.main.screenToCamera((int) event.current.x, (int) event.current.y);
 //
 //            //Prioritizes a sprite if it and a tile overlap, so long as that sprite isn't more than 4 pixels into another tile.
 //            //The extra check prevents large sprites from blocking the player from clicking adjacent tiles
@@ -33,27 +41,28 @@ public class EditorCellSelector extends CellSelector {
 //                }
 //            }
 //
-//            //then mobs
-//            for (Char mob : Dungeon.level.mobs.toArray(new Mob[0])){
-//                if (mob.sprite != null && mob.sprite.overlapsPoint( p.x, p.y )){
-//                    PointF c = DungeonTilemap.tileCenterToWorld(mob.pos);
-//                    if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
-//                        select(mob.pos, event.button);
-//                        return;
-//                    }
-//                }
-//            }
-//
-//            //then heaps
-//            for (Heap heap : Dungeon.level.heaps.valueList()){
-//                if (heap.sprite != null && heap.sprite.overlapsPoint( p.x, p.y)){
-//                    PointF c = DungeonTilemap.tileCenterToWorld(heap.pos);
-//                    if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
-//                        select(heap.pos, event.button);
-//                        return;
-//                    }
-//                }
-//            }
+            //then mobs
+            for (Char mob : Dungeon.level.mobs.toArray(new Mob[0])){
+                if (mob.sprite != null && mob.sprite.overlapsPoint( p.x, p.y )){
+                    PointF c = DungeonTilemap.tileCenterToWorld(mob.pos);
+                    if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
+                        select(mob.pos, event.button, false);
+                        return;
+                    }
+                }
+            }
+
+            //then heaps
+            for (Heap heap : Dungeon.level.heaps.valueList()) {
+                if (heap.sprite != null && heap.sprite.overlapsPoint(p.x, p.y)) {
+                    PointF c = DungeonTilemap.tileCenterToWorld(heap.pos);
+                    if (Math.abs(p.x - c.x) <= 12 && Math.abs(p.y - c.y) <= 12) {
+                        select(heap.pos, event.button, false);
+                        return;
+                    }
+                }
+            }
+        }
 
         select(((DungeonTilemap) target).screenToTile(
                 (int) event.current.x,

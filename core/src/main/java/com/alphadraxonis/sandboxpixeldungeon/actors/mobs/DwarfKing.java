@@ -72,7 +72,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class DwarfKing extends Mob implements MobBasedOnDepth{
+public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 	{
 		spriteClass = KingSprite.class;

@@ -14,6 +14,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.CrystalMimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DM100;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DM200;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DM201;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DM300;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DemonSpawner;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DwarfKing;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Elemental;
@@ -248,6 +249,7 @@ public enum Mobs {
                 Spinner.class,
                 DM200.class,
                 DM201.class,
+                DM300.class
         };
 
         CITY.classes = new Class[]{

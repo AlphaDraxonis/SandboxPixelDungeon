@@ -48,10 +48,10 @@ import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-public class Goo extends Mob {
+public class Goo extends Mob implements MobBasedOnDepth {
 
 	{
-		HP = HT = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 120 : 100;
+		HP = HT = 100;
 		EXP = 10;
 		defenseSkill = 8;
 		spriteClass = GooSprite.class;
@@ -96,6 +96,11 @@ public class Goo extends Mob {
 	@Override
 	public int drRoll() {
 		return (int) (super.drRoll() + Random.NormalIntRange(0, 2) * statsScale);
+	}
+
+	@Override
+	public void setLevel(int depth) {
+		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) HP = HT = (int) (HP * 1.2f);
 	}
 
 	@Override

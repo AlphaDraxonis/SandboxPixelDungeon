@@ -2,6 +2,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
 
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Buff;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.ArmoredStatue;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.DM300;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
@@ -73,6 +74,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
     private final Spinner sentryRange, sentryDelay;
     private final Spinner tenguPhase, tenguRange;
+    private final CheckBox dm300destroyWalls;
 
     private final Component[] comps;
 
@@ -331,6 +333,20 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             tenguRange = null;
         }
 
+        if (mob instanceof DM300) {
+            dm300destroyWalls = new CheckBox(Messages.get(EditMobComp.class, "dm300_destroy_walls")){
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    ((DM300) mob).destroyWalls = value;
+                }
+            };
+            dm300destroyWalls.checked(((DM300) mob).destroyWalls);
+            add(dm300destroyWalls);
+        } else {
+            dm300destroyWalls = null;
+        }
+
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
                 mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper)) {
             addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
@@ -386,7 +402,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         } else editStats = null;
 
         comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, sheepLifespan,
-                mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, tenguPhase, tenguRange,
+                mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, tenguPhase, tenguRange, dm300destroyWalls,
                 sentryRange, sentryDelay, addBuffs, editStats};
     }
 
