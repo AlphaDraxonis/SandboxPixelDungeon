@@ -53,7 +53,7 @@ import java.util.Collections;
 
 public class WelcomeScene extends PixelScene {
 
-	private static final int LATEST_UPDATE = SandboxPixelDungeon._0_8_v2_1_4;
+	private static final int LATEST_UPDATE = SandboxPixelDungeon._0_8_v2_2_0;
 
 	//used so that the game does not keep showing the window forever if cleaning fails
 	private static boolean triedCleaningTemp = false;
@@ -205,8 +205,6 @@ public class WelcomeScene extends PixelScene {
 				message += "\n" + Messages.get(this, "patch_translations");
 
 			}
-			message = "Greetings beta testers!\n\n" +
-					"I've decided to change my plans a bit when it comes to the development and release of the new quest. v2.2.0 will now only include the crystal variant, but will be releasing much sooner! Expect the beta to wrap up around October 18th.";
 		} else {
 			message = Messages.get(this, "what_msg");
 		}

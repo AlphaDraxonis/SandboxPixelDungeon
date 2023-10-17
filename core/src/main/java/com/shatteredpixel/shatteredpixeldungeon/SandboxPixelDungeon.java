@@ -35,10 +35,10 @@ public class SandboxPixelDungeon extends Game {
 
 	//variable constants for specific older versions of shattered, used for data conversion
 	//versions older than v1.2.3 are no longer supported, and data from them is ignored
-	public static final int _0_8_v2_1_4  = 737; //iOS was 737, other platforms were 736
 	public static final int _0_3_v2_1_0  = 723;
+	public static final int _0_8_v2_2_0  = 755;
 
-	public SandboxPixelDungeon(PlatformSupport platform ) {
+	public SandboxPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
 
 		//pre-v2.2.0
