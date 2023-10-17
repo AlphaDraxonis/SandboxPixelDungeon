@@ -547,6 +547,15 @@ public class PrisonBossLevel extends Level {
 				break;
 		}
 	}
+
+	public static void killTengu(Level level, Tengu tengu){
+		level.unseal();
+		tengu.die(Dungeon.hero);
+		GameScene.flash(0x80FFFFFF);
+		Sample.INSTANCE.play(Assets.Sounds.BLAST);
+
+		Game.runOnRenderThread(() -> Dungeon.level.playLevelMusic());
+	}
 	
 	private boolean[] triggered = new boolean[]{false, false, false, false};
 	

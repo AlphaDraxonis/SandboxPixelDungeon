@@ -68,6 +68,8 @@ import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.ui.BossHealthBar;
 import com.alphadraxonis.sandboxpixeldungeon.utils.BArray;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
@@ -80,7 +82,7 @@ import com.watabou.utils.Random;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class Tengu extends Mob {
+public class Tengu extends Mob implements MobBasedOnDepth{
 	
 	{
 		spriteClass = TenguSprite.class;
@@ -101,6 +103,10 @@ public class Tengu extends Mob {
 		
 		viewDistance = 12;
 	}
+
+	public int phase = 1;//1 or 2, ONLY used for non PrisonBossLevels
+	public int arenaRadius = 10;//ONLY used for non PrisonBossLevels
+	private int initialPos;
 	
 //	@Override
 //	public int damageRoll() {
@@ -115,8 +121,14 @@ public class Tengu extends Mob {
 			return attackSkill;
 		}
 	}
-	
-//	@Override
+
+	@Override
+	public void setLevel(int depth) {
+		initialPos = pos;
+		if (Dungeon.level instanceof PrisonBossLevel) phase = 0;
+	}
+
+	//	@Override
 //	public int drRoll() {
 //		return super.drRoll() + Random.NormalIntRange(0, 5);
 //	}
@@ -138,9 +150,12 @@ public class Tengu extends Mob {
 			return;
 		}
 
-		PrisonBossLevel.State state = ((PrisonBossLevel)Dungeon.level).state();
-		
-		int hpBracket = HT / 8;
+		PrisonBossLevel.State state;
+		boolean normalFight = Dungeon.level instanceof PrisonBossLevel;
+		if (normalFight) state = ((PrisonBossLevel) Dungeon.level).state();
+		else state = phase == 1 ? PrisonBossLevel.State.FIGHT_START : PrisonBossLevel.State.FIGHT_ARENA;
+
+		int hpBracket = Math.max(2, HT / 8);
 		
 		int beforeHitHP = HP;
 		super.damage(dmg, src);
@@ -169,7 +184,8 @@ public class Tengu extends Mob {
 				@Override
 				protected boolean act() {
 					Actor.remove(this);
-					((PrisonBossLevel)Dungeon.level).progress();
+					if (normalFight) ((PrisonBossLevel) Dungeon.level).progress();
+					else PrisonBossLevel.killTengu(Dungeon.level, Tengu.this);
 					return true;
 				}
 			});
@@ -177,11 +193,15 @@ public class Tengu extends Mob {
 		}
 		
 		//phase 1 of the fight is over
-		if (state == PrisonBossLevel.State.FIGHT_START && HP <= HT/2){
-			HP = (HT/2);
-			yell(Messages.get(this, "interesting"));
-			((PrisonBossLevel)Dungeon.level).progress();
-			BossHealthBar.bleed(true);
+		if (state == PrisonBossLevel.State.FIGHT_START && (HP <= HT/2 && normalFight || HP <= 0 && !normalFight)){
+			if (normalFight) {
+				HP = (HT / 2);
+				yell(Messages.get(this, "interesting"));
+				((PrisonBossLevel) Dungeon.level).progress();
+
+				BossHealthBar.bleed(true);
+
+			} else PrisonBossLevel.killTengu(Dungeon.level, Tengu.this);
 			
 		//if tengu has lost a certain amount of hp, jump
 		} else if (beforeHitHP / hpBracket != HP / hpBracket) {
@@ -199,7 +219,10 @@ public class Tengu extends Mob {
 					return true;
 				}
 			});
-			return;
+
+		}
+		if (!normalFight && HP > 0 && HP <= HT / 2) {
+			BossHealthBar.bleed(true);
 		}
 	}
 	
@@ -225,11 +248,24 @@ public class Tengu extends Mob {
 		Statistics.bossScores[1] += 2000;
 		
 		yell( Messages.get(this, "defeated") );
+
+		if (!(Dungeon.level instanceof PrisonBossLevel)) {
+			int id = id();
+			for (Heap h : Dungeon.level.heaps.valueList()) {
+				for (Item item : h.items) {
+					if (item instanceof TenguAbilityItem && ((TenguAbilityItem) item).throwerId == id
+					) {
+						h.remove(item);
+					}
+				}
+			}
+		}
 	}
 	
 	@Override
 	protected boolean canAttack( Char enemy ) {
-		return new Ballistica( pos, enemy.pos, Ballistica.PROJECTILE).collisionPos == enemy.pos;
+		Ballistica b = new Ballistica(pos, enemy.pos, Ballistica.PROJECTILE);
+		return b.collisionPos == enemy.pos && (Dungeon.level instanceof PrisonBossLevel || b.dist <= arenaRadius);
 	}
 	
 	private void jump() {
@@ -307,13 +343,29 @@ public class Tengu extends Mob {
 		//if we're on another type of level
 		} else {
 			Level level = Dungeon.level;
-			
-			newPos = level.randomRespawnCell( this );
+
+			int tries = 300;
+			do {
+				newPos = Random.Int(level.length());
+				tries--;
+			} while (  tries > 0 &&
+					(level.solid[newPos] ||
+							level.distance(newPos, enemy.pos) > arenaRadius ||
+//							level.distance(newPos, enemy.pos) > 7 ||
+							level.distance(newPos, Dungeon.hero.pos) > arenaRadius ||
+//							level.distance(newPos, Dungeon.hero.pos) > 7 ||
+							level.distance(newPos, pos) < arenaRadius - 1 ||
+							Actor.findChar(newPos) != null ||
+							level.heaps.get(newPos) != null));
+
+			if (tries <= 0) newPos = pos;
 			
 			if (level.heroFOV[pos]) CellEmitter.get( pos ).burst( Speck.factory( Speck.WOOL ), 6 );
 			
 			sprite.move( pos, newPos );
 			move( newPos );
+
+			if (arenaJumps < 6) arenaJumps++;
 			
 			if (level.heroFOV[newPos]) CellEmitter.get( newPos ).burst( Speck.factory( Speck.WOOL ), 6 );
 			Sample.INSTANCE.play( Assets.Sounds.PUFF );
@@ -339,6 +391,10 @@ public class Tengu extends Mob {
 				yell(Messages.get(this, "notice_have", Dungeon.hero.name()));
 			}
 		}
+		if (!(Dungeon.level instanceof PrisonBossLevel)) {
+			Dungeon.level.seal();
+			Game.runOnRenderThread(() -> Music.INSTANCE.play(Assets.Music.PRISON_BOSS, true));
+		}
 	}
 	
 	{
@@ -351,6 +407,10 @@ public class Tengu extends Mob {
 	private static final String ABILITIES_USED   = "abilities_used";
 	private static final String ARENA_JUMPS      = "arena_jumps";
 	private static final String ABILITY_COOLDOWN = "ability_cooldown";
+	private static final String PHASE            = "phase";
+	private static final String ARENA_RADIUS     = "arena_radius";
+	private static final String INITIAL_POS      = "initial_pos";
+
 	
 	@Override
 	public void storeInBundle(Bundle bundle) {
@@ -359,6 +419,9 @@ public class Tengu extends Mob {
 		bundle.put( ABILITIES_USED, abilitiesUsed );
 		bundle.put( ARENA_JUMPS, arenaJumps );
 		bundle.put( ABILITY_COOLDOWN, abilityCooldown );
+		bundle.put(PHASE, phase);
+		bundle.put(ARENA_RADIUS, arenaRadius);
+		bundle.put(INITIAL_POS, initialPos);
 	}
 	
 	@Override
@@ -370,7 +433,10 @@ public class Tengu extends Mob {
 		abilitiesUsed = bundle.getInt( ABILITIES_USED );
 		arenaJumps = bundle.getInt( ARENA_JUMPS );
 		abilityCooldown = bundle.getInt( ABILITY_COOLDOWN );
-		
+		phase = bundle.getInt(PHASE);
+		arenaRadius = bundle.getInt(ARENA_RADIUS);
+		initialPos = bundle.getInt(INITIAL_POS);
+
 		BossHealthBar.assignBoss(this);
 		if (HP <= HT/2) BossHealthBar.bleed(true);
 	}
@@ -439,7 +505,7 @@ public class Tengu extends Mob {
 	//expects to be called once per turn;
 	public boolean canUseAbility(){
 		
-		if (HP > HT/2) return false;
+		if (HP > HT/2 && Dungeon.level instanceof PrisonBossLevel) return false;
 		
 		if (abilitiesUsed >= targetAbilityUses()){
 			return false;
@@ -474,7 +540,10 @@ public class Tengu extends Mob {
 		int targetAbilityUses = 1 + 2*arenaJumps;
 		
 		//and ane extra 2 use for jumps 3 and 4
-		targetAbilityUses += Math.max(0, arenaJumps-2);
+		if (Dungeon.level instanceof PrisonBossLevel) {
+			if (arenaJumps >= 3) targetAbilityUses++;
+			if (arenaJumps >= 4) targetAbilityUses++;
+		}
 		
 		return targetAbilityUses;
 	}
@@ -545,6 +614,25 @@ public class Tengu extends Mob {
 		abilitiesUsed++;
 		return lastAbility == FIRE_ABILITY;
 	}
+
+	public static class TenguAbilityItem extends Item {
+
+		int throwerId;
+
+		private final static String THROWER_ID = "thrower_id";
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			throwerId = bundle.getInt(THROWER_ID);
+		}
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(THROWER_ID, throwerId);
+		}
+	}
 	
 	//******************
 	//***Bomb Ability***
@@ -571,6 +659,7 @@ public class Tengu extends Mob {
 		final int finalTargetCell = targetCell;
 		throwingChar = thrower;
 		final BombAbility.BombItem item = new BombAbility.BombItem();
+		item.throwerId = thrower.id();
 		thrower.sprite.zap(finalTargetCell);
 		((MissileSprite) thrower.sprite.parent.recycle(MissileSprite.class)).
 				reset(thrower.sprite,
@@ -687,7 +776,7 @@ public class Tengu extends Mob {
 			timer = bundle.getInt( TIMER );
 		}
 		
-		public static class BombItem extends Item {
+		public static class BombItem extends TenguAbilityItem {
 			
 			{
 				dropsDownHeap = true;
@@ -928,6 +1017,7 @@ public class Tengu extends Mob {
 		final int finalTargetCell = targetCell;
 		throwingChar = thrower;
 		final ShockerAbility.ShockerItem item = new ShockerAbility.ShockerItem();
+		item.throwerId = thrower.id();
 		thrower.sprite.zap(finalTargetCell);
 		((MissileSprite) thrower.sprite.parent.recycle(MissileSprite.class)).
 				reset(thrower.sprite,
@@ -1070,7 +1160,7 @@ public class Tengu extends Mob {
 			}
 		}
 		
-		public static class ShockerItem extends Item {
+		public static class ShockerItem extends TenguAbilityItem {
 			
 			{
 				dropsDownHeap = true;

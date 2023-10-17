@@ -48,6 +48,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Succubus;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Swarm;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Tengu;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.TormentedSpirit;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Warlock;
@@ -233,7 +234,8 @@ public enum Mobs {
                 Guard.class,
                 RotLasher.class,
                 RotHeart.class,
-                Elemental.NewbornFireElemental.class
+                Elemental.NewbornFireElemental.class,
+                Tengu.class
         };
 
         CAVES.classes = new Class[]{

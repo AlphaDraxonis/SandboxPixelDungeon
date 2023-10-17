@@ -223,7 +223,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
             public void onSelect(boolean positive, String text) {
                 if (positive) {
                     try {
-                        setValue(Math.max(min, Integer.parseInt(text)));
+                        setValue((int) Math.max(min, Integer.parseInt(text)));
                     } catch (NumberFormatException ex) {
                         //just ignore value
                     }

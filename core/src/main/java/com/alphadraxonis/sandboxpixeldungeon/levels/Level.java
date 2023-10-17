@@ -814,7 +814,7 @@ public abstract class Level implements Bundlable {
                                 && (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])
                                 && Actor.findChar(cell) == null
                                 && (!(ch instanceof Piranha) || map[cell] == Terrain.WATER)
-                                && getMobAtCell(cell) == null
+                                && findMob(cell) == null
                                 && (!checkPath || PathFinder.distance[cell] != Integer.MAX_VALUE))
                             return cell;//choose first valid cell
                     }
@@ -828,7 +828,7 @@ public abstract class Level implements Bundlable {
                         || (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
                         || Actor.findChar(cell) != null
                         || (ch instanceof Piranha && map[cell] != Terrain.WATER)
-                        || getMobAtCell(cell) != null
+                        || findMob(cell) != null
                         || (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE));
 
         return cell;
@@ -1646,11 +1646,4 @@ public abstract class Level implements Bundlable {
         return cell >= 0 && transitions.get(cell) == null ? "\n" + Messages.get(Hero.class, "no_trans_warning") : "";
     }
 
-
-    public Mob getMobAtCell(int cell) {
-        for (Mob m : mobs) {//TODO maybe hashmap??
-            if (m.pos == cell) return m;
-        }
-        return null;
-    }
 }

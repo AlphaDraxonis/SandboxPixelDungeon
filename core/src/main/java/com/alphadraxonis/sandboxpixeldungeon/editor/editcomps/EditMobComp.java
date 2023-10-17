@@ -5,6 +5,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.ArmoredStatue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Tengu;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
@@ -71,6 +72,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final CheckBox spawnQuestRoom;
 
     private final Spinner sentryRange, sentryDelay;
+    private final Spinner tenguPhase, tenguRange;
 
     private final Component[] comps;
 
@@ -282,7 +284,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof SentryRoom.Sentry) {
-            sentryRange = new Spinner(new SpinnerIntegerModel(1, 100, ((SentryRoom.Sentry) mob).range, 1, false, null){
+            sentryRange = new Spinner(new SpinnerIntegerModel(1, 100, ((SentryRoom.Sentry) mob).range, 1, false, null) {
                 @Override
                 public float getInputFieldWith(float height) {
                     return height * 1.4f;
@@ -291,13 +293,42 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     " " + Messages.get(EditMobComp.class, "range") + ":", 9);
             sentryRange.addChangeListener(() -> ((SentryRoom.Sentry) mob).range = (int) sentryRange.getValue());
             add(sentryRange);
-            sentryDelay = new Spinner(new SpinnerFloatModel(0f, 100f,((SentryRoom.Sentry) mob).getInitialChargeDelay() - 1, false),
+            sentryDelay = new Spinner(new SpinnerFloatModel(0f, 100f, ((SentryRoom.Sentry) mob).getInitialChargeDelay() - 1, false),
                     " " + Messages.get(EditMobComp.class, "delay") + ":", 9);
             sentryDelay.addChangeListener(() -> ((SentryRoom.Sentry) mob).setInitialChargeDelay(((SpinnerFloatModel) sentryDelay.getModel()).getAsFloat() + 1));
             add(sentryDelay);
         } else {
             sentryRange = null;
             sentryDelay = null;
+        }
+
+        if (mob instanceof Tengu) {
+            tenguPhase = new Spinner(new SpinnerIntegerModel(1, 2, ((Tengu) mob).phase, 1, true, null) {
+                @Override
+                public float getInputFieldWith(float height) {
+                    return height * 1.4f;
+                }
+
+                @Override
+                public void displayInputAnyNumberDialog() {
+                    //disabled
+                }
+            },
+                    " " + Messages.get(EditMobComp.class, "phase") + ":", 9);
+            tenguPhase.addChangeListener(() -> ((Tengu) mob).phase = (int) tenguPhase.getValue());
+            add(tenguPhase);
+            tenguRange = new Spinner(new SpinnerIntegerModel(1, 100, ((Tengu) mob).arenaRadius, 1, false, null) {
+                @Override
+                public float getInputFieldWith(float height) {
+                    return height * 1.4f;
+                }
+            },
+                    " " + Messages.get(EditMobComp.class, "range") + ":", 9);
+            tenguRange.addChangeListener(() -> ((Tengu) mob).arenaRadius = (int) tenguRange.getValue());
+            add(tenguRange);
+        } else {
+            tenguPhase = null;
+            tenguRange = null;
         }
 
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
@@ -355,8 +386,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         } else editStats = null;
 
         comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, sheepLifespan,
-                mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, sentryRange, sentryDelay,
-                addBuffs, editStats};
+                mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, tenguPhase, tenguRange,
+                sentryRange, sentryDelay, addBuffs, editStats};
     }
 
     @Override

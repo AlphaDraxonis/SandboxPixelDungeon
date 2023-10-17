@@ -342,7 +342,7 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
             disableSpawning.checked(f.isRespawEnabled());
             add(disableSpawning);
 
-            Mob bossMob = EditorScene.customLevel().getMobAtCell(EditorScene.customLevel().bossmobAt);
+            Mob bossMob = EditorScene.customLevel().findMob(EditorScene.customLevel().bossmobAt);
             MobActionPart.Modify modify = bossMob == null ? null : new MobActionPart.Modify(bossMob);
             boss = new ItemSelector(getUpdatedLabelForBossChooser(bossMob), MobItem.class, bossMob == null ? null : new MobItem(bossMob), ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
@@ -409,7 +409,7 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
                     if (cell != null) {
                         CustomLevel l = EditorScene.customLevel();
                         final int oldBoss = l.bossmobAt;
-                        if (cell >= 0 && cell < l.length() && l.getMobAtCell(cell) != null) {
+                        if (cell >= 0 && cell < l.length() && l.findMob(cell) != null) {
                             ActionPart part = new ActionPart() {
                                 @Override
                                 public void undo() {
@@ -429,7 +429,7 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
                             Undo.addActionPart(part);
                             part.redo();
 
-                            callBack.accept(l.getMobAtCell(cell));
+                            callBack.accept(l.findMob(cell));
                         } else callBack.accept(null);
 
                         w.active = true;

@@ -560,7 +560,7 @@ public class EditorScene extends PixelScene {
 
         Trap trap = f.traps.get(cell);
         Heap heap = f.heaps.get(cell);
-        Mob mob = f.getMobAtCell(cell);
+        Mob mob = f.findMob(cell);
         Plant plant = f.plants.get(cell);
 
         DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, plant, cell);
@@ -661,7 +661,7 @@ public class EditorScene extends PixelScene {
     }
 
     private static Object getObjAtCell(int cell) {
-        Mob mob = customLevel.getMobAtCell(cell);
+        Mob mob = customLevel.findMob(cell);
         if (mob != null) return mob;
         Heap heap = customLevel.heaps.get(cell);
         if (heap != null && heap.peek() != null) return heap.peek();

@@ -41,6 +41,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.quests.GhostQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomTileLoader;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Amulet;
 import com.alphadraxonis.sandboxpixeldungeon.items.Generator;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
@@ -437,20 +438,8 @@ public class Dungeon {
         if (pos < 0 || pos >= level.length() || (!level.passable[pos] && !level.avoid[pos])) {
             LevelTransition t = level.getTransition(null);
             if (t == null) {
-                int tries = level.length();
                 Random.pushGenerator(Dungeon.seedCurLevel() + 5);
-                do {
-                    pos = Random.Int(level.length());//Choose a random cell
-                    tries--;
-                } while ((!level.passable[pos] || level.avoid[pos]) && tries >= 0);
-                if (!level.passable[pos] || level.avoid[pos]) {
-                    int l = level.length();
-                    for (pos = 0; pos < l; pos++) {
-                        if (level.passable[pos] && !level.avoid[pos])
-                            break;//choose first valid cell
-                    }
-                    if (pos == l) pos = l / 2;//if all positions are invalid, just take the center
-                }
+                pos = EditorUtilies.getRandomCellGuranteed(level);
                 GameScene.errorMsg.add(Messages.get(Dungeon.class, "no_transitions_warning", level.name, Dungeon.customDungeon.getName()));
                 Random.popGenerator();
             } else

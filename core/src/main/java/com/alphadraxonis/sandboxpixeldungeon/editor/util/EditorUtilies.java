@@ -17,6 +17,7 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.Window;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Random;
 
 import java.util.Map;
 
@@ -189,4 +190,25 @@ public final class EditorUtilies {
     }
 
     public static final ParagraphIndicator PARAGRAPH_INDICATOR_INSTANCE = new ParagraphIndicator();
+
+
+    public static int getRandomCellGuranteed(Level level){
+        int pos;
+        int tries = level.length();
+        do {
+            pos = Random.Int(level.length());//Choose a random cell
+            tries--;
+        } while ((!level.passable[pos] || level.avoid[pos]) && tries >= 0);
+        if (!level.passable[pos] || level.avoid[pos]) {
+            int l = level.length();
+            for (pos = 0; pos < l; pos++) {
+                if (level.passable[pos] && !level.avoid[pos])
+                    break;//choose first valid cell
+            }
+            return pos == l
+                    ? l / 2//if all positions are invalid, just take the center
+                    : pos;
+        }
+        return pos;
+    }
 }
