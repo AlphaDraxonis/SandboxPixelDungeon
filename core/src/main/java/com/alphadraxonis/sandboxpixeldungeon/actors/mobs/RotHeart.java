@@ -33,6 +33,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Paralysis;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Sleep;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Terror;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Vertigo;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Rotberry;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.RotHeartSprite;
@@ -91,6 +92,7 @@ public class RotHeart extends Mob {
 	@Override
 	public void destroy() {
 		super.destroy();
+		if (CustomDungeon.isEditing()) return;
 		for (Mob mob : Dungeon.level.mobs.toArray(new Mob[Dungeon.level.mobs.size()])){
 			if (mob instanceof RotLasher){
 				mob.die(null);

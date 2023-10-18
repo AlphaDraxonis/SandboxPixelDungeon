@@ -94,15 +94,6 @@ public class CustomDungeon implements Bundlable {
     //select builder and painter
     //Category items/mobs/rooms
 
-    //
-    //custom mob drops:
-    //override rollToDropLoot, similar as mimic, set loot to null, always 100% chance
-
-    //Add Yog
-
-    //add random option to weapon Augs
-    //change randomize option to randomize everytime the level regenerates
-
     //Custom mob attacks: externalise
 
     //Scale mobs if their normal stats editor is disabled: not just everything!

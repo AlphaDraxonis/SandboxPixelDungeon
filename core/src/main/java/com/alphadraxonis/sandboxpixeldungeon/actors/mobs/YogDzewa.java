@@ -40,6 +40,8 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Sleep;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Terror;
 import com.alphadraxonis.sandboxpixeldungeon.actors.buffs.Vertigo;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Sheep;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
+import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Beam;
 import com.alphadraxonis.sandboxpixeldungeon.effects.CellEmitter;
 import com.alphadraxonis.sandboxpixeldungeon.effects.Pushing;
@@ -47,10 +49,12 @@ import com.alphadraxonis.sandboxpixeldungeon.effects.TargetedCell;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.PurpleParticle;
 import com.alphadraxonis.sandboxpixeldungeon.effects.particles.ShadowParticle;
 import com.alphadraxonis.sandboxpixeldungeon.items.artifacts.DriedRose;
+import com.alphadraxonis.sandboxpixeldungeon.levels.HallsBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.mechanics.Ballistica;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.scenes.GameScene;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.TitleScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.CharSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.LarvaSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.YogSprite;
@@ -59,6 +63,7 @@ import com.alphadraxonis.sandboxpixeldungeon.ui.BossHealthBar;
 import com.alphadraxonis.sandboxpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
+import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.GameMath;
@@ -89,6 +94,8 @@ public class YogDzewa extends Mob {
 		properties.add(Property.DEMONIC);
 	}
 
+	public int spawnersAlive = CustomDungeon.isEditing() || Game.scene() instanceof TitleScene ? -1 : Statistics.spawnersAlive;
+
 	private int phase = 0;
 
 	private float abilityCooldown;
@@ -99,24 +106,24 @@ public class YogDzewa extends Mob {
 	private static final int MIN_SUMMON_CD = 10;
 	private static final int MAX_SUMMON_CD = 15;
 
-	private static Class getPairedFist(Class fist){
-		if (fist == YogFist.BurningFist.class) return YogFist.SoiledFist.class;
-		if (fist == YogFist.SoiledFist.class) return YogFist.BurningFist.class;
-		if (fist == YogFist.RottingFist.class) return YogFist.RustedFist.class;
-		if (fist == YogFist.RustedFist.class) return YogFist.RottingFist.class;
-		if (fist == YogFist.BrightFist.class) return YogFist.DarkFist.class;
-		if (fist == YogFist.DarkFist.class) return YogFist.BrightFist.class;
+	private static YogFist getPairedFist(YogFist fist){
+		if (fist instanceof YogFist.BurningFist) return new YogFist.SoiledFist();
+		if (fist instanceof YogFist.SoiledFist) return new YogFist.BurningFist();
+		if (fist instanceof YogFist.RottingFist) return new YogFist.RustedFist();
+		if (fist instanceof YogFist.RustedFist) return new YogFist.RottingFist();
+		if (fist instanceof YogFist.BrightFist) return new YogFist.DarkFist();
+		if (fist instanceof YogFist.DarkFist) return new YogFist.BrightFist();
 		return null;
 	}
 
-	private ArrayList<Class> fistSummons = new ArrayList<>();
-	private ArrayList<Class> challengeSummons = new ArrayList<>();
+	public ArrayList<YogFist> fistSummons = new ArrayList<>();
+	public ArrayList<YogFist> challengeSummons = new ArrayList<>();
 	{
 		//offset seed slightly to avoid output patterns
-		Random.pushGenerator(Dungeon.seedCurLevel()+1);
-			fistSummons.add(Random.Int(2) == 0 ? YogFist.BurningFist.class : YogFist.SoiledFist.class);
-			fistSummons.add(Random.Int(2) == 0 ? YogFist.RottingFist.class : YogFist.RustedFist.class);
-			fistSummons.add(Random.Int(2) == 0 ? YogFist.BrightFist.class : YogFist.DarkFist.class);
+		Random.pushGenerator(Dungeon.level == null ? Random.Long() : Dungeon.seedCurLevel()+1);
+			fistSummons.add(Random.Int(2) == 0 ? new YogFist.BurningFist() : new YogFist.SoiledFist());
+			fistSummons.add(Random.Int(2) == 0 ? new YogFist.RottingFist() : new YogFist.RustedFist());
+			fistSummons.add(Random.Int(2) == 0 ? new YogFist.BrightFist()  : new YogFist.DarkFist());
 			Random.shuffle(fistSummons);
 			//randomly place challenge summons so that two fists of a pair can never spawn together
 			if (Random.Int(2) == 0){
@@ -133,11 +140,15 @@ public class YogDzewa extends Mob {
 
 	private ArrayList<Class> regularSummons = new ArrayList<>();
 	{
+		if (!CustomDungeon.isEditing()) initRegularSummons();
+	}
+
+	private void initRegularSummons(){
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
 			for (int i = 0; i < 6; i++){
 				if (i >= 4){
 					regularSummons.add(YogRipper.class);
-				} else if (i >= Statistics.spawnersAlive){
+				} else if (i >= spawnersAlive){
 					regularSummons.add(Larva.class);
 				} else {
 					regularSummons.add( i % 2 == 0 ? YogEye.class : YogScorpio.class);
@@ -145,7 +156,7 @@ public class YogDzewa extends Mob {
 			}
 		} else {
 			for (int i = 0; i < 4; i++){
-				if (i >= Statistics.spawnersAlive){
+				if (i >= spawnersAlive){
 					regularSummons.add(Larva.class);
 				} else {
 					regularSummons.add(YogRipper.class);
@@ -256,7 +267,7 @@ public class YogDzewa extends Mob {
 
 			if (abilityCooldown <= 0){
 
-				int beams = 1 + (HT - HP)/400;
+				int beams = 1 + (int) ((HT - HP) * 0.0025f);
 				HashSet<Integer> affectedCells = new HashSet<>();
 				for (int i = 0; i < beams; i++){
 
@@ -306,6 +317,7 @@ public class YogDzewa extends Mob {
 
 				Class<?extends Mob> cls = regularSummons.remove(0);
 				Mob summon = Reflection.newInstance(cls);
+				((YogDzewaMob) summon).setId(id());
 				regularSummons.add(cls);
 
 				int spawnPos = -1;
@@ -382,10 +394,12 @@ public class YogDzewa extends Mob {
 
 		if (phase == 0 || findFist() != null) return;
 
+		int tenPercentOfMaxHP = HT / 10;
+
 		if (phase < 4) {
-			HP = Math.max(HP, HT - 300 * phase);
+			HP = Math.max(HP, HT - tenPercentOfMaxHP * 3 * phase);
 		} else if (phase == 4) {
-			HP = Math.max(HP, 100);
+			HP = Math.max(HP, tenPercentOfMaxHP);
 		}
 		int dmgTaken = preHP - HP;
 
@@ -394,7 +408,7 @@ public class YogDzewa extends Mob {
 			summonCooldown -= dmgTaken / 10f;
 		}
 
-		if (phase < 4 && HP <= HT - 300*phase){
+		if (phase < 4 && HP <= HT - tenPercentOfMaxHP*3*phase){
 
 			phase++;
 
@@ -402,15 +416,15 @@ public class YogDzewa extends Mob {
 			GLog.n(Messages.get(this, "darkness"));
 			sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
 
-			addFist((YogFist)Reflection.newInstance(fistSummons.remove(0)));
+			int fistPos = addFist(fistSummons.remove(0));
 
 			if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
-				addFist((YogFist)Reflection.newInstance(challengeSummons.remove(0)));
+				addFist(challengeSummons.remove(0));
 			}
 
-			CellEmitter.get(Dungeon.level.exit()-1).burst(ShadowParticle.UP, 25);
-			CellEmitter.get(Dungeon.level.exit()).burst(ShadowParticle.UP, 100);
-			CellEmitter.get(Dungeon.level.exit()+1).burst(ShadowParticle.UP, 25);
+			CellEmitter.get(fistPos-1).burst(ShadowParticle.UP, 25);
+			CellEmitter.get(fistPos).burst(ShadowParticle.UP, 100);
+			CellEmitter.get(fistPos+1).burst(ShadowParticle.UP, 25);
 
 			if (abilityCooldown < 5) abilityCooldown = 5;
 			if (summonCooldown < 5) summonCooldown = 5;
@@ -425,17 +439,59 @@ public class YogDzewa extends Mob {
 
 	}
 
-	public void addFist(YogFist fist){
-		fist.pos = Dungeon.level.exit();
+	public int addFist(YogFist fist){
+		fist.yogDzewaId = id();
+		boolean normalFight = Dungeon.level instanceof HallsBossLevel;
+		if (normalFight) fist.pos = Dungeon.level.exit();
+		else {
+			int width = Dungeon.level.width();
+			int width2 = width * 2;
+			int width3 = width * 3;
+			int[] possiblePos = {
+					-width3, 1 - width3, 2 - width3, 3 - width3,
+					3 - width2, 3 - width, 3, 3 + width, 3 + width2, 3 + width3, 2 + width3, 1 + width3,
+					width3, -1 + width3, -2 + width3, -3 + width3, -3 + width2, -3 + width,
+					-3, -3 - width, -3 - width2, -3 - width3, -2 - width3, -1 - width3,
 
-		CellEmitter.get(Dungeon.level.exit()-1).burst(ShadowParticle.UP, 25);
-		CellEmitter.get(Dungeon.level.exit()).burst(ShadowParticle.UP, 100);
-		CellEmitter.get(Dungeon.level.exit()+1).burst(ShadowParticle.UP, 25);
+					-width2, 1 - width2, 2 - width2,
+					2 - width, 2, 2 + width, 2 + width2, 1 + width2, width2, -1 + width2, -2 + width2,
+					-2 + width, -2, -2 - width, -2 - width2, -1 - width2,
+
+					-width, -width + 1, +1, +width + 1, +width, +width - 1, -1, -width - 1
+			};
+			fist.pos = -1;
+			for (int i : possiblePos) {
+				int cell = i + pos;
+				boolean valid = true;
+				for (int j = -1; j <= 1; j++) {
+					Actor ch;
+					if (!Dungeon.level.passable[cell + j]
+							|| !Dungeon.level.openSpace[cell + j]
+							|| !((ch = Actor.findChar(cell)) instanceof Sheep || ch == null)
+							|| Dungeon.level.findMob(cell + j) != null) {
+						valid = false;
+						break;
+					}
+				}
+				if (valid) {
+					fist.pos = cell;
+					break;
+				}
+			}
+			if (fist.pos == -1) {
+				fist.pos = EditorUtilies.getRandomCellGuranteed(Dungeon.level);
+			}
+			fist.pos -= width;
+		}
+
+		CellEmitter.get(fist.pos-1 ).burst(ShadowParticle.UP, 25);
+		CellEmitter.get(fist.pos).burst(ShadowParticle.UP, 100);
+		CellEmitter.get(fist.pos+1).burst(ShadowParticle.UP, 25);
 
 		if (abilityCooldown < 5) abilityCooldown = 5;
 		if (summonCooldown < 5) summonCooldown = 5;
 
-		int targetPos = Dungeon.level.exit() + Dungeon.level.width();
+		int targetPos = fist.pos + Dungeon.level.width();
 
 		if (!Dungeon.isChallenged(Challenges.STRONGER_BOSSES)
 				&& (Actor.findChar(targetPos) == null || Actor.findChar(targetPos) instanceof Sheep)){
@@ -452,9 +508,11 @@ public class YogDzewa extends Mob {
 			Actor.findChar(fist.pos).die(null);
 		}
 
-		GameScene.add(fist, 4);
-		Actor.addDelayed( new Pushing( fist, Dungeon.level.exit(), fist.pos ), -1 );
+		GameScene.add(fist, normalFight ? 4 : 1);
+		Actor.addDelayed( new Pushing( fist, normalFight ? Dungeon.level.exit() : fist.pos, fist.pos ), -1 );
 		Dungeon.level.occupyCell(fist);
+
+		return fist.pos;
 	}
 
 	public void updateVisibility( Level level ){
@@ -473,8 +531,9 @@ public class YogDzewa extends Mob {
 	}
 
 	private YogFist findFist(){
-		for ( Char c : Actor.chars() ){
-			if (c instanceof YogFist){
+		int id = id();
+		for (Char c : Actor.chars()) {
+			if (c instanceof YogFist && ((YogFist) c).yogDzewaId == id) {
 				return (YogFist) c;
 			}
 		}
@@ -492,9 +551,10 @@ public class YogDzewa extends Mob {
 
 	@Override
 	public void aggro(Char ch) {
+		int id = id();
 		for (Mob mob : (Iterable<Mob>)Dungeon.level.mobs.clone()) {
 			if (Dungeon.level.distance(pos, mob.pos) <= 4 &&
-					(mob instanceof Larva || mob instanceof YogRipper || mob instanceof YogEye || mob instanceof YogScorpio)) {
+					mob instanceof YogDzewaMob && ((YogDzewaMob) mob).getId() == id) {
 				mob.aggro(ch);
 			}
 		}
@@ -504,8 +564,9 @@ public class YogDzewa extends Mob {
 	@Override
 	public void die( Object cause ) {
 
+		int id = id();
 		for (Mob mob : (Iterable<Mob>)Dungeon.level.mobs.clone()) {
-			if (mob instanceof Larva || mob instanceof YogRipper || mob instanceof YogEye || mob instanceof YogScorpio) {
+			if (mob instanceof YogDzewaMob && ((YogDzewaMob) mob).getId() == id) {
 				mob.die( cause );
 			}
 		}
@@ -514,17 +575,19 @@ public class YogDzewa extends Mob {
 
 		GameScene.bossSlain();
 
-		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) && Statistics.spawnersAlive == 4){
+		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) && spawnersAlive == 4){
 			Badges.validateBossChallengeCompleted(YogDzewa.class);
 		} else {
 			Statistics.qualifiedForBossChallengeBadge = false;
 		}
-		Statistics.bossScores[4] += 5000 + 1250*Statistics.spawnersAlive;
+		Statistics.bossScores[4] += 5000 + 1250*spawnersAlive;
 
 		Dungeon.level.unseal();
 		super.die( cause );
 
 		yell( Messages.get(this, "defeated") );
+
+		if (!(Dungeon.level instanceof HallsBossLevel)) Dungeon.level.playLevelMusic();
 	}
 
 	@Override
@@ -549,6 +612,7 @@ public class YogDzewa extends Mob {
 				abilityCooldown = Random.NormalFloat(MIN_ABILITY_CD, MAX_ABILITY_CD);
 			}
 		}
+		if (!(Dungeon.level instanceof HallsBossLevel)) Dungeon.level.seal();
 	}
 
 	@Override
@@ -574,6 +638,7 @@ public class YogDzewa extends Mob {
 	}
 
 	private static final String PHASE = "phase";
+	private static final String SPAWNERS_ALIVE = "spawners_alive";
 
 	private static final String ABILITY_CD = "ability_cd";
 	private static final String SUMMON_CD = "summon_cd";
@@ -588,13 +653,14 @@ public class YogDzewa extends Mob {
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(PHASE, phase);
+		bundle.put(SPAWNERS_ALIVE, spawnersAlive);
 
 		bundle.put(ABILITY_CD, abilityCooldown);
 		bundle.put(SUMMON_CD, summonCooldown);
 
-		bundle.put(FIST_SUMMONS, fistSummons.toArray(new Class[0]));
-		bundle.put(CHALLENGE_SUMMONS, challengeSummons.toArray(new Class[0]));
-		bundle.put(REGULAR_SUMMONS, regularSummons.toArray(new Class[0]));
+		bundle.put(FIST_SUMMONS, fistSummons);
+		bundle.put(CHALLENGE_SUMMONS, challengeSummons);
+		if (!CustomDungeon.isEditing()) bundle.put(REGULAR_SUMMONS, regularSummons.toArray(new Class[0]));
 
 		int[] bundleArr = new int[targetedCells.size()];
 		for (int i = 0; i < targetedCells.size(); i++){
@@ -611,23 +677,35 @@ public class YogDzewa extends Mob {
 			BossHealthBar.assignBoss(this);
 			if (phase == 5) BossHealthBar.bleed(true);
 		}
+		spawnersAlive = bundle.getInt(SPAWNERS_ALIVE);
+		if (spawnersAlive == -1 && !CustomDungeon.isEditing() && !(Game.scene() instanceof TitleScene)) spawnersAlive = Statistics.spawnersAlive;
 
 		abilityCooldown = bundle.getFloat(ABILITY_CD);
 		summonCooldown = bundle.getFloat(SUMMON_CD);
 
 		fistSummons.clear();
-		Collections.addAll(fistSummons, bundle.getClassArray(FIST_SUMMONS));
+		for (Bundlable b : bundle.getCollection(FIST_SUMMONS))
+			fistSummons.add((YogFist) b);
 		challengeSummons.clear();
-		Collections.addAll(challengeSummons, bundle.getClassArray(CHALLENGE_SUMMONS));
-		regularSummons.clear();
-		Collections.addAll(regularSummons, bundle.getClassArray(REGULAR_SUMMONS));
+		for (Bundlable b : bundle.getCollection(CHALLENGE_SUMMONS))
+			challengeSummons.add((YogFist) b);
+		if (bundle.contains(REGULAR_SUMMONS)) {
+			regularSummons.clear();
+			Collections.addAll(regularSummons, bundle.getClassArray(REGULAR_SUMMONS));
+		}
 
 		for (int i : bundle.getIntArray(TARGETED_CELLS)){
 			targetedCells.add(i);
 		}
 	}
 
-	public static class Larva extends Mob {
+	interface YogDzewaMob {
+		void setId(int id);
+
+		int getId();
+	}
+
+	public static class Larva extends Mob implements YogDzewaMob {
 
 		{
 			spriteClass = LarvaSprite.class;
@@ -645,6 +723,31 @@ public class YogDzewa extends Mob {
 
 			properties.add(Property.DEMONIC);
 			properties.add(Property.BOSS_MINION);
+		}
+
+		private int yogDzewaId;
+		public static final String YOG_DZEWA_ID = "yog_dzewa_id";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(YOG_DZEWA_ID, yogDzewaId);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			yogDzewaId = bundle.getInt(YOG_DZEWA_ID);
+		}
+
+		@Override
+		public void setId(int id) {
+			yogDzewaId = id;
+		}
+
+		@Override
+		public int getId() {
+			return yogDzewaId;
 		}
 
 //		@Override
@@ -665,22 +768,97 @@ public class YogDzewa extends Mob {
 	}
 
 	//used so death to yog's ripper demons have their own rankings description
-	public static class YogRipper extends RipperDemon {
+	public static class YogRipper extends RipperDemon implements YogDzewaMob {
 		{
 			maxLvl = -2;
 			properties.add(Property.BOSS_MINION);
 		}
+
+		private int yogDzewaId;
+		public static final String YOG_DZEWA_ID = "yog_dzewa_id";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(YOG_DZEWA_ID, yogDzewaId);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			yogDzewaId = bundle.getInt(YOG_DZEWA_ID);
+		}
+
+		@Override
+		public void setId(int id) {
+			yogDzewaId = id;
+		}
+
+		@Override
+		public int getId() {
+			return yogDzewaId;
+		}
 	}
-	public static class YogEye extends Eye {
+	public static class YogEye extends Eye implements YogDzewaMob {
 		{
 			maxLvl = -2;
 			properties.add(Property.BOSS_MINION);
 		}
+
+		private int yogDzewaId;
+		public static final String YOG_DZEWA_ID = "yog_dzewa_id";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(YOG_DZEWA_ID, yogDzewaId);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			yogDzewaId = bundle.getInt(YOG_DZEWA_ID);
+		}
+
+		@Override
+		public void setId(int id) {
+			yogDzewaId = id;
+		}
+
+		@Override
+		public int getId() {
+			return yogDzewaId;
+		}
 	}
-	public static class YogScorpio extends Scorpio {
+	public static class YogScorpio extends Scorpio implements YogDzewaMob {
 		{
 			maxLvl = -2;
 			properties.add(Property.BOSS_MINION);
+		}
+
+		private int yogDzewaId;
+		public static final String YOG_DZEWA_ID = "yog_dzewa_id";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(YOG_DZEWA_ID, yogDzewaId);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			yogDzewaId = bundle.getInt(YOG_DZEWA_ID);
+		}
+
+		@Override
+		public void setId(int id) {
+			yogDzewaId = id;
+		}
+
+		@Override
+		public int getId() {
+			return yogDzewaId;
 		}
 	}
 }

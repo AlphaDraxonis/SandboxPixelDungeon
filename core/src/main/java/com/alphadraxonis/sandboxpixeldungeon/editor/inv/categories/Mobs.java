@@ -54,6 +54,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.TormentedSpirit;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Warlock;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Wraith;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogDzewa;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogFist;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
@@ -272,7 +273,7 @@ public enum Mobs {
                 Acidic.class,
                 RipperDemon.class,
                 DemonSpawner.class,
-//                YogDzewa.class,
+                YogDzewa.class,
                 YogFist.SoiledFist.class,
                 YogFist.BurningFist.class,
                 YogFist.RustedFist.class,

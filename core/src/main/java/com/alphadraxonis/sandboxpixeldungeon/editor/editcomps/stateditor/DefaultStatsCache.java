@@ -9,8 +9,6 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.MobBasedOnDepth;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Pylon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Wraith;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogDzewa;
-import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogFist;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
 import com.alphadraxonis.sandboxpixeldungeon.items.food.Food;
 import com.alphadraxonis.sandboxpixeldungeon.items.rings.Ring;
@@ -60,8 +58,7 @@ public class DefaultStatsCache {
             //Acthung Brute kann manche stats setzten, auch speed ändern!
             if (Mob.class.isAssignableFrom(clazz) &&
                     (NPC.class.isAssignableFrom(clazz) && !SentryRoom.Sentry.class.isAssignableFrom(clazz)
-                            || Pylon.class.isAssignableFrom(clazz)
-                            || YogDzewa.class.isAssignableFrom(clazz) || YogFist.class.isAssignableFrom(clazz)))
+                            || Pylon.class.isAssignableFrom(clazz)))
                 return null;
 
             ret = Reflection.newInstance(clazz);

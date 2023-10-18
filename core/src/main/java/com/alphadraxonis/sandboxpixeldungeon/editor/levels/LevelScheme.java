@@ -253,23 +253,27 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
 
         if (type == CustomLevel.class) {
             List<Integer> possibleEntrances = customDungeon.getFloor(defaultBelow).entranceCells;
-            if (!possibleEntrances.isEmpty()) {
+            int size = possibleEntrances.size();
+            if (size > 0) {
                 boolean load = level == null;
                 if (load) loadLevel();
                 boolean save = false;
                 int destCell = possibleEntrances.get(0);
-                for (int i : exitCells) {
-                    if (!level.transitions.containsKey(i)) {
-                        LevelTransition t = new LevelTransition(level, i, destCell, defaultBelow);
-                        t.type = LevelTransition.Type.REGULAR_EXIT;
-                        level.transitions.put(i, t);
-                        save = true;
+                if (destCell == TransitionEditPart.NONE && size > 1) destCell = possibleEntrances.get(1);
+                if (destCell != TransitionEditPart.NONE) {
+                    for (int i : exitCells) {
+                        if (!level.transitions.containsKey(i)) {
+                            LevelTransition t = new LevelTransition(level, i, destCell, defaultBelow);
+                            t.type = LevelTransition.Type.REGULAR_EXIT;
+                            level.transitions.put(i, t);
+                            save = true;
+                        }
                     }
-                }
-                if (exitCells.size() > 0 && save) {
-                    try {
-                        saveLevel();//Need to always save because otherwise, it will be unloaded without any additional checks
-                    } catch (IOException ignored) {
+                    if (exitCells.size() > 0 && save) {
+                        try {
+                            saveLevel();//Need to always save because otherwise, it will be unloaded without any additional checks
+                        } catch (IOException ignored) {
+                        }
                     }
                 }
                 if (load) unloadLevel();
@@ -277,8 +281,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         } else {
             exitTransitionRegular.destLevel = defaultBelow;
             List<Integer> possibleEntrances = customDungeon.getFloor(defaultBelow).entranceCells;
-            if (!possibleEntrances.isEmpty()) {
-                exitTransitionRegular.destCell = possibleEntrances.get(0);
+            int size = possibleEntrances.size();
+            if (size > 0) {
+                int destCell = possibleEntrances.get(0);
+                if (destCell == TransitionEditPart.NONE && size > 1) destCell = possibleEntrances.get(1);
+                if (destCell != TransitionEditPart.NONE) exitTransitionRegular.destCell = destCell;
             }
         }
     }

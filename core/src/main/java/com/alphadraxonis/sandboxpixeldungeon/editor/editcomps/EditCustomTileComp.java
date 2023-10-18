@@ -40,6 +40,7 @@ public class EditCustomTileComp extends EditTileComp {
     }
 
     public static boolean areEqual(CustomTilemap a, CustomTilemap b) {
+        if (a == null && b == null) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.tileX != b.tileX) return false;

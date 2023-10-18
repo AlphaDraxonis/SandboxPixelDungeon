@@ -2,6 +2,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon;
 
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
@@ -256,9 +257,9 @@ public class HeroSettings extends Component {
 
                 @Override
                 protected void showSelectWindow() {
-                    Set<Class<? extends Item>> exclude = new HashSet<>(5);
+                    Set<Class<?>> exclude = new HashSet<>(5);
 //                    for (Bag b : data.bags) exclude.add(b.getClass());
-                    ItemSelector.showSelectWindow(startBags, ItemSelector.NullTypeSelector.NONE, Bag.class, exclude);
+                    ItemSelector.showSelectWindow(startBags, ItemSelector.NullTypeSelector.NONE, Bag.class, Items.bag, exclude);
                 }
             };
             add(startBags);

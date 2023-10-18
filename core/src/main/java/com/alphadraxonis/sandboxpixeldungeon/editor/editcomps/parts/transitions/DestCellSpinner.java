@@ -11,7 +11,7 @@ import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import java.util.ArrayList;
 import java.util.List;
 
-class DestCellSpinner extends Spinner {
+public class DestCellSpinner extends Spinner {
 
     public DestCellSpinner(List<Integer> cells, int levelWidth) {
         super(new DestCellModel(cells, levelWidth), Messages.get(TransitionEditPart.class, "dest_cell"), 8);

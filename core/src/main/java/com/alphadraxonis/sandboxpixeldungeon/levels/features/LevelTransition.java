@@ -183,6 +183,7 @@ public class LevelTransition extends Rect implements Bundlable {
         if (bundle.contains(TYPE)) type = bundle.getEnum(TYPE, Type.class);
         departLevel = bundle.getString(DEPART_LEVEL);
         destLevel = bundle.getString(DEST_LEVEL);
+        if (destLevel.equals("")) destLevel = null;
         if (bundle.contains(DEST_TYPE)) destType = bundle.getEnum(DEST_TYPE, Type.class);
         destCell = bundle.getInt(DEST_CELL);
         departCell = bundle.getInt(DEPART_CELL);

@@ -4,6 +4,7 @@ import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.EditCompWindow;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.EditorInventoryWindow;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.EditorItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.ItemItem;
@@ -29,8 +30,8 @@ public class ItemSelector extends Component {
         NONE, NOTHING, RANDOM
     }
 
-    protected static final int MIN_GAP = 6;//Gap between text and title
-    protected static final float GAP = 0.5f;
+    public static final int MIN_GAP = 6;//Gap between text and title
+    public static final float GAP = 0.5f;
 
     private Class<? extends Item> itemClasses;
     private Item selectedItem;
@@ -155,16 +156,16 @@ public class ItemSelector extends Component {
     }
 
     public void change() {
-        showSelectWindow(selector, nullTypeSelector, itemClasses, new HashSet<>(0));
+        showSelectWindow(selector, nullTypeSelector, itemClasses, Items.bag, new HashSet<>(0));
     }
 
-    private static void addItem(ScrollingListPane sp, Item i, EditorInventoryWindow w, Class<? extends Item> itemClasses, Collection<Class<? extends Item>> excludeItems) {
-        if (i instanceof ItemItem && itemClasses.isAssignableFrom(((ItemItem) i).item().getClass()) && !excludeItems.contains(((ItemItem) i).item().getClass())) {
-            sp.addItem(((ItemItem) i).createListItem(w));
+    private static void addItem(ScrollingListPane sp, Item i, EditorInventoryWindow w, Class<?> itemClasses, Collection<Class<?>> excludeItems) {
+        if (i instanceof EditorItem && itemClasses.isAssignableFrom(((EditorItem) i).getObject().getClass()) && !excludeItems.contains(((EditorItem) i).getObject().getClass())) {
+            sp.addItem(((EditorItem) i).createListItem(w));
         }
     }
 
-    public static EditorInventoryWindow showSelectWindow(WndBag.ItemSelectorInterface selector, NullTypeSelector nullTypeSelector, Class<? extends Item> itemClasses, Collection<Class<? extends Item>> excludeItems) {
+    public static EditorInventoryWindow showSelectWindow(WndBag.ItemSelectorInterface selector, NullTypeSelector nullTypeSelector, Class<?> itemClasses, EditorItemBag bag, Collection<Class<?>> excludeItems) {
         final int WIDTH = Math.min(160, (int) (PixelScene.uiCamera.width * 0.9));
         final int HEIGHT = (int) (PixelScene.uiCamera.height * 0.8f);
 
@@ -178,7 +179,7 @@ public class ItemSelector extends Component {
             sp.addItem(EditorItem.NULL_ITEM.createListItem(w));
         else if (nullTypeSelector == NullTypeSelector.RANDOM)
             sp.addItem(EditorItem.RANDOM_ITEM.createListItem(w));
-        for (Item bagitem : Items.bag.items) {
+        for (Item bagitem : bag.items) {
             if (bagitem instanceof Bag) {
                 for (Item i : (Bag) bagitem) {
                     addItem(sp, i, w, itemClasses, excludeItems);

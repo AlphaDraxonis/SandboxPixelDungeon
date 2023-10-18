@@ -57,7 +57,7 @@ public class PlaceCellActionPart implements ActionPart {
 
     @Override
     public boolean hasContent() {
-        return oldTerrain != newTerrain || !EditCustomTileComp.areEqual(oldCustomTile(),CustomTileItem.findCustomTileAt(cell()));
+        return oldTerrain != newTerrain || !EditCustomTileComp.areEqual(oldCustomTile(), CustomTileItem.findCustomTileAt(cell()));
     }
 
     protected CustomTilemap oldCustomTile() {

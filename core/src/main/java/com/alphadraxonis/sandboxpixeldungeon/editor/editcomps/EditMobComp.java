@@ -8,6 +8,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Tengu;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
+import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.YogDzewa;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Ghost;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Imp;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.RatKing;
@@ -16,16 +17,20 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.FistSelector;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.LotusLevelSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.MobStateSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.mobs.QuestSpinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.DestCellSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.stateditor.WndEditStats;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Buffs;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.MobItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.QuestNPC;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelectorList;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.WndChooseOneInCategories;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
@@ -39,6 +44,7 @@ import com.alphadraxonis.sandboxpixeldungeon.items.wands.WandOfRegrowth;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.Weapon;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.SentryRoom;
 import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
+import com.alphadraxonis.sandboxpixeldungeon.scenes.PixelScene;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.MimicSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.StatueSprite;
@@ -55,6 +61,7 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class EditMobComp extends DefaultEditComp<Mob> {
@@ -75,6 +82,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final Spinner sentryRange, sentryDelay;
     private final Spinner tenguPhase, tenguRange;
     private final CheckBox dm300destroyWalls;
+    private final Spinner yogSpawnersAlive;
+    private final ItemSelectorList<MobItem> yogNormalFists, yogChallengeFists;
 
     private final Component[] comps;
 
@@ -334,7 +343,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof DM300) {
-            dm300destroyWalls = new CheckBox(Messages.get(EditMobComp.class, "dm300_destroy_walls")){
+            dm300destroyWalls = new CheckBox(Messages.get(EditMobComp.class, "dm300_destroy_walls")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -345,6 +354,38 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(dm300destroyWalls);
         } else {
             dm300destroyWalls = null;
+        }
+
+        if (mob instanceof YogDzewa) {
+            int spAlive = ((YogDzewa) mob).spawnersAlive;
+            yogSpawnersAlive = new Spinner(new SpinnerIntegerModel(0, 4, spAlive == -1 ? null : spAlive, 1, true,
+                    Messages.get(DestCellSpinner.class, "default")) {
+                @Override
+                public float getInputFieldWith(float height) {
+                    return Spinner.FILL;
+                }
+
+                @Override
+                public void displayInputAnyNumberDialog() {
+                }
+            },
+                    " " + Messages.get(EditMobComp.class, "spawners_alive") + ":", 7 + (PixelScene.landscape() ? 2 : 0));
+            yogSpawnersAlive.addChangeListener(() -> {
+                Integer val = (Integer) yogSpawnersAlive.getValue();
+                if (val == null) val = -1;
+                ((YogDzewa) mob).spawnersAlive = val;
+            });
+            yogSpawnersAlive.setButtonWidth(10f);
+            add(yogSpawnersAlive);
+
+            yogNormalFists = new FistSelector(((YogDzewa) mob).fistSummons, " " + Messages.get(EditMobComp.class, "normal_fists") + ":", 7 + (PixelScene.landscape() ? 2 : 0));
+            add(yogNormalFists);
+            yogChallengeFists = new FistSelector(((YogDzewa) mob).challengeSummons, " " + Messages.get(EditMobComp.class, "challenge_fists") + ":", 7 + (PixelScene.landscape() ? 2 : 0));
+            add(yogChallengeFists);
+        } else {
+            yogSpawnersAlive = null;
+            yogNormalFists = null;
+            yogChallengeFists = null;
         }
 
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
@@ -402,6 +443,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         } else editStats = null;
 
         comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, sheepLifespan,
+                yogSpawnersAlive, yogNormalFists, yogChallengeFists,
                 mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, tenguPhase, tenguRange, dm300destroyWalls,
                 sentryRange, sentryDelay, addBuffs, editStats};
     }
@@ -465,6 +507,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         for (Buff buff : a.buffs()) aBuffs.add(buff.getClass());
         for (Buff buff : b.buffs()) bBuffs.add(buff.getClass());
         if (!bBuffs.equals(aBuffs)) return false;//only very simple, does not compare any values, just the types!!
+        if (a.loot instanceof LootTableComp.CustomLootInfo) {
+            if (!a.loot.equals(b.loot)) return false;
+        }else if (b.loot instanceof LootTableComp.CustomLootInfo) return false;
+
         if (a instanceof Statue) {
             if (!EditItemComp.areEqual(((Statue) a).weapon, ((Statue) b).weapon)) return false;
             return !(a instanceof ArmoredStatue)
@@ -473,11 +519,24 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             return EditItemComp.areEqual(((Thief) a).item, ((Thief) b).item);
         } else if (a instanceof Mimic) {
             return DefaultEditComp.isItemListEqual(((Mimic) a).items, ((Mimic) b).items);
+        } else if (a instanceof YogDzewa) {
+            if (((YogDzewa) a).spawnersAlive != ((YogDzewa) b).spawnersAlive) return false;
+            if (!isMobListEqual(((YogDzewa) a).fistSummons, ((YogDzewa) b).fistSummons)) return false;
+            return isMobListEqual(((YogDzewa) a).challengeSummons, ((YogDzewa) b).challengeSummons);
         }
-        if (a.loot instanceof LootTableComp.CustomLootInfo) {
-            return a.loot.equals(b.loot);
+        return true;
+    }
+
+    public static boolean isMobListEqual(List<? extends Mob> a, List<? extends Mob> b) {
+        if (a == null) return b == null || b.size() == 0;
+        if (b == null) return a.size() == 0;
+        if (a.size() != b.size()) return false;
+        int index = 0;
+        for (Mob m : a) {
+            if (!EditMobComp.areEqual(m, b.get(index))) return false;
+            index++;
         }
-        return !(b.loot instanceof LootTableComp.CustomLootInfo);
+        return true;
     }
 
     private class MobTitleEditor extends WndInfoMob.MobTitle {

@@ -23,6 +23,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Statue;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.alphadraxonis.sandboxpixeldungeon.editor.Sign;
+import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.TileItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.BiPredicate;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.CustomDungeonSaves;
@@ -270,9 +271,16 @@ public class CustomLevel extends Level {
 
 
             for (LevelTransition t : transitions.values()) {
-                if (t.destCell == -1 && t.type == LevelTransition.Type.REGULAR_ENTRANCE) {
+                if (t.destCell == TransitionEditPart.DEFAULT && t.type == LevelTransition.Type.REGULAR_ENTRANCE) {
                     LevelScheme destLevelScheme = Dungeon.customDungeon.getFloor(t.destLevel);
-                    if (destLevelScheme != null && !destLevelScheme.exitCells.isEmpty()) t.destCell = destLevelScheme.exitCells.get(0);
+                    if (destLevelScheme != null){
+                        int size = destLevelScheme.exitCells.size();
+                        if (size > 0) {
+                            int destCell = destLevelScheme.exitCells.get(0);
+                            if (size > 1 && destCell == TransitionEditPart.NONE) destCell = destLevelScheme.exitCells.get(1);
+                            if (destCell != TransitionEditPart.NONE) t.destCell = destCell;
+                        }
+                    }
                 }
             }
 
@@ -535,8 +543,16 @@ public class CustomLevel extends Level {
                     transitions.put(i, new LevelTransition(this, i, LevelTransition.Type.SURFACE));
                 } else {
                     LevelScheme destLevelScheme = Dungeon.customDungeon.getFloor(dest);
-                    if (destLevelScheme != null && !destLevelScheme.exitCells.isEmpty())
-                        transitions.put(i, new LevelTransition(this, i, destLevelScheme.exitCells.get(0), dest));
+                    if (destLevelScheme != null){
+                        int size = destLevelScheme.exitCells.size();
+                        if (size > 0) {
+                            int destCell = destLevelScheme.exitCells.get(0);
+                            if (size > 1 && destCell == TransitionEditPart.NONE) destCell = destLevelScheme.exitCells.get(1);
+                            if (destCell != TransitionEditPart.NONE){
+                                transitions.put(i, new LevelTransition(this, i, destCell, dest));
+                            }
+                        }
+                    }
                 }
             }
             else if (TileItem.isExitTerrainCell(terrain)) levelScheme.exitCells.add(i);

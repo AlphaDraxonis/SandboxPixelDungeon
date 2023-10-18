@@ -48,6 +48,7 @@ import com.alphadraxonis.sandboxpixeldungeon.effects.particles.LeafParticle;
 import com.alphadraxonis.sandboxpixeldungeon.items.armor.glyphs.Viscosity;
 import com.alphadraxonis.sandboxpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.melee.Sickle;
+import com.alphadraxonis.sandboxpixeldungeon.levels.HallsBossLevel;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.GeyserTrap;
@@ -66,6 +67,10 @@ public abstract class YogFist extends Mob {
 	{
 		HP = HT = 300;
 		defenseSkill = 20;
+		attackSkill = 36;
+		damageRollMin = 18;
+		damageRollMax = 36;
+		damageReductionMax = 15;
 
 		viewDistance = Light.DISTANCE;
 
@@ -81,6 +86,8 @@ public abstract class YogFist extends Mob {
 
 	private float rangedCooldown;
 	protected boolean canRangedInMelee = true;
+
+	protected int yogDzewaId;
 
 	protected void incrementRangedCooldown(){
 		rangedCooldown += Random.NormalFloat(8, 12);
@@ -111,6 +118,7 @@ public abstract class YogFist extends Mob {
 	private boolean invulnWarned = false;
 
 	protected boolean isNearYog(){
+		if (!(Dungeon.level instanceof HallsBossLevel)) return false;
 		int yogPos = Dungeon.level.exit() + 3*Dungeon.level.width();
 		return Dungeon.level.distance(pos, yogPos) <= 4;
 	}
@@ -164,20 +172,20 @@ public abstract class YogFist extends Mob {
 		next();
 	}
 
-	@Override
-	public int attackSkill( Char target ) {
-		return 36;
-	}
-
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 18, 36 );
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 15);
-	}
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 36;
+//	}
+//
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 18, 36 );
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 15);
+//	}
 
 	{
 		immunities.add( Sleep.class );
@@ -189,17 +197,20 @@ public abstract class YogFist extends Mob {
 	}
 
 	public static final String RANGED_COOLDOWN = "ranged_cooldown";
+	public static final String YOG_DZEWA_ID = "yog_dzewa_id";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(RANGED_COOLDOWN, rangedCooldown);
+		bundle.put(YOG_DZEWA_ID, yogDzewaId);
 	}
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		rangedCooldown = bundle.getFloat(RANGED_COOLDOWN);
+		yogDzewaId = bundle.getInt(YOG_DZEWA_ID);
 	}
 
 	public static class BurningFist extends YogFist {
