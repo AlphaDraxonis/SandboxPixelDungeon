@@ -66,9 +66,9 @@ public class WndSelectDungeon extends Window {
             add(createNewDungeonBtn);
 
             //this is commented out in the apk version
-            if (DeviceCompat.isDesktop() && Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)){
-                createNewDungeonBtn.setRect(0, height - 18, (width*9/16f)-2, 18);
-                openFileExplorer = new RedButton(Messages.get(WndSelectDungeon.class, "open_file_explorer")){
+            if (DeviceCompat.isDesktop() && Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+                createNewDungeonBtn.setRect(0, height - 18, (width * 9 / 16f) - 2, 18);
+                openFileExplorer = new RedButton(Messages.get(WndSelectDungeon.class, "open_file_explorer")) {
                     @Override
                     protected void onClick() {
                         Desktop desktop = Desktop.getDesktop();
@@ -78,14 +78,14 @@ public class WndSelectDungeon extends Window {
                         try {
                             desktop.open(fileToOpen);
                         } catch (IOException e) {
-                            Game.runOnRenderThread(()->
+                            Game.runOnRenderThread(() ->
                                     Game.scene().addToFront(new WndTitledMessage(Icons.get(Icons.WARNING), "ERROR",
-                                            "Something went wrong:\n"+e.getMessage())));
+                                            "Something went wrong:\n" + e.getMessage())));
                         }
                     }
                 };
                 add(openFileExplorer);
-                openFileExplorer.setRect(createNewDungeonBtn.right()+2, height - 18, width - createNewDungeonBtn.width() - 2, 18);
+                openFileExplorer.setRect(createNewDungeonBtn.right() + 2, height - 18, width - createNewDungeonBtn.width() - 2, 18);
             } else {
                 createNewDungeonBtn.setRect(0, height - 18, width, 18);
             }
@@ -114,8 +114,17 @@ public class WndSelectDungeon extends Window {
 
         private final CustomDungeonSaves.Info info;
 
+        protected RenderedTextBlock folderName;
+
         public ListItem(CustomDungeonSaves.Info info) {
             super(Icons.get(Icons.STAIRS), info.name);
+            for (String n : dungeonNames) {
+                if (info.name != n && info.name.trim().equals(n.trim())) {
+                    folderName = PixelScene.renderTextBlock("(" + info.name + ")", 5);
+                    add(folderName);
+                    break;
+                }
+            }
             this.info = info;
         }
 
@@ -123,6 +132,15 @@ public class WndSelectDungeon extends Window {
         protected void createChildren(Object... params) {
             super.createChildren(params);
             label.setHightlighting(false);
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+            if (folderName != null) {
+                label.setPos(label.left(), label.top()-1);
+                folderName.setPos(label.left(), label.bottom() + 2);
+            }
         }
 
         @Override
@@ -185,9 +203,9 @@ public class WndSelectDungeon extends Window {
                 RedButton export = new RedButton(Messages.get(WndSelectDungeon.class, "export_label")) {
                     @Override
                     protected void onClick() {
-                        String exportedName = info.name.replace('_','-');
+                        String exportedName = info.name.replace('_', '-');
                         String fileName = "exports/" + info.name + ".json";
-                        String destLocation = CustomDungeonSaves.getAbsolutePath(fileName).replace('_','-');
+                        String destLocation = CustomDungeonSaves.getAbsolutePath(fileName).replace('_', '-');
                         Window w = new WndOptions(
                                 Messages.get(WndSelectDungeon.class, "export_title", exportedName),
                                 Messages.get(WndSelectDungeon.class, "export_body", destLocation),
@@ -224,7 +242,7 @@ public class WndSelectDungeon extends Window {
                 };
                 export.enable(info.numLevels > 0);
 
-                IconButton rename = new IconButton(Icons.get(Icons.RENAME_ON)){
+                IconButton rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
                     @Override
                     protected void onClick() {
                         Window w = new WndTextInput(Messages.get(WndSelectDungeon.class, "rename_title"),
@@ -233,7 +251,7 @@ public class WndSelectDungeon extends Window {
                                 50,
                                 false,
                                 Messages.get(WndSelectDungeon.class, "rename_yes"),
-                                Messages.get(WndSelectDungeon.class, "export_no")){
+                                Messages.get(WndSelectDungeon.class, "export_no")) {
                             @Override
                             public void onSelect(boolean positive, String text) {
                                 if (positive && !text.isEmpty()) {
