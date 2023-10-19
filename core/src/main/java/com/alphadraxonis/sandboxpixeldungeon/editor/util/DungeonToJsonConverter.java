@@ -111,7 +111,7 @@ public class DungeonToJsonConverter {
             appendParam(b, "region", l.getRegion());//1 to 5   is value??!
             appendParam(b, "view_distance", f.viewDistance);
             appendMusic(b, f.getRegionValue());
-            appendArrayReplace(b, "map", f.map, Terrain.INACTIVE_TRAP, Terrain.EMPTY, Terrain.SIGN_SP, Terrain.SIGN);//ask quasi why this replacement is necessary
+            appendArrayReplace(b, "map", f.map, Terrain.SIGN_SP, Terrain.SIGN);
 
             appendArrayHead(b, "entrances");
             entranceCells = l.entranceCells;
@@ -137,8 +137,7 @@ public class DungeonToJsonConverter {
             }
             b.append("],\n");
 
-            //Seeds cannot be added in custompd because they are not inside the items folder
-            appendComplexArray(b, "items", f.heaps.valueList(), h -> h.peek() != null && !(h.peek() instanceof Plant.Seed),
+            appendComplexArray(b, "items", f.heaps.valueList(), h -> h.peek() != null,
                     obj -> appendItemValues(b, obj, width), null, 0);
 
             //TODO shuffle_items
@@ -152,9 +151,8 @@ public class DungeonToJsonConverter {
             appendComplexArray(b, "hidden_traps", f.traps.values(), t -> !t.visible && t.active,
                     obj -> appendParamEnd(b, "type", obj.getClass().getSimpleName()), t -> t.pos, width);
 
-            //disarmed traps cause custompd to crah because it assumes that customLevel==Dungeon.level while calling customLevel.build()
-//            appendComplexArray(b, "disarmed_traps", f.traps.values(), t -> !t.active,
-//                    obj -> appendParamEnd(b, "type", obj.getClass().getSimpleName()), t -> t.pos, width);
+            appendComplexArray(b, "disarmed_traps", f.traps.values(), t -> !t.active,
+                    obj -> appendParamEnd(b, "type", obj.getClass().getSimpleName()), t -> t.pos, width);
 
             appendComplexArray(b, "plants", f.plants.values(), p -> p != null,
                     obj -> appendParamEnd(b, "type", obj.getClass().getSimpleName()), p -> p.pos, width);
@@ -220,10 +218,9 @@ public class DungeonToJsonConverter {
         //TODO trap_detection
         //TODO door_detection
         if (f == null && l.getFeeling() != Level.Feeling.NONE && l.getFeeling() != null) //TODO why is this "unknown key"?
-            appendParam(b, "levelFeeling", l.getFeeling().toString().toLowerCase(Locale.ENGLISH));
+            appendParam(b, "level_feeling", l.getFeeling().toString().toLowerCase(Locale.ENGLISH));
 
-        //Seeds cannot be added in custompd because they are not inside the items folder
-        appendComplexArray(b, "extra_items", l.itemsToSpawn, i -> i != null && !(i instanceof Plant.Seed),
+        appendComplexArray(b, "extra_items", l.itemsToSpawn, i -> i != null,
                 obj -> appendValueOneItem(b, obj, Heap.Type.HEAP, -1, 0));
 
         appendComplexArray(b, "extra_mobs", l.mobsToSpawn, m -> m != null,
@@ -275,11 +272,10 @@ public class DungeonToJsonConverter {
         b.append("],\n");
     }
 
-    private static void appendArrayReplace(StringBuilder b, String name, int[] value, int oldValue, int newValue, int oldValue2, int newValue2) {
+    private static void appendArrayReplace(StringBuilder b, String name, int[] value, int oldValue, int newValue) {
         appendArrayHead(b, name);
         for (int i : value) {
             if (i == oldValue) i = newValue;
-            else if (i == oldValue2) i = newValue2;
             b.append(i).append(", ");
         }
         if (value.length > 0) {
@@ -365,7 +361,7 @@ public class DungeonToJsonConverter {
 
     private static final int PACKAGE_NAME_LENGTH = "com.alphadraxonis.sandboxpixeldungeon.".length();
     private static final int PACKAGE_NAME_ITEMS_LENGTH = PACKAGE_NAME_LENGTH + "items.".length();
-    private static final int PACKAGE_NAME_SEEDS_LENGTH = PACKAGE_NAME_LENGTH + "plants.".length();
+    private static final int PACKAGE_NAME_SEEDS_LENGTH = PACKAGE_NAME_LENGTH /*+ "plants.".length()*/;
     private static final int PACKAGE_NAME_MOBS_LENGTH = PACKAGE_NAME_LENGTH + "actors.mobs.".length();
     private static final int PACKAGE_NAME_WEAPON_LENGTH = PACKAGE_NAME_ITEMS_LENGTH + "weapon.".length();
     private static final int PACKAGE_NAME_ARMOR_LENGTH = PACKAGE_NAME_ITEMS_LENGTH + "armor.".length();
