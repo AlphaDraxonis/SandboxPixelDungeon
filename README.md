@@ -9,7 +9,7 @@ Challenge players to think strategically, adapt, and emerge victorious against t
 
 Tailor the item placement to create unique challenges for brave adventurers. Experiment with weapons, adjusting their upgrades, curses, enchantments, or glyphs to create the perfect balance of risk and reward. Although customizing armor sets is not currently supported, you can still shape the loot and rewards found within your dungeon, ensuring players are tested to their limits.
 
-When you're ready to share your creation, you can export your dungeon as JSON, capturing the most important dungeon settings. However, for a more immersive experience with your mod, players can utilize the raw files that you share to truly delve into the world you've built.
+When you're ready to share your creation, you can export your dungeon as JSON for [Custom Pixel Dungeon](https://github.com/QuasiStellar/custom-pixel-dungeon), capturing the most important dungeon settings. However, for a more immersive experience with your mod, players can utilize the raw files that you share to truly delve into the world you've built.
 
 Download Sandbox Pixel Dungeon now and embark on an adventure where you're not only the player but the architect of your own dungeon. Leave your mark on the realm of roguelike gaming, defy the limits of what's possible, and forge a unique experience that will captivate players around the world.
 
@@ -17,8 +17,6 @@ Download Sandbox Pixel Dungeon now and embark on an adventure where you're not o
 
 
 Sandbox Pixel Dungeon is based on the open-source traditional roguelike dungeon crawler [Shattered Pixel Dungeon](https://shatteredpixel.com/shatteredpd/) which is based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://www.watabou.ru).
-
-Keep in mind that this is only an early version and many more updates will improve the game further.
 
 Please look at the [tutorial](https://docs.google.com/document/d/1LEx8uZYdv04ndrITJeUttdphXp_hkJ5WDdysWNQTXyY) for help or for sceenshots.
 
