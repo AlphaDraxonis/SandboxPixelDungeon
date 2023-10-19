@@ -288,7 +288,7 @@ public enum Mobs {
         private final Mobs mobs;
 
         public MobBag(Mobs mobs) {
-            super(mobs.getName(), 0);
+            super(null, 0);
             this.mobs = mobs;
             for (Class<?> m : mobs.classes) {
                 Mob mob = (Mob) Reflection.newInstance(m);
@@ -308,9 +308,14 @@ public enum Mobs {
         public Image getCategoryImage() {
             return mobs.getImage();
         }
+
+        @Override
+        public String name() {
+            return mobs.getName();
+        }
     }
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "mobs"), 0){
+    public static final EditorItemBag bag = new EditorItemBag("name", 0){
         @Override
         public Item findItem(Object src) {
             for (Item bag : items) {

@@ -3,7 +3,6 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.PlantItem;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
-import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.plants.BlandfruitBush;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Blindweed;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Earthroot;
@@ -31,6 +30,7 @@ public enum Plants {
     PLANTS;
 
     private static final Class<?>[] EMPTY_PLANT_CLASS_ARRAY = new Class[0];
+
     public static Class<?>[][] getAllPlants(Set<Class<? extends Plant>> plantsToIgnore) {
         Plants[] all = values();
         Class<?>[][] ret = new Class[all.length][];
@@ -54,6 +54,7 @@ public enum Plants {
     }
 
     private Class<?>[] classes;
+
     public Class<?>[] classes() {
         return classes;
     }
@@ -80,7 +81,7 @@ public enum Plants {
         private final Plants plants;
 
         public PlantBag(Plants plants) {
-            super(Messages.get(Plants.class, "plants"), 0);
+            super("plants", 0);
             this.plants = plants;
             for (Class<?> p : plants.classes) {
                 items.add(new PlantItem((Plant) Reflection.newInstance(p)));
@@ -93,7 +94,7 @@ public enum Plants {
         }
     }
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "plants"), 0) {
+    public static final EditorItemBag bag = new EditorItemBag("name", 0) {
         @Override
         public Item findItem(Object src) {
             for (Item bag : items) {

@@ -215,7 +215,6 @@ import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.darts.Paralyt
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.darts.PoisonDart;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.darts.RotDart;
 import com.alphadraxonis.sandboxpixeldungeon.items.weapon.missiles.darts.ShockingDart;
-import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Blindweed;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Earthroot;
 import com.alphadraxonis.sandboxpixeldungeon.plants.Fadeleaf;
@@ -474,6 +473,7 @@ public enum Items {
         }
         return ret;
     }
+
     public static Class<? extends Item> getRandomItem(Set<Class<? extends Item>> itemsToIgnore) {
         Class<? extends Item>[][] items = (Class<? extends Item>[][]) getAllItems(itemsToIgnore);
         List<Class<? extends Item>> itemList = new ArrayList<>();
@@ -722,7 +722,7 @@ public enum Items {
     }
 
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "items"), 0) {
+    public static final EditorItemBag bag = new EditorItemBag("name", 0) {
         @Override
         public Image getCategoryImage() {
             return null;
@@ -742,7 +742,7 @@ public enum Items {
     public static class ItemBag extends EditorItemBag {
 
         public ItemBag(String name, int image, Class<?>[]... classes) {
-            super(name,image);
+            super(name, image);
             for (Class<?>[] cs : classes) {
                 for (Class<?> c : cs) {
                     items.add(new ItemItem((Item) Reflection.newInstance(c)));
@@ -754,26 +754,26 @@ public enum Items {
     private static final ItemBag bagWithKeys;
 
     static {
-        bag.items.add(new ItemBag(Messages.get(Items.class,"melee"), WEAPON_HOLDER, MELEE_WEAPON.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"wand"), WAND_HOLDER, WAND.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"ring"), RING_HOLDER, RING.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"seed"), SEED_HOLDER, SEED.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"stone"), STONE_HOLDER, STONE.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"bomb"), BOMB_HOLDER,  BOMB.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"food"), FOOD_HOLDER, FOOD.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"missile"), MISSILE_HOLDER, MISSILE_WEAPON.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"armor"), ARMOR_HOLDER, ARMOR.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"artifact"), ARTIFACT_HOLDER, ARTIFACT.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"potion"), POTION_HOLDER,  POTION.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"scroll"), SCROLL_HOLDER, SCROLL.classes()));
-        bag.items.add(new ItemBag(Messages.get(Items.class,"alch"), SPELL_HOLDER, ALCHEMICAL.classes(), SPELL.classes()));
-        bag.items.add(bagWithKeys = new ItemBag(Messages.get(Items.class,"other"), SOMETHING, KEY.classes(), OTHER.classes(), BAG.classes(), QUEST.classes()));
+        bag.items.add(new ItemBag("melee", WEAPON_HOLDER, MELEE_WEAPON.classes()));
+        bag.items.add(new ItemBag("wand", WAND_HOLDER, WAND.classes()));
+        bag.items.add(new ItemBag("ring", RING_HOLDER, RING.classes()));
+        bag.items.add(new ItemBag("seed", SEED_HOLDER, SEED.classes()));
+        bag.items.add(new ItemBag("stone", STONE_HOLDER, STONE.classes()));
+        bag.items.add(new ItemBag("bomb", BOMB_HOLDER, BOMB.classes()));
+        bag.items.add(new ItemBag("food", FOOD_HOLDER, FOOD.classes()));
+        bag.items.add(new ItemBag("missile", MISSILE_HOLDER, MISSILE_WEAPON.classes()));
+        bag.items.add(new ItemBag("armor", ARMOR_HOLDER, ARMOR.classes()));
+        bag.items.add(new ItemBag("artifact", ARTIFACT_HOLDER, ARTIFACT.classes()));
+        bag.items.add(new ItemBag("potion", POTION_HOLDER, POTION.classes()));
+        bag.items.add(new ItemBag("scroll", SCROLL_HOLDER, SCROLL.classes()));
+        bag.items.add(new ItemBag("alch", SPELL_HOLDER, ALCHEMICAL.classes(), SPELL.classes()));
+        bag.items.add(bagWithKeys = new ItemBag("other", SOMETHING, KEY.classes(), OTHER.classes(), BAG.classes(), QUEST.classes()));
     }
 
-    public static void updateKeys(String oldLvlName, String newLvlName){
-        for(Item item : bagWithKeys){
+    public static void updateKeys(String oldLvlName, String newLvlName) {
+        for (Item item : bagWithKeys) {
             Item i = ((ItemItem) item).item();
-            if(i instanceof Key && (oldLvlName == null || ((Key) i).levelName == null || ((Key) i).levelName.equals(oldLvlName))){
+            if (i instanceof Key && (oldLvlName == null || ((Key) i).levelName == null || ((Key) i).levelName.equals(oldLvlName))) {
                 ((Key) i).levelName = newLvlName;
             }
         }

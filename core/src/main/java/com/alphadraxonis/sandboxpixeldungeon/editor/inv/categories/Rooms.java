@@ -257,7 +257,7 @@ public enum Rooms {
         private final Rooms rooms;
 
         public RoomBag(Rooms rooms) {
-            super(rooms.getName(), 0);
+            super(null, 0);
             this.rooms = rooms;
             for (Class<?> r : rooms.classes) {
                 items.add(new RoomItem((Room) Reflection.newInstance(r)));
@@ -268,9 +268,14 @@ public enum Rooms {
         public Image getCategoryImage() {
             return rooms.getImage();
         }
+
+        @Override
+        public String name() {
+            return rooms.getName();
+        }
     }
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "rooms"), 0) {
+    public static final EditorItemBag bag = new EditorItemBag("name", 0) {
         @Override
         public Item findItem(Object src) {
             for (Item bag : items) {

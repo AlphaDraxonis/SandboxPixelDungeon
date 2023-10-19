@@ -41,7 +41,6 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MagicalFireRoo
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MassGraveRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.RitualSiteRoom;
-import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.CustomTilemap;
 import com.alphadraxonis.sandboxpixeldungeon.tiles.DungeonTileSheet;
@@ -100,7 +99,7 @@ public enum Tiles {
     //TODO Icon zeige in inv an, ob brennbar, oder Schlüssel?? -> muss über ListItem gemacht werden!
 
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "tiles"), 0) {
+    public static final EditorItemBag bag = new EditorItemBag("name", 0) {
         @Override
         public Item findItem(Object src) {
             if (src instanceof Class<?>) {//for blobs and customTiles
@@ -154,7 +153,7 @@ public enum Tiles {
 
     public static class CustomTileBag extends EditorItemBag {
         public CustomTileBag() {
-            super("CUSTOM_TILES", -1);
+            super("name", -1);
         }
 
         @Override
@@ -166,10 +165,10 @@ public enum Tiles {
     private static CustomTileBag customTileBag;
 
     static {
-        bag.items.add(new TileBag(Messages.get(Tiles.class, "empty"), EMPTY.terrains));
-        bag.items.add(new TileBag(Messages.get(Tiles.class, "wall"), WALL.terrains));
-        bag.items.add(new TileBag(Messages.get(Tiles.class, "door"), DOOR.terrains));
-        TileBag specialTiles = new TileBag(Messages.get(Tiles.class, "special"), SPECIAL.terrains);
+        bag.items.add(new TileBag("empty", EMPTY.terrains));
+        bag.items.add(new TileBag("wall", WALL.terrains));
+        bag.items.add(new TileBag("door", DOOR.terrains));
+        TileBag specialTiles = new TileBag("other", SPECIAL.terrains);
         specialTiles.items.add(new BlobItem(MagicalFireRoom.EternalFire.class));
         specialTiles.items.add(new BlobItem(SacrificialFire.class));
         bag.items.add(specialTiles);

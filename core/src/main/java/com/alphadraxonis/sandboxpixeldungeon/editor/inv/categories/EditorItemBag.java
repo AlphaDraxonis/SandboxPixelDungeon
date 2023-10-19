@@ -3,6 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.WndEditorInv;
 import com.alphadraxonis.sandboxpixeldungeon.items.Item;
 import com.alphadraxonis.sandboxpixeldungeon.items.bags.Bag;
+import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.watabou.noosa.Image;
 
@@ -31,7 +32,7 @@ public class EditorItemBag extends Bag {
 
     @Override
     public String name() {
-        return name;
+        return Messages.get(this, name);
     }
 
     public Item findItem(Object src){

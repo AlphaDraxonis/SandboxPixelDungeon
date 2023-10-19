@@ -35,7 +35,6 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.traps.Trap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.WarpingTrap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.WeakeningTrap;
 import com.alphadraxonis.sandboxpixeldungeon.levels.traps.WornDartTrap;
-import com.alphadraxonis.sandboxpixeldungeon.messages.Messages;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSprite;
 import com.alphadraxonis.sandboxpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Image;
@@ -126,15 +125,6 @@ public enum Traps {
         return ret;
     }
 
-    public static String[] getAllNames() {
-        Traps[] all = values();
-        String[] ret = new String[all.length];
-        for (int i = 0; i < all.length; i++) {
-            ret[i] = all[i].getName();
-        }
-        return ret;
-    }
-
     public static Class<? extends Trap> getRandomTrap(Set<Class<? extends Trap>> trapsToIgnore) {
         Class<? extends Trap>[][] traps = (Class<? extends Trap>[][]) getAllTraps(trapsToIgnore);
         List<Class<? extends Trap>> trapList = new ArrayList<>();
@@ -144,10 +134,6 @@ public enum Traps {
         int length = trapList.size();
         if (length == 0) return null;
         return trapList.get((int) (Math.random() * length));
-    }
-
-    public String getName() {
-        return Messages.get(Traps.class, name().toLowerCase(Locale.ENGLISH));
     }
 
     public Image getImage() {
@@ -182,7 +168,7 @@ public enum Traps {
     }
 
 
-    public static final EditorItemBag bag = new EditorItemBag(Messages.get(EditorItemBag.class, "traps"), 0){
+    public static final EditorItemBag bag = new EditorItemBag("name", 0) {
         @Override
         public Item findItem(Object src) {
             for (Item bag : items) {
@@ -204,7 +190,7 @@ public enum Traps {
         private final Traps traps;
 
         public TrapBag(Traps traps) {
-            super(traps.getName(), 0);
+            super(traps.name().toLowerCase(Locale.ENGLISH), 0);
             this.traps = traps;
             for (Class<?> t : traps.classes) {
                 Trap trap = (Trap) Reflection.newInstance(t);
