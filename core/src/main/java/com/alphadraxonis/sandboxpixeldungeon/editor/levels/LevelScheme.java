@@ -124,6 +124,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         exitCells = new ArrayList<>(3);
         entranceCells = new ArrayList<>(3);
 
+        if (depth == 6 || depth == 11 || depth == 16) roomsToSpawn.add(new ShopRoom());
+
         if (type == CustomLevel.class) {
             level = new CustomLevel(name, levelTemplate, feeling, seedSet ? seed : null, numInRegion, depth, this);
         }
