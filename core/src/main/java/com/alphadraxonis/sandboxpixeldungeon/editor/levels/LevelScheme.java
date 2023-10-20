@@ -83,7 +83,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
     private Level level;
     private int numInRegion = 3;
     private Level.Feeling feeling = Level.Feeling.NONE;
-    private int shopPriceMultiplier = 1;
+    private float shopPriceMultiplier = 1f;
 
     private long seed;
     private boolean seedSet = false;
@@ -388,7 +388,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         return Random.Int(2);
     }
 
-    public int getPriceMultiplier() {
+    public float getPriceMultiplier() {
         return shopPriceMultiplier;
     }
 
@@ -422,7 +422,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         this.depth = depth;
     }
 
-    public void setShopPriceMultiplier(int shopPriceMultiplier) {
+    public void setShopPriceMultiplier(float shopPriceMultiplier) {
         this.shopPriceMultiplier = shopPriceMultiplier;
     }
 
@@ -712,7 +712,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme> {
         passage = bundle.getString(PASSAGE);
         depth = bundle.getInt(DEPTH);
         if (bundle.contains(FEELING)) feeling = bundle.getEnum(FEELING, Level.Feeling.class);
-        shopPriceMultiplier = bundle.getInt(SHOP_PRICE_MULTIPLIER);
+        shopPriceMultiplier = bundle.getFloat(SHOP_PRICE_MULTIPLIER);
         spawnTorchIfDarkness = bundle.getBoolean(SPAWN_TORCH_IF_DARKNESS);
         reduceViewDistanceIfDarkness = bundle.getBoolean(REDUCE_VIEW_DISTANCE_IF_DARKNESS);
         affectedByNoScrolls = bundle.getBoolean(AFFECTED_BY_NO_SCROLLS);

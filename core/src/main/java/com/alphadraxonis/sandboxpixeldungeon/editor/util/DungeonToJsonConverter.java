@@ -213,7 +213,7 @@ public class DungeonToJsonConverter {
                 }
             }
         }
-        appendParam(b, "price_multiplier", l.getPriceMultiplier());
+        appendParam(b, "price_multiplier", (int) Math.min(1, l.getPriceMultiplier()));
         //TODO visibility
         //TODO trap_detection
         //TODO door_detection

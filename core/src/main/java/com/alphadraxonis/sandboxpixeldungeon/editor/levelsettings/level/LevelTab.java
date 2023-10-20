@@ -9,6 +9,7 @@ import com.alphadraxonis.sandboxpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.StyledCheckbox;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
@@ -123,7 +124,7 @@ public class LevelTab extends MultiWindowTabComp {
         depth.addChangeListener(() -> level.levelScheme.setDepth((Integer) depth.getValue()));
         content.add(depth);
 
-        shopPrice = new StyledSpinner(new SpinnerIntegerModel(1, 10, level.levelScheme.getPriceMultiplier(), 1, false, null) {
+        shopPrice = new StyledSpinner(new SpinnerFloatModel(0.1f, 10f, level.levelScheme.getPriceMultiplier(), false) {
             @Override
             public float getInputFieldWith(float height) {
                 return Spinner.FILL;
@@ -131,15 +132,15 @@ public class LevelTab extends MultiWindowTabComp {
 
             @Override
             public int getClicksPerSecondWhileHolding() {
-                return 8;
+                return 20;
             }
 
             @Override
             public void displayInputAnyNumberDialog() {
-                super.displayInputAnyNumberDialog(0, 10000);
+                super.displayInputAnyNumberDialog(0f, 10000f);
             }
         }, Messages.get(LevelTab.class, "shop_price"), 8);
-        shopPrice.addChangeListener(() -> level.levelScheme.setShopPriceMultiplier((int) shopPrice.getValue()));
+        shopPrice.addChangeListener(() -> level.levelScheme.setShopPriceMultiplier(SpinnerFloatModel.convertToFloat((Integer) shopPrice.getValue())));
         content.add(shopPrice);
 
         mainWindowComps = new Component[]{

@@ -17,13 +17,13 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
         return (int) (val * 10 + 0.01f);
     }
 
-    public float getAsFloat() {
-        return getAsFloat((Integer) getValue());
+    public static float convertToFloat(Integer val) {
+        if (val == null) return -1;
+        return val / 10f;
     }
 
-    public float getAsFloat(Integer value) {
-        if (value == null) return -1;
-        return value / 10f;
+    public float getAsFloat() {
+        return convertToFloat((Integer) getValue());
     }
 
     @Override
@@ -54,8 +54,8 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
                 Messages.get(this, "input_dialog_body",
                         String.format(Languages.getCurrentLocale(), "%.1f", min),
                         String.format(Languages.getCurrentLocale(), "%.1f", max),
-                        String.format(Languages.getCurrentLocale(), "%.1f", getAsFloat(getMinimum())),
-                        String.format(Languages.getCurrentLocale(), "%.1f", getAsFloat(getMaximum()))),
+                        String.format(Languages.getCurrentLocale(), "%.1f", convertToFloat(getMinimum())),
+                        String.format(Languages.getCurrentLocale(), "%.1f", convertToFloat(getMaximum()))),
                 String.format(Languages.getCurrentLocale(), "%.1f", getAsFloat()), 11, false,
                 Messages.get(this, "input_dialog_yes"),
                 Messages.get(this, "input_dialog_no")
