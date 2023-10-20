@@ -173,14 +173,19 @@ public class DurationSettings extends Component {
 
         protected static SpinnerModel createSpinnerModel(float defaultVal, float currentVal) {
             return new SpinnerIntegerModel(1, (int) (defaultVal * 10), (int) currentVal, 1, false, null) {
+                {
+                    setAbsoluteMinimum((float) getMinimum());
+                }
+
                 @Override
                 public int getClicksPerSecondWhileHolding() {
                     return 25;
                 }
 
                 @Override
-                public void displayInputAnyNumberDialog() {
-                    super.displayInputAnyNumberDialog(getMinimum(), Integer.MAX_VALUE);
+                public void setMinimum(Integer minimum) {
+                    super.setMinimum(minimum);
+                    setAbsoluteMinimum((float) minimum);
                 }
             };
         }

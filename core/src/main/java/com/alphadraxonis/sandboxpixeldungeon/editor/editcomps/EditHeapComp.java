@@ -3,7 +3,10 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.editcomps;
 import com.alphadraxonis.sandboxpixeldungeon.Chrome;
 import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.level.LevelTab;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.Spinner;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
+import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.util.EditorUtilies;
 import com.alphadraxonis.sandboxpixeldungeon.items.Heap;
@@ -24,6 +27,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
 
     protected final CheckBox haunted;
     protected final IconButton hauntedInfo;
+    protected final Spinner priceMultiplier;
 
     protected final HeapTypeSpinner heapType;
 
@@ -70,6 +74,21 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             }
         };
         add(hauntedInfo);
+
+        priceMultiplier = new Spinner(new SpinnerFloatModel(0.1f, 10f, heap.priceMultiplier, false) {
+            @Override
+            public float getInputFieldWith(float height) {
+                return height * 1.4f;
+            }
+
+            @Override
+            public int getClicksPerSecondWhileHolding() {
+                return 20;
+            }
+        }, Messages.get(LevelTab.class, "shop_price"), 8);
+        ((SpinnerIntegerModel) priceMultiplier.getModel()).setAbsoluteMinAndMax(0f, 10000f);
+        priceMultiplier.addChangeListener(() -> heap.priceMultiplier = SpinnerFloatModel.convertToFloat((Integer) priceMultiplier.getValue()));
+        add(priceMultiplier);
 
         heapType = new HeapTypeSpinner(heap);
         add(heapType);
@@ -150,6 +169,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             haunted.checked(false);
             haunted.enable(false);
         } else haunted.enable(true);
+        priceMultiplier.enable(obj.type == Heap.Type.FOR_SALE);
     }
 
     @Override
@@ -168,6 +188,11 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             haunted.setRect(x, posY, width - WndMenuEditor.BTN_HEIGHT - WndTitledMessage.GAP, WndMenuEditor.BTN_HEIGHT);
             hauntedInfo.setRect(haunted.right() + WndTitledMessage.GAP, posY, WndMenuEditor.BTN_HEIGHT, WndMenuEditor.BTN_HEIGHT);
             posY = haunted.bottom() + WndTitledMessage.GAP;
+        }
+
+        if (priceMultiplier != null) {
+            priceMultiplier.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+            posY = priceMultiplier.bottom() + WndTitledMessage.GAP;
         }
 
         if (heapType != null) {
@@ -189,6 +214,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         if (a.autoExplored != b.autoExplored) return false;
         if (a.haunted != b.haunted) return false;
         if (a.type != b.type) return false;
+        if (a.priceMultiplier != b.priceMultiplier) return false;
         return DefaultEditComp.isItemListEqual(a.items, b.items);
     }
 

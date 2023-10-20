@@ -295,12 +295,11 @@ public class WndEditStats extends MultiWindowTabComp {
         }
 
         public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity, float realMin) {
-            super(new SpinnerFloatModel(minimum, maximum, value, false){
-                @Override
-                public void displayInputAnyNumberDialog() {
-                    displayInputAnyNumberDialog(realMin, 9_999_999f);
-                }
-            }, name, 9);
+            super(new SpinnerFloatModel(minimum, maximum, value, false){@Override
+            public float getInputFieldWith(float height) {
+                return Spinner.FILL;
+            }}, name, 9);
+            ((SpinnerIntegerModel) getModel()).setAbsoluteMinimum(realMin);
             setButtonWidth(12);
         }
 

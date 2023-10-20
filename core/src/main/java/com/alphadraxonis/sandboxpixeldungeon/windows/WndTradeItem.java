@@ -124,7 +124,7 @@ public class WndTradeItem extends WndInfoItem {
 
 		float pos = height;
 
-		final int price = Shopkeeper.sellPrice( item );
+		final int price = Shopkeeper.sellPrice( item, heap.priceMultiplier );
 
 		RedButton btnBuy = new RedButton( Messages.get(this, "buy", price) ) {
 			@Override
@@ -248,7 +248,7 @@ public class WndTradeItem extends WndInfoItem {
 		Item item = heap.pickUp();
 		if (item == null) return;
 		
-		int price = Shopkeeper.sellPrice( item );
+		int price = Shopkeeper.sellPrice( item, heap.priceMultiplier );
 		Dungeon.gold -= price;
 		
 		if (!item.doPickUp( Dungeon.hero )) {

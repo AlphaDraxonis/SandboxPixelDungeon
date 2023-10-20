@@ -11,7 +11,13 @@ public class LevelSpinner extends Spinner {
 
     public LevelSpinner(Item item) {
         super(new LevelSpinnerModel(item.level(), item instanceof Artifact ? ((Artifact) item).levelCap() : 100),
-                " "+ Messages.get(LevelSpinner.class,"label") + ":", 10);
+                " " + Messages.get(LevelSpinner.class, "label") + ":", 10);
+        SpinnerIntegerModel model = (SpinnerIntegerModel) getModel();
+        if (item instanceof Artifact) {
+            model.setAbsoluteMinAndMax((float) model.getMinimum(), (float) model.getMaximum());
+        } else {
+            model.setAbsoluteMinimum(-100f);
+        }
         addChangeListener(() -> {
             item.level((int) getValue());
             onChange();
@@ -26,6 +32,7 @@ public class LevelSpinner extends Spinner {
         public LevelSpinnerModel(int level) {
             this(level, 100);
         }
+
         public LevelSpinnerModel(int level, int max) {
             super(-10, max, level, 1, false, null);
         }
@@ -38,12 +45,6 @@ public class LevelSpinner extends Spinner {
         @Override
         public int getClicksPerSecondWhileHolding() {
             return 12;
-        }
-
-        @Override
-        public void displayInputAnyNumberDialog() {
-            if (getMaximum() == 100) displayInputAnyNumberDialog(-100, Integer.MAX_VALUE);
-            else displayInputAnyNumberDialog(getMinimum(), getMaximum());
         }
     }
 }

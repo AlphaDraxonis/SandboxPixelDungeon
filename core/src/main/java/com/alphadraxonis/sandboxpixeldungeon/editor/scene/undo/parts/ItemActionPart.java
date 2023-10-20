@@ -11,6 +11,8 @@ public /*sealed*/ abstract class ItemActionPart implements ActionPart {
     private final Item item;
     private final int cell, quantity;
     private Heap.Type heapType;
+    private boolean heapAutoExplored, heapHaunted;
+    private float heapShopPrice;
 
     private ItemActionPart(Item item, int pos) {
         this.item = item;
@@ -21,16 +23,25 @@ public /*sealed*/ abstract class ItemActionPart implements ActionPart {
     }
 
     protected void place() {
-        place(item, cell, quantity, heapType);
+        place(item, cell, quantity, heapType, heapAutoExplored, heapHaunted, heapShopPrice);
     }
 
     protected void remove() {
-        heapType = remove(item, cell, quantity);
+        Heap heap = remove(item, cell, quantity);
+        if (heap != null) {
+            heapType = heap.type;
+            heapAutoExplored = heap.autoExplored;
+            heapHaunted = heap.haunted;
+            heapShopPrice = heap.priceMultiplier;
+        }
     }
 
-    protected static void place(Item item, int cell, int quantity, Heap.Type heapType) {
+    protected static void place(Item item, int cell, int quantity, Heap.Type heapType, boolean heapAutoExplored, boolean heapHaunted, float heapShopPrice) {
         item.quantity(quantity);
         Heap heap = Dungeon.level.drop(item, cell);
+        heap.autoExplored = heapAutoExplored;
+        heap.haunted = heapHaunted;
+        heap.priceMultiplier = heapShopPrice;
         if (heapType != null) {
             heap.type = heapType;
             EditorScene.updateHeapImage(heap);
@@ -38,12 +49,11 @@ public /*sealed*/ abstract class ItemActionPart implements ActionPart {
         heap.updateSubicon();
     }
 
-    protected static Heap.Type remove(Item item, int cell, int quantity) {
+    protected static Heap remove(Item item, int cell, int quantity) {
         Heap heap = Dungeon.level.heaps.get(cell);
         if (heap != null) {
-            Heap.Type heapType = heap.type;
             heap.remove(item, quantity);
-            return heapType;
+            return heap;
         }
         return null;
     }
@@ -92,7 +102,7 @@ public /*sealed*/ abstract class ItemActionPart implements ActionPart {
         Heap heap = Dungeon.level.heaps.get(pos);
         if (heap == null) return new PlaceClass(item, pos);
         HeapActionPart.Modify modify = new HeapActionPart.Modify(heap);
-        place(item, pos, item.quantity(), null);
+        place(item, pos, item.quantity(), null, false, false, 1f);
         modify.finish();
         return modify;
     }

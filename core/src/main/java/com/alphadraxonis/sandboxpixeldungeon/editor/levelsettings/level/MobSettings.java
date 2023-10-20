@@ -317,6 +317,7 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
                     displayInputAnyNumberDialog(1, Integer.MAX_VALUE);
                 }
             }, " " + Messages.get(MobSettings.class, "respawn_time") + ":", 9);
+            ((SpinnerIntegerModel) respawnTime.getModel()).setAbsoluteMinimum(1f);
             respawnTime.addChangeListener(() -> f.setRespawnCooldown((int) respawnTime.getValue()));
             add(respawnTime);
 

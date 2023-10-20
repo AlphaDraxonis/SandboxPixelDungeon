@@ -91,6 +91,7 @@ public class Heap implements Bundlable {
     public boolean seen = false;
     public boolean haunted = false;
     public boolean autoExplored = false; //used to determine if this heap should count for exploration bonus
+    public float priceMultiplier = 1f;
 
     public LinkedList<Item> items = new LinkedList<>();
 
@@ -405,7 +406,7 @@ public class Heap implements Bundlable {
             case FOR_SALE:
                 Item i = peek();
                 if (size() == 1) {
-                    return Messages.get(this, "for_sale", Shopkeeper.sellPrice(i), i.title());
+                    return Messages.get(this, "for_sale", Shopkeeper.sellPrice(i, priceMultiplier), i.title());
                 } else {
                     return i.title();
                 }
@@ -456,6 +457,7 @@ public class Heap implements Bundlable {
     private static final String ITEMS = "items";
     private static final String HAUNTED = "haunted";
     private static final String AUTO_EXPLORED = "auto_explored";
+    private static final String PRICE_MULTIPLIER = "price_multiplier";
 
     @SuppressWarnings("unchecked")
     @Override
@@ -481,6 +483,7 @@ public class Heap implements Bundlable {
 
         haunted = bundle.getBoolean(HAUNTED);
         autoExplored = bundle.getBoolean(AUTO_EXPLORED);
+        priceMultiplier = bundle.getFloat(PRICE_MULTIPLIER);
     }
 
     @Override
@@ -491,6 +494,7 @@ public class Heap implements Bundlable {
         bundle.put(ITEMS, items);
         bundle.put(HAUNTED, haunted);
         bundle.put(AUTO_EXPLORED, autoExplored);
+        bundle.put(PRICE_MULTIPLIER, priceMultiplier);
     }
 
     public Heap getCopy(){

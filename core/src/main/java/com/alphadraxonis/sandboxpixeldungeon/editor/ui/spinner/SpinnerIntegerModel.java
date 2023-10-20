@@ -13,7 +13,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
 
     public static final String INFINITY = "∞";
 
-    private Integer minimum, maximum, value;
+    private Integer minimum, maximum, value, absoluteMinimum, absoluteMaximum;
     private int stepSize;
     private boolean cycle;
     private String showWhenNull;
@@ -41,6 +41,9 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         this.stepSize = stepSize;
         this.cycle = cycle;
         this.showWhenNull = showWhenNull;
+
+        absoluteMaximum = Integer.MAX_VALUE;
+        absoluteMinimum = 0;
     }
 
     @Override
@@ -122,7 +125,8 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         if (value == null) return cycle ? minimum : goToNull(minimum);
         if (value.equals(maximum)) return cycle ? goToNull(minimum) : value;
         long newValue = value + stepSize;
-        if (newValue == (long) maximum + stepSize) return maximum;
+        if (value < maximum && newValue > (long) maximum) return maximum;
+        if (newValue > getAbsoluteMaximum()) return getAbsoluteMaximum();
         return (int) newValue;
     }
 
@@ -131,7 +135,8 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         if (value == null) return cycle ? maximum : goToNull(maximum);
         if (value.equals(minimum)) return goToNull(cycle ? maximum : value);
         long newValue = value - stepSize;
-        if (newValue == (long) minimum - stepSize) return minimum;
+        if (value > minimum && newValue < (long) minimum) return minimum;
+        if (newValue < getAbsoluteMinimum()) return getAbsoluteMinimum();
         return (int) newValue;
     }
 
@@ -200,6 +205,27 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         return 60;
     }
 
+    public void setAbsoluteMaximum(float absoluteMaximum) {
+        this.absoluteMaximum = (int) absoluteMaximum;
+    }
+
+    public void setAbsoluteMinimum(float absoluteMinimum) {
+        this.absoluteMinimum = (int) absoluteMinimum;
+    }
+
+    public void setAbsoluteMinAndMax(float absoluteMinimum, float absoluteMaximum) {
+        setAbsoluteMinimum(absoluteMinimum);
+        setAbsoluteMaximum(absoluteMaximum);
+    }
+
+    public Integer getAbsoluteMaximum() {
+        return absoluteMaximum;
+    }
+
+    public Integer getAbsoluteMinimum() {
+        return absoluteMinimum;
+    }
+
     @Override
     public void enable(boolean value) {
         if (inputField instanceof Spinner.SpinnerTextBlock)
@@ -207,7 +233,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     }
 
     public void displayInputAnyNumberDialog() {
-        displayInputAnyNumberDialog(0f, Integer.MAX_VALUE);
+        displayInputAnyNumberDialog(getAbsoluteMinimum(), getAbsoluteMaximum());
     }
 
     protected void displayInputAnyNumberDialog(float min, float max) {

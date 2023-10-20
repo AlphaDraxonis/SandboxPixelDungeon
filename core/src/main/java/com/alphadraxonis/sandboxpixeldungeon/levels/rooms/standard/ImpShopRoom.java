@@ -24,6 +24,7 @@ package com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard;
 import com.alphadraxonis.sandboxpixeldungeon.SandboxPixelDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.ImpShopkeeper;
+import com.alphadraxonis.sandboxpixeldungeon.editor.levels.CustomDungeon;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.ImpQuest;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Level;
 import com.alphadraxonis.sandboxpixeldungeon.levels.Terrain;
@@ -64,7 +65,7 @@ public class ImpShopRoom extends ShopRoom {
 			door.set( Door.Type.REGULAR );
 		}
 
-		if (ImpQuest.completedOnce()){
+		if (ImpQuest.completedOnce() || CustomDungeon.isEditing()){
 			spawnShop(level);
 		} else {
 			impSpawned = false;

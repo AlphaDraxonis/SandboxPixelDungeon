@@ -71,19 +71,15 @@ public class EditItemComp extends DefaultEditComp<Item> {
             quantity = new Spinner(new SpinnerIntegerModel(1, 100 * quantityMultiplierForGold, item.quantity(), 1, false, null) {
                 @Override
                 public float getInputFieldWith(float height) {
-                    return height;
+                    return height * 1.3f;
                 }
 
                 @Override
                 public int getClicksPerSecondWhileHolding() {
                     return 15 * quantityMultiplierForGold;
                 }
-
-                @Override
-                public void displayInputAnyNumberDialog() {
-                    displayInputAnyNumberDialog(1, 1_000_000);
-                }
             }, " " + Messages.get(EditItemComp.class, "quantity") + ":", 10);
+            ((SpinnerIntegerModel) quantity.getModel()).setAbsoluteMinAndMax(1f, 1_000_000f);
             quantity.setButtonWidth(14);
             quantity.addChangeListener(() -> {
                 item.quantity((int) quantity.getValue());

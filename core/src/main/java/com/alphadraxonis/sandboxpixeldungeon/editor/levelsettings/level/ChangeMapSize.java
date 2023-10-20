@@ -118,11 +118,8 @@ public class ChangeMapSize extends Component {
     private static class OwnSpinnerModel extends SpinnerIntegerModel {
         public OwnSpinnerModel(Integer minimum, Integer maximum, Integer value, int stepSize, boolean cycle, String showWhenNull) {
             super(minimum, maximum, value, stepSize, cycle, showWhenNull);
-        }
 
-        @Override
-        public void displayInputAnyNumberDialog() {
-            displayInputAnyNumberDialog(1, 60);
+            setAbsoluteMinAndMax(1f, 60f);
         }
     }
 }

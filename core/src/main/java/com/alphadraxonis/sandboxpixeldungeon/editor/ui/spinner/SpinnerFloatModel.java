@@ -11,6 +11,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
 
     public SpinnerFloatModel(float minimum, float maximum, float value, boolean includeInfinity) {
         super(convertToInt(minimum), convertToInt(maximum), convertToInt(value), 1, includeInfinity, includeInfinity ? INFINITY : null);
+        setAbsoluteMaximum(9_999_999f);
     }
 
     public static int convertToInt(float val) {
@@ -42,8 +43,13 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
     }
 
     @Override
-    public void displayInputAnyNumberDialog() {
-        displayInputAnyNumberDialog(0f, 9_999_999f);
+    public void setAbsoluteMinimum(float absoluteMinimum) {
+        super.setAbsoluteMinimum((float) convertToInt(absoluteMinimum));
+    }
+
+    @Override
+    public void setAbsoluteMaximum(float absoluteMaxmimum) {
+        super.setAbsoluteMaximum((float) convertToInt(absoluteMaxmimum));
     }
 
     @Override

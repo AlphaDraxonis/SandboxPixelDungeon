@@ -134,12 +134,8 @@ public class LevelTab extends MultiWindowTabComp {
             public int getClicksPerSecondWhileHolding() {
                 return 20;
             }
-
-            @Override
-            public void displayInputAnyNumberDialog() {
-                super.displayInputAnyNumberDialog(0f, 10000f);
-            }
         }, Messages.get(LevelTab.class, "shop_price"), 8);
+        ((SpinnerIntegerModel) shopPrice.getModel()).setAbsoluteMinAndMax(0f, 10000f);
         shopPrice.addChangeListener(() -> level.levelScheme.setShopPriceMultiplier(SpinnerFloatModel.convertToFloat((Integer) shopPrice.getValue())));
         content.add(shopPrice);
 

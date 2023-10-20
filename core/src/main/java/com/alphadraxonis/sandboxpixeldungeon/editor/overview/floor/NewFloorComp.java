@@ -141,7 +141,7 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
             }
 
             @Override
-            protected void displayInputAnyNumberDialog(float min, float max) {
+            public void displayInputAnyNumberDialog() {
                 //do nothing
             }
         }, Messages.get(WndNewFloor.class, "num_region") + ":", 8);

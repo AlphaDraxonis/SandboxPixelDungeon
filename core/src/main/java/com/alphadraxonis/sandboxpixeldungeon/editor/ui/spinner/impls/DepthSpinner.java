@@ -28,6 +28,9 @@ public abstract class DepthSpinner extends Spinner {
 
     public static SpinnerModel createModel(int depth, Function<Float, Float> getInputFieldWith) {
         return new SpinnerIntegerModel(0, 26, depth, 1, true, null) {
+            {
+                setAbsoluteMaximum(10000f);
+            }
             @Override
             public float getInputFieldWith(float height) {
                 return getInputFieldWith.apply(height);
@@ -36,11 +39,6 @@ public abstract class DepthSpinner extends Spinner {
             @Override
             public int getClicksPerSecondWhileHolding() {
                 return 15;
-            }
-
-            @Override
-            public void displayInputAnyNumberDialog() {
-                super.displayInputAnyNumberDialog(0, 10000);
             }
         };
     }
