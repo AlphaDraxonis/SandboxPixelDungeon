@@ -35,6 +35,7 @@ public /*sealed*/ abstract class ItemActionPart implements ActionPart {
             heap.type = heapType;
             EditorScene.updateHeapImage(heap);
         }
+        heap.updateSubicon();
     }
 
     protected static Heap.Type remove(Item item, int cell, int quantity) {
