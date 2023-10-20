@@ -33,6 +33,8 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class SpecialRoom extends Room {
 
@@ -117,7 +119,7 @@ public abstract class SpecialRoom extends Room {
     public static ArrayList<Class<? extends Room>> runSpecials = new ArrayList<>();
     public static ArrayList<Class<? extends Room>> floorSpecials = new ArrayList<>();
 
-    private static String pitNeededLevel = Level.SURFACE;
+    private static Map<String, Integer> pitNeededLevel = new HashMap<>(3);
 
     public static void initForRun() {
         runSpecials = new ArrayList<>();
@@ -137,7 +139,7 @@ public abstract class SpecialRoom extends Room {
             if (!runConsSpecials.isEmpty()) runSpecials.add(runConsSpecials.remove(0));
         }
 
-        pitNeededLevel = Level.SURFACE;
+        pitNeededLevel.clear();
     }
 
     public static void initForFloor() {
@@ -163,15 +165,19 @@ public abstract class SpecialRoom extends Room {
     }
 
     public static void resetPitRoom(String level) {
-        if (pitNeededLevel.equals(level)) pitNeededLevel = Level.SURFACE;
+        pitNeededLevel.remove(level);
     }
 
     public static SpecialRoom createRoom() {
-        if (Dungeon.levelName.equals(pitNeededLevel)) {
-            pitNeededLevel = Level.SURFACE;
 
+        if (pitNeededLevel.containsKey(Dungeon.levelName)) {
+            PitRoom r = new PitRoom();
+            r.useTimesOnFloor = pitNeededLevel.get(Dungeon.levelName);
+
+            pitNeededLevel.remove(Dungeon.levelName);
             useType(PitRoom.class);
-            return new PitRoom();
+
+            return r;
 
         } else if (floorSpecials.contains(LaboratoryRoom.class)) {
 
@@ -192,18 +198,24 @@ public abstract class SpecialRoom extends Room {
 
             Room r = Reflection.newInstance(floorSpecials.get(index));
 
-            if (r instanceof WeakFloorRoom) {
-                pitNeededLevel = Dungeon.customDungeon.getFloor(Dungeon.levelName).getChasm();
-            }
-
             useType(r.getClass());
             return (SpecialRoom) r;
 
         }
     }
 
+    public static void increasePitNeededCount(){
+        String chasm = Dungeon.customDungeon.getFloor(Dungeon.levelName).getChasm();
+        Integer prev = SpecialRoom.pitNeededLevel.get(chasm);
+        if (prev == null) prev = 0;
+        prev++;
+        pitNeededLevel.put(chasm, prev);
+    }
+
     private static final String ROOMS = "special_rooms";
-    private static final String PIT = "pit_needed";
+    private static final String PIT_OLD = "pit_needed";
+    private static final String PIT_KEYS = "pit_needed_keys";
+    private static final String PIT_VALUES = "pit_needed_values";
 
     public static void restoreRoomsFromBundle(Bundle bundle) {
         runSpecials.clear();
@@ -215,11 +227,31 @@ public abstract class SpecialRoom extends Room {
             initForRun();
             SandboxPixelDungeon.reportException(new Exception("specials array didn't exist!"));
         }
-        pitNeededLevel = bundle.getString(PIT);
+
+        int[] vals = bundle.getIntArray(PIT_VALUES);
+        String[] keys = bundle.getStringArray(PIT_KEYS);
+        for (int i = 0; i < vals.length; i++) {
+            pitNeededLevel.put(keys[i], vals[i]);
+        }
+        if (bundle.contains(PIT_OLD)) {
+            pitNeededLevel.put(bundle.getString(PIT_OLD), 1);
+        }
     }
 
     public static void storeRoomsInBundle(Bundle bundle) {
         bundle.put(ROOMS, runSpecials.toArray(new Class[0]));
-        bundle.put(PIT, pitNeededLevel);
+
+        int[] vals = new int[pitNeededLevel.size()];
+        if (vals.length != 0) {
+            String[] keys = new String[vals.length];
+            int i = 0;
+            for (String k : pitNeededLevel.keySet()) {
+                keys[i] = k;
+                vals[i] = pitNeededLevel.get(k);
+                i++;
+            }
+            bundle.put(PIT_VALUES, vals);
+            bundle.put(PIT_KEYS, keys);
+        }
     }
 }

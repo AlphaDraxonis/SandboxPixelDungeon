@@ -45,7 +45,7 @@ public class WndNewDungeon extends WndTextInput {
 
     @Override
     public void onSelect(boolean positive, String text) {
-        if (positive && !text.isEmpty()) {
+        if (positive && !text.isEmpty() && !text.contains("\"")) {
             for (String dungeonN : dungeonNames) {
                 if (dungeonN.replace(' ', '_').equals(text.replace(' ', '_'))) {
                     WndNewDungeon.showNameWarnig();

@@ -62,6 +62,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MagicalFireRoo
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.PitRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.ShopRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.SpecialRoom;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.EntranceRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.ExitRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.standard.StandardRoom;
@@ -166,7 +167,12 @@ public abstract class RegularLevel extends Level {
 			SpecialRoom.initForFloor();
 			for (int i = 0; i < specials; i++) {
 				SpecialRoom s = SpecialRoom.createRoom();
-				if (s instanceof PitRoom) specials++;
+				if (s instanceof PitRoom) {
+					specials++;
+					for (int j = 1; j < ((PitRoom) s).useTimesOnFloor; j++) {
+						initRooms.add(new PitRoom());
+					}
+				}
 				initRooms.add(s);
 			}
 		}
@@ -181,6 +187,14 @@ public abstract class RegularLevel extends Level {
 		}
 
 		initRooms.addAll(levelScheme.roomsToSpawn);
+
+		if (!Dungeon.levelName.equals(Level.NONE)) {
+			for (Room r : initRooms) {
+				if (r instanceof WeakFloorRoom) {
+					SpecialRoom.increasePitNeededCount();
+				}
+			}
+		}
 
 		return initRooms;
 	}

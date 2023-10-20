@@ -96,7 +96,7 @@ public class WndNewFloor extends WndTabbed {
                     return;
                 }
             }
-            if (name.equals(Level.SURFACE) || name.equals(Level.NONE) || name.equals(Level.ANY)) {
+            if (name.equals(Level.SURFACE) || name.equals(Level.NONE) || name.equals(Level.ANY) ||  name.contains("\"")) {
                 WndNewDungeon.showNameWarnig();
                 return;
             }
