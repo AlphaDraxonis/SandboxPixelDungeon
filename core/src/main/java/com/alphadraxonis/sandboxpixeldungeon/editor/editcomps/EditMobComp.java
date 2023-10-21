@@ -67,6 +67,7 @@ import java.util.Set;
 public class EditMobComp extends DefaultEditComp<Mob> {
 
 
+    //TODO demon spawner should set their cooldown here!
     private final ItemSelector statueWeapon, statueArmor;
     private final ItemSelector thiefItem;
     private final MobStateSpinner mobStateSpinner;

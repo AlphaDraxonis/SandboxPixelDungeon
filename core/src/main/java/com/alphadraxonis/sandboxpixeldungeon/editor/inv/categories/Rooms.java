@@ -29,6 +29,7 @@ import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.CrystalVaultRo
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.DemonSpawnerRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.GardenRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.LaboratoryRoom;
+import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.LibraryRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MagicWellRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.alphadraxonis.sandboxpixeldungeon.levels.rooms.special.MassGraveRoom;
@@ -229,6 +230,7 @@ public enum Rooms {
                 GrassyGraveRoom.class,
                 StripedRoom.class,
                 StudyRoom.class,
+                LibraryRoom.class,
                 SuspiciousChestRoom.class,
                 MinefieldRoom.class
         };

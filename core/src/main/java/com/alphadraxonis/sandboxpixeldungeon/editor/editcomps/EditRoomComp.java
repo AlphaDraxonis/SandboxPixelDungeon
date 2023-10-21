@@ -43,7 +43,7 @@ public class EditRoomComp extends DefaultEditComp<Room> {
 
     @Override
     protected String createDescription() {
-        return "Description unavailable atm";
+        return RoomItem.getDesc(obj.getClass());
     }
 
     @Override

@@ -179,6 +179,11 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
     }
 
     @Override
+    public void select(int index) {
+        if (!tabs.isEmpty()) super.select(index);
+    }
+
+    @Override
     protected void onClick(Tab tab) {
         Trap tempTrapSave = lastTrapForImage;
         Plant tempPlantSave = lastPlantForImage;

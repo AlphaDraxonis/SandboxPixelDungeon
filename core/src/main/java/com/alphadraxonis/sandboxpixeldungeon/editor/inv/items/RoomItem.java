@@ -152,6 +152,10 @@ public class RoomItem extends EditorItem {
         return Messages.get(RoomItem.class, r.getSimpleName().toLowerCase(Locale.ENGLISH));
     }
 
+    public static String getDesc(Class<? extends Room> r) {
+        return Messages.get(RoomItem.class, r.getSimpleName().toLowerCase(Locale.ENGLISH) + "_desc");
+    }
+
     public static Image getImage(Class<? extends Room> r) {
 
         //standard rooms
