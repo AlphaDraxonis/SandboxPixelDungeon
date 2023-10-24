@@ -444,43 +444,50 @@ public class Dungeon {
         return customDungeon.getFloor(levelName) != null && customDungeon.getFloor(levelName).hasBoss();
     }
 
-    //value used for scaling of damage values and other effects.
-    //is usually the dungeon depth, but can be set to 26 when ascending
-    public static int scalingDepth() {
-        if (Dungeon.hero != null && Dungeon.hero.buff(AscensionChallenge.class) != null) {
-            return 26;
-        } else {
-            return depth;
-        }
-    }
+	//value used for scaling of damage values and other effects.
+	//is usually the dungeon depth, but can be set to 26 when ascending
+	public static int scalingDepth(){
+		if (Dungeon.hero != null && Dungeon.hero.buff(AscensionChallenge.class) != null){
+			return 26;
+		} else {
+			return depth;
+		}
+	}
 
-    public static boolean interfloorTeleportAllowed() {
-        return !Dungeon.level.locked && (Dungeon.hero == null || Dungeon.hero.belongings.getItem(Amulet.class) == null);
-    }
+	public static boolean interfloorTeleportAllowed(){
+		if (Dungeon.level.locked || (Dungeon.hero != null && Dungeon.hero.belongings.getItem(Amulet.class) != null)){
+			return false;
+		}
+		return true;
+	}
 
-    public static void switchLevel(final Level level, int pos) {
+	public static void switchLevel( final Level level, int pos ) {
 
-        if (pos == -2) {
-            LevelTransition t = level.getTransition(LevelTransition.Type.REGULAR_EXIT);
-            if (t != null) pos = t.cell();
-        }
+		//Position of -2 specifically means trying to place the hero the exit
+		if (pos == -2){
+			LevelTransition t = level.getTransition(LevelTransition.Type.REGULAR_EXIT);
+			if (t != null) pos = t.cell();
+		}
 
-        if (pos < 0 || pos >= level.length() || (!level.passable[pos] && !level.avoid[pos])) {
-            LevelTransition t = level.getTransition(null);
-            if (t == null) {
-                Random.pushGenerator(Dungeon.seedCurLevel() + 5);
-                pos = EditorUtilies.getRandomCellGuranteed(level);
-                GameScene.errorMsg.add(Messages.get(Dungeon.class, "no_transitions_warning", level.name, Dungeon.customDungeon.getName()));
-                Random.popGenerator();
-            } else
-                pos = t.cell();
-        }
+		//Place hero at the entrance if they are out of the map (often used for pox = -1)
+		// or if they are in solid terrain (except in the mining level, where that happens normally)
+		if (pos < 0 || pos >= level.length()
+				|| (!(level instanceof MiningLevel) && !level.passable[pos] && !level.avoid[pos])){
+			LevelTransition t = level.getTransition(null);
+			if (t == null) {
+				Random.pushGenerator(Dungeon.seedCurLevel() + 5);
+				pos = EditorUtilies.getRandomCellGuranteed(level);
+				GameScene.errorMsg.add(Messages.get(Dungeon.class, "no_transitions_warning", level.name, Dungeon.customDungeon.getName()));
+				Random.popGenerator();
+			} else
+				pos = t.cell();
+		}
 
-        PathFinder.setMapSize(level.width(), level.height());
+		PathFinder.setMapSize(level.width(), level.height());
 
-        Dungeon.level = level;
-        Dungeon.levelName = level.name;
-        hero.pos = pos;
+		Dungeon.level = level;
+		Dungeon.levelName = level.name;
+		hero.pos = pos;
 
 		if (hero.buff(AscensionChallenge.class) != null){
 			hero.buff(AscensionChallenge.class).onLevelSwitch();
@@ -519,14 +526,14 @@ public class Dungeon {
 		}
 	}
 
-    public static void dropToChasm(Item item) {
-        String nextLevel = customDungeon.getFloor(Dungeon.levelName).getChasm();
-        ArrayList<Item> dropped = Dungeon.droppedItems.get(nextLevel);
-        if (dropped == null) {
-            Dungeon.droppedItems.put(nextLevel, dropped = new ArrayList<>());
-        }
-        dropped.add(item);
-    }
+	public static void dropToChasm( Item item ) {
+		String nextLevel = customDungeon.getFloor(Dungeon.levelName).getChasm();
+		ArrayList<Item> dropped = Dungeon.droppedItems.get( nextLevel );
+		if (dropped == null) {
+			Dungeon.droppedItems.put( nextLevel, dropped = new ArrayList<>() );
+		}
+		dropped.add( item );
+	}
 
     public static boolean posNeeded() {
         if (CustomDungeon.isEditing()) return Random.Int(2) == 0;
