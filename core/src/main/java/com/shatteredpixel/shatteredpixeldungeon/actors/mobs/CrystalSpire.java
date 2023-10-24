@@ -69,15 +69,15 @@ public class CrystalSpire extends Mob {
 		EXP = 20;
 
 		//acts after other mobs, which makes baiting crystal guardians more consistent
-		actPriority = Actor.MOB_PRIO-1;
+		actPriority = MOB_PRIO-1;
 
 		state = PASSIVE;
 
-		alignment = Char.Alignment.NEUTRAL;
+		alignment = Alignment.NEUTRAL;
 
-		properties.add(Char.Property.IMMOVABLE);
-		properties.add(Char.Property.MINIBOSS);
-		properties.add(Char.Property.INORGANIC);
+		properties.add(Property.IMMOVABLE);
+		properties.add(Property.MINIBOSS);
+		properties.add(Property.INORGANIC);
 	}
 
 	private float abilityCooldown;
@@ -144,7 +144,7 @@ public class CrystalSpire extends Mob {
 								movePos = i+j;
 							}
 						}
-					} else if (!Char.hasProp(ch, Char.Property.IMMOVABLE)) {
+					} else if (!Char.hasProp(ch, Property.IMMOVABLE)) {
 						for (int j : PathFinder.NEIGHBOURS8){
 							if (!Dungeon.level.solid[i+j] && Actor.findChar(i+j) == null &&
 									Dungeon.level.trueDistance(i+j, pos) > Dungeon.level.trueDistance(movePos, pos)){
@@ -178,7 +178,7 @@ public class CrystalSpire extends Mob {
 		}
 
 		if (hits < 3 || !enemySeen){
-			spend(Actor.TICK);
+			spend(TICK);
 			return true;
 		} else {
 
@@ -196,10 +196,11 @@ public class CrystalSpire extends Mob {
 
 				abilityCooldown += ABILITY_CD;
 
-				spend(GameMath.gate(Actor.TICK, (int)Math.ceil(Dungeon.hero.cooldown()), 3* Actor.TICK));
+				spend(GameMath.gate(TICK, (int)Math.ceil(Dungeon.hero.cooldown()), 3*TICK));
+				Dungeon.hero.interrupt();
 			} else {
 				abilityCooldown -= 1;
-				spend(Actor.TICK);
+				spend(TICK);
 			}
 
 		}
