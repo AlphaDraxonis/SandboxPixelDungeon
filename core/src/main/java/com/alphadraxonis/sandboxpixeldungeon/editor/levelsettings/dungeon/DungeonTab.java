@@ -71,7 +71,7 @@ public class DungeonTab extends MultiWindowTabComp {
         heroes.icon(BadgeBanner.image(0));
         content.add(heroes);
 
-        durationSettings = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "heroes"), 8){
+        durationSettings = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "effects"), 8){
             @Override
             protected void onClick() {
                 DurationSettings ds = new DurationSettings();

@@ -3,6 +3,7 @@ package com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.Dungeon;
 import com.alphadraxonis.sandboxpixeldungeon.actors.hero.HeroClass;
 import com.alphadraxonis.sandboxpixeldungeon.editor.inv.categories.Items;
+import com.alphadraxonis.sandboxpixeldungeon.editor.inv.items.ItemItem;
 import com.alphadraxonis.sandboxpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.alphadraxonis.sandboxpixeldungeon.editor.ui.ItemSelector;
@@ -215,7 +216,7 @@ public class HeroSettings extends Component {
                 public int getClicksPerSecondWhileHolding() {
                     return 150;
                 }
-            }, Messages.get(Gold.class, "name"), 10, Icons.GOLD.get());
+            }, Messages.titleCase(Messages.get(Gold.class, "name")), 10, Icons.GOLD.get());
             startGold.icon().scale = new PointF(0.5f, 0.5f);
             startGold.addChangeListener(() -> data.gold = (int) startGold.getValue());
             itemSelectorParent.add(startGold);
@@ -229,7 +230,7 @@ public class HeroSettings extends Component {
                 public int getClicksPerSecondWhileHolding() {
                     return 15;
                 }
-            }, Messages.get(EnergyCrystal.class, "name"), 10, Icons.ENERGY.get());
+            }, Messages.titleCase(Messages.get(EnergyCrystal.class, "name")), 10, Icons.ENERGY.get());
             startEnergy.icon().scale = new PointF(0.5f, 0.5f);
             startEnergy.addChangeListener(() -> data.energy = (int) startEnergy.getValue());
             itemSelectorParent.add(startEnergy);
@@ -239,7 +240,8 @@ public class HeroSettings extends Component {
             startBags = new ItemContainerWithLabel<Bag>(data.bags, Messages.get(HeroSettings.class, "bags")) {
                 @Override
                 public boolean itemSelectable(Item item) {
-                    return item instanceof Bag;
+                    Item i = item instanceof ItemItem ? ((ItemItem) item).item() : item;
+                    return i instanceof Bag;
                 }
 
                 @Override

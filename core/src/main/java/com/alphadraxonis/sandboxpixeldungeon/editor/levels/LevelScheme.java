@@ -9,6 +9,7 @@ import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mimic;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Mob;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.Thief;
 import com.alphadraxonis.sandboxpixeldungeon.actors.mobs.npcs.NPC;
+import com.alphadraxonis.sandboxpixeldungeon.editor.EditorScene;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.alphadraxonis.sandboxpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.alphadraxonis.sandboxpixeldungeon.editor.quests.BlacksmithQuest;
@@ -771,7 +772,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (unloadLevel) loadLevel();
         if (level == null) return new Point(-1, -1);//For non CustomLevels
         Point ret = new Point(level.width(), level.height());
-        if (unloadLevel) unloadLevel();
+        if (unloadLevel) {
+            unloadLevel();
+            EditorScene.updatePathfinder();
+        }
         return ret;
     }
 

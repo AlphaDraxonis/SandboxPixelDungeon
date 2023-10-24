@@ -165,6 +165,7 @@ public class WndNewFloor extends WndTabbed {
                 Dungeon.levelName = name;
                 if (newLevelScheme.getLevel().width() == 0) newLevelScheme.getLevel().create();
                 owner.initExitsFromPreviousFloor(newLevelScheme);
+                PathFinder.setMapSize(newLevelScheme.getLevel().width(), newLevelScheme.getLevel().height());
                 try {
                     CustomDungeonSaves.saveLevel(newLevelScheme.getLevel());
                 } catch (IOException e) {
@@ -175,6 +176,7 @@ public class WndNewFloor extends WndTabbed {
             } else {
                 newLevelScheme.initExitEntranceCellsForRandomLevel();
                 owner.initExitsFromPreviousFloor(newLevelScheme);
+                EditorScene.updatePathfinder();
                 EditorScene.updateTransitionIndicators();
                 WndSwitchFloor.updateList();
                 FloorOverviewScene.updateList();

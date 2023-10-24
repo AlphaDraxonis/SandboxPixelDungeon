@@ -240,34 +240,35 @@ public abstract class Level implements Bundlable {
 
         Random.pushGenerator(Dungeon.seedForLevel(name,this instanceof MiningLevel ? 1 + ((MiningLevel)this).questId : 0 ));//TODO fixme tzz
 
-        if (!Dungeon.bossLevel() && Dungeon.branch == 0) {
+		if (!Dungeon.bossLevel() && Dungeon.branch == 0) {
 
-            if (levelScheme.spawnItems) {
+			if (levelScheme.spawnItems) {
 
-                for (Item item : levelScheme.prizeItemsToSpawn) {
-                    addItemToSpawn(item);
-                    item.reset();//important for scroll runes being inited
-                }
-
-			addItemToSpawn(Generator.random(Generator.Category.FOOD));
-
-			if (Dungeon.posNeeded()) {
-				Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
-				addItemToSpawn( new PotionOfStrength() );
-			}
-			if (Dungeon.souNeeded()) {
-				Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
-				//every 2nd scroll of upgrade is removed with forbidden runes challenge on
-				//TODO while this does significantly reduce this challenge's levelgen impact, it doesn't quite remove it
-				//for 0 levelgen impact, we need to do something like give the player all SOU, but nerf them
-				//or give a random scroll (from a separate RNG) instead of every 2nd SOU
-				if (!Dungeon.isChallenged(Challenges.NO_SCROLLS) || Dungeon.LimitedDrops.UPGRADE_SCROLLS.count%2 != 0){
-					addItemToSpawn(new ScrollOfUpgrade());
+				for (Item item : levelScheme.prizeItemsToSpawn) {
+					addItemToSpawn(item);
+					item.reset();//important for scroll runes being inited
 				}
-			}
-			if (Dungeon.asNeeded()) {
-				Dungeon.LimitedDrops.ARCANE_STYLI.count++;
-				addItemToSpawn( new Stylus() );
+
+				addItemToSpawn(Generator.random(Generator.Category.FOOD));
+
+				if (Dungeon.posNeeded()) {
+					Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
+					addItemToSpawn(new PotionOfStrength());
+				}
+				if (Dungeon.souNeeded()) {
+					Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
+					//every 2nd scroll of upgrade is removed with forbidden runes challenge on
+					//TODO while this does significantly reduce this challenge's levelgen impact, it doesn't quite remove it
+					//for 0 levelgen impact, we need to do something like give the player all SOU, but nerf them
+					//or give a random scroll (from a separate RNG) instead of every 2nd SOU
+					if (!Dungeon.isChallenged(Challenges.NO_SCROLLS) || Dungeon.LimitedDrops.UPGRADE_SCROLLS.count % 2 != 0) {
+						addItemToSpawn(new ScrollOfUpgrade());
+					}
+				}
+				if (Dungeon.asNeeded()) {
+					Dungeon.LimitedDrops.ARCANE_STYLI.count++;
+					addItemToSpawn(new Stylus());
+				}
 			}
 			
 			if (Dungeon.depth > 1 && feeling == null) {
@@ -311,12 +312,11 @@ public abstract class Level implements Bundlable {
 						}
 					}
 				}
-			}
 			if (feeling == null) feeling = Feeling.NONE;//this also includes default case
 
 		}
 		
-		do {
+        do {
 			width = height = length = 0;
 
 			transitions = new HashMap<>();
@@ -1403,6 +1403,7 @@ public abstract class Level implements Bundlable {
 	}
 	
 	public int fallCell( boolean fallIntoPit ) {
+		Dungeon.hero.pos = -1;
 		int result;
 		do {
 			result = randomRespawnCell( null );

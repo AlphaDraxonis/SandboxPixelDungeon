@@ -910,4 +910,9 @@ public class EditorScene extends PixelScene {
 
     }
 
+    public static void updatePathfinder(){
+        if (customLevel() != null && scene != null)
+            PathFinder.setMapSize(customLevel().width(), customLevel().height());
+    }
+
 }

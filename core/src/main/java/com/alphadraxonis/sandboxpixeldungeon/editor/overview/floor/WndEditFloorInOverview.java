@@ -98,7 +98,10 @@ public class WndEditFloorInOverview extends WndTabbed {
     @Override
     public void hide() {
         super.hide();
-        if (EditorScene.customLevel() != levelScheme.getLevel()) levelScheme.unloadLevel();
+        if (EditorScene.customLevel() != levelScheme.getLevel()) {
+            levelScheme.unloadLevel();
+            EditorScene.updatePathfinder();
+        }
     }
 
     private class General extends WndEditorSettings.TabComp {

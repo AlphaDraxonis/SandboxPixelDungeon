@@ -169,7 +169,7 @@ public class TitleScene extends PixelScene {
 		btnBadges.icon(Icons.get(Icons.BADGES));
 		add(btnBadges);
 
-		StyledButton btnNews = new NewsButton(GREY_TR, "Tutorial");
+		StyledButton btnNews = new NewsButton(GREY_TR, Messages.get(this, "help"));
 		btnNews.icon(Icons.get(Icons.NEWS));
 		add(btnNews);
 

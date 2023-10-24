@@ -37,8 +37,7 @@ public final class CustomTileLoader {
         if (!dir.exists()) {
             dir.mkdirs();
         } else if (!dir.isDirectory()) {
-            if (!dir.delete()) return;
-            dir.mkdirs();
+            return;
         }
 
 

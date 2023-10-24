@@ -768,6 +768,7 @@ public class CustomDungeon implements Bundlable {
         //Set level for keys in inv
         Items.updateKeys(n, EditorScene.customLevel() == null ? null : EditorScene.customLevel().name);
 
+        EditorScene.updatePathfinder();
 
         CustomDungeonSaves.deleteLevelFile(n);
         CustomDungeonSaves.saveDungeon(this);
@@ -937,6 +938,7 @@ public class CustomDungeon implements Bundlable {
 
             EditorScene.updateDepthIcon();
 
+            EditorScene.updatePathfinder();
             CustomDungeonSaves.saveDungeon(this);
 
         } catch (IOException e) {
@@ -975,6 +977,7 @@ public class CustomDungeon implements Bundlable {
                 i++;
             }
         }
+        EditorScene.updatePathfinder();
 
         return bundle.toString().hashCode();
     }
