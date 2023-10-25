@@ -52,7 +52,6 @@ import java.util.ArrayList;
 
 public class WndBlacksmith extends Window {
 
-
 	private static final int WIDTH_P = 120;
 	private static final int WIDTH_L = 160;
 
@@ -110,7 +109,7 @@ public class WndBlacksmith extends Window {
 		pickaxe.enable(troll.quest.pickaxe != null && troll.quest.favor >= pickaxeCost);
 		buttons.add(pickaxe);
 
-		int reforgecost = 500 * (int)Math.pow(2, troll.quest.reforges);
+		int reforgecost = 500 + 1000*troll.quest.reforges;
 		RedButton reforge = new RedButton(Messages.get(this, "reforge", reforgecost), 6){
 			@Override
 			protected void onClick() {
@@ -120,7 +119,7 @@ public class WndBlacksmith extends Window {
 		reforge.enable(troll.quest.favor >= reforgecost);
 		buttons.add(reforge);
 
-		int hardenCost = 500 * (int)Math.pow(2, troll.quest.hardens);
+		int hardenCost = 500 + 1000*troll.quest.hardens;
 		RedButton harden = new RedButton(Messages.get(this, "harden", hardenCost), 6){
 			@Override
 			protected void onClick() {
@@ -130,7 +129,7 @@ public class WndBlacksmith extends Window {
 		harden.enable(troll.quest.favor >= hardenCost);
 		buttons.add(harden);
 
-		int upgradeCost = 1000 * (int)Math.pow(2, troll.quest.upgrades);
+		int upgradeCost = 1000 + 1000*troll.quest.upgrades;
 		RedButton upgrade = new RedButton(Messages.get(this, "upgrade", upgradeCost), 6){
 			@Override
 			protected void onClick() {
@@ -203,7 +202,6 @@ public class WndBlacksmith extends Window {
 		resize(width, (int)pos);
 
 	}
-
 
 	//public so that it can be directly called for pre-v2.2.0 quest completions
 	public static class WndReforge extends Window {
@@ -294,10 +292,9 @@ public class WndBlacksmith extends Window {
 					Badges.validateItemLevelAquired( first );
 					Item.updateQuickslot();
 
-
-					troll.quest.favor -= 500 * (int)Math.pow(2, troll.quest.reforges);
+					Blacksmith.Quest.favor -= 500 + 1000*troll.quest.reforges;
+					Blacksmith.Quest.reforges++;
 					Notes.remove( Notes.Landmark.TROLL );
-					troll.quest.reforges++;
 
 					hide();
 					if (wndParent != null){
@@ -342,11 +339,11 @@ public class WndBlacksmith extends Window {
 					if (item1 == null || item2 == null) {
 						btnReforge.enable(false);
 
-						//both of the same type
+					//both of the same type
 					} else if (item1.getClass() != item2.getClass()) {
 						btnReforge.enable(false);
 
-						//and not the literal same item (unless quantity is >1)
+					//and not the literal same item (unless quantity is >1)
 					} else if (item1 == item2 && item1.quantity() == 1) {
 						btnReforge.enable(false);
 
@@ -388,8 +385,7 @@ public class WndBlacksmith extends Window {
 					((Armor) item).glyphHardened = true;
 				}
 
-				int hardenCost = troll.quest.hardens == 0 ? 500 : 1000;
-				troll.quest.favor -= hardenCost;
+				troll.quest.favor -= 500 + 1000*troll.quest.hardens;
 				troll.quest.hardens++;
 
 				WndBlacksmith.this.hide();
@@ -416,14 +412,14 @@ public class WndBlacksmith extends Window {
 		public boolean itemSelectable(Item item) {
 			return item.isUpgradable()
 					&& item.isIdentified()
-					&& item.level() < 3;
+					&& item.level() < 2;
 		}
 
 		@Override
 		public void onSelect(Item item) {
 			if (item != null) {
 				item.upgrade();
-				int upgradeCost = 1000 * (int)Math.pow(2, troll.quest.upgrades);
+				int upgradeCost = 1000 + 1000*troll.quest.upgrades;
 				troll.quest.favor -= upgradeCost;
 				troll.quest.upgrades++;
 
@@ -460,6 +456,10 @@ public class WndBlacksmith extends Window {
 			message.maxWidth(WIDTH);
 			message.setPos(0, titlebar.bottom() + GAP);
 			add( message );
+
+//			if (Blacksmith.Quest.smithRewards == null || Blacksmith.Quest.smithRewards.isEmpty()){
+//				Blacksmith.Quest.generateRewards(false);
+//			}
 
 			int count = 0;
 			for (Item i : troll.quest.smithRewards){
