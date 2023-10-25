@@ -61,10 +61,10 @@ public class BlacksmithQuest extends Quest {
 
         if (smithRewards.size() < 3) {
 
-            //15%:+0, 55%:+1, 20%:+2, 5%:+3
+            //30%:+0, 45%:+1, 20%:+2, 5%:+3
             int rewardLevel;
             float itemLevelRoll = Random.Float();
-            if (itemLevelRoll < 0.2f) rewardLevel = 0;
+            if (itemLevelRoll < 0.3f) rewardLevel = 0;
             else if (itemLevelRoll < 0.75f) rewardLevel = 1;
             else if (itemLevelRoll < 0.95f) rewardLevel = 2;
             else rewardLevel = 3;
