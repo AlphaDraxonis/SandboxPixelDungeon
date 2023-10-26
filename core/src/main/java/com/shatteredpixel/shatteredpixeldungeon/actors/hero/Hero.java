@@ -1009,7 +1009,7 @@ public class Hero extends Char {
 
 			return false;
 
-		} else if (getCloser(dst)) {
+		} else if (getCloser( dst )) {
 
 			return true;
 
@@ -1712,8 +1712,8 @@ public class Hero extends Char {
 		}
 
 	}
-
-	public boolean handle(int cell ) {
+	
+	public boolean handle( int cell ) {
 		
 		if (cell == -1) {
 			return false;
@@ -1918,7 +1918,7 @@ public class Hero extends Char {
 		attackSkill = STARTING_ATK_SKILL + lvl;
 		defenseSkill = STARTING_DEF_SKILL + lvl;
 	}
-	
+
 	public int maxExp() {
 		return maxExp( lvl );
 	}
@@ -2060,7 +2060,7 @@ public class Hero extends Char {
 		boolean[] discoverable = Dungeon.level.discoverable;
 
 		if (Dungeon.customDungeon.seeLevelOnDeath) {
-			for (int i = 0; i < length; i++) {
+			for (int i=0; i < length; i++) {
 
 				int terr = map[i];
 
@@ -2169,7 +2169,7 @@ public class Hero extends Char {
 	public void moveNoSound(int step, boolean travelling) {
 		super.move( step, travelling);
 	}
-	
+
 	@Override
 	public void onAttackComplete() {
 
