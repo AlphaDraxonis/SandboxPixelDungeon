@@ -50,7 +50,8 @@ public class Reflection {
 	
 	public static Class forName( String name ){
 
-		name = name.replace("shatteredpixel.shatteredpixeldungeon","alphadraxonis.sandboxpixeldungeon");
+		name = name.replace("alphadraxonis.sandboxpixeldungeon", "shatteredpixel.shatteredpixeldungeon");
+//		name = name.replace("shatteredpixel.shatteredpixeldungeon","alphadraxonis.sandboxpixeldungeon");
 
 		try {
 			return ClassReflection.forName( name );
