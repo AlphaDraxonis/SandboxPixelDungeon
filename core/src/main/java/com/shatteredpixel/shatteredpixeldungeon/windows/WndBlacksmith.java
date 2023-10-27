@@ -292,8 +292,8 @@ public class WndBlacksmith extends Window {
 					Badges.validateItemLevelAquired( first );
 					Item.updateQuickslot();
 
-					Blacksmith.Quest.favor -= 500 + 1000*troll.quest.reforges;
-					Blacksmith.Quest.reforges++;
+					troll.quest.favor -= 500 + 1000*troll.quest.reforges;
+					troll.quest.reforges++;
 					Notes.remove( Notes.Landmark.TROLL );
 
 					hide();

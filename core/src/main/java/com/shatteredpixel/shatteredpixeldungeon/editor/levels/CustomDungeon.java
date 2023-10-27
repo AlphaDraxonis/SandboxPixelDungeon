@@ -112,6 +112,7 @@ public class CustomDungeon implements Bundlable {
     public EffectDuration effectDuration = new EffectDuration();
 
     private final Object[] toolbarItems = new Object[QuickSlot.SIZE];
+    public int lastSelectedToolbarSlot;
 
     private String password;
 
@@ -464,6 +465,7 @@ public class CustomDungeon implements Bundlable {
     }
 
     public void restoreToolbar() {
+        int slotBefore = lastSelectedToolbarSlot;
         EditorItemBag.callStaticInitializers();
         for (int i = 0; i < toolbarItems.length; i++) {
             if (toolbarItems[i] != null) {
@@ -475,6 +477,7 @@ public class CustomDungeon implements Bundlable {
                     QuickSlotButton.set(i, EditorScene.getObjAsInBagFromClass((Class<?>) toolbarItems[i]));
             }
         }
+        lastSelectedToolbarSlot = slotBefore;
     }
 
 
@@ -496,6 +499,7 @@ public class CustomDungeon implements Bundlable {
     private static final String TOOLBAR_ITEM = "toolbar_item_";
     private static final String TOOLBAR_ITEM_INT = "toolbar_item_int_";
     private static final String TOOLBAR_ITEM_STRING = "toolbar_item_string_";
+    private static final String LAST_SELECTED_TOOLBAR_SLOT = "last_selected_toolbar_slot";
     private static final String HEROES_ENABLED = "heroes_enabled";
     private static final String EFFECT_DURATION = "effect_duration";
     private static final String START_ITEMS = "start_items";
@@ -561,6 +565,8 @@ public class CustomDungeon implements Bundlable {
             bundle.put(LEVEL_SCHEME + "_" + i, levelScheme);
             i++;
         }
+
+        bundle.put( LAST_SELECTED_TOOLBAR_SLOT, lastSelectedToolbarSlot );
         for (int j = 0; j < toolbarItems.length; j++) {
             if (toolbarItems[j] != null) {
                 if (toolbarItems[j] instanceof Integer)
@@ -640,6 +646,7 @@ public class CustomDungeon implements Bundlable {
             if ("".equals(ls.levelCreatedBefore) && name.equals(getStart())) ls.levelCreatedBefore = null;
             if ("".equals(ls.levelCreatedAfter) && name.equals(getLastEditedFloor())) ls.levelCreatedAfter = null;
         }
+        lastSelectedToolbarSlot = bundle.getInt( LAST_SELECTED_TOOLBAR_SLOT );
         for (i = 0; i < toolbarItems.length; i++) {
             if (bundle.contains(TOOLBAR_ITEM + i))
                 toolbarItems[i] = bundle.getClass(TOOLBAR_ITEM + i);

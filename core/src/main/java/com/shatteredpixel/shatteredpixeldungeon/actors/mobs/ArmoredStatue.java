@@ -45,9 +45,12 @@ public class ArmoredStatue extends Statue {
 
 	public ArmoredStatue(){
 		super();
+	}
 
-		//double HP
-		HP = HT = 30 + Dungeon.depth * 10;
+	@Override
+	public void setLevel(int depth) {
+		super.setLevel(depth);
+		HP = HT = HT * 2;//double HP
 	}
 
 	@Override

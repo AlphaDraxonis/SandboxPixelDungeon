@@ -467,16 +467,27 @@ public class EToolbar extends Component {
             if (instance.btnQuick[i].visible) instance.btnQuick[i].setSelected(i == selectedSlot);
         }
         EditorScene.cancel();
+
+        if (Dungeon.customDungeon != null) Dungeon.customDungeon.lastSelectedToolbarSlot = slot;
     }
 
     private void autoselect() {
+
+        int firstNonEmptySlot = -1;
         for (int i = 0; i < btnQuick.length; i++) {
             if (btnQuick[i].visible && Dungeon.quickslot.getItem(i) != null) {
-                select(i);
-                return;
+                firstNonEmptySlot = i;
+                break;
             }
         }
-        QuickSlotButton.set(0, EditorItem.REMOVER_ITEM);
+        int lsts = Dungeon.customDungeon.lastSelectedToolbarSlot;
+        
+        if (firstNonEmptySlot == -1)
+            QuickSlotButton.set(0, EditorItem.REMOVER_ITEM);
+
+        if (lsts < btnQuick.length && btnQuick[lsts].visible) select(lsts);
+        else select(firstNonEmptySlot);
+
 //        Item i = EditorItemBag.getFirstItem();
 //        if (i != null) QuickSlotButton.set(1, i);
     }
