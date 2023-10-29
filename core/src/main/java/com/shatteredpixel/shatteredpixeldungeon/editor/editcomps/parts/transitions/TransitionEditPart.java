@@ -2,7 +2,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transiti
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
@@ -140,8 +139,8 @@ public abstract class TransitionEditPart extends Component {
                 transition.type = LevelTransition.Type.REGULAR_ENTRANCE;
             else {
                 LevelScheme departLevel = Dungeon.customDungeon.getFloor(transition.departLevel);
-                if (departLevel != null && departLevel.getType() == CustomLevel.class && EditorScene.customLevel() != null) {
-                    if (TileItem.isExitTerrainCell(EditorScene.customLevel().map[transition.departCell]))
+                if (departLevel != null && departLevel.getType() == CustomLevel.class) {
+                    if (departLevel.exitCells.contains(transition.departCell))
                         transition.type = LevelTransition.Type.REGULAR_EXIT;
                     else transition.type = LevelTransition.Type.REGULAR_ENTRANCE;
                 } else transition.type = LevelTransition.Type.REGULAR_EXIT;

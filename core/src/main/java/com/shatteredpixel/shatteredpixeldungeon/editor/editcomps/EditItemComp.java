@@ -81,7 +81,6 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 }
             }, " " + Messages.get(EditItemComp.class, "quantity") + ":", 10);
             ((SpinnerIntegerModel) quantity.getModel()).setAbsoluteMinAndMax(1f, 1_000_000f);
-            quantity.setButtonWidth(14);
             quantity.addChangeListener(() -> {
                 item.quantity((int) quantity.getValue());
                 updateObj();

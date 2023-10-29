@@ -547,7 +547,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             }
         } else if (m instanceof Thief){
             Item i = ((Thief) m).item;
-            if (i.identifyOnStart && (i instanceof EquipableItem || i instanceof Wand)) i.identify();
+            if ((i instanceof EquipableItem || i instanceof Wand) && i.identifyOnStart) i.identify();
             AugumentationSpinner.assignRandomAugumentation(i);
         }
     }

@@ -19,10 +19,10 @@ public class Spinner extends Component {
     protected Component inputField;
     protected RenderedTextBlock label;
 
-    private SpinnerModel model;//Determitesinput size
+    private SpinnerModel model;//Determines input size
 
     private float alignmentSpinnerX = ALIGNMENT_RIGHT;
-    private float buttonWidth = SQUARE;
+    private float buttonWidth = 14f;
 
 
     public Spinner(SpinnerModel model, String name, int textSize) {

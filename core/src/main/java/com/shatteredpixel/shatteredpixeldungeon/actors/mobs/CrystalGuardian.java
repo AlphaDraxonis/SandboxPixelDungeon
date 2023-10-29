@@ -171,6 +171,24 @@ public class CrystalGuardian extends Mob{
 	}
 
 	@Override
+	public Actor getCopy() {
+		CrystalGuardian copy = (CrystalGuardian) super.getCopy();
+		//TODO remove this when sprite class can be changed
+		switch (Random.Int(3)){
+			case 0: default:
+				copy.spriteClass = CrystalGuardianSprite.Blue.class;
+				break;
+			case 1:
+				copy.spriteClass = CrystalGuardianSprite.Green.class;
+				break;
+			case 2:
+				copy.spriteClass = CrystalGuardianSprite.Red.class;
+				break;
+		}
+		return copy;
+	}
+
+	@Override
 	public float spawningWeight() {
 		return 0;
 	}

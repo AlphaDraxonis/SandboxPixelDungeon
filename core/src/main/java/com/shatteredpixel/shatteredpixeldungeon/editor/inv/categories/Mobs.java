@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bee;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CausticSlime;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Crab;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalGuardian;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
@@ -250,7 +251,8 @@ public enum Mobs {
                 Spinner.class,
                 DM200.class,
                 DM201.class,
-                DM300.class
+                DM300.class,
+                CrystalGuardian.class
         };
 
         CITY.classes = new Class[]{
@@ -297,6 +299,9 @@ public enum Mobs {
                 }
                 if (mob instanceof QuestNPC) {
                     ((QuestNPC<?>) mob).createNewQuest();
+                }
+                if (mob instanceof Statue) {
+                    ((Statue) mob).createWeapon(false);
                 }
                 if (mob == null) throw new RuntimeException(m.getName());
                 mob.pos = -1;
