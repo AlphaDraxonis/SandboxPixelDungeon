@@ -444,6 +444,7 @@ public class TitleScene extends PixelScene {
 
         @Override
         protected void onClick() {
+			SPDSettings.discordClicked(true);
             SandboxPixelDungeon.platform.openURI("https://discord.gg/AQAyPqwXvS");
 //          SandboxPixelDungeon.platform.openURI("https://discord.gg@download.zip");
         }
@@ -455,12 +456,14 @@ public class TitleScene extends PixelScene {
         @Override
         public void update() {
             super.update();
-            if (scale.x >= 1.8f || scale.x <= .8f) increasing = !increasing;
-            float diff = .05f;
-            if (increasing) diff = -diff;
-            scale.x += diff;
-            scale.y += diff;
-            layout();
+			if (!SPDSettings.discordClicked()) {
+				if (scale.x >= 1.8f || scale.x <= .8f) increasing = !increasing;
+				float diff = .05f;
+				if (increasing) diff = -diff;
+				scale.x += diff;
+				scale.y += diff;
+				layout();
+			}
         }
     }
 }

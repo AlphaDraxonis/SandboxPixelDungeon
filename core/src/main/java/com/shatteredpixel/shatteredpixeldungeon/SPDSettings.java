@@ -37,8 +37,9 @@ public class SPDSettings extends GameSettings {
 	
 	//Version info
 	
-	public static final String KEY_VERSION      = "version";
-	
+	public static final String KEY_VERSION         = "version";
+	public static final String KEY_DISCORD_CLICKED = "discord_clicked";
+
 	public static void version( int value)  {
 		put( KEY_VERSION, value );
 	}
@@ -46,7 +47,15 @@ public class SPDSettings extends GameSettings {
 	public static int version() {
 		return getInt( KEY_VERSION, 0 );
 	}
-	
+
+	public static void discordClicked( boolean value)  {
+		put( KEY_DISCORD_CLICKED, value );
+	}
+
+	public static boolean discordClicked() {
+		return getBoolean( KEY_DISCORD_CLICKED, false );
+	}
+
 	//Display
 	
 	public static final String KEY_FULLSCREEN	= "fullscreen";
