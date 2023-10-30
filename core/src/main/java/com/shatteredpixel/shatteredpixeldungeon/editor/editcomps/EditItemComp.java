@@ -48,7 +48,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
     private final Heap heap;
 
-    protected final Spinner quantity;
+    protected final Spinner quantity, quickslotPos;
 
     protected final CurseButton curseBtn;
     protected final LevelSpinner levelSpinner;
@@ -72,7 +72,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             quantity = new Spinner(new SpinnerIntegerModel(1, 100 * quantityMultiplierForGold, item.quantity(), 1, false, null) {
                 @Override
                 public float getInputFieldWith(float height) {
-                    return height * 1.3f;
+                    return height * 1.4f;
                 }
 
                 @Override
@@ -87,6 +87,37 @@ public class EditItemComp extends DefaultEditComp<Item> {
             });
             add(quantity);
         } else quantity = null;
+
+        //only for start items
+        if (item.reservedQuickslot != 0 && item.defaultAction() != null) {//use -1 to indicate 0 while still enabling this
+            quickslotPos = new Spinner(new SpinnerIntegerModel(0, 6, item.reservedQuickslot == -1 ? 0 : item.reservedQuickslot, 1, false, null) {
+                @Override
+                public float getInputFieldWith(float height) {
+                    return height * 1.4f;
+                }
+
+                @Override
+                public void displayInputAnyNumberDialog() {
+                    //do nothing
+                }
+
+                @Override
+                public String getDisplayString() {
+                    if ((int) getValue() == 0) return Messages.get(EditItemComp.class, "no_quickslot");
+                    return super.getDisplayString();
+                }
+
+                @Override
+                public int getClicksPerSecondWhileHolding() {
+                    return 14;
+                }
+            }, " " + Messages.get(EditItemComp.class, "quickslot") + ":", 10);
+            quickslotPos.addChangeListener(() -> {
+                item.reservedQuickslot = (int) quickslotPos.getValue();
+                if (item.reservedQuickslot == 0) item.reservedQuickslot = -1;
+            });
+            add(quickslotPos);
+        }else quickslotPos = null;
 
         if (!(item instanceof MissileWeapon) && (item instanceof Weapon || item instanceof Armor || item instanceof Ring || item instanceof Artifact || item instanceof Wand)) {
             curseBtn = new CurseButton(item) {
@@ -216,7 +247,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(keylevel);
         } else keylevel = null;
 
-        comps = new Component[]{quantity, keylevel, chargeSpinner, levelSpinner, augumentationSpinner, curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed};
+        comps = new Component[]{quantity, quickslotPos, keylevel, chargeSpinner, levelSpinner, augumentationSpinner,
+                curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed};
     }
 
     @Override

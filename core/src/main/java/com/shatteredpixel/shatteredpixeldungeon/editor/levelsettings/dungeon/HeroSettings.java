@@ -166,6 +166,7 @@ public class HeroSettings extends Component {
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
                     data.weapon = (Weapon) selectedItem;
+                    if (selectedItem != null && selectedItem.reservedQuickslot == 0) selectedItem.reservedQuickslot = -1;
                 }
             };
             startWeapon.setShowWhenNull(ItemSpriteSheet.WEAPON_HOLDER);
@@ -175,6 +176,7 @@ public class HeroSettings extends Component {
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
                     data.armor = (Armor) selectedItem;
+                    if (selectedItem != null && selectedItem.reservedQuickslot == 0) selectedItem.reservedQuickslot = -1;
                 }
             };
             startArmor.setShowWhenNull(ItemSpriteSheet.ARMOR_HOLDER);
@@ -184,6 +186,7 @@ public class HeroSettings extends Component {
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
                     data.ring = (Ring) selectedItem;
+                    if (selectedItem != null && selectedItem.reservedQuickslot == 0) selectedItem.reservedQuickslot = -1;
                 }
             };
             startRing.setShowWhenNull(ItemSpriteSheet.RING_HOLDER);
@@ -193,6 +196,7 @@ public class HeroSettings extends Component {
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
                     data.artifact = (Artifact) selectedItem;
+                    if (selectedItem != null && selectedItem.reservedQuickslot == 0) selectedItem.reservedQuickslot = -1;
                 }
             };
             startArti.setShowWhenNull(ItemSpriteSheet.ARTIFACT_HOLDER);
@@ -202,6 +206,7 @@ public class HeroSettings extends Component {
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
                     data.misc = (KindofMisc) selectedItem;
+                    if (selectedItem != null && selectedItem.reservedQuickslot == 0) selectedItem.reservedQuickslot = -1;
                 }
             };
             startMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
@@ -278,6 +283,12 @@ public class HeroSettings extends Component {
 //                    for (Bag b : data.bags) exclude.add(b.getClass());
                     ItemSelector.showSelectWindow(startBags, ItemSelector.NullTypeSelector.NONE, Bag.class, Items.bag, exclude);
                 }
+
+                @Override
+                protected void addItemToUI(Item item, boolean last) {
+                    super.addItemToUI(item, last);
+                    if (item != null && item.reservedQuickslot == 0) item.reservedQuickslot = -1;
+                }
             };
             add(startBags);
             startItems = new ItemContainerWithLabel<Item>(data.items, Messages.get(HeroSettings.class, "items")) {
@@ -292,6 +303,12 @@ public class HeroSettings extends Component {
                     if (startItems != null) {
                         DungeonTab.updateLayout();
                     }
+                }
+
+                @Override
+                protected void addItemToUI(Item item, boolean last) {
+                    super.addItemToUI(item, last);
+                    if (item != null && item.reservedQuickslot == 0) item.reservedQuickslot = -1;
                 }
             };
             add(startItems);

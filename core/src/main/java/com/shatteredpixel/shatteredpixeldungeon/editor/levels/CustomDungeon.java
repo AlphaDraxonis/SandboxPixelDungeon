@@ -94,10 +94,7 @@ public class CustomDungeon implements Bundlable {
     //Category items/mobs/rooms
 
     //Custom mob attacks: externalise
-    //Hero start level
     //More items dropped as loot
-    //Hero start items: include in toolbar
-    //Hero start items: make all to there
     //Max loot drop level set for mobs edit stats
 
     //Scale mobs if their normal stats editor is disabled: not just everything
