@@ -166,7 +166,7 @@ public class MagicalFireRoom extends SpecialRoom {
 			Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );
 
 			//if any part of the fire is cleared, cleanse the whole thing
-			//Note that this is a bit brittle atm, it assumes only one group of eternal fire per floor
+			//Note that this is a bit brittle atm, it assumes only one group of eternal fire per floor tzz TODO
 			boolean clearAll = false;
 
 			Level l = Dungeon.level;

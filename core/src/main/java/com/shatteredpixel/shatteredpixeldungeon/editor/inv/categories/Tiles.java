@@ -30,6 +30,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WATER;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WELL;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.gases.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -172,6 +173,11 @@ public enum Tiles {
         TileBag specialTiles = new TileBag("other", SPECIAL.terrains);
         specialTiles.items.add(new BlobItem(MagicalFireRoom.EternalFire.class));
         specialTiles.items.add(new BlobItem(SacrificialFire.class));
+        specialTiles.items.add(new BlobItem(PermaGas.PToxicGas.class));
+        specialTiles.items.add(new BlobItem(PermaGas.PCorrosiveGas.class));
+        specialTiles.items.add(new BlobItem(PermaGas.PConfusionGas.class));
+        specialTiles.items.add(new BlobItem(PermaGas.PParalyticGas.class));
+        specialTiles.items.add(new BlobItem(PermaGas.PStenchGas.class));
         bag.items.add(specialTiles);
         customTileBag = new CustomTileBag();
         bag.items.add(customTileBag);

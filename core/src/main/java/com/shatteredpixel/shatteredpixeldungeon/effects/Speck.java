@@ -76,7 +76,14 @@ public class Speck extends Image {
 	private float left;
 	
 	private static TextureFilm film;
-	
+
+	public static TextureFilm getFilm() {
+		if (film == null) {
+			film = new TextureFilm( Assets.Effects.SPECKS, SIZE, SIZE );
+		}
+		return film;
+	}
+
 	private static SparseArray<Emitter.Factory> factories = new SparseArray<>();
 	
 	public Speck() {

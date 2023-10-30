@@ -39,7 +39,7 @@ public class LevelSpinner extends Spinner {
 
         @Override
         public float getInputFieldWith(float height) {
-            return height * 1.3f;
+            return height * 1.4f;
         }
 
         @Override

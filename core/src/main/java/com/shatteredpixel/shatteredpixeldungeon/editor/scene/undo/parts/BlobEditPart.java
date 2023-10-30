@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfHealth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.gases.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 
@@ -51,11 +52,16 @@ public class BlobEditPart {
         public static final Class<? extends Blob>[] BLOB_CLASSES = new Class[]{
                 MagicalFireRoom.EternalFire.class,
                 SacrificialFire.class,
+                PermaGas.PToxicGas.class,
+                PermaGas.PCorrosiveGas.class,
+                PermaGas.PConfusionGas.class,
+                PermaGas.PParalyticGas.class,
+                PermaGas.PStenchGas.class,
                 WaterOfHealth.class,
                 WaterOfAwareness.class,
                 WaterOfTransmutation.class};
 
-        private final int[] blobs = new int[5];
+        private final int[] blobs = new int[BLOB_CLASSES.length];
 
         public BlobData(int cell) {
             for (int i = 0; i < BLOB_CLASSES.length; i++) {
