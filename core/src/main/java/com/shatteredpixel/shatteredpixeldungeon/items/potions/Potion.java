@@ -308,7 +308,7 @@ public class Potion extends Item {
 			if (!anonymous){
 				Talent.onPotionUsed(curUser, cell, talentFactor);
 			}
-
+			
 		}
 	}
 	
@@ -317,10 +317,10 @@ public class Potion extends Item {
 	}
 	
 	public void shatter( int cell ) {
+		splash( cell );
 		if (Dungeon.level.heroFOV[cell]) {
 			GLog.i( Messages.get(Potion.class, "shatter") );
 			Sample.INSTANCE.play( Assets.Sounds.SHATTER );
-			splash( cell );
 		}
 	}
 
@@ -393,19 +393,20 @@ public class Potion extends Item {
 	}
 	
 	protected void splash( int cell ) {
-
-
 		Dungeon.level.blobs.doOnEach(Fire.class, b -> b.clear(cell));
-
-		final int color = splashColor();
 
 		Char ch = Actor.findChar(cell);
 		if (ch != null && ch.alignment == Char.Alignment.ALLY) {
 			Buff.detach(ch, Burning.class);
 			Buff.detach(ch, Ooze.class);
-			Splash.at( ch.sprite.center(), color, 5 );
-		} else {
-			Splash.at( cell, color, 5 );
+		}
+
+		if (Dungeon.level.heroFOV[cell]) {
+			if (ch != null) {
+				Splash.at(ch.sprite.center(), splashColor(), 5);
+			} else {
+				Splash.at(cell, splashColor(), 5);
+			}
 		}
 	}
 	
