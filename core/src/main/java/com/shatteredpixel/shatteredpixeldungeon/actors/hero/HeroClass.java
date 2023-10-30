@@ -100,16 +100,8 @@ public enum HeroClass {
         hero.heroClass = this;
         Talent.initClassTalents(hero);
 
-        Item i = new ClothArmor().identify();
-        if (!Challenges.isItemBlocked(i)) hero.belongings.armor = (ClothArmor) i;
-
-        i = new Food();
-        if (!Challenges.isItemBlocked(i)) i.collect();
-
-        Waterskin waterskin = new Waterskin();
-        waterskin.collect();
-
         new ScrollOfIdentify().identify();
+        new ClothArmor().identify();
 
         switch (this) {
             case WARRIOR:
@@ -133,8 +125,6 @@ public enum HeroClass {
                 break;
         }
 
-        new VelvetPouch().collect();
-
         HeroSettings.HeroStartItemsData generalItems = Dungeon.customDungeon.startItems[0].getCopy();
         HeroSettings.HeroStartItemsData classItems = Dungeon.customDungeon.startItems[getIndex() + 1].getCopy();
 
@@ -144,53 +134,37 @@ public enum HeroClass {
         collectStartItems(hero, classItems);
         collectStartItems(hero, generalItems);
 
-        if (hero.belongings.weapon != null && hero.belongings.weapon.identifyOnStart)
+        int plusLvl = generalItems.plusLvl + classItems.plusLvl;
+        if (plusLvl != 0) {
+            hero.lvl += plusLvl;
+            hero.updateHT(true);
+            hero.attackSkill += plusLvl;
+            hero.defenseSkill += plusLvl;
+        }
+
+        if (hero.belongings.weapon != null && hero.belongings.weapon.identifyOnStart) {
             hero.belongings.weapon.identify();
-        if (hero.belongings.armor != null && hero.belongings.armor.identifyOnStart)
+            maybePutIntoToolbar(hero.belongings.weapon);
+        }
+        if (hero.belongings.armor != null && hero.belongings.armor.identifyOnStart) {
             hero.belongings.armor.identify();
-        if (hero.belongings.ring != null){
+            maybePutIntoToolbar(hero.belongings.armor);
+        }
+        if (hero.belongings.ring != null) {
             hero.belongings.ring.reset();
-            if( hero.belongings.ring.identifyOnStart) hero.belongings.ring.identify();
+            if (hero.belongings.ring.identifyOnStart) hero.belongings.ring.identify();
+            maybePutIntoToolbar(hero.belongings.ring);
         }
-        if (hero.belongings.artifact != null){
+        if (hero.belongings.artifact != null) {
             hero.belongings.artifact.reset();
-            if( hero.belongings.artifact.identifyOnStart) hero.belongings.artifact.identify();
+            if (hero.belongings.artifact.identifyOnStart) hero.belongings.artifact.identify();
+            maybePutIntoToolbar(hero.belongings.artifact);
         }
-        if (hero.belongings.misc != null){
+        if (hero.belongings.misc != null) {
             hero.belongings.misc.reset();
-            if( hero.belongings.misc.identifyOnStart) hero.belongings.misc.identify();
+            if (hero.belongings.misc.identifyOnStart) hero.belongings.misc.identify();
+            maybePutIntoToolbar(hero.belongings.misc);
         }
-
-//        validateItemLevelAquired(hero.belongings.weapon);
-//        validateItemLevelAquired(hero.belongings.armor);
-//        validateItemLevelAquired(hero.belongings.ring);
-//        validateItemLevelAquired(hero.belongings.artifact);
-//        validateItemLevelAquired(hero.belongings.misc);
-
-        if (SPDSettings.quickslotWaterskin()) {
-            for (int s = 0; s < QuickSlot.SIZE; s++) {
-                if (Dungeon.quickslot.getItem(s) == null) {
-                    Dungeon.quickslot.setSlot(s, waterskin);
-                    break;
-                }
-            }
-        }
-
-//        if (Dungeon.isLevelTesting()) {
-//            Item item = new ScrollOfIdentify();
-//            item.quantity(100);
-//            item.collect();
-//
-//            Weapon weapon = new Greataxe();
-//            weapon.identify();
-//            weapon.upgrade(300);
-//            weapon.collect();
-//
-//            Ring ring = new RingOfHaste();
-//            ring.identify();
-//            ring.upgrade(50);
-//            ring.collect();
-//        }
     }
 
     private void validateItemLevelAquired(Item item) {
@@ -213,76 +187,122 @@ public enum HeroClass {
         return null;
     }
 
-    private static void initWarrior(Hero hero) {
-        (hero.belongings.weapon = new WornShortsword()).identify();
-        ThrowingStone stones = new ThrowingStone();
-        stones.quantity(3).collect();
-        Dungeon.quickslot.setSlot(0, stones);
-
-        if (hero.belongings.armor != null) {
-            hero.belongings.armor.affixSeal(new BrokenSeal());
+    public static void initGeneral(HeroSettings.HeroStartItemsData data) {
+        if (data.armor == null) {
+            ClothArmor i = new ClothArmor();
+            i.identifyOnStart = true;
+            data.armor = i;
         }
 
+        data.items.add(new Food());
+        data.items.add(new Waterskin());
+
+        data.bags.add(new VelvetPouch());
+    }
+
+    private static void initWarrior(Hero hero) {
+        new WornShortsword().identify();
         new PotionOfHealing().identify();
         new ScrollOfRage().identify();
     }
 
     private static void initMage(Hero hero) {
-        MagesStaff staff;
-
-        staff = new MagesStaff(new WandOfMagicMissile());
-
-        (hero.belongings.weapon = staff).identify();
-        hero.belongings.weapon.activate(hero);
-
-        Dungeon.quickslot.setSlot(0, staff);
-
+        new MagesStaff().identify();
         new ScrollOfUpgrade().identify();
         new PotionOfLiquidFlame().identify();
     }
 
     private static void initRogue(Hero hero) {
-        (hero.belongings.weapon = new Dagger()).identify();
-
-        CloakOfShadows cloak = new CloakOfShadows();
-        (hero.belongings.artifact = cloak).identify();
-        hero.belongings.artifact.activate(hero);
-
-        ThrowingKnife knives = new ThrowingKnife();
-        knives.quantity(3).collect();
-
-        Dungeon.quickslot.setSlot(0, cloak);
-        Dungeon.quickslot.setSlot(1, knives);
-
+        new Dagger().identify();
         new ScrollOfMagicMapping().identify();
         new PotionOfInvisibility().identify();
     }
 
     private static void initHuntress(Hero hero) {
-
-        (hero.belongings.weapon = new Gloves()).identify();
-        SpiritBow bow = new SpiritBow();
-        bow.identify().collect();
-
-        Dungeon.quickslot.setSlot(0, bow);
-
+        new Gloves().identify();
+        new SpiritBow().identify();
         new PotionOfMindVision().identify();
         new ScrollOfLullaby().identify();
     }
 
     private static void initDuelist(Hero hero) {
-
-        (hero.belongings.weapon = new Rapier()).identify();
-        hero.belongings.weapon.activate(hero);
-
-        ThrowingSpike spikes = new ThrowingSpike();
-        spikes.quantity(2).collect();
-
-        Dungeon.quickslot.setSlot(0, hero.belongings.weapon);
-        Dungeon.quickslot.setSlot(1, spikes);
-
+        new Rapier().identify();
         new PotionOfStrength().identify();
         new ScrollOfMirrorImage().identify();
+    }
+
+    public static void initWarrior(HeroSettings.HeroStartItemsData data) {
+
+        if (data.weapon == null) {
+            WornShortsword i = new WornShortsword();
+            i.identifyOnStart = true;
+            data.weapon = i;
+        }
+
+        data.items.add(new BrokenSeal());
+
+        ThrowingStone stones = new ThrowingStone();
+        stones.quantity(3);
+        stones.reservedQuickslot = 1;
+        data.items.add(stones);
+
+    }
+
+    public static void initMage(HeroSettings.HeroStartItemsData data) {
+        if (data.weapon == null) {
+            MagesStaff i = new MagesStaff(new WandOfMagicMissile());
+            i.reservedQuickslot = 1;
+            i.identifyOnStart = true;
+            data.weapon = i;
+        }
+    }
+
+    public static void initRouge(HeroSettings.HeroStartItemsData data) {
+        if (data.weapon == null) {
+            Dagger i = new Dagger();
+            i.identifyOnStart = true;
+            data.weapon = i;
+        }
+
+        int nextQuickslot = 0;
+        if (data.artifact == null || data.misc == null) {
+            CloakOfShadows cloak = new CloakOfShadows();
+            cloak.identifyOnStart = true;
+            cloak.reservedQuickslot = nextQuickslot++;
+            if (data.artifact == null) data.artifact = cloak;
+            else data.misc = cloak;
+        }
+
+        ThrowingKnife knives = new ThrowingKnife();
+        knives.quantity(3);
+        knives.reservedQuickslot = nextQuickslot;
+    }
+
+    public static void initHuntress(HeroSettings.HeroStartItemsData data) {
+        if (data.weapon == null) {
+            Gloves i = new Gloves();
+            i.identifyOnStart = true;
+            data.weapon = i;
+        }
+        SpiritBow bow = new SpiritBow();
+        bow.identifyOnStart = true;
+        bow.reservedQuickslot = 1;
+        data.items.add(bow);
+    }
+
+    public static void initDuelist(HeroSettings.HeroStartItemsData data) {
+        int nextQuickslot = 0;
+        if (data.weapon == null) {
+            Rapier i = new Rapier();
+            i.identifyOnStart = true;
+            i.reservedQuickslot = nextQuickslot++;
+            data.weapon = i;
+        }
+
+        ThrowingSpike spikes = new ThrowingSpike();
+        spikes.quantity(2);
+        spikes.reservedQuickslot = nextQuickslot++;
+        data.items.add(spikes);
     }
 
     private static void collectStartEq(Hero hero, HeroSettings.HeroStartItemsData startItems) {
@@ -348,6 +368,7 @@ public enum HeroClass {
                 if (b instanceof ScrollHolder) Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
                 if (b instanceof PotionBandolier) Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
                 if (b instanceof MagicalHolster) Dungeon.LimitedDrops.MAGICAL_HOLSTER.drop();
+                maybePutIntoToolbar(b);
             }
         }
     }
@@ -365,8 +386,20 @@ public enum HeroClass {
                 i.reset();
                 if (i.identifyOnStart) i.identify();
                 i.doPickUp(hero);
+                maybePutIntoToolbar(i);
             }
         }
+    }
+
+    private static void maybePutIntoToolbar(Item item){
+        if (item.reservedQuickslot > 0) Dungeon.quickslot.setSlot(item.reservedQuickslot - 1, item);
+        else if (SPDSettings.quickslotWaterskin() && item instanceof Waterskin)
+            for (int s = 0; s < QuickSlot.SIZE; s++) {
+                if (Dungeon.quickslot.getItem(s) == null) {
+                    Dungeon.quickslot.setSlot(s, item);
+                    break;
+                }
+            }
     }
 
     public String title() {

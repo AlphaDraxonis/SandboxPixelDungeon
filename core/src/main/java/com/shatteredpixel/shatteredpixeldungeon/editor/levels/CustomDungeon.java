@@ -37,7 +37,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.ItemStatusHandler;
 import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
@@ -95,6 +94,11 @@ public class CustomDungeon implements Bundlable {
     //Category items/mobs/rooms
 
     //Custom mob attacks: externalise
+    //Hero start level
+    //More items dropped as loot
+    //Hero start items: include in toolbar
+    //Hero start items: make all to there
+    //Max loot drop level set for mobs edit stats
 
     //Scale mobs if their normal stats editor is disabled: not just everything
 
@@ -122,9 +126,7 @@ public class CustomDungeon implements Bundlable {
         itemDistributions = new ArrayList<>(5);
         heroesEnabled = new boolean[HeroClass.values().length];
         Arrays.fill(heroesEnabled, true);
-        startItems = new HeroSettings.HeroStartItemsData[heroesEnabled.length + 1];
-        for (int i = 0; i < startItems.length; i++)
-            startItems[i] = new HeroSettings.HeroStartItemsData();
+        startItems = HeroSettings.HeroStartItemsData.getDefault();
     }
 
     public CustomDungeon() {
@@ -598,17 +600,16 @@ public class CustomDungeon implements Bundlable {
             heroesEnabled = new boolean[HeroClass.values().length];
             Arrays.fill(heroesEnabled, true);
         }
-        startItems = new HeroSettings.HeroStartItemsData[heroesEnabled.length + 1];
         if (bundle.contains(START_ITEMS)) {
+            startItems = new HeroSettings.HeroStartItemsData[heroesEnabled.length + 1];
             int i = 0;
             for (Bundlable heroStartItemsData : bundle.getCollection(START_ITEMS)) {
                 startItems[i] = (HeroSettings.HeroStartItemsData) heroStartItemsData;
+                startItems[i].maybeInitDefault(i);
                 i++;
             }
         } else {
-            for (int i = 0; i < startItems.length; i++)
-                startItems[i] = new HeroSettings.HeroStartItemsData();
-            startItems[0].bags.add(new VelvetPouch());
+            startItems = HeroSettings.HeroStartItemsData.getDefault();
         }
 
         if (bundle.contains(RUNE_LABELS)) {

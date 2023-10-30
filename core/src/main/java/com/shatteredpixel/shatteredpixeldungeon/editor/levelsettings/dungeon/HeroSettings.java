@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp.OutsideSpSwitchTabs;
@@ -138,7 +139,7 @@ public class HeroSettings extends Component {
         private final ItemContainerWithLabel<Item> startItems;
         private final ItemContainerWithLabel<Bag> startBags;
         private final ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
-        private final StyledSpinner startGold, startEnergy;
+        private final StyledSpinner startGold, startEnergy, plusLvl;
 
         private final Component itemSelectorParent;
 
@@ -235,6 +236,20 @@ public class HeroSettings extends Component {
             startEnergy.addChangeListener(() -> data.energy = (int) startEnergy.getValue());
             itemSelectorParent.add(startEnergy);
 
+            plusLvl = new StyledSpinner(new SpinnerIntegerModel(0, 100, data.plusLvl, 1, false, null) {
+                @Override
+                public float getInputFieldWith(float height) {
+                    return Spinner.FILL;
+                }
+
+                @Override
+                public int getClicksPerSecondWhileHolding() {
+                    return 15;
+                }
+            }, Messages.titleCase(Messages.get(HeroSettings.class, "plus_lvl")), 10, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
+            plusLvl.addChangeListener(() -> data.plusLvl = (int) plusLvl.getValue());
+            itemSelectorParent.add(plusLvl);
+
             add(itemSelectorParent);
 
             startBags = new ItemContainerWithLabel<Bag>(data.bags, Messages.get(HeroSettings.class, "bags")) {
@@ -300,7 +315,7 @@ public class HeroSettings extends Component {
             itemSelectorParent.setPos(x, posY);
             EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
                     new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                            startGold, startEnergy});
+                            startGold, startEnergy, plusLvl});
             PixelScene.align(itemSelectorParent);
             posY = itemSelectorParent.bottom() + gap;
             startBags.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
@@ -323,6 +338,9 @@ public class HeroSettings extends Component {
         public List<Bag> bags = new ArrayList<>(2);
         public List<Item> items = new ArrayList<>(3);
         public int gold, energy;
+        public int plusLvl;//default is 0
+
+        private boolean needToAddDefaultConfiguration = false;
 
         private static final String WEAPON = "weapon";
         private static final String ARMOR = "armor";
@@ -331,6 +349,7 @@ public class HeroSettings extends Component {
         private static final String MISC = "misc";
         private static final String GOLD = "gold";
         private static final String ENERGY = "energy";
+        private static final String LVL = "lvl";
         private static final String BAGS = "bags";
         private static final String ITEMS = "items";
 
@@ -343,6 +362,8 @@ public class HeroSettings extends Component {
             bundle.put(MISC, misc);
             bundle.put(GOLD, gold);
             bundle.put(ENERGY, energy);
+            bundle.put(ENERGY, energy);
+            bundle.put(LVL, plusLvl);
 
             bundle.put(BAGS, bags);
             bundle.put(ITEMS, items);
@@ -358,6 +379,9 @@ public class HeroSettings extends Component {
             gold = bundle.getInt(GOLD);
             energy = bundle.getInt(ENERGY);
 
+            needToAddDefaultConfiguration = !bundle.contains(LVL);
+            plusLvl = bundle.getInt(LVL);
+
             for (Bundlable b : bundle.getCollection(BAGS)) {
                 bags.add((Bag) b);
             }
@@ -371,5 +395,40 @@ public class HeroSettings extends Component {
             bundle.put("DATA", this);
             return (HeroStartItemsData) bundle.get("DATA");
         }
+
+        public void maybeInitDefault(int heroIndex) {
+            if (!needToAddDefaultConfiguration) return;
+            switch (heroIndex) {
+                case 0:
+                    HeroClass.initGeneral(this);
+                    break;
+                case 1:
+                    HeroClass.initWarrior(this);
+                    break;
+                case 2:
+                    HeroClass.initMage(this);
+                    break;
+                case 3:
+                    HeroClass.initRouge(this);
+                    break;
+                case 4:
+                    HeroClass.initHuntress(this);
+                    break;
+                case 5:
+                    HeroClass.initDuelist(this);
+                    break;
+            }
+        }
+
+        public static HeroStartItemsData[] getDefault(){
+            HeroStartItemsData[] startItems = new HeroStartItemsData[HeroClass.values().length + 1];
+            for (int i = 0; i < startItems.length; i++) {
+                startItems[i] = new HeroSettings.HeroStartItemsData();
+                startItems[i].needToAddDefaultConfiguration = true;
+                startItems[i].maybeInitDefault(i);
+            }
+            return startItems;
+        }
+
     }
 }

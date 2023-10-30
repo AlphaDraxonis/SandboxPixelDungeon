@@ -67,7 +67,10 @@ public class IconTitleWithSubIcon extends IconTitle {
     }
 
     public static Image createSubIcon(Item item) {
-        RectF r = ItemSpriteSheet.Icons.film.get(item.icon);
+        return createSubIcon(item.icon);
+    }
+    public static Image createSubIcon(int icon) {
+        RectF r = ItemSpriteSheet.Icons.film.get(icon);
         if (r == null) return null;
         Image itemIcon = new Image(Assets.Sprites.ITEM_ICONS);
         itemIcon.frame(r);

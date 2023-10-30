@@ -98,6 +98,9 @@ public class Item implements Bundlable {
     // whether an item can be included in heroes remains
     public boolean bones = false;
 
+    // only for hero start items, 0 means not in toolbar, first index is 1
+    public int reservedQuickslot;
+
     public static final Comparator<Item> itemComparator = new Comparator<Item>() {
         @Override
         public int compare(Item lhs, Item rhs) {
@@ -572,6 +575,7 @@ public class Item implements Bundlable {
     private static final String IDENTIFY_ON_START = "identify_on_start";
     private static final String QUICKSLOT = "quickslotpos";
     private static final String KEPT_LOST = "kept_lost";
+    private static final String RESERVED_QUICKSLOT = "reserved_quickslot";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -585,6 +589,7 @@ public class Item implements Bundlable {
             bundle.put(QUICKSLOT, Dungeon.quickslot.getSlot(this));
         }
         bundle.put(KEPT_LOST, keptThoughLostInvent);
+        bundle.put(RESERVED_QUICKSLOT, reservedQuickslot);
     }
 
     @Override
@@ -611,6 +616,7 @@ public class Item implements Bundlable {
         }
 
         keptThoughLostInvent = bundle.getBoolean(KEPT_LOST);
+        reservedQuickslot = bundle.getInt(RESERVED_QUICKSLOT);
     }
 
     public Item getCopy(){

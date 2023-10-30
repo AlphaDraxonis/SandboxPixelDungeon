@@ -234,7 +234,10 @@ public class ItemSelector extends Component {
 
         @Override
         public boolean itemSelectable(Item item) {
-            return itemClasses.isAssignableFrom(item.getClass());
+            return itemClasses.isAssignableFrom(
+                    item instanceof EditorItem
+                            ? ((EditorItem) item).getObject().getClass()
+                            : item.getClass());
         }
 
         @Override
