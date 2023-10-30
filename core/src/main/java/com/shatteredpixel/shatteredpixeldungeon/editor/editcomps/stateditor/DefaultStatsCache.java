@@ -86,7 +86,8 @@ public class DefaultStatsCache {
                 && a.damageRollMin == b.damageRollMin
                 && a.damageRollMax == b.damageRollMax
                 && a.damageReductionMax == b.damageReductionMax
-                && a.EXP == b.EXP;
+                && a.EXP == b.EXP
+                && a.maxLvl == b.maxLvl;
     }
 
     public static boolean canModifyStats(Object obj) {

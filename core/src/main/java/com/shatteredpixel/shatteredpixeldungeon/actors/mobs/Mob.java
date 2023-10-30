@@ -1101,6 +1101,8 @@ public abstract class Mob extends Char {
 
                     if (defaultStats.EXP != EXP)
                         desc += "\n" + Messages.get(Mob.class, "xp") + ": " + defaultStats.EXP + " -> _" + EXP + "_";
+                    if (defaultStats.maxLvl != maxLvl)
+                        desc += "\n" + Messages.get(Mob.class, "max_lvl") + ": " + defaultStats.maxLvl + " -> _" + maxLvl + "_";
                 }
             } else {
 
@@ -1121,6 +1123,8 @@ public abstract class Mob extends Char {
 
                     if (defaultStats.EXP != EXP)
                         desc += "\n" + Messages.get(Mob.class, "xp") + ": " + defaultStats.EXP + " -> _" + EXP + "_";
+					if (defaultStats.maxLvl != maxLvl)
+						desc += "\n" + Messages.get(Mob.class, "max_lvl") + ": " + defaultStats.maxLvl + " -> _" + maxLvl + "_";
                 }
 
             }

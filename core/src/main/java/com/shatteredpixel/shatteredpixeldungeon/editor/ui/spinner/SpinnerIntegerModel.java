@@ -155,7 +155,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         else {
             if (!this.maximum.equals(maximum)) {
                 this.maximum = maximum;
-                if (value > maximum) setValue(maximum);
+//                if (value > maximum) setValue(maximum);
             }
         }
     }
@@ -165,7 +165,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         else {
             if (!this.minimum.equals(minimum)) {
                 this.minimum = minimum;
-                if (value < minimum) setValue(minimum);
+//                if (value < minimum) setValue(minimum);
             }
         }
     }

@@ -57,7 +57,7 @@ public class WndEditStats extends MultiWindowTabComp {
 
     private RedButton restoreDefaults;
 
-    private IntegerSpinner hp, attackSkill, defenseSkill, armor, dmgMin, dmgMax, xp;
+    private IntegerSpinner hp, attackSkill, defenseSkill, armor, dmgMin, dmgMax, xp, maxLvl;
     private FloatSpinner speed, statsScale;
     private StyledButtonWithIconAndText loot;
 
@@ -138,6 +138,12 @@ public class WndEditStats extends MultiWindowTabComp {
             xp.addChangeListener(() -> current.EXP = xp.getAsInt());
             content.add(xp);
 
+            maxLvl = new IntegerSpinner(Messages.get(Mob.class, "max_lvl"),
+                    0, def.maxLvl * 10, current.maxLvl, false);
+            maxLvl.addChangeListener(() -> current.maxLvl = maxLvl.getAsInt());
+            ((IntegerSpinnerModel) maxLvl.getModel()).setMaximum(30);
+            content.add(maxLvl);
+
             if (!(current instanceof Mimic)) {
 
                 loot = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndEditStats.class, "loot"), 9){
@@ -164,7 +170,7 @@ public class WndEditStats extends MultiWindowTabComp {
                 statsScale, speed, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 hp, attackSkill, defenseSkill, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 armor, dmgMin, dmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                xp, loot
+                xp, maxLvl, loot
         };
     }
 
