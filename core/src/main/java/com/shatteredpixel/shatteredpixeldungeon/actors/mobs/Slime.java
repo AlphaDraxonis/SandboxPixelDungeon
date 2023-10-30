@@ -88,7 +88,7 @@ public class Slime extends Mob {
 		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
 		Generator.convertGeneratorToCustomLootInfo(customLootInfo, Generator.Category.WEP_T2, 1);
 		for (LootTableComp.ItemWithCount item : customLootInfo.lootList) {
-			item.item.level(0);
+			item.items.get(0).level(0);
 		}
 		customLootInfo.setLootChance(customLootInfo.calculateSum() * 4);
 		return customLootInfo;

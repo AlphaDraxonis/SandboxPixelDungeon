@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatMo
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -78,12 +79,18 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         priceMultiplier = new Spinner(new SpinnerFloatModel(0.1f, 10f, heap.priceMultiplier, false) {
             @Override
             public float getInputFieldWith(float height) {
-                return height * 1.4f;
+                return Spinner.FILL;
             }
 
             @Override
             public int getClicksPerSecondWhileHolding() {
                 return 20;
+            }
+
+            @Override
+            public String getDisplayString() {
+                float price = heap.items.getLast().getCopy().identify().value() * 5 * EditorScene.customLevel().levelScheme.getPriceMultiplier();
+                return super.getDisplayString() + " = " + ((int)(getAsFloat() * price) + " " + Messages.get(Gold.class, "name"));
             }
         }, Messages.get(LevelTab.class, "shop_price"), 8);
         ((SpinnerIntegerModel) priceMultiplier.getModel()).setAbsoluteMinAndMax(0f, 10000f);

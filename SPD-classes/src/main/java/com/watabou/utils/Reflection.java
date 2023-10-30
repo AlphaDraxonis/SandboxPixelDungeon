@@ -39,6 +39,7 @@ public class Reflection {
 		try {
 			return ClassReflection.newInstance(cls);
 		} catch (Exception e) {
+//			throw new RuntimeException(">>>"+cls+"<<<");
 			Game.reportException(e);
 			return null;
 		}

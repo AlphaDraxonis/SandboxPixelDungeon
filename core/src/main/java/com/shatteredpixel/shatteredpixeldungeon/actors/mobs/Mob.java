@@ -92,9 +92,11 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 
 public abstract class Mob extends Char {
 
@@ -972,12 +974,13 @@ public abstract class Mob extends Char {
 		MasterThievesArmband.StolenTracker stolen = buff(MasterThievesArmband.StolenTracker.class);
 		if (stolen == null || !stolen.itemWasStolen()) {
 			if (Random.Float() < lootChance()) {
-				Item loot = createActualLoot();
-				if (loot != null) {
-					if (loot.identifyOnStart) loot.identify();
-					AugumentationSpinner.assignRandomAugumentation(loot);
-					increaseLimitedDropCount(loot);
-					Dungeon.level.drop(loot, pos).sprite.drop();
+				List<Item> loot = createActualLoot();
+				for (Item l : loot) {
+					if (l == null) continue;
+					if (l.identifyOnStart) l.identify();
+					AugumentationSpinner.assignRandomAugumentation(l);
+					increaseLimitedDropCount(l);
+					Dungeon.level.drop(l, pos).sprite.drop();
 				}
 			}
 		}
@@ -1011,9 +1014,9 @@ public abstract class Mob extends Char {
 	public Object loot = null;
 	protected float lootChance = 0;
 
-	public Item createActualLoot() {
+	public List<Item> createActualLoot() {
 		if (loot instanceof LootTableComp.CustomLootInfo) return ((LootTableComp.CustomLootInfo) loot).generateLoot();
-		else return createLoot();
+		else return Arrays.asList(createLoot());
 	}
 
 	@SuppressWarnings("unchecked")

@@ -3,21 +3,20 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp.BUTTON_HEIGHT;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp.GAP;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.ItemContainer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -36,8 +35,11 @@ import java.util.List;
 
 public class LootTableComp extends Component {
 
+    private static final float ROW_HEIGHT = 20;
+
     public static final class ItemWithCount implements Bundlable {
-        public Item item;
+
+        public List<Item> items = new ArrayList<>(3);
         private int count;
 
         private LootItem lootComp;
@@ -51,18 +53,23 @@ public class LootTableComp extends Component {
             return count;
         }
 
-        private static final String ITEM = "item";
+        private static final String ITEMS = "items";
         private static final String COUNT = "count";
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
-            item = (Item) bundle.get(ITEM);
+            items.clear();
             count = bundle.getInt(COUNT);
+            if (bundle.contains("item")) items.add((Item) bundle.get("item"));
+            else {
+                for (Bundlable b : bundle.getCollection(ITEMS))
+                    items.add((Item) b);
+            }
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
-            bundle.put(ITEM, item);
+            bundle.put(ITEMS, items);
             bundle.put(COUNT, count);
         }
     }
@@ -108,7 +115,7 @@ public class LootTableComp extends Component {
                                 if (item != EditorItem.NULL_ITEM)
                                     item = item instanceof ItemItem ? ((ItemItem) item).item().getCopy() : item.getCopy();
                                 ItemWithCount i = new ItemWithCount();
-                                i.item = item;
+                                i.items.add(item);
                                 i.setCount(1);
                                 sum++;
                                 customLootInfo.lootList.add(i);
@@ -158,7 +165,7 @@ public class LootTableComp extends Component {
         if (customLootInfo.noLootCount > 0) {
             sum += customLootInfo.noLootCount;
             ItemWithCount item = new ItemWithCount();
-            item.item = EditorItem.NULL_ITEM;
+            item.items.add(EditorItem.NULL_ITEM);
             item.count = customLootInfo.noLootCount;
             customLootInfo.lootList.add(item);
             addLootItem(item);
@@ -178,7 +185,7 @@ public class LootTableComp extends Component {
 
         for (ItemWithCount item : customLootInfo.lootList) {
             if (item.lootComp != null) {
-                item.lootComp.setRect(x, posY, width, BUTTON_HEIGHT);
+                item.lootComp.setRect(x, posY, width, ROW_HEIGHT);
                 item.setCount((int) item.lootComp.countSpinner.getValue());
                 PixelScene.align(item.lootComp);
                 posY = item.lootComp.bottom();
@@ -201,10 +208,10 @@ public class LootTableComp extends Component {
     }
 
     private void addLootItem(ItemWithCount item) {
-        if (item.item == EditorItem.NULL_ITEM) hasNullInLoot = true;
+        if (item.items.contains(EditorItem.NULL_ITEM)) hasNullInLoot = true;
         item.lootComp = new LootItem(item);
         add(item.lootComp);
-        item.lootComp.setSize(width, BUTTON_HEIGHT);
+        item.lootComp.setSize(width, ROW_HEIGHT);
     }
 
     private String calculatePercentage(float count) {
@@ -221,23 +228,40 @@ public class LootTableComp extends Component {
     }
 
 
-    private class LootItem extends AdvancedListPaneItem {
+    private class LootItem extends Button {
 
         private final Spinner countSpinner;
         private final IconButton removeBtn;
         private final ItemWithCount item;
 
+        private final ItemContainer<Item> items;
+//        private final Image img;
+        private final RenderedTextBlock text;
+
         public LootItem(ItemWithCount item) {
-            super(Dungeon.customDungeon.getItemImage(item.item),
-                    IconTitleWithSubIcon.createSubIcon(item.item),
-                    item.item.title());
+
             this.item = item;
 
-            String oldText = label.text();
-            remove(label);
-            label = PixelScene.renderTextBlock(6);
-            add(label);
-            label.text(oldText);
+            if (item.items.contains(EditorItem.NULL_ITEM)) {
+                items = null;
+                text = PixelScene.renderTextBlock(EditorItem.NULL_ITEM.title(),7);
+//                img = Dungeon.customDungeon.getItemImage(EditorItem.NULL_ITEM);
+                add(text);
+//                add(img);
+            } else {
+//                img = null;
+                text = null;
+
+                items = new ItemContainer<Item>(item.items, null, true){
+                    @Override
+                    protected void onSlotNumChange() {
+                        LootItem.this.layout();
+                    }
+                };
+                add(items);
+
+                remove(hotArea);
+            }
 
             countSpinner = new Spinner(new SModel(item.count) {
                 @Override
@@ -267,7 +291,7 @@ public class LootTableComp extends Component {
             sum -= count;
             item.count = 0;
             customLootInfo.lootList.remove(item);
-            if (item.item == EditorItem.NULL_ITEM) {
+            if (item.items.contains(EditorItem.NULL_ITEM)) {
                 hasNullInLoot = false;
                 customLootInfo.noLootCount = 0;
             }
@@ -281,9 +305,11 @@ public class LootTableComp extends Component {
 
         @Override
         public void onClick() {
-            Window w = new EditCompWindow(item.item, this);
-            if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-            else Game.scene().addToFront(w);
+            if (item.items.contains(EditorItem.NULL_ITEM)) {
+                Window w = new EditCompWindow(EditorItem.NULL_ITEM);
+                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                else Game.scene().addToFront(w);
+            }
         }
 
         @Override
@@ -292,28 +318,30 @@ public class LootTableComp extends Component {
 
             if (countSpinner == null) return;
 
-            float h = height() - 3;
-            float ypsilon = y + 2f;
             float spinnW = countSpinner.width();
             float gap = -1.1f;
-            countSpinner.setRect(width - spinnW + x - h - gap, ypsilon, spinnW, h);
-            removeBtn.setRect(countSpinner.right() + gap, ypsilon, h, h);
+
+            float labelWidth = width - spinnW + 4.1f - ROW_HEIGHT;
+            if (items != null) {
+                items.setRect(x, y, labelWidth, -1);
+                height = Math.max(items.height(), ROW_HEIGHT);
+            } else {
+//                img.y = y + 1 + (height() - 1 - img.height()) / 2f;
+//                img.x = x + (16 - img.width()) / 2f;
+//                PixelScene.align(img);
+
+                text.maxWidth((int) labelWidth);
+                text.setPos(x + 1, y + (height() - text.height()) / 2f);
+                PixelScene.align(text);
+            }
+
+            float h = ROW_HEIGHT - 3;
+            countSpinner.setRect(width - spinnW + x - h - gap, y + 2f + (height - ROW_HEIGHT) * 0.5f, spinnW, h);
+            removeBtn.setRect(countSpinner.right() + gap, y + 2f + (height - ROW_HEIGHT) * 0.5f, h, h);
             PixelScene.align(countSpinner);
             PixelScene.align(removeBtn);
 
             hotArea.width = countSpinner.left() - x - 2;
-        }
-
-        @Override
-        protected int getLabelMaxWidth() {
-            if (countSpinner == null) return super.getLabelMaxWidth();
-            return (int) (super.getLabelMaxWidth() - countSpinner.width() + 4.1f - height());
-        }
-
-        @Override
-        public void onUpdate() {
-            if (item != null) onUpdateIfUsedForItem(item.item);
-            super.onUpdate();
         }
     }
 
@@ -343,7 +371,7 @@ public class LootTableComp extends Component {
     public synchronized void destroy() {
         ItemWithCount remove = null;
         for (ItemWithCount item : customLootInfo.lootList) {
-            if (item.item == EditorItem.NULL_ITEM) {
+            if (item.items.contains(EditorItem.NULL_ITEM)) {
                 customLootInfo.noLootCount = item.count;
                 remove = item;
                 break;
@@ -370,6 +398,17 @@ public class LootTableComp extends Component {
 
         @Override
         public void storeInBundle(Bundle bundle) {
+
+            ItemWithCount remove = null;
+            for (ItemWithCount item : lootList) {
+                if (item.items.contains(EditorItem.NULL_ITEM)) {
+                    noLootCount = item.count;
+                    remove = item;
+                    break;
+                }
+            }
+            if (remove != null) lootList.remove(remove);
+
             bundle.put(LOOT, lootList);
             bundle.put(NO_LOOT, noLootCount);
         }
@@ -384,14 +423,14 @@ public class LootTableComp extends Component {
             int index = 0;
             for (ItemWithCount item : lootList) {
                 ItemWithCount other = a.lootList.get(index);
-                if (!EditItemComp.areEqual(item.item, other.item)) return false;
+                if (!EditItemComp.isItemListEqual(item.items, other.items)) return false;
                 if (item.count != other.count) return false;
                 index++;
             }
             return true;
         }
 
-        public Item generateLoot() {
+        public List<Item> generateLoot() {
             if (lootList.isEmpty()) return null;//mob should use it's default create loot methods
             int sum = 0;
             for (ItemWithCount item : lootList)
@@ -400,7 +439,7 @@ public class LootTableComp extends Component {
             sum = 0;
             for (ItemWithCount item : lootList) {
                 sum += item.getCount();
-                if (sum > get) return item.item;
+                if (sum > get) return item.items;
             }
             return null;
         }
@@ -423,7 +462,7 @@ public class LootTableComp extends Component {
 
         public void addItem(Item item, int count) {
             ItemWithCount itemWithCount = new ItemWithCount();
-            itemWithCount.item = item;
+            itemWithCount.items.add(item);
             itemWithCount.count = count;
             lootList.add(itemWithCount);
         }

@@ -49,6 +49,7 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MasterThievesArmband extends Artifact {
 
@@ -155,21 +156,25 @@ public class MasterThievesArmband extends Artifact {
 							if (lootChance == 0){
 								GLog.w(Messages.get(MasterThievesArmband.class, "no_steal"));
 							} else if (Random.Float() <= lootChance){
-								Item loot = ((Mob) ch).createActualLoot();
-								((Mob)ch).increaseLimitedDropCount(loot);
-								if (Challenges.isItemBlocked(loot)){
-									GLog.i(Messages.get(MasterThievesArmband.class, "failed_steal"));
-									Buff.affect(ch, StolenTracker.class).setItemStolen(false);
-								} else {
-									if (loot.doPickUp(curUser)) {
+
+								List<Item> loot = ((Mob) ch).createActualLoot();
+								boolean stoleSth = false;
+								for (Item l : loot) {
+									if (l == null) continue;
+									((Mob)ch).increaseLimitedDropCount(l);
+									if (Challenges.isItemBlocked(l)) continue;
+									stoleSth = true;
+									if (l.doPickUp(curUser)) {
 										//item collection happens instantly
 										curUser.spend(-TIME_TO_PICK_UP);
 									} else {
-										Dungeon.level.drop(loot, curUser.pos).sprite.drop();
+										Dungeon.level.drop(l, curUser.pos).sprite.drop();
 									}
-									GLog.i(Messages.get(MasterThievesArmband.class, "stole_item", loot.name()));
-									Buff.affect(ch, StolenTracker.class).setItemStolen(true);
+									GLog.i(Messages.get(MasterThievesArmband.class, "stole_item", l.name()));
 								}
+								Buff.affect(ch, StolenTracker.class).setItemStolen(stoleSth);
+								if(!stoleSth) GLog.i(Messages.get(MasterThievesArmband.class, "failed_steal"));
+
 							} else {
 								GLog.i(Messages.get(MasterThievesArmband.class, "failed_steal"));
 								Buff.affect(ch, StolenTracker.class).setItemStolen(false);

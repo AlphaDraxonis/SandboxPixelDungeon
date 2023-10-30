@@ -55,6 +55,7 @@ public class Statue extends Mob implements MobBasedOnDepth {
 	public Statue() {
 		super();
 		setLevel(Dungeon.depth);
+		createWeapon(false);
 	}
 
 	@Override

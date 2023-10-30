@@ -58,7 +58,6 @@ public class GuardianTrap extends Trap {
 
 		for (int i = 0; i < (scalingDepth() - 5)/5; i++){
 			Guardian guardian = new Guardian();
-			guardian.createWeapon(false);
 			guardian.state = guardian.WANDERING;
 			guardian.pos = Dungeon.level.randomRespawnCell( guardian );
 			if (guardian.pos != -1) {

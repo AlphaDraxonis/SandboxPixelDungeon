@@ -138,7 +138,7 @@ public class GnollTrickster extends Gnoll {
 		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
 		Generator.convertRandomMissileWeaponToCustomLootInfo(customLootInfo);
 		for (LootTableComp.ItemWithCount item : customLootInfo.lootList) {
-			item.item.quantity((item.item.quantity() + 1) / 2);
+			item.items.get(0).quantity((item.items.get(0).quantity() + 1) / 2);
 		}
 		return customLootInfo;
 	}

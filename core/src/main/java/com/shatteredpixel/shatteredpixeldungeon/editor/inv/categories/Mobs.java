@@ -300,9 +300,6 @@ public enum Mobs {
                 if (mob instanceof QuestNPC) {
                     ((QuestNPC<?>) mob).createNewQuest();
                 }
-                if (mob instanceof Statue) {
-                    ((Statue) mob).createWeapon(false);
-                }
                 if (mob == null) throw new RuntimeException(m.getName());
                 mob.pos = -1;
                 items.add(new MobItem(mob));
