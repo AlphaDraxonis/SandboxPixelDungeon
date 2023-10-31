@@ -876,7 +876,7 @@ public class EditorScene extends PixelScene {
     }
 
     private static Set<Integer> changedCells = new HashSet<>();
-    private static Set<Integer> queue = new HashSet<>();
+    private static Set<Integer> queue = new HashSet<>();//avoid StackOverflowError
 
     public static void fillAllWithOneTerrainQueue(int cell, int terrainClick, EditorItem place, int[] map, int lvlWidth) {
 

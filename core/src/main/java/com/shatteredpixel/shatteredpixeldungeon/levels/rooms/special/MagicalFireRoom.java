@@ -47,6 +47,9 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class MagicalFireRoom extends SpecialRoom {
 
 	@Override
@@ -166,8 +169,7 @@ public class MagicalFireRoom extends SpecialRoom {
 			Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );
 
 			//if any part of the fire is cleared, cleanse the whole thing
-			//Note that this is a bit brittle atm, it assumes only one group of eternal fire per floor tzz TODO
-			boolean clearAll = false;
+			Set<Integer> fireToClear = new HashSet<>(5);
 
 			Level l = Dungeon.level;
 			for (int i = area.left - 1; i <= area.right; i++){
@@ -180,7 +182,7 @@ public class MagicalFireRoom extends SpecialRoom {
 						//potion of purity can cleanse it though
 						if (l.water[cell]){
 							cur[cell] = 0;
-							clearAll = true;
+							fireToClear.add(cell);
 						}
 						//overrides fire
 						if (fire != null && fire.volume > 0 && fire.cur[cell] > 0){
@@ -189,12 +191,12 @@ public class MagicalFireRoom extends SpecialRoom {
 						if (freeze != null && freeze.volume > 0 && freeze.cur[cell] > 0){
 							freeze.clear(cell);
 							cur[cell] = 0;
-							clearAll = true;
+							fireToClear.add(cell);
 						}
 						if (bliz != null && bliz.volume > 0 && bliz.cur[cell] > 0){
 							bliz.clear(cell);
 							cur[cell] = 0;
-							clearAll = true;
+							fireToClear.add(cell);
 						}
 						l.passable[cell] = cur[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0;
 					}
@@ -229,10 +231,8 @@ public class MagicalFireRoom extends SpecialRoom {
 				}
 			}
 
-			if (clearAll){
-				fullyClear();
-				return;
-			}
+			if (!fireToClear.isEmpty())
+				clearAdjacent(fireToClear);
 
 		}
 
@@ -274,6 +274,40 @@ public class MagicalFireRoom extends SpecialRoom {
 				}
 			}
 		}
+
+
+		//This is similar as the fill operation in EditorScene
+		private Set<Integer> queue = new HashSet<>();//avoid StackOverflowError
+		private void clearAdjacent(Set<Integer> fireToClear) {
+
+			int lvlWidth = Dungeon.level.width();
+			int length = Dungeon.level.length();
+
+			for (int cell : fireToClear) {
+				queue.add(cell);
+				while (!queue.isEmpty()) {
+					int c = queue.iterator().next();
+					queue.remove(c);
+
+					for (int i : PathFinder.CIRCLE4) {
+						int neighbor = i + c;
+						int xCoord = c % lvlWidth;
+						if (neighbor >= 0 && neighbor < length && cur[neighbor] > 0
+								&& (Math.abs(neighbor % lvlWidth - xCoord) <= 1)) {
+							queue.add(neighbor);
+						}
+					}
+
+					volume -= cur[c];
+					cur[c] = off[c] = 0;
+
+				}
+			}
+
+			setupArea();
+			Dungeon.level.buildFlagMaps();
+		}
+
 	}
 
 }
