@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
@@ -68,7 +69,7 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 			return plants.get(pos).image + 7*16;
 		}
 
-		if (CustomDungeon.isEditing()) return -1;
+		if (CustomDungeon.isEditing() && CustomTileItem.findCustomTileAt(pos) == null) return -1;
 
 		int stage = Dungeon.curLvlScheme().getRegion() - 1;
 		if (tile == Terrain.HIGH_GRASS) {

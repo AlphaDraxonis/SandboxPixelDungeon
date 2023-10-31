@@ -25,6 +25,7 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
                 customTile.tileW, customTile.tileH);
         Dungeon.level.customTiles.add(customTile);
         EditorScene.add(customTile, terrain == Terrain.WALL);
+        EditorScene.updateMap(cell);
     }
 
     public static void remove(CustomTilemap customTile, int terrain) {
@@ -92,12 +93,16 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
             super.undo();
 
             place(customTile, cell() - offset, terrain);
+            EditorScene.updateMap(cell());
         }
 
         @Override
         public void redo() {
             super.redo();
-            if (customTile != null) remove(customTile, terrain);
+            if (customTile != null) {
+                remove(customTile, terrain);
+//                EditorScene.updateMap(cell());
+            }
         }
 
         @Override
