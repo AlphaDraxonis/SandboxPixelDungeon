@@ -626,7 +626,7 @@ public class EditorScene extends PixelScene {
 //            }
 
             scene.addToFront(wnd);
-        }
+        } else Game.scene().addToFront(wnd);
     }
 
     public static boolean showingWindow() {

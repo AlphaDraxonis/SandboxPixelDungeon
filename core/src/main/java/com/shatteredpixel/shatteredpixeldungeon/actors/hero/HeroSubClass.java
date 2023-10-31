@@ -82,4 +82,8 @@ public enum HeroSubClass {
 		return icon;
 	}
 
+	public int getIndex() {
+		return ordinal() - 1;
+	}
+
 }

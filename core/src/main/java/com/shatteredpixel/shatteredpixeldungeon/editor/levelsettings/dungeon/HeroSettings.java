@@ -2,6 +2,8 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
@@ -19,6 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
+import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -30,7 +33,13 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.AbstractWndChooseSubclass;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndHeroInfo;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundlable;
@@ -136,6 +145,7 @@ public class HeroSettings extends Component {
     private static class HeroTab extends Component {
 
         private CheckBox heroEnabled;
+        private RedButton subClassesEnabled;
         private final ItemContainerWithLabel<Item> startItems;
         private final ItemContainerWithLabel<Bag> startBags;
         private final ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
@@ -155,6 +165,32 @@ public class HeroSettings extends Component {
                 };
                 heroEnabled.checked(Dungeon.customDungeon.heroesEnabled[index - 1]);
                 add(heroEnabled);
+
+                final HeroClass heroClass = HeroClass.getFromIndex(index - 1);
+                subClassesEnabled = new RedButton(createSubclassBtnLabel(heroClass)) {
+                    @Override
+                    protected void onClick() {
+                        RenderedTextBlock titlebar = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(WndHeroInfo.class, "subclasses")),9);
+                        Window w = new AbstractWndChooseSubclass(titlebar, null, null, heroClass, null) {
+                            @Override
+                            protected StyledButton createHeroSubClassButton(TengusMask tome, HeroSubClass subCls) {
+                                final int idx = subCls.getIndex();
+                                CheckBox clsBtn = new CheckBox(subCls.title()){
+                                    @Override
+                                    public void checked(boolean value) {
+                                        Dungeon.customDungeon.heroSubClassesEnabled[idx] = value;
+                                        if (value != checked()) subClassesEnabled.text(createSubclassBtnLabel(heroClass));
+                                        super.checked(value);
+                                    }
+                                };
+                                clsBtn.checked(Dungeon.customDungeon.heroSubClassesEnabled[idx]);
+                                return clsBtn;
+                            }
+                        };
+                        EditorScene.show(w);
+                    }
+                };
+                add(subClassesEnabled);
             }
 
             HeroStartItemsData data = Dungeon.customDungeon.startItems[index];
@@ -329,6 +365,11 @@ public class HeroSettings extends Component {
                 PixelScene.align(heroEnabled);
                 posY = heroEnabled.bottom() + gap;
             }
+            if (subClassesEnabled != null) {
+                subClassesEnabled.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+                PixelScene.align(subClassesEnabled);
+                posY = subClassesEnabled.bottom() + gap;
+            }
             itemSelectorParent.setPos(x, posY);
             EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
                     new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
@@ -344,6 +385,14 @@ public class HeroSettings extends Component {
 
             height = (posY - y - gap);
         }
+    }
+
+    private static String createSubclassBtnLabel(HeroClass heroClass) {
+        int activeSubCls = 0;
+        for (HeroSubClass cls : heroClass.subClasses())
+            if (Dungeon.customDungeon.heroSubClassesEnabled[cls.getIndex()]) activeSubCls++;
+        return Messages.get(WndHeroInfo.class, "subclasses")
+                + " (" + activeSubCls + "/" + heroClass.subClasses().length + ")";
     }
 
     public static class HeroStartItemsData implements Bundlable {

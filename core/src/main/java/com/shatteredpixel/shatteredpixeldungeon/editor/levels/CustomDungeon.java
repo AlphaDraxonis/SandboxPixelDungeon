@@ -97,7 +97,6 @@ public class CustomDungeon implements Bundlable {
     //search: used so resistances can differentiate between melee and magical attacks
 
     //Non hostile mobs (mit emo icon)
-    //disable (certain) subclasses
     //Bei Custom Tiles: untergrund per spinner pro tile ändernbar (EditCustomTileComp), grass visuals dann ggf anzeigen
     //   und für jede cell innerhalb eines Custom Tiles einen eigenen Spinner
 
@@ -111,7 +110,8 @@ public class CustomDungeon implements Bundlable {
     private List<ItemDistribution<? extends Bundlable>> itemDistributions;
     private Map<String, LevelScheme> floors = new HashMap<>();
 
-    public boolean[] heroesEnabled;
+    //heroSubClasses assumes that there are exactly 2 subclasses per hero, see HeroSubClass.getIndex() for more details
+    public boolean[] heroesEnabled, heroSubClassesEnabled;
     public HeroSettings.HeroStartItemsData[] startItems;
 
     public EffectDuration effectDuration = new EffectDuration();
@@ -126,6 +126,7 @@ public class CustomDungeon implements Bundlable {
         ratKingLevels = new HashSet<>();
         itemDistributions = new ArrayList<>(5);
         heroesEnabled = new boolean[HeroClass.values().length];
+        heroSubClassesEnabled = new boolean[heroesEnabled.length * 2];
         Arrays.fill(heroesEnabled, true);
         startItems = HeroSettings.HeroStartItemsData.getDefault();
     }
@@ -504,6 +505,7 @@ public class CustomDungeon implements Bundlable {
     private static final String TOOLBAR_ITEM_STRING = "toolbar_item_string_";
     private static final String LAST_SELECTED_TOOLBAR_SLOT = "last_selected_toolbar_slot";
     private static final String HEROES_ENABLED = "heroes_enabled";
+    private static final String HERO_SUBCLASSES_ENABLED = "hero_subclasses_enabled";
     private static final String EFFECT_DURATION = "effect_duration";
     private static final String START_ITEMS = "start_items";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
@@ -518,6 +520,7 @@ public class CustomDungeon implements Bundlable {
         bundle.put(REMOVE_NEXT_SCROLL, removeNextScroll);
         bundle.put(PASSWORD, password);
         bundle.put(HEROES_ENABLED, heroesEnabled);
+        bundle.put(HERO_SUBCLASSES_ENABLED, heroSubClassesEnabled);
         bundle.put(EFFECT_DURATION, effectDuration);
         bundle.put(START_ITEMS, Arrays.asList(startItems));
 
@@ -600,6 +603,11 @@ public class CustomDungeon implements Bundlable {
         else {
             heroesEnabled = new boolean[HeroClass.values().length];
             Arrays.fill(heroesEnabled, true);
+        }
+        if (bundle.contains(HERO_SUBCLASSES_ENABLED)) heroSubClassesEnabled = bundle.getBooleanArray(HERO_SUBCLASSES_ENABLED);
+        else {
+            heroSubClassesEnabled = new boolean[heroesEnabled.length * 2];
+            Arrays.fill(heroSubClassesEnabled, true);
         }
         if (bundle.contains(START_ITEMS)) {
             startItems = new HeroSettings.HeroStartItemsData[heroesEnabled.length + 1];

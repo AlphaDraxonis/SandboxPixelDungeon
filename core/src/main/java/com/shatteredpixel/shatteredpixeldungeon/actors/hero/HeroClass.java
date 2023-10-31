@@ -503,4 +503,15 @@ public enum HeroClass {
         return -1;
     }
 
+    public static HeroClass getFromIndex(int index) {
+        switch (index){
+            case 0: return WARRIOR;
+            case 1: return MAGE;
+            case 2: return ROGUE;
+            case 3: return HUNTRESS;
+            case 4: return DUELIST;
+        }
+        return null;
+    }
+
 }
