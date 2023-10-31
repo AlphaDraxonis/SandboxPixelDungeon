@@ -603,6 +603,8 @@ public class YogDzewa extends Mob {
 
 	@Override
 	public void notice() {
+		if (neutralEnemy) return;
+
 		if (!BossHealthBar.isAssigned()) {
 			BossHealthBar.assignBoss(this);
 			yell(Messages.get(this, "notice"));
@@ -684,7 +686,7 @@ public class YogDzewa extends Mob {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		phase = bundle.getInt(PHASE);
-		if (phase != 0) {
+		if (phase != 0 && !neutralEnemy) {
 			BossHealthBar.assignBoss(this);
 			if (phase == 5) BossHealthBar.bleed(true);
 		}

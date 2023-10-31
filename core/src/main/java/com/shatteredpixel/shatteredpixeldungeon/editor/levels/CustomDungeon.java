@@ -94,8 +94,13 @@ public class CustomDungeon implements Bundlable {
     //Category items/mobs/rooms
 
     //Custom mob attacks: externalise
-    //More items dropped as loot
-    //Max loot drop level set for mobs edit stats
+    //search: used so resistances can differentiate between melee and magical attacks
+
+    //Non hostile mobs (mit emo icon)
+    //disable (certain) subclasses
+    //keys point to a specific cell
+    //Bei Custom Tiles: untergrund per spinner pro tile ändernbar (EditCustomTileComp), grass visuals dann ggf anzeigen
+    //   und für jede cell innerhalb eines Custom Tiles einen eigenen Spinner
 
     //Scale mobs if their normal stats editor is disabled: not just everything
 

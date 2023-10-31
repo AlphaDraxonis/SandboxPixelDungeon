@@ -92,7 +92,7 @@ public class LootTableComp extends Component {
     }
 
     public Component createTitle() {
-        title = PixelScene.renderTextBlock(Messages.get(LootTableComp.class, "title"), 10);
+        title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(LootTableComp.class, "title")), 10);
         title.hardlight(Window.TITLE_COLOR);
         return title;
     }

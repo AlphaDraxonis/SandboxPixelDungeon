@@ -378,6 +378,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	@Override
 	public void notice() {
 		super.notice();
+		if (neutralEnemy) return;
+
 		if (!BossHealthBar.isAssigned()) {
 			BossHealthBar.assignBoss(this);
 			if (HP <= HT/2) BossHealthBar.bleed(true);
@@ -438,8 +440,10 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		arenaRadius = bundle.getInt(ARENA_RADIUS);
 		initialPos = bundle.getInt(INITIAL_POS);
 
-		BossHealthBar.assignBoss(this);
-		if (HP <= HT/2) BossHealthBar.bleed(true);
+		if (!neutralEnemy) {
+			BossHealthBar.assignBoss(this);
+			if (HP <= HT / 2) BossHealthBar.bleed(true);
+		}
 	}
 	
 	//don't bother bundling this, as its purely cosmetic

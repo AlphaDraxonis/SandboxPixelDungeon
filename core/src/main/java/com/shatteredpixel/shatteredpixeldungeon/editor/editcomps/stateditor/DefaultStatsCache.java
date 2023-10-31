@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bee;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
@@ -10,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
@@ -63,6 +65,7 @@ public class DefaultStatsCache {
 
             ret = Reflection.newInstance(clazz);
             if (!(ret instanceof MobBasedOnDepth)) cache.put(clazz, ret);
+            else if (!CustomDungeon.isEditing()) ((MobBasedOnDepth) ret).setLevel(Dungeon.depth);
         }
         return ret;
     }

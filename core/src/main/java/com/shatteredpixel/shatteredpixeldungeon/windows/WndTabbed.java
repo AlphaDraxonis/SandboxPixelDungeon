@@ -271,17 +271,16 @@ public class WndTabbed extends Window {
         protected RectF defaultFrame;
 
         public IconTab(Image icon) {
-            super();
+            super(icon);
 
-            this.icon.copy(icon);
             this.defaultFrame = icon.frame();
         }
 
         @Override
-        protected void createChildren(Object... icons) {
-            super.createChildren();
+        protected void createChildren(Object... params) {
+            super.createChildren(params);
 
-            if (icons != null && icons.length > 0) this.icon = (Image) icons[0];
+            if (params != null && params.length > 0) this.icon = (Image) params[0];
             else this.icon = new Image();
             add(icon);
         }

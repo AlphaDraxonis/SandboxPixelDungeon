@@ -22,7 +22,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.EditorCellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.SideControlPane;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.TerrainFeaturesTilemapEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.UndoPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobEditPart;
@@ -244,7 +243,7 @@ public class EditorScene extends PixelScene {
         visualGrid = new GridTileMap();
         terrain.add(visualGrid);
 
-        terrainFeatures = new TerrainFeaturesTilemapEditor(customLevel());
+        terrainFeatures = new TerrainFeaturesTilemap(customLevel().plants, customLevel().traps);
         terrain.add(terrainFeatures);
 
         transitionIndicators = new Group();

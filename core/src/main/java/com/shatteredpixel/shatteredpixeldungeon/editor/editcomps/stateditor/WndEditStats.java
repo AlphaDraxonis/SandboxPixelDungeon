@@ -139,9 +139,9 @@ public class WndEditStats extends MultiWindowTabComp {
             content.add(xp);
 
             maxLvl = new IntegerSpinner(Messages.get(Mob.class, "max_lvl"),
-                    0, def.maxLvl * 10, current.maxLvl, false);
+                    -2, 28, current.maxLvl, false);
             maxLvl.addChangeListener(() -> current.maxLvl = maxLvl.getAsInt());
-            ((IntegerSpinnerModel) maxLvl.getModel()).setMaximum(30);
+            ((IntegerSpinnerModel) maxLvl.getModel()).setAbsoluteMinimum(-2f);
             content.add(maxLvl);
 
             if (!(current instanceof Mimic)) {

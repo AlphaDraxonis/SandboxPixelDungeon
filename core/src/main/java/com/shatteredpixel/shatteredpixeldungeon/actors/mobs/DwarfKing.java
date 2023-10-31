@@ -155,8 +155,10 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 		if (phase == 2) properties.add(Property.IMMOVABLE);
 
-		BossHealthBar.assignBoss(this);
-		if (phase == 3) BossHealthBar.bleed(true);
+		if (!neutralEnemy) {
+			BossHealthBar.assignBoss(this);
+			if (phase == 3) BossHealthBar.bleed(true);
+		}
 	}
 
 	@Override
@@ -540,6 +542,8 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 	@Override
 	public void notice() {
 		super.notice();
+		if (neutralEnemy) return;
+
 		if (!BossHealthBar.isAssigned()) {
 			BossHealthBar.assignBoss(this);
 			yell(Messages.get(this, "notice"));

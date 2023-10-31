@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
@@ -375,8 +376,10 @@ public abstract class YogFist extends Mob {
 
 		private boolean canSpreadGrass(int cell){
 			int yogPos = Dungeon.level.exit() + Dungeon.level.width()*3;
-			return Dungeon.level.distance(cell, yogPos) > 4 && !Dungeon.level.solid[cell]
-					&& !(Dungeon.level.map[cell] == Terrain.FURROWED_GRASS || Dungeon.level.map[cell] == Terrain.HIGH_GRASS);
+			return (!(Dungeon.level instanceof HallsBossLevel) || Dungeon.level.distance(cell, yogPos) > 4)
+					&& !Dungeon.level.solid[cell]
+					&& !(Dungeon.level.map[cell] == Terrain.FURROWED_GRASS || Dungeon.level.map[cell] == Terrain.HIGH_GRASS)
+					&& !(TileItem.isExitTerrainCell(Dungeon.level.map[cell]) || Dungeon.level.map[cell] == Terrain.ENTRANCE);
 		}
 
 	}

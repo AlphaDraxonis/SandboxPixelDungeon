@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
@@ -80,6 +81,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final ItemSelector statueWeapon, statueArmor;
     private final ItemSelector thiefItem;
     private final MobStateSpinner mobStateSpinner;
+    private final CheckBox neutralEnemy;
     private final RedButton addBuffs, editStats;
 
     private final ItemContainer<Item> mimicItems;
@@ -460,6 +462,27 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
                 mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper)) {
+
+            neutralEnemy = new CheckBox(Messages.get(EditMobComp.class, "neutral_enemy")) {
+
+                @Override
+                protected void layout() {
+                    super.layout();
+                    text.setPos(x + (width() - text.width()) / 2f, y + (height() - text.height()) / 2f);
+                    PixelScene.align(text);
+                }
+
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    if (mob.neutralEnemy = value) mob.alignment = Char.Alignment.NEUTRAL;
+                    else if (mob.alignment == Char.Alignment.NEUTRAL)
+                        mob.alignment = Reflection.newInstance(mob.getClass()).alignment;//only works if alignment can't be changed otherwise
+                }
+            };
+            neutralEnemy.checked(mob.neutralEnemy);
+            add(neutralEnemy);
+
             addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
                 @Override
                 protected void onClick() {
@@ -496,7 +519,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 }
             };
             add(addBuffs);
-        } else addBuffs = null;
+        } else {
+            neutralEnemy = null;
+            addBuffs = null;
+        }
 
         Mob defaultStats = DefaultStatsCache.getDefaultObject(mob.getClass());
         if (defaultStats != null) {
@@ -516,7 +542,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 yogSpawnersAlive, yogNormalFists, yogChallengeFists,
                 mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, blacksmithQuestRewards,
                 tenguPhase, tenguRange, dm300destroyWalls,
-                sentryRange, sentryDelay, addBuffs, editStats};
+                sentryRange, sentryDelay, neutralEnemy, addBuffs, editStats};
     }
 
     @Override
@@ -573,6 +599,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (a.getClass() != b.getClass()) return false;
         if (a.state.getClass() != b.state.getClass()) return false;
         if (!DefaultStatsCache.areStatsEqual(a, b)) return false;
+        if (a.alignment != b.alignment) return false;
+        if (a.neutralEnemy != b.neutralEnemy) return false;
         Set<Class<? extends Buff>> aBuffs = new HashSet<>(4);
         Set<Class<? extends Buff>> bBuffs = new HashSet<>(4);
         for (Buff buff : a.buffs()) aBuffs.add(buff.getClass());

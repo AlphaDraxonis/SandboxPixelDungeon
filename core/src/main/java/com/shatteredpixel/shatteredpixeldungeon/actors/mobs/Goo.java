@@ -316,6 +316,8 @@ public class Goo extends Mob implements MobBasedOnDepth {
 	@Override
 	public void notice() {
 		super.notice();
+		if (neutralEnemy) return;
+
 		if (!BossHealthBar.isAssigned()) {
 			BossHealthBar.assignBoss(this);
 			Dungeon.level.seal();
@@ -346,8 +348,11 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		super.restoreFromBundle( bundle );
 
 		pumpedUp = bundle.getInt( PUMPEDUP );
-		if (state != SLEEPING) BossHealthBar.assignBoss(this);
-		if ((HP*2 <= HT)) BossHealthBar.bleed(true);
+
+		if (!neutralEnemy) {
+			if (state != SLEEPING) BossHealthBar.assignBoss(this);
+			if ((HP * 2 <= HT)) BossHealthBar.bleed(true);
+		}
 
 		healInc = bundle.getInt(HEALINC);
 	}

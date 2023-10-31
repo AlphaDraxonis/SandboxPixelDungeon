@@ -50,8 +50,9 @@ public class TenguSprite extends MobSprite {
 		
 		die = new Animation( 8, false );
 		die.frames( frames, 8, 9, 10, 10, 10, 10, 10, 10 );
-		
-		play( run.clone() );
+
+		isMoving = true;
+		play( run );
 	}
 
 	@Override
