@@ -380,7 +380,7 @@ public class DungeonTileSheet {
 	public static final int DOOR_SIDEWAYS_CRYSTAL       = DOOR_OVERHANG+6;
 	public static final int DOOR_SIDEWAYS_SECRET        = DOOR_OVERHANG+7;
 	//exit visuals are rendered flat atm, so they actually underhang
-	public static final int EXIT_UNDERHANG              = DOOR_OVERHANG+8;
+	public static final int EXIT_UNDERHANG              = DOOR_OVERHANG+18;
 
 
 	private static final int OTHER_OVERHANG             =                   xy(9, 15);  //24 slots
