@@ -157,7 +157,9 @@ public abstract class CustomTilemap implements Bundlable {
 	public CustomTilemap getCopy(){
 		Bundle bundle = new Bundle();
 		bundle.put("CustomTilemap", this);
-		return (CustomTilemap) bundle.get("CustomTilemap");
+		CustomTilemap clone = (CustomTilemap) bundle.get("CustomTilemap");
+		clone.terrain = terrain;
+		return clone;
 	}
 
 	public Object getTexture() {

@@ -25,10 +25,15 @@ public final class CustomTileLoader {
     static final String CUSTOM_TILES = "custom_tiles/";
     private static final String DESC_FILE_EXTENSION = ".dat";
 
+    private static String dungeonNameOfLastLoadedTiles;
+
     private CustomTileLoader() {
     }
 
-    public static void loadTiles() {
+    public static void loadTiles(boolean forceLoad) {
+
+        if (!forceLoad && Dungeon.customDungeon.getName().equals(dungeonNameOfLastLoadedTiles)) return;
+        dungeonNameOfLastLoadedTiles = Dungeon.customDungeon.getName();
 
         EditorItemBag.callStaticInitializers();
         Tiles.clearCustomTiles();

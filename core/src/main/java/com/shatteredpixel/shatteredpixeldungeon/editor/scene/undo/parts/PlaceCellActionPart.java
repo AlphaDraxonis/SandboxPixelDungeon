@@ -44,7 +44,8 @@ public class PlaceCellActionPart implements ActionPart {
         Dungeon.level.plants.put(cell, oldPlant);
         CustomTileItem.removeCustomTilesAt(cell, Dungeon.level);
         if (oldCustomTile != null) {
-            Dungeon.level.customTiles.add(oldCustomTile);
+            if (wall) Dungeon.level.customWalls.add(oldCustomTile);
+            else Dungeon.level.customTiles.add(oldCustomTile);
             EditorScene.add(oldCustomTile, wall);
         }
     }

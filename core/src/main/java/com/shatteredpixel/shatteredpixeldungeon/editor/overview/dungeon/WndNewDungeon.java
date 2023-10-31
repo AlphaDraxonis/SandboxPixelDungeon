@@ -65,7 +65,7 @@ public class WndNewDungeon extends WndTextInput {
             SandboxPixelDungeon.reportException(e);
         }
         EditorScene.start();
-        CustomTileLoader.loadTiles();
+        CustomTileLoader.loadTiles(true);
         SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
     }
 

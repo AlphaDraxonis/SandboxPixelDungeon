@@ -51,7 +51,8 @@ import java.util.Collections;
 public class TileItem extends EditorItem {
 
 
-    private final int terrainType, cell;
+    private int terrainType;
+    private final int cell;
 
 
     public TileItem(int terrainFeature, int cell) {
@@ -64,6 +65,11 @@ public class TileItem extends EditorItem {
         this.terrainType = terrainFeature;
         this.cell = cell;
         this.image = image;
+    }
+
+    public void setTerrainType(int terrainType) {
+        this.terrainType = terrainType;
+        randomizeTexture();
     }
 
     @Override

@@ -234,7 +234,7 @@ public class Dungeon {
         }
         CustomDungeonSaves.setCurDirectory(levelDir);
 
-        CustomTileLoader.loadTiles();
+        CustomTileLoader.loadTiles(false);
 //
 //        if (customDungeon == null) {
 //            customDungeon = new CustomDungeon("DefaultDungeon");
@@ -375,7 +375,7 @@ public class Dungeon {
         Dungeon.level = null;
         Actor.clear();
 
-        Dungeon.depth = customDungeon.getFloor(levelName).getDepth();//TODO maybe move above Statistics.deepestFloor check?
+        Dungeon.depth = customDungeon.getFloor(levelName).getDepth();
         Level level;
         if (branch == QuestLevels.MINING.ID) {
 //            if (MiningLevel.generateWithThisQuest == null) MiningLevel.generateWithThisQuest = new Blacksmith(new BlacksmithQuest());
@@ -833,7 +833,7 @@ public class Dungeon {
             CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/dungeon_levels/");
         } else CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/");
 
-        CustomTileLoader.loadTiles();
+        CustomTileLoader.loadTiles(true);
     }
 
     public static Level loadLevel(int save) throws IOException {

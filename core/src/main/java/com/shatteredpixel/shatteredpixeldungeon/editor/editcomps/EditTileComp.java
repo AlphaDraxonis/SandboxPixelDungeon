@@ -217,19 +217,25 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
         CustomTilemapAndPosWrapper customTileWr = findCustomTile();
 
-        String desc;
+        String desc = null;
         if (TileItem.isSignTerrainCell(obj.terrainType())) {
             Sign sign = level.signs.get(obj.cell());
             if (sign == null || sign.text == null) desc = "";
             else desc = sign.text;
-        } else {
-            if (customTileWr != null) {
-                String customDesc = customTileWr.customTilemap.desc(customTileWr.x, customTileWr.y);
-                desc = customDesc != null ? customDesc + (TileItem.isExitTerrainCell(obj.terrainType()) || obj.terrainType() == Terrain.ENTRANCE
-                        ? Dungeon.level.appendNoTransWarning(obj.cell()) : "")
-                        : level.tileDesc(obj.terrainType(), obj.cell());
-            } else desc = level.tileDesc(obj.terrainType(), obj.cell());
         }
+        if (customTileWr != null) {
+
+            if (desc != null && !"".equals(desc)) desc += "\n\n";//If we have sign text
+            else desc = "";
+            String customDesc = customTileWr.customTilemap.desc(customTileWr.x, customTileWr.y);
+            if (customDesc != null) desc += customDesc;
+            else desc += level.tileDesc(obj.terrainType(), obj.cell());
+
+            desc += "\n" + Messages.get(EditCustomTileComp.class, "terrain") + ": " + TileItem.getName(obj.terrainType(), -1);
+            if (TileItem.isExitTerrainCell(obj.terrainType()) || obj.terrainType() == Terrain.ENTRANCE)
+                desc += Dungeon.level.appendNoTransWarning(obj.cell());
+
+        } else desc = level.tileDesc(obj.terrainType(), obj.cell());
 
         if (obj.cell() >= 0) {
             for (Blob blob : Dungeon.level.blobs.values()) {

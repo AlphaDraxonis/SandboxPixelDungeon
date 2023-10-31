@@ -106,6 +106,7 @@ public class WndSelectDungeon extends Window {
     }
 
     protected void select(String customDungeonName) {
+        EditorScene.openDifferentLevel = true;
         openDungeon(customDungeonName);
     }
 
@@ -346,7 +347,7 @@ public class WndSelectDungeon extends Window {
             e.showExceptionWindow();
             return;
         }
-        CustomTileLoader.loadTiles();
+        CustomTileLoader.loadTiles(EditorScene.openDifferentLevel);
         String lastEditedFloor = Dungeon.customDungeon.getLastEditedFloor();
         LevelScheme l;
         if (Dungeon.customDungeon.getNumFloors() == 0 || lastEditedFloor == null || (l = Dungeon.customDungeon.getFloor(lastEditedFloor)) == null)
