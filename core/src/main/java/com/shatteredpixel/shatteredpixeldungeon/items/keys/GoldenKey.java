@@ -33,14 +33,15 @@ public class GoldenKey extends Key {
 	}
 
 	public GoldenKey() {
-		this( Dungeon.levelName );
+		this( Dungeon.levelName, -1 );
 	}
 
 
-	public GoldenKey( String levelName ) {
+	public GoldenKey( String levelName, int cell ) {
 		super();
 		if (Level.NONE.equals(levelName)) this.levelName = CustomLevel.tempDungeonNameForKey;
 		else this.levelName = levelName;
+		this.cell = cell;
 	}
 
 }

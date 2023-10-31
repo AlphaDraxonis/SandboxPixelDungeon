@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -90,7 +89,7 @@ public class PitRoom extends SpecialRoom {
 			level.drop( prize( level ), remains ).setHauntedIfCursed();
 		}
 
-		level.drop( new CrystalKey( Dungeon.levelName ), remains );
+		level.drop( new CrystalKey(), remains );
 	}
 	
 	private static Item prize( Level level ) {

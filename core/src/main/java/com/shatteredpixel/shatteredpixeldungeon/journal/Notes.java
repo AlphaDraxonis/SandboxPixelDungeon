@@ -27,7 +27,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
@@ -137,6 +136,9 @@ public class Notes {
 			return key.levelName;
 		}
 
+		public int keyCell() {
+			return key.cell;
+		}
 
 		@Override
 		public String desc() {
@@ -224,51 +226,43 @@ public class Notes {
 	
 	public static boolean remove( Key key ){
 		int keyQuantityToRemove = key.quantity();
-		KeyRecord k = new KeyRecord( key );
-		if (records.contains(k)){
-			k = (KeyRecord) records.get(records.indexOf(k));
-			k.quantity(k.quantity() - keyQuantityToRemove);
-			if (k.quantity() <= 0){
-				records.remove(k);
-			}
-			return true;
-		}
 
-		Key anyKey = Reflection.newInstance(key.getClass());
-		anyKey.levelName = Level.ANY;
-		k = new KeyRecord( anyKey );
-		if (records.contains(k)){
-			k = (KeyRecord) records.get(records.indexOf(k));
-			k.quantity(k.quantity() - keyQuantityToRemove);
-			if (k.quantity() <= 0){
-				records.remove(k);
+		for (int i = 0; i < keyQuantityToRemove; i++) {
+			if (searchForKeyAndRemoveIt(key.levelName, key.cell)) continue;
+			if (key.cell != -1) {
+				if (searchForKeyAndRemoveIt(Level.ANY, key.cell)) continue;
+				if (searchForKeyAndRemoveIt(key.levelName, -1)) continue;
 			}
-			return true;
+			if (searchForKeyAndRemoveIt(Level.ANY, -1)) continue;
+			return Dungeon.customDungeon.permaKey;
 		}
+		return true;
+	}
 
-		if (Dungeon.customDungeon.permaKey) return true;
+	private static boolean searchForKeyAndRemoveIt(String compareName, int compareCell){
+		for (KeyRecord record : getRecords(KeyRecord.class)) {
+			if (record.keyCell() == compareCell && record.levelName().equals(compareName)) {
+				record.quantity(record.quantity() - 1);
+				if (record.quantity() <= 0) {
+					records.remove(record);
+				}
+				return true;
+			}
+		}
 		return false;
 	}
 	
 	public static int keyCount( Key key ){
 		if (Dungeon.customDungeon.permaKey) return 1;
+
 		int quantity = 0;
-
-		Key anyKey = Reflection.newInstance(key.getClass());
-		anyKey.levelName = Level.ANY;
-		KeyRecord k = new KeyRecord( anyKey );
-		if (records.contains(k)){
-			k = (KeyRecord) records.get(records.indexOf(k));
-			quantity += k.quantity();
+		for (KeyRecord record : getRecords(KeyRecord.class)){
+			if (record.levelName().equals(Level.ANY) || record.levelName().equals(key.levelName)
+					&& (record.keyCell() == -1 || record.keyCell() == key.cell)){
+				quantity += record.quantity();
+			}
 		}
-
-		k = new KeyRecord( key );
-		if (records.contains(k)){
-			k = (KeyRecord) records.get(records.indexOf(k));
-			return k.quantity() + quantity;
-		} else {
-			return quantity;
-		}
+		return quantity;
 	}
 	
 	public static ArrayList<Record> getRecords(){

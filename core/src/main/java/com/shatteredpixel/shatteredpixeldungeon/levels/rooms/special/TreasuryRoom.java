@@ -66,6 +66,6 @@ public class TreasuryRoom extends SpecialRoom {
 		}
 		
 		entrance().set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey( Dungeon.levelName) );
+		level.addItemToSpawn( new IronKey() );
 	}
 }

@@ -98,7 +98,6 @@ public class CustomDungeon implements Bundlable {
 
     //Non hostile mobs (mit emo icon)
     //disable (certain) subclasses
-    //keys point to a specific cell
     //Bei Custom Tiles: untergrund per spinner pro tile ändernbar (EditCustomTileComp), grass visuals dann ggf anzeigen
     //   und für jede cell innerhalb eines Custom Tiles einen eigenen Spinner
 

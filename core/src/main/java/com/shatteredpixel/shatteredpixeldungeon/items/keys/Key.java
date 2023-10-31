@@ -22,9 +22,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.keys;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.watabou.noosa.audio.Sample;
@@ -40,10 +43,21 @@ public abstract class Key extends Item {
 	}
 
 	public String levelName;
+	public int cell;
 	
 	@Override
 	public boolean isSimilar( Item item ) {
-		return super.isSimilar(item) && ((Key)item).levelName.equals(levelName);
+		return super.isSimilar(item) && ((Key)item).levelName.equals(levelName) && cell == ((Key) item).cell;
+	}
+
+	@Override
+	public String name() {
+		return super.name() + (cell == -1 ? "" : " (" + Messages.get(this, "cell_name", EditorUtilies.cellToStringNoBrackets(cell, Dungeon.level.width()))+")");
+	}
+
+	@Override
+	public String desc() {
+		return super.desc() + (cell == -1 ? "" : " \n\n" + Messages.get(this, "cell_desc", EditorUtilies.cellToStringNoBrackets(cell, Dungeon.level.width())));
 	}
 
 	@Override
@@ -58,17 +72,20 @@ public abstract class Key extends Item {
 	}
 
 	private static final String LEVEL_NAME = "levelName";
-	
+	private static final String CELL = "cell";
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put(LEVEL_NAME, levelName );
+		bundle.put(CELL, cell+1 );
 	}
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		levelName = bundle.getString(LEVEL_NAME);
+		cell = bundle.getInt(CELL) - 1;
 	}
 	
 	@Override

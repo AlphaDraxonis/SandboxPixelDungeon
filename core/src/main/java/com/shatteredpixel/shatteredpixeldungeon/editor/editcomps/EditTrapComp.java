@@ -23,7 +23,7 @@ import com.watabou.noosa.ui.Component;
 public class EditTrapComp extends DefaultEditComp<Trap> {
 
 
-    protected CheckBox visible, active;//TODO pitfalltrap and gatewaytrap!
+    protected CheckBox visible, active;
     protected RedButton gatewayTelePos;
     private Window windowInstance;
 

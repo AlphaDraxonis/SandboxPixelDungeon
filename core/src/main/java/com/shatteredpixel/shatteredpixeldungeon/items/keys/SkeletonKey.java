@@ -34,13 +34,14 @@ public class SkeletonKey extends Key {
 	}
 	
 	public SkeletonKey() {
-		this( Dungeon.levelName);
+		this( Dungeon.levelName, -1);
 	}
 
-	public SkeletonKey( String levelName ) {
+	public SkeletonKey( String levelName, int cell ) {
 		super();
 		if (Level.NONE.equals(levelName)) this.levelName = CustomLevel.tempDungeonNameForKey;
 		else this.levelName = levelName;
+		this.cell = cell;
 	}
 
 	@Override

@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -43,7 +42,7 @@ public class StatueRoom extends SpecialRoom {
 		Door door = entrance();
 		
 		door.set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey( Dungeon.levelName) );
+		level.addItemToSpawn( new IronKey() );
 		
 		if (door.x == left) {
 			

@@ -53,6 +53,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ChillingTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ExplosiveTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FrostTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GatewayTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
@@ -899,6 +900,17 @@ public class CustomLevel extends Level {
             if (isPositionValid.test(h.pos, nPos)) {
                 nHeaps.put(nPos, h);
                 h.pos = nPos;
+
+                for (Item i : h.items){
+                    if (i instanceof Key) {
+                        int cell = ((Key) i).cell;
+                        if (cell != -1) {
+                            int nCell = newPosition.get(cell);
+                            ((Key) i).cell = isPositionValid.test(cell, nCell) ? nCell : -1;
+                        }
+                    }
+                }
+
             }
         }
         level.heaps.clear();
@@ -910,6 +922,13 @@ public class CustomLevel extends Level {
             if (isPositionValid.test(t.pos, nPos)) {
                 nTrap.put(nPos, t);
                 t.pos = nPos;
+                if (t instanceof GatewayTrap) {
+                    int telePos = ((GatewayTrap) t).telePos;
+                    if (telePos != -1) {
+                        int nTelePos = newPosition.get(telePos);
+                        ((GatewayTrap) t).telePos = isPositionValid.test(telePos, nTelePos) ? nTelePos : -1;
+                    }
+                }
             }
         }
         level.traps.clear();

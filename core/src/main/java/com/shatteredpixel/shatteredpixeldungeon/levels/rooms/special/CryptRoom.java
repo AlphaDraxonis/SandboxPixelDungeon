@@ -48,7 +48,7 @@ public class CryptRoom extends SpecialRoom {
 		Door entrance = entrance();
 		
 		entrance.set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey( Dungeon.levelName ) );
+		level.addItemToSpawn( new IronKey() );
 		
 		if (entrance.x == left) {
 			Painter.set( level, new Point( right-1, top+1 ), Terrain.STATUE );

@@ -57,6 +57,12 @@ public final class EditorUtilies {
         return "( " + x + " | " + y + " )";
     }
 
+    public static String cellToStringNoBrackets(int cell, int levelWidth) {
+        int x = cell % levelWidth + 1;
+        int y = cell / levelWidth + 1;
+        return x + " | " + y;
+    }
+
     public static String formatTitle(String name, int cell) {
         return Messages.titleCase(name) + ": " + cellToString(cell);
     }

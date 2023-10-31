@@ -33,13 +33,14 @@ public class CrystalKey extends Key {
     }
 
     public CrystalKey() {
-        this(Dungeon.levelName);
+        this(Dungeon.levelName, -1);
     }
 
-    public CrystalKey(String levelName) {
+    public CrystalKey(String levelName, int cell) {
         super();
         if (Level.NONE.equals(levelName)) this.levelName = CustomLevel.tempDungeonNameForKey;
         else this.levelName = levelName;
+        this.cell = cell;
     }
 
 }

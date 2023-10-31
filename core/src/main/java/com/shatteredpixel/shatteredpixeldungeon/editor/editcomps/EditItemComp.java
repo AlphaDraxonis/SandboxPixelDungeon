@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.ChargeSpinner;
@@ -21,7 +22,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
@@ -30,14 +35,19 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -60,8 +70,11 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected final AugumentationSpinner augumentationSpinner;
     protected final RedButton enchantBtn;
     protected final ChooseDestLevelComp keylevel;
+    protected RedButton keyCell;
 
     private final Component[] comps;
+
+    private Window windowInstance;
 
     public EditItemComp(Item item, Heap heap) {
         super(item);
@@ -240,14 +253,45 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     if (object instanceof LevelScheme) {
                         ((Key) item).levelName = EditorUtilies.getCodeName((LevelScheme) object);
                     }
+                    if (keyCell != null) {
+                        boolean canChangeKeyCell = !Level.ANY.equals(((Key) item).levelName);
+                        if (!canChangeKeyCell && ((Key) item).cell != -1) {
+                            ((Key) item).cell = -1;
+                            keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
+                        }
+                        keyCell.enable(canChangeKeyCell);
+                    }
                     updateObj();
                 }
             };
             keylevel.selectObject(((Key) item).levelName);
             add(keylevel);
-        } else keylevel = null;
 
-        comps = new Component[]{quantity, quickslotPos, keylevel, chargeSpinner, levelSpinner, augumentationSpinner,
+            if (heap != null && heap.pos != -1) {
+                int cell = ((Key) item).cell;
+                if (EditorScene.customLevel() == null || cell >= EditorScene.customLevel().length()) cell = ((Key) item).cell = -1;
+                keyCell = new RedButton("") {
+                    @Override
+                    protected void onClick() {
+                        EditorScene.selectCell(gatewayTelePosListener);
+                        windowInstance = EditorUtilies.getParentWindow(keyCell);
+                        windowInstance.active = false;
+                        if (windowInstance instanceof WndTabbed)
+                            ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
+                        Game.scene().remove(windowInstance);
+                    }
+                };
+                if (cell == -1) keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
+                else keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilies.cellToString(cell)));
+                add(keyCell);
+            } else keyCell = null;
+
+        } else {
+            keylevel = null;
+            keyCell = null;
+        }
+
+        comps = new Component[]{quantity, quickslotPos, keylevel, keyCell, chargeSpinner, levelSpinner, augumentationSpinner,
                 curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed};
     }
 
@@ -286,6 +330,39 @@ public class EditItemComp extends DefaultEditComp<Item> {
         super.updateObj();
     }
 
+    private final CellSelector.Listener gatewayTelePosListener = new CellSelector.Listener() {
+        @Override
+        public void onSelect(Integer cell) {
+            if (cell != null) {
+                Key key = (Key) obj;
+
+                boolean validPos;
+                Heap h = EditorScene.customLevel().heaps.get(cell);
+                if (key instanceof GoldenKey) validPos = h != null && h.type == Heap.Type.LOCKED_CHEST;
+                else if (key instanceof CrystalKey) validPos = Dungeon.level.map[cell] == Terrain.CRYSTAL_DOOR || h != null && h.type == Heap.Type.CRYSTAL_CHEST;
+                else if (key instanceof IronKey) validPos = Dungeon.level.map[cell] == Terrain.LOCKED_DOOR;
+                else if (key instanceof SkeletonKey) validPos = Dungeon.level.map[cell] == Terrain.LOCKED_EXIT;
+                else validPos = false;
+
+                if (!validPos) key.cell = -1;
+                else key.cell = cell;
+                if (key.cell == -1)
+                    keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
+                else
+                    keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilies.cellToString(key.cell)));
+                windowInstance.active = true;
+                if (windowInstance instanceof WndTabbed)
+                    ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
+                EditorScene.show(windowInstance);
+            }
+        }
+
+        @Override
+        public String prompt() {
+            return Messages.get(EditItemComp.class, "key_cell_prompt");
+        }
+    };
+
 
     public static boolean areEqual(Item a, Item b) {
         if (a == null || b == null) return false;
@@ -311,7 +388,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             if (bb.glyph == null) return false;
             return aa.glyph.getClass() == bb.glyph.getClass();
         }
-        if (a instanceof Key) return ((Key) a).levelName.equals(((Key) b).levelName);
+        if (a instanceof Key) return ((Key) a).levelName.equals(((Key) b).levelName) && ((Key) a).cell == ((Key) b).cell;
         return true;
     }
 }

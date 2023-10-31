@@ -156,7 +156,7 @@ public class EditorScene extends PixelScene {
                 Undo.reset();
             }
             openDifferentLevel = true;
-            if (!firstTimeOpening) Items.updateKeys(oldLvlName, customLevel.name);
+            Items.updateKeys(oldLvlName, customLevel.name);
         }
         EditorScene.customLevel = customLevel;
         Dungeon.levelName = customLevel.name;

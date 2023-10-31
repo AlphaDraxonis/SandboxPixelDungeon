@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -129,10 +128,10 @@ public class CrystalChoiceRoom extends SpecialRoom {
 		//opening the chest is optional, so it doesn't count for exploration bonus
 		chest.autoExplored = true;
 
-		level.addItemToSpawn( new CrystalKey( Dungeon.levelName ) );
+		level.addItemToSpawn( new CrystalKey() );
 
 		entrance().set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey( Dungeon.levelName ) );
+		level.addItemToSpawn( new IronKey() );
 
 	}
 }
