@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -52,8 +53,21 @@ public class Dewdrop extends Item {
 		
 		if (flask != null && !flask.isFull()){
 
-			flask.collectDew( this );
-			GameScene.pickUp( this, pos );
+			if (quantity() > flask.volumeRemaining()){
+				Dewdrop collect = new Dewdrop();
+				collect.quantity = flask.volumeRemaining();
+				quantity = quantity() - collect.quantity();
+				flask.collectDew(collect);
+
+				Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
+				hero.spendAndNext( TIME_TO_PICK_UP );
+
+				return false;
+			} else {
+				flask.collectDew( this );
+				GameScene.pickUp( this, pos );
+			}
+
 
 		} else {
 
@@ -117,6 +131,7 @@ public class Dewdrop extends Item {
 
 	@Override
 	public Item merge( Item other ){
+		if (CustomDungeon.isEditing()) return super.merge(other);
 		if (isSimilar( other )){
 			quantity = 1;
 			other.quantity = 0;
@@ -126,6 +141,7 @@ public class Dewdrop extends Item {
 
 	@Override
 	public Item quantity(int value) {
+		if (CustomDungeon.isEditing()) return super.quantity(value);
 		quantity = Math.min( value, 1);
 		return this;
 	}

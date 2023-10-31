@@ -159,6 +159,10 @@ public class Waterskin extends Item {
 		return volume >= MAX_VOLUME;
 	}
 
+	public int volumeRemaining(){
+		return MAX_VOLUME - volume;
+	}
+
 	public void collectDew( Dewdrop dew ) {
 
 		GLog.i( Messages.get(this, "collected") );

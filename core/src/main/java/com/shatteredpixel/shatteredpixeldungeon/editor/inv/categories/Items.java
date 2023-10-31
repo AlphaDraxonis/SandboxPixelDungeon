@@ -23,6 +23,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
@@ -606,6 +607,7 @@ public enum Items {
         STONE.classes = Generator.Category.STONE.classes;
 
         SEED.classes = new Class[]{
+                Dewdrop.class,
                 Sungrass.Seed.class,
                 Fadeleaf.Seed.class,
                 Icecap.Seed.class,
