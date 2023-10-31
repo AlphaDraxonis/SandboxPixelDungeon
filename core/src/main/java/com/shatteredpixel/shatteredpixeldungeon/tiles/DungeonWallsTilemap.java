@@ -92,7 +92,6 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 			return DungeonTileSheet.DOOR_OVERHANG_CRYSTAL;
 		} else if (Dungeon.level.insideMap(pos) && map[pos+mapWidth] == Terrain.SECRET_DOOR && Dungeon.customDungeon.seeSecrets ) {
 			return DungeonTileSheet.DOOR_OVERHANG_SECRET;
-		} else if (pos + mapWidth < size && (map[pos+mapWidth] == Terrain.STATUE || map[pos+mapWidth] == Terrain.STATUE_SP)){
 		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.STATUE){
 			return DungeonTileSheet.STATUE_OVERHANG;
 		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.STATUE_SP){
