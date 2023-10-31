@@ -121,6 +121,8 @@ public class CustomDungeon implements Bundlable {
 
     private String password;
 
+    public boolean view2d = false;
+
     public CustomDungeon(String name) {
         this.name = name;
         ratKingLevels = new HashSet<>();
@@ -508,6 +510,7 @@ public class CustomDungeon implements Bundlable {
     private static final String HERO_SUBCLASSES_ENABLED = "hero_subclasses_enabled";
     private static final String EFFECT_DURATION = "effect_duration";
     private static final String START_ITEMS = "start_items";
+    private static final String VIEW_2D = "view_2d";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     @Override
@@ -523,6 +526,7 @@ public class CustomDungeon implements Bundlable {
         bundle.put(HERO_SUBCLASSES_ENABLED, heroSubClassesEnabled);
         bundle.put(EFFECT_DURATION, effectDuration);
         bundle.put(START_ITEMS, Arrays.asList(startItems));
+        bundle.put(VIEW_2D, view2d);
 
         if (scrollRuneLabels != null) {
             String[] labels = new String[scrollRuneLabels.size()];
@@ -599,6 +603,7 @@ public class CustomDungeon implements Bundlable {
         effectDuration.load((EffectDuration) bundle.get(EFFECT_DURATION));
         password = bundle.getString(PASSWORD);
         if (password.isEmpty()) password = null;
+        view2d = bundle.getBoolean(VIEW_2D);
         if (bundle.contains(HEROES_ENABLED)) heroesEnabled = bundle.getBooleanArray(HEROES_ENABLED);
         else {
             heroesEnabled = new boolean[HeroClass.values().length];

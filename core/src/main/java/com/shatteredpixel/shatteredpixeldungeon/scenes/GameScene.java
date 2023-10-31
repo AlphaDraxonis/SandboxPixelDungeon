@@ -325,8 +325,10 @@ public class GameScene extends PixelScene {
 		levelWallVisuals = Dungeon.level.addWallVisuals();
 		add( levelWallVisuals );
 
-		wallBlocking = new WallBlockingTilemap();
-		add (wallBlocking);
+		if (!Dungeon.customDungeon.view2d) {
+			wallBlocking = new WallBlockingTilemap();
+			add(wallBlocking);
+		}
 
 		add( emitters );
 		add( effects );
@@ -1277,21 +1279,21 @@ public class GameScene extends PixelScene {
 	public static void updateFog(){
 		if (scene != null) {
 			scene.fog.updateFog();
-			scene.wallBlocking.updateMap();
+			if (!Dungeon.customDungeon.view2d) scene.wallBlocking.updateMap();
 		}
 	}
 
 	public static void updateFog(int x, int y, int w, int h){
 		if (scene != null) {
 			scene.fog.updateFogArea(x, y, w, h);
-			scene.wallBlocking.updateArea(x, y, w, h);
+			if (!Dungeon.customDungeon.view2d) scene.wallBlocking.updateArea(x, y, w, h);
 		}
 	}
 	
 	public static void updateFog( int cell, int radius ){
 		if (scene != null) {
 			scene.fog.updateFog( cell, radius );
-			scene.wallBlocking.updateArea( cell, radius );
+			if (!Dungeon.customDungeon.view2d) scene.wallBlocking.updateArea( cell, radius );
 		}
 	}
 	

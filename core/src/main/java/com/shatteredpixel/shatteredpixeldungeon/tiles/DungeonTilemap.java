@@ -50,21 +50,21 @@ public abstract class DungeonTilemap extends Tilemap {
 
 	@Override
 	public synchronized void updateMap() {
-		boolean mapEditing = CustomDungeon.isEditing();
+		boolean view2d = CustomDungeon.isEditing() || Dungeon.customDungeon.view2d;
 		for (int i = 0; i < data.length; i++)
-			data[i] = getTileVisual(i ,map[i], mapEditing);
+			data[i] = getTileVisual(i ,map[i], view2d);
 		super.updateMap();
 	}
 
 	@Override
 	public synchronized void updateMapCell(int cell) {
-		boolean mapEditing = CustomDungeon.isEditing();
+		boolean view2d = CustomDungeon.isEditing() || Dungeon.customDungeon.view2d;
 		//update in a 3x3 grid to account for neighbours which might also be affected
 //		if (Dungeon.level.insideMap(cell)) {
 			for (int i : PathFinder.NEIGHBOURS9) {
 				int index = cell + i;
 				if (index >= 0 && index < data.length)
-					data[index] = getTileVisual(index, map[index], mapEditing);
+					data[index] = getTileVisual(index, map[index], view2d);
 			}
 			if(Dungeon.level.insideMap(cell)){
 				super.updateMapCell(cell - mapWidth - 1);
@@ -148,11 +148,11 @@ public abstract class DungeonTilemap extends Tilemap {
 
 	public void discover( int pos, int oldValue ) {
 
-		int visual = getTileVisual( pos, oldValue, false);
+		int visual = getTileVisual( pos, oldValue, Dungeon.customDungeon.view2d);
 		if (visual < 0) return;
 
 		final Image tile = new Image( texture );
-		tile.frame( tileset.get( getTileVisual( pos, oldValue, false)));
+		tile.frame( tileset.get( getTileVisual( pos, oldValue, Dungeon.customDungeon.view2d)));
 		tile.point( tileToWorld( pos ) );
 
 		parent.add( tile );

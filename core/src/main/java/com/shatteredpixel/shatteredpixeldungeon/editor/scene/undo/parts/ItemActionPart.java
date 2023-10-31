@@ -18,6 +18,7 @@ public /*sealed*/ abstract class ItemActionPart implements ActionPart {
         this.item = item;
         this.cell = pos;
         this.quantity = item.quantity();
+        heapShopPrice = 1f;
 
         redo();
     }
