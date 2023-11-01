@@ -106,7 +106,7 @@ public class CorpseDust extends Item {
 			spawnPower++;
 			int wraiths = 1; //we include the wraith we're trying to spawn
 			for (Mob mob : Dungeon.level.mobs){
-				if (mob instanceof Wraith){
+				if (mob instanceof DustWraith){
 					wraiths++;
 				}
 			}
@@ -131,7 +131,7 @@ public class CorpseDust extends Item {
 					}
 				}
 				if (!candidates.isEmpty()){
-					Wraith.spawnAt(Random.element(candidates), false);
+					Wraith.spawnAt(Random.element(candidates), DustWraith.class);
 					Sample.INSTANCE.play(Assets.Sounds.CURSED);
 					spawnPower -= powerNeeded;
 				}
@@ -144,7 +144,7 @@ public class CorpseDust extends Item {
 		public void dispel(){
 			detach();
 			for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])){
-				if (mob instanceof Wraith){
+				if (mob instanceof DustWraith){
 					mob.die(null);
 				}
 			}
@@ -166,5 +166,7 @@ public class CorpseDust extends Item {
 			spawnPower = bundle.getInt( SPAWNPOWER );
 		}
 	}
+
+	public static class DustWraith extends Wraith{};
 
 }

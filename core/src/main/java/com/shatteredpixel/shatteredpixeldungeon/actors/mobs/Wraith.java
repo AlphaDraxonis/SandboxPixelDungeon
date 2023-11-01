@@ -33,6 +33,7 @@ import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 public class Wraith extends Mob implements MobBasedOnDepth {
 
@@ -94,21 +95,34 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 		state = WANDERING;
 		return true;
 	}
-	
-	public static void spawnAround( int pos, boolean allowExotic ) {
+
+	public static void spawnAround( int pos ) {
+		spawnAround( pos, null );
+	}
+
+	public static void spawnAround( int pos, Class<? extends Wraith> wraithClass ) {
 		for (int n : PathFinder.NEIGHBOURS4) {
-			spawnAt( pos + n, allowExotic );
+			spawnAt( pos + n, wraithClass );
 		}
 	}
-	
-	public static Wraith spawnAt( int pos, boolean allowExotic ) {
+
+	public static Wraith spawnAt( int pos ) {
+		return spawnAt( pos, null );
+	}
+
+	public static Wraith spawnAt( int pos, Class<? extends Wraith> wraithClass ) {
 		if ((!Dungeon.level.solid[pos] || Dungeon.level.isPassable(pos)) && Actor.findChar( pos ) == null) {
 
 			Wraith w;
-			if (allowExotic && Random.Int(100) == 0){
-				w = new TormentedSpirit();
+			//if no wraith type is specified, 1/100 chance for exotic, otherwise normal
+			if (wraithClass == null){
+				if (Random.Int(100) == 0){
+					w = new TormentedSpirit();
+				} else {
+					w = new Wraith();
+				}
 			} else {
-				w = new Wraith();
+				w = Reflection.newInstance(wraithClass);
 			}
 			if (Barrier.stopChar(pos, w)) return null;
 
@@ -119,7 +133,7 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 			Dungeon.level.occupyCell(w);
 
 			showSpawnParticle(w);
-			
+
 			return w;
 		} else {
 			return null;

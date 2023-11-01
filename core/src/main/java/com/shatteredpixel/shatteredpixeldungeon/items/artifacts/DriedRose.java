@@ -440,7 +440,7 @@ public class DriedRose extends Artifact {
 				}
 
 				if (spawnPoints.size() > 0) {
-					Wraith w = Wraith.spawnAt(Random.element(spawnPoints), false);
+					Wraith w = Wraith.spawnAt(Random.element(spawnPoints), Wraith.class);
 					if (w != null) {
 						if (target.alignment == Char.Alignment.ENEMY) w.alignment = Char.Alignment.ALLY;
 						if (Dungeon.level.heroFOV[target.pos] || Dungeon.level.heroFOV[w.pos])
