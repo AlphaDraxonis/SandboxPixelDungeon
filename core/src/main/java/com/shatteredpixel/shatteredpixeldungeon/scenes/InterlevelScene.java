@@ -78,7 +78,7 @@ public class InterlevelScene extends PixelScene {
 
 	public static boolean fallIntoPit;
 	public static int fallPosition;
-	
+
 	private enum Phase {
 		FADE_IN, STATIC, FADE_OUT
 	}
@@ -305,42 +305,44 @@ public class InterlevelScene extends PixelScene {
 						error.getMessage().equals("old save")) errorMsg = Messages.get(this, "io_error");
 				else if (error.getCause() instanceof CustomDungeonSaves.RenameRequiredException) errorMsg = error.getCause().getMessage();
 
-				else throw new RuntimeException("fatal error occured while moving between floors. " +
+				else throw new RuntimeException("fatal error occurred while moving between floors. " +
 							"Seed:" + Dungeon.seed + " depth:" + Dungeon.depth, error);
 
-                    add(new WndError(errorMsg) {
-                        {
-                            setHighligtingEnabled(!(error.getCause() instanceof CustomDungeonSaves.RenameRequiredException));
-                        }
-                        public void onBackPressed() {
-                            super.onBackPressed();
-                            Game.switchScene(StartScene.class);
-                        }
-                    });
-                    thread = null;
-                    error = null;
-                } else if (thread != null && (int) waitingTime == 10) {
-                    waitingTime = 11f;
-                    String s = "";
-                    for (StackTraceElement t : thread.getStackTrace()) {
-                        s += "\n";
-                        s += t.toString();
-                    }
-                    SandboxPixelDungeon.reportException(
-                            new RuntimeException("waited more than 10 seconds on levelgen. " +
-                                    "Seed:" + Dungeon.seed + " depth:" + Dungeon.depth + " trace:" +
-                                    s)
-                    );
-                    add(new WndError(Messages.get(InterlevelScene.class,"could_not_generate", Dungeon.seed)) {
-                        public void onBackPressed() {
-                            super.onBackPressed();
-                            Game.switchScene(StartScene.class);
-                        }
-                    });
-                }
-                break;
-        }
-    }
+				add( new WndError( errorMsg ) {
+					{
+						setHighligtingEnabled(!(error.getCause() instanceof CustomDungeonSaves.RenameRequiredException));
+					}
+					public void onBackPressed() {
+						super.onBackPressed();
+						Game.switchScene( StartScene.class );
+					}
+				} );
+				thread = null;
+				error = null;
+			} else if (thread != null && (int)waitingTime == 10){
+				waitingTime = 11f;
+				String s = "";
+				for (StackTraceElement t : thread.getStackTrace()){
+					s += "\n";
+					s += t.toString();
+				}
+				//we care about reporting game logic exceptions, not slow IO
+				if (!s.contains("FileUtils.bundleToFile")){
+					SandboxPixelDungeon.reportException(
+							new RuntimeException("waited more than 10 seconds on levelgen. " +
+									"Seed:" + Dungeon.seed + " depth:" + Dungeon.depth + " trace:" +
+									s));
+					add(new WndError(Messages.get(InterlevelScene.class,"could_not_generate", Dungeon.seed)) {
+						public void onBackPressed() {
+							super.onBackPressed();
+							Game.switchScene(StartScene.class);
+						}
+					});
+				}
+			}
+			break;
+		}
+	}
 
 	private void descend() throws IOException {
 
@@ -377,7 +379,7 @@ public class InterlevelScene extends PixelScene {
 	private void fall() throws IOException {
 
 		if (!Dungeon.hero.isAlive()) return;
-		
+
 		Mob.holdAllies( Dungeon.level );
 		
 		Buff.affect( Dungeon.hero, Chasm.Falling.class );
