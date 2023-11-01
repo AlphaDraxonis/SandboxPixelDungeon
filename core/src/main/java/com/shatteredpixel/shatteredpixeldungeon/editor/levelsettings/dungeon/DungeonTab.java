@@ -1,9 +1,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckbox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -27,6 +29,7 @@ public class DungeonTab extends MultiWindowTabComp {
 
         StyledButton potionColors, scrollRunes, ringGems;
         StyledButton heroes, durationSettings;
+        StyledCheckbox view2d;
 
         potionColors = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_pot"), 7) {
             @Override
@@ -81,8 +84,18 @@ public class DungeonTab extends MultiWindowTabComp {
         durationSettings.icon(new ItemSprite(ItemSpriteSheet.POTION_JADE));
         content.add(durationSettings);
 
-        mainWindowComps = new Component[]{potionColors, scrollRunes, ringGems,EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                heroes, durationSettings
+        view2d = new StyledCheckbox(Messages.get(DungeonTab.class, "enable_2d"), 8){
+            @Override
+            public void checked(boolean value) {
+                super.checked(value);
+                Dungeon.customDungeon.view2d = value;
+            }
+        };
+        view2d.checked(Dungeon.customDungeon.view2d);
+        content.add(view2d);
+
+        mainWindowComps = new Component[]{potionColors, scrollRunes, ringGems, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                heroes, durationSettings, view2d
         };
     }
 
