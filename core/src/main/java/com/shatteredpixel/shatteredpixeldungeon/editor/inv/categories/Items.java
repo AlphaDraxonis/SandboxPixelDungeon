@@ -32,12 +32,25 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KingsCrown;
 import com.shatteredpixel.shatteredpixeldungeon.items.LiquidMetal;
+import com.shatteredpixel.shatteredpixeldungeon.items.MerchantsBeacon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
 import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.EtherealChains;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HornOfPlenty;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.LloydsBeacon;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArmband;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SandalsOfNature;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.UnstableSpellbook;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
@@ -559,7 +572,20 @@ public enum Items {
 
         ARMOR.classes = Generator.Category.ARMOR.classes;
         RING.classes = Generator.Category.RING.classes;
-        ARTIFACT.classes = Generator.Category.ARTIFACT.classes;
+        ARTIFACT.classes = new Class<?>[]{
+                AlchemistsToolkit.class,
+                ChaliceOfBlood.class,
+                CloakOfShadows.class,
+                DriedRose.class,
+                EtherealChains.class,
+                HornOfPlenty.class,
+                MasterThievesArmband.class,
+                SandalsOfNature.class,
+                TalismanOfForesight.class,
+                TimekeepersHourglass.class,
+                UnstableSpellbook.class,
+                LloydsBeacon.class
+        };
         WAND.classes = Generator.Category.WAND.classes;
 
         POTION.classes = new Class[]{
@@ -707,6 +733,7 @@ public enum Items {
                 Stylus.class,
                 Honeypot.class,
                 Honeypot.ShatteredPot.class,
+                MerchantsBeacon.class,
                 Ankh.class,
                 Waterskin.class,
                 BrokenSeal.class,
