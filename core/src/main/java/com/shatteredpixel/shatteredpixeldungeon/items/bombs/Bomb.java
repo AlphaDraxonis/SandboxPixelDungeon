@@ -133,7 +133,11 @@ public class Bomb extends Item {
 			GLog.w( Messages.get(this, "snuff_fuse") );
 			fuse = null;
 		}
-		return super.doPickUp(hero, pos);
+		if (super.doPickUp(hero, pos)) {
+			if (image == ItemSpriteSheet.DBL_BOMB) image = ItemSpriteSheet.BOMB;
+			return true;
+		}
+		return false;
 	}
 
 	public void explode(int cell){

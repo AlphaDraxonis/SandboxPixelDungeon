@@ -775,10 +775,10 @@ public class EditorScene extends PixelScene {
 //        Emitter.freezeEmitters = false;
 
         scene = null;
-        if (Dungeon.customDungeon.getFloor(customLevel.name) != null) {
+        if (Dungeon.customDungeon.getFloor(Dungeon.level.name) != null) {
             try {
                 CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
-                CustomDungeonSaves.saveLevel(customLevel);//only save if not already deleted
+                CustomDungeonSaves.saveLevel(Dungeon.level);//only save if not already deleted
             } catch (IOException e) {
                 SandboxPixelDungeon.reportException(e);
             }
