@@ -72,6 +72,7 @@ public class SacrificialFire extends Blob {
 	// The limit is to prevent farming
 	private int bonusSpawns = 3;
 
+	//TODO: each cell should know its max, and ????has its own emitter???
 	private Map<Integer, Item> prizes = new HashMap<>(3);
 	public static Item prizeInInventory;
 
@@ -112,9 +113,11 @@ public class SacrificialFire extends Blob {
 			}
 		}
 
-		//a bit brittle, assumes only one tile of sacrificial fire can exist per floor
-		int max = 6 + Dungeon.depth * 4;
-		curEmitter.pour( SacrificialParticle.FACTORY, 0.01f + ((volume / (float)max) * 0.09f) );
+//		//a bit brittle, assumes only one tile of sacrificial fire can exist per floor
+//		int max = 6 + Dungeon.depth * 4;
+//		curEmitter.pour( SacrificialParticle.FACTORY, 0.01f + ((volume / (float)max) * 0.09f) );
+		// each cell should know its max, and ????has its own emitter???
+		curEmitter.pour( SacrificialParticle.FACTORY, 0.04f );
 	}
 
 	@Override
@@ -122,9 +125,11 @@ public class SacrificialFire extends Blob {
 		super.use( emitter );
 		curEmitter = emitter;
 
-		//a bit brittle, assumes only one tile of sacrificial fire can exist per floor
-		int max = 6 + Dungeon.depth * 4;
-		curEmitter.pour( SacrificialParticle.FACTORY, 0.01f + ((volume / (float)max) * 0.09f) );
+//		//a bit brittle, assumes only one tile of sacrificial fire can exist per floor
+//		int max = 6 + Dungeon.depth * 4;
+//		curEmitter.pour( SacrificialParticle.FACTORY, 0.01f + ((volume / (float)max) * 0.09f) );
+		// each cell should know its max, and ????has its own emitter???
+		curEmitter.pour( SacrificialParticle.FACTORY, 0.04f );
 	}
 
 	@Override

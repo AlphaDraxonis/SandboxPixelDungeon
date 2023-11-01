@@ -157,7 +157,9 @@ public class BlobItem extends EditorItem {
 
     public static ActionPart place(Class<? extends Blob> blob, int cell) {
         BlobEditPart.Modify part = new BlobEditPart.Modify(cell);
-        BlobEditPart.place(cell, blob, 1);
+        Integer amount = Blob.volumeInInv.get(blob);
+        if (amount == null) amount = 1;
+        BlobEditPart.place(cell, blob, amount);
         part.finish();
         if (part.hasContent()) return part;
         return null;

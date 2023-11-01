@@ -98,8 +98,6 @@ public class CustomDungeon implements Bundlable {
     //search: used so resistances can differentiate between melee and magical attacks
 
     //Non hostile mobs (mit emo icon)
-    //Enable Setting for 2.5d/2d
-    //Test: sacrifical fire remove keys, change map size
 
 
     //Scale mobs if their normal stats editor is disabled: not just everything

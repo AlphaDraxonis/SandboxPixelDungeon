@@ -30,7 +30,12 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Rect;
 import com.watabou.utils.Reflection;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Blob extends Actor {
+
+	public static final Map<Class<? extends Blob>, Integer> volumeInInv = new HashMap<>(7);
 
 	{
 		actPriority = BLOB_PRIO;

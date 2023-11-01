@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.WellWaterSpinner;
@@ -10,11 +11,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitio
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndItemDistribution;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
@@ -23,14 +24,12 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoCell;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -42,6 +41,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     private RedButton addTransition;
     private RedButton editSignText;
     private WellWaterSpinner wellWaterSpinner;
+    private EditBlobComp.VolumeSpinner volumeSpinner;
     private EditBlobComp.SacrificialFirePrize sacrificialFirePrize;
 
     public EditTileComp(TileItem item) {
@@ -108,8 +108,27 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 add(wellWaterSpinner);
             }
 
-            SacrificialFire sacrificialFire = (SacrificialFire) EditorScene.customLevel().blobs.get(SacrificialFire.class);
-            if (sacrificialFire != null && sacrificialFire.cur[cell] > 0) {
+            Blob blobAtCell = null;
+            for (int i = 0; i < BlobEditPart.BlobData.BLOB_CLASSES.length; i++) {
+                Blob b = Dungeon.level.blobs.get(BlobEditPart.BlobData.BLOB_CLASSES[i]);
+                if (b != null && !(b instanceof WellWater) && b.cur != null && b.cur[cell] > 0) {
+                    blobAtCell = b;
+                    break;
+                }
+            }
+            if (blobAtCell != null) {
+                final Blob finalBlobAtCell = blobAtCell;
+                volumeSpinner = new EditBlobComp.VolumeSpinner(finalBlobAtCell.cur[cell]);
+                volumeSpinner.addChangeListener(() -> {
+                    int old = finalBlobAtCell.cur[cell];
+                    finalBlobAtCell.cur[cell] = (int) volumeSpinner.getValue();
+                    finalBlobAtCell.volume += finalBlobAtCell.cur[cell] - old;
+                });
+                add(volumeSpinner);
+            } else volumeSpinner = null;
+
+            if (blobAtCell instanceof SacrificialFire) {
+                SacrificialFire sacrificialFire = (SacrificialFire) blobAtCell;
                 sacrificialFirePrize = new EditBlobComp.SacrificialFirePrize(sacrificialFire.getPrize(cell)) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
@@ -120,6 +139,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 add(sacrificialFirePrize);
             } else sacrificialFirePrize = null;
         }
+
     }
 
     public static LevelTransition createNewTransition(int cell) {
@@ -163,32 +183,10 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     @Override
     protected void layout() {
         super.layout();
-
-        float pos = y + height + WndTitledMessage.GAP * 2 - 1;
-
-        if (transitionEdit != null) {
-            transitionEdit.setRect(x, pos, width, -1);
-            PixelScene.align(transitionEdit);
-            pos = transitionEdit.bottom() + WndTitledMessage.GAP + 1;
-        } else if (addTransition != null) {
-            addTransition.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
-            PixelScene.align(addTransition);
-            pos = addTransition.bottom() + WndTitledMessage.GAP + 1;
-        } else if (editSignText != null) {
-            editSignText.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
-            PixelScene.align(editSignText);
-            pos = editSignText.bottom() + WndTitledMessage.GAP + 1;
-        } else if (wellWaterSpinner != null) {
-            wellWaterSpinner.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
-            PixelScene.align(wellWaterSpinner);
-            pos = wellWaterSpinner.bottom() + WndTitledMessage.GAP + 1;
-        } else if (sacrificialFirePrize != null) {
-            sacrificialFirePrize.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
-            PixelScene.align(sacrificialFirePrize);
-            pos = sacrificialFirePrize.bottom() + WndTitledMessage.GAP + 1;
-        } else return;
-
-        height = (int) (pos - y - WndTitledMessage.GAP);
+        Component[] comps = {//transitionEdit is later instantiated
+                transitionEdit, addTransition, editSignText, wellWaterSpinner, volumeSpinner, sacrificialFirePrize
+        };
+        layoutCompsLinear(comps);
     }
 
     protected static final class CustomTilemapAndPosWrapper {
