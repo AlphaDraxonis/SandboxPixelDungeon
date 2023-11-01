@@ -461,7 +461,9 @@ public class Dungeon {
 	}
 
 	public static boolean interfloorTeleportAllowed(){
-		if (Dungeon.level.locked() || (Dungeon.hero != null && Dungeon.hero.belongings.getItem(Amulet.class) != null)){
+		if (Dungeon.level.locked()
+				|| Dungeon.level instanceof MiningLevel
+				|| (Dungeon.hero != null && Dungeon.hero.belongings.getItem(Amulet.class) != null)){
 			return false;
 		}
 		return true;
@@ -505,7 +507,7 @@ public class Dungeon {
 
 		level.addRespawner();
         level.addZoneRespawner();
-		
+
 		for(Mob m : level.mobs){
 			if (m.pos == hero.pos && !Char.hasProp(m, Char.Property.IMMOVABLE)){
 				//displace mob
