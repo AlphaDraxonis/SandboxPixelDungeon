@@ -17,6 +17,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.S
 import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.WAND_HOLDER;
 import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.WEAPON_HOLDER;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
@@ -776,10 +777,15 @@ public enum Items {
 
     public static void updateKeys(String oldLvlName, String newLvlName) {
         for (Item item : bagWithKeys) {
-            Item i = ((ItemItem) item).item();
-            if (i instanceof Key && (oldLvlName == null || ((Key) i).levelName == null || ((Key) i).levelName.equals(oldLvlName))) {
-                ((Key) i).levelName = newLvlName;
-            }
+            maybeUpdateKeyLevel(((ItemItem) item).item(), oldLvlName, newLvlName);
+        }
+        maybeUpdateKeyLevel(SacrificialFire.prizeInInventory, oldLvlName, newLvlName);
+        //TODO update mob containers! tzz
+    }
+
+    private static void maybeUpdateKeyLevel(Item i, String oldLvlName, String newLvlName){
+        if (i instanceof Key && (oldLvlName == null || ((Key) i).levelName == null || ((Key) i).levelName.equals(oldLvlName))) {
+            ((Key) i).levelName = newLvlName;
         }
     }
 

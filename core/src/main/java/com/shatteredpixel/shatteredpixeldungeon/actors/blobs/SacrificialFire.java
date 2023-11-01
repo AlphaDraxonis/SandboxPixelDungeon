@@ -36,18 +36,28 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Swarm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.ItemWithPos;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SacrificialParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SacrificeRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class SacrificialFire extends Blob {
 
@@ -62,7 +72,8 @@ public class SacrificialFire extends Blob {
 	// The limit is to prevent farming
 	private int bonusSpawns = 3;
 
-	private Item prize;
+	private Map<Integer, Item> prizes = new HashMap<>(3);
+	public static Item prizeInInventory;
 
 	@Override
 	protected void evolve() {
@@ -122,27 +133,74 @@ public class SacrificialFire extends Blob {
 	}
 
 	private static final String BONUS_SPAWNS = "bonus_spawns";
-	private static final String PRIZE = "prize";
+	private static final String PRIZES = "prizes";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(BONUS_SPAWNS, bonusSpawns);
-		bundle.put(PRIZE, prize);
+
+		Set<ItemWithPos> prizesWithPos = new HashSet<>();
+		for (Integer key : prizes.keySet()) {
+			prizesWithPos.add(new ItemWithPos(prizes.get(key), key));
+		}
+		bundle.put(PRIZES, prizesWithPos);
 	}
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		bonusSpawns = bundle.getInt(BONUS_SPAWNS);
-		if (bundle.contains(PRIZE)) prize = (Item) bundle.get(PRIZE);
+
+		if (bundle.contains(PRIZES)) {
+			Collection<Bundlable> prizesWithPos = bundle.getCollection(PRIZES);
+			for (Bundlable b : prizesWithPos) {
+				ItemWithPos iWP = (ItemWithPos) b;
+				prizes.put(iWP.pos(), iWP.item());
+			}
+		}
 	}
 
-	public void setPrize( Item prize ){
-		this.prize = prize;
+	public void setPrize( int cell, Item prize ){
+		prizes.put(cell, prize);
 	}
 
-	public void sacrifice( Char ch ) {
+	public Item getPrize( int cell ){
+		return prizes.get(cell);
+	}
+
+	public boolean removeInvalidKeys(String invalidLevelName) {
+		boolean removedSth = false;
+		for (Integer cell : prizes.keySet()) {
+			Item i = prizes.get(cell);
+			if (CustomDungeon.isInvalidKey(i, invalidLevelName)) {
+				prizes.remove(cell);
+				removedSth = true;
+			}
+		}
+		return removedSth;
+	}
+
+	public boolean renameInvalidKeys(String invalidLevelName, String newName) {
+		boolean removedSth = false;
+		for (Integer cell : prizes.keySet()) {
+			Item i = prizes.get(cell);
+			if (CustomDungeon.isInvalidKey(i, invalidLevelName)) {
+				((Key) i).levelName = newName;
+				removedSth = true;
+			}
+		}
+		return removedSth;
+	}
+
+	public Map<Integer, Item> getPrizes() {//Only for changeMapSize
+		return prizes;//Only for changeMapSize
+	}
+	public void setPrizes(Map<Integer, Item> prizes) {//Only for changeMapSize
+		this.prizes = prizes;//Only for changeMapSize
+	}
+
+	public void sacrifice(Char ch ) {
 
 		int firePos = -1;
 		for (int i : PathFinder.NEIGHBOURS9){
@@ -196,7 +254,9 @@ public class SacrificialFire extends Blob {
 					Sample.INSTANCE.play(Assets.Sounds.BURNING );
 					Sample.INSTANCE.play(Assets.Sounds.BURNING );
 					GLog.w( Messages.get(SacrificialFire.class, "reward"));
+					Item prize = prizes.get(firePos);
 					if (prize != null) {
+						prizes.remove(firePos);
 						Dungeon.level.drop(prize, firePos).sprite.drop();
 					} else {
 						Dungeon.level.drop(SacrificeRoom.prize(Dungeon.level), firePos).sprite.drop();

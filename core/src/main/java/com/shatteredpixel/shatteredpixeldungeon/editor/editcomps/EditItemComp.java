@@ -365,6 +365,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
 
     public static boolean areEqual(Item a, Item b) {
+        if (a == null && b == null) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.quantity() != b.quantity()) return false;
@@ -388,7 +389,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
             if (bb.glyph == null) return false;
             return aa.glyph.getClass() == bb.glyph.getClass();
         }
-        if (a instanceof Key) return ((Key) a).levelName.equals(((Key) b).levelName) && ((Key) a).cell == ((Key) b).cell;
+        if (a instanceof Key)
+            return ((Key) a).levelName.equals(((Key) b).levelName) && ((Key) a).cell == ((Key) b).cell;
         return true;
     }
 }

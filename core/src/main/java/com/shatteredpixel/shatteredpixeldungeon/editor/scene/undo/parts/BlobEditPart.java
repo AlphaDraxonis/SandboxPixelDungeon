@@ -8,8 +8,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfHealth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.gases.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 
 public class BlobEditPart {
@@ -63,10 +65,18 @@ public class BlobEditPart {
 
         private final int[] blobs = new int[BLOB_CLASSES.length];
 
+        private Item sacrificialFirePrize;
+
         public BlobData(int cell) {
             for (int i = 0; i < BLOB_CLASSES.length; i++) {
                 Blob b = Dungeon.level.blobs.get(BLOB_CLASSES[i]);
-                if (b != null && b.cur != null) blobs[i] = b.cur[cell];
+                if (b != null && b.cur != null) {
+                    blobs[i] = b.cur[cell];
+                    if (b instanceof SacrificialFire) {
+                        sacrificialFirePrize = ((SacrificialFire) b).getPrize(cell);
+                        if (sacrificialFirePrize != null) sacrificialFirePrize = sacrificialFirePrize.getCopy();
+                    }
+                }
             }
         }
 
@@ -76,7 +86,7 @@ public class BlobEditPart {
             for (int i = 0; i < a.blobs.length; i++) {
                 if (a.blobs[i] != b.blobs[i]) return false;
             }
-            return true;
+            return EditItemComp.areEqual(a.sacrificialFirePrize, b.sacrificialFirePrize);
         }
 
         protected void place(int cell) {
@@ -84,6 +94,8 @@ public class BlobEditPart {
             for (int i = 0; i < BLOB_CLASSES.length; i++) {
                 EditorScene.add(Blob.seed(cell, blobs[i], BLOB_CLASSES[i]));
             }
+            SacrificialFire sacrificialFire = (SacrificialFire) EditorScene.customLevel().blobs.get(SacrificialFire.class);
+            if (sacrificialFire != null) sacrificialFire.setPrize(cell, sacrificialFirePrize);
         }
 
     }
@@ -91,6 +103,11 @@ public class BlobEditPart {
     public static void place(int cell, Class<? extends Blob> blob, int amount) {
         clearNormalAtCell(cell);
         EditorScene.add(Blob.seed(cell, amount, blob));
+        if (blob == SacrificialFire.class) {
+            SacrificialFire sacrificialFire = (SacrificialFire) EditorScene.customLevel().blobs.get(SacrificialFire.class);
+            if (sacrificialFire != null && sacrificialFire.getPrize(cell) == null)
+                sacrificialFire.setPrize(cell, SacrificialFire.prizeInInventory);
+        }
     }
 
     public static void clearAllAtCell(int cell) {

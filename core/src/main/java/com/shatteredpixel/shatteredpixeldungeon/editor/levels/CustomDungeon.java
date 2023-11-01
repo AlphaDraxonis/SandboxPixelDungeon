@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -97,8 +98,9 @@ public class CustomDungeon implements Bundlable {
     //search: used so resistances can differentiate between melee and magical attacks
 
     //Non hostile mobs (mit emo icon)
-    //Bei Custom Tiles: untergrund per spinner pro tile ändernbar (EditCustomTileComp), grass visuals dann ggf anzeigen
-    //   und für jede cell innerhalb eines Custom Tiles einen eigenen Spinner
+    //Enable Setting for 2.5d/2d
+    //Test: sacrifical fire remove keys, change map size
+
 
     //Scale mobs if their normal stats editor is disabled: not just everything
 
@@ -758,6 +760,13 @@ public class CustomDungeon implements Bundlable {
                         removedItems = true;
                     }
                 }
+
+                //Remove invalid keys as sacrificial fire reward
+                SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.get(SacrificialFire.class);
+                if (sacrificialFire != null) {
+                    if (sacrificialFire.removeInvalidKeys(n)) removedItems = true;
+                }
+
                 if (removeInvalidKeys(ls.itemsToSpawn, n)) removedItems = true;
 
                 boolean save = removedItems || !toRemoveTransitions.isEmpty();
@@ -787,6 +796,10 @@ public class CustomDungeon implements Bundlable {
             distr.getLevels().remove(n);
         }
 
+        for (HeroSettings.HeroStartItemsData si : startItems) {
+            removeInvalidKeys(si.items, n);
+        }
+
         //Set level for keys in inv
         Items.updateKeys(n, EditorScene.customLevel() == null ? null : EditorScene.customLevel().name);
 
@@ -808,7 +821,7 @@ public class CustomDungeon implements Bundlable {
         return removedSth;
     }
 
-    private boolean isInvalidKey(Item item, String invalidLevelName) {
+    public static boolean isInvalidKey(Item item, String invalidLevelName) {
         if (item == null) return false;
         return item instanceof Key && ((Key) item).levelName.equals(invalidLevelName);
     }
@@ -898,6 +911,14 @@ public class CustomDungeon implements Bundlable {
                             needsSave = true;
                         }
                     }
+
+                    //Remove invalid keys as sacrificial fire reward
+                    SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.get(SacrificialFire.class);
+                    if (sacrificialFire != null) {
+                        if (sacrificialFire.renameInvalidKeys(oldName, newName)) needsSave = true;
+                    }
+
+                    if (renameInvalidKeys(ls.itemsToSpawn, oldName, newName)) needsSave = true;
 
                     if (needsSave) {
                         if (ls == levelScheme) {

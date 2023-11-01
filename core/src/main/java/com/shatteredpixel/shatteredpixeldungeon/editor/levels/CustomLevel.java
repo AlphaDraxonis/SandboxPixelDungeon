@@ -974,6 +974,18 @@ public class CustomLevel extends Level {
                 b.cur = nCur;
                 b.changeSizeOfOffToNewMapSizeAndClearIt(newLength);
                 b.setupArea();
+
+                if (b instanceof SacrificialFire) {
+                    Map<Integer, Item> prizes = ((SacrificialFire) b).getPrizes();
+                    Map<Integer, Item> newPrizePositions = new HashMap<>(3);
+                    for (Integer oldPos : prizes.keySet()) {
+                        int nPos = newPosition.get(oldPos);
+                        if (isPositionValid.test(oldPos, nPos)) {
+                            newPrizePositions.put(nPos, prizes.get(oldPos));
+                        }
+                    }
+                    ((SacrificialFire) b).setPrizes(newPrizePositions);
+                }
             }
         }
 

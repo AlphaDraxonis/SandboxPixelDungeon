@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.WellWaterSpinner;
@@ -17,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -40,23 +42,25 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     private RedButton addTransition;
     private RedButton editSignText;
     private WellWaterSpinner wellWaterSpinner;
+    private EditBlobComp.SacrificialFirePrize sacrificialFirePrize;
 
     public EditTileComp(TileItem item) {
         super(item);
 
-        if (item.cell() != -1) {
+        final int cell = item.cell();
+        if (cell != -1) {
             if (item.terrainType() == Terrain.ENTRANCE || TileItem.isExitTerrainCell(item.terrainType())) {
 
                 addTransition = new RedButton(Messages.get(EditTileComp.class, "add_transition"), 9) {
                     @Override
                     protected void onClick() {
-                        addTransition(createNewTransition(item.cell()));
+                        addTransition(createNewTransition(cell));
                     }
                 };
                 add(addTransition);
 
-                if (EditorScene.customLevel().transitions.get(item.cell()) != null) {
-                    addTransition(EditorScene.customLevel().transitions.get(item.cell()));
+                if (EditorScene.customLevel().transitions.get(cell) != null) {
+                    addTransition(EditorScene.customLevel().transitions.get(cell));
                 }
 
             } else if (TileItem.isSignTerrainCell(item.terrainType())) {
@@ -65,7 +69,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
                     @Override
                     protected void onClick() {
-                        Sign sign = EditorScene.customLevel().signs.get(item.cell());
+                        Sign sign = EditorScene.customLevel().signs.get(cell);
                         final Sign oldSign;
                         if (sign != null) oldSign = sign.getCopy();
                         else oldSign = null;
@@ -78,13 +82,13 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                             @Override
                             public void onSelect(boolean positive, String text) {
                                 if (positive) {
-                                    Sign newSign = EditorScene.customLevel().signs.get(item.cell());
+                                    Sign newSign = EditorScene.customLevel().signs.get(cell);
                                     if (newSign == null) {
                                         newSign = new Sign();
                                         newSign.pos = item.cell();
                                     }
                                     newSign.text = text;
-                                    ActionPart actionPart = new SignEditPart.ActionPart(item.cell(), oldSign, newSign);
+                                    ActionPart actionPart = new SignEditPart.ActionPart(cell, oldSign, newSign);
                                     if (actionPart.hasContent()) {
                                         Undo.startAction();//this is maybe not so good, better if using TileModify?
                                         Undo.addActionPart(actionPart);
@@ -99,10 +103,22 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 };
                 add(editSignText);
             } else if (item.terrainType() == Terrain.WELL) {
-                wellWaterSpinner = new WellWaterSpinner(item.cell());
+                wellWaterSpinner = new WellWaterSpinner(cell);
                 wellWaterSpinner.addChangeListener(this::updateObj);
                 add(wellWaterSpinner);
             }
+
+            SacrificialFire sacrificialFire = (SacrificialFire) EditorScene.customLevel().blobs.get(SacrificialFire.class);
+            if (sacrificialFire != null && sacrificialFire.cur[cell] > 0) {
+                sacrificialFirePrize = new EditBlobComp.SacrificialFirePrize(sacrificialFire.getPrize(cell)) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+                        super.setSelectedItem(selectedItem);
+                        sacrificialFire.setPrize(cell, selectedItem);
+                    }
+                };
+                add(sacrificialFirePrize);
+            } else sacrificialFirePrize = null;
         }
     }
 
@@ -166,6 +182,10 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             wellWaterSpinner.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
             PixelScene.align(wellWaterSpinner);
             pos = wellWaterSpinner.bottom() + WndTitledMessage.GAP + 1;
+        } else if (sacrificialFirePrize != null) {
+            sacrificialFirePrize.setRect(x, pos, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(sacrificialFirePrize);
+            pos = sacrificialFirePrize.bottom() + WndTitledMessage.GAP + 1;
         } else return;
 
         height = (int) (pos - y - WndTitledMessage.GAP);
