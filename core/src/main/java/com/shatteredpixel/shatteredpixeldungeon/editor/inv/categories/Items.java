@@ -18,7 +18,11 @@ import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.W
 import static com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet.WEAPON_HOLDER;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
@@ -809,7 +813,34 @@ public enum Items {
             maybeUpdateKeyLevel(((ItemItem) item).item(), oldLvlName, newLvlName);
         }
         maybeUpdateKeyLevel(SacrificialFire.prizeInInventory, oldLvlName, newLvlName);
-        //TODO update mob containers! tzz
+
+        for (Item bag : Mobs.bag.items){
+            if (bag instanceof Bag) {
+                for (Item mobItem : ((Bag) bag).items) {
+                    if (mobItem instanceof MobItem) {
+                        Mob m = ((MobItem) mobItem).mob();
+                        if (m instanceof Mimic && ((Mimic) m).items != null) {
+                            for (Item item : ((Mimic) m).items) {
+                                maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
+                            }
+                        }
+                        if (m instanceof Thief) {
+                            maybeUpdateKeyLevel(((Thief) m).item, oldLvlName, newLvlName);
+                        }
+                    }
+                }
+            } else if (bag instanceof MobItem) {
+                Mob m = ((MobItem) bag).mob();
+                if (m instanceof Mimic && ((Mimic) m).items != null) {
+                    for (Item item : ((Mimic) m).items) {
+                        maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
+                    }
+                }
+                if (m instanceof Thief) {
+                    maybeUpdateKeyLevel(((Thief) m).item, oldLvlName, newLvlName);
+                }
+            }
+        }
     }
 
     private static void maybeUpdateKeyLevel(Item i, String oldLvlName, String newLvlName){

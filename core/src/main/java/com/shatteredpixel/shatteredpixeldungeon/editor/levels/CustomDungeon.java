@@ -95,9 +95,7 @@ public class CustomDungeon implements Bundlable {
     //Category items/mobs/rooms
 
     //Custom mob attacks: externalise
-    //search: used so resistances can differentiate between melee and magical attacks
-
-    //Non hostile mobs (mit emo icon)
+    //and search: used so resistances can differentiate between melee and magical attacks
 
 
     //Scale mobs if their normal stats editor is disabled: not just everything
