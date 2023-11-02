@@ -561,7 +561,7 @@ public class AlchemyScene extends PixelScene {
 		
 		@Override
 		protected void createChildren(Object... params) {
-			super.createChildren();
+			super.createChildren(params);
 			
 			bg = Chrome.get( Chrome.Type.RED_BUTTON);
 			add( bg );

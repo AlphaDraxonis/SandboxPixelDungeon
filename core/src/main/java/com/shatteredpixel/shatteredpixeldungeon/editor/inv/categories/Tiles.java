@@ -29,6 +29,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL_DECO;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WATER;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WELL;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.gases.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
@@ -153,6 +154,23 @@ public enum Tiles {
         }
     }
 
+    public static class BlobBag extends EditorItemBag {
+
+        public BlobBag(Class<? extends Blob>... blobs) {
+            super("name", -1);
+            for (Class<? extends Blob> b : blobs) {
+                items.add(new BlobItem(b));
+            }
+        }
+
+        @Override
+        public Image getCategoryImage() {
+            Image icon = Icons.ETERNAL_FIRE.get();
+            icon.scale.set(2.28f);// 16/7 = 2.28
+            return icon;
+        }
+    }
+
     public static class CustomTileBag extends EditorItemBag {
         public CustomTileBag() {
             super("name", -1);
@@ -170,17 +188,17 @@ public enum Tiles {
         bag.items.add(new TileBag("empty", EMPTY.terrains));
         bag.items.add(new TileBag("wall", WALL.terrains));
         bag.items.add(new TileBag("door", DOOR.terrains));
-        TileBag specialTiles = new TileBag("other", SPECIAL.terrains);
-        specialTiles.items.add(new BlobItem(MagicalFireRoom.EternalFire.class));
-        specialTiles.items.add(new BlobItem(SacrificialFire.class));
-        specialTiles.items.add(new BlobItem(PermaGas.PToxicGas.class));
-        specialTiles.items.add(new BlobItem(PermaGas.PCorrosiveGas.class));
-        specialTiles.items.add(new BlobItem(PermaGas.PConfusionGas.class));
-        specialTiles.items.add(new BlobItem(PermaGas.PParalyticGas.class));
-        specialTiles.items.add(new BlobItem(PermaGas.PStenchGas.class));
-        bag.items.add(specialTiles);
-        customTileBag = new CustomTileBag();
-        bag.items.add(customTileBag);
+        bag.items.add(new TileBag("other", SPECIAL.terrains));
+        bag.items.add(customTileBag = new CustomTileBag());
+
+        bag.items.add(new BlobBag(
+                MagicalFireRoom.EternalFire.class,
+                SacrificialFire.class,
+                PermaGas.PToxicGas.class,
+                PermaGas.PCorrosiveGas.class,
+                PermaGas.PConfusionGas.class,
+                PermaGas.PParalyticGas.class,
+                PermaGas.PStenchGas.class));
     }
 
     private static final Map<String, CustomTileLoader.OwnCustomTile> ownCustomTiles = new HashMap<>();

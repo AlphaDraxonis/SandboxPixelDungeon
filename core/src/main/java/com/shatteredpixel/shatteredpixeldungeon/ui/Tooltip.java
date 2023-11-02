@@ -71,7 +71,7 @@ public class Tooltip extends Component {
 
 	@Override
 	protected void createChildren(Object... params) {
-		super.createChildren();
+		super.createChildren(params);
 
 		bg = Chrome.get(Chrome.Type.TOAST_TR);
 		add(bg);

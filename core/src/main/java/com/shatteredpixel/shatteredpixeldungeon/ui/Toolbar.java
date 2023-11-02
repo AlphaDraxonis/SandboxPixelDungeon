@@ -360,7 +360,7 @@ public class Toolbar extends Component {
 
 			@Override
 			protected void createChildren(Object... params) {
-				super.createChildren();
+				super.createChildren(params);
 				arrow = Icons.get(Icons.COMPASS);
 				arrow.originToCenter();
 				arrow.visible = SPDSettings.interfaceSize() == 2;

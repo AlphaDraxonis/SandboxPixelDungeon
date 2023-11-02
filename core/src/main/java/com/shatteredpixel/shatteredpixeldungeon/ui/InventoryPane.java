@@ -638,7 +638,7 @@ public class InventoryPane extends Component {
 
 		@Override
 		protected void createChildren(Object... params) {
-			super.createChildren();
+			super.createChildren(params);
 
 			bgTop = new ColorBlock(1, 1, ACTIVE);
 			add(bgTop);

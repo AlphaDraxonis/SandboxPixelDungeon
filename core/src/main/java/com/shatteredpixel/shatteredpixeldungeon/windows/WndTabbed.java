@@ -241,7 +241,7 @@ public class WndTabbed extends Window {
 
         @Override
         protected void createChildren(Object... params) {
-            super.createChildren();
+            super.createChildren(params);
 
             btLabel = PixelScene.renderTextBlock(9);
             add(btLabel);

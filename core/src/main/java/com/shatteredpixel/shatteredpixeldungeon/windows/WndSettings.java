@@ -174,7 +174,7 @@ public class WndSettings extends WndTabbed {
 
 			@Override
 			protected void createChildren(Object... params) {
-				super.createChildren();
+				super.createChildren(params);
 				switch(Messages.lang().status()){
 					case UNFINISHED:
 						icon.hardlight(1.5f, 0, 0);
