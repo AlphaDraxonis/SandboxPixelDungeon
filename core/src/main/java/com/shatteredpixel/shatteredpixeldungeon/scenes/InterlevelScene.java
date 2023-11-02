@@ -152,8 +152,10 @@ public class InterlevelScene extends PixelScene {
 		else if (lastRegion == 5)    loadingAsset = Assets.Interfaces.LOADING_HALLS;
 		else                         loadingAsset = Assets.Interfaces.SHADOW;
 		
-		if (DeviceCompat.isDebug()){
+		if (DeviceCompat.isDebug()&&false){
 			fadeTime = 0f;
+		} else if (Dungeon.isLevelTesting()){
+			fadeTime /= 2f;
 		}
 		
 		SkinnedBlock bg = new SkinnedBlock(Camera.main.width, Camera.main.height, loadingAsset ){

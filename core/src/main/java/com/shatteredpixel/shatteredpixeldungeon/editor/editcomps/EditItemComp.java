@@ -102,7 +102,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         } else quantity = null;
 
         //only for start items
-        if (item.reservedQuickslot != 0 && item.defaultAction() != null) {//use -1 to indicate 0 while still enabling this
+        if (item.reservedQuickslot != 0 && item.defaultAction() != null && !(item instanceof Key)) {//use -1 to indicate 0 while still enabling this
             quickslotPos = new Spinner(new SpinnerIntegerModel(0, 6, item.reservedQuickslot == -1 ? 0 : item.reservedQuickslot, 1, false, null) {
                 @Override
                 public float getInputFieldWith(float height) {
@@ -130,7 +130,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 if (item.reservedQuickslot == 0) item.reservedQuickslot = -1;
             });
             add(quickslotPos);
-        }else quickslotPos = null;
+        } else quickslotPos = null;
 
         if (!(item instanceof MissileWeapon) && (item instanceof Weapon || item instanceof Armor || item instanceof Ring || item instanceof Artifact || item instanceof Wand)) {
             curseBtn = new CurseButton(item) {
