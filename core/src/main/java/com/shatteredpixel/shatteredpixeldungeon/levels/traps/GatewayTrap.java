@@ -104,6 +104,8 @@ public class GatewayTrap extends Trap {
 				}
 			}
 
+			if (telePositions.isEmpty()) return;
+
 			for (int i : PathFinder.NEIGHBOURS9){
 
 				Char ch = Actor.findChar(pos + i);
@@ -134,9 +136,11 @@ public class GatewayTrap extends Trap {
 				Heap heap = Dungeon.level.heaps.get(pos + i);
 				if (heap != null && heap.type == Heap.Type.HEAP){
 					Item item = heap.pickUp();
-					Dungeon.level.drop( item, telePos );
+					int actualTelepos = telePos;
+					if (!Dungeon.level.passable[actualTelepos]) actualTelepos = telePositions.get(Random.Int(telePositions.size()));
+					Dungeon.level.drop( item, actualTelepos );
 					if (item instanceof Honeypot.ShatteredPot){
-						((Honeypot.ShatteredPot)item).movePot(pos, telePos);
+						((Honeypot.ShatteredPot)item).movePot(pos, actualTelepos);
 					}
 					Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 					CellEmitter.get(pos).burst(Speck.factory(Speck.LIGHT), 4);

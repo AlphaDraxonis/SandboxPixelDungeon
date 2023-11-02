@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditPlantComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
@@ -58,6 +59,7 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
                     return true;
                 }
             };
+            if (moreActions == null) moreActions = new ActionPartList();
             moreActions.addActionPart(part);
             part.redo();
             EditorScene.updateMap(plant.pos);
@@ -83,6 +85,7 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
                     return true;
                 }
             };
+            if (moreActions == null) moreActions = new ActionPartList();
             moreActions.addActionPart(part);
             part.redo();
             EditorScene.updateMap(plant.pos);
