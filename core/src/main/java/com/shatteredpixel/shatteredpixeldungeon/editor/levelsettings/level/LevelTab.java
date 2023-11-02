@@ -124,7 +124,7 @@ public class LevelTab extends MultiWindowTabComp {
         depth.addChangeListener(() -> level.levelScheme.setDepth((Integer) depth.getValue()));
         content.add(depth);
 
-        shopPrice = new StyledSpinner(new SpinnerFloatModel(0.1f, 10f, level.levelScheme.getPriceMultiplier(), false) {
+        shopPrice = new StyledSpinner(new SpinnerFloatModel(0.1f, 10f, level.levelScheme.getPriceMultiplier(),2,0.1f, false) {
             @Override
             public float getInputFieldWith(float height) {
                 return Spinner.FILL;
@@ -136,7 +136,7 @@ public class LevelTab extends MultiWindowTabComp {
             }
         }, Messages.get(LevelTab.class, "shop_price"), 8);
         ((SpinnerIntegerModel) shopPrice.getModel()).setAbsoluteMinAndMax(0f, 10000f);
-        shopPrice.addChangeListener(() -> level.levelScheme.setShopPriceMultiplier(SpinnerFloatModel.convertToFloat((Integer) shopPrice.getValue())));
+        shopPrice.addChangeListener(() -> level.levelScheme.setShopPriceMultiplier(((SpinnerFloatModel) shopPrice.getModel()).getAsFloat()));
         content.add(shopPrice);
 
         mainWindowComps = new Component[]{

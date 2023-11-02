@@ -76,7 +76,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         };
         add(hauntedInfo);
 
-        priceMultiplier = new Spinner(new SpinnerFloatModel(0.1f, 10f, heap.priceMultiplier, false) {
+        priceMultiplier = new Spinner(new SpinnerFloatModel(0.1f, 10f, heap.priceMultiplier, 2, 0.1f,false) {
             @Override
             public float getInputFieldWith(float height) {
                 return Spinner.FILL;
@@ -94,7 +94,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             }
         }, Messages.get(LevelTab.class, "shop_price"), 8);
         ((SpinnerIntegerModel) priceMultiplier.getModel()).setAbsoluteMinAndMax(0f, 10000f);
-        priceMultiplier.addChangeListener(() -> heap.priceMultiplier = SpinnerFloatModel.convertToFloat((Integer) priceMultiplier.getValue()));
+        priceMultiplier.addChangeListener(() -> heap.priceMultiplier = ((SpinnerFloatModel) priceMultiplier.getModel()).getAsFloat());
         add(priceMultiplier);
 
         heapType = new HeapTypeSpinner(heap);

@@ -272,8 +272,8 @@ public class WndEditStats extends MultiWindowTabComp {
         if (defaultStats instanceof Mob) {
             Mob def = (Mob) defaultStats;
 
-            if (speed != null) speed.setValue(SpinnerFloatModel.convertToInt(def.baseSpeed));
-            if (statsScale != null) statsScale.setValue(SpinnerFloatModel.convertToInt(def.statsScale));
+            if (speed != null) speed.setValue(SpinnerFloatModel.convertToInt(def.baseSpeed, 1));
+            if (statsScale != null) statsScale.setValue(SpinnerFloatModel.convertToInt(def.statsScale, 1));
             if (hp != null) {
                 hp.setValue(def.HT);
                 attackSkill.setValue(def.attackSkill);

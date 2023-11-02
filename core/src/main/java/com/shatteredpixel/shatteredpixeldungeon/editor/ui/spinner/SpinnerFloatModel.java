@@ -9,27 +9,41 @@ import com.watabou.noosa.Game;
 
 public class SpinnerFloatModel extends SpinnerIntegerModel {
 
+    //Number of allowed decimal places
+    private final int precision;
+    private final String precisionFormat;
+
     public SpinnerFloatModel(float minimum, float maximum, float value, boolean includeInfinity) {
-        super(convertToInt(minimum), convertToInt(maximum), convertToInt(value), 1, includeInfinity, includeInfinity ? INFINITY : null);
+        this(minimum, maximum, value, 1, 0.1f, includeInfinity);
+    }
+    public SpinnerFloatModel(float minimum, float maximum, float value, int precision, float stepSize, boolean includeInfinity) {
+        super(convertToInt(minimum, precision), convertToInt(maximum, precision), convertToInt(value, precision),
+                convertToInt(stepSize, precision), includeInfinity, includeInfinity ? INFINITY : null);
+        this.precision = precision;
+        precisionFormat = "%." + precision + "f";
         setAbsoluteMaximum(9_999_999f);
     }
 
-    public static int convertToInt(float val) {
-        return (int) (val * 10 + 0.01f);
+    public static int convertToInt(float val, int precision) {
+        return (int) (val * Math.pow(10, precision) + 0.01f);
     }
 
-    public static float convertToFloat(Integer val) {
+    public static float convertToFloat(Integer val, int precision) {
         if (val == null) return -1;
-        return val / 10f;
+        return val / (float)Math.pow(10, precision);
     }
 
     public float getAsFloat() {
-        return convertToFloat((Integer) getValue());
+        return convertToFloat((Integer) getValue(), precision);
+    }
+
+    public int getPrecision() {
+        return precision;
     }
 
     @Override
     public String getDisplayString() {
-        return getValue() == null ? super.getDisplayString() : String.format(Languages.getCurrentLocale(), "%.1f", getAsFloat());
+        return getValue() == null ? super.getDisplayString() : String.format(Languages.getCurrentLocale(), precisionFormat, getAsFloat());
     }
 
     @Override
@@ -44,12 +58,12 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
 
     @Override
     public void setAbsoluteMinimum(float absoluteMinimum) {
-        super.setAbsoluteMinimum((float) convertToInt(absoluteMinimum));
+        super.setAbsoluteMinimum((float) convertToInt(absoluteMinimum, precision));
     }
 
     @Override
     public void setAbsoluteMaximum(float absoluteMaxmimum) {
-        super.setAbsoluteMaximum((float) convertToInt(absoluteMaxmimum));
+        super.setAbsoluteMaximum((float) convertToInt(absoluteMaxmimum, precision));
     }
 
     @Override
@@ -58,11 +72,12 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
         WndTextInput w = new WndTextInput(
                 Messages.get(this, "input_dialog_title"),
                 Messages.get(this, "input_dialog_body",
-                        String.format(Languages.getCurrentLocale(), "%.1f", min),
-                        String.format(Languages.getCurrentLocale(), "%.1f", max),
-                        String.format(Languages.getCurrentLocale(), "%.1f", convertToFloat(getMinimum())),
-                        String.format(Languages.getCurrentLocale(), "%.1f", convertToFloat(getMaximum()))),
-                String.format(Languages.getCurrentLocale(), "%.1f", getAsFloat()), 11, false,
+                        String.format(Languages.getCurrentLocale(), precisionFormat, min),
+                        String.format(Languages.getCurrentLocale(), precisionFormat, max),
+                        String.format(Languages.getCurrentLocale(), precisionFormat, convertToFloat(getMinimum(), precision)),
+                        String.format(Languages.getCurrentLocale(), precisionFormat, convertToFloat(getMaximum(), precision)),
+                        String.format(Languages.getCurrentLocale(), precisionFormat, (float) Math.pow(10, -precision))),
+                String.format(Languages.getCurrentLocale(), precisionFormat, getAsFloat()), 10 + precision, false,
                 Messages.get(this, "input_dialog_yes"),
                 Messages.get(this, "input_dialog_no")
         ) {
@@ -70,7 +85,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
             public void onSelect(boolean positive, String text) {
                 if (positive) {
                     try {
-                        setValue(convertToInt(Math.max(min, Float.parseFloat(text.replace(NUMBER_DECIMAL_SEPARATOR,'.')))));
+                        setValue(convertToInt(Math.max(min, Float.parseFloat(text.replace(NUMBER_DECIMAL_SEPARATOR,'.'))), precision));
                     } catch (NumberFormatException ex) {
                         //just ignore value
                     }
@@ -93,8 +108,8 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
         w.getTextBox().convertStringToValidString = s -> {
             try {
                 float val = Float.parseFloat(s.replace(NUMBER_DECIMAL_SEPARATOR,'.'));
-//                if (val < min) return String.format(Languages.getCurrentLocale(), "%.1f", min);
-                if (val > max) return String.format(Languages.getCurrentLocale(), "%.1f", max);
+//                if (val < min) return String.format(Languages.getCurrentLocale(), precisionFormat, min);
+                if (val > max) return String.format(Languages.getCurrentLocale(), precisionFormat, max);
                 return s;
             } catch (NumberFormatException ex) {
                 char[] cs = s.toCharArray();
@@ -114,8 +129,8 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
                 while (true) {
                     try {
                         float val = Float.parseFloat(s.replace(NUMBER_DECIMAL_SEPARATOR,'.'));
-                        if (val < min) return String.format(Languages.getCurrentLocale(), "%.1f", min);
-                        if (val > max) return String.format(Languages.getCurrentLocale(), "%.1f", max);
+                        if (val < min) return String.format(Languages.getCurrentLocale(), precisionFormat, min);
+                        if (val > max) return String.format(Languages.getCurrentLocale(), precisionFormat, max);
                         return s;
                     } catch (NumberFormatException ex2) {
                         if (s.length() <= 1) return "";
