@@ -483,42 +483,44 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             neutralEnemy.checked(mob.neutralEnemy);
             add(neutralEnemy);
 
-            addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
-                @Override
-                protected void onClick() {
-                    Set<Class<? extends Buff>> buffsToIgnore = new HashSet<>();
-                    for (Buff b : mob.buffs()) buffsToIgnore.add(b.getClass());
-                    for (Class<?> c : mob.immunities) {
-                        if (Buff.class.isAssignableFrom(c)) {
-                            buffsToIgnore.add((Class<? extends Buff>) c);
-                        }
-                    }
-
-                    Window w = new WndChooseOneInCategories(
-                            Messages.get(EditMobComp.class, "add_buff_title"), "",
-                            Buffs.getAllBuffs(buffsToIgnore), new String[]{"Buffs"}) {
-                        @Override
-                        protected ChooseOneInCategoriesBody.BtnRow[] createCategoryRows(Object[] category) {
-                            ChooseOneInCategoriesBody.BtnRow[] ret = new ChooseOneInCategoriesBody.BtnRow[category.length];
-                            for (int i = 0; i < ret.length; i++) {
-                                Buff b = Reflection.newInstance((Class<? extends Buff>) category[i]);
-                                ret[i] = new ChooseOneInCategoriesBody.BtnRow(b.name(), b.desc(), new BuffIcon(b, true)) {
-                                    @Override
-                                    protected void onClick() {
-                                        finish();
-                                        Buff.affect(mob, b.getClass());
-                                        updateObj();
-                                    }
-                                };
+            if(!(mob instanceof Tengu)) {
+                addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
+                    @Override
+                    protected void onClick() {
+                        Set<Class<? extends Buff>> buffsToIgnore = new HashSet<>();
+                        for (Buff b : mob.buffs()) buffsToIgnore.add(b.getClass());
+                        for (Class<?> c : mob.immunities) {
+                            if (Buff.class.isAssignableFrom(c)) {
+                                buffsToIgnore.add((Class<? extends Buff>) c);
                             }
-                            return ret;
                         }
-                    };
-                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                    else Game.scene().addToFront(w);
-                }
-            };
-            add(addBuffs);
+
+                        Window w = new WndChooseOneInCategories(
+                                Messages.get(EditMobComp.class, "add_buff_title"), "",
+                                Buffs.getAllBuffs(buffsToIgnore), new String[]{"Buffs"}) {
+                            @Override
+                            protected ChooseOneInCategoriesBody.BtnRow[] createCategoryRows(Object[] category) {
+                                ChooseOneInCategoriesBody.BtnRow[] ret = new ChooseOneInCategoriesBody.BtnRow[category.length];
+                                for (int i = 0; i < ret.length; i++) {
+                                    Buff b = Reflection.newInstance((Class<? extends Buff>) category[i]);
+                                    ret[i] = new ChooseOneInCategoriesBody.BtnRow(b.name(), b.desc(), new BuffIcon(b, true)) {
+                                        @Override
+                                        protected void onClick() {
+                                            finish();
+                                            Buff.affect(mob, b.getClass());
+                                            updateObj();
+                                        }
+                                    };
+                                }
+                                return ret;
+                            }
+                        };
+                        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                        else Game.scene().addToFront(w);
+                    }
+                };
+                add(addBuffs);
+            } else addBuffs = null;
         } else {
             neutralEnemy = null;
             addBuffs = null;

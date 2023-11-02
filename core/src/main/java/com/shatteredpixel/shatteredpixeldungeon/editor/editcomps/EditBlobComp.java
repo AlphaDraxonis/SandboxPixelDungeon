@@ -22,9 +22,11 @@ public class EditBlobComp extends DefaultEditComp<Class<? extends Blob>> {
     public EditBlobComp(Class<? extends Blob> item) {
         super(item);
 
-        volumeSpinner = new VolumeSpinner(Blob.volumeInInv.get(item));
-        volumeSpinner.addChangeListener(() -> Blob.volumeInInv.put(item, (int) volumeSpinner.getValue()));
-        add(volumeSpinner);
+        if (item == SacrificialFire.class) {
+            volumeSpinner = new VolumeSpinner(Blob.volumeInInv.get(item));
+            volumeSpinner.addChangeListener(() -> Blob.volumeInInv.put(item, (int) volumeSpinner.getValue()));
+            add(volumeSpinner);
+        } else volumeSpinner = null;
 
         if (item == SacrificialFire.class) {
             sacrificialFirePrize = new SacrificialFirePrize(SacrificialFire.prizeInInventory) {

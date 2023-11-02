@@ -116,7 +116,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                     break;
                 }
             }
-            if (blobAtCell != null) {
+            if (blobAtCell != null && blobAtCell instanceof SacrificialFire) {
                 final Blob finalBlobAtCell = blobAtCell;
                 volumeSpinner = new EditBlobComp.VolumeSpinner(finalBlobAtCell.cur[cell]);
                 volumeSpinner.addChangeListener(() -> {
