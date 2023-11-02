@@ -537,7 +537,7 @@ public class Item implements Bundlable {
 
     //item's value in gold coins
     public int value() {
-        return 0;
+        return 10 * quantity;
     }
 
     //item's value in energy crystals
