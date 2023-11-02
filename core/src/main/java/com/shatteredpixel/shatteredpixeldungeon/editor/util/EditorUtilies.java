@@ -142,7 +142,7 @@ public final class EditorUtilies {
 
         boolean hasAtLeastOneComp = false;
         for (Component c : comps) {
-            if (c != null && c.isVisible()) {
+            if (c != null && c.visible) {
                 hasAtLeastOneComp = true;
                 c.setRect(parent.left(), posY, parent.width(), WndMenuEditor.BTN_HEIGHT);
                 PixelScene.align(c);

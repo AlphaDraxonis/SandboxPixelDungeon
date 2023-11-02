@@ -108,6 +108,7 @@ public enum Icons {
     BUSY,
     COMPASS,
     SLEEP,
+    NEUTRAL,
     ALERT,
     LOST,
     DEPTH,      //depth icons have two variants, for regular and seeded runs
@@ -354,6 +355,9 @@ public enum Icons {
                 break;
             case SLEEP:
                 icon.frame(icon.texture.uvRectBySize(32, 64, 9, 8));
+                break;
+            case NEUTRAL:
+                icon.frame(icon.texture.uvRectBySize(24, 72, 8, 8));
                 break;
             case ALERT:
                 icon.frame(icon.texture.uvRectBySize(32, 72, 8, 8));

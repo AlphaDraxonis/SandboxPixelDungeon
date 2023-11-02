@@ -25,7 +25,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
     }
 
     public static int convertToInt(float val, int precision) {
-        return (int) (val * Math.pow(10, precision) + 0.01f);
+        return (int) (val * (int)Math.pow(10, precision) + 0.01f);
     }
 
     public static float convertToFloat(Integer val, int precision) {
@@ -56,15 +56,15 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
         return String.format(Languages.getCurrentLocale(), "%.1f", 1.1f).charAt(1);
     }
 
-    @Override
-    public void setAbsoluteMinimum(float absoluteMinimum) {
-        super.setAbsoluteMinimum((float) convertToInt(absoluteMinimum, precision));
-    }
-
-    @Override
-    public void setAbsoluteMaximum(float absoluteMaxmimum) {
-        super.setAbsoluteMaximum((float) convertToInt(absoluteMaxmimum, precision));
-    }
+//    @Override
+//    public void setAbsoluteMinimum(float absoluteMinimum) {
+//        super.setAbsoluteMinimum((float) convertToInt(absoluteMinimum, precision));
+//    }
+//
+//    @Override
+//    public void setAbsoluteMaximum(float absoluteMaxmimum) {
+//        super.setAbsoluteMaximum((float) convertToInt(absoluteMaxmimum, precision));
+//    }
 
     @Override
     public void displayInputAnyNumberDialog(float min, float max) {

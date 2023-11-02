@@ -120,6 +120,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	protected float flashTime = 0;
 	
 	protected boolean sleeping = false;
+	protected boolean neutral = false;
 
 	public Char ch;
 
@@ -552,6 +553,9 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			showSleep();
 		} else {
 			hideSleep();
+			if (neutral) {
+				if (emo == null) showNeutral();
+			} else hideNeutral();
 		}
 		synchronized (EmoIcon.class) {
 			if (emo != null && emo.alive) {
@@ -626,6 +630,29 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	public void hideLost() {
 		synchronized (EmoIcon.class) {
 			if (emo instanceof EmoIcon.Lost) {
+				emo.killAndErase();
+				emo = null;
+			}
+		}
+	}
+
+	public void showNeutral() {
+		if (emo == null) {
+			synchronized (EmoIcon.class) {
+				if (!(emo instanceof EmoIcon.Neutral)) {
+					if (emo != null) {
+						emo.killAndErase();
+					}
+					emo = new EmoIcon.Neutral(this);
+					emo.visible = visible;
+				}
+			}
+		}
+	}
+
+	public void hideNeutral() {
+		synchronized (EmoIcon.class) {
+			if (emo instanceof EmoIcon.Neutral) {
 				emo.killAndErase();
 				emo = null;
 			}

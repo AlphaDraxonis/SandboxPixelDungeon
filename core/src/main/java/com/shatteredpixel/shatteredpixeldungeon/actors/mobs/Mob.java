@@ -1108,6 +1108,10 @@ public abstract class Mob extends Char {
 			desc += "\n\n_" + Messages.titleCase(b.name()) + "_\n" + b.desc();
 		}
 
+		if (neutralEnemy) {
+			desc += "\n\n" + Messages.get(this, "neutral_desc");
+		}
+
         Mob defaultStats = DefaultStatsCache.getDefaultObject(getClass());
         if (defaultStats != null) {
 
