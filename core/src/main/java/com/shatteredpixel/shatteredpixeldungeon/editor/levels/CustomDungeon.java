@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
@@ -755,6 +756,16 @@ public class CustomDungeon implements Bundlable {
                         ((Thief) m).item = null;
                         removedItems = true;
                     }
+                    if (m.loot instanceof LootTableComp.CustomLootInfo) {
+                        Set<LootTableComp.ItemWithCount> toRemove = new HashSet<>(4);
+                        for (LootTableComp.ItemWithCount itemsWithCount : ((LootTableComp.CustomLootInfo) m.loot).lootList) {
+                            if (removeInvalidKeys(itemsWithCount.items, n)) {
+                                removedItems = true;
+                                if (itemsWithCount.items.isEmpty()) toRemove.add(itemsWithCount);
+                            }
+                        }
+                        ((LootTableComp.CustomLootInfo) m.loot).lootList.removeAll(toRemove);
+                    }
                 }
 
                 //Remove invalid keys as sacrificial fire reward
@@ -906,6 +917,13 @@ public class CustomDungeon implements Bundlable {
                             ((Key) ((Thief) m).item).levelName = newName;
                             needsSave = true;
                         }
+                        if (m.loot instanceof LootTableComp.CustomLootInfo) {
+                            for (LootTableComp.ItemWithCount itemsWithCount : ((LootTableComp.CustomLootInfo) m.loot).lootList) {
+                                if (renameInvalidKeys(itemsWithCount.items, oldName, newName)) {
+                                    needsSave = true;
+                                }
+                            }
+                        }
                     }
 
                     //Remove invalid keys as sacrificial fire reward
@@ -951,6 +969,10 @@ public class CustomDungeon implements Bundlable {
                     distr.getLevels().remove(oldName);
                     distr.getLevels().add(newName);
                 }
+            }
+
+            for (HeroSettings.HeroStartItemsData si : startItems) {
+                renameInvalidKeys(si.items, oldName, newName);
             }
 
             //Set level for keys in inv

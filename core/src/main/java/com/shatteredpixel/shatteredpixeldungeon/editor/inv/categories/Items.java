@@ -21,6 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -818,27 +819,11 @@ public enum Items {
             if (bag instanceof Bag) {
                 for (Item mobItem : ((Bag) bag).items) {
                     if (mobItem instanceof MobItem) {
-                        Mob m = ((MobItem) mobItem).mob();
-                        if (m instanceof Mimic && ((Mimic) m).items != null) {
-                            for (Item item : ((Mimic) m).items) {
-                                maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
-                            }
-                        }
-                        if (m instanceof Thief) {
-                            maybeUpdateKeyLevel(((Thief) m).item, oldLvlName, newLvlName);
-                        }
+                        updateKeysInMobContrainer((MobItem) mobItem, oldLvlName, newLvlName);
                     }
                 }
             } else if (bag instanceof MobItem) {
-                Mob m = ((MobItem) bag).mob();
-                if (m instanceof Mimic && ((Mimic) m).items != null) {
-                    for (Item item : ((Mimic) m).items) {
-                        maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
-                    }
-                }
-                if (m instanceof Thief) {
-                    maybeUpdateKeyLevel(((Thief) m).item, oldLvlName, newLvlName);
-                }
+                updateKeysInMobContrainer((MobItem) bag, oldLvlName, newLvlName);
             }
         }
     }
@@ -846,6 +831,25 @@ public enum Items {
     private static void maybeUpdateKeyLevel(Item i, String oldLvlName, String newLvlName){
         if (i instanceof Key && (oldLvlName == null || ((Key) i).levelName == null || ((Key) i).levelName.equals(oldLvlName))) {
             ((Key) i).levelName = newLvlName;
+        }
+    }
+
+    private static void updateKeysInMobContrainer(MobItem mobItem, String oldLvlName, String newLvlName){
+        Mob m = ((MobItem) mobItem).mob();
+        if (m instanceof Mimic && ((Mimic) m).items != null) {
+            for (Item item : ((Mimic) m).items) {
+                maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
+            }
+        }
+        if (m instanceof Thief) {
+            maybeUpdateKeyLevel(((Thief) m).item, oldLvlName, newLvlName);
+        }
+        if (m.loot instanceof LootTableComp.CustomLootInfo) {
+            for (LootTableComp.ItemWithCount itemsWithCount : ((LootTableComp.CustomLootInfo) m.loot).lootList) {
+                for (Item item : itemsWithCount.items) {
+                    maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
+                }
+            }
         }
     }
 
