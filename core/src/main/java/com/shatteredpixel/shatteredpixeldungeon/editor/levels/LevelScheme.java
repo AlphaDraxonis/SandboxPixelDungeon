@@ -541,9 +541,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private void initRandStatsForMob(Mob m){
         if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
         if (m instanceof Mimic) {
-            for (Item i : ((Mimic) m).items) {
-                if (i.identifyOnStart && (i instanceof EquipableItem || i instanceof Wand)) i.identify();
-                AugumentationSpinner.assignRandomAugumentation(i);
+            if (((Mimic) m).items != null) {
+                for (Item i : ((Mimic) m).items) {
+                    if (i.identifyOnStart && (i instanceof EquipableItem || i instanceof Wand)) i.identify();
+                    AugumentationSpinner.assignRandomAugumentation(i);
+                }
             }
         } else if (m instanceof Thief){
             Item i = ((Thief) m).item;

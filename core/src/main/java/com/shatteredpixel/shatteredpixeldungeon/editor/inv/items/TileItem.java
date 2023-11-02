@@ -394,7 +394,7 @@ public class TileItem extends EditorItem {
 
         @Override
         public boolean hasContent() {
-            return super.hasContent() || moreActions.hasContent();
+            return super.hasContent() || (moreActions != null && moreActions.hasContent());
         }
     }
 
