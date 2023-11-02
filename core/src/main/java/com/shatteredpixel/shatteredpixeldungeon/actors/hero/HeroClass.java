@@ -314,12 +314,12 @@ public enum HeroClass {
             hero.belongings.weapon = startItems.weapon;
             hero.belongings.weapon.activate(hero);
         }
-        if (startItems.armor != null && !Challenges.isItemBlocked(startItems.weapon)) {
+        if (startItems.armor != null && !Challenges.isItemBlocked(startItems.armor)) {
             if (hero.belongings.armor != null) overrideEq(hero, hero.belongings.armor);
             hero.belongings.armor = startItems.armor;
             hero.belongings.armor.activate(hero);
         }
-        if (startItems.ring != null && !Challenges.isItemBlocked(startItems.weapon)) {
+        if (startItems.ring != null && !Challenges.isItemBlocked(startItems.ring)) {
             if (hero.belongings.misc == null) {
                 hero.belongings.misc = startItems.ring;
                 hero.belongings.misc.activate(hero);
@@ -329,28 +329,12 @@ public enum HeroClass {
                 hero.belongings.ring.activate(hero);
             }
         }
-        if (startItems.artifact != null && !Challenges.isItemBlocked(startItems.weapon)) {
-            if (hero.belongings.misc == null) {
-                if (hero.belongings.artifact.getClass() != startItems.artifact.getClass()) {
-                    hero.belongings.misc = startItems.ring;
-                    hero.belongings.misc.activate(hero);
-                }
-            } else if (hero.belongings.misc.getClass() != startItems.artifact.getClass()) {
-                if (hero.belongings.artifact != null) overrideEq(hero, hero.belongings.artifact);
-                hero.belongings.artifact = startItems.artifact;
-                hero.belongings.artifact.activate(hero);
-            }
+        if (startItems.artifact != null && !Challenges.isItemBlocked(startItems.artifact)) {
+            equipArtifact(startItems.artifact, hero);
         }
-        if (startItems.misc != null && !Challenges.isItemBlocked(startItems.weapon)) {
+        if (startItems.misc != null && !Challenges.isItemBlocked(startItems.misc)) {
             if (startItems.misc instanceof Artifact) {
-                if (hero.belongings.artifact == null) {
-                    hero.belongings.artifact = (Artifact) startItems.misc;
-                    hero.belongings.artifact.activate(hero);
-                } else if (hero.belongings.artifact.getClass() != startItems.misc.getClass()) {
-                    if (hero.belongings.misc != null) overrideEq(hero, hero.belongings.misc);
-                    hero.belongings.misc = startItems.misc;
-                    hero.belongings.misc.activate(hero);
-                }
+                equipArtifact((Artifact) startItems.misc, hero);
             } else {
                 if (hero.belongings.ring == null) {
                     hero.belongings.ring = (Ring) startItems.misc;
@@ -372,6 +356,32 @@ public enum HeroClass {
                 if (b instanceof MagicalHolster) Dungeon.LimitedDrops.MAGICAL_HOLSTER.drop();
                 maybePutIntoToolbar(b);
             }
+        }
+    }
+
+    private static void equipArtifact(Artifact artifact, Hero hero) {
+        if (hero.belongings.misc == null) {
+            if (hero.belongings.artifact == null || hero.belongings.artifact.getClass() == artifact.getClass()) {
+                if (hero.belongings.artifact != null) overrideEq(hero, hero.belongings.artifact);
+                hero.belongings.artifact = artifact;
+                hero.belongings.artifact.activate(hero);
+            } else {
+                hero.belongings.misc = artifact;
+                hero.belongings.misc.activate(hero);
+            }
+        } else if (hero.belongings.misc.getClass() != artifact.getClass()
+                && hero.belongings.artifact.getClass() != artifact.getClass()) {
+            overrideEq(hero, hero.belongings.misc);
+            hero.belongings.misc = artifact;
+            hero.belongings.misc.activate(hero);
+        } else if (hero.belongings.misc.getClass() == artifact.getClass()) {
+            overrideEq(hero, hero.belongings.misc);
+            hero.belongings.misc = artifact;
+            hero.belongings.misc.activate(hero);
+        } else {
+            overrideEq(hero, hero.belongings.artifact);
+            hero.belongings.artifact = artifact;
+            hero.belongings.artifact.activate(hero);
         }
     }
 
