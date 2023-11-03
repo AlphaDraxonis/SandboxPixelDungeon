@@ -65,7 +65,7 @@ public class CavesLevel extends RegularLevel {
 
 	@Override
 	public void playLevelMusic() {
-		playLevelMusic(LevelScheme.REGION_CAVES);
+		playLevelMusic(LevelScheme.REGION_CAVES, 0);
 	}
 
 	public static void playCavesLevelMusic() {

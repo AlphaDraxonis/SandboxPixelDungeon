@@ -98,6 +98,16 @@ public class CustomDungeon implements Bundlable {
     //Custom mob attacks: externalise
     //and search: used so resistances can differentiate between melee and magical attacks
 
+    //Copy levels/dungeons
+    //Backup levels/dungeons
+    //import levels
+
+    //boss music
+    //A way to edit what necromancer/spectral necromancers can summon
+    //grass on every tile: store grass type in inv, add boolean array in level to show that there are grass visuals
+
+    //Maybe I should also suggestion the auto exit and auto entrance, like after the tengu fight, you see a massive staircase leading down.
+
 
     //Scale mobs if their normal stats editor is disabled: not just everything
 

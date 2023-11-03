@@ -87,7 +87,7 @@ public class CustomLevel extends Level {
 
     int region;
     private int waterTexture = REGION_NONE;
-    private int music = REGION_NONE;
+    private int music = REGION_NONE, musicVariant = 0;
 
     {
         setRegion(REGION_SEWERS);
@@ -445,9 +445,17 @@ public class CustomLevel extends Level {
         return music;
     }
 
+    public void setMusicVariant(int musicVariant) {
+        this.musicVariant = musicVariant;
+    }
+
+    public int getMusicVariant() {
+        return musicVariant;
+    }
+
     @Override
     public void playLevelMusic() {
-        playLevelMusic(music == REGION_NONE ? region : music);
+        playLevelMusic(music == REGION_NONE ? region : music, musicVariant);
     }
 
     @Override
@@ -675,6 +683,7 @@ public class CustomLevel extends Level {
     private static final String REGION = "region";
     private static final String WATER_TEXTUTE = "water_texture";
     private static final String MUSIC = "music";
+    private static final String MUSIC_VARIANT = "music_variant";
     private static final String ENABLE_RESPAWNING = "enable_respawning";
     private static final String RESPAWN_COOLDOWN = "respawn_cooldown";
     private static final String SWAP_FOR_MUTATIONS = "swap_for_mutations";
@@ -689,6 +698,7 @@ public class CustomLevel extends Level {
         bundle.put(REGION, region);
         bundle.put(WATER_TEXTUTE, waterTexture);
         bundle.put(MUSIC, music);
+        bundle.put(MUSIC_VARIANT, musicVariant);
         bundle.put(ENABLE_RESPAWNING, enableRespawning);
         bundle.put(RESPAWN_COOLDOWN, respawnCooldown);
         bundle.put(SWAP_FOR_MUTATIONS, swapForMutations);
@@ -704,6 +714,7 @@ public class CustomLevel extends Level {
         region = bundle.getInt(REGION);
         waterTexture = bundle.getInt(WATER_TEXTUTE);
         music = bundle.getInt(MUSIC);
+        musicVariant = bundle.getInt(MUSIC_VARIANT);
         enableRespawning = bundle.getBoolean(ENABLE_RESPAWNING);
         respawnCooldown = bundle.getInt(RESPAWN_COOLDOWN);
         swapForMutations = bundle.getBoolean(SWAP_FOR_MUTATIONS);

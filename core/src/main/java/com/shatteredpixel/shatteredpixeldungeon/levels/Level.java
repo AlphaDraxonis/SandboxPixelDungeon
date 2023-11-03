@@ -405,7 +405,19 @@ public abstract class Level implements Bundlable {
 		//do nothing by default
 	}
 
-	public void playLevelMusic(int region) {
+	private static final String[][] SPECIAL_MUSIC = {
+			{Assets.Music.SEWERS_TENSE, Assets.Music.SEWERS_BOSS, Assets.Music.SEWERS_BOSS},
+			{Assets.Music.PRISON_TENSE, Assets.Music.PRISON_BOSS, Assets.Music.PRISON_BOSS},
+			{Assets.Music.CAVES_TENSE, Assets.Music.CAVES_BOSS, Assets.Music.CAVES_BOSS_FINALE},
+			{Assets.Music.CITY_TENSE, Assets.Music.CITY_BOSS, Assets.Music.CITY_BOSS_FINALE},
+			{Assets.Music.HALLS_TENSE, Assets.Music.HALLS_BOSS, Assets.Music.HALLS_BOSS_FINALE}
+	};
+	public void playLevelMusic(int region, int variant) {
+		//variant = 0: normal
+		//variant = 1: tense
+		//variant = 2: boss normal
+		//variant = 3: boss final
+		//region = -1: theme final
 
 		boolean hasTransitionToSurface = false;
 		for (LevelTransition transition : transitions.values()) {
@@ -415,8 +427,13 @@ public abstract class Level implements Bundlable {
 			}
 		}
 
-		if (Statistics.amuletObtained && hasTransitionToSurface) {
+		if (Statistics.amuletObtained && hasTransitionToSurface || region == -1) {
 			Music.INSTANCE.play(Assets.Music.THEME_FINALE, true);
+			return;
+		}
+
+		if (variant > 0 && variant <= 3) {
+			Music.INSTANCE.play(SPECIAL_MUSIC[region-1][variant-1], true);
 			return;
 		}
 
@@ -444,7 +461,6 @@ public abstract class Level implements Bundlable {
 	}
 
 	public int playsMusicFromRegion(){
-		int temp;
 		if (this instanceof CustomLevel) {
 			int music = ((CustomLevel) this).getMusicValue();
 			return music == REGION_NONE ? ((CustomLevel) this).getRegionValue() : music;

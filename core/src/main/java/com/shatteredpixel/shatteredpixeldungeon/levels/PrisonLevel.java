@@ -67,7 +67,7 @@ public class PrisonLevel extends RegularLevel {
 
 	@Override
 	public void playLevelMusic() {
-		playLevelMusic(LevelScheme.REGION_PRISON);
+		playLevelMusic(LevelScheme.REGION_PRISON, 0);
 	}
 
 	public static boolean playingQuestMusic;

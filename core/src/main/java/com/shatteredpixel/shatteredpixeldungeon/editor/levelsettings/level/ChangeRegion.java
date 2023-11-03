@@ -4,6 +4,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -40,9 +42,12 @@ public class ChangeRegion extends Component {
             new AssetCheckbox(Document.INTROS.pageTitle("Prison"), LevelScheme.REGION_PRISON, CAT_MUSIC),
             new AssetCheckbox(Document.INTROS.pageTitle("Caves"), LevelScheme.REGION_CAVES, CAT_MUSIC),
             new AssetCheckbox(Document.INTROS.pageTitle("City"), LevelScheme.REGION_CITY, CAT_MUSIC),
-            new AssetCheckbox(Document.INTROS.pageTitle("Halls"), LevelScheme.REGION_HALLS, CAT_MUSIC)
+            new AssetCheckbox(Document.INTROS.pageTitle("Halls"), LevelScheme.REGION_HALLS, CAT_MUSIC),
+            new AssetCheckbox(Messages.get(ChangeRegion.class, "theme_final"), -1, CAT_MUSIC)
     }
     };
+
+    private final MusicVariantSpinner musicVariantSpinner;
 
     public ChangeRegion(Runnable onClose) {
         super();
@@ -54,6 +59,7 @@ public class ChangeRegion extends Component {
                 f.getWaterTextureValue(),
                 f.getMusicValue()
         };
+        int oldMusicVariant = f.getMusicVariant();
 
 
         outsideSp = new Component() {
@@ -65,6 +71,7 @@ public class ChangeRegion extends Component {
                     @Override
                     protected void onClick() {
                         int[] newValues = oldValues.clone();
+                        int newMusicVariant = (int) musicVariantSpinner.getValue();
 
                         for (int i = 0; i < checkboxes.length; i++) {
                             for (AssetCheckbox cb : checkboxes[i]) {
@@ -73,10 +80,11 @@ public class ChangeRegion extends Component {
                         }
                         onClose.run();
                         for (int i = 0; i < newValues.length; i++) {
-                            if (newValues[i] != oldValues[i]) {
+                            if (newValues[i] != oldValues[i] || newMusicVariant != oldMusicVariant) {
                                 f.setRegion(newValues[CAT_REGION]);
                                 f.setWaterTexture(newValues[CAT_WATER]);
                                 f.setMusic(newValues[CAT_MUSIC]);
+                                f.setMusicVariant(newMusicVariant);
                                 Game.switchScene(EditorScene.class);
                                 return;
                             }
@@ -123,6 +131,9 @@ public class ChangeRegion extends Component {
                 add(cb);
             }
         }
+
+        musicVariantSpinner = new MusicVariantSpinner(oldMusicVariant);
+        add(musicVariantSpinner);
     }
 
     protected void layout() {
@@ -135,6 +146,12 @@ public class ChangeRegion extends Component {
             catTitles[i].maxWidth((int) width);
             catTitles[i].setPos(((width - catTitles[i].width()) * 0.5f), pos);
             pos = catTitles[i].bottom() + GAP * 3;
+
+            if( i == CAT_MUSIC){
+                musicVariantSpinner.setRect(0, pos, width, ChooseOneInCategoriesBody.BUTTON_HEIGHT);
+                PixelScene.align(musicVariantSpinner);
+                pos = musicVariantSpinner.bottom() + GAP;
+            }
 
             for (AssetCheckbox cb : checkboxes[i]) {
                 cb.setRect(0, pos, width, ChooseOneInCategoriesBody.BUTTON_HEIGHT);
@@ -180,6 +197,30 @@ public class ChangeRegion extends Component {
                 uncheckAll(category);
                 super.onClick();
             }
+        }
+    }
+
+    private static class MusicVariantSpinner extends Spinner {
+
+
+        public MusicVariantSpinner(int val) {
+            super(new SpinnerIntegerModel(0,3, val, 1, true, null){
+                @Override
+                public String getDisplayString() {
+                    switch ((int) getValue()) {
+                        case 0: return Messages.get(ChangeRegion.class, "normal");
+                        case 1: return Messages.get(ChangeRegion.class, "tense");
+                        case 2: return Messages.get(ChangeRegion.class, "boss");
+                        case 3: return Messages.get(ChangeRegion.class, "boss_final");
+                    }
+                    return super.getDisplayString();
+                }
+
+                @Override
+                public float getInputFieldWith(float height) {
+                    return Spinner.FILL;
+                }
+            }, Messages.get(MusicVariantSpinner.class, "label"), 9);
         }
     }
 }

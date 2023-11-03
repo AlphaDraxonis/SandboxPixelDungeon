@@ -741,6 +741,8 @@ public enum Items {
                 Honeypot.class,
                 Honeypot.ShatteredPot.class,
                 MerchantsBeacon.class,
+                DriedRose.Petal.class,
+                TimekeepersHourglass.sandBag.class,
                 Ankh.class,
                 Waterskin.class,
                 BrokenSeal.class,
