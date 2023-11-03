@@ -21,21 +21,14 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SpectralNecromancerSprite;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
@@ -43,12 +36,26 @@ public class SpectralNecromancer extends Necromancer {
 
 	{
 		spriteClass = SpectralNecromancerSprite.class;
+
+		defaultTemplateClass = Wraith.class;
+		summonTemplate = Reflection.newInstance(defaultTemplateClass);
+		summonTemplate.state = summonTemplate.HUNTING;
 	}
 
 	private ArrayList<Integer> wraithIDs = new ArrayList<>();
+	private boolean justLoaded = true;
 
 	@Override
 	protected boolean act() {
+		if (justLoaded) {
+			for (int wraithID : wraithIDs) {
+				Actor ch = Actor.findById(wraithID);
+				if (ch instanceof Mob) {
+					((Mob) ch).spawningWeight_NOT_SAVED_IN_BUNDLE = 0;//spawningWeight is not stored is bundle, but mobs act before level respawner
+				}
+			}
+			justLoaded = false;
+		}
 		if (summoning && state != HUNTING){
 			summoning = false;
 			if (sprite instanceof SpectralNecromancerSprite) {
@@ -75,8 +82,8 @@ public class SpectralNecromancer extends Necromancer {
 	public void die(Object cause) {
 		for (int ID : wraithIDs){
 			Actor a = Actor.findById(ID);
-			if (a instanceof Wraith){
-				((Wraith) a).die(null);
+			if (a instanceof Mob){
+				((Mob) a).die(null);
 			}
 		}
 
@@ -103,65 +110,25 @@ public class SpectralNecromancer extends Necromancer {
 	}
 
 	@Override
-	public void summonMinion() {
-		if (Actor.findChar(summoningPos) != null) {
-
-			//cancel if character cannot be moved
-			if (Char.hasProp(Actor.findChar(summoningPos), Property.IMMOVABLE)){
-				summoning = false;
-				((SpectralNecromancerSprite)sprite).finishSummoning();
-				spend(TICK);
-				return;
-			}
-
-			int pushPos = pos;
-			for (int c : PathFinder.NEIGHBOURS8) {
-				if (Actor.findChar(summoningPos + c) == null
-						&& Dungeon.level.passable[summoningPos + c]
-						&& (Dungeon.level.openSpace[summoningPos + c] || !hasProp(Actor.findChar(summoningPos), Property.LARGE))
-						&& Dungeon.level.trueDistance(pos, summoningPos + c) > Dungeon.level.trueDistance(pos, pushPos)) {
-					pushPos = summoningPos + c;
-				}
-			}
-
-			//push enemy, or wait a turn if there is no valid pushing position
-			if (pushPos != pos) {
-				Char ch = Actor.findChar(summoningPos);
-				Actor.add( new Pushing( ch, ch.pos, pushPos ) );
-
-				ch.pos = pushPos;
-				Dungeon.level.occupyCell(ch );
-
-			} else {
-
-				Char blocker = Actor.findChar(summoningPos);
-				if (blocker.alignment != alignment){
-					blocker.damage( Random.NormalIntRange(2, 10), this );
-					if (blocker == Dungeon.hero && !blocker.isAlive()){
-						Badges.validateDeathFromEnemyMagic();
-						Dungeon.fail(this);
-						GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );
-					}
-				}
-
-				spend(TICK);
-				return;
-			}
+	public Mob summonMinion() {
+		Mob summoned;
+		if ((summoned = super.summonMinion()) != null) {
+			wraithIDs.add(summoned.id());
+			mySummon = null;
 		}
+		return summoned;
+	}
 
-		summoning = firstSummon = false;
-
-		Wraith wraith = Wraith.spawnAt(summoningPos, false);
-		wraith.setLevel(0);
-		Dungeon.level.occupyCell( wraith );
+	@Override
+	protected void finishSummoning(){
 		((SpectralNecromancerSprite)sprite).finishSummoning();
+	}
 
-		for (Buff b : buffs(AllyBuff.class)){
-			Buff.affect( wraith, b.getClass());
-		}
-		for (Buff b : buffs(ChampionEnemy.class)){
-			Buff.affect( wraith, b.getClass());
-		}
-		wraithIDs.add(wraith.id());
+	@Override
+	protected Mob convertToSummonedMob(Mob mob) {
+		mob = super.convertToSummonedMob(mob);
+		mob.HP = mob.HT;
+		if (mob instanceof MobBasedOnDepth) ((MobBasedOnDepth) mob).setLevel(0);
+		return mob;
 	}
 }

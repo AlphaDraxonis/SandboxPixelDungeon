@@ -1078,9 +1078,10 @@ public abstract class Mob extends Char {
 
 	}
 
+	public float spawningWeight_NOT_SAVED_IN_BUNDLE = 1;
 	//how many mobs this one should count as when determining spawning totals
 	public float spawningWeight(){
-		return 1;
+		return spawningWeight_NOT_SAVED_IN_BUNDLE;
 	}
 	
 	public boolean reset() {

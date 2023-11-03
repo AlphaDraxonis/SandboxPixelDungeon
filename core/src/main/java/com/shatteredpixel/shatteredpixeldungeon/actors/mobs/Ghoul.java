@@ -82,7 +82,7 @@ public class Ghoul extends Mob {
 
 	@Override
 	public float spawningWeight() {
-		return 0.5f;
+		return 0.5f * spawningWeight_NOT_SAVED_IN_BUNDLE;
 	}
 
 	private int timesDowned = 0;

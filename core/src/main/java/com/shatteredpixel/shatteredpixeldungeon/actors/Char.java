@@ -892,6 +892,10 @@ public abstract class Char extends Actor {
 		
 		super.spend( time / timeScale );
 	}
+
+	public void spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY( float time ){
+		spend(time);
+	}
 	
 	public synchronized LinkedHashSet<Buff> buffs() {
 		return new LinkedHashSet<>(buffs);

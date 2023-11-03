@@ -115,18 +115,22 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 			GameScene.add( w, SPAWN_DELAY );
 			Dungeon.level.occupyCell(w);
 
-			w.sprite.alpha( 0 );
-			w.sprite.parent.add( new AlphaTweener( w.sprite, 1, 0.5f ) );
-
-			if (w instanceof TormentedSpirit){
-				w.sprite.emitter().burst(ChallengeParticle.FACTORY, 10);
-			} else {
-				w.sprite.emitter().burst(ShadowParticle.CURSE, 5);
-			}
+			showSpawnParticle(w);
 			
 			return w;
 		} else {
 			return null;
+		}
+	}
+
+	public static void showSpawnParticle(Wraith w) {
+		w.sprite.alpha( 0 );
+		w.sprite.parent.add( new AlphaTweener( w.sprite, 1, 0.5f ) );
+
+		if (w instanceof TormentedSpirit){
+			w.sprite.emitter().burst(ChallengeParticle.FACTORY, 10);
+		} else {
+			w.sprite.emitter().burst(ShadowParticle.CURSE, 5);
 		}
 	}
 

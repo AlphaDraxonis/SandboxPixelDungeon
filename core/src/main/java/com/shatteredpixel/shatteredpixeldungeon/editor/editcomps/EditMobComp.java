@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
@@ -29,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.Loot
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.WndEditStats;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Buffs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
@@ -92,6 +94,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final CheckBox spawnQuestRoom;
 
     private final Spinner sentryRange, sentryDelay;
+    private final ItemSelector necroSpawnMob;
     private final Spinner tenguPhase, tenguRange;
     private final CheckBox dm300destroyWalls;
     private final Spinner yogSpawnersAlive;
@@ -385,6 +388,28 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             sentryDelay = null;
         }
 
+        if (mob instanceof Necromancer) {
+            Mob necroMob = ((Necromancer) mob).summonTemplate;
+            necroSpawnMob = new ItemSelector(Messages.get(EditMobComp.class, "necro_spawn"), MobItem.class, necroMob == null ? null : new MobItem(necroMob), ItemSelector.NullTypeSelector.NOTHING) {
+                {
+                    selector.preferredBag = Mobs.bag.getClass();
+                }
+                @Override
+                public void change() {
+                    EditorScene.selectItem(selector);
+                }
+
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    if (selectedItem == EditorItem.NULL_ITEM) ((Necromancer) mob).summonTemplate = null;
+                    else if (selectedItem instanceof MobItem) ((Necromancer) mob).summonTemplate = ((MobItem) selectedItem).mob();
+                    updateObj();
+                }
+            };
+            add(necroSpawnMob);
+        } else necroSpawnMob = null;
+
         if (mob instanceof Tengu) {
             tenguPhase = new Spinner(new SpinnerIntegerModel(1, 2, ((Tengu) mob).phase, 1, true, null) {
                 @Override
@@ -544,7 +569,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 yogSpawnersAlive, yogNormalFists, yogChallengeFists,
                 mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, blacksmithQuestRewards,
                 tenguPhase, tenguRange, dm300destroyWalls,
-                sentryRange, sentryDelay, neutralEnemy, addBuffs, editStats};
+                sentryRange, sentryDelay, necroSpawnMob, neutralEnemy, addBuffs, editStats};
     }
 
     @Override
@@ -624,6 +649,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (((YogDzewa) a).spawnersAlive != ((YogDzewa) b).spawnersAlive) return false;
             if (!isMobListEqual(((YogDzewa) a).fistSummons, ((YogDzewa) b).fistSummons)) return false;
             return isMobListEqual(((YogDzewa) a).challengeSummons, ((YogDzewa) b).challengeSummons);
+        } else if (a instanceof Necromancer){
+            return EditMobComp.areEqual(((Necromancer) a).summonTemplate, ((Necromancer) b).summonTemplate);
         }
         return true;
     }

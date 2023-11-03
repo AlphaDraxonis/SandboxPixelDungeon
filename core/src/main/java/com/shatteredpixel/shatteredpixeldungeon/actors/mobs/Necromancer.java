@@ -44,6 +44,7 @@ import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 public class Necromancer extends Mob {
 	
@@ -69,8 +70,13 @@ public class Necromancer extends Mob {
 	public int summoningPos = -1;
 	
 	protected boolean firstSummon = true;
-	
-	private NecroSkeleton mySkeleton;
+
+	protected Class<? extends Mob> defaultTemplateClass = Skeleton.class;
+	public Mob summonTemplate = Reflection.newInstance(defaultTemplateClass);
+	{
+		summonTemplate.state = summonTemplate.WANDERING;
+	}
+	protected Mob mySummon;
 	private int storedSkeletonID = -1;
 
 	@Override
@@ -100,17 +106,27 @@ public class Necromancer extends Mob {
 	}
 
 	@Override
+	public String description() {
+		String desc = super.description();
+		if (summonTemplate == null)
+			desc += "\n\n" + Messages.get(this, "summon_none");
+		else if(summonTemplate.getClass() != defaultTemplateClass)
+			desc += "\n\n" + Messages.get(this, "summon", summonTemplate.name());
+		return desc;
+	}
+
+	@Override
 	public void die(Object cause) {
 		if (storedSkeletonID != -1){
 			Actor ch = Actor.findById(storedSkeletonID);
 			storedSkeletonID = -1;
-			if (ch instanceof NecroSkeleton){
-				mySkeleton = (NecroSkeleton) ch;
+			if (ch instanceof Mob){
+				mySummon = (Mob) ch;
 			}
 		}
 		
-		if (mySkeleton != null && mySkeleton.isAlive()){
-			mySkeleton.die(null);
+		if (mySummon != null && mySummon.isAlive()){
+			mySummon.die(null);
 		}
 		
 		super.die(cause);
@@ -125,17 +141,19 @@ public class Necromancer extends Mob {
 	private static final String FIRST_SUMMON = "first_summon";
 	private static final String SUMMONING_POS = "summoning_pos";
 	private static final String MY_SKELETON = "my_skeleton";
-	
+	private static final String SUMMONING_TEMPLATE = "summoning_template";
+
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put( SUMMONING, summoning );
 		bundle.put( FIRST_SUMMON, firstSummon );
+		bundle.put( SUMMONING_TEMPLATE, summonTemplate );
 		if (summoning){
 			bundle.put( SUMMONING_POS, summoningPos);
 		}
-		if (mySkeleton != null){
-			bundle.put( MY_SKELETON, mySkeleton.id() );
+		if (mySummon != null){
+			bundle.put( MY_SKELETON, mySummon.id() );
 		} else if (storedSkeletonID != -1){
 			bundle.put( MY_SKELETON, storedSkeletonID );
 		}
@@ -145,6 +163,7 @@ public class Necromancer extends Mob {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		summoning = bundle.getBoolean( SUMMONING );
+		summonTemplate = (Mob) bundle.get(SUMMONING_TEMPLATE);
 		if (bundle.contains(FIRST_SUMMON)) firstSummon = bundle.getBoolean(FIRST_SUMMON);
 		if (summoning){
 			summoningPos = bundle.getInt( SUMMONING_POS );
@@ -155,34 +174,34 @@ public class Necromancer extends Mob {
 	}
 	
 	public void onZapComplete(){
-		if (mySkeleton == null || mySkeleton.sprite == null || !mySkeleton.isAlive()){
+		if (mySummon == null || mySummon.sprite == null || !mySummon.isAlive()){
 			return;
 		}
 		
 		//heal skeleton first
-		if (mySkeleton.HP < mySkeleton.HT){
+		if (mySummon.HP < mySummon.HT){
 
-			if (sprite.visible || mySkeleton.sprite.visible) {
-				sprite.parent.add(new Beam.HealthRay(sprite.center(), mySkeleton.sprite.center()));
+			if (sprite.visible || mySummon.sprite.visible) {
+				sprite.parent.add(new Beam.HealthRay(sprite.center(), mySummon.sprite.center()));
 			}
 			
-			mySkeleton.HP = Math.min(mySkeleton.HP + mySkeleton.HT/5, mySkeleton.HT);
-			if (mySkeleton.sprite.visible) mySkeleton.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+			mySummon.HP = Math.min(mySummon.HP + mySummon.HT/5, mySummon.HT);
+			if (mySummon.sprite.visible) mySummon.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
 			
 		//otherwise give it adrenaline
-		} else if (mySkeleton.buff(Adrenaline.class) == null) {
+		} else if (mySummon.buff(Adrenaline.class) == null) {
 
-			if (sprite.visible || mySkeleton.sprite.visible) {
-				sprite.parent.add(new Beam.HealthRay(sprite.center(), mySkeleton.sprite.center()));
+			if (sprite.visible || mySummon.sprite.visible) {
+				sprite.parent.add(new Beam.HealthRay(sprite.center(), mySummon.sprite.center()));
 			}
 			
-			Buff.affect(mySkeleton, Adrenaline.class, 3f);
+			Buff.affect(mySummon, Adrenaline.class, 3f);
 		}
 		
 		next();
 	}
 
-	public void summonMinion(){
+	public Mob summonMinion(){
 		if (Actor.findChar(summoningPos) != null) {
 
 			//cancel if character cannot be moved
@@ -190,7 +209,7 @@ public class Necromancer extends Mob {
 				summoning = false;
 				((NecromancerSprite)sprite).finishSummoning();
 				spend(TICK);
-				return;
+				return null;
 			}
 
 			int pushPos = pos;
@@ -224,24 +243,33 @@ public class Necromancer extends Mob {
 				}
 
 				spend(TICK);
-				return;
+				return null;
 			}
 		}
 
 		summoning = firstSummon = false;
 
-		mySkeleton = new NecroSkeleton();
-		mySkeleton.pos = summoningPos;
-		GameScene.add( mySkeleton );
-		Dungeon.level.occupyCell( mySkeleton );
-		((NecromancerSprite)sprite).finishSummoning();
+		mySummon = convertToSummonedMob((Mob) summonTemplate.getCopy());
+		mySummon.pos = summoningPos;
+		GameScene.add(mySummon);
+		Dungeon.level.occupyCell(mySummon);
+		finishSummoning();
+
+		if (mySummon instanceof Wraith) {
+			Wraith.showSpawnParticle((Wraith) mySummon);
+		}
 
 		for (Buff b : buffs(AllyBuff.class)){
-			Buff.affect(mySkeleton, b.getClass());
+			Buff.affect(mySummon, b.getClass());
 		}
 		for (Buff b : buffs(ChampionEnemy.class)){
-			Buff.affect( mySkeleton, b.getClass());
+			Buff.affect(mySummon, b.getClass());
 		}
+		return mySummon;
+	}
+
+	protected void finishSummoning(){
+		((NecromancerSprite)sprite).finishSummoning();
 	}
 	
 	private class Hunting extends Mob.Hunting{
@@ -257,8 +285,9 @@ public class Necromancer extends Mob {
 			if (storedSkeletonID != -1){
 				Actor ch = Actor.findById(storedSkeletonID);
 				storedSkeletonID = -1;
-				if (ch instanceof NecroSkeleton){
-					mySkeleton = (NecroSkeleton) ch;
+				if (ch instanceof Mob){
+					mySummon = (Mob) ch;
+					mySummon.spawningWeight_NOT_SAVED_IN_BUNDLE = 0;//spawningWeight is not stored is bundle, but mobs act before level respawner
 				}
 			}
 			
@@ -267,15 +296,15 @@ public class Necromancer extends Mob {
 				return true;
 			}
 			
-			if (mySkeleton != null &&
-					(!mySkeleton.isAlive()
-					|| !Dungeon.level.mobs.contains(mySkeleton)
-					|| mySkeleton.alignment != alignment)){
-				mySkeleton = null;
+			if (mySummon != null &&
+					(!mySummon.isAlive()
+					|| !Dungeon.level.mobs.contains(mySummon)
+					|| (mySummon.alignment != alignment && !mySummon.neutralEnemy))){
+				mySummon = null;
 			}
 			
 			//if enemy is seen, and enemy is within range, and we have no skeleton, summon a skeleton!
-			if (enemySeen && Dungeon.level.distance(pos, enemy.pos) <= 4 && mySkeleton == null){
+			if (enemySeen && Dungeon.level.distance(pos, enemy.pos) <= 4 && mySummon == null){
 				
 				summoningPos = -1;
 
@@ -293,7 +322,7 @@ public class Necromancer extends Mob {
 					}
 				}
 				
-				if (summoningPos != -1){
+				if (summoningPos != -1 && summonTemplate != null){
 					
 					summoning = true;
 					sprite.zap( summoningPos );
@@ -306,21 +335,21 @@ public class Necromancer extends Mob {
 				
 				return true;
 			//otherwise, if enemy is seen, and we have a skeleton...
-			} else if (enemySeen && mySkeleton != null){
+			} else if (enemySeen && mySummon != null){
 				
 				spend(TICK);
 				
-				if (!fieldOfView[mySkeleton.pos]){
+				if (!fieldOfView[mySummon.pos]){
 					
 					//if the skeleton is not next to the enemy
 					//teleport them to the closest spot next to the enemy that can be seen
-					if (!Dungeon.level.adjacent(mySkeleton.pos, enemy.pos)){
+					if (!Dungeon.level.adjacent(mySummon.pos, enemy.pos)){
 						int telePos = -1;
 						for (int c : PathFinder.NEIGHBOURS8){
 							if (Actor.findChar(enemy.pos+c) == null
 									&& Dungeon.level.passable[enemy.pos+c]
 									&& fieldOfView[enemy.pos+c]
-									&& (Dungeon.level.openSpace[enemy.pos+c] || !Char.hasProp(mySkeleton, Property.LARGE))
+									&& (Dungeon.level.openSpace[enemy.pos+c] || !Char.hasProp(mySummon, Property.LARGE))
 									&& Dungeon.level.trueDistance(pos, enemy.pos+c) < Dungeon.level.trueDistance(pos, telePos)){
 								telePos = enemy.pos+c;
 							}
@@ -328,8 +357,8 @@ public class Necromancer extends Mob {
 						
 						if (telePos != -1){
 							
-							ScrollOfTeleportation.appear(mySkeleton, telePos);
-							mySkeleton.teleportSpend();
+							ScrollOfTeleportation.appear(mySummon, telePos);
+							mySummon.spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY(TICK);
 							
 							if (sprite != null && sprite.visible){
 								sprite.zap(telePos);
@@ -345,9 +374,9 @@ public class Necromancer extends Mob {
 				} else {
 					
 					//zap skeleton
-					if (mySkeleton.HP < mySkeleton.HT || mySkeleton.buff(Adrenaline.class) == null) {
+					if (mySummon.HP < mySummon.HT || mySummon.buff(Adrenaline.class) == null) {
 						if (sprite != null && sprite.visible){
-							sprite.zap(mySkeleton.pos);
+							sprite.zap(mySummon.pos);
 							return false;
 						} else {
 							onZapComplete();
@@ -364,43 +393,37 @@ public class Necromancer extends Mob {
 			}
 		}
 	}
-	
-	public static class NecroSkeleton extends Skeleton {
-		
-		{
-			state = WANDERING;
-			
-			spriteClass = NecroSkeletonSprite.class;
-			
-			//no loot or exp
-			maxLvl = -5;
-			
-			//20/25 health to start
-			HP = 20;
+
+	protected Mob convertToSummonedMob(Mob mob) {
+		//TODO name/desc
+		if (mob instanceof Skeleton)
+			mob.spriteClass = NecroSkeletonSprite.class;
+
+		if (mob instanceof MobBasedOnDepth) ((MobBasedOnDepth) mob).setLevel(Dungeon.depth);
+
+		mob.spawningWeight_NOT_SAVED_IN_BUNDLE = 0;
+
+		//no loot or exp
+		mob.maxLvl = -5;
+
+		//20/25 health to start  -> 20% less hp
+		mob.HP = mob.HT - mob.HT/5;
+
+		return mob;
+	}
+
+	public static class NecroSkeletonSprite extends SkeletonSprite {
+
+		public NecroSkeletonSprite() {
+			super();
+			brightness(0.75f);
 		}
 
 		@Override
-		public float spawningWeight() {
-			return 0;
+		public void resetColor() {
+			super.resetColor();
+			brightness(0.75f);
 		}
-
-		private void teleportSpend(){
-			spend(TICK);
-		}
-		
-		public static class NecroSkeletonSprite extends SkeletonSprite{
-			
-			public NecroSkeletonSprite(){
-				super();
-				brightness(0.75f);
-			}
-			
-			@Override
-			public void resetColor() {
-				super.resetColor();
-				brightness(0.75f);
-			}
-		}
-		
 	}
+
 }

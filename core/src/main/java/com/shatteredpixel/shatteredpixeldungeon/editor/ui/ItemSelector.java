@@ -222,9 +222,11 @@ public class ItemSelector extends Component {
 
     public static abstract class AnyItemSelectorWnd  extends WndBag.ItemSelector {
         protected final Class<? extends Item> itemClasses;
+        public Class<? extends Bag> preferredBag;
 
         public AnyItemSelectorWnd(Class<? extends Item> itemClasses) {
             this.itemClasses = itemClasses;
+            preferredBag = Items.bag.getClass();
         }
 
         @Override
@@ -242,7 +244,7 @@ public class ItemSelector extends Component {
 
         @Override
         public Class<? extends Bag> preferredBag() {
-            return Items.bag.getClass();
+            return preferredBag;
         }
 
         @Override
