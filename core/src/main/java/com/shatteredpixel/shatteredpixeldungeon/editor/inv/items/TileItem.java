@@ -171,7 +171,7 @@ public class TileItem extends EditorItem {
 
 
     public static class PlaceTileActionPart extends PlaceCellActionPart {
-        protected /*final*/ ActionPartList moreActions;//should ONLY be changed if null
+        private /*final*/ ActionPartList moreActions;//should ONLY be changed if null
 
         protected PlaceTileActionPart(int cell, int terrainType, boolean forceChange) {
 
@@ -395,6 +395,11 @@ public class TileItem extends EditorItem {
         @Override
         public boolean hasContent() {
             return super.hasContent() || (moreActions != null && moreActions.hasContent());
+        }
+
+        protected void addToMoreActions(ActionPart actionPart){
+            if (moreActions == null) moreActions = new ActionPartList();
+            moreActions.addActionPart(actionPart);
         }
     }
 

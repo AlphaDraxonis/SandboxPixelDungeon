@@ -57,7 +57,8 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
                     return true;
                 }
             };
-            moreActions.addActionPart(part);
+
+            addToMoreActions(part);
             part.redo();
             EditorScene.updateMap(trap.pos);
         }
@@ -82,7 +83,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
                     return true;
                 }
             };
-            moreActions.addActionPart(part);
+            addToMoreActions(part);
             part.redo();
             EditorScene.updateMap(trap.pos);
         }
