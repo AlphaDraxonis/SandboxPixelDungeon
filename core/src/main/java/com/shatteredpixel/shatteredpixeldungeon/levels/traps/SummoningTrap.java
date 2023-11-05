@@ -26,7 +26,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -85,6 +87,7 @@ public class SummoningTrap extends Trap {
 			}
 		}
 
+
 		//important to process the visuals and pressing of cells last, so spawned mobs have a chance to occupy cells first
 		Trap t;
 		for (Mob mob : mobs){
@@ -96,6 +99,10 @@ public class SummoningTrap extends Trap {
 			}
 			ScrollOfTeleportation.appear(mob, mob.pos);
 			Dungeon.level.occupyCell(mob);
+		}
+
+		if (mobs.isEmpty()) {
+			GLog.w(Messages.get(this, "no_mobs"));
 		}
 
 	}

@@ -633,6 +633,7 @@ public abstract class Level implements Bundlable {
 	public Mob createMob() {
 		if (mobsToSpawn == null || mobsToSpawn.isEmpty()) {
 			mobsToSpawn = getMobRotation();
+			if (mobsToSpawn.isEmpty()) return null;
 		}
 
 		Mob m = Reflection.newInstance(mobsToSpawn.remove(0));
