@@ -465,6 +465,7 @@ public class TimekeepersHourglass extends Artifact {
 
 		{
 			image = ItemSpriteSheet.SANDBAG;
+			stackable = true;
 		}
 
 		@Override
