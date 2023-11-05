@@ -89,7 +89,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
 
             @Override
             public String getDisplayString() {
-                float price = heap.items.getLast().getCopy().identify().value() * 5 * EditorScene.customLevel().levelScheme.getPriceMultiplier();
+                float price = heap.items.getLast().getCopy().value() * 5 * EditorScene.customLevel().levelScheme.getPriceMultiplier();
                 return super.getDisplayString() + " = " + ((int)(getAsFloat() * price) + " " + Messages.get(Gold.class, "name"));
             }
         }, Messages.get(LevelTab.class, "shop_price"), 8);
