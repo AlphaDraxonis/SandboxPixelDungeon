@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
@@ -488,25 +489,29 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
                 mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper)) {
 
-            neutralEnemy = new CheckBox(Messages.get(EditMobComp.class, "neutral_enemy")) {
+            if(!(mob instanceof YogFist || mob instanceof Mimic || mob instanceof SentryRoom.Sentry)) {
+                neutralEnemy = new CheckBox(Messages.get(EditMobComp.class, "neutral_enemy")) {
 
-                @Override
-                protected void layout() {
-                    super.layout();
-                    text.setPos(x + (width() - text.width()) / 2f, y + (height() - text.height()) / 2f);
-                    PixelScene.align(text);
-                }
+                    @Override
+                    protected void layout() {
+                        super.layout();
+                        text.setPos(x + (width() - text.width()) / 2f, y + (height() - text.height()) / 2f);
+                        PixelScene.align(text);
+                    }
 
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    if (mob.neutralEnemy = value) mob.alignment = Char.Alignment.NEUTRAL;
-                    else if (mob.alignment == Char.Alignment.NEUTRAL)
-                        mob.alignment = Reflection.newInstance(mob.getClass()).alignment;//only works if alignment can't be changed otherwise
-                }
-            };
-            neutralEnemy.checked(mob.neutralEnemy);
-            add(neutralEnemy);
+                    @Override
+                    public void checked(boolean value) {
+                        super.checked(value);
+                        int val = value ? Mob.NEUTRAL_ALIGNMENT : Mob.NORMAL_ALIGNMENT;
+                        mob.setPlayerAlignment(val);
+                        if ((mob.playerAlignment = val) == Mob.NEUTRAL_ALIGNMENT) mob.alignment = Char.Alignment.NEUTRAL;
+                        else if (mob.alignment == Char.Alignment.NEUTRAL)
+                            updateObj();
+                    }
+                };
+                neutralEnemy.checked(mob.playerAlignment == Mob.NEUTRAL_ALIGNMENT);
+                add(neutralEnemy);
+            } else neutralEnemy = null;
 
             if(!(mob instanceof Tengu)) {
                 addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
@@ -627,7 +632,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (a.state.getClass() != b.state.getClass()) return false;
         if (!DefaultStatsCache.areStatsEqual(a, b)) return false;
         if (a.alignment != b.alignment) return false;
-        if (a.neutralEnemy != b.neutralEnemy) return false;
+        if (a.playerAlignment != b.playerAlignment) return false;
         Set<Class<? extends Buff>> aBuffs = new HashSet<>(4);
         Set<Class<? extends Buff>> bBuffs = new HashSet<>(4);
         for (Buff buff : a.buffs()) aBuffs.add(buff.getClass());

@@ -388,7 +388,7 @@ public abstract class Level implements Bundlable {
 				bossMob.isBossMob = !(m instanceof Goo || m instanceof DwarfKing);
 				bossMob.addBossProperty();
 			}
-			if (m.neutralEnemy) {
+			if (m.playerAlignment != Mob.NORMAL_ALIGNMENT) {
 				if (m.state == m.HUNTING) m.state = m.WANDERING;
 			}
 		}

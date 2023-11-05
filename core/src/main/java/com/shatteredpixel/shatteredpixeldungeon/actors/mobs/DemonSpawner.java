@@ -126,10 +126,7 @@ public class DemonSpawner extends Mob {
 
 			if (!candidates.isEmpty()) {
 				RipperDemon spawn = new RipperDemon();
-				if (neutralEnemy){
-					spawn.neutralEnemy = true;
-					spawn.alignment = Alignment.NEUTRAL;
-				}
+				spawn.setPlayerAlignment(playerAlignment);
 
 				spawn.pos = Random.element( candidates );
 				spawn.state = spawn.HUNTING;

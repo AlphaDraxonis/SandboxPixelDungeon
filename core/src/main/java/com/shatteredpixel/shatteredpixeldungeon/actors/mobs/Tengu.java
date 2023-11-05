@@ -382,7 +382,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	@Override
 	public void notice() {
 		super.notice();
-		if (neutralEnemy) return;
+		if (playerAlignment != NORMAL_ALIGNMENT) return;
 
 		if (!BossHealthBar.isAssigned()) {
 			BossHealthBar.assignBoss(this);
@@ -447,7 +447,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		initialPos = bundle.getInt(INITIAL_POS);
 		stepsToDo = bundle.getInt(STEPS_TO_DO);
 
-		if (!neutralEnemy) {
+		if (playerAlignment == NORMAL_ALIGNMENT) {
 			BossHealthBar.assignBoss(this);
 			if (HP <= HT / 2) BossHealthBar.bleed(true);
 		}

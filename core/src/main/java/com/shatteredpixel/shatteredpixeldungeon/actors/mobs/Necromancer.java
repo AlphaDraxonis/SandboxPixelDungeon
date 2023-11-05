@@ -299,7 +299,7 @@ public class Necromancer extends Mob {
 			if (mySummon != null &&
 					(!mySummon.isAlive()
 					|| !Dungeon.level.mobs.contains(mySummon)
-					|| (mySummon.alignment != alignment && !mySummon.neutralEnemy))){
+					|| (mySummon.alignment != alignment && mySummon.playerAlignment == NORMAL_ALIGNMENT))){
 				mySummon = null;
 			}
 			

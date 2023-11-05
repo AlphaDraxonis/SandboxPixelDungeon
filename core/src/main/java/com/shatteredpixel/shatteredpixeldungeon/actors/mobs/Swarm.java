@@ -125,6 +125,7 @@ public class Swarm extends Mob {
 	
 	private Swarm split() {
 		Swarm clone = new Swarm();
+		clone.setPlayerAlignment(playerAlignment);
 		clone.generation = generation + 1;
 		clone.EXP = 0;
 		if (buff( Burning.class ) != null) {

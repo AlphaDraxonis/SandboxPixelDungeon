@@ -131,7 +131,11 @@ public abstract class Mob extends Char {
 
 	public boolean isBossMob;//only real value while playing, use level.bossmobAt instead!, not meant for shattered bosses except goo!
 
-	public boolean neutralEnemy;//Neutral enemies behave similar as RatKing, cannot have boss bars
+	//Normal, Neutral, or Friedly; Neutral enemies behave similar as RatKing, cannot have boss bars
+	public static final int NORMAL_ALIGNMENT   = 0;
+	public static final int NEUTRAL_ALIGNMENT  = 1;
+	public static final int FRIENDLY_ALIGNMENT = 2;
+	public int playerAlignment;
 	
 	public int EXP = 1;
 	public int maxLvl = Hero.MAX_LEVEL-1;
@@ -165,7 +169,7 @@ public abstract class Mob extends Char {
 	private static final String XP = "xp";
 	private static final String STATS_SCALE = "stats_scale";
 	private static final String IS_BOSS_MOB = "is_boss_mob";
-	private static final String NEUTRAL_ENEMY = "neutral_enemy";
+	private static final String PLAYER_ALIGNMENT = "player_alignment";
 	private static final String LOOT = "loot";
 
 	private static final String ENEMY_ID	= "enemy_id";
@@ -201,7 +205,7 @@ public abstract class Mob extends Char {
         }
 
         bundle.put(IS_BOSS_MOB, isBossMob);
-        bundle.put(NEUTRAL_ENEMY, neutralEnemy);
+        bundle.put(PLAYER_ALIGNMENT, playerAlignment);
 
         if (loot instanceof LootTableComp.CustomLootInfo) bundle.put(LOOT, (Bundlable) loot);
 
@@ -258,8 +262,17 @@ public abstract class Mob extends Char {
 		}
 
 		if (bundle.contains(LOOT)) loot = bundle.get(LOOT);
-		neutralEnemy = bundle.getBoolean( NEUTRAL_ENEMY );
-		if (neutralEnemy) alignment = Alignment.NEUTRAL;
+		if (bundle.contains("neutral_enemy")) playerAlignment = bundle.getBoolean("neutral_enemy") ? NEUTRAL_ALIGNMENT : NORMAL_ALIGNMENT;
+		else playerAlignment = bundle.getInt( PLAYER_ALIGNMENT );
+		setPlayerAlignment(playerAlignment);
+	}
+
+	public void setPlayerAlignment(int playerAlignment) {
+		this.playerAlignment = playerAlignment;
+		if (playerAlignment == NEUTRAL_ALIGNMENT) alignment = Alignment.NEUTRAL;
+		else if (playerAlignment == FRIENDLY_ALIGNMENT) alignment = Alignment.ALLY;
+		else if (alignment == Alignment.NEUTRAL || alignment == Alignment.ALLY)
+			alignment = Reflection.newInstance(getClass()).alignment;//only works if alignment can't be changed otherwise
 	}
 
 	//mobs need to remember their targets after every actor is added
@@ -317,7 +330,7 @@ public abstract class Mob extends Char {
 
 	@Override
 	public boolean interact(Char c) {
-		if (neutralEnemy) {
+		if (playerAlignment == NEUTRAL_ALIGNMENT) {
 			sprite.turnTo(pos, c.pos);
 			if (c == Dungeon.hero) {
 				if (state == SLEEPING) {
@@ -327,7 +340,7 @@ public abstract class Mob extends Char {
 				} else yell(Messages.get(this, "what_is_it"));
 			}
 		}
-		if (!neutralEnemy || c != Dungeon.hero) {
+		if (playerAlignment != NEUTRAL_ALIGNMENT || c != Dungeon.hero) {
 			return super.interact(c);
 		}
 		return true;
@@ -735,7 +748,7 @@ public abstract class Mob extends Char {
 	
 	@Override
 	public int defenseSkill( Char enemy ) {
-		if (neutralEnemy) return INFINITE_EVASION;
+		if (playerAlignment == NEUTRAL_ALIGNMENT) return INFINITE_EVASION;
 		if ( !surprisedBy(enemy)
 				&& paralysed == 0
 				&& !(alignment == Alignment.ALLY && enemy == Dungeon.hero)) {
@@ -1109,8 +1122,10 @@ public abstract class Mob extends Char {
 			desc += "\n\n_" + Messages.titleCase(b.name()) + "_\n" + b.desc();
 		}
 
-		if (neutralEnemy) {
+		if (playerAlignment == NEUTRAL_ALIGNMENT) {
 			desc += "\n\n" + Messages.get(this, "neutral_desc");
+		} else if (playerAlignment == FRIENDLY_ALIGNMENT) {
+			desc += "\n\n" + Messages.get(this, "friendly_desc");
 		}
 
         Mob defaultStats = DefaultStatsCache.getDefaultObject(getClass());
@@ -1188,7 +1203,7 @@ public abstract class Mob extends Char {
 
     public void notice() {
         sprite.showAlert();
-		if (neutralEnemy) return;
+		if (playerAlignment != NORMAL_ALIGNMENT) return;
 
 		if (isBossMob) {
             if (!BossHealthBar.isAssigned()) {

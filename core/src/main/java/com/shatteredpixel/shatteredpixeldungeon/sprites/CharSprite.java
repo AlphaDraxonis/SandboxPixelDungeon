@@ -120,7 +120,6 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	protected float flashTime = 0;
 	
 	protected boolean sleeping = false;
-	protected boolean neutral = false;
 
 	public Char ch;
 

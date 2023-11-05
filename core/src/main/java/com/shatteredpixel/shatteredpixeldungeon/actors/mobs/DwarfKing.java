@@ -155,7 +155,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 		if (phase == 2) properties.add(Property.IMMOVABLE);
 
-		if (!neutralEnemy) {
+		if (playerAlignment == NORMAL_ALIGNMENT) {
 			BossHealthBar.assignBoss(this);
 			if (phase == 3) BossHealthBar.bleed(true);
 		}
@@ -369,7 +369,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 	}
 
 	private boolean summonSubject( int delay, Class<?extends DwarfKingMob> type ){
-		Summoning s = new Summoning(id());
+		Summoning s = new Summoning(id(), playerAlignment);
 		s.pos = getSummoningPos();
 		if (s.pos == -1) {
 			return false;
@@ -542,7 +542,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 	@Override
 	public void notice() {
 		super.notice();
-		if (neutralEnemy) return;
+		if (playerAlignment != NORMAL_ALIGNMENT) return;
 
 		if (!BossHealthBar.isAssigned()) {
 			BossHealthBar.assignBoss(this);
@@ -860,12 +860,14 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		private Emitter particles;
 
 		private int kingID;
+		private int playerAlignment;
 
 		public Summoning(){
 			kingID = -1;
 		}
-		public Summoning(int kingID){
+		public Summoning(int kingID, int playerAlignment){
 			this.kingID = kingID;
+			this.playerAlignment = playerAlignment;
 		}
 
 		public int getPos() {
@@ -913,6 +915,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 				if (Actor.findChar(pos) == null) {
 					Mob m = (Mob) Reflection.newInstance(summon);
 					((DwarfKingMob) m).setKingId(kingID);
+					m.setPlayerAlignment(playerAlignment);
 					m.pos = pos;
 					m.maxLvl = -2;
 					GameScene.add(m);
@@ -979,7 +982,10 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			delay = bundle.getInt(DELAY);
 			pos = bundle.getInt(POS);
 			summon = bundle.getClass(SUMMON);
-			if (target != null) kingID = target.id();
+			if (target != null) {
+				kingID = target.id();
+				playerAlignment = ((DwarfKing)target).playerAlignment;
+			}
 		}
 	}
 

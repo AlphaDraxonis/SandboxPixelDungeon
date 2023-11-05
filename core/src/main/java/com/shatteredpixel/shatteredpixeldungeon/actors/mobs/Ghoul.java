@@ -125,6 +125,7 @@ public class Ghoul extends Mob {
 				Ghoul child = new Ghoul();
 				child.partnerID = this.id();
 				this.partnerID = child.id();
+				child.setPlayerAlignment(playerAlignment);
 				if (state != SLEEPING) {
 					child.state = child.WANDERING;
 				}
