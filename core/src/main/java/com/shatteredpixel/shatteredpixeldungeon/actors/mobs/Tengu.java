@@ -55,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -96,6 +97,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		damageReductionMax = 5;
 		
 		HUNTING = new Hunting();
+		WANDERING = new Wandering();
+		state = WANDERING;
 		
 		flying = true; //doesn't literally fly, but he is fleet-of-foot enough to avoid hazards
 		
@@ -107,6 +110,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	public int phase = 1;//1 or 2, ONLY used for non PrisonBossLevels
 	public int arenaRadius = 10;//ONLY used for non PrisonBossLevels
 	private int initialPos;
+	private int stepsToDo;//only if state is Wandering
 	
 //	@Override
 //	public int damageRoll() {
@@ -413,6 +417,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	private static final String PHASE            = "phase";
 	private static final String ARENA_RADIUS     = "arena_radius";
 	private static final String INITIAL_POS      = "initial_pos";
+	private static final String STEPS_TO_DO      = "steps_to_do";
 
 	
 	@Override
@@ -425,6 +430,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		bundle.put(PHASE, phase);
 		bundle.put(ARENA_RADIUS, arenaRadius);
 		bundle.put(INITIAL_POS, initialPos);
+		bundle.put(STEPS_TO_DO, stepsToDo);
 	}
 	
 	@Override
@@ -439,6 +445,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		phase = bundle.getInt(PHASE);
 		arenaRadius = bundle.getInt(ARENA_RADIUS);
 		initialPos = bundle.getInt(INITIAL_POS);
+		stepsToDo = bundle.getInt(STEPS_TO_DO);
 
 		if (!neutralEnemy) {
 			BossHealthBar.assignBoss(this);
@@ -449,7 +456,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	//don't bother bundling this, as its purely cosmetic
 	private boolean yelledCoward = false;
 	
-	//tengu is always hunting
+	//tengu is always hunting in Shattered
 	private class Hunting extends Mob.Hunting{
 		
 		@Override
@@ -488,7 +495,42 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			}
 		}
 	}
-	
+
+	protected class Wandering extends Mob.Wandering {
+
+		protected boolean continueWandering(){
+
+			if (target == -1) {
+				target = randomDestination();
+				spend( TICK );
+			}
+
+			if (stepsToDo > 0) {
+				stepsToDo--;
+				spend(1 / speed());
+				return true;
+			}
+
+			enemySeen = false;
+
+			int oldPos = pos;
+			if (!ScrollOfTeleportation.teleportToLocation(Tengu.this, target, false, false)){
+				return super.continueWandering();
+			} else {
+				stepsToDo = new Ballistica(oldPos, pos, Ballistica.STOP_TARGET).dist - 1;
+				spend(1 / speed());
+				moveSprite( oldPos, pos );
+				return true;
+			}
+		}
+
+		@Override
+		protected boolean noticeEnemy() {
+			stepsToDo = 0;
+			return super.noticeEnemy();
+		}
+	}
+
 	//*****************************************************************************************
 	//***** Tengu abilities. These are expressed in game logic as buffs, blobs, and items *****
 	//*****************************************************************************************

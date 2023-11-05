@@ -71,6 +71,9 @@ public class ScrollOfTeleportation extends Scroll {
 		return teleportToLocation(ch, pos, true);
 	}
 	public static boolean teleportToLocation(Char ch, int pos, boolean pathNeeded){
+		return teleportToLocation(ch, pos, pathNeeded, true);
+	}
+	public static boolean teleportToLocation(Char ch, int pos, boolean pathNeeded, boolean animation){
 		if (pathNeeded) PathFinder.buildDistanceMap(pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
 		if (pathNeeded && PathFinder.distance[ch.pos] == Integer.MAX_VALUE
 				|| (!Dungeon.level.passable[pos] && !Dungeon.level.avoid[pos])
@@ -81,7 +84,7 @@ public class ScrollOfTeleportation extends Scroll {
 			return false;
 		}
 		
-		appear( ch, pos );
+		appear( ch, pos, animation );
 		Dungeon.level.occupyCell( ch );
 		Buff.detach(ch, Roots.class);
 		if (ch == Dungeon.hero) {
@@ -278,15 +281,20 @@ public class ScrollOfTeleportation extends Scroll {
 	}
 
 	public static void appear( Char ch, int pos ) {
+		appear(ch, pos, true);
+	}
+	public static void appear( Char ch, int pos, boolean animation ) {
 
-		ch.sprite.interruptMotion();
+		if (animation) {
+			ch.sprite.interruptMotion();
 
-		if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[ch.pos]){
-			Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
-		}
+			if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[ch.pos]){
+				Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
+			}
 
-		if (Dungeon.level.heroFOV[ch.pos] && ch != Dungeon.hero ) {
-			CellEmitter.get(ch.pos).start(Speck.factory(Speck.LIGHT), 0.2f, 3);
+			if (Dungeon.level.heroFOV[ch.pos] && ch != Dungeon.hero ) {
+				CellEmitter.get(ch.pos).start(Speck.factory(Speck.LIGHT), 0.2f, 3);
+			}
 		}
 
 		ch.move( pos, false );
@@ -295,13 +303,15 @@ public class ScrollOfTeleportation extends Scroll {
 			ch.sprite.place(pos);
 		}
 
-		if (ch.invisible == 0) {
-			ch.sprite.alpha( 0 );
-			ch.sprite.parent.add( new AlphaTweener( ch.sprite, 1, 0.4f ) );
-		}
+		if (animation) {
+			if (ch.invisible == 0) {
+				ch.sprite.alpha(0);
+				ch.sprite.parent.add(new AlphaTweener(ch.sprite, 1, 0.4f));
+			}
 
-		if (Dungeon.level.heroFOV[pos] || ch == Dungeon.hero ) {
-			ch.sprite.emitter().start(Speck.factory(Speck.LIGHT), 0.2f, 3);
+			if (Dungeon.level.heroFOV[pos] || ch == Dungeon.hero) {
+				ch.sprite.emitter().start(Speck.factory(Speck.LIGHT), 0.2f, 3);
+			}
 		}
 	}
 
