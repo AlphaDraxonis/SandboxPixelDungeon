@@ -553,9 +553,9 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 			showSleep();
 		} else {
 			hideSleep();
-			if (neutral) {
-				if (emo == null) showNeutral();
-			} else hideNeutral();
+//			if (neutral) {
+//				if (emo == null) showNeutral();
+//			} else hideNeutral();
 		}
 		synchronized (EmoIcon.class) {
 			if (emo != null && emo.alive) {
