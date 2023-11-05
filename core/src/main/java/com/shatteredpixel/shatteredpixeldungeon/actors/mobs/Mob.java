@@ -123,6 +123,7 @@ public abstract class Mob extends Char {
 	public Class<? extends CharSprite> spriteClass;
 	
 	protected int target = -1;
+	public boolean following;
 	
 	public int defenseSkill = 0;//evasion
 	public int attackSkill = 0;//accuracy
@@ -170,6 +171,7 @@ public abstract class Mob extends Char {
 	private static final String STATS_SCALE = "stats_scale";
 	private static final String IS_BOSS_MOB = "is_boss_mob";
 	private static final String PLAYER_ALIGNMENT = "player_alignment";
+	private static final String FOLLOWING = "following";
 	private static final String LOOT = "loot";
 
 	private static final String ENEMY_ID	= "enemy_id";
@@ -193,6 +195,7 @@ public abstract class Mob extends Char {
 		bundle.put( SEEN, enemySeen );
 		bundle.put( TARGET, target );
 		bundle.put( MAX_LVL, maxLvl );
+		bundle.put( FOLLOWING, following );
 
         Mob defaultMob = DefaultStatsCache.getDefaultObject(getClass());
         if (defaultMob != null) {
@@ -235,6 +238,7 @@ public abstract class Mob extends Char {
 		enemySeen = bundle.getBoolean( SEEN );
 
 		target = bundle.getInt( TARGET );
+		following = bundle.getBoolean( FOLLOWING );
 
 		if (bundle.contains(MAX_LVL)) maxLvl = bundle.getInt(MAX_LVL);
 
@@ -316,7 +320,7 @@ public abstract class Mob extends Char {
 		
 		enemy = chooseEnemy();
 		
-		boolean enemyInFOV = enemy != null && enemy.isAlive() && fieldOfView[enemy.pos] && enemy.invisible <= 0;
+		boolean enemyInFOV = enemy != null && enemy.isAlive() && (fieldOfView[enemy.pos] && enemy.invisible <= 0 || following);
 
 		//prevents action, but still updates enemy seen status
 		if (buff(Feint.AfterImage.FeintConfusion.class) != null){
@@ -365,6 +369,10 @@ public abstract class Mob extends Char {
 			if (source != null) {
 				return source;
 			}
+		}
+
+		if (following) {
+			if (playerAlignment == NORMAL_ALIGNMENT) return Dungeon.hero;
 		}
 		
 		//if we are an alert enemy, auto-hunt a target that is affected by aggression, even another enemy
@@ -1127,6 +1135,10 @@ public abstract class Mob extends Char {
 		} else if (playerAlignment == FRIENDLY_ALIGNMENT) {
 			desc += "\n\n" + Messages.get(this, "friendly_desc");
 		}
+		if (following) {
+			if (playerAlignment == NORMAL_ALIGNMENT) desc += "\n";
+			desc += "\n" + Messages.get(this, "following_desc");
+		}
 
         Mob defaultStats = DefaultStatsCache.getDefaultObject(getClass());
         if (defaultStats != null) {
@@ -1351,7 +1363,7 @@ public abstract class Mob extends Char {
 		}
 
 		protected int randomDestination(){
-			return Dungeon.level.randomDestination( Mob.this );
+			return following ? Dungeon.hero.pos : Dungeon.level.randomDestination( Mob.this );
 		}
 		
 	}
@@ -1376,9 +1388,7 @@ public abstract class Mob extends Char {
 				if (enemyInFOV) {
 					target = enemy.pos;
 				} else if (enemy == null) {
-					sprite.showLost();
-					state = WANDERING;
-					target = Dungeon.level.randomDestination( Mob.this );
+					looseEnemy();
 					spend( TICK );
 					return true;
 				}
@@ -1407,13 +1417,17 @@ public abstract class Mob extends Char {
 
 					spend( TICK );
 					if (!enemyInFOV) {
-						sprite.showLost();
-						state = WANDERING;
-						target = Dungeon.level.randomDestination( Mob.this );
+						looseEnemy();
 					}
 					return true;
 				}
 			}
+		}
+
+		protected void looseEnemy(){
+			sprite.showLost();
+			state = WANDERING;
+			target = following ? Dungeon.hero.pos : Dungeon.level.randomDestination( Mob.this );
 		}
 	}
 

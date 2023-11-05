@@ -220,7 +220,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				@Override
 				protected boolean act() {
 					Actor.remove(this);
-					jump();
+					jump(-1);
 					return true;
 				}
 			});
@@ -273,7 +273,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		return b.collisionPos == enemy.pos && (Dungeon.level instanceof PrisonBossLevel || b.dist <= arenaRadius);
 	}
 	
-	private void jump() {
+	private void jump(int targetPos) {
 		
 		//in case tengu hasn't had a chance to act yet
 		if (fieldOfView == null || fieldOfView.length != Dungeon.level.length()){
@@ -282,7 +282,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		}
 		
 		if (enemy == null) enemy = chooseEnemy();
-		if (enemy == null) return;
+		if (enemy == null && targetPos == -1) return;
+		else if (enemy != null) targetPos = enemy.pos;
 		
 		int newPos;
 		if (Dungeon.level instanceof PrisonBossLevel){
@@ -297,7 +298,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				do {
 					newPos = ((PrisonBossLevel)Dungeon.level).randomTenguCellPos();
 					tries--;
-				} while ( tries > 0 && (level.trueDistance(newPos, enemy.pos) <= 3.5f
+				} while ( tries > 0 && (level.trueDistance(newPos, targetPos) <= 3.5f
 						|| level.trueDistance(newPos, Dungeon.hero.pos) <= 3.5f
 						|| Actor.findChar(newPos) != null));
 
@@ -323,8 +324,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 					tries--;
 				} while (  tries > 0 &&
 						(level.solid[newPos] ||
-								level.distance(newPos, enemy.pos) < 5 ||
-								level.distance(newPos, enemy.pos) > 7 ||
+								level.distance(newPos, targetPos) < 5 ||
+								level.distance(newPos, targetPos) > 7 ||
 								level.distance(newPos, Dungeon.hero.pos) < 5 ||
 								level.distance(newPos, Dungeon.hero.pos) > 7 ||
 								level.distance(newPos, pos) < 5 ||
@@ -354,9 +355,10 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				newPos = Random.Int(level.length());
 				tries--;
 			} while (  tries > 0 &&
-					(level.solid[newPos] ||
-							level.distance(newPos, enemy.pos) > arenaRadius ||
-//							level.distance(newPos, enemy.pos) > 7 ||
+					(!Dungeon.hero.fieldOfView[newPos] ||
+							!level.passable[newPos] || level.avoid[newPos] ||
+							level.distance(newPos, targetPos) > arenaRadius ||
+//							level.distance(newPos, targetPos) > 7 ||
 							level.distance(newPos, Dungeon.hero.pos) > arenaRadius ||
 //							level.distance(newPos, Dungeon.hero.pos) > 7 ||
 							level.distance(newPos, pos) < arenaRadius - 1 ||
@@ -478,10 +480,19 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				} else {
 					chooseEnemy();
 					if (enemy == null){
-						//if nothing else can be targeted, target hero
-						enemy = Dungeon.hero;
+						if (playerAlignment == NORMAL_ALIGNMENT) {
+							//if nothing else can be targeted, target hero
+							enemy = Dungeon.hero;
+						} else {
+							looseEnemy();
+							spend(TICK);
+							return true;
+						}
 					}
 					target = enemy.pos;
+					if (following) {
+
+					}
 				}
 				
 				//if not charmed, attempt to use an ability, even if the enemy can't be seen
@@ -500,14 +511,15 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 		protected boolean continueWandering(){
 
-			if (target == -1) {
-				target = randomDestination();
-				spend( TICK );
-			}
-
 			if (stepsToDo > 0) {
 				stepsToDo--;
 				spend(1 / speed());
+				return true;
+			}
+
+			if (target == -1) {
+				target = randomDestination();
+				spend( TICK );
 				return true;
 			}
 
@@ -515,7 +527,13 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 			int oldPos = pos;
 			if (!ScrollOfTeleportation.teleportToLocation(Tengu.this, target, false, false)){
-				return super.continueWandering();
+				int oldArenaJumps = arenaJumps;
+				jump(target);
+				spend(1 / speed());
+				arenaJumps = oldArenaJumps;
+				stepsToDo = new Ballistica(oldPos, pos, Ballistica.STOP_TARGET).dist - 1;
+				target = -1;
+				return true;
 			} else {
 				stepsToDo = new Ballistica(oldPos, pos, Ballistica.STOP_TARGET).dist - 1;
 				spend(1 / speed());

@@ -24,17 +24,20 @@ public class MobStateSpinner extends Spinner {
         HUNTING,
         WANDERING,
         PASSIVE,
-        FLEEING;
+        FLEEING,
+        FOLLOWING;
 
         public static int getIndex(Mob mob) {
+            if (mob.following) return 5;
             if (mob.state == mob.SLEEPING) return 0;
-            if (mob.state == mob.HUNTING) return 1;
-            if (mob.state == mob.PASSIVE) return 3;
-            if (mob.state == mob.FLEEING) return 4;
+            if (mob.state == mob.HUNTING)  return 1;
+            if (mob.state == mob.PASSIVE)  return 3;
+            if (mob.state == mob.FLEEING)  return 4;
             return 2;//Wandering is default
         }
 
         public void applyChange(Mob mob) {
+            mob.following = false;
             switch (this) {
                 case SLEEPING:
                     mob.state = mob.SLEEPING;
@@ -50,6 +53,10 @@ public class MobStateSpinner extends Spinner {
                     break;
                 case FLEEING:
                     mob.state = mob.FLEEING;
+                    break;
+                case FOLLOWING:
+                    mob.following = true;
+                    mob.state = mob.HUNTING;
                     break;
             }
         }

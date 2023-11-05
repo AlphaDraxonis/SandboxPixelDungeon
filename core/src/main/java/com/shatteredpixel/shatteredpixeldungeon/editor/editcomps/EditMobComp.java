@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
@@ -502,14 +501,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     @Override
                     public void checked(boolean value) {
                         super.checked(value);
-                        int val = value ? Mob.NEUTRAL_ALIGNMENT : Mob.NORMAL_ALIGNMENT;
+                        int val = value ? Mob.FRIENDLY_ALIGNMENT : Mob.NORMAL_ALIGNMENT;
                         mob.setPlayerAlignment(val);
-                        if ((mob.playerAlignment = val) == Mob.NEUTRAL_ALIGNMENT) mob.alignment = Char.Alignment.NEUTRAL;
-                        else if (mob.alignment == Char.Alignment.NEUTRAL)
-                            updateObj();
+                        updateObj();
                     }
                 };
-                neutralEnemy.checked(mob.playerAlignment == Mob.NEUTRAL_ALIGNMENT);
+                neutralEnemy.checked(mob.playerAlignment == Mob.FRIENDLY_ALIGNMENT);
                 add(neutralEnemy);
             } else neutralEnemy = null;
 
@@ -656,6 +653,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             return isMobListEqual(((YogDzewa) a).challengeSummons, ((YogDzewa) b).challengeSummons);
         } else if (a instanceof Necromancer){
             return EditMobComp.areEqual(((Necromancer) a).summonTemplate, ((Necromancer) b).summonTemplate);
+        } else if (a instanceof Tengu){
+            return ((Tengu) a).arenaRadius == ((Tengu) b).arenaRadius && ((Tengu) a).phase == ((Tengu) b).phase;
+        } else if (a instanceof DM300) {
+            return ((DM300) a).destroyWalls == ((DM300) b).destroyWalls;
         }
         return true;
     }
