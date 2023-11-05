@@ -487,9 +487,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
-                mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper)) {
+                mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper || mob instanceof SentryRoom.Sentry)) {
 
-            if(!(mob instanceof YogFist || mob instanceof Mimic || mob instanceof SentryRoom.Sentry)) {
+            if(!(mob instanceof YogFist || mob instanceof Mimic)) {
                 neutralEnemy = new CheckBox(Messages.get(EditMobComp.class, "neutral_enemy")) {
 
                     @Override

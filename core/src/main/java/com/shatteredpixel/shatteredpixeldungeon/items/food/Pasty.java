@@ -30,8 +30,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
-import java.util.Calendar;
-
 public class Pasty extends Food {
 
 	//TODO: implement fun stuff for other holidays
@@ -43,56 +41,77 @@ public class Pasty extends Food {
 		XMAS //3rd week of december through first week of january
 	}
 
-	private static Holiday holiday;
-
-	static{
-
-		holiday = Holiday.NONE;
-
-		final Calendar calendar = Calendar.getInstance();
-		switch(calendar.get(Calendar.MONTH)){
-			case Calendar.JANUARY:
-				if (calendar.get(Calendar.WEEK_OF_MONTH) == 1)
-					holiday = Holiday.XMAS;
-				break;
-			case Calendar.OCTOBER:
-				if (calendar.get(Calendar.WEEK_OF_MONTH) >= 2)
-					holiday = Holiday.HWEEN;
-				break;
-			case Calendar.NOVEMBER:
-				if (calendar.get(Calendar.DAY_OF_MONTH) == 1)
-					holiday = Holiday.HWEEN;
-				break;
-			case Calendar.DECEMBER:
-				if (calendar.get(Calendar.WEEK_OF_MONTH) >= 3)
-					holiday = Holiday.XMAS;
-				break;
+	public static class PastyEaster extends Pasty {
+		{
+			holiday = Holiday.EASTER;
 		}
 	}
 
+	public static class PastyHWeen extends Pasty {
+		{
+			image = ItemSpriteSheet.PUMPKIN_PIE;
+			holiday = Holiday.HWEEN;
+		}
+	}
+
+	public static class PastyXMas extends Pasty {
+		{
+			image = ItemSpriteSheet.CANDY_CANE;
+			holiday = Holiday.XMAS;
+		}
+	}
+
+	protected Holiday holiday = Holiday.NONE;
+
+//	static{
+//
+//		holiday = Holiday.NONE;
+//
+//		final Calendar calendar = Calendar.getInstance();
+//		switch(calendar.get(Calendar.MONTH)){
+//			case Calendar.JANUARY:
+//				if (calendar.get(Calendar.WEEK_OF_MONTH) == 1)
+//					holiday = Holiday.XMAS;
+//				break;
+//			case Calendar.OCTOBER:
+//				if (calendar.get(Calendar.WEEK_OF_MONTH) >= 2)
+//					holiday = Holiday.HWEEN;
+//				break;
+//			case Calendar.NOVEMBER:
+//				if (calendar.get(Calendar.DAY_OF_MONTH) == 1)
+//					holiday = Holiday.HWEEN;
+//				break;
+//			case Calendar.DECEMBER:
+//				if (calendar.get(Calendar.WEEK_OF_MONTH) >= 3)
+//					holiday = Holiday.XMAS;
+//				break;
+//		}
+//	}
+
 	{
-		reset();
+//		reset();
+		image = ItemSpriteSheet.PASTY;
 
 		energy = Hunger.STARVING;
 
 		bones = true;
 	}
 	
-	@Override
-	public void reset() {
-		super.reset();
-		switch(holiday){
-			case NONE:
-				image = ItemSpriteSheet.PASTY;
-				break;
-			case HWEEN:
-				image = ItemSpriteSheet.PUMPKIN_PIE;
-				break;
-			case XMAS:
-				image = ItemSpriteSheet.CANDY_CANE;
-				break;
-		}
-	}
+//	@Override
+//	public void reset() {
+//		super.reset();
+//		switch(holiday){
+//			case NONE:
+//				image = ItemSpriteSheet.PASTY;
+//				break;
+//			case HWEEN:
+//				image = ItemSpriteSheet.PUMPKIN_PIE;
+//				break;
+//			case XMAS:
+//				image = ItemSpriteSheet.CANDY_CANE;
+//				break;
+//		}
+//	}
 	
 	@Override
 	protected void satisfy(Hero hero) {

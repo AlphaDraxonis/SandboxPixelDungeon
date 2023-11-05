@@ -667,7 +667,9 @@ public enum Items {
                 SmallRation.class,
                 MeatPie.class,
                 Berry.class,
-                Blandfruit.class
+                Blandfruit.class,
+                Pasty.PastyHWeen.class,
+                Pasty.PastyXMas.class
         };
 
         KEY.classes = new Class[]{
