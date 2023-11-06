@@ -165,10 +165,10 @@ public class MiningLevel extends CavesLevel {
 				return new Bat();
 			case BlacksmithQuest.CRYSTAL:
 				return new CrystalWisp();
-			case BlacksmithQuest.FUNGI:
-				return new Spinner();
 			case BlacksmithQuest.GNOLL:
 				return new GnollGuard();
+			case BlacksmithQuest.FUNGI:
+				return new Spinner();
 		}
 	}
 

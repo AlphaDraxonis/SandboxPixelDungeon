@@ -130,7 +130,7 @@ public abstract class Mob extends Char {
 	
 	protected int target = -1;
 	public boolean following;
-	
+
 	public int defenseSkill = 0;//evasion
 	public int attackSkill = 0;//accuracy
 	public int damageRollMin = 0, damageRollMax = 0;
@@ -413,7 +413,7 @@ public abstract class Mob extends Char {
 		if (following) {
 			if (playerAlignment == NORMAL_ALIGNMENT) return Dungeon.hero;
 		}
-		
+
 		//if we are an alert enemy, auto-hunt a target that is affected by aggression, even another enemy
 		if (alignment == Alignment.ENEMY && state != PASSIVE && state != SLEEPING) {
 			if (enemy != null && enemy.buff(StoneOfAggression.Aggression.class) != null){
@@ -806,14 +806,14 @@ public abstract class Mob extends Char {
 	public int damageRoll() {
 		return Random.NormalIntRange(damageRollMin, damageRollMax);
 	}
-	
+
 	@Override
 	public int defenseProc( Char enemy, int damage ) {
 
 		if (glyphArmor != null && buff(MagicImmune.class) == null) {
 			damage = glyphArmor.proc(enemy, this, damage);
 		}
-		
+
 		if (enemy instanceof Hero
 				&& ((Hero) enemy).belongings.attackingWeapon() instanceof MissileWeapon){
 			Statistics.thrownAttacks++;
@@ -1154,7 +1154,7 @@ public abstract class Mob extends Char {
 		}
 		Dungeon.level.drop(item, pos).sprite.drop();
 	}
-	
+
 	public Object loot = null;
 	protected float lootChance = 0;
 
@@ -1487,7 +1487,7 @@ public abstract class Mob extends Char {
 		protected int randomDestination(){
 			return Mob.this.randomDestination();
 		}
-		
+
 	}
 
 	protected int randomDestination(){
@@ -1559,7 +1559,7 @@ public abstract class Mob extends Char {
 		protected void looseEnemy(){
 			sprite.showLost();
 			state = WANDERING;
-			target = following ? Dungeon.hero.pos : Dungeon.level.randomDestination( Mob.this );
+			target = following ? Dungeon.hero.pos : ((Mob.Wandering)WANDERING).randomDestination( Mob.this );
 		}
 	}
 

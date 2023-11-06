@@ -97,16 +97,6 @@ public class MineLargeRoom extends CaveRoom {
 			level.mobs.add(m);
 			Painter.set(level, p, Terrain.EMPTY);
 
-		} else if (questType == BlacksmithQuest.FUNGI){
-			Painter.fillEllipse(level, this, 3, Terrain.EMPTY);
-
-			for (int i = 0; i < width() * height() / 4; i++) {
-				Point r = random(1);
-				if (level.map[level.pointToCell(r)] != Terrain.WALL) {
-					Painter.set(level, r, Terrain.HIGH_GRASS);
-				}
-			}
-
 		} else if (questType == BlacksmithQuest.GNOLL){
 			Painter.fillEllipse(level, this, 3, Terrain.EMPTY);
 
@@ -181,6 +171,16 @@ public class MineLargeRoom extends CaveRoom {
 					}
 				}
 			}
+		} else if (questType == BlacksmithQuest.FUNGI){
+			Painter.fillEllipse(level, this, 3, Terrain.EMPTY);
+
+			for (int i = 0; i < width() * height() / 4; i++) {
+				Point r = random(1);
+				if (level.map[level.pointToCell(r)] != Terrain.WALL) {
+					Painter.set(level, r, Terrain.HIGH_GRASS);
+				}
+			}
+
 		} else {
 			Painter.fillEllipse(level, this, 3, Terrain.EMPTY);
 		}

@@ -117,7 +117,6 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			Game.runOnRenderThread(new Callback() {
 				@Override
 				public void call() {
-
 					GameScene.show(new WndQuest(Blacksmith.this, msg1Final) {
 						@Override
 						public void hide() {
@@ -215,19 +214,19 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			});
 
 		} else {
-
-			tell(Messages.get(this, "get_lost"));
-
+			
+			tell( Messages.get(this, "get_lost") );
+			
 		}
 
 		return true;
 	}
-
-	private void tell(String text) {
+	
+	private void tell( String text ) {
 		Game.runOnRenderThread(new Callback() {
 			@Override
 			public void call() {
-				GameScene.show(new WndQuest(Blacksmith.this, text));
+				GameScene.show( new WndQuest( Blacksmith.this, text ) );
 			}
 		});
 	}
@@ -245,7 +244,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 		if (!item1.isIdentified() || !item2.isIdentified()) {
 			return Messages.get(Blacksmith.class, "un_ided");
 		}
-		
+
 		if (item1.cursed || item2.cursed ||
 				(item1 instanceof Armor && ((Armor) item1).hasCurseGlyph()) ||
 				(item2 instanceof Armor && ((Armor) item2).hasCurseGlyph()) ||
@@ -253,20 +252,20 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 				(item2 instanceof Weapon && ((Weapon) item2).hasCurseEnchant())) {
 			return Messages.get(Blacksmith.class, "cursed");
 		}
-		
+
 		if (item1.level() < 0 || item2.level() < 0) {
 			return Messages.get(Blacksmith.class, "degraded");
 		}
-		
+
 		if (!item1.isUpgradable() || !item2.isUpgradable()) {
 			return Messages.get(Blacksmith.class, "cant_reforge");
 		}
-		
+
 		return null;
 	}
-	
+
 	public static void upgrade( Item item1, Item item2 ) {
-		
+
 		Item first, second;
 		if (item2.trueLevel() > item1.trueLevel()) {
 			first = item2;

@@ -48,15 +48,15 @@ public class MineSecretRoom extends SecretRoom {
 		int questType = level instanceof MiningLevel ? ((MiningLevel) level).quest.type() : BlacksmithQuest.NONE;
 		if (questType == BlacksmithQuest.CRYSTAL) {
 			Painter.fill(level, this, 1, Terrain.MINE_CRYSTAL);
+		} else if (questType == BlacksmithQuest.GNOLL) {
+			Painter.fill( level, this, 1, Terrain.EMPTY_SP );
+			level.drop(new DarkGold().quantity(Random.NormalIntRange(3, 5)), level.pointToCell(center())).type = Heap.Type.CHEST;
+			return;
 		} else if (questType == BlacksmithQuest.FUNGI) {
 			Painter.fill(level, this, 1, Terrain.HIGH_GRASS);
 
 			//random plant?
 
-		} else if (questType == BlacksmithQuest.GNOLL) {
-			Painter.fill( level, this, 1, Terrain.EMPTY_SP );
-			level.drop(new DarkGold().quantity(Random.NormalIntRange(3, 5)), level.pointToCell(center())).type = Heap.Type.CHEST;
-			return;
 		} else {
 			Painter.fill(level, this, 1, Terrain.EMPTY);
 		}
