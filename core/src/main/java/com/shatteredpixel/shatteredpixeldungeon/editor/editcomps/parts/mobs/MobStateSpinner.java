@@ -79,5 +79,10 @@ public class MobStateSpinner extends Spinner {
             States state = (States) value;
             return Messages.get(MobStateSpinner.class, state.name().toLowerCase(Locale.ENGLISH));
         }
+
+        @Override
+        public float getInputFieldWith(float height) {
+            return height * 2.5f;
+        }
     }
 }

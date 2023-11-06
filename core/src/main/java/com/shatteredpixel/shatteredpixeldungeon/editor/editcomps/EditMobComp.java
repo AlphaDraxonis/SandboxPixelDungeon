@@ -83,7 +83,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final ItemSelector statueWeapon, statueArmor;
     private final ItemSelector thiefItem;
     private final MobStateSpinner mobStateSpinner;
-    private final CheckBox neutralEnemy;
+    private final Spinner playerAlignment;
     private final RedButton addBuffs, editStats;
 
     private final ItemContainer<Item> mimicItems;
@@ -202,7 +202,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     new SpinnerIntegerModel(0, 600, (int) ((Sheep) mob).lifespan, 1, false, null) {
                         @Override
                         public float getInputFieldWith(float height) {
-                            return height * 1.3f;
+                            return height * 2.5f;
                         }
 
                         @Override
@@ -310,7 +310,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     BlacksmithQuest quest = ((Blacksmith) mob).quest;
                     if (quest.smithRewards == null) quest.smithRewards = new ArrayList<>(3);
                     while (quest.smithRewards.size() < 3) quest.smithRewards.add(new Item());
-                    blacksmithQuestRewards = new ItemSelectorList<Item>(quest.smithRewards," " + Messages.get(EditMobComp.class, "blacksmith_items") + ":", 9){
+                    blacksmithQuestRewards = new ItemSelectorList<Item>(quest.smithRewards, " " + Messages.get(EditMobComp.class, "blacksmith_items") + ":", 9) {
                         @Override
                         public void change(int index) {
                             ItemSelector.showSelectWindow(new WndBag.ItemSelector() {
@@ -322,7 +322,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                                 @Override
                                 public boolean itemSelectable(Item item) {
                                     Item i = item instanceof ItemItem ? ((ItemItem) item).item() : item;
-                                    return i instanceof Weapon && !( i instanceof MissileWeapon || i instanceof SpiritBow)
+                                    return i instanceof Weapon && !(i instanceof MissileWeapon || i instanceof SpiritBow)
                                             || i instanceof Armor;
                                 }
 
@@ -373,7 +373,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             sentryRange = new Spinner(new SpinnerIntegerModel(1, 100, ((SentryRoom.Sentry) mob).range, 1, false, null) {
                 @Override
                 public float getInputFieldWith(float height) {
-                    return height * 1.4f;
+                    return height * 2.5f;
                 }
             },
                     " " + Messages.get(EditMobComp.class, "range") + ":", 9);
@@ -394,6 +394,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 {
                     selector.preferredBag = Mobs.bag.getClass();
                 }
+
                 @Override
                 public void change() {
                     EditorScene.selectItem(selector);
@@ -414,7 +415,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             tenguPhase = new Spinner(new SpinnerIntegerModel(1, 2, ((Tengu) mob).phase, 1, true, null) {
                 @Override
                 public float getInputFieldWith(float height) {
-                    return height * 1.4f;
+                    return height * 2.5f;
                 }
 
                 @Override
@@ -428,7 +429,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             tenguRange = new Spinner(new SpinnerIntegerModel(1, 100, ((Tengu) mob).arenaRadius, 1, false, null) {
                 @Override
                 public float getInputFieldWith(float height) {
-                    return height * 1.4f;
+                    return height * 2.5f;
                 }
             },
                     " " + Messages.get(EditMobComp.class, "range") + ":", 9);
@@ -459,7 +460,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     Messages.get(DestCellSpinner.class, "default")) {
                 @Override
                 public float getInputFieldWith(float height) {
-                    return Spinner.FILL;
+                    return height * 2.5f;
                 }
 
                 @Override
@@ -488,29 +489,34 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
                 mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper || mob instanceof SentryRoom.Sentry)) {
 
-            if(!(mob instanceof YogFist || mob instanceof Mimic)) {
-                neutralEnemy = new CheckBox(Messages.get(EditMobComp.class, "neutral_enemy")) {
-
+            if (!(mob instanceof YogFist || mob instanceof Mimic)) {
+                playerAlignment = new Spinner(new SpinnerIntegerModel(Mob.NORMAL_ALIGNMENT, Mob.FRIENDLY_ALIGNMENT, mob.playerAlignment, 1, true, null) {
                     @Override
-                    protected void layout() {
-                        super.layout();
-                        text.setPos(x + (width() - text.width()) / 2f, y + (height() - text.height()) / 2f);
-                        PixelScene.align(text);
+                    public void displayInputAnyNumberDialog() {
                     }
 
                     @Override
-                    public void checked(boolean value) {
-                        super.checked(value);
-                        int val = value ? Mob.FRIENDLY_ALIGNMENT : Mob.NORMAL_ALIGNMENT;
-                        mob.setPlayerAlignment(val);
-                        updateObj();
+                    public String getDisplayString() {
+                        switch ((int) getValue()) {
+                            case Mob.NORMAL_ALIGNMENT: return Messages.get(EditMobComp.class, "player_alignment_normal");
+                            case Mob.NEUTRAL_ALIGNMENT: return Messages.get(EditMobComp.class, "player_alignment_neutral");
+                            case Mob.FRIENDLY_ALIGNMENT: return Messages.get(EditMobComp.class, "player_alignment_friendly");
+                        }
+                        return super.getDisplayString();
                     }
-                };
-                neutralEnemy.checked(mob.playerAlignment == Mob.FRIENDLY_ALIGNMENT);
-                add(neutralEnemy);
-            } else neutralEnemy = null;
 
-            if(!(mob instanceof Tengu)) {
+                    @Override
+                    public float getInputFieldWith(float height) {
+                        return height * 2.5f;
+                    }
+                },
+                        " " + Messages.get(EditMobComp.class, "player_alignment") + ":", 10);
+                playerAlignment.addChangeListener(()-> mob.setPlayerAlignment((int) playerAlignment.getValue()));
+                playerAlignment.setButtonWidth(12);
+                add(playerAlignment);
+            } else playerAlignment = null;
+
+            if (!(mob instanceof Tengu)) {
                 addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
                     @Override
                     protected void onClick() {
@@ -549,7 +555,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 add(addBuffs);
             } else addBuffs = null;
         } else {
-            neutralEnemy = null;
+            playerAlignment = null;
             addBuffs = null;
         }
 
@@ -571,7 +577,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 yogSpawnersAlive, yogNormalFists, yogChallengeFists,
                 mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, blacksmithQuestRewards,
                 tenguPhase, tenguRange, dm300destroyWalls,
-                sentryRange, sentryDelay, necroSpawnMob, neutralEnemy, addBuffs, editStats};
+                sentryRange, sentryDelay, necroSpawnMob, playerAlignment, addBuffs, editStats};
     }
 
     @Override
@@ -651,9 +657,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (((YogDzewa) a).spawnersAlive != ((YogDzewa) b).spawnersAlive) return false;
             if (!isMobListEqual(((YogDzewa) a).fistSummons, ((YogDzewa) b).fistSummons)) return false;
             return isMobListEqual(((YogDzewa) a).challengeSummons, ((YogDzewa) b).challengeSummons);
-        } else if (a instanceof Necromancer){
+        } else if (a instanceof Necromancer) {
             return EditMobComp.areEqual(((Necromancer) a).summonTemplate, ((Necromancer) b).summonTemplate);
-        } else if (a instanceof Tengu){
+        } else if (a instanceof Tengu) {
             return ((Tengu) a).arenaRadius == ((Tengu) b).arenaRadius && ((Tengu) a).phase == ((Tengu) b).phase;
         } else if (a instanceof DM300) {
             return ((DM300) a).destroyWalls == ((DM300) b).destroyWalls;

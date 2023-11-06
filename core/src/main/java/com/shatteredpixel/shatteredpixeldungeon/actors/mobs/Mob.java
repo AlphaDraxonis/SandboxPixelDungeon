@@ -351,7 +351,7 @@ public abstract class Mob extends Char {
 	}
 
 	//FIXME this is sort of a band-aid correction for allies needing more intelligent behaviour
-	protected boolean intelligentAlly = false;
+	public boolean intelligentAlly = false;
 	
 	protected Char chooseEnemy() {
 
@@ -1321,6 +1321,7 @@ public abstract class Mob extends Char {
 
 			} else {
 
+				if (following) target = Dungeon.hero.pos;
 				return continueWandering();
 
 			}

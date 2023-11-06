@@ -390,7 +390,7 @@ public abstract class Level implements Bundlable {
 			}
 			if (m.playerAlignment == Mob.NEUTRAL_ALIGNMENT) {
 				if (m.state == m.HUNTING) m.state = m.WANDERING;
-			}
+			} else if (m.following && m.playerAlignment == Mob.FRIENDLY_ALIGNMENT) m.intelligentAlly = true;
 		}
 		for (Heap h : heaps.valueList()) {
 			h.seen = false;
