@@ -155,7 +155,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 		if (phase == 2) properties.add(Property.IMMOVABLE);
 
-		if (playerAlignment == NORMAL_ALIGNMENT) {
+		if (playerAlignment == NORMAL_ALIGNMENT && (enemyID == -1 || HP < HT)) {
 			BossHealthBar.assignBoss(this);
 			if (phase == 3) BossHealthBar.bleed(true);
 		}
@@ -165,7 +165,10 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 	public void setLevel(int depth) {
 		initialThrone = pos;
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) HP = HT = (int) (HP * 1.5f);
-		if (!(Dungeon.level instanceof CityBossLevel)) Dungeon.level.passable[initialThrone] = false;
+		if (!(Dungeon.level instanceof CityBossLevel)) {
+			Dungeon.level.passable[initialThrone] = false;
+			phase = 0;
+		}
 	}
 
 	@Override
@@ -380,7 +383,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		return true;
 	}
 
-	private List<Integer> getPedestalsInRange(){//range=3; add pos to the values!
+	private List<Integer> getPedestalsInRange(int position){//range=3; add pos to the values!
 		if (Dungeon.level instanceof CityBossLevel) return null;
 		int width = Dungeon.level.width();
 		int width2 = width * 2;
@@ -396,8 +399,9 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		};
 		List<Integer> actualPedestals = new ArrayList<>();
 		for (int i : possiblePos) {
-			if (i + pos >= 0 && i + pos < Dungeon.level.map.length
-					&& Dungeon.level.map[i + pos] == Terrain.PEDESTAL) actualPedestals.add(i);
+			int cell = i + position;
+			if (cell >= 0 && cell < Dungeon.level.map.length
+					&& Dungeon.level.map[cell] == Terrain.PEDESTAL) actualPedestals.add(i);
 		}
 		return actualPedestals;
 	}
@@ -405,7 +409,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 	private int getSummoningPos(){
 		if (Dungeon.level instanceof CityBossLevel) return ((CityBossLevel) Dungeon.level).getSummoningPos();
 
-		List<Integer> actualPedestals = getPedestalsInRange();
+		List<Integer> actualPedestals = getPedestalsInRange(pos);
 //		if (actualPedestals.isEmpty()) {
 //			for (int i : possiblePos) actualPedestals.add(i);
 //		}
@@ -435,7 +439,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 	}
 
 	private boolean skipPhase2(){
-		List<Integer> actualPedestals = getPedestalsInRange();
+		List<Integer> actualPedestals = getPedestalsInRange(initialThrone);
 		return actualPedestals != null && actualPedestals.isEmpty();
 	}
 
@@ -542,6 +546,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 	@Override
 	public void notice() {
 		super.notice();
+		phase = Math.max(phase, 1);
 		if (playerAlignment != NORMAL_ALIGNMENT) return;
 
 		if (!BossHealthBar.isAssigned()) {

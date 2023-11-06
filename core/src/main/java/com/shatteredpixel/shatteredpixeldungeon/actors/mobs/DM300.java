@@ -162,7 +162,7 @@ public class DM300 extends Mob implements MobBasedOnDepth {
 		abilityCooldown = bundle.getInt(ABILITY_COOLDOWN);
 		lastAbility = bundle.getInt(LAST_ABILITY);
 
-		if (turnsSinceLastAbility != -1 && playerAlignment == NORMAL_ALIGNMENT){
+		if (turnsSinceLastAbility != -1 && playerAlignment == NORMAL_ALIGNMENT && (enemyID == -1 || HP < HT)){
 			BossHealthBar.assignBoss(this);
 			if (!supercharged && pylonsActivated == totalPylonsToActivate()) BossHealthBar.bleed(true);
 		}

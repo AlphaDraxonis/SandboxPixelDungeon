@@ -686,7 +686,7 @@ public class YogDzewa extends Mob {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		phase = bundle.getInt(PHASE);
-		if (phase != 0 && playerAlignment == NORMAL_ALIGNMENT) {
+		if (phase != 0 && playerAlignment == NORMAL_ALIGNMENT && (enemyID == -1 || HP < HT)) {
 			BossHealthBar.assignBoss(this);
 			if (phase == 5) BossHealthBar.bleed(true);
 		}

@@ -212,7 +212,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     },
                     " " + Messages.get(EditMobComp.class, "sheep_lifespan") + ":", 9);
             sheepLifespan.addChangeListener(() -> ((Sheep) mob).lifespan = (int) sheepLifespan.getValue());
-            sheepLifespan.setButtonWidth(12);
             sheepLifespan.setAlignmentSpinnerX(1f);
             add(sheepLifespan);
         } else sheepLifespan = null;
@@ -512,7 +511,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 },
                         " " + Messages.get(EditMobComp.class, "player_alignment") + ":", 10);
                 playerAlignment.addChangeListener(()-> mob.setPlayerAlignment((int) playerAlignment.getValue()));
-                playerAlignment.setButtonWidth(12);
                 add(playerAlignment);
             } else playerAlignment = null;
 

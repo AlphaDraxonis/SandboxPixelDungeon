@@ -349,7 +349,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 		pumpedUp = bundle.getInt( PUMPEDUP );
 
-		if (playerAlignment == NORMAL_ALIGNMENT) {
+		if (playerAlignment == NORMAL_ALIGNMENT && (enemyID == -1 || HP < HT)) {
 			if (state != SLEEPING) BossHealthBar.assignBoss(this);
 			if ((HP * 2 <= HT)) BossHealthBar.bleed(true);
 		}

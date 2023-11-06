@@ -207,6 +207,11 @@ public class RipperDemon extends Mob {
 			enemySeen = enemyInFOV;
 			if (enemyInFOV && !isCharmedBy( enemy ) && canAttack( enemy )) {
 
+				if (enemy.invisible > 0) {
+					spend( TICK );
+					return true;
+				}
+
 				return doAttack( enemy );
 
 			} else {
@@ -214,8 +219,8 @@ public class RipperDemon extends Mob {
 				if (enemyInFOV) {
 					target = enemy.pos;
 				} else if (enemy == null) {
-					state = WANDERING;
-					target = Dungeon.level.randomDestination( RipperDemon.this );
+					looseEnemy();
+					sprite.hideLost();//we don't want to show this
 					return true;
 				}
 
@@ -264,9 +269,7 @@ public class RipperDemon extends Mob {
 				} else {
 					spend( TICK );
 					if (!enemyInFOV) {
-						sprite.showLost();
-						state = WANDERING;
-						target = Dungeon.level.randomDestination( RipperDemon.this );
+						looseEnemy();
 					}
 					return true;
 				}

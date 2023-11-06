@@ -22,7 +22,7 @@ public class Spinner extends Component {
     private SpinnerModel model;//Determines input size
 
     private float alignmentSpinnerX = ALIGNMENT_RIGHT;
-    private float buttonWidth = 14f;
+    private float buttonWidth = 12f;
 
 
     public Spinner(SpinnerModel model, String name, int textSize) {

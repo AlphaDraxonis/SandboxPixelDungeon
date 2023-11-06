@@ -162,7 +162,7 @@ public class DM200 extends Mob {
 
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
-			if (!enemyInFOV || canAttack(enemy)) {
+			if (!enemyInFOV || (canAttack(enemy) && enemy.invisible <= 0)) {
 				return super.act(enemyInFOV, justAlerted);
 			} else {
 				enemySeen = true;

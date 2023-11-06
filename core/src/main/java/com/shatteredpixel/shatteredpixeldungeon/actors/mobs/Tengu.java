@@ -98,7 +98,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		
 		HUNTING = new Hunting();
 		WANDERING = new Wandering();
-		state = WANDERING;
+		state = HUNTING;
 		
 		flying = true; //doesn't literally fly, but he is fleet-of-foot enough to avoid hazards
 		
@@ -220,7 +220,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				@Override
 				protected boolean act() {
 					Actor.remove(this);
-					jump(-1);
+					jump(-1, true);
 					return true;
 				}
 			});
@@ -273,7 +273,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		return b.collisionPos == enemy.pos && (Dungeon.level instanceof PrisonBossLevel || b.dist <= arenaRadius);
 	}
 	
-	private void jump(int targetPos) {
+	private void jump(int targetPos, boolean insideArena) {
 		
 		//in case tengu hasn't had a chance to act yet
 		if (fieldOfView == null || fieldOfView.length != Dungeon.level.length()){
@@ -358,10 +358,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 					(!Dungeon.hero.fieldOfView[newPos] ||
 							!level.passable[newPos] || level.avoid[newPos] ||
 							level.distance(newPos, targetPos) > arenaRadius ||
-//							level.distance(newPos, targetPos) > 7 ||
-							level.distance(newPos, Dungeon.hero.pos) > arenaRadius ||
-//							level.distance(newPos, Dungeon.hero.pos) > 7 ||
-							level.distance(newPos, pos) < arenaRadius - 1 ||
+							insideArena && level.distance(newPos, Dungeon.hero.pos) > arenaRadius ||
+							insideArena && level.distance(newPos, pos) < arenaRadius - 1 ||
 							Actor.findChar(newPos) != null ||
 							level.heaps.get(newPos) != null));
 
@@ -449,7 +447,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		initialPos = bundle.getInt(INITIAL_POS);
 		stepsToDo = bundle.getInt(STEPS_TO_DO);
 
-		if (playerAlignment == NORMAL_ALIGNMENT) {
+		if (playerAlignment == NORMAL_ALIGNMENT  && (enemyID == -1 || HP < HT)) {
 			BossHealthBar.assignBoss(this);
 			if (HP <= HT / 2) BossHealthBar.bleed(true);
 		}
@@ -490,9 +488,6 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 						}
 					}
 					target = enemy.pos;
-					if (following) {
-
-					}
 				}
 				
 				//if not charmed, attempt to use an ability, even if the enemy can't be seen
@@ -528,7 +523,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			int oldPos = pos;
 			if (!ScrollOfTeleportation.teleportToLocation(Tengu.this, target, false, false)){
 				int oldArenaJumps = arenaJumps;
-				jump(target);
+				jump(target, false);
 				spend(1 / speed());
 				arenaJumps = oldArenaJumps;
 				stepsToDo = new Ballistica(oldPos, pos, Ballistica.STOP_TARGET).dist - 1;
@@ -572,7 +567,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		
 		if (HP > HT/2 && Dungeon.level instanceof PrisonBossLevel) return false;
 		
-		if (abilitiesUsed >= targetAbilityUses()){
+		if (abilitiesUsed >= targetAbilityUses() || new Ballistica(pos, enemy.pos, Ballistica.PROJECTILE).collisionPos != enemy.pos) {
 			return false;
 		} else {
 			

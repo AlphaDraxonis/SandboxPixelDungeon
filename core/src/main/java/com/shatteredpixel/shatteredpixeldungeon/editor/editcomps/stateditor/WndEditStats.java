@@ -297,7 +297,6 @@ public class WndEditStats extends MultiWindowTabComp {
                     return Spinner.FILL;
                 }
             }, name, 9);
-            setButtonWidth(12);
         }
 
         public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity, float realMin) {
@@ -306,7 +305,6 @@ public class WndEditStats extends MultiWindowTabComp {
                 return Spinner.FILL;
             }}, name, 9);
             ((SpinnerIntegerModel) getModel()).setAbsoluteMinimum(realMin);
-            setButtonWidth(12);
         }
 
         protected float getAsFloat() {
@@ -319,7 +317,6 @@ public class WndEditStats extends MultiWindowTabComp {
 
         public IntegerSpinner(String name, int minimum, int maximum, int value, boolean includeInfinity) {
             super(new IntegerSpinnerModel(minimum, maximum, value, false), name, 9);
-            setButtonWidth(12);
         }
 
         public IntegerSpinner(String name, int minimum, int maximum, int value, boolean includeInfinity, int realMin) {
@@ -329,7 +326,6 @@ public class WndEditStats extends MultiWindowTabComp {
                     displayInputAnyNumberDialog(realMin, Integer.MAX_VALUE);
                 }
             }, name, 9);
-            setButtonWidth(12);
         }
 
         protected int getAsInt() {

@@ -1,11 +1,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.watabou.noosa.ui.Component;
 
 import java.util.Locale;
 
@@ -16,7 +14,6 @@ public class MobStateSpinner extends Spinner {
         super(new MobStateSpinnerModel(mob), " " + Messages.get(MobStateSpinner.class, "label"), 10);
 
         addChangeListener(() -> ((States) getValue()).applyChange(mob));
-        setButtonWidth(12);
     }
 
     private enum States {
@@ -66,12 +63,6 @@ public class MobStateSpinner extends Spinner {
 
         public MobStateSpinnerModel(Mob mob) {
             super(true, States.getIndex(mob), (Object[]) States.values());
-        }
-
-        @Override
-        public Component createInputField(int fontSize) {
-            inputField = new Spinner.SpinnerTextBlock(Chrome.get(getChromeType()), 9);
-            return inputField;
         }
 
         @Override

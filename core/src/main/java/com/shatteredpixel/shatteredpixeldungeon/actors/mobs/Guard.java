@@ -194,6 +194,7 @@ public class Guard extends Mob {
 					&& !isCharmedBy( enemy )
 					&& !canAttack( enemy )
 					&& Dungeon.level.distance( pos, enemy.pos ) < 5
+					&& enemy.invisible <= 0
 
 					
 					&& chain(enemy.pos)){

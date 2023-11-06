@@ -21,7 +21,6 @@ public class QuestSpinner extends Spinner {
                 return inputFiledWith.get(height);
             }
         }, " " + Messages.get(QuestSpinner.class, "label"), 10);
-        setButtonWidth(12);
     }
 
     private static class QuestSpinnerModel extends SpinnerTextIconModel {
