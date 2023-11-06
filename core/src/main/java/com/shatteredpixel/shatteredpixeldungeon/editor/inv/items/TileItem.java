@@ -328,10 +328,12 @@ public class TileItem extends EditorItem {
                 signActionPart.redo();
             }
 
-            ActionPartModify blobEditPart = new BlobEditPart.Modify(cell);
-            BlobEditPart.clearWellWaterAtCell(cell);
-            blobEditPart.finish();
-            moreActions.addActionPart(blobEditPart);
+            if (terrainType != Terrain.WELL) {
+                ActionPartModify blobEditPart = new BlobEditPart.Modify(cell);
+                BlobEditPart.clearWellWaterAtCell(cell);
+                blobEditPart.finish();
+                moreActions.addActionPart(blobEditPart);
+            }
 
             EditorScene.updateMap(cell);
 

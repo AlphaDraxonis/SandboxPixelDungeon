@@ -101,7 +101,6 @@ public class BlobEditPart {
     }
 
     public static void place(int cell, Class<? extends Blob> blob, int amount) {
-        clearNormalAtCell(cell);
         EditorScene.add(Blob.seed(cell, amount, blob));
         if (blob == SacrificialFire.class) {
             SacrificialFire sacrificialFire = (SacrificialFire) EditorScene.customLevel().blobs.get(SacrificialFire.class);

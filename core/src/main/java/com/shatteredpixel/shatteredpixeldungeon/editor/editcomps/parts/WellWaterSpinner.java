@@ -26,7 +26,7 @@ public class WellWaterSpinner extends Spinner {
     }
 
     private void apply() {
-        BlobEditPart.clearAllAtCell(cell);
+        BlobEditPart.clearWellWaterAtCell(cell);
         switch ((WellWaters) getValue()) {
             case HEALTH:
                 EditorScene.add(Blob.seed(cell, 1, WaterOfHealth.class));
