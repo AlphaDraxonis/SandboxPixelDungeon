@@ -90,14 +90,14 @@ import java.util.Iterator;
 import java.util.List;
 
 public abstract class RegularLevel extends Level {
-
+	
 	protected ArrayList<Room> rooms;
-
+	
 	protected Builder builder;
-
+	
 	protected Room roomEntrance;
 	protected Room roomExit;
-
+	
 	@Override
 	protected boolean build() {
 
@@ -126,7 +126,7 @@ public abstract class RegularLevel extends Level {
 		}
 
 		Random.shuffle(initRooms);
-
+		
 		do {
 			for (Room r : initRooms){
 				r.neigbours.clear();
@@ -134,11 +134,11 @@ public abstract class RegularLevel extends Level {
 			}
 			rooms = builder.build((ArrayList<Room>)initRooms.clone());
 		} while (rooms == null);
-
+		
 		return painter().paint(this, rooms);
-
+		
 	}
-
+	
 	protected ArrayList<Room> initRooms() {
 		ArrayList<Room> initRooms = new ArrayList<>();
 		initRooms.add ( roomEntrance = new EntranceRoom());
@@ -155,7 +155,7 @@ public abstract class RegularLevel extends Level {
 				do {
 					s = StandardRoom.createRoom();
 				} while (!s.setSizeCat(standards - i));
-				i += s.sizeCat.roomValue - 1;
+				i += s.sizeFactor() - 1;
 				initRooms.add(s);
 			}
 		}
@@ -200,15 +200,15 @@ public abstract class RegularLevel extends Level {
 
 		return initRooms;
 	}
-
+	
 	protected int standardRooms(boolean forceMax){
 		return 0;
 	}
-
+	
 	protected int specialRooms(boolean forceMax){
 		return 0;
 	}
-
+	
 	protected Builder builder(){
 		if (Random.Int(2) == 0){
 			return new LoopBuilder()
@@ -223,13 +223,13 @@ public abstract class RegularLevel extends Level {
 		}
 
 	}
-
+	
 	protected abstract Painter painter();
-
+	
 	protected int nTraps() {
 		return Random.NormalIntRange( 2, 3 + Dungeon.customDungeon.getFloor(Dungeon.levelName).getRegion()-1 );
 	}
-
+	
 	protected Class<?>[] trapClasses(){
 		return new Class<?>[]{WornDartTrap.class};
 	}
@@ -237,7 +237,7 @@ public abstract class RegularLevel extends Level {
 	protected float[] trapChances() {
 		return new float[]{1};
 	}
-
+	
 	@Override
 	public int mobLimit() {
 		if ((CustomDungeon.isEditing() ? Dungeon.getSimulatedDepth() : Dungeon.depth) <= 1) {
@@ -251,7 +251,7 @@ public abstract class RegularLevel extends Level {
 		}
 		return mobs;
 	}
-
+	
 	@Override
 	protected void createMobs() {
 
@@ -283,7 +283,7 @@ public abstract class RegularLevel extends Level {
 			ArrayList<Room> stdRooms = new ArrayList<>();
 			for (Room room : rooms) {
 				if (room instanceof StandardRoom && room != roomEntrance) {
-					for (int i = 0; i < ((StandardRoom) room).sizeCat.roomValue; i++) {
+					for (int i = 0; i < ((StandardRoom) room).mobSpawnWeight(); i++) {
 						stdRooms.add(room);
 					}
 				}
@@ -388,16 +388,16 @@ public abstract class RegularLevel extends Level {
 
 	@Override
 	public int randomDestination( Char ch ) {
-
+		
 		int count = 0;
 		int cell = -1;
-
+		
 		while (true) {
-
+			
 			if (++count > 30) {
 				return -1;
 			}
-
+			
 			Room room = Random.element( rooms );
 			if (room == null) {
 				continue;
@@ -410,10 +410,10 @@ public abstract class RegularLevel extends Level {
 					return cell;
 				}
 			}
-
+			
 		}
 	}
-
+	
 	@Override
 	protected void createItems() {
 
@@ -677,11 +677,11 @@ public abstract class RegularLevel extends Level {
 		limitedDocs.put(Document.CITY_WARLOCK, Dungeon.LimitedDrops.LORE_CITY);
 		limitedDocs.put(Document.HALLS_KING, Dungeon.LimitedDrops.LORE_HALLS);
 	}
-
+	
 	public ArrayList<Room> rooms() {
 		return new ArrayList<>(rooms);
 	}
-
+	
 	protected Room randomRoom( Class<?extends Room> type ) {
 		Random.shuffle( rooms );
 		for (Room r : rooms) {
@@ -691,21 +691,21 @@ public abstract class RegularLevel extends Level {
 		}
 		return null;
 	}
-
+	
 	public Room room( int pos ) {
 		for (Room room : rooms) {
 			if (room.inside( cellToPoint(pos) )) {
 				return room;
 			}
 		}
-
+		
 		return null;
 	}
 
 	public int randomDropCell(){
 		return randomDropCell(StandardRoom.class);
 	}
-
+	
 	protected int randomDropCell( Class<?extends Room> roomType ) {
 		int tries = 100;
 		int lengthHalf = tries / 2;
@@ -722,14 +722,14 @@ public abstract class RegularLevel extends Level {
 						&& (tries <= lengthHalf || (heaps.get(pos) == null && findMob(pos) == null))) {
 
 					Trap t = traps.get(pos);
-
+					
 					//items cannot spawn on traps which destroy items
 					if (t == null ||
 							! (t instanceof BurningTrap || t instanceof BlazingTrap
 							|| t instanceof ChillingTrap || t instanceof FrostTrap
 							|| t instanceof ExplosiveTrap || t instanceof DisintegrationTrap
 							|| t instanceof PitfallTrap)) {
-
+						
 						return pos;
 					}
 				}
@@ -737,7 +737,7 @@ public abstract class RegularLevel extends Level {
 		}
 		return -1;
 	}
-
+	
 	@Override
 	public int fallCell( boolean fallIntoPit, String destZone ) {
 		if (fallIntoPit) {
@@ -760,7 +760,7 @@ public abstract class RegularLevel extends Level {
 				}
 			}
 		}
-
+		
 		return super.fallCell( fallIntoPit, destZone );
 	}
 
@@ -823,12 +823,12 @@ public abstract class RegularLevel extends Level {
 		super.storeInBundle( bundle );
 		bundle.put( "rooms", rooms );
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
-
+		
 		rooms = new ArrayList<>( (Collection<Room>) ((Collection<?>) bundle.getCollection( "rooms" )) );
 		for (Room r : rooms) {
 			r.onLevelLoad( this );
@@ -839,5 +839,5 @@ public abstract class RegularLevel extends Level {
 			}
 		}
 	}
-
+	
 }
