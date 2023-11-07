@@ -41,18 +41,22 @@ public class Freezing extends Blob {
 		
 		int cell;
 		
-		Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );
+		Blob[] fires = Dungeon.level.blobs.get( Fire.class );
 		
 		for (int i = area.left-1; i <= area.right; i++) {
 			for (int j = area.top-1; j <= area.bottom; j++) {
 				cell = i + j*Dungeon.level.width();
 				if (cur[cell] > 0) {
-					
-					if (fire != null && fire.volume > 0 && fire.cur[cell] > 0){
-						fire.clear(cell);
-						off[cell] = cur[cell] = 0;
-						continue;
+
+					boolean foundFire = false;
+					for (int k = 0; k < fires.length; k++) {
+						if (fires[k].volume > 0 && fires[k].cur[cell] > 0){
+							fires[k].clear(cell);
+							off[cell] = cur[cell] = 0;
+							foundFire = true;
+						}
 					}
+					if (foundFire) continue;
 					
 					Freezing.freeze(cell);
 					
@@ -116,15 +120,17 @@ public class Freezing extends Blob {
 			}
 		}
 
-		Fire fire = (Fire) Dungeon.level.blobs.get(Fire.class);
-		if (fire != null && fire.volume > 0) {
-			fire.clear( cell );
-		}
+		Dungeon.level.blobs.doOnEach(Fire.class, fire ->{
+			if (fire.volume > 0) {
+				fire.clear( cell );
+			}
+		});
 
-		MagicalFireRoom.EternalFire eternalFire = (MagicalFireRoom.EternalFire)Dungeon.level.blobs.get(MagicalFireRoom.EternalFire.class);
-		if (eternalFire != null && eternalFire.volume > 0) {
-			eternalFire.clear( cell );
-		}
+		Dungeon.level.blobs.doOnEach(MagicalFireRoom.EternalFire.class, eternalFire ->{
+			if (eternalFire.volume > 0) {
+				eternalFire.clear( cell );
+			}
+		});
 		
 		Heap heap = Dungeon.level.heaps.get( cell );
 		if (heap != null) {

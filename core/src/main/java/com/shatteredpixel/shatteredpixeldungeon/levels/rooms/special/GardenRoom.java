@@ -49,7 +49,7 @@ public class GardenRoom extends SpecialRoom {
 			level.plant(new BlandfruitBush.Seed(), plantPos( level ));
 		}
 		
-		Foliage light = (Foliage)level.blobs.get( Foliage.class );
+		Foliage light = (Foliage)level.blobs.getOnly( Foliage.class );
 		if (light == null) {
 			light = new Foliage();
 		}

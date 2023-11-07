@@ -34,28 +34,38 @@ public class Blizzard extends Blob {
 		
 		int cell;
 		
-		Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );
-		Freezing freeze = (Freezing)Dungeon.level.blobs.get( Freezing.class );
+		Blob[] fires = Dungeon.level.blobs.get( Fire.class );
+		Blob[] freezes = Dungeon.level.blobs.get( Freezing.class );
 		
-		Inferno inf = (Inferno)Dungeon.level.blobs.get( Inferno.class );
-		
-		for (int i = area.left; i < area.right; i++) {
-			for (int j = area.top; j < area.bottom; j++) {
-				cell = i + j * Dungeon.level.width();
-				if (cur[cell] > 0) {
-					
-					if (fire != null)   fire.clear(cell);
-					if (freeze != null) freeze.clear(cell);
-					
-					if (inf != null && inf.volume > 0 && inf.cur[cell] > 0){
-						inf.clear(cell);
-						off[cell] = cur[cell] = 0;
-						continue;
+		Blob[] infs = Dungeon.level.blobs.get( Inferno.class );
+
+		int repeat = Math.max(Math.max(Math.max(fires.length, freezes.length), infs.length), 1);
+
+		for (int blob = 0; blob < repeat; blob++) {
+			Fire fire = blob < fires.length ? (Fire) fires[blob] : null;
+			Freezing freeze = blob < freezes.length ? (Freezing) freezes[blob] : null;
+			Inferno inf = blob < infs.length ? (Inferno) infs[blob] : null;
+
+			for (int i = area.left; i < area.right; i++) {
+				for (int j = area.top; j < area.bottom; j++) {
+					cell = i + j * Dungeon.level.width();
+					if (cur[cell] > 0) {
+
+						if (fire != null) fire.clear(cell);
+						if (freeze != null) freeze.clear(cell);
+
+						if (inf != null && inf.volume > 0 && inf.cur[cell] > 0) {
+							inf.clear(cell);
+							off[cell] = cur[cell] = 0;
+							continue;
+						}
+
+						if (blob == 0) {
+							Freezing.freeze(cell);
+							Freezing.freeze(cell);
+						}
+
 					}
-					
-					Freezing.freeze(cell);
-					Freezing.freeze(cell);
-					
 				}
 			}
 		}

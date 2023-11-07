@@ -66,11 +66,11 @@ public class WellWaterSpinner extends Spinner {
     public static WellWaters convertToValue(int cell) {
         if (cell < 0) return WellWaters.NONE;
 
-        Blob b = Dungeon.level.blobs.get(WaterOfHealth.class);
+        Blob b = Dungeon.level.blobs.getOnly(WaterOfHealth.class);
         if (b != null && b.cur != null && b.cur[cell] > 0) return WellWaters.HEALTH;
-        b = Dungeon.level.blobs.get(WaterOfAwareness.class);
+        b = Dungeon.level.blobs.getOnly(WaterOfAwareness.class);
         if (b != null && b.cur != null && b.cur[cell] > 0) return WellWaters.AWARENESS;
-        b = Dungeon.level.blobs.get(WaterOfTransmutation.class);
+        b = Dungeon.level.blobs.getOnly(WaterOfTransmutation.class);
         if (b != null && b.cur != null && b.cur[cell] > 0) return WellWaters.TRANSMUTATION;
         return WellWaters.NONE;
     }

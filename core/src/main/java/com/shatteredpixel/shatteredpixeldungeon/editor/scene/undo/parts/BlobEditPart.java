@@ -69,7 +69,7 @@ public class BlobEditPart {
 
         public BlobData(int cell) {
             for (int i = 0; i < BLOB_CLASSES.length; i++) {
-                Blob b = Dungeon.level.blobs.get(BLOB_CLASSES[i]);
+                Blob b = Dungeon.level.blobs.getOnly(BLOB_CLASSES[i]);
                 if (b != null && b.cur != null) {
                     blobs[i] = b.cur[cell];
                     if (b instanceof SacrificialFire) {
@@ -94,7 +94,7 @@ public class BlobEditPart {
             for (int i = 0; i < BLOB_CLASSES.length; i++) {
                 EditorScene.add(Blob.seed(cell, blobs[i], BLOB_CLASSES[i]));
             }
-            SacrificialFire sacrificialFire = (SacrificialFire) EditorScene.customLevel().blobs.get(SacrificialFire.class);
+            SacrificialFire sacrificialFire = (SacrificialFire) EditorScene.customLevel().blobs.getOnly(SacrificialFire.class);
             if (sacrificialFire != null) sacrificialFire.setPrize(cell, sacrificialFirePrize);
         }
 
@@ -103,7 +103,7 @@ public class BlobEditPart {
     public static void place(int cell, Class<? extends Blob> blob, int amount) {
         EditorScene.add(Blob.seed(cell, amount, blob));
         if (blob == SacrificialFire.class) {
-            SacrificialFire sacrificialFire = (SacrificialFire) EditorScene.customLevel().blobs.get(SacrificialFire.class);
+            SacrificialFire sacrificialFire = (SacrificialFire) EditorScene.customLevel().blobs.getOnly(SacrificialFire.class);
             if (sacrificialFire != null && sacrificialFire.getPrize(cell) == null)
                 sacrificialFire.setPrize(cell, SacrificialFire.prizeInInventory);
         }
@@ -111,7 +111,7 @@ public class BlobEditPart {
 
     public static void clearAllAtCell(int cell) {
         for (int i = 0; i < BlobData.BLOB_CLASSES.length; i++) {
-            Blob b = Dungeon.level.blobs.get(BlobData.BLOB_CLASSES[i]);
+            Blob b = Dungeon.level.blobs.getOnly(BlobData.BLOB_CLASSES[i]);
             if (b != null && b.cur != null) {
                 b.volume -= b.cur[cell];
                 b.cur[cell] = 0;
@@ -121,7 +121,7 @@ public class BlobEditPart {
 
     public static void clearNormalAtCell(int cell) {
         for (int i = 0; i < BlobData.BLOB_CLASSES.length; i++) {
-            Blob b = Dungeon.level.blobs.get(BlobData.BLOB_CLASSES[i]);
+            Blob b = Dungeon.level.blobs.getOnly(BlobData.BLOB_CLASSES[i]);
             if (b != null && !(b instanceof WellWater) && b.cur != null) {
                 b.volume -= b.cur[cell];
                 b.cur[cell] = 0;
@@ -131,7 +131,7 @@ public class BlobEditPart {
 
     public static void clearWellWaterAtCell(int cell) {
         for (int i = 0; i < BlobData.BLOB_CLASSES.length; i++) {
-            Blob b = Dungeon.level.blobs.get(BlobData.BLOB_CLASSES[i]);
+            Blob b = Dungeon.level.blobs.getOnly(BlobData.BLOB_CLASSES[i]);
             if (b != null && b instanceof WellWater && b.cur != null) {
                 b.volume -= b.cur[cell];
                 b.cur[cell] = 0;

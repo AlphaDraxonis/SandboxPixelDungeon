@@ -139,7 +139,7 @@ public class MagicalFireRoom extends SpecialRoom {
 
 	@Override
 	public boolean canPlaceCharacter(Point p, Level l) {
-		Blob fire = l.blobs.get(EternalFire.class);
+		Blob fire = l.blobs.getOnly(EternalFire.class);
 
 		//disallow placing on special tiles or next to fire if fire is present.
 		//note that this is slightly brittle, assumes the fire is either all there or totally gone
@@ -163,10 +163,13 @@ public class MagicalFireRoom extends SpecialRoom {
 
 			int cell;
 
-			Freezing freeze = (Freezing)Dungeon.level.blobs.get( Freezing.class );
-			Blizzard bliz = (Blizzard)Dungeon.level.blobs.get( Blizzard.class );
+			Fire pureFire = (Fire) Dungeon.level.blobs.getOnly( Fire.class );
 
-			Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );
+			Blob[] freezes = Dungeon.level.blobs.get( Freezing.class );
+			Blob[] blizs = Dungeon.level.blobs.get( Blizzard.class );
+			Blob[] fires = Dungeon.level.blobs.get( Fire.class );
+
+			int repeat = Math.max(Math.max(Math.max(fires.length, freezes.length), blizs.length), 1);
 
 			//if any part of the fire is cleared, cleanse the whole thing
 			Set<Integer> fireToClear = new HashSet<>(5);
@@ -184,20 +187,26 @@ public class MagicalFireRoom extends SpecialRoom {
 							cur[cell] = 0;
 							fireToClear.add(cell);
 						}
-						//overrides fire
-						if (fire != null && fire.volume > 0 && fire.cur[cell] > 0){
-							fire.clear(cell);
+						for (int blob = 0; blob < repeat; blob++) {
+							Fire fire = blob < fires.length ? (Fire) fires[blob] : null;
+							Freezing freeze = blob < freezes.length ? (Freezing) freezes[blob] : null;
+							Blizzard bliz = blob < blizs.length ? (Blizzard) blizs[blob] : null;
+							//overrides fire
+							if (fire != null && fire.volume > 0 && fire.cur[cell] > 0){
+								fire.clear(cell);
+							}
+							if (freeze != null && freeze.volume > 0 && freeze.cur[cell] > 0){
+								freeze.clear(cell);
+								cur[cell] = 0;
+								fireToClear.add(cell);
+							}
+							if (bliz != null && bliz.volume > 0 && bliz.cur[cell] > 0){
+								bliz.clear(cell);
+								cur[cell] = 0;
+								fireToClear.add(cell);
+							}
 						}
-						if (freeze != null && freeze.volume > 0 && freeze.cur[cell] > 0){
-							freeze.clear(cell);
-							cur[cell] = 0;
-							fireToClear.add(cell);
-						}
-						if (bliz != null && bliz.volume > 0 && bliz.cur[cell] > 0){
-							bliz.clear(cell);
-							cur[cell] = 0;
-							fireToClear.add(cell);
-						}
+
 						l.passable[cell] = cur[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0;
 					}
 
@@ -208,7 +217,7 @@ public class MagicalFireRoom extends SpecialRoom {
 							|| cur[cell+Dungeon.level.width()] > 0) {
 
 						//spread fire to nearby flammable cells
-						if (Dungeon.level.flamable[cell] && (fire == null || fire.volume == 0 || fire.cur[cell] == 0)){
+						if (Dungeon.level.flamable[cell] && (pureFire == null || pureFire.volume == 0 || pureFire.cur[cell] == 0)){
 							GameScene.add(Blob.seed(cell, 4, Fire.class));
 						}
 

@@ -102,8 +102,6 @@ public class CustomDungeon implements Bundlable {
     //Backup levels/dungeons
     //import levels
 
-    //boss music
-    //A way to edit what necromancer/spectral necromancers can summon
     //grass on every tile: store grass type in inv, add boolean array in level to show that there are grass visuals
 
     //Maybe I should also suggestion the auto exit and auto entrance, like after the tengu fight, you see a massive staircase leading down.
@@ -779,7 +777,7 @@ public class CustomDungeon implements Bundlable {
                 }
 
                 //Remove invalid keys as sacrificial fire reward
-                SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.get(SacrificialFire.class);
+                SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.getOnly(SacrificialFire.class);
                 if (sacrificialFire != null) {
                     if (sacrificialFire.removeInvalidKeys(n)) removedItems = true;
                 }
@@ -937,7 +935,7 @@ public class CustomDungeon implements Bundlable {
                     }
 
                     //Remove invalid keys as sacrificial fire reward
-                    SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.get(SacrificialFire.class);
+                    SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.getOnly(SacrificialFire.class);
                     if (sacrificialFire != null) {
                         if (sacrificialFire.renameInvalidKeys(oldName, newName)) needsSave = true;
                     }

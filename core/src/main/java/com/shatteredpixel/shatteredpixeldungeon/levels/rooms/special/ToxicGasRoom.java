@@ -108,7 +108,7 @@ public class ToxicGasRoom extends SpecialRoom {
 
 	@Override
 	public boolean canPlaceCharacter(Point p, Level l) {
-		Blob gas = l.blobs.get(ToxicGas.class);
+		Blob gas = l.blobs.getOnly(ToxicGas.class);
 		return gas == null || gas.volume == 0 || gas.cur[l.pointToCell(p)] == 0;
 	}
 
@@ -117,7 +117,7 @@ public class ToxicGasRoom extends SpecialRoom {
 		@Override
 		protected void evolve() {
 			int cell;
-			ToxicGas gas = (ToxicGas) Dungeon.level.blobs.get(ToxicGas.class);
+			ToxicGas gas = (ToxicGas) Dungeon.level.blobs.getOnly(ToxicGas.class);
 			for (int i=area.top-1; i <= area.bottom; i++) {
 				for (int j = area.left-1; j <= area.right; j++) {
 					cell = j + i* Dungeon.level.width();

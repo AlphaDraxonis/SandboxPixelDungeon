@@ -58,7 +58,7 @@ public class SecretGardenRoom extends SecretRoom {
 			level.plant(new WandOfRegrowth.Dewcatcher.Seed(), plantPos( level ));
 		}
 		
-		Foliage light = (Foliage)level.blobs.get( Foliage.class );
+		Foliage light = (Foliage)level.blobs.getOnly( Foliage.class );
 		if (light == null) {
 			light = new Foliage();
 		}

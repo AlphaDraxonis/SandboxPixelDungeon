@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.BlobStoreMap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SmokeScreen;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Web;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
@@ -191,7 +192,7 @@ public abstract class Level implements Bundlable {
 	
 	public HashSet<Mob> mobs;
 	public SparseArray<Heap> heaps;
-	public HashMap<Class<? extends Blob>,Blob> blobs;
+	public BlobStoreMap blobs;
 	public SparseArray<Plant> plants;
 	public SparseArray<Trap> traps;
 	public SparseArray<Sign> signs;
@@ -323,7 +324,7 @@ public abstract class Level implements Bundlable {
 
 			mobs = new HashSet<>();
 			heaps = new SparseArray<>();
-			blobs = new HashMap<>();
+			blobs = new BlobStoreMap();
 			plants = new SparseArray<>();
 			traps = new SparseArray<>();
 			signs = new SparseArray<>();
@@ -477,7 +478,7 @@ public abstract class Level implements Bundlable {
 		
 		mobs = new HashSet<>();
 		heaps = new SparseArray<>();
-		blobs = new HashMap<>();
+		blobs = new BlobStoreMap();
 		plants = new SparseArray<>();
 		traps = new SparseArray<>();
 		signs = new SparseArray<>();
@@ -1201,10 +1202,7 @@ public abstract class Level implements Bundlable {
 				|| (Terrain.flags[map[pos]] & Terrain.FLAMABLE) != 0) {
 			set(pos, Terrain.EMBERS);
 		}
-		Blob web = blobs.get(Web.class);
-		if (web != null){
-			web.clear(pos);
-		}
+		blobs.doOnEach(Web.class, b -> b.clear(pos));
 	}
 
 	public void cleanWalls() {
@@ -1435,7 +1433,7 @@ public abstract class Level implements Bundlable {
 	
 	public void occupyCell( Char ch ){
 		if (!ch.isImmune(Web.class) && Blob.volumeAt(ch.pos, Web.class) > 0){
-			blobs.get(Web.class).clear(ch.pos);
+			blobs.doOnEach(Web.class, b -> b.clear(ch.pos));
 			Web.affectChar( ch );
 		}
 
@@ -1561,7 +1559,7 @@ public abstract class Level implements Bundlable {
 		}
 
 		if (hard && Blob.volumeAt(cell, Web.class) > 0){
-			blobs.get(Web.class).clear(cell);
+			blobs.doOnEach(Web.class, b -> b.clear(cell));
 		}
 	}
 
@@ -1598,15 +1596,16 @@ public abstract class Level implements Bundlable {
 
 			if (c.alignment != Char.Alignment.ALLY
 					&& Dungeon.level.blobs.containsKey(SmokeScreen.class)
-					&& Dungeon.level.blobs.get(SmokeScreen.class).volume > 0) {
+					&& Blob.totalVolume(SmokeScreen.class) > 0) {
 				if (blocking == null) {
 					System.arraycopy(Dungeon.level.losBlocking, 0, modifiableBlocking, 0, modifiableBlocking.length);
 					blocking = modifiableBlocking;
 				}
-				Blob s = Dungeon.level.blobs.get(SmokeScreen.class);
-				for (int i = 0; i < blocking.length; i++){
-					if (!blocking[i] && s.cur[i] > 0){
-						blocking[i] = true;
+				for (Blob s : blobs.get(SmokeScreen.class)){
+					for (int i = 0; i < blocking.length; i++){
+						if (!blocking[i] && s.cur[i] > 0){
+							blocking[i] = true;
+						}
 					}
 				}
 			}

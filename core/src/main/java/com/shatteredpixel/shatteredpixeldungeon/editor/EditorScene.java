@@ -697,7 +697,7 @@ public class EditorScene extends PixelScene {
         Trap trap = customLevel.traps.get(cell);
         if (trap != null) return trap;
         for (int i = 0; i < BlobEditPart.BlobData.BLOB_CLASSES.length; i++) {
-            Blob b = Dungeon.level.blobs.get(BlobEditPart.BlobData.BLOB_CLASSES[i]);
+            Blob b = Dungeon.level.blobs.getOnly(BlobEditPart.BlobData.BLOB_CLASSES[i]);
             if (b != null && !(b instanceof WellWater) && b.cur != null && b.cur[cell] > 0) return b;
         }
         CustomTilemap customTile = CustomTileItem.findCustomTileAt(cell);

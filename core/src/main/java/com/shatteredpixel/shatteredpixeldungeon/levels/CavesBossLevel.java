@@ -334,7 +334,7 @@ public class CavesBossLevel extends Level {
 	public void unseal() {
 		super.unseal();
 
-		blobs.get(PylonEnergy.class).fullyClear();
+		blobs.getOnly(PylonEnergy.class).fullyClear();
 
 		set( entrance(), Terrain.ENTRANCE );
 		int i = 14 + 13*width();
@@ -406,7 +406,7 @@ public class CavesBossLevel extends Level {
 		}
 		int finalPylonsRemaining = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 1 : 2;
 		if (pylonsRemaining > finalPylonsRemaining) {
-			blobs.get(PylonEnergy.class).fullyClear();
+			blobs.getOnly(PylonEnergy.class).fullyClear();
 		}
 	}
 

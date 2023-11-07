@@ -113,10 +113,11 @@ public class Shopkeeper extends NPC {
 			//cleanses all harmful blobs in the shop
 			ArrayList<Blob> blobs = new ArrayList<>();
 			for (Class c : new BlobImmunity().immunities()){
-				Blob b = Dungeon.level.blobs.get(c);
-				if (b != null && b.volume > 0){
-					blobs.add(b);
-				}
+				Dungeon.level.blobs.doOnEach(c, b -> {
+					if (b.volume > 0){
+						blobs.add(b);
+					}
+				});
 			}
 
 			PathFinder.buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 4 );

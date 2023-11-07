@@ -58,10 +58,11 @@ public class PotionOfPurity extends Potion {
 		
 		ArrayList<Blob> blobs = new ArrayList<>();
 		for (Class c : affectedBlobs){
-			Blob b = Dungeon.level.blobs.get(c);
-			if (b != null && b.volume > 0){
-				blobs.add(b);
-			}
+			Dungeon.level.blobs.doOnEach(c, b -> {
+				if (b.volume > 0){
+					blobs.add(b);
+				}
+			});
 		}
 		
 		for (int i=0; i < Dungeon.level.length(); i++) {

@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
@@ -53,17 +54,17 @@ public class GeyserTrap extends Trap {
 		Splash.at( DungeonTilemap.tileCenterToWorld( pos ), -PointF.PI/2, PointF.PI/2, 0x5bc1e3, 100, 0.01f);
 		Sample.INSTANCE.play(Assets.Sounds.GAS, 1f, 0.75f);
 
-		Fire fire = (Fire) Dungeon.level.blobs.get(Fire.class);
+		Blob[] fires = Dungeon.level.blobs.get(Fire.class);
 		PathFinder.buildDistanceMap( pos, BArray.not( Dungeon.level.solid, null ), 2 );
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] == 2 && Random.Int(3) > 0){
 				Dungeon.level.setCellToWater(true, i);
-				if (fire != null){
+				for (Blob fire : fires){
 					fire.clear(i);
 				}
 			} else if (PathFinder.distance[i] < 2){
 				Dungeon.level.setCellToWater(true, i);
-				if (fire != null){
+				for (Blob fire : fires){
 					fire.clear(i);
 				}
 			}

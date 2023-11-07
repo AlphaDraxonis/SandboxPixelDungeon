@@ -246,7 +246,7 @@ public class Blob extends Actor {
 	@SuppressWarnings("unchecked")
 	public static<T extends Blob> T seed( int cell, int amount, Class<T> type, Level level ) {
 		
-		T gas = (T)level.blobs.get( type );
+		T gas = (T)level.blobs.getOnly( type );
 		
 		if (gas == null) {
 			gas = Reflection.newInstance(type);
@@ -264,12 +264,21 @@ public class Blob extends Actor {
 		return gas;
 	}
 
-	public static int volumeAt( int cell, Class<? extends Blob> type){
-		Blob gas = Dungeon.level.blobs.get( type );
-		if (gas == null || gas.volume == 0) {
-			return 0;
-		} else {
-			return gas.cur[cell];
+	public static int volumeAt( int cell, Class<? extends Blob> type ){
+		Blob[] gasses = Dungeon.level.blobs.get( type );
+		int volume = 0;
+		for (Blob gas : gasses) {
+			if (gas.volume != 0) volume += gas.cur[cell];
 		}
+		return volume;
+	}
+
+	public static int totalVolume(Class<? extends Blob> type){
+		Blob[] gasses = Dungeon.level.blobs.get( type );
+		int volume = 0;
+		for (Blob gas : gasses) {
+			if (gas.volume != 0) volume += gas.volume;
+		}
+		return volume;
 	}
 }

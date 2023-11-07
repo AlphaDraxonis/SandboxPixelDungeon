@@ -35,25 +35,36 @@ public class Inferno extends Blob {
 		
 		int cell;
 		boolean observe = false;
-		
-		Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );
-		Freezing freeze = (Freezing)Dungeon.level.blobs.get( Freezing.class );
-		
-		Blizzard bliz = (Blizzard)Dungeon.level.blobs.get( Blizzard.class );
+
+		Fire pureFire = (Fire) Dungeon.level.blobs.getOnly( Fire.class );
+
+		Blob[] freezes = Dungeon.level.blobs.get( Freezing.class );
+		Blob[] blizs = Dungeon.level.blobs.get( Blizzard.class );
+		Blob[] fires = Dungeon.level.blobs.get( Fire.class );
+
+		int repeat = Math.max(Math.max(Math.max(fires.length, freezes.length), blizs.length), 1);
 		
 		for (int i = area.left-1; i <= area.right; i++) {
 			for (int j = area.top-1; j <= area.bottom; j++) {
 				cell = i + j * Dungeon.level.width();
 				if (cur[cell] > 0) {
-					
-					if (fire != null)   fire.clear(cell);
-					if (freeze != null) freeze.clear(cell);
-					
-					if (bliz != null && bliz.volume > 0 && bliz.cur[cell] > 0){
-						bliz.clear(cell);
-						off[cell] = cur[cell] = 0;
-						continue;
+
+					boolean continueThen = false;
+					for (int blob = 0; blob < repeat; blob++) {
+						Fire fire = blob < fires.length ? (Fire) fires[blob] : null;
+						Freezing freeze = blob < freezes.length ? (Freezing) freezes[blob] : null;
+						Blizzard bliz = blob < blizs.length ? (Blizzard) blizs[blob] : null;
+
+						if (fire != null)   fire.clear(cell);
+						if (freeze != null) freeze.clear(cell);
+
+						if (bliz != null && bliz.volume > 0 && bliz.cur[cell] > 0){
+							bliz.clear(cell);
+							off[cell] = cur[cell] = 0;
+							continueThen = true;
+						}
 					}
+					if (continueThen) continue;
 					
 					Fire.burn(cell);
 
@@ -70,7 +81,7 @@ public class Inferno extends Blob {
 						|| cur[cell-Dungeon.level.width()] > 0
 						|| cur[cell+Dungeon.level.width()] > 0)) {
 
-					if (fire == null || fire.cur == null || fire.cur[cell] == 0) {
+					if (pureFire == null || pureFire.cur == null || pureFire.cur[cell] == 0) {
 						GameScene.add(Fire.seed(cell, 4, Fire.class));
 					}
 

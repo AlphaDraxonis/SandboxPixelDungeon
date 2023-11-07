@@ -116,10 +116,13 @@ public abstract class WellWater extends Blob {
 	
 	public static void affectCell( int cell ) {
 		
-		Class<?>[] waters = {WaterOfHealth.class, WaterOfAwareness.class, WaterOfTransmutation.class};
+		Class<? extends WellWater>[] waters = new Class[3];
+		waters[0] = WaterOfHealth.class;
+		waters[1] = WaterOfAwareness.class;
+		waters[2] = WaterOfTransmutation.class;
 		
-		for (Class<?>waterClass : waters) {
-			WellWater water = (WellWater)Dungeon.level.blobs.get( waterClass );
+		for (Class<? extends WellWater> waterClass : waters) {
+			WellWater water = (WellWater)Dungeon.level.blobs.getOnly( waterClass );
 			if (water != null &&
 				water.volume > 0 &&
 				water.cur[cell] > 0 &&

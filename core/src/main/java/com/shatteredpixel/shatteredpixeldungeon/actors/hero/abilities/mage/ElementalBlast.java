@@ -200,8 +200,8 @@ public class ElementalBlast extends ArmorAbility {
 					public void call() {
 
 						int charsHit = 0;
-						Freezing freeze = (Freezing)Dungeon.level.blobs.get( Freezing.class );
-						Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );
+						Blob[] freezes = Dungeon.level.blobs.get( Freezing.class );
+						Blob[] fires = Dungeon.level.blobs.get( Fire.class );
 						for (int cell : aoe.cells) {
 
 							//### Cell effects ###
@@ -217,7 +217,7 @@ public class ElementalBlast extends ArmorAbility {
 									Level.set(cell, Terrain.OPEN_DOOR);
 									GameScene.updateMap(cell);
 								}
-								if (freeze != null){
+								for (Blob freeze : freezes) {
 									freeze.clear(cell);
 								}
 								if (Dungeon.level.flamable[cell]){
@@ -226,7 +226,7 @@ public class ElementalBlast extends ArmorAbility {
 
 							//*** Wand of Frost ***
 							} else if (finalWandCls == WandOfFrost.class){
-								if (fire != null){
+								for (Blob fire : fires) {
 									fire.clear(cell);
 								}
 

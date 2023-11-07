@@ -110,7 +110,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
             Blob blobAtCell = null;
             for (int i = 0; i < BlobEditPart.BlobData.BLOB_CLASSES.length; i++) {
-                Blob b = Dungeon.level.blobs.get(BlobEditPart.BlobData.BLOB_CLASSES[i]);
+                Blob b = Dungeon.level.blobs.getOnly(BlobEditPart.BlobData.BLOB_CLASSES[i]);
                 if (b != null && !(b instanceof WellWater) && b.cur != null && b.cur[cell] > 0) {
                     blobAtCell = b;
                     break;

@@ -282,7 +282,7 @@ public class SacrificialFire extends Blob {
 		@Override
 		public void detach() {
 			if (!target.isAlive()) {
-				SacrificialFire fire = (SacrificialFire) Dungeon.level.blobs.get(SacrificialFire.class);
+				SacrificialFire fire = (SacrificialFire) Dungeon.level.blobs.getOnly(SacrificialFire.class);
 				if (fire != null) {
 					fire.sacrifice(target);
 				}

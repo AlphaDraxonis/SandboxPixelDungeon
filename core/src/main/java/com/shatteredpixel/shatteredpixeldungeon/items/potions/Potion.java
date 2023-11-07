@@ -394,9 +394,8 @@ public class Potion extends Item {
 	
 	protected void splash( int cell ) {
 
-		Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );
-		if (fire != null)
-			fire.clear( cell );
+
+		Dungeon.level.blobs.doOnEach(Fire.class, b -> b.clear(cell));
 
 		final int color = splashColor();
 
