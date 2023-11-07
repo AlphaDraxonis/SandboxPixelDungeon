@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
@@ -225,6 +226,7 @@ public enum Tiles {
 //        customTileBag.items.add(new CustomTileItem(new LastLevel.CustomFloor(), -1));
         customTileBag.items.add(new CustomTileItem(new WeakFloorRoom.HiddenWell(), -1));
         customTileBag.items.add(new CustomTileItem(new CavesBossLevel.TrapTile(), -1));
+        customTileBag.items.add(new CustomTileItem(new CityBossLevel.KingsThrone(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExit(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExitOverhang(), -1));
     }

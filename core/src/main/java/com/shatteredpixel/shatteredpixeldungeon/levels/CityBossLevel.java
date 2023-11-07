@@ -690,4 +690,38 @@ public class CityBossLevel extends Level {
 			return v;
 		}
 	}
+
+	public static class KingsThrone extends CustomTilemap {
+
+		{
+			texture = Assets.Environment.CITY_BOSS;
+
+			terrain = Terrain.EMPTY_SP;
+
+			tileW = tileH = 3;
+			offsetCenterX = offsetCenterY = 1;
+		}
+
+		@Override
+		public Tilemap create() {
+			Tilemap v = super.create();
+			int[] data = new int[tileW*tileH];
+			for (int i = 0; i < data.length; i++) {
+				data[i] = (13 + i/3) * 8 + 1 + i%3;
+			}
+			v.map( data, tileW );
+			return v;
+		}
+
+		@Override
+		public String name(int tileX, int tileY) {
+			return Messages.get(CityBossLevel.class, "throne_name");
+		}
+
+		@Override
+		public String desc(int tileX, int tileY) {
+			return Messages.get(CityBossLevel.class, "throne_desc");
+		}
+
+	}
 }
