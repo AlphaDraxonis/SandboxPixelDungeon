@@ -30,6 +30,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WATER;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WELL;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.gases.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
@@ -192,13 +193,19 @@ public enum Tiles {
         bag.items.add(customTileBag = new CustomTileBag());
 
         bag.items.add(new BlobBag(
+                PermaGas.PFire.class,
+                PermaGas.PFreezing.class,
                 MagicalFireRoom.EternalFire.class,
                 SacrificialFire.class,
                 PermaGas.PToxicGas.class,
                 PermaGas.PCorrosiveGas.class,
                 PermaGas.PConfusionGas.class,
                 PermaGas.PParalyticGas.class,
-                PermaGas.PStenchGas.class));
+                PermaGas.PStenchGas.class,
+                PermaGas.PSmokeScreen.class,
+                PermaGas.PElectricity.class,
+                Foliage.class,
+                PermaGas.PStormCloud.class));
     }
 
     private static final Map<String, CustomTileLoader.OwnCustomTile> ownCustomTiles = new HashMap<>();

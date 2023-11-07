@@ -14,6 +14,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -360,6 +361,16 @@ public class CustomLevel extends Level {
 //
 //        createItems();
 //    }
+
+
+    @Override
+    public void initForPlay() {
+        super.initForPlay();
+        for (int i = 0; i < map.length; i++) {
+            if (map[i] == Terrain.ALCHEMY)
+                Blob.seed( i, 1, Alchemy.class, this );
+        }
+    }
 
     @Override
     public String tilesTex() {

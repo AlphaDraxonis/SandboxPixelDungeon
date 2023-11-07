@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
@@ -17,6 +18,9 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
@@ -80,24 +84,54 @@ public class BlobItem extends EditorItem {
     }
 
     public static Image createIcon(Class<? extends Blob> blob) {
+        if(blob == PermaGas.PFire.class
+                || blob == PermaGas.PFreezing.class
+                || blob == PermaGas.PToxicGas.class
+                || blob == PermaGas.PCorrosiveGas.class
+                || blob == PermaGas.PParalyticGas.class
+                || blob == PermaGas.PElectricity.class
+                || blob == PermaGas.PSmokeScreen.class
+                || blob == PermaGas.PStormCloud.class){
+            int icon;
+            if(blob == PermaGas.PFire.class) icon = ItemSpriteSheet.Icons.POTION_LIQFLAME;
+            else if (blob == PermaGas.PFreezing.class) icon = ItemSpriteSheet.Icons.POTION_FROST;
+            else if (blob == PermaGas.PToxicGas.class) icon = ItemSpriteSheet.Icons.POTION_TOXICGAS;
+            else if (blob == PermaGas.PCorrosiveGas.class) icon = ItemSpriteSheet.Icons.POTION_CORROGAS;
+            else if (blob == PermaGas.PParalyticGas.class) icon = ItemSpriteSheet.Icons.POTION_PARAGAS;
+            else if (blob == PermaGas.PElectricity.class) icon = ItemSpriteSheet.Icons.SCROLL_RECHARGE;
+            else if (blob == PermaGas.PSmokeScreen.class) icon = ItemSpriteSheet.Icons.POTION_SHROUDFOG;
+            else icon = ItemSpriteSheet.Icons.POTION_STRMCLOUD;
+            RectF r = ItemSpriteSheet.Icons.film.get(icon);
+            if (r == null) return new ItemSprite();
+            Image img = new Image(Assets.Sprites.ITEM_ICONS);
+            img.frame(r);
+            img.scale.set(2.28f);//16/7=2.28
+            return img;
+        }
         if (blob == MagicalFireRoom.EternalFire.class) {
             Image icon = Icons.ETERNAL_FIRE.get();
             icon.scale.set(2.28f);//16/7=2.28
             return icon;
-        } else if (blob == SacrificialFire.class) {
+        }
+        if (blob == SacrificialFire.class) {
             Image icon = Icons.SACRIFICIAL_FIRE.get();
             icon.scale.set(2.28f);//16/7=2.28
             return icon;
-        } else if (PermaGas.class.isAssignableFrom(blob)) {
+        }
+        if (blob == Foliage.class) {
+            return new BuffIcon(BuffIndicator.SHADOWS,true);
+        }
+        if (PermaGas.class.isAssignableFrom(blob)) {
             RectF r = Speck.getFilm().get(Speck.STEAM);
             if (r == null) return null;
 
             int color;
-            if (blob == PermaGas.PToxicGas.class) color = 0x50FF60;
-            else if (blob == PermaGas.PCorrosiveGas.class) color = 0xDC8C32;
-            else if (blob == PermaGas.PConfusionGas.class) color = 0xA882A0;
-            else if (blob == PermaGas.PParalyticGas.class) color = 0xDCE150;
+//            if (blob == PermaGas.PToxicGas.class) color = 0x50FF60;
+//            else if (blob == PermaGas.PCorrosiveGas.class) color = 0xDC8C32;
+            if (blob == PermaGas.PConfusionGas.class) color = 0xA882A0;
+//            else if (blob == PermaGas.PParalyticGas.class) color = 0xDCE150;
             else if (blob == PermaGas.PStenchGas.class) color = 0x003300;
+//            else if (blob == PermaGas.PSmokeScreen.class) color = 0x000000;
             else return new ItemSprite();
             Image icon = new Image(Assets.Effects.SPECKS) {
                 @Override
@@ -121,15 +155,15 @@ public class BlobItem extends EditorItem {
                         bm = value * 2f * bm;
                         ra = ga = ba = 0;
                     } else {
-                        if (blob == PermaGas.PToxicGas.class) {
-                            rm = 3f * rm - value * 3f * rm;
-                            gm = 3f * gm - value * 3f * gm;
-                            bm = 3f * bm - value * 3f * bm;
-                        } else {
+//                        if (blob == PermaGas.PToxicGas.class) {
+//                            rm = 3f * rm - value * 3f * rm;
+//                            gm = 3f * gm - value * 3f * gm;
+//                            bm = 3f * bm - value * 3f * bm;
+//                        } else {
                             rm = 2f * rm - value * 2f * rm;
                             gm = 2f * gm - value * 2f * gm;
                             bm = 2f * bm - value * 2f * bm;
-                        }
+//                        }
                         ra = ga = ba = value * 2f - 1f;
                     }
                 }

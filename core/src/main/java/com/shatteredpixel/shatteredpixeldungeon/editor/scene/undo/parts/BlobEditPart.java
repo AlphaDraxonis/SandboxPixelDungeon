@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfAwareness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfHealth;
@@ -52,6 +53,8 @@ public class BlobEditPart {
     public static class BlobData {
 
         public static final Class<? extends Blob>[] BLOB_CLASSES = new Class[]{
+                PermaGas.PFire.class,
+                PermaGas.PFreezing.class,
                 MagicalFireRoom.EternalFire.class,
                 SacrificialFire.class,
                 PermaGas.PToxicGas.class,
@@ -59,6 +62,10 @@ public class BlobEditPart {
                 PermaGas.PConfusionGas.class,
                 PermaGas.PParalyticGas.class,
                 PermaGas.PStenchGas.class,
+                PermaGas.PSmokeScreen.class,
+                PermaGas.PElectricity.class,
+                Foliage.class,
+                PermaGas.PStormCloud.class,
                 WaterOfHealth.class,
                 WaterOfAwareness.class,
                 WaterOfTransmutation.class};
