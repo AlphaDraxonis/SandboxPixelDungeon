@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SpawnerMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
@@ -94,7 +95,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final CheckBox spawnQuestRoom;
 
     private final Spinner sentryRange, sentryDelay;
-    private final ItemSelector necroSpawnMob;
+    private final ItemSelector summonMob;
     private final Spinner tenguPhase, tenguRange;
     private final CheckBox dm300destroyWalls;
     private final Spinner yogSpawnersAlive;
@@ -387,9 +388,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             sentryDelay = null;
         }
 
-        if (mob instanceof Necromancer) {
-            Mob necroMob = ((Necromancer) mob).summonTemplate;
-            necroSpawnMob = new ItemSelector(Messages.get(EditMobComp.class, "necro_spawn"), MobItem.class, necroMob == null ? null : new MobItem(necroMob), ItemSelector.NullTypeSelector.NOTHING) {
+        if (mob instanceof SpawnerMob) {
+            Mob necroMob = ((SpawnerMob) mob).summonTemplate;
+            summonMob = new ItemSelector(Messages.get(EditMobComp.class, "summon_mob"), MobItem.class, necroMob == null ? null : new MobItem(necroMob), ItemSelector.NullTypeSelector.NOTHING) {
                 {
                     selector.preferredBag = Mobs.bag.getClass();
                 }
@@ -402,13 +403,13 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
-                    if (selectedItem == EditorItem.NULL_ITEM) ((Necromancer) mob).summonTemplate = null;
-                    else if (selectedItem instanceof MobItem) ((Necromancer) mob).summonTemplate = ((MobItem) selectedItem).mob();
+                    ((SpawnerMob) mob).summonTemplate = selectedItem == EditorItem.NULL_ITEM ? null
+                            : selectedItem instanceof MobItem ? ((MobItem) selectedItem).mob() : null;
                     updateObj();
                 }
             };
-            add(necroSpawnMob);
-        } else necroSpawnMob = null;
+            add(summonMob);
+        } else summonMob = null;
 
         if (mob instanceof Tengu) {
             tenguPhase = new Spinner(new SpinnerIntegerModel(1, 2, ((Tengu) mob).phase, 1, true, null) {
@@ -575,7 +576,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 yogSpawnersAlive, yogNormalFists, yogChallengeFists,
                 mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, blacksmithQuestRewards,
                 tenguPhase, tenguRange, dm300destroyWalls,
-                sentryRange, sentryDelay, necroSpawnMob, playerAlignment, addBuffs, editStats};
+                sentryRange, sentryDelay, summonMob, playerAlignment, addBuffs, editStats};
     }
 
     @Override

@@ -42,10 +42,11 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
-public class DemonSpawner extends Mob {
+public class DemonSpawner extends SpawnerMob {
 
 	{
 		spriteClass = SpawnerSprite.class;
@@ -65,6 +66,12 @@ public class DemonSpawner extends Mob {
 		properties.add(Property.IMMOVABLE);
 		properties.add(Property.MINIBOSS);
 		properties.add(Property.DEMONIC);
+	}
+
+	{
+		defaultTemplateClass = RipperDemon.class;
+		summonTemplate = Reflection.newInstance(defaultTemplateClass);
+		summonTemplate.state = summonTemplate.HUNTING;
 	}
 
 
@@ -125,11 +132,9 @@ public class DemonSpawner extends Mob {
 			}
 
 			if (!candidates.isEmpty()) {
-				RipperDemon spawn = new RipperDemon();
-				spawn.setPlayerAlignment(playerAlignment);
+				Mob spawn = (Mob) summonTemplate.getCopy();
 
 				spawn.pos = Random.element( candidates );
-				spawn.state = spawn.HUNTING;
 
 				GameScene.add( spawn, 1 );
 				Dungeon.level.occupyCell(spawn);

@@ -46,7 +46,7 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
-public class Necromancer extends Mob {
+public class Necromancer extends SpawnerMob {
 	
 	{
 		spriteClass = NecromancerSprite.class;
@@ -71,9 +71,9 @@ public class Necromancer extends Mob {
 	
 	protected boolean firstSummon = true;
 
-	protected Class<? extends Mob> defaultTemplateClass = Skeleton.class;
-	public Mob summonTemplate = Reflection.newInstance(defaultTemplateClass);
 	{
+		defaultTemplateClass = Skeleton.class;
+		summonTemplate = Reflection.newInstance(defaultTemplateClass);
 		summonTemplate.state = summonTemplate.WANDERING;
 	}
 	protected Mob mySummon;
@@ -106,16 +106,6 @@ public class Necromancer extends Mob {
 	}
 
 	@Override
-	public String description() {
-		String desc = super.description();
-		if (summonTemplate == null)
-			desc += "\n\n" + Messages.get(this, "summon_none");
-		else if(summonTemplate.getClass() != defaultTemplateClass)
-			desc += "\n\n" + Messages.get(this, "summon", summonTemplate.name());
-		return desc;
-	}
-
-	@Override
 	public void die(Object cause) {
 		if (storedSkeletonID != -1){
 			Actor ch = Actor.findById(storedSkeletonID);
@@ -141,14 +131,12 @@ public class Necromancer extends Mob {
 	private static final String FIRST_SUMMON = "first_summon";
 	private static final String SUMMONING_POS = "summoning_pos";
 	private static final String MY_SKELETON = "my_skeleton";
-	private static final String SUMMONING_TEMPLATE = "summoning_template";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put( SUMMONING, summoning );
 		bundle.put( FIRST_SUMMON, firstSummon );
-		bundle.put( SUMMONING_TEMPLATE, summonTemplate );
 		if (summoning){
 			bundle.put( SUMMONING_POS, summoningPos);
 		}
@@ -163,7 +151,6 @@ public class Necromancer extends Mob {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		summoning = bundle.getBoolean( SUMMONING );
-		summonTemplate = (Mob) bundle.get(SUMMONING_TEMPLATE);
 		if (bundle.contains(FIRST_SUMMON)) firstSummon = bundle.getBoolean(FIRST_SUMMON);
 		if (summoning){
 			summoningPos = bundle.getInt( SUMMONING_POS );
