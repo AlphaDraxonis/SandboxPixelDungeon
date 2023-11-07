@@ -90,7 +90,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             @Override
             protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
                 List<LevelSchemeLike> ret = super.filterLevels(levels);
-                ret.remove(EditorScene.customLevel().levelScheme);//Cant choose same level
+//                ret.remove(EditorScene.customLevel().levelScheme);//Cant choose same level
                 return ret;
             }
         };
