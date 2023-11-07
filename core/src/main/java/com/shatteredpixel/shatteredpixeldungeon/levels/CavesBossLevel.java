@@ -67,6 +67,7 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Rect;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CavesBossLevel extends Level {
 
@@ -726,6 +727,8 @@ public class CavesBossLevel extends Level {
 
 	}
 
+	private static final int IMG_INACTIVE_TRAP = 37;
+
 	public static class ArenaVisuals extends CustomTilemap {
 
 		{
@@ -761,7 +764,7 @@ public class CavesBossLevel extends Level {
 							}
 						}
 					} else if (Dungeon.level.map[j] == Terrain.INACTIVE_TRAP){
-						data[i] = 37;
+						data[i] = IMG_INACTIVE_TRAP;
 					} else if (gate.inside(Dungeon.level.cellToPoint(j))){
 						int idx = Dungeon.level.solid[j] ? 40 : 32;
 						data[i++] = idx++;
@@ -819,6 +822,35 @@ public class CavesBossLevel extends Level {
 			return super.image(tileX, tileY);
 
 		}
+	}
+
+	public static class TrapTile extends CustomTilemap {
+
+		{
+			texture = Assets.Environment.CAVES_BOSS;
+
+			terrain = Terrain.INACTIVE_TRAP;
+		}
+
+		@Override
+		public Tilemap create() {
+			Tilemap v = super.create();
+			int[] data = new int[tileW*tileH];
+			Arrays.fill(data, IMG_INACTIVE_TRAP);
+			v.map( data, tileW );
+			return v;
+		}
+
+		@Override
+		public String name(int tileX, int tileY) {
+			return Messages.get(CavesBossLevel.class, "wires_name");
+		}
+
+		@Override
+		public String desc(int tileX, int tileY) {
+			return Messages.get(CavesBossLevel.class, "wires_desc");
+		}
+
 	}
 
 	public static class PylonEnergy extends Blob {

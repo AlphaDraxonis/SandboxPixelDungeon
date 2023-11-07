@@ -38,7 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
-public class DM100 extends Mob implements Callback {
+public class DM100 extends DMMob implements Callback {
 
 	private static final float TIME_TO_ZAP	= 1f;
 	

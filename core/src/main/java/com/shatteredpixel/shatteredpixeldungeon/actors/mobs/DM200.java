@@ -37,7 +37,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-public class DM200 extends Mob {
+public class DM200 extends DMMob {
 
 	{
 		spriteClass = DM200Sprite.class;

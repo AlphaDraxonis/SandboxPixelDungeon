@@ -30,7 +30,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
@@ -47,7 +46,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.EarthParticle;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
@@ -79,7 +77,7 @@ import com.watabou.utils.Rect;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DM300 extends Mob implements MobBasedOnDepth {
+public class DM300 extends DMMob implements MobBasedOnDepth {
 
 	{
 		spriteClass = DM300Sprite.class;
@@ -342,25 +340,6 @@ public class DM300 extends Mob implements MobBasedOnDepth {
 		super.move(step, travelling);
 
 		if (travelling) PixelScene.shake( supercharged ? 3 : 1, 0.25f );
-
-		if (Dungeon.level.map[step] == Terrain.INACTIVE_TRAP && Dungeon.level instanceof CavesBossLevel && state == HUNTING) {
-
-			//don't gain energy from cells that are energized
-			if (CavesBossLevel.PylonEnergy.volumeAt(pos, CavesBossLevel.PylonEnergy.class) > 0){
-				return;
-			}
-
-			if (Dungeon.level.heroFOV[step]) {
-				if (buff(Barrier.class) == null) {
-					GLog.w(Messages.get(this, "shield"));
-				}
-				Sample.INSTANCE.play(Assets.Sounds.LIGHTNING);
-				sprite.emitter().start(SparkParticle.STATIC, 0.05f, 20);
-			}
-
-			Buff.affect(this, Barrier.class).setShield( 30 + (HT - HP)/10);
-
-		}
 	}
 
 	@Override
