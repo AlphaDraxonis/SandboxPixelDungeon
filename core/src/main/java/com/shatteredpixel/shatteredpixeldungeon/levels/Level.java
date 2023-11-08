@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.BlobStoreMap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SmokeScreen;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Web;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
@@ -391,6 +392,7 @@ public abstract class Level implements Bundlable {
 			}
 			if (m.playerAlignment == Mob.NEUTRAL_ALIGNMENT) {
 				if (m.state == m.HUNTING) m.state = m.WANDERING;
+				m.immunities.add(Amok.class);
 			} else if (m.following && m.playerAlignment == Mob.FRIENDLY_ALIGNMENT) m.intelligentAlly = true;
 		}
 		for (Heap h : heaps.valueList()) {
