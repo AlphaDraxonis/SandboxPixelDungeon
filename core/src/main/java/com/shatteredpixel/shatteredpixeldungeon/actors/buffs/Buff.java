@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
 
 import java.util.HashSet;
@@ -61,6 +62,8 @@ public class Buff extends Actor {
         return new HashSet<>(immunities);
     }
 
+    public boolean permanent = false;
+
     public boolean attachTo(Char target) {
 
         if (target.isImmune(getClass())) {
@@ -84,7 +87,10 @@ public class Buff extends Actor {
 
     @Override
     public boolean act() {
-        diactivate();
+        if (permanent){
+            timeToNow();
+            spend(TICK);
+        } else diactivate();
         return true;
     }
 
@@ -126,7 +132,7 @@ public class Buff extends Actor {
     }
 
     public String desc() {
-        return Messages.get(this, "desc");
+        return Messages.get(this, "desc") + (permanent ? "\n\n" + Messages.get(this, "permanent") : "");
     }
 
     //to handle the common case of showing how many turns are remaining in a buff description.
@@ -199,5 +205,19 @@ public class Buff extends Actor {
         Buff b = (Buff) super.getCopy();
         b.target = null;//Need to add later!
         return b;
+    }
+
+    public static final String PERMANENT = "permanent";
+
+    @Override
+    public void storeInBundle(Bundle bundle) {
+        super.storeInBundle(bundle);
+        bundle.put(PERMANENT, permanent);
+    }
+
+    @Override
+    public void restoreFromBundle(Bundle bundle) {
+        super.restoreFromBundle(bundle);
+        permanent = bundle.getBoolean(PERMANENT);
     }
 }

@@ -95,7 +95,8 @@ public class Pylon extends Mob {
 
 		sprite.flash();
 
-		boolean visible = Dungeon.level.heroFOV[pos];
+		boolean visible = shouldSpriteBeVisible();
+
 		for (int cell : shockCells){
 			if (Dungeon.level.heroFOV[cell]){
 				visible = true;

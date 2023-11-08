@@ -1,4 +1,4 @@
-package com.shatteredpixel.shatteredpixeldungeon.editor.inv.gases;
+package com.shatteredpixel.shatteredpixeldungeon.editor.inv.other;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ConfusionGas;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;

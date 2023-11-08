@@ -277,6 +277,10 @@ public abstract class ChooseOneInCategoriesBody extends Component {
             return false;
         }
 
+        public void setLeftJustify(boolean leftJustify){
+            btn.leftJustify = leftJustify;
+        }
+
         protected void onInfo() {
             Image img;
             if (icon != null) {

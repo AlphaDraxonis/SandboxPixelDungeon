@@ -28,18 +28,21 @@ public class FlavourBuff extends Buff {
 	
 	@Override
 	public boolean act() {
-		detach();
+		if (permanent){
+			timeToNow();
+			spend(TICK);
+		} else detach();
 		return true;
 	}
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", dispTurns());
+		return Messages.get(this, "desc", dispTurns()) + (permanent ? "\n\n" + Messages.get(this, "permanent") : "");
 	}
 
 	//flavour buffs can all just rely on cooldown()
 	protected String dispTurns() {
-		return dispTurns(visualcooldown());
+		return dispTurns(Math.max(0f, visualcooldown()));
 	}
 
 	@Override

@@ -2,6 +2,11 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Levitation;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +17,8 @@ import java.util.Set;
 public enum Buffs {
 
 
-    BUFFS;
+    CHAMPIONS,
+    NORMAL;
 
     private static final Class<?>[] EMPTY_BUFF_CLASS_ARRAY = new Class[0];
 
@@ -33,6 +39,13 @@ public enum Buffs {
         return ret;
     }
 
+    public static String[] getCatNames() {
+        return new String[]{
+                Messages.titleCase(Messages.get(Buffs.class, "champions")),
+                Messages.titleCase(Messages.get(Buffs.class, "normal"))
+        };
+    }
+
     private Class<?>[] classes;
 
     public Class<?>[] classes() {
@@ -42,7 +55,7 @@ public enum Buffs {
 
     static {
 
-        BUFFS.classes = new Class[]{
+        CHAMPIONS.classes = new Class[]{
 
                 ChampionEnemy.Blazing.class,
                 ChampionEnemy.Projecting.class,
@@ -51,6 +64,13 @@ public enum Buffs {
                 ChampionEnemy.Blessed.class,
                 ChampionEnemy.Growing.class
 
+        };
+
+        NORMAL.classes = new Class[]{
+                Invisibility.class,
+                MindVision.class,
+                Haste.class,
+                Levitation.class
         };
 
     }

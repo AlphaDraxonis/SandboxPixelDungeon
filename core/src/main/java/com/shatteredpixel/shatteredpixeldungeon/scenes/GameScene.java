@@ -913,7 +913,7 @@ public class GameScene extends PixelScene {
 	
 	private synchronized void addMobSprite( Mob mob ) {
 		CharSprite sprite = mob.sprite();
-		sprite.visible = Dungeon.level.heroFOV[mob.pos];
+		mob.updateSpriteVisibility();
 		mobs.add( sprite );
 		sprite.link( mob );
 		sortMobSprites();
@@ -1300,7 +1300,7 @@ public class GameScene extends PixelScene {
 	public static void afterObserve() {
 		if (scene != null) {
 			for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
-				if (mob.sprite != null) mob.sprite.visible = Dungeon.level.heroFOV[mob.pos];
+				if (mob.sprite != null) mob.updateSpriteVisibility();
 				if (mob instanceof Ghoul){
 					for (Ghoul.GhoulLifeLink link : mob.buffs(Ghoul.GhoulLifeLink.class)){
 						link.updateVisibility();
@@ -1510,7 +1510,7 @@ public class GameScene extends PixelScene {
 
 		} else if (Dungeon.level.heroFOV[cell]) {
 			Mob mob = (Mob) Actor.findChar(cell);
-			if (mob != null) objects.add(mob);
+			if (mob != null && mob.sprite.visible) objects.add(mob);
 		}
 
 		Heap heap = Dungeon.level.heaps.get(cell);
@@ -1529,7 +1529,8 @@ public class GameScene extends PixelScene {
 		ArrayList<String> names = new ArrayList<>();
 		for (Object obj : objects){
 			if (obj instanceof Hero)        names.add(((Hero) obj).className().toUpperCase(Locale.ENGLISH));
-			else if (obj instanceof Mob)    names.add(Messages.titleCase( ((Mob)obj).name() ));
+			else if (obj instanceof Mob && ((Mob) objects.get(0)).sprite.visible)
+											names.add(Messages.titleCase( ((Mob)obj).name() ));
 			else if (obj instanceof Heap)   names.add(Messages.titleCase( ((Heap)obj).title() ));
 			else if (obj instanceof Plant)  names.add(Messages.titleCase( ((Plant) obj).name() ));
 			else if (obj instanceof Trap)   names.add(Messages.titleCase( ((Trap) obj).name() ));

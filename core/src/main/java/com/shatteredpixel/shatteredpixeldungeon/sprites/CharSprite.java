@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.DarkBlock;
 import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
@@ -189,7 +190,11 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	}
 	
 	public void showStatus( int color, String text, Object... args ) {
-		if (visible) {
+		showStatus(false, color, text, args);
+	}
+
+	public void showStatus( boolean ignoreVisibility, int color, String text, Object... args ) {
+		if (visible || ignoreVisibility) {
 			if (args.length > 0) {
 				text = Messages.format( text, args );
 			}
@@ -373,6 +378,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					parent.add(invisible);
 				} else
 					alpha( 0.4f );
+				visible = !(this instanceof MobSprite) || CustomDungeon.isEditing();
 				break;
 			case PARALYSED:
 				paused = true;
@@ -431,6 +437,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					invisible = null;
 				}
 				alpha( 1f );
+				visible = true;
 				break;
 			case PARALYSED:
 				paused = false;

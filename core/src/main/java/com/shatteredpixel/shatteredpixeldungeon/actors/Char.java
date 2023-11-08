@@ -54,6 +54,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LifeLink;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSleep;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MonkEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
@@ -996,6 +997,16 @@ public abstract class Char extends Actor {
 			buff.fx( true );
 		}
 	}
+
+	public void updateSpriteVisibility() {
+		if (sprite != null) {
+			sprite.visible = shouldSpriteBeVisible();
+		}
+	}
+
+	public boolean shouldSpriteBeVisible(){
+		return Dungeon.level.heroFOV[pos] && (invisible <= 0 || Dungeon.hero.buff(MindVision.class) != null);
+	}
 	
 	public float stealth() {
 		return 0;
@@ -1028,7 +1039,7 @@ public abstract class Char extends Actor {
 		pos = step;
 		
 		if (this != Dungeon.hero) {
-			sprite.visible = Dungeon.level.heroFOV[pos];
+			updateSpriteVisibility();
 		}
 		
 		Dungeon.level.occupyCell(this );

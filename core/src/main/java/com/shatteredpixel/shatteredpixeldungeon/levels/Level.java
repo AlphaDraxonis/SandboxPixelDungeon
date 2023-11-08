@@ -1742,7 +1742,7 @@ public abstract class Level implements Bundlable {
 
 			//set mind vision chars
 			for (Mob mob : mobs) {
-				if (heroMindFov[mob.pos] && !fieldOfView[mob.pos]){
+				if (heroMindFov[mob.pos] && (!fieldOfView[mob.pos] || mob.invisible > 0)){
 					Dungeon.hero.mindVisionEnemies.add(mob);
 				}
 			}

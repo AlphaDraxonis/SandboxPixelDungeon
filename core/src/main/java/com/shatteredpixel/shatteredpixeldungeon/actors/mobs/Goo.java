@@ -191,7 +191,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 			return true;
 		} else if (pumpedUp >= 2 || Random.Int( (HP*2 <= HT) ? 2 : 5 ) > 0) {
 
-			boolean visible = Dungeon.level.heroFOV[pos];
+			boolean visible = shouldSpriteBeVisible();
 
 			if (visible) {
 				if (pumpedUp >= 2) {

@@ -529,7 +529,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
                         Window w = new WndChooseOneInCategories(
                                 Messages.get(EditMobComp.class, "add_buff_title"), "",
-                                Buffs.getAllBuffs(buffsToIgnore), new String[]{"Buffs"}) {
+                                Buffs.getAllBuffs(buffsToIgnore), Buffs.getCatNames()) {
                             @Override
                             protected ChooseOneInCategoriesBody.BtnRow[] createCategoryRows(Object[] category) {
                                 ChooseOneInCategoriesBody.BtnRow[] ret = new ChooseOneInCategoriesBody.BtnRow[category.length];
@@ -539,10 +539,11 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                                         @Override
                                         protected void onClick() {
                                             finish();
-                                            Buff.affect(mob, b.getClass());
+                                            Buff.affect(mob, b.getClass()).permanent = true;
                                             updateObj();
                                         }
                                     };
+                                    ret[i].setLeftJustify(true);
                                 }
                                 return ret;
                             }

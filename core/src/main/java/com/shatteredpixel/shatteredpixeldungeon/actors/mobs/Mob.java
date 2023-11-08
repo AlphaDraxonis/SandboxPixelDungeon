@@ -320,7 +320,8 @@ public abstract class Mob extends Char {
 		
 		enemy = chooseEnemy();
 		
-		boolean enemyInFOV = enemy != null && enemy.isAlive() && (fieldOfView[enemy.pos] && enemy.invisible <= 0 || following);
+		boolean enemyInFOV = enemy != null && enemy.isAlive() && (fieldOfView[enemy.pos] && enemy.invisible <= 0 || following || buff(MindVision.class) != null);
+		if (enemyInFOV && target == -1 && !justAlerted) justAlerted = true;
 
 		//prevents action, but still updates enemy seen status
 		if (buff(Feint.AfterImage.FeintConfusion.class) != null){
@@ -417,13 +418,14 @@ public abstract class Mob extends Char {
 		if ( newEnemy ) {
 
 			HashSet<Char> enemies = new HashSet<>();
+			boolean hasMindVision = buff(MindVision.class) != null;
 
 			//if we are amoked...
 			if ( buff(Amok.class) != null) {
 				//try to find an enemy mob to attack first.
 				for (Mob mob : Dungeon.level.mobs)
 					if (mob.alignment == Alignment.ENEMY && mob != this
-							&& fieldOfView[mob.pos] && mob.invisible <= 0) {
+							&& (fieldOfView[mob.pos] && mob.invisible <= 0 || hasMindVision)) {
 						enemies.add(mob);
 					}
 				
@@ -431,13 +433,13 @@ public abstract class Mob extends Char {
 					//try to find ally mobs to attack second.
 					for (Mob mob : Dungeon.level.mobs)
 						if (mob.alignment == Alignment.ALLY && mob != this
-								&& fieldOfView[mob.pos] && mob.invisible <= 0) {
+								&& (fieldOfView[mob.pos] && mob.invisible <= 0 || hasMindVision)) {
 							enemies.add(mob);
 						}
 					
 					if (enemies.isEmpty()) {
 						//try to find the hero third
-						if (fieldOfView[Dungeon.hero.pos] && Dungeon.hero.invisible <= 0) {
+						if (fieldOfView[Dungeon.hero.pos] && Dungeon.hero.invisible <= 0 || hasMindVision) {
 							enemies.add(Dungeon.hero);
 						}
 					}
@@ -447,8 +449,8 @@ public abstract class Mob extends Char {
 			} else if ( alignment == Alignment.ALLY ) {
 				//look for hostile mobs to attack
 				for (Mob mob : Dungeon.level.mobs)
-					if (mob.alignment == Alignment.ENEMY && fieldOfView[mob.pos]
-							&& mob.invisible <= 0 && !mob.isInvulnerable(getClass()))
+					if (mob.alignment == Alignment.ENEMY && (fieldOfView[mob.pos] && mob.invisible <= 0 || hasMindVision)
+							&& !mob.isInvulnerable(getClass()))
 						//intelligent allies do not target mobs which are passive, wandering, or asleep
 						if (!intelligentAlly ||
 								(mob.state != mob.SLEEPING && mob.state != mob.PASSIVE && mob.state != mob.WANDERING)) {
@@ -459,11 +461,11 @@ public abstract class Mob extends Char {
 			} else if (alignment == Alignment.ENEMY) {
 				//look for ally mobs to attack
 				for (Mob mob : Dungeon.level.mobs)
-					if (mob.alignment == Alignment.ALLY && fieldOfView[mob.pos] && mob.invisible <= 0)
+					if (mob.alignment == Alignment.ALLY && (fieldOfView[mob.pos] && mob.invisible <= 0 || hasMindVision))
 						enemies.add(mob);
 
 				//and look for the hero
-				if (fieldOfView[Dungeon.hero.pos] && Dungeon.hero.invisible <= 0) {
+				if (fieldOfView[Dungeon.hero.pos] && Dungeon.hero.invisible <= 0 || hasMindVision) {
 					enemies.add(Dungeon.hero);
 				}
 				
@@ -483,7 +485,7 @@ public abstract class Mob extends Char {
 				return null;
 			} else {
 				//go after the closest potential enemy, preferring enemies that can be reached/attacked, and the hero if two are equidistant
-				PathFinder.buildDistanceMap(pos, Dungeon.findPassable(this, Dungeon.level.passable, fieldOfView, true));
+				PathFinder.buildDistanceMap(pos, Dungeon.findPassable(this, Dungeon.level.passable, hasMindVision ? Dungeon.level.passable : fieldOfView, true));
 				Char closest = null;
 
 				for (Char curr : enemies){
@@ -1293,7 +1295,7 @@ public abstract class Mob extends Char {
 			} else {
 				notice();
 				state = WANDERING;
-				target = Dungeon.level.randomDestination( Mob.this );
+				target = randomDestination();
 			}
 
 			if (alignment == Alignment.ENEMY && Dungeon.isChallenged(Challenges.SWARM_INTELLIGENCE)) {
@@ -1364,9 +1366,13 @@ public abstract class Mob extends Char {
 		}
 
 		protected int randomDestination(){
-			return following ? Dungeon.hero.pos : Dungeon.level.randomDestination( Mob.this );
+			return Mob.this.randomDestination();
 		}
 		
+	}
+
+	protected int randomDestination(){
+		return following ? Dungeon.hero.pos : Dungeon.level.randomDestination( Mob.this );
 	}
 
 	protected class Hunting implements AiState {

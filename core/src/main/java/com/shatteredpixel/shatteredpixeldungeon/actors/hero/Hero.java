@@ -1537,7 +1537,7 @@ public class Hero extends Char {
 
 		Mob target = null;
 		for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
-			if (fieldOfView[ m.pos ] && m.alignment == Alignment.ENEMY) {
+			if (fieldOfView[ m.pos ] && m.alignment == Alignment.ENEMY && m.invisible <= 0) {
 				visible.add(m);
 				if (!visibleEnemies.contains( m )) {
 					newMob = true;
@@ -1578,7 +1578,14 @@ public class Hero extends Char {
 
 		visibleEnemies = visible;
 	}
-	
+
+	@Override
+	public void updateSpriteVisibility() {
+		if (sprite != null) {
+			sprite.visible = true;
+		}
+	}
+
 	public int visibleEnemies() {
 		return visibleEnemies.size();
 	}
@@ -1728,7 +1735,16 @@ public class Hero extends Char {
 			if (ch.alignment != Alignment.ENEMY && ch.buff(Amok.class) == null) {
 				curAction = new HeroAction.Interact( ch );
 			} else {
-				curAction = new HeroAction.Attack( ch );
+				if (ch.invisible <= 0) curAction = new HeroAction.Attack( ch );
+				else {
+					//wait instead
+					curAction = null;
+					spendConstant( TIME_TO_REST );
+					//trigger no talents
+					if (ch.sprite != null) {
+						ch.sprite.showStatus( true, CharSprite.NEUTRAL, ch.defenseVerb() );
+					}
+				}
 			}
 
 		//TODO perhaps only trigger this if hero is already adjacent? reducing mistaps

@@ -54,6 +54,8 @@ public class Reflection {
 		name = name.replace("alphadraxonis.sandboxpixeldungeon", "shatteredpixel.shatteredpixeldungeon");
 //		name = name.replace("shatteredpixel.shatteredpixeldungeon","alphadraxonis.sandboxpixeldungeon");
 
+		name = name.replace("gases.PermaGas", "other.PermaGas");
+
 		try {
 			return ClassReflection.forName( name );
 		} catch (Exception e) {
