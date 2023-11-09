@@ -143,6 +143,7 @@ public enum HeroClass {
             hero.attackSkill += plusLvl;
             hero.defenseSkill += plusLvl;
         }
+        hero.STR += generalItems.plusStr + classItems.plusStr;
 
         if (hero.belongings.weapon != null && hero.belongings.weapon.identifyOnStart) {
             hero.belongings.weapon.identify();

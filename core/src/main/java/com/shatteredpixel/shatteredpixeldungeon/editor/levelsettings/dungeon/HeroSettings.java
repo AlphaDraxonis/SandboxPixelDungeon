@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -39,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.AbstractWndChooseSubclass;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHeroInfo;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -149,7 +151,7 @@ public class HeroSettings extends Component {
         private final ItemContainerWithLabel<Item> startItems;
         private final ItemContainerWithLabel<Bag> startBags;
         private final ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
-        private final StyledSpinner startGold, startEnergy, plusLvl;
+        private final StyledSpinner startGold, startEnergy, plusLvl, plusStr;
 
         private final Component itemSelectorParent;
 
@@ -277,7 +279,10 @@ public class HeroSettings extends Component {
             startEnergy.addChangeListener(() -> data.energy = (int) startEnergy.getValue());
             itemSelectorParent.add(startEnergy);
 
-            plusLvl = new StyledSpinner(new SpinnerIntegerModel(0, 100, data.plusLvl, 1, false, null) {
+            plusLvl = new StyledSpinner(new SpinnerIntegerModel(1, 30, 1 + data.plusLvl, 1, false, null) {
+                {
+                    setAbsoluteMinimum(1);
+                }
                 @Override
                 public float getInputFieldWith(float height) {
                     return Spinner.FILL;
@@ -287,9 +292,23 @@ public class HeroSettings extends Component {
                 public int getClicksPerSecondWhileHolding() {
                     return 15;
                 }
-            }, Messages.titleCase(Messages.get(HeroSettings.class, "plus_lvl")), 10, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
-            plusLvl.addChangeListener(() -> data.plusLvl = (int) plusLvl.getValue());
+            }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
+            plusLvl.addChangeListener(() -> data.plusLvl = (int) plusLvl.getValue() - 1);
             itemSelectorParent.add(plusLvl);
+
+            plusStr = new StyledSpinner(new SpinnerIntegerModel(0, 100, Hero.STARTING_STR + data.plusStr, 1, false, null) {
+                @Override
+                public float getInputFieldWith(float height) {
+                    return Spinner.FILL;
+                }
+
+                @Override
+                public int getClicksPerSecondWhileHolding() {
+                    return 15;
+                }
+            }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
+            plusStr.addChangeListener(() -> data.plusStr = (int) plusStr.getValue() - Hero.STARTING_STR);
+            itemSelectorParent.add(plusStr);
 
             add(itemSelectorParent);
 
@@ -373,7 +392,8 @@ public class HeroSettings extends Component {
             itemSelectorParent.setPos(x, posY);
             EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
                     new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                            startGold, startEnergy, plusLvl});
+                            startGold, startEnergy, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                            plusLvl, plusStr});
             PixelScene.align(itemSelectorParent);
             posY = itemSelectorParent.bottom() + gap;
             startBags.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
@@ -405,6 +425,7 @@ public class HeroSettings extends Component {
         public List<Item> items = new ArrayList<>(3);
         public int gold, energy;
         public int plusLvl;//default is 0
+        public int plusStr;//default is 0
 
         private boolean needToAddDefaultConfiguration = false;
 
@@ -416,6 +437,7 @@ public class HeroSettings extends Component {
         private static final String GOLD = "gold";
         private static final String ENERGY = "energy";
         private static final String LVL = "lvl";
+        private static final String STR = "str";
         private static final String BAGS = "bags";
         private static final String ITEMS = "items";
 
@@ -430,6 +452,7 @@ public class HeroSettings extends Component {
             bundle.put(ENERGY, energy);
             bundle.put(ENERGY, energy);
             bundle.put(LVL, plusLvl);
+            bundle.put(STR, STR);
 
             bundle.put(BAGS, bags);
             bundle.put(ITEMS, items);
@@ -447,6 +470,7 @@ public class HeroSettings extends Component {
 
             needToAddDefaultConfiguration = !bundle.contains(LVL);
             plusLvl = bundle.getInt(LVL);
+            plusStr = bundle.getInt(STR);
 
             for (Bundlable b : bundle.getCollection(BAGS)) {
                 bags.add((Bag) b);
