@@ -50,7 +50,7 @@ public class CausticSlime extends Slime {
 	
 	@Override
 	public void rollToDropLoot() {
-		if (Dungeon.hero.lvl > maxLvl + 2) return;
+		if (Dungeon.hero.lvl > maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL) return;
 		
 		super.rollToDropLoot();
 		

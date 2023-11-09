@@ -452,7 +452,7 @@ public class HeroSettings extends Component {
             bundle.put(ENERGY, energy);
             bundle.put(ENERGY, energy);
             bundle.put(LVL, plusLvl);
-            bundle.put(STR, STR);
+            bundle.put(STR, plusStr);
 
             bundle.put(BAGS, bags);
             bundle.put(ITEMS, items);

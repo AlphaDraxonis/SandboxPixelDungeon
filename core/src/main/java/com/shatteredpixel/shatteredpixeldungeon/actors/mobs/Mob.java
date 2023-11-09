@@ -1012,9 +1012,10 @@ public abstract class Mob extends Char {
 
 		return lootChance * dropBonus;
 	}
-	
+
+	public static final int DROP_LOOT_IF_ABOVE_MAX_LVL = 2;
 	public void rollToDropLoot(){
-		if (Dungeon.hero.lvl > maxLvl + 2) return;
+		if (Dungeon.hero.lvl > maxLvl + DROP_LOOT_IF_ABOVE_MAX_LVL) return;
 
 		if (loot instanceof LootTableComp.CustomLootInfo) {
 			this.lootChance = ((LootTableComp.CustomLootInfo) loot).lootChance();
