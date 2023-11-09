@@ -97,7 +97,7 @@ public class WandOfFireblast extends DamageWand {
 
 			//only ignite cells directly near caster if they are flammable or solid
 			if (Dungeon.level.adjacent(bolt.sourcePos, cell)
-					&& !(Dungeon.level.flamable[cell] || Dungeon.level.solid[cell])){
+					&& !(Dungeon.level.isFlamable(cell) || Dungeon.level.solid[cell])){
 				adjacentCells.add(cell);
 				//do burn any heaps located here though
 				if (Dungeon.level.heaps.get(cell) != null){
@@ -123,7 +123,7 @@ public class WandOfFireblast extends DamageWand {
 		for (int cell : adjacentCells){
 			for (int i : PathFinder.NEIGHBOURS8){
 				if (Dungeon.level.trueDistance(cell+i, bolt.collisionPos) < Dungeon.level.trueDistance(cell, bolt.collisionPos)
-						&& Dungeon.level.flamable[cell+i]
+						&& Dungeon.level.isFlamable(cell+i)
 						&& Fire.volumeAt(cell+i, Fire.class) == 0){
 					GameScene.add( Blob.seed( cell+i, 1+chargesPerCast(), Fire.class ) );
 				}

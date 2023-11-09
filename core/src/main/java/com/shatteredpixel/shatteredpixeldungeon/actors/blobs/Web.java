@@ -52,7 +52,7 @@ public class Web extends Blob {
 				volume += off[cell];
 
 				l.solid[cell] = off[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.SOLID) != 0;
-				l.flamable[cell] = off[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.FLAMABLE) != 0;
+				l.getFlamable()[cell] = off[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.FLAMABLE) != 0;
 			}
 		}
 	}
@@ -61,7 +61,7 @@ public class Web extends Blob {
 	public void seed(Level level, int cell, int amount) {
 		super.seed(level, cell, amount);
 		level.solid[cell] = cur[cell] > 0 || (Terrain.flags[level.map[cell]] & Terrain.SOLID) != 0;
-		level.flamable[cell] = cur[cell] > 0 || (Terrain.flags[level.map[cell]] & Terrain.FLAMABLE) != 0;
+		level.getFlamable()[cell] = cur[cell] > 0 || (Terrain.flags[level.map[cell]] & Terrain.FLAMABLE) != 0;
 	}
 
 	//affects characters as they step on it. See Level.OccupyCell and Level.PressCell
@@ -82,7 +82,7 @@ public class Web extends Blob {
 		if (cur == null) return;
 		Level l = Dungeon.level;
 		l.solid[cell] = cur[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.SOLID) != 0;
-		l.flamable[cell] = cur[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.FLAMABLE) != 0;
+		l.getFlamable()[cell] = cur[cell] > 0 || (Terrain.flags[l.map[cell]] & Terrain.FLAMABLE) != 0;
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class Web extends Blob {
 		if (volume > 0){
 			for (int i=0; i < l.length(); i++) {
 				l.solid[i] = l.solid[i] || cur[i] > 0;
-				l.flamable[i] = l.flamable[i] || cur[i] > 0;
+				l.getFlamable()[i] = l.getFlamable()[i] || cur[i] > 0;
 			}
 		}
 	}

@@ -1014,7 +1014,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 								Statistics.bossScores[1] -= 100;
 							}
 							
-							if (Dungeon.level.flamable[cell]){
+							if (Dungeon.level.isFlamable(cell)){
 								Dungeon.level.destroy( cell );
 								
 								observe = true;

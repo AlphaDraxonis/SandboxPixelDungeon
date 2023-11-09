@@ -237,7 +237,7 @@ public class YogDzewa extends Mob {
 						if (ch != null && (ch.alignment != alignment || ch instanceof Bee)) {
 							affected.add(ch);
 						}
-						if (Dungeon.level.flamable[p]) {
+						if (Dungeon.level.isFlamable(p)) {
 							Dungeon.level.destroy(p);
 							GameScene.updateMap(p);
 							terrainAffected = true;

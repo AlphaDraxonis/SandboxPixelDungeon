@@ -170,7 +170,7 @@ public class PotionOfDragonsBreath extends ExoticPotion {
 											}
 
 											//only ignite cells directly near caster if they are flammable
-											if (Dungeon.level.adjacent(bolt.sourcePos, cell) && !Dungeon.level.flamable[cell]){
+											if (Dungeon.level.adjacent(bolt.sourcePos, cell) && !Dungeon.level.isFlamable(cell)){
 												adjacentCells.add(cell);
 											} else {
 												GameScene.add( Blob.seed( cell, 5, Fire.class ) );
@@ -189,7 +189,7 @@ public class PotionOfDragonsBreath extends ExoticPotion {
 										for (int cell : adjacentCells){
 											for (int i : PathFinder.NEIGHBOURS4){
 												if (Dungeon.level.trueDistance(cell+i, bolt.sourcePos) > Dungeon.level.trueDistance(cell, bolt.sourcePos)
-														&& Dungeon.level.flamable[cell+i]
+														&& Dungeon.level.isFlamable(cell+i)
 														&& Fire.volumeAt(cell+i, Fire.class) == 0){
 													GameScene.add( Blob.seed( cell+i, 5, Fire.class ) );
 												}

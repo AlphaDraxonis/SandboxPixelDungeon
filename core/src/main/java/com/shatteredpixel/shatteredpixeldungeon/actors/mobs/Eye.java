@@ -175,7 +175,7 @@ public class Eye extends Mob {
 		Invisibility.dispel(this);
 		for (int pos : beam.subPath(1, beam.dist)) {
 
-			if (Dungeon.level.flamable[pos]) {
+			if (Dungeon.level.isFlamable(pos)) {
 
 				Dungeon.level.destroy( pos );
 				GameScene.updateMap( pos );

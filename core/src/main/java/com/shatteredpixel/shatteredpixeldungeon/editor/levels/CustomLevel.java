@@ -243,7 +243,7 @@ public class CustomLevel extends Level {
             heroFOV = level.heroFOV;
             passable = level.passable;
             losBlocking = level.losBlocking;
-            flamable = level.flamable;
+            setFlamable(level.getFlamable());
             secret = level.secret;
             solid = level.solid;
             avoid = level.avoid;
@@ -251,6 +251,7 @@ public class CustomLevel extends Level {
             pit = level.pit;
             openSpace = level.openSpace;
             locked = level.locked;
+            flamableDisabled = level.flamableDisabled;
             if (levelTemplate != LastLevel.class && levelTemplate != DeadEndLevel.class)
                 mobRotation = level.getMobRotation();
 
@@ -900,6 +901,14 @@ public class CustomLevel extends Level {
     }
 
     private static void recalculateNewPositions(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid, Level level, int newLength) {
+
+        Set<Integer> flamableDisabled = new HashSet<>(3);
+        for(int cell : level.flamableDisabled) {
+            int nPos = newPosition.get(cell);
+            if (isPositionValid.test(cell, nPos)) flamableDisabled.add(nPos);
+        }
+        level.flamableDisabled = flamableDisabled;
+
         List<Mob> removeEntities = new ArrayList<>();
         for (Mob m : level.mobs) {
             int nPos = newPosition.get(m.pos);

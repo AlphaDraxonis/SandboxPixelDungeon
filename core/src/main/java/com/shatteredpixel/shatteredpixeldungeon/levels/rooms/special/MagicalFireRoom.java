@@ -217,7 +217,7 @@ public class MagicalFireRoom extends SpecialRoom {
 							|| cur[cell+Dungeon.level.width()] > 0) {
 
 						//spread fire to nearby flammable cells
-						if (Dungeon.level.flamable[cell] && (pureFire == null || pureFire.volume == 0 || pureFire.cur[cell] == 0)){
+						if (Dungeon.level.isFlamable(cell) && (pureFire == null || pureFire.volume == 0 || pureFire.cur[cell] == 0)){
 							GameScene.add(Blob.seed(cell, 4, Fire.class));
 						}
 

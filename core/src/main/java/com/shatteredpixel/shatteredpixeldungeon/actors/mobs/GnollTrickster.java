@@ -96,7 +96,7 @@ public class GnollTrickster extends Gnoll {
 
 			if (effect >=6 && enemy.buff(Burning.class) == null){
 
-				if (Dungeon.level.flamable[enemy.pos])
+				if (Dungeon.level.isFlamable(enemy.pos))
 					GameScene.add(Blob.seed(enemy.pos, 4, Fire.class));
 				Buff.affect(enemy, Burning.class).reignite( enemy );
 

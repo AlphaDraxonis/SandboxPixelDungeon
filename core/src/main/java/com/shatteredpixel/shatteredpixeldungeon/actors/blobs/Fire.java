@@ -38,7 +38,6 @@ public class Fire extends Blob {
 	@Override
 	protected void evolve() {
 
-		boolean[] flamable = Dungeon.level.flamable;
 		int cell;
 		int fire;
 		
@@ -68,7 +67,7 @@ public class Fire extends Blob {
 					burn( cell );
 
 					fire = cur[cell] - 1;
-					if (fire <= 0 && flamable[cell]) {
+					if (fire <= 0 && Dungeon.level.isFlamable(cell)) {
 
 						Dungeon.level.destroy( cell );
 
@@ -85,7 +84,7 @@ public class Fire extends Blob {
 					}
 
 					if (curFreeze <= 0 &&
-							flamable[cell]
+							Dungeon.level.isFlamable(cell)
 							&& (cur[cell-1] > 0
 							|| cur[cell+1] > 0
 							|| cur[cell-Dungeon.level.width()] > 0

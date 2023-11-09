@@ -54,7 +54,9 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Image;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public enum Tiles {
 
@@ -64,6 +66,8 @@ public enum Tiles {
     DOOR(Terrain.DOOR, SECRET_DOOR, LOCKED_DOOR, CRYSTAL_DOOR, LOCKED_EXIT, UNLOCKED_EXIT),
     SPECIAL(ENTRANCE, EXIT, EMPTY_WELL, WELL, ALCHEMY, SIGN);
 
+
+    public static Set<Integer> tilesNotFlamable = new HashSet<>(3);
 
     public final int[] terrains;
 

@@ -220,7 +220,7 @@ public class ElementalBlast extends ArmorAbility {
 								for (Blob freeze : freezes) {
 									freeze.clear(cell);
 								}
-								if (Dungeon.level.flamable[cell]){
+								if (Dungeon.level.isFlamable(cell)){
 									GameScene.add( Blob.seed( cell, 4, Fire.class ) );
 								}
 

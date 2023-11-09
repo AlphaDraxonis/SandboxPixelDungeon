@@ -15,7 +15,7 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
     protected final int terrain;
 
     protected CustomTileActionPart(int cell, int terrain, CustomTilemap customTile) {
-        super(cell, terrain, true);
+        super(cell, terrain, false, true);
         this.customTile = customTile;
         this.terrain = terrain;
     }

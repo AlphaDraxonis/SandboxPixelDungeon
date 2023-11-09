@@ -175,7 +175,7 @@ public abstract class Level implements Bundlable {
 	
 	public boolean[] passable;
 	public boolean[] losBlocking;
-	public boolean[] flamable;
+	private boolean[] flamable;
 	public boolean[] secret;
 	public boolean[] solid;
 	public boolean[] avoid;
@@ -183,6 +183,8 @@ public abstract class Level implements Bundlable {
 	public boolean[] pit;
 
 	public boolean[] openSpace;
+
+	public Set<Integer> flamableDisabled = new HashSet<>(3);
 	
 	public Feeling feeling = Feeling.NONE;
 
@@ -236,6 +238,7 @@ public abstract class Level implements Bundlable {
 	private static final String VIEW_DISTANCE = "view_distance";
 	private static final String BOSS_MOB_AT = "boss_mob_at";
 	private static final String BOSS_FOUND  = "boss_found";
+	private static final String FLAMABLE_DISABLED = "flamable_disabled";
 
 
 	public void create() {
@@ -556,6 +559,13 @@ public abstract class Level implements Bundlable {
 			blobs.put( blob.getClass(), blob );
 		}
 
+		int[] flamableDisabledArray = bundle.getIntArray(FLAMABLE_DISABLED);
+		if(flamableDisabledArray != null){
+			for (int j : flamableDisabledArray) {
+				flamableDisabled.add(j);
+			}
+		}
+
 		feeling = bundle.getEnum( FEELING, Feeling.class );
 
 		if (bundle.contains(BOSS_MOB_AT)) {
@@ -603,6 +613,14 @@ public abstract class Level implements Bundlable {
 		bundle.put( "mobs_to_spawn", mobsToSpawn.toArray(new Class[0]));
 		bundle.put( "respawner", respawner );
 		bundle.put( VIEW_DISTANCE, viewDistance );
+
+		int[] flamableDisabledArray = new int[flamableDisabled.size()];
+		int i = 0;
+		for (int cell : flamableDisabled){
+			flamableDisabledArray[i] = cell;
+			i++;
+		}
+		bundle.put( FLAMABLE_DISABLED, flamableDisabledArray );
 	}
 	
 	public int tunnelTile() {
@@ -1197,7 +1215,19 @@ public abstract class Level implements Bundlable {
 
 	}
 
-	public void destroy( int pos ) {
+	public boolean isFlamable(int cell) {
+		return flamable[cell] && !flamableDisabled.contains(cell);
+	}
+
+	public boolean[] getFlamable() {
+		return flamable;
+	}
+
+	public void setFlamable(boolean[] flamable) {
+		this.flamable = flamable;
+	}
+
+	public void destroy(int pos ) {
 		//if raw tile type is flammable or empty
 		int terr = map[pos];
 		if (terr == Terrain.EMPTY || terr == Terrain.EMPTY_DECO
