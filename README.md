@@ -1,19 +1,11 @@
 # Sandbox Pixel Dungeon
-Introducing Sandbox Pixel Dungeon, a groundbreaking mod that empowers you to shape your own dungeon experience within the world of Shattered Pixel Dungeon! Take control and unleash your creativity like never before!
+Sandbox Pixel Dungeon is a **level building mod** than allows you to build and share your own dungeons within the world of Shattered Pixel Dungeon!
 
-With Sandbox Pixel Dungeon, you can design your very own dungeon layouts effortlessly. Use randomly generated levels as templates, providing a starting point for your grand designs. No need to start from scratch when you have the foundations of exciting and challenging levels at your fingertips!
+The intuitive design helps creating dungeons faster, and if you need a good starting point, you can always use randomly generated levels as templates.
 
-Craft a meticulously detailed dungeon by placing tiles wherever you desire. Create a labyrinth of corridors, rooms filled with treasures, or devious traps lying in wait. The choice is yours, limited only by your imagination!
+You can place every single tile wherever you want. You can change the properties of every single or any mob, item, trap or plant, including things which aren't possible in Shattered,  of every object for true customization. You can do whatever you want!
 
-Challenge players to think strategically, adapt, and emerge victorious against the cunning foes lurking in your carefully crafted dungeon. With Sandbox Pixel Dungeon, unleash your creativity and bring your dungeon to life with creatures that will test the limits of even the most seasoned adventurers.
-
-Tailor the item placement to create unique challenges for brave adventurers. Experiment with weapons, adjusting their upgrades, curses, enchantments, or glyphs to create the perfect balance of risk and reward. Although customizing armor sets is not currently supported, you can still shape the loot and rewards found within your dungeon, ensuring players are tested to their limits.
-
-When you're ready to share your creation, you can export your dungeon as JSON for [Custom Pixel Dungeon](https://github.com/QuasiStellar/custom-pixel-dungeon), capturing the most important dungeon settings. However, for a more immersive experience with your mod, players can utilize the raw files that you share to truly delve into the world you've built.
-
-Download Sandbox Pixel Dungeon now and embark on an adventure where you're not only the player but the architect of your own dungeon. Leave your mark on the realm of roguelike gaming, defy the limits of what's possible, and forge a unique experience that will captivate players around the world.
-
-(Thanks to ChatGPT for their invaluable contribution in crafting this description. Their assistance has truly elevated the summary to new heights, and I couldn't have asked for a better result.)
+Download Sandbox Pixel Dungeon now to design the perfect unique challenge for every adventurer and share your dungeons with the world.
 
 
 Sandbox Pixel Dungeon is based on the open-source traditional roguelike dungeon crawler [Shattered Pixel Dungeon](https://shatteredpixel.com/shatteredpd/) which is based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://www.watabou.ru).
