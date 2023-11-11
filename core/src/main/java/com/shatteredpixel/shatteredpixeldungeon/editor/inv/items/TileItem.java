@@ -125,7 +125,7 @@ public class TileItem extends EditorItem {
     }
 
     public static ActionPart place(int cell, int terrainType, boolean forceChange) {
-        return new PlaceTileActionPart(cell, terrainType, Tiles.tilesNotFlamable.contains(terrainType), forceChange);
+        return new PlaceTileActionPart(cell, terrainType, forceChange);
     }
 
 
@@ -173,7 +173,7 @@ public class TileItem extends EditorItem {
     public static class PlaceTileActionPart extends PlaceCellActionPart {
         private /*final*/ ActionPartList moreActions;//should ONLY be changed if null
 
-        protected PlaceTileActionPart(int cell, int terrainType, boolean notFlamable, boolean forceChange) {
+        protected PlaceTileActionPart(int cell, int terrainType, boolean forceChange) {
 
             super();
 
@@ -182,13 +182,13 @@ public class TileItem extends EditorItem {
 
             if (oldTerrain == terrainType) {
                 CustomTilemap customTilemap;
-                if ((customTilemap = CustomTileItem.findCustomTileAt(cell)) != null || forceChange || notFlamable != level.flamableDisabled.contains(cell))
-                    init(oldTerrain, terrainType, cell, notFlamable,
+                if ((customTilemap = CustomTileItem.findCustomTileAt(cell)) != null || forceChange)
+                    init(oldTerrain, terrainType, cell,
                             level.traps.get(cell), level.plants.get(cell), customTilemap);
                 moreActions = null;
                 return; //no need to continue bc nothing changes at all
             }
-            init(oldTerrain, terrainType, cell, notFlamable,
+            init(oldTerrain, terrainType, cell,
                     level.traps.get(cell), level.plants.get(cell), CustomTileItem.findCustomTileAt(cell));
 
             moreActions = new ActionPartList();

@@ -84,7 +84,7 @@ public class BlobItem extends EditorItem {
     }
 
     public static Image createIcon(Class<? extends Blob> blob) {
-        if(blob == PermaGas.PFire.class
+        if (blob == PermaGas.PFire.class
                 || blob == PermaGas.PFreezing.class
                 || blob == PermaGas.PToxicGas.class
                 || blob == PermaGas.PCorrosiveGas.class
@@ -93,7 +93,7 @@ public class BlobItem extends EditorItem {
                 || blob == PermaGas.PSmokeScreen.class
                 || blob == PermaGas.PStormCloud.class){
             int icon;
-            if(blob == PermaGas.PFire.class) icon = ItemSpriteSheet.Icons.POTION_LIQFLAME;
+            if (blob == PermaGas.PFire.class) icon = ItemSpriteSheet.Icons.POTION_LIQFLAME;
             else if (blob == PermaGas.PFreezing.class) icon = ItemSpriteSheet.Icons.POTION_FROST;
             else if (blob == PermaGas.PToxicGas.class) icon = ItemSpriteSheet.Icons.POTION_TOXICGAS;
             else if (blob == PermaGas.PCorrosiveGas.class) icon = ItemSpriteSheet.Icons.POTION_CORROGAS;

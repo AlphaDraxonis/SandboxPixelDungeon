@@ -8,7 +8,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.WellWaterSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -27,7 +26,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
-import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoCell;
@@ -42,12 +40,9 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     private TransitionEditPart transitionEdit;
     private RedButton addTransition;
     private RedButton editSignText;
-    private CheckBox disableFlamable;
     private WellWaterSpinner wellWaterSpinner;
     private EditBlobComp.VolumeSpinner volumeSpinner;
     private EditBlobComp.SacrificialFirePrize sacrificialFirePrize;
-
-    private final boolean wasFlamableDisabled;
 
     public EditTileComp(TileItem item) {
         super(item);
@@ -113,19 +108,6 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 add(wellWaterSpinner);
             }
 
-            if (Dungeon.level.getFlamable()[cell]) {
-                disableFlamable = new CheckBox(Messages.get(EditTileComp.class, "disable_flamable")) {
-                    @Override
-                    public void checked(boolean value) {
-                        super.checked(value);
-                        if (value) Dungeon.level.flamableDisabled.add(cell);
-                        else Dungeon.level.flamableDisabled.remove(cell);
-                    }
-                };
-                disableFlamable.checked(wasFlamableDisabled = Dungeon.level.flamableDisabled.contains(cell));
-                add(disableFlamable);
-            } else wasFlamableDisabled = false;
-
             //TODO fix this if more blobs have attributes
             SacrificialFire blobAtCell = null;
             for (int i = 0; i < BlobEditPart.BlobData.BLOB_CLASSES.length; i++) {
@@ -160,21 +142,6 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 add(sacrificialFirePrize);
             } else sacrificialFirePrize = null;
 
-        } else {
-            wasFlamableDisabled = false;
-            int terrain = item.terrainType();
-            if ((Terrain.flags[terrain] & Terrain.FLAMABLE) != 0) {
-                disableFlamable = new CheckBox(Messages.get(EditTileComp.class, "disable_flamable")) {
-                    @Override
-                    public void checked(boolean value) {
-                        super.checked(value);
-                        if (value) Tiles.tilesNotFlamable.add(terrain);
-                        else Tiles.tilesNotFlamable.remove(terrain);
-                    }
-                };
-                disableFlamable.checked(Tiles.tilesNotFlamable.contains(terrain));
-                add(disableFlamable);
-            }
         }
 
     }
@@ -221,38 +188,9 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     protected void layout() {
         super.layout();
         Component[] comps = {//transitionEdit is later instantiated
-                transitionEdit, addTransition, editSignText, wellWaterSpinner, disableFlamable, volumeSpinner, sacrificialFirePrize
+                transitionEdit, addTransition, editSignText, wellWaterSpinner, volumeSpinner, sacrificialFirePrize
         };
         layoutCompsLinear(comps);
-    }
-
-    @Override
-    public synchronized void destroy() {
-        super.destroy();
-        if (wasFlamableDisabled != Dungeon.level.flamableDisabled.contains(getObj().cell())) {
-            final int cell = getObj().cell();
-            ActionPart actionPart = new ActionPart() {
-                @Override
-                public void undo() {
-                    if (wasFlamableDisabled) Dungeon.level.flamableDisabled.add(cell);
-                    else Dungeon.level.flamableDisabled.remove(cell);
-                }
-
-                @Override
-                public void redo() {
-                    if (!wasFlamableDisabled) Dungeon.level.flamableDisabled.add(cell);
-                    else Dungeon.level.flamableDisabled.remove(cell);
-                }
-
-                @Override
-                public boolean hasContent() {
-                    return true;
-                }
-            };
-            Undo.startAction();//this is maybe not so good, better if using TileModify?
-            Undo.addActionPart(actionPart);
-            Undo.endAction();
-        }
     }
 
     protected static final class CustomTilemapAndPosWrapper {

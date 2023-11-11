@@ -251,7 +251,9 @@ public class CustomLevel extends Level {
             pit = level.pit;
             openSpace = level.openSpace;
             locked = level.locked;
-            flamableDisabled = level.flamableDisabled;
+            zoneMap.clear();
+            zoneMap.putAll(level.zoneMap);
+            Zone.setupZoneArray(this);
             if (levelTemplate != LastLevel.class && levelTemplate != DeadEndLevel.class)
                 mobRotation = level.getMobRotation();
 
@@ -570,28 +572,7 @@ public class CustomLevel extends Level {
     }
 
     protected int randomDropCell() {
-        int tries = length;
-        int lengthHalf = length / 2;
-        while (tries-- > 0) {
-            int pos = Random.Int(length());
-            if (passable[pos] && !solid[pos] && canSpawnThings[pos]
-                    && map[pos] != ENTRANCE
-                    && map[pos] != EXIT
-                    && (tries <= lengthHalf || (heaps.get(pos) == null && findMob(pos) == null))) {
-
-                Trap t = traps.get(pos);
-
-                //items cannot spawn on traps which destroy items
-                if (t == null ||
-                        !(t instanceof BurningTrap || t instanceof BlazingTrap
-                                || t instanceof ChillingTrap || t instanceof FrostTrap
-                                || t instanceof ExplosiveTrap || t instanceof DisintegrationTrap
-                                || t instanceof PitfallTrap)) {
-                    return pos;
-                }
-            }
-        }
-        return -1;
+        return randomDropCell(this);
     }
 
     public static int randomDropCell(Level level) {
@@ -599,9 +580,10 @@ public class CustomLevel extends Level {
         int lengthHalf = level.length() / 2;
         while (tries-- > 0) {
             int pos = Random.Int(level.length());
-            if (level.passable[pos] && !level.solid[pos] /*&& canSpawnThings[pos]*/
+            if (level.passable[pos] && !level.solid[pos]
                     && level.map[pos] != ENTRANCE
                     && level.map[pos] != EXIT
+                    && Zone.canSpawnItems(level, pos)
                     && (tries <= lengthHalf || (level.heaps.get(pos) == null && level.findMob(pos) == null))) {
 
                 Trap t = level.traps.get(pos);
@@ -615,7 +597,7 @@ public class CustomLevel extends Level {
                 }
             }
         }
-        return -1;
+        return lengthHalf;//-1 would throw IndexOutOfBoundsException without any check!
     }
 
     @Override
@@ -811,6 +793,7 @@ public class CustomLevel extends Level {
         PathFinder.setMapSize(newWidth, newHeight);
 
         level.buildFlagMaps();
+        Zone.setupZoneArray(level);
     }
 
     private static void changeMapHeight(Level level, int newHeight, int addTop) {
@@ -902,13 +885,6 @@ public class CustomLevel extends Level {
 
     private static void recalculateNewPositions(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid, Level level, int newLength) {
 
-        Set<Integer> flamableDisabled = new HashSet<>(3);
-        for(int cell : level.flamableDisabled) {
-            int nPos = newPosition.get(cell);
-            if (isPositionValid.test(cell, nPos)) flamableDisabled.add(nPos);
-        }
-        level.flamableDisabled = flamableDisabled;
-
         List<Mob> removeEntities = new ArrayList<>();
         for (Mob m : level.mobs) {
             int nPos = newPosition.get(m.pos);
@@ -988,6 +964,8 @@ public class CustomLevel extends Level {
         }
         level.plants.clear();
         level.plants.putAll(nPlant);
+
+        Zone.changeMapSize(level, newPosition, isPositionValid);
 
         for (Blob b : level.blobs.values()) {
             if (b != null) {

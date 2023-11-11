@@ -74,6 +74,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlowParticle;
@@ -184,7 +185,8 @@ public abstract class Level implements Bundlable {
 
 	public boolean[] openSpace;
 
-	public Set<Integer> flamableDisabled = new HashSet<>(3);
+	public final Map<String, Zone> zoneMap = new HashMap<>(3);
+	public Zone[] zone;
 	
 	public Feeling feeling = Feeling.NONE;
 
@@ -238,7 +240,7 @@ public abstract class Level implements Bundlable {
 	private static final String VIEW_DISTANCE = "view_distance";
 	private static final String BOSS_MOB_AT = "boss_mob_at";
 	private static final String BOSS_FOUND  = "boss_found";
-	private static final String FLAMABLE_DISABLED = "flamable_disabled";
+	private static final String ZONES       = "zones";
 
 
 	public void create() {
@@ -559,11 +561,10 @@ public abstract class Level implements Bundlable {
 			blobs.put( blob.getClass(), blob );
 		}
 
-		int[] flamableDisabledArray = bundle.getIntArray(FLAMABLE_DISABLED);
-		if(flamableDisabledArray != null){
-			for (int j : flamableDisabledArray) {
-				flamableDisabled.add(j);
-			}
+		collection = bundle.getCollection( ZONES );
+		for (Bundlable b : collection) {
+			Zone zone = (Zone) b;
+			zoneMap.put( zone.getName(), zone );
 		}
 
 		feeling = bundle.getEnum( FEELING, Feeling.class );
@@ -584,6 +585,7 @@ public abstract class Level implements Bundlable {
 		}
 
 		buildFlagMaps();
+		Zone.setupZoneArray(this);
 		cleanWalls();
 
 	}
@@ -607,20 +609,13 @@ public abstract class Level implements Bundlable {
 		bundle.put( CUSTOM_WALLS, customWalls );
 		bundle.put( MOBS, mobs );
 		bundle.put( BLOBS, blobs.values() );
+		bundle.put( ZONES, zoneMap.values() );
 		bundle.put( FEELING, feeling );
 		bundle.put( BOSS_MOB_AT, bossmobAt );
 		bundle.put( BOSS_FOUND, bossFound );
 		bundle.put( "mobs_to_spawn", mobsToSpawn.toArray(new Class[0]));
 		bundle.put( "respawner", respawner );
 		bundle.put( VIEW_DISTANCE, viewDistance );
-
-		int[] flamableDisabledArray = new int[flamableDisabled.size()];
-		int i = 0;
-		for (int cell : flamableDisabled){
-			flamableDisabledArray[i] = cell;
-			i++;
-		}
-		bundle.put( FLAMABLE_DISABLED, flamableDisabledArray );
 	}
 	
 	public int tunnelTile() {
@@ -1064,7 +1059,7 @@ public abstract class Level implements Bundlable {
 		do {
 			mob.pos = randomRespawnCell(mob);
 			tries--;
-		} while ((mob.pos == -1 || PathFinder.distance[mob.pos] < disLimit) && tries > 0);
+		} while ((mob.pos == -1 || PathFinder.distance[mob.pos] < disLimit || !Zone.canSpawnMobs(this, mob.pos)) && tries > 0);
 
 		if (Dungeon.hero.isAlive() && mob.pos != -1 && PathFinder.distance[mob.pos] >= disLimit) {
 			GameScene.add( mob );
@@ -1115,7 +1110,8 @@ public abstract class Level implements Bundlable {
 				|| Actor.findChar( cell ) != null
 				|| (ch instanceof Piranha && map[cell] != Terrain.WATER)
 				|| findMob(cell) != null
-				|| (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE));
+				|| (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE)
+				|| (!Zone.canSpawnMobs(this, cell) && !(ch instanceof Hero)));
 
 		return cell;
 	}
@@ -1216,7 +1212,7 @@ public abstract class Level implements Bundlable {
 	}
 
 	public boolean isFlamable(int cell) {
-		return flamable[cell] && !flamableDisabled.contains(cell);
+		return flamable[cell] && Zone.isFlamable(this, cell);
 	}
 
 	public boolean[] getFlamable() {
@@ -1456,6 +1452,7 @@ public abstract class Level implements Bundlable {
 		Dungeon.hero.pos = -1;
 		int result;
 		do {
+			//TODO tzz
 			result = randomRespawnCell( null );
 			if (result == -1) return -1;
 		} while (traps.get(result) != null

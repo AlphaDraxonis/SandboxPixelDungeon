@@ -17,24 +17,21 @@ public class PlaceCellActionPart implements ActionPart {
     private Plant oldPlant;
     private CustomTilemap oldCustomTile;
     private boolean wall;
-    private boolean oldFlamableDisabled, newFlamableDisabled;
 
-    public PlaceCellActionPart(int oldTerrain, int newTerrain, int cell, boolean flamableDisabled, Trap oldTrap, Plant oldPlant, CustomTilemap oldCustomTile) {
-        init(oldTerrain, newTerrain, cell, flamableDisabled, oldTrap, oldPlant, oldCustomTile);
+    public PlaceCellActionPart(int oldTerrain, int newTerrain, int cell, Trap oldTrap, Plant oldPlant, CustomTilemap oldCustomTile) {
+        init(oldTerrain, newTerrain, cell, oldTrap, oldPlant, oldCustomTile);
     }
 
     public PlaceCellActionPart() {
     }
 
-    protected void init(int oldTerrain, int newTerrain, int cell, boolean flamableDisabled, Trap oldTrap, Plant oldPlant, CustomTilemap oldCustomTile) {
+    protected void init(int oldTerrain, int newTerrain, int cell, Trap oldTrap, Plant oldPlant, CustomTilemap oldCustomTile) {
         this.oldTerrain = oldTerrain;
         this.newTerrain = newTerrain;
         this.cell = cell;
         this.oldTrap = oldTrap;
         this.oldPlant = oldPlant;
         this.oldCustomTile = oldCustomTile;
-        this.oldFlamableDisabled = Dungeon.level.flamableDisabled.contains(cell);
-        newFlamableDisabled = flamableDisabled;
         wall = Dungeon.level.customWalls.contains(oldCustomTile);
 
         redo();
@@ -51,25 +48,17 @@ public class PlaceCellActionPart implements ActionPart {
             else Dungeon.level.customTiles.add(oldCustomTile);
             EditorScene.add(oldCustomTile, wall);
         }
-        if (oldFlamableDisabled != newFlamableDisabled) {
-            if (oldFlamableDisabled) Dungeon.level.flamableDisabled.add(cell);
-            else Dungeon.level.flamableDisabled.remove(cell);
-        }
     }
 
     @Override
     public void redo() {
         Level.set(cell, newTerrain); //old traps are already removed here
         CustomTileItem.removeCustomTilesAt(cell, Dungeon.level);
-        if (oldFlamableDisabled != newFlamableDisabled) {
-            if (newFlamableDisabled) Dungeon.level.flamableDisabled.add(cell);
-            else Dungeon.level.flamableDisabled.remove(cell);
-        }
     }
 
     @Override
     public boolean hasContent() {
-        return oldTerrain != newTerrain || oldFlamableDisabled != newFlamableDisabled || !EditCustomTileComp.areEqual(oldCustomTile(), CustomTileItem.findCustomTileAt(cell()));
+        return oldTerrain != newTerrain || !EditCustomTileComp.areEqual(oldCustomTile(), CustomTileItem.findCustomTileAt(cell()));
     }
 
     protected CustomTilemap oldCustomTile() {

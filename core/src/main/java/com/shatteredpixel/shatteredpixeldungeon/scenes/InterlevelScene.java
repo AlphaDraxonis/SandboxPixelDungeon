@@ -468,7 +468,7 @@ public class InterlevelScene extends PixelScene {
 
 			Dungeon.hero.resurrect();
 			level = Dungeon.newLevel(null, 0);
-			Dungeon.hero.pos = level.randomRespawnCell(Dungeon.hero);
+			Dungeon.hero.pos = level.randomRespawnCell(Dungeon.hero);//TODO tzz
 			if (Dungeon.hero.pos == -1) Dungeon.hero.pos = level.entrance();
 
 			for (Item i : preservedItems){
@@ -488,6 +488,7 @@ public class InterlevelScene extends PixelScene {
 			int invPos = Dungeon.hero.pos;
 			int tries = 0;
 			do {
+				//TODO prefer spawning where no mobs can spawn! tzz
 				Dungeon.hero.pos = level.randomRespawnCell(Dungeon.hero);
 				tries++;
 

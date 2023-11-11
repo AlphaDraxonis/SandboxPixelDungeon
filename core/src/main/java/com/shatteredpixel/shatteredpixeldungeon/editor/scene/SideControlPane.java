@@ -31,17 +31,18 @@ public class SideControlPane extends Component {
 
 
     public static final int WIDTH = 16;
-    private Component[] buttons;
+    private SideControlButton[] buttons;
 
     public SideControlPane(boolean editor) {
 
         if (editor) {
-            buttons = new Component[3];
+            buttons = new SideControlButton[4];
             buttons[0] = new StartBtn();
             buttons[1] = new PipetteBtn();
             buttons[2] = new FillBtn();
+            buttons[3] = new ToggleZoneViewBtn();
         } else {
-            buttons = new Component[8];
+            buttons = new SideControlButton[8];
             buttons[0] = new ExitBtn();
             buttons[1] = new DamageBtn();
             buttons[2] = new SecretsBtn();
@@ -71,6 +72,12 @@ public class SideControlPane extends Component {
         height = posY - y;
     }
 
+    public void setButtonEnabled(Class<? extends SideControlButton> button, boolean enabled) {
+        for (SideControlButton b : buttons) {
+            if (b.getClass() == button) b.enable(enabled);
+        }
+    }
+
     public static HeroClass lastSelectedClass;
 
 
@@ -84,11 +91,11 @@ public class SideControlPane extends Component {
 
         public SideControlButton(int num, boolean large) {
 
-            if(large){
-                icon = new Image(Assets.Interfaces.SIDE_CONTROL_BUTTONS_LARGE, 0, 26 * num, 24,26);
+            if (large) {
+                icon = new Image(Assets.Interfaces.SIDE_CONTROL_BUTTONS_LARGE, 0, 26 * num, 24, 26);
                 icon.scale = new PointF(0.5f, 0.5f);
-            }else {
-                icon = new Image(Assets.Interfaces.SIDE_CONTROL_BUTTONS, 0, 13 * num, 12,13);
+            } else {
+                icon = new Image(Assets.Interfaces.SIDE_CONTROL_BUTTONS, 0, 13 * num, 12, 13);
             }
             add(icon);
 
@@ -138,11 +145,16 @@ public class SideControlPane extends Component {
         public boolean isBtnEnabled() {
             return btnEnabled;
         }
+
+        @Override
+        protected String hoverText() {
+            return Messages.titleCase(Messages.get(this, "label"));
+        }
     }
 
-    private static class StartBtn extends SideControlButton {
+    public static final class StartBtn extends SideControlButton {
 
-        public StartBtn() {
+        private StartBtn() {
             super(0);
             enable(true);
         }
@@ -167,16 +179,11 @@ public class SideControlPane extends Component {
                 SandboxPixelDungeon.reportException(e);
             }
         }
-
-        @Override
-        protected String hoverText() {
-            return Messages.titleCase(Messages.get(SideControlPane.class, "play"));
-        }
     }
 
-    private static class PipetteBtn extends SideControlButton {
+    public static final class PipetteBtn extends SideControlButton {
 
-        public PipetteBtn() {
+        private PipetteBtn() {
             super(1);
             enable(true);
         }
@@ -185,16 +192,11 @@ public class SideControlPane extends Component {
         protected void onClick() {
             EditorScene.selectCell(pickObjCellListener);
         }
-
-        @Override
-        protected String hoverText() {
-            return null;
-        }
     }
 
-    private static class FillBtn extends SideControlButton {
+    public static final class FillBtn extends SideControlButton {
 
-        public FillBtn() {
+        private FillBtn() {
             super(1, true);
             enable(true);
         }
@@ -204,16 +206,26 @@ public class SideControlPane extends Component {
             if (EditorScene.dragClickEnabled())
                 EditorScene.selectCell(fillAllCellListener);
         }
+    }
+
+    public static final class ToggleZoneViewBtn extends SideControlButton {
+
+        private ToggleZoneViewBtn() {
+            super(1, true);
+            enable(EditorScene.isDisplayZones());
+        }
 
         @Override
-        protected String hoverText() {
-            return null;
+        protected void onClick() {
+            boolean value = !EditorScene.isDisplayZones();
+            EditorScene.setDisplayZoneState(value);
+            enable(value);
         }
     }
 
-    private static class ExitBtn extends SideControlButton {
+    public static final class ExitBtn extends SideControlButton {
 
-        public ExitBtn() {
+        private ExitBtn() {
             super(2);
             enable(true);
         }
@@ -225,25 +237,15 @@ public class SideControlPane extends Component {
             EditorScene.openDifferentLevel = false;
             WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
         }
-
-        @Override
-        protected String hoverText() {
-            return Messages.titleCase(Messages.get(SideControlPane.class, "exit"));
-        }
     }
 
-    private static class DamageBtn extends SideControlButton {
+    public static final class DamageBtn extends SideControlButton {
 
         private static boolean shouldBeEnabled;
 
-        public DamageBtn() {
+        private DamageBtn() {
             super(3);
             enable(shouldBeEnabled);
-        }
-
-        @Override
-        protected String hoverText() {
-            return Messages.titleCase(Messages.get(SideControlPane.class, "damage"));
         }
 
         @Override
@@ -254,18 +256,13 @@ public class SideControlPane extends Component {
         }
     }
 
-    private static class SecretsBtn extends SideControlButton {
+    public static final class SecretsBtn extends SideControlButton {
 
         private static boolean shouldBeEnabled;
 
-        public SecretsBtn() {
+        private SecretsBtn() {
             super(4);
             enable(shouldBeEnabled);
-        }
-
-        @Override
-        protected String hoverText() {
-            return Messages.titleCase(Messages.get(SideControlPane.class, "secrets"));
         }
 
         @Override
@@ -277,17 +274,12 @@ public class SideControlPane extends Component {
         }
     }
 
-    private static class MindVisionBtn extends SideControlButton {
+    public static final class MindVisionBtn extends SideControlButton {
         private static boolean shouldBeEnabled;
 
-        public MindVisionBtn() {
+        private MindVisionBtn() {
             super(5);
             enable(shouldBeEnabled);
-        }
-
-        @Override
-        protected String hoverText() {
-            return Messages.titleCase(Messages.get(SideControlPane.class, "mind_vision"));
         }
 
         @Override
@@ -304,9 +296,9 @@ public class SideControlPane extends Component {
         }
     }
 
-    private static class MappingBtn extends SideControlButton {
+    public static final class MappingBtn extends SideControlButton {
 
-        public MappingBtn() {
+        private MappingBtn() {
             super(6);
             enable(true);
         }
@@ -326,22 +318,17 @@ public class SideControlPane extends Component {
 
         @Override
         protected String hoverText() {
-            return Messages.titleCase(Messages.get(SideControlPane.class, "magic_mapping")
-                    + " " + Messages.get(ScrollOfMagicMapping.class, "name"));
+            return super.hoverText()
+                    + " " + Messages.get(ScrollOfMagicMapping.class, "name");
         }
     }
 
-    private static class KeyBtn extends SideControlButton {
+    public static final class KeyBtn extends SideControlButton {
         private static boolean shouldBeEnabled;
 
-        public KeyBtn() {
+        private KeyBtn() {
             super(7);
             enable(shouldBeEnabled);
-        }
-
-        @Override
-        protected String hoverText() {
-            return Messages.titleCase(Messages.get(SideControlPane.class, "play"));
         }
 
 
@@ -353,17 +340,12 @@ public class SideControlPane extends Component {
         }
     }
 
-    private static class SpeedBtn extends SideControlButton {
+    public static final class SpeedBtn extends SideControlButton {
         private static boolean shouldBeEnabled;
 
-        public SpeedBtn() {
+        private SpeedBtn() {
             super(8);
             enable(shouldBeEnabled);
-        }
-
-        @Override
-        protected String hoverText() {
-            return Messages.titleCase(Messages.get(SideControlPane.class, "speed"));
         }
 
         @Override
@@ -377,17 +359,12 @@ public class SideControlPane extends Component {
         }
     }
 
-    private static class InvisBtn extends SideControlButton {
+    public static final class InvisBtn extends SideControlButton {
         private static boolean shouldBeEnabled;
 
-        public InvisBtn() {
+        private InvisBtn() {
             super(9);
             enable(shouldBeEnabled);
-        }
-
-        @Override
-        protected String hoverText() {
-            return Messages.titleCase(Messages.get(SideControlPane.class, "invis"));
         }
 
         @Override
