@@ -136,6 +136,10 @@ public class ScrollPane extends Component {
 
     @Override
     protected void layout() {
+        layout(true);
+    }
+
+    protected void layout(boolean modifyContentCameraPosition) {
 
         content.setPos(0, 0);
         controller.x = x;
@@ -143,10 +147,12 @@ public class ScrollPane extends Component {
         controller.width = width;
         controller.height = height;
 
-        Point p = camera().cameraToScreen(x, y);
         Camera cs = content.camera;
-        cs.x = p.x;
-        cs.y = p.y;
+        if (modifyContentCameraPosition) {
+            Point p = camera().cameraToScreen(x, y);
+            cs.x = p.x;
+            cs.y = p.y;
+        }
         cs.resize((int) width, (int) height);
 
         thumb.visible = height < content.height();
