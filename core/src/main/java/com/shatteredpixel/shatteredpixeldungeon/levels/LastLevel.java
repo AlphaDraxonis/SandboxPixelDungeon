@@ -241,7 +241,6 @@ public class LastLevel extends Level {
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
-
 		super.restoreFromBundle(bundle);
 		for (int i=0; i < length(); i++) {
 			int flags = Terrain.flags[map[i]];

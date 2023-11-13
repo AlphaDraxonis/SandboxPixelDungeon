@@ -197,7 +197,7 @@ public abstract class Level implements Bundlable {
 	 */
 	public final Map<String, Zone> zoneMap = new HashMap<>(3);
 	public Zone[] zone;
-	
+
 	public Feeling feeling = Feeling.NONE;
 
 	public Map<Integer, LevelTransition> transitions;
@@ -537,11 +537,17 @@ public abstract class Level implements Bundlable {
 			playLevelMusic();
 		}
 	}
-	
+
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 
 		version = bundle.getInt( VERSION );
+		
+		//saves from before v1.4.3 are not supported
+		if (version < SandboxPixelDungeon.v1_4_3){
+			throw new RuntimeException("old save");
+		}
+
 		initForPlayCalled = !bundle.contains(INIT_FOR_PLAY_CALLED) || bundle.getBoolean( INIT_FOR_PLAY_CALLED );
 
 		setSize( bundle.getInt(WIDTH), bundle.getInt(HEIGHT));
@@ -641,7 +647,7 @@ public abstract class Level implements Bundlable {
 			}
 		}
 		bossMob = bossMobStatic;
-		
+
 		collection = bundle.getCollection( BLOBS );
 		for (Bundlable b : collection) {
 			Blob blob = (Blob)b;

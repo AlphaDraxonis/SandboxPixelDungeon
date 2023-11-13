@@ -36,14 +36,14 @@ import java.util.Set;
 
 public class ItemStatusHandler<T extends Item> {
 
-    private Class<? extends T>[] items;
-    private LinkedHashMap<Class<? extends T>, String> itemLabels;//stores a string for each item used as key in labelImages
-    private LinkedHashMap<String, Integer> labelImages;//stores general string->image information
-    private LinkedHashSet<Class<? extends T>> known;
+	private Class<? extends T>[] items;
+	private LinkedHashMap<Class<? extends T>, String> itemLabels;//stores a string for each item used as key in labelImages
+	private LinkedHashMap<String, Integer> labelImages;//stores general string->image information
+	private LinkedHashSet<Class<? extends T>> known;
 
-    public ItemStatusHandler(Class<? extends T>[] items, HashMap<String, Integer> labelImages) {
+	public ItemStatusHandler( Class<? extends T>[] items, HashMap<String, Integer> labelImages ) {
 
-        this.items = items;
+		this.items = items;
 
         this.labelImages = new LinkedHashMap<>(labelImages);
         known = new LinkedHashSet<>();
@@ -56,165 +56,165 @@ public class ItemStatusHandler<T extends Item> {
 
         for (Class<? extends T> item : items) {
 
-            int index = Random.Int(labelsLeft.size());
+			int index = Random.Int( labelsLeft.size() );
 
-            itemLabels.put(item, labelsLeft.get(index));
-            labelsLeft.remove(index);
+			itemLabels.put( item, labelsLeft.get( index ) );
+			labelsLeft.remove( index );
 
         }
         return itemLabels;
     }
 
-    public ItemStatusHandler(Class<? extends T>[] items, HashMap<String, Integer> labelImages, Bundle bundle) {
+	public ItemStatusHandler( Class<? extends T>[] items, HashMap<String, Integer> labelImages, Bundle bundle ) {
 
-        this.items = items;
+		this.items = items;
 
-        this.itemLabels = new LinkedHashMap<>();
-        this.labelImages = new LinkedHashMap<>(labelImages);
-        known = new LinkedHashSet<>();
+		this.itemLabels = new LinkedHashMap<>();
+		this.labelImages = new LinkedHashMap<>(labelImages);
+		known = new LinkedHashSet<>();
 
-        ArrayList<String> allLabels = new ArrayList<>(labelImages.keySet());
+		ArrayList<String> allLabels = new ArrayList<>(labelImages.keySet());
 
-        restore(bundle, allLabels);
-    }
+		restore(bundle, allLabels);
+	}
 
-    private static final String PFX_LABEL = "_label";
-    private static final String PFX_KNOWN = "_known";
+	private static final String PFX_LABEL	= "_label";
+	private static final String PFX_KNOWN	= "_known";
+	
+	public void save( Bundle bundle ) {
+		for (int i=0; i < items.length; i++) {
+			String itemName = items[i].getSimpleName();
+			bundle.put( itemName + PFX_LABEL, itemLabels.get( items[i] ) );
+			bundle.put( itemName + PFX_KNOWN, known.contains( items[i] ) );
+		}
+	}
 
-    public void save(Bundle bundle) {
-        for (int i = 0; i < items.length; i++) {
-            String itemName = items[i].getSimpleName();
-            bundle.put(itemName + PFX_LABEL, itemLabels.get(items[i]));
-            bundle.put(itemName + PFX_KNOWN, known.contains(items[i]));
-        }
-    }
+	public void saveSelectively( Bundle bundle, ArrayList<Item> itemsToSave ){
+		List<Class<? extends T>> items = Arrays.asList(this.items);
+		for (Item item : itemsToSave){
+			if (items.contains(item.getClass())){
+				Class<? extends T> cls = items.get(items.indexOf(item.getClass()));
+				String itemName = cls.getSimpleName();
+				bundle.put( itemName + PFX_LABEL, itemLabels.get( cls ) );
+				bundle.put( itemName + PFX_KNOWN, known.contains( cls ) );
+			}
+		}
+	}
+	
+	public void saveClassesSelectively( Bundle bundle, ArrayList<Class<?extends Item>> clsToSave ){
+		List<Class<? extends T>> items = Arrays.asList(this.items);
+		for (Class<?extends Item> cls : clsToSave){
+			if (items.contains(cls)){
+				Class<? extends T> toSave = items.get(items.indexOf(cls));
+				String itemName = toSave.getSimpleName();
+				bundle.put( itemName + PFX_LABEL, itemLabels.get( toSave ) );
+				bundle.put( itemName + PFX_KNOWN, known.contains( toSave ) );
+			}
+		}
+	}
 
-    public void saveSelectively(Bundle bundle, ArrayList<Item> itemsToSave) {
-        List<Class<? extends T>> items = Arrays.asList(this.items);
-        for (Item item : itemsToSave) {
-            if (items.contains(item.getClass())) {
-                Class<? extends T> cls = items.get(items.indexOf(item.getClass()));
-                String itemName = cls.getSimpleName();
-                bundle.put(itemName + PFX_LABEL, itemLabels.get(cls));
-                bundle.put(itemName + PFX_KNOWN, known.contains(cls));
-            }
-        }
-    }
+	private void restore( Bundle bundle, ArrayList<String> labelsLeft  ) {
 
-    public void saveClassesSelectively(Bundle bundle, ArrayList<Class<? extends Item>> clsToSave) {
-        List<Class<? extends T>> items = Arrays.asList(this.items);
-        for (Class<? extends Item> cls : clsToSave) {
-            if (items.contains(cls)) {
-                Class<? extends T> toSave = items.get(items.indexOf(cls));
-                String itemName = toSave.getSimpleName();
-                bundle.put(itemName + PFX_LABEL, itemLabels.get(toSave));
-                bundle.put(itemName + PFX_KNOWN, known.contains(toSave));
-            }
-        }
-    }
+		ArrayList<Class<? extends T>> unlabelled = new ArrayList<>();
 
-    private void restore(Bundle bundle, ArrayList<String> labelsLeft) {
+		for (int i=0; i < items.length; i++) {
 
-        ArrayList<Class<? extends T>> unlabelled = new ArrayList<>();
+			Class<? extends T> item = items[i];
+			String itemName = item.getSimpleName();
 
-        for (int i = 0; i < items.length; i++) {
+			if (bundle.contains( itemName + PFX_LABEL )) {
 
-            Class<? extends T> item = items[i];
-            String itemName = item.getSimpleName();
+				String label = bundle.getString( itemName + PFX_LABEL );
+				itemLabels.put( item, label );
+				labelsLeft.remove( label );
 
-            if (bundle.contains(itemName + PFX_LABEL)) {
+				if (bundle.getBoolean( itemName + PFX_KNOWN )) {
+					known.add( item );
+				}
 
-                String label = bundle.getString(itemName + PFX_LABEL);
-                itemLabels.put(item, label);
-                labelsLeft.remove(label);
+			} else {
 
-                if (bundle.getBoolean(itemName + PFX_KNOWN)) {
-                    known.add(item);
-                }
+				unlabelled.add(items[i]);
 
-            } else {
+			}
+		}
 
-                unlabelled.add(items[i]);
+		for (Class<? extends T> item : unlabelled){
 
-            }
-        }
+			String itemName = item.getSimpleName();
 
-        for (Class<? extends T> item : unlabelled) {
+			int index = Random.Int( labelsLeft.size() );
 
-            String itemName = item.getSimpleName();
+			itemLabels.put( item, labelsLeft.get( index ) );
+			labelsLeft.remove( index );
 
-            int index = Random.Int(labelsLeft.size());
-
-            itemLabels.put(item, labelsLeft.get(index));
-            labelsLeft.remove(index);
-
-            if (bundle.contains(itemName + PFX_KNOWN) && bundle.getBoolean(itemName + PFX_KNOWN)) {
-                known.add(item);
-            }
-        }
-    }
-
-    public boolean contains(T item) {
-        for (Class<? extends Item> i : items) {
-            if (item.getClass().equals(i)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean contains(Class<? extends T> itemCls) {
-        for (Class<? extends Item> i : items) {
-            if (itemCls.equals(i)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public int image(T item) {
-        return labelImages.get(label(item));
-    }
-
-    public int image(Class<? extends T> itemCls) {
-        return labelImages.get(label(itemCls));
-    }
-
-    public String label(T item) {
-        return itemLabels.get(item.getClass());
-    }
-
-    public String label(Class<? extends T> itemCls) {
-        return itemLabels.get(itemCls);
-    }
-
-    public boolean isKnown(T item) {
-        return known.contains(item.getClass()) || CustomDungeon.isEditing();
-    }
-
-    public boolean isKnown(Class<? extends T> itemCls) {
-        return known.contains(itemCls);
-    }
-
-    public void know(T item) {
-        known.add((Class<? extends T>) item.getClass());
-    }
-
-    public void know(Class<? extends T> itemCls) {
-        known.add(itemCls);
-    }
-
-    public HashSet<Class<? extends T>> known() {
-        return known;
-    }
-
-    public HashSet<Class<? extends T>> unknown() {
-        LinkedHashSet<Class<? extends T>> result = new LinkedHashSet<>();
-        for (Class<? extends T> i : items) {
-            if (!known.contains(i)) {
-                result.add(i);
-            }
-        }
-        return result;
-    }
+			if (bundle.contains( itemName + PFX_KNOWN ) && bundle.getBoolean( itemName + PFX_KNOWN )) {
+				known.add( item );
+			}
+		}
+	}
+	
+	public boolean contains( T item ){
+		for (Class<?extends Item> i : items){
+			if (item.getClass().equals(i)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean contains( Class<?extends T> itemCls ){
+		for (Class<?extends Item> i : items){
+			if (itemCls.equals(i)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public int image( T item ) {
+		return labelImages.get(label(item));
+	}
+	
+	public int image( Class<?extends T> itemCls ) {
+		return labelImages.get(label(itemCls));
+	}
+	
+	public String label( T item ) {
+		return itemLabels.get(item.getClass());
+	}
+	
+	public String label( Class<?extends T> itemCls ){
+		return itemLabels.get( itemCls );
+	}
+	
+	public boolean isKnown( T item ) {
+		return known.contains( item.getClass() ) || CustomDungeon.isEditing();
+	}
+	
+	public boolean isKnown( Class<?extends T> itemCls ){
+		return known.contains( itemCls );
+	}
+	
+	public void know( T item ) {
+		known.add( (Class<? extends T>)item.getClass() );
+	}
+	
+	public void know( Class<?extends T> itemCls ){
+		known.add( itemCls );
+	}
+	
+	public HashSet<Class<? extends T>> known() {
+		return known;
+	}
+	
+	public HashSet<Class<? extends T>> unknown() {
+		LinkedHashSet<Class<? extends T>> result = new LinkedHashSet<>();
+		for (Class<? extends T> i : items) {
+			if (!known.contains( i )) {
+				result.add( i );
+			}
+		}
+		return result;
+	}
 }

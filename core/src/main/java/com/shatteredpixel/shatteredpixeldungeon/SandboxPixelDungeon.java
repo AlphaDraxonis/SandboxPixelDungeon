@@ -34,9 +34,17 @@ import com.watabou.utils.PlatformSupport;
 public class SandboxPixelDungeon extends Game {
 
 	//variable constants for specific older versions of shattered, used for data conversion
+	public static final int v1_2_3 = 628; //v1.2.3 is kept for now, for old rankings score logic
+
+	//savegames from versions older than v1.4.3 are no longer supported, and data from them is ignored
+	public static final int v1_4_3 = 668;
 	//versions older than v1.2.3 are no longer supported, and data from them is ignored
 	public static final int _0_3_v2_1_0  = 723;
 	public static final int _0_8_v2_2_0  = 755;
+
+	public static final int v2_0_2 = 700;
+	public static final int v2_1_4 = 737; //iOS was 737, other platforms were 736
+	public static final int v2_2_1 = 755; //iOS was 755 (also called v2.2.2), other platforms were 754
 
 	public SandboxPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
