@@ -40,9 +40,10 @@ public class GnollGuard extends Mob {
 		HP = HT = 35;
 		defenseSkill = 15;
 		attackSkill = 20;
-		damageRollMin = 5;
-		damageRollMax = 15;
-		specialDamageRollMax = specialDamageRollMin = 10;
+		damageRollMin = 3;
+		damageRollMax = 12;
+		specialDamageRollMin = 10;
+		specialDamageRollMax = 25;
 		damageReductionMax = 6;
 
 		EXP = 7;
@@ -86,8 +87,11 @@ public class GnollGuard extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return super.damageRoll()
-				+ (enemy != null && !Dungeon.level.adjacent(pos, enemy.pos) ? Random.NormalIntRange( specialDamageRollMin, specialDamageRollMax ) : 0);
+		if (enemy != null && !Dungeon.level.adjacent(pos, enemy.pos)){
+			return Random.NormalIntRange( damageRollMin, damageRollMax );
+		} else {
+			return super.damageRoll();
+		}
 	}
 
 //	@Override

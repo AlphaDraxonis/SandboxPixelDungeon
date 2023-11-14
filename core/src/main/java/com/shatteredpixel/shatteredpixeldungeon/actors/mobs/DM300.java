@@ -456,7 +456,6 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 				}
 				//add rock cell to pos, if it is not solid, and isn't the safecell
 				if (!Dungeon.level.solid[pos] && pos != safeCell && Random.Int(Dungeon.level.distance(rockCenter, pos)) == 0) {
-					//don't want to overly punish players with slow move or attack speed
 					rockCells.add(pos);
 				}
 				pos++;
@@ -465,6 +464,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		for (int i : rockCells){
 			sprite.parent.add(new TargetedCell(i, 0xFF0000));
 		}
+		//don't want to overly punish players with slow move or attack speed
 		Buff.append(this, FallingRockBuff.class, GameMath.gate(TICK, (int)Math.ceil(target.cooldown()), 3*TICK)).setRockPositions(rockCells);
 
 	}
