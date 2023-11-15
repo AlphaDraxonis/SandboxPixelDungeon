@@ -79,7 +79,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			Notes.remove(Notes.Landmark.TROLL);
 			return true;
 		}
-		if (quest != null && quest.type() >= 0 && Dungeon.level.visited[pos]) {
+		if (quest != null && quest.type() >= 0 && !quest.started() && Dungeon.level.visited[pos]) {
 			Notes.add(Notes.Landmark.TROLL);
 		}
 		return super.act();
@@ -199,7 +199,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 				}
 			});
 
-		} else if (quest.favor > 0 || quest.pickaxe != null && quest.questScore >= 2500) {
+		} else if (quest.rewardsAvailable()) {
 
 			Game.runOnRenderThread(new Callback() {
 				@Override
@@ -313,7 +313,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			}
 		}
 	}
-
+	
 	@Override
 	public void createNewQuest() {
 		quest = new BlacksmithQuest();
@@ -331,7 +331,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 			}
 		} else registerQuest();
 	}
-
+	
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);

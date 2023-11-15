@@ -101,6 +101,10 @@ public class WndBlacksmith extends Window {
 							troll.quest.favor -= pickaxeCost;
 							troll.quest.pickaxe = null;
 							WndBlacksmith.this.hide();
+
+							if (!troll.quest.rewardsAvailable()){
+								Notes.remove( Notes.Landmark.TROLL );
+							}
 						}
 					}
 				});
@@ -294,7 +298,10 @@ public class WndBlacksmith extends Window {
 
 					troll.quest.favor -= 500 + 1000*troll.quest.reforges;
 					troll.quest.reforges++;
-					Notes.remove( Notes.Landmark.TROLL );
+
+					if (!troll.quest.rewardsAvailable()){
+						Notes.remove( Notes.Landmark.TROLL );
+					}
 
 					hide();
 					if (wndParent != null){
@@ -392,6 +399,10 @@ public class WndBlacksmith extends Window {
 
 				Sample.INSTANCE.play(Assets.Sounds.EVOKE);
 				Item.evoke( Dungeon.hero );
+
+				if (!troll.quest.rewardsAvailable()){
+					Notes.remove( Notes.Landmark.TROLL );
+				}
 			}
 		}
 	}
@@ -430,6 +441,10 @@ public class WndBlacksmith extends Window {
 				Item.evoke( Dungeon.hero );
 
 				Badges.validateItemLevelAquired( item );
+
+				if (!troll.quest.rewardsAvailable()){
+					Notes.remove( Notes.Landmark.TROLL );
+				}
 			}
 		}
 	}
@@ -504,6 +519,10 @@ public class WndBlacksmith extends Window {
 						}
 						WndSmith.this.hide();
 						troll.quest.smithRewards = null;
+
+						if (!troll.quest.rewardsAvailable()){
+							Notes.remove( Notes.Landmark.TROLL );
+						}
 					}
 				};
 				btnConfirm.setRect(0, height+2, width/2-1, 16);
