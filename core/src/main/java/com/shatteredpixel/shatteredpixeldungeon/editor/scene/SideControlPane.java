@@ -211,7 +211,7 @@ public class SideControlPane extends Component {
     public static final class ToggleZoneViewBtn extends SideControlButton {
 
         private ToggleZoneViewBtn() {
-            super(1, true);
+            super(2, false);
             enable(EditorScene.isDisplayZones());
         }
 
@@ -221,12 +221,17 @@ public class SideControlPane extends Component {
             EditorScene.setDisplayZoneState(value);
             enable(value);
         }
+
+        @Override
+        protected String hoverText() {
+            return Messages.get(this, "label_" + (btnEnabled ? "on" : "off"));
+        }
     }
 
     public static final class ExitBtn extends SideControlButton {
 
         private ExitBtn() {
-            super(2);
+            super(3);
             enable(true);
         }
 
@@ -244,7 +249,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private DamageBtn() {
-            super(3);
+            super(4);
             enable(shouldBeEnabled);
         }
 
@@ -261,7 +266,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private SecretsBtn() {
-            super(4);
+            super(5);
             enable(shouldBeEnabled);
         }
 
@@ -278,7 +283,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private MindVisionBtn() {
-            super(5);
+            super(6);
             enable(shouldBeEnabled);
         }
 
@@ -299,7 +304,7 @@ public class SideControlPane extends Component {
     public static final class MappingBtn extends SideControlButton {
 
         private MappingBtn() {
-            super(6);
+            super(7);
             enable(true);
         }
 
@@ -327,7 +332,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private KeyBtn() {
-            super(7);
+            super(8);
             enable(shouldBeEnabled);
         }
 
@@ -344,7 +349,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private SpeedBtn() {
-            super(8);
+            super(9);
             enable(shouldBeEnabled);
         }
 
@@ -363,7 +368,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private InvisBtn() {
-            super(9);
+            super(10);
             enable(shouldBeEnabled);
         }
 

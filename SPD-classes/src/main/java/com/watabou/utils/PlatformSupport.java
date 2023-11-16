@@ -51,6 +51,21 @@ public abstract class PlatformSupport {
 		return Gdx.net.openURI( uri );
 	}
 
+//	public FileHandle pickPngFile() {
+//		JFileChooser dialog = new JFileChooser();
+//		dialog.setDialogTitle("TestTitle");
+//		dialog.setFileFilter(new FileNameExtensionFilter("Images", "png"));
+//		dialog.setCurrentDirectory(new File(System.getProperty("user.home"),"Pictures"));
+//		dialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+//		if (dialog.showDialog(null, UIManager.getString("FileChooser.openButtonText")) == JFileChooser.APPROVE_OPTION){
+//			File selectedFile = dialog.getSelectedFile();
+//
+//			FileHandle dest = FileUtils.getFileHandle("temp_img.png");
+//			new FileHandle(selectedFile).copyTo(dest);
+//		}
+//		return null;
+//	}
+
 	public void setOnscreenKeyboardVisible(boolean value){
 		Gdx.input.setOnscreenKeyboardVisible(value);
 	}

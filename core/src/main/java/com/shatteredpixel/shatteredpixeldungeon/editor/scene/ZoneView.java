@@ -36,12 +36,11 @@ public class ZoneView extends Group {
                     PixelScene.align(Camera.main, ((cell % Dungeon.level.width())) * DungeonTilemap.SIZE),
                     PixelScene.align(Camera.main, ((cell / Dungeon.level.width())) * DungeonTilemap.SIZE));
             point(pos);
-
-            resetColor();
         }
 
         private void updateImage(int cell, Zone zone, int levelLength, boolean updateNeighbours) {
             frame(textureFilm.get(ZoneView.this.updateImage(cell, zone, levelLength, updateNeighbours)));
+            resetColor();
         }
 
         @Override
@@ -72,8 +71,10 @@ public class ZoneView extends Group {
         return img;
     }
 
-    public void updateCell(int cell) {
+    public void updateCell(int cell, Zone zoneBefore) {
         Zone zone = Dungeon.level.zone[cell];
+        if (zone == zoneBefore) return;
+
         if (zone != null) {
             ZoneComp zoneComp = comps.get(cell);
             if (zoneComp == null) {
@@ -82,12 +83,13 @@ public class ZoneView extends Group {
                 add(zoneComp);
             }
             zoneComp.updateImage(cell, zone, Dungeon.level.map.length, true);
+            if (zoneBefore != null) updateImage(cell, zoneBefore, Dungeon.level.map.length, true);
         } else {
             ZoneComp destroy = comps.remove(cell);
             if (destroy != null) {
                 destroy.remove();
                 destroy.killAndErase();
-                updateImage(cell, null, Dungeon.level.map.length, true);
+                updateImage(cell, zoneBefore, Dungeon.level.map.length, true);
             }
         }
     }

@@ -22,29 +22,35 @@ public /*sealed*/ abstract class ZoneActionPart implements ActionPart {
         redo();
     }
 
-    private static void place(String zone, int cell) {
-        if(zone == null) {
-            remove(cell);
-            EditorScene.updateZoneCell(cell);
+    private static void place(String zone, String zoneReplace, int cell) {
+        Zone removed;
+        if (zone == null) {
+            removed = remove(zoneReplace, cell);
+            if (removed != null) EditorScene.updateZoneCell(cell, removed);
             return;
         }
         Level level = Dungeon.level;
         Zone z = level.zoneMap.get(zone);
         if (z == null) {
-            z = new Zone();
-            z.name = zone;
-            EditorScene.add(z);
+//            z = new Zone();
+//            z.name = zone;
+//            EditorScene.add(z);
+            return;
         }
-        remove(cell);
-        level.zone[cell] = z;
-        z.addCell(cell, level);
-        EditorScene.updateZoneCell(cell);
+        removed = remove(zoneReplace, cell);
+        if (zoneReplace == null || zoneReplace.equals(removed.getName())) {
+            level.zone[cell] = z;
+            z.addCell(cell, level);
+            EditorScene.updateZoneCell(cell, removed);
+        }
     }
 
-    private static void remove(int cell) {
+    private static Zone remove(String zoneReplace, int cell) {
         if (Dungeon.level.zone[cell] != null) {
-            Zone.removeCell(cell, Dungeon.level);
+            return zoneReplace == null || zoneReplace.equals(Dungeon.level.zone[cell].getName())
+                    ? Zone.removeCell(cell, Dungeon.level) : null;
         }
+        return null;
     }
 
     @Override
@@ -60,12 +66,36 @@ public /*sealed*/ abstract class ZoneActionPart implements ActionPart {
 
         @Override
         public void undo() {
-            ZoneActionPart.place(zoneBefore, cell);
+            ZoneActionPart.place(zoneBefore, null, cell);
         }
 
         @Override
         public void redo() {
-            ZoneActionPart.place(zoneAfter, cell);
+            ZoneActionPart.place(zoneAfter, null, cell);
+        }
+    }
+
+    public static final class Remove extends ZoneActionPart {
+
+        //zoneAfter is zoneReplace
+        public Remove(String zoneReplace, int cell) {
+            super(zoneReplace, cell);
+        }
+
+
+        @Override
+        public void undo() {
+            ZoneActionPart.place(zoneBefore, null, cell);
+        }
+
+        @Override
+        public void redo() {
+            ZoneActionPart.place(null, zoneAfter, cell);
+        }
+
+        @Override
+        public boolean hasContent() {
+            return zoneBefore != null && (zoneAfter == null || zoneAfter.equals(zoneBefore));
         }
     }
 

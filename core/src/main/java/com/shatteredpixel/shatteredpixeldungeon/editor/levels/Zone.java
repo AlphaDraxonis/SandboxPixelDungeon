@@ -21,7 +21,7 @@ public class Zone implements Bundlable {
     public boolean canSpawnMobs = true;
     public boolean canSpawnItems = true;
 
-    public String chasmDestZone;
+    public String chasmDestZone;//TODO tzz
     public LevelTransition zoneTransition;//TODO needs to be added when init for play, zones cannot be destination of normal transitions, only for chasms
 
     private final Set<Integer> cells = new HashSet<>();
@@ -81,9 +81,11 @@ public class Zone implements Bundlable {
         cells.add(cell);
     }
 
-    public static void removeCell(int cell, Level level) {
-        level.zone[cell].cells.remove(cell);
+    public static Zone removeCell(int cell, Level level) {
+        Zone z = level.zone[cell];
+        z.cells.remove(cell);
         level.zone[cell] = null;
+        return z;
     }
 
     public static void changeMapSize(Level level, IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {

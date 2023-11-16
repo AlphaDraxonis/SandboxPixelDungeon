@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor;
 
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
@@ -8,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
@@ -21,10 +21,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndZones;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.EditorCellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.SideControlPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.UndoPane;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZoneView;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobEditPart;
@@ -56,7 +58,6 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.GridTileMap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.RaisedTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
@@ -166,6 +167,7 @@ public class EditorScene extends PixelScene {
             if (openDifferentLevel) {
                 mainCameraPos = null;
                 Undo.reset();
+                ZonePrompt.setSelectedZone(ZonePrompt.getFirstZoneAvailable(customLevel));
             }
             openDifferentLevel = true;
             Items.updateKeys(oldLvlName, customLevel.name);
@@ -258,13 +260,6 @@ public class EditorScene extends PixelScene {
         terrainFeatures = new TerrainFeaturesTilemap(customLevel().plants, customLevel().traps);
         terrain.add(terrainFeatures);
 
-        zoneGroup = new ZoneView();
-        zoneGroup.visible = displayZones;
-        add(zoneGroup);
-        for (int cell = 0; cell < Dungeon.level.map.length; cell++) {
-            zoneGroup.updateCell(cell);
-        }
-
         transitionIndicators = new Group();
         add(transitionIndicators);
         transitionIndicatorsMap = new HashMap<>();
@@ -309,6 +304,13 @@ public class EditorScene extends PixelScene {
         emoicons = new Group();
         add(emoicons);
 
+        zoneGroup = new ZoneView();
+        zoneGroup.visible = displayZones;
+        add(zoneGroup);
+        for (int cell = 0; cell < Dungeon.level.map.length; cell++) {
+            zoneGroup.updateCell(cell, null);
+        }
+
         add(cellSelector = new EditorCellSelector(tiles));
 
         int uiSize = SPDSettings.interfaceSize();
@@ -348,9 +350,9 @@ public class EditorScene extends PixelScene {
         }
     }
 
-    public static void setDisplayZoneState(boolean enable){
+    public static void setDisplayZoneState(boolean enable) {
 
-        if (scene == null){
+        if (scene == null) {
             displayZones = enable;
             return;
         }
@@ -360,18 +362,8 @@ public class EditorScene extends PixelScene {
         scene.changeDisplayZoneModeButNoPrompt(enable);
 
         if (displayZones) {
-
-            StyledButton addZone = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "");
-            StyledButton removeZone = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "");
-            StyledButton editZone = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "");
-
-            addZone.setSize(16,16);
-            removeZone.setSize(16,16);
-            editZone.setSize(16,16);
-
             selectCell(zonesCellListener);
-            scene.prompt(new ToastWithButtons(addZone, removeZone, editZone));
-
+            scene.prompt(new ZonePrompt());
         } else scene.prompt((Component) null);
     }
 
@@ -385,8 +377,8 @@ public class EditorScene extends PixelScene {
         return displayZones;
     }
 
-    public static void sortMobSprites(){
-        if (scene != null){
+    public static void sortMobSprites() {
+        if (scene != null) {
             synchronized (scene) {
                 scene.mobs.sort(new Comparator() {
                     @Override
@@ -395,9 +387,9 @@ public class EditorScene extends PixelScene {
                         if (a instanceof Visual && b instanceof Visual) {
                             return (int) Math.signum((((Visual) a).y + ((Visual) a).height())
                                     - (((Visual) b).y + ((Visual) b).height()));
-                        } else if (a instanceof Visual){
+                        } else if (a instanceof Visual) {
                             return -1;
-                        } else if (b instanceof Visual){
+                        } else if (b instanceof Visual) {
                             return 1;
                         } else {
                             return 0;
@@ -409,7 +401,7 @@ public class EditorScene extends PixelScene {
     }
 
     private synchronized void prompt(String text) {
-        prompt(text == null ? null : new Toast( text ) {
+        prompt(text == null ? null : new Toast(text) {
             @Override
             protected void onClose() {
                 cancel();
@@ -417,9 +409,13 @@ public class EditorScene extends PixelScene {
         });
     }
 
+    public static synchronized void promptStatic(Component newPrompt) {
+        scene.prompt(newPrompt);
+    }
+
     private synchronized void prompt(Component newPrompt) {
 
-        if (prompt != null) {
+        if (prompt != null && prompt != newPrompt) {
             prompt.killAndErase();
             toDestroy.add(prompt);
             prompt = null;
@@ -446,9 +442,9 @@ public class EditorScene extends PixelScene {
         }
     }
 
-    public static void updateZoneCell(int cell){
+    public static void updateZoneCell(int cell, Zone zoneBefore) {
         if (scene != null) {
-            scene.zoneGroup.updateCell(cell);
+            scene.zoneGroup.updateCell(cell, zoneBefore);
         }
     }
 
@@ -906,20 +902,36 @@ public class EditorScene extends PixelScene {
     private static final CellSelector.Listener zonesCellListener = new CellSelector.Listener() {
         @Override
         public void onSelect(Integer cell) {
-            if (cell == null) return;
+            if (cell == null || !customLevel().insideMap(cell)) return;
 
-            Undo.addActionPart(new ZoneActionPart.Place("TEST", cell));
+            Zone selected = ZonePrompt.getSelectedZone();
+
+            switch (ZonePrompt.mode) {
+                case ADD:
+                    if (selected == null) EditorScene.show(new WndZones.WndNewZone());
+                    else Undo.addActionPart(new ZoneActionPart.Place(selected.getName(), cell));
+                    break;
+                case REMOVE:
+                    Undo.addActionPart(new ZoneActionPart.Remove(selected == null ? null : selected.getName(), cell));
+                    break;
+                case EDIT:
+                    onRightClick(cell);
+                    break;
+            }
         }
 
         @Override
         public void onRightClick(Integer cell) {
             if (cell != null && cell >= 0 && cell < customLevel.length()) {
-//                EditorScene.showEditCellWindow(cell);
+                Zone zoneAt = customLevel().zone[cell];
+                if (zoneAt != null) EditorScene.show(new EditCompWindow(zoneAt));
             }
         }
 
         @Override
         public void onMiddleClick(Integer cell) {
+            Zone zoneAt = customLevel().zone[cell];
+            if (zoneAt != null) ZonePrompt.setSelectedZone(zoneAt);
         }
 
         @Override
@@ -929,7 +941,7 @@ public class EditorScene extends PixelScene {
 
         @Override
         protected boolean dragClickEnabled() {
-            return EditorScene.dragClickEnabled();
+            return ZonePrompt.getSelectedZone() != null;
         }
     };
 
@@ -1017,7 +1029,7 @@ public class EditorScene extends PixelScene {
 
     }
 
-    public static void updatePathfinder(){
+    public static void updatePathfinder() {
         if (customLevel() != null && scene != null)
             PathFinder.setMapSize(customLevel().width(), customLevel().height());
     }

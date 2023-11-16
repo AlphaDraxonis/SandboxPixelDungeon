@@ -36,7 +36,7 @@ public class ToastWithButtons extends Component {
     @Override
     protected void layout() {
 
-        final float maxWidth = PixelScene.uiCamera.width;
+        final float maxWidth = PixelScene.uiCamera.width * PixelScene.uiCamera.zoom;
         float minWidth = 0;
         float posX = x + Toast.MARGIN_HOR;
         float posY = y + Toast.MARGIN_VER;
@@ -51,6 +51,11 @@ public class ToastWithButtons extends Component {
                 if (posX > maxWidth) {
                     posY = posYnextRow;
                     posX = x + Toast.MARGIN_HOR;
+                    c.setPos(posX, posY);
+                    PixelScene.align(c);
+                    posX = c.right() + Toast.MARGIN_HOR;
+                    posYnextRow = Math.max(posYnextRow, c.bottom() + Toast.MARGIN_VER);
+                    minWidth = Math.max(minWidth, posX - x);
                 } else minWidth = Math.max(minWidth, posX - x);
             }
         }
