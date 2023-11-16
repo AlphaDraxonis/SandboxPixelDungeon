@@ -410,7 +410,7 @@ public class EditorScene extends PixelScene {
     }
 
     public static synchronized void promptStatic(Component newPrompt) {
-        scene.prompt(newPrompt);
+        if (scene != null) scene.prompt(newPrompt);
     }
 
     private synchronized void prompt(Component newPrompt) {

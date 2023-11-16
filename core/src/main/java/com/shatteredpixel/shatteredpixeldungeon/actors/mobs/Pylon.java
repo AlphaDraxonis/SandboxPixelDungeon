@@ -73,12 +73,16 @@ public class Pylon extends Mob {
 
 	private int targetNeighbor = Random.Int(8);
 
+	public boolean alwaysActive = false;
+
+	public int dm300id;
+
 	@Override
 	protected boolean act() {
 		alerted = false;
 		super.act();
 
-		if (alignment == Alignment.NEUTRAL){
+		if (alignment == Alignment.NEUTRAL && !alwaysActive){
 			return true;
 		}
 
@@ -98,8 +102,9 @@ public class Pylon extends Mob {
 		boolean visible = shouldSpriteBeVisible();
 
 		for (int cell : shockCells){
-			if (Dungeon.level.heroFOV[cell]){
+			if (Dungeon.level.heroFOV[cell]) {
 				visible = true;
+				break;
 			}
 		}
 
@@ -145,7 +150,7 @@ public class Pylon extends Mob {
 	@Override
 	public CharSprite sprite() {
 		PylonSprite p = (PylonSprite) super.sprite();
-		if (alignment != Alignment.NEUTRAL) p.activate();
+		if (alignment != Alignment.NEUTRAL || alwaysActive) p.activate();
 		return p;
 	}
 
@@ -201,17 +206,22 @@ public class Pylon extends Mob {
 	@Override
 	public void die(Object cause) {
 		super.die(cause);
-		((CavesBossLevel)Dungeon.level).eliminatePylon();
+		DM300 dm300 = (DM300) Actor.findById(dm300id);
+		CavesBossLevel.eliminatePylon(Dungeon.level, dm300 != null && dm300.totalPylonsToActivate() - dm300.pylonsActivated > 0);
 	}
 
 	private static final String ALIGNMENT = "alignment";
+	private static final String ALWAYS_ACTIVE = "always_active";
 	private static final String TARGET_NEIGHBOUR = "target_neighbour";
+	private static final String DM300_ID = "dm300_id";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(ALIGNMENT, alignment);
 		bundle.put(TARGET_NEIGHBOUR, targetNeighbor);
+		bundle.put(ALWAYS_ACTIVE, alwaysActive);
+		bundle.put(DM300_ID, dm300id);
 	}
 
 	@Override
@@ -219,6 +229,8 @@ public class Pylon extends Mob {
 		super.restoreFromBundle(bundle);
 		alignment = bundle.getEnum(ALIGNMENT, Alignment.class);
 		targetNeighbor = bundle.getInt(TARGET_NEIGHBOUR);
+		alwaysActive = bundle.getBoolean(ALWAYS_ACTIVE);
+		dm300id = bundle.getInt(DM300_ID);
 	}
 
 	{

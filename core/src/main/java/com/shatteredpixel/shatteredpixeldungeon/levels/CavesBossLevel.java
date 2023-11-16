@@ -68,6 +68,7 @@ import com.watabou.utils.Rect;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class CavesBossLevel extends Level {
 
@@ -365,26 +366,14 @@ public class CavesBossLevel extends Level {
 
 	}
 
-	public void activatePylon(){
+	public Pylon activatePylon(){
 		ArrayList<Pylon> pylons = new ArrayList<>();
 		for (Mob m : mobs){
-			if (m instanceof Pylon && m.alignment == Char.Alignment.NEUTRAL){
+			if (m instanceof Pylon && m.alignment == Char.Alignment.NEUTRAL && ((Pylon) m).dm300id <= 0){
 				pylons.add((Pylon) m);
 			}
 		}
-
-		if (pylons.size() == 1){
-			pylons.get(0).activate();
-		} else if (!pylons.isEmpty()) {
-			Pylon closest = null;
-			for (Pylon p : pylons){
-				if (closest == null || trueDistance(p.pos, Dungeon.hero.pos) < trueDistance(closest.pos, Dungeon.hero.pos)){
-					closest = p;
-				}
-			}
-			pylons.remove(closest);
-			Random.element(pylons).activate();
-		}
+		Pylon pylon = activatePylon(this, pylons);
 
 		for( int i = (mainArena.top-1)*width; i <length; i++){
 			if (map[i] == Terrain.INACTIVE_TRAP || map[i] == Terrain.WATER || map[i] == Terrain.CUSTOM_DECO){
@@ -392,22 +381,43 @@ public class CavesBossLevel extends Level {
 			}
 		}
 
+		return pylon;
 	}
 
-	public void eliminatePylon(){
-		if (customArenaVisuals != null) customArenaVisuals.updateState();
-		int pylonsRemaining = 0;
-		for (Mob m : mobs){
+	public static Pylon activatePylon(Level level, List<Pylon> pylons){
+
+		if (pylons.size() == 1){
+			pylons.get(0).activate();
+			return pylons.get(0);
+		} else if (!pylons.isEmpty()) {
+			Pylon closest = null;
+			for (Pylon p : pylons){
+				if (closest == null || level.trueDistance(p.pos, Dungeon.hero.pos) < level.trueDistance(closest.pos, Dungeon.hero.pos)){
+					closest = p;
+				}
+			}
+			pylons.remove(closest);
+			Random.element(pylons).activate();
+			return closest;
+		}
+		return null;
+
+	}
+
+	public static void eliminatePylon(Level level, boolean clearPylonEnergy){
+		if (level instanceof CavesBossLevel){
+			if (((CavesBossLevel) level).customArenaVisuals != null)
+				((CavesBossLevel) level).customArenaVisuals.updateState();
+		}
+		for (Mob m : level.mobs) {
 			if (m instanceof DM300){
 				((DM300) m).loseSupercharge();
 				PylonEnergy.energySourceSprite = m.sprite;
-			} else if (m instanceof Pylon){
-				pylonsRemaining++;
 			}
 		}
-		int finalPylonsRemaining = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 1 : 2;
-		if (pylonsRemaining > finalPylonsRemaining) {
-			blobs.getOnly(PylonEnergy.class).fullyClear();
+		if (clearPylonEnergy) {
+			Blob energy = level.blobs.getOnly(PylonEnergy.class);
+			if (energy != null) energy.fullyClear();
 		}
 	}
 

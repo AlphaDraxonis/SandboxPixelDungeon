@@ -78,6 +78,13 @@ public class PylonSprite extends MobSprite {
 		idle();
 	}
 
+	public void deactivate(){
+		TextureFilm frames = new TextureFilm( texture, 10, 20 );
+		idle = new Animation( 1, false );
+		idle.frames( frames, 0 );
+		idle();
+	}
+
 	@Override
 	public void play(Animation anim) {
 		if (anim == die){

@@ -1,11 +1,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SpawnerMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
@@ -59,6 +61,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MimicSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
@@ -98,8 +101,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final ItemSelector summonMob;
     private final Spinner tenguPhase, tenguRange;
     private final CheckBox dm300destroyWalls;
+    private final Spinner dm300pylonsNeeded;
     private final Spinner yogSpawnersAlive;
     private final ItemSelectorList<MobItem> yogNormalFists, yogChallengeFists;
+    private final CheckBox pylonAlwaysActive;
 
     private final ItemSelectorList<Item> blacksmithQuestRewards;
 
@@ -176,9 +181,11 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(mimicItems);
         } else mimicItems = null;
 
-        mobStateSpinner = new MobStateSpinner(mob);
-        add(mobStateSpinner);
-        if (mob instanceof Mimic) mobStateSpinner.addChangeListener(this::updateObj);
+        if (!(mob instanceof Pylon)) {//mob (Pylon) should not be instanceof QuestNPC!!!
+            mobStateSpinner = new MobStateSpinner(mob);
+            add(mobStateSpinner);
+            if (mob instanceof Mimic) mobStateSpinner.addChangeListener(this::updateObj);
+        } else mobStateSpinner = null;//mob instanceof QuestNPC MUST be false in this line
 
         if (mob instanceof WandOfRegrowth.Lotus) {
             WandOfRegrowth.Lotus lotus = (WandOfRegrowth.Lotus) mob;
@@ -450,8 +457,20 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             };
             dm300destroyWalls.checked(((DM300) mob).destroyWalls);
             add(dm300destroyWalls);
+
+            dm300pylonsNeeded = new Spinner(new SpinnerIntegerModel(0, 4, ((DM300) mob).pylonsNeeded, 1, false, null) {
+                @Override
+                public float getInputFieldWith(float height) {
+                    return height * 2.5f;
+                }
+            },
+                    " " + Messages.get(EditMobComp.class, "dm300_pylons_needed") + ":", 9);
+            dm300pylonsNeeded.addChangeListener(() -> ((DM300) mob).pylonsNeeded = (int) dm300pylonsNeeded.getValue());
+            add(dm300pylonsNeeded);
+
         } else {
             dm300destroyWalls = null;
+            dm300pylonsNeeded = null;
         }
 
         if (mob instanceof YogDzewa) {
@@ -486,6 +505,21 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             yogChallengeFists = null;
         }
 
+        if (mob instanceof Pylon) {
+            pylonAlwaysActive = new CheckBox(Messages.get(EditMobComp.class, "pylon_always_active")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    ((Pylon) mob).alwaysActive = value;
+                    updateObj();
+                }
+            };
+            pylonAlwaysActive.checked(((Pylon) mob).alwaysActive);
+            add(pylonAlwaysActive);
+        } else {
+            pylonAlwaysActive = null;
+        }
+
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
                 mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper || mob instanceof SentryRoom.Sentry)) {
 
@@ -511,11 +545,14 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
                 },
                         " " + Messages.get(EditMobComp.class, "player_alignment") + ":", 10);
-                playerAlignment.addChangeListener(()-> mob.setPlayerAlignment((int) playerAlignment.getValue()));
+                playerAlignment.addChangeListener(()-> {
+                    mob.setPlayerAlignment((int) playerAlignment.getValue());
+                    updateObj();
+                });
                 add(playerAlignment);
             } else playerAlignment = null;
 
-            if (!(mob instanceof Tengu)) {
+            if (!(mob instanceof Tengu || mob instanceof Pylon)) {
                 addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
                     @Override
                     protected void onClick() {
@@ -573,11 +610,13 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(editStats);
         } else editStats = null;
 
-        comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, lotusLevelSpinner, sheepLifespan,
+        comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, summonMob,
+                lotusLevelSpinner, sheepLifespan,
                 yogSpawnersAlive, yogNormalFists, yogChallengeFists,
-                mobStateSpinner, questSpinner, questItem1, questItem2, spawnQuestRoom, blacksmithQuestRewards,
-                tenguPhase, tenguRange, dm300destroyWalls,
-                sentryRange, sentryDelay, summonMob, playerAlignment, addBuffs, editStats};
+                mobStateSpinner, playerAlignment, sentryRange, sentryDelay,
+                tenguPhase, tenguRange,
+                questSpinner, questItem1, questItem2, spawnQuestRoom, blacksmithQuestRewards,
+                dm300pylonsNeeded, dm300destroyWalls, pylonAlwaysActive, addBuffs, editStats};
     }
 
     @Override
@@ -611,6 +650,11 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 MimicSprite sprite = (MimicSprite) ((MobTitleEditor) title).image;
                 if (obj.state != obj.PASSIVE) sprite.idle();
                 else sprite.hideMimic();
+            } else if (obj instanceof Pylon) {
+                Pylon pylon = (Pylon) obj;
+                if (pylon.alwaysActive || pylon.alignment != Char.Alignment.NEUTRAL && obj.playerAlignment == Mob.NORMAL_ALIGNMENT)
+                    ((PylonSprite) pylon.sprite).activate();
+                else ((PylonSprite) pylon.sprite).deactivate();
             }
         }
         desc.text(createDescription());
@@ -624,6 +668,21 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (obj instanceof Mimic) {
             if (obj.state != obj.PASSIVE) obj.sprite.idle();
             else ((MimicSprite) obj.sprite).hideMimic();
+        }
+        if (pylonAlwaysActive != null) {
+            boolean active = false;
+            Pylon pylon = (Pylon) obj;
+            if (obj.playerAlignment == Mob.NORMAL_ALIGNMENT) {
+                pylonAlwaysActive.enable(true);
+                active = pylon.alignment != Char.Alignment.NEUTRAL;
+            } else {
+                if (!pylonAlwaysActive.active) {
+                    pylonAlwaysActive.enable(false);
+                    pylonAlwaysActive.checked(true);
+                }
+            }
+            if (active || pylon.alwaysActive) ((PylonSprite) pylon.sprite).activate();
+            else ((PylonSprite) pylon.sprite).deactivate();
         }
 
         super.updateObj();
@@ -662,7 +721,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         } else if (a instanceof Tengu) {
             return ((Tengu) a).arenaRadius == ((Tengu) b).arenaRadius && ((Tengu) a).phase == ((Tengu) b).phase;
         } else if (a instanceof DM300) {
-            return ((DM300) a).destroyWalls == ((DM300) b).destroyWalls;
+            return ((DM300) a).destroyWalls == ((DM300) b).destroyWalls
+                    && ((DM300) a).pylonsNeeded == ((DM300) b).pylonsNeeded;
+        } else if (a instanceof Pylon) {
+            return ((Pylon) a).alwaysActive == ((Pylon) b).alwaysActive;
         }
         return true;
     }

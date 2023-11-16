@@ -123,10 +123,12 @@ public class ZonePrompt extends ToastWithButtons {
             selectedZone = getFirstZoneAvailable(Dungeon.level);
         }
 
-        ZonePrompt.selectedZone = selectedZone;
-        if (instance != null) {
-            instance.destroy();
-            EditorScene.promptStatic(new ZonePrompt());//changing coordinates didn't work...
+        if(ZonePrompt.selectedZone != selectedZone){
+            ZonePrompt.selectedZone = selectedZone;
+            if (instance != null) {
+                instance.destroy();
+                EditorScene.promptStatic(new ZonePrompt());//changing coordinates didn't work...
+            }
         }
     }
 

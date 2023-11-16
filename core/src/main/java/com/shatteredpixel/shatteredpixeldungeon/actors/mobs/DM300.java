@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.EarthParticle;
@@ -90,6 +91,8 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		damageRollMax = 25;
 		damageReductionMax = 10;
 
+		pylonsNeeded = 2;
+
 		properties.add(Property.BOSS);
 		properties.add(Property.INORGANIC);
 		properties.add(Property.LARGE);
@@ -111,6 +114,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 //	}
 
 	public int pylonsActivated = 0;
+	public int pylonsNeeded;
 	public boolean supercharged = false;
 	public boolean chargeAnnounced = false;
 
@@ -128,6 +132,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 	private static final int ROCKS = 2;
 
 	private static final String PYLONS_ACTIVATED = "pylons_activated";
+	private static final String PYLONS_NEEDED = "pylons_needed";
 	private static final String SUPERCHARGED = "supercharged";
 	private static final String CHARGE_ANNOUNCED = "charge_announced";
 	private static final String DESTROY_WALLS = "destroy_walls";
@@ -141,6 +146,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(PYLONS_ACTIVATED, pylonsActivated);
+		bundle.put(PYLONS_NEEDED, pylonsNeeded);
 		bundle.put(SUPERCHARGED, supercharged);
 		bundle.put(CHARGE_ANNOUNCED, chargeAnnounced);
 		bundle.put(DESTROY_WALLS, destroyWalls);
@@ -153,6 +159,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		pylonsActivated = bundle.getInt(PYLONS_ACTIVATED);
+		pylonsNeeded = bundle.getInt(PYLONS_NEEDED);
 		supercharged = bundle.getBoolean(SUPERCHARGED);
 		chargeAnnounced = bundle.getBoolean(CHARGE_ANNOUNCED);
 		destroyWalls = bundle.getBoolean(DESTROY_WALLS);
@@ -483,25 +490,21 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 			}
 		}
 
-		if (Dungeon.level instanceof CavesBossLevel) {
+		int pylonsToActivate = totalPylonsToActivate();
+		int threshold = (int) Math.ceil(HT / ((float)(pylonsToActivate + 1)) * (pylonsToActivate - pylonsActivated));
 
-			int threshold;
-			if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) {
-				threshold = HT / 4 * (3 - pylonsActivated);
-			} else {
-				threshold = HT / 3 * (2 - pylonsActivated);
-			}
-
-			if (HP < threshold) {
-				HP = threshold;
-				supercharge();
-			}
+		if (HP < threshold) {
+			HP = threshold;
+			supercharge();
 		}
 
 	}
 
 	public int totalPylonsToActivate(){
-		return Dungeon.level instanceof CavesBossLevel ? Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 3 : 2 : 0;
+		if (Dungeon.level instanceof CavesBossLevel) {
+			return Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 3 : 2;
+		}
+		return pylonsNeeded;
 	}
 
 	@Override
@@ -515,7 +518,29 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 
 	public void supercharge(){
 		supercharged = true;
-		((CavesBossLevel)Dungeon.level).activatePylon();
+		if (Dungeon.level instanceof CavesBossLevel) ((CavesBossLevel)Dungeon.level).activatePylon().dm300id = id();
+		else {
+			int id = id();
+			List<Pylon> pylons = new ArrayList<>();
+			for (Mob m : Dungeon.level.mobs) {
+				if (m instanceof Pylon
+						&& !((Pylon) m).alwaysActive
+						&& m.playerAlignment == Mob.NORMAL_ALIGNMENT
+						&& m.alignment == Char.Alignment.NEUTRAL
+						&& (((Pylon) m).dm300id <= 0 || ((Pylon) m).dm300id == id)
+				) pylons.add((Pylon) m);
+			}
+			Level level = Dungeon.level;
+			Pylon p = CavesBossLevel.activatePylon(level, pylons);
+			if (p != null) p.dm300id = id();
+
+			for (int i = 0; i < level.length(); i++) {
+				if (level.map[i] == Terrain.WATER || level.map[i] == Terrain.CUSTOM_DECO
+						|| CustomTileItem.findCustomTileAt(i) instanceof CavesBossLevel.TrapTile) {
+					GameScene.add(Blob.seed(i, 1, CavesBossLevel.PylonEnergy.class));
+				}
+			}
+		}
 		pylonsActivated++;
 
 		spend(Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 2f : 3f);

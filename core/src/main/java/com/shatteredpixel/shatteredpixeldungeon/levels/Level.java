@@ -65,6 +65,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobBasedOnDepth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
@@ -392,6 +393,7 @@ public abstract class Level implements Bundlable {
 		for (Mob m : mobs) {
 			if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
 			if (m instanceof Blacksmith) ((Blacksmith) m).registerQuest();
+			else if (m instanceof Pylon && ((Pylon) m).alwaysActive && m.playerAlignment == Mob.NORMAL_ALIGNMENT) m.alignment = Char.Alignment.ENEMY;
 			if (m.pos == bossmobAt) {
 				bossMob = m;
 				bossMob.isBossMob = !(m instanceof Goo || m instanceof DwarfKing);
