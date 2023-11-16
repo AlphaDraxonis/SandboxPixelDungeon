@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -44,13 +45,15 @@ public class WndChallenges extends Window {
 	private boolean editable;
 	private ArrayList<CheckBox> boxes;
 
+	protected RenderedTextBlock title;
+
 	public WndChallenges( int checked, boolean editable ) {
 
 		super();
 
 		this.editable = editable;
 
-		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 12 );
+		title = PixelScene.renderTextBlock( Messages.get(this, "title"), 12 );
 		title.hardlight( TITLE_COLOR );
 		title.setPos(
 				(WIDTH - title.width()) / 2,
@@ -77,6 +80,10 @@ public class WndChallenges extends Window {
 
 			add( cb );
 			boxes.add( cb );
+
+			if ( (Dungeon.customDungeon.forceChallenges & Challenges.MASKS[i]) != 0 ){
+				cb.enable(false);
+			}
 			
 			IconButton info = new IconButton(Icons.get(Icons.INFO)){
 				@Override
@@ -100,15 +107,29 @@ public class WndChallenges extends Window {
 	public void onBackPressed() {
 
 		if (editable) {
+			int oldValue = SPDSettings.challenges(false);
 			int value = 0;
 			for (int i=0; i < boxes.size(); i++) {
 				if (boxes.get( i ).checked()) {
-					value |= Challenges.MASKS[i];
+					int mask = Challenges.MASKS[i];
+					//only add to new value if it was in old value or not forced
+					if ((oldValue & mask) != 0 || (Dungeon.customDungeon.forceChallenges & mask) == 0)
+						value |= mask;
 				}
 			}
 			SPDSettings.challenges( value );
 		}
 
 		super.onBackPressed();
+	}
+
+	public int getSelectedValues(){
+		int value = 0;
+		for (int i=0; i < boxes.size(); i++) {
+			if (boxes.get( i ).checked()) {
+				value |= Challenges.MASKS[i];
+			}
+		}
+		return value;
 	}
 }

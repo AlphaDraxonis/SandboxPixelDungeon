@@ -258,7 +258,7 @@ public class Dungeon {
 
 
         initialVersion = version = Game.versionCode;
-        challenges = SPDSettings.challenges();
+        challenges = SPDSettings.challenges(true);
         mobsToChampion = -1;
 
 		if (daily) {

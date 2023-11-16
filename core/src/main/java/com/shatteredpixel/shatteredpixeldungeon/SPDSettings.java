@@ -251,8 +251,8 @@ public class SPDSettings extends GameSettings {
 		put( KEY_CHALLENGES, value );
 	}
 	
-	public static int challenges() {
-		return getInt( KEY_CHALLENGES, 0, 0, Challenges.MAX_VALUE );
+	public static int challenges(boolean includeForced) {
+		return getInt( KEY_CHALLENGES, 0, 0, Challenges.MAX_VALUE ) | (includeForced ? Dungeon.customDungeon.forceChallenges : 0);
 	}
 
 	public static void customSeed( String value ){

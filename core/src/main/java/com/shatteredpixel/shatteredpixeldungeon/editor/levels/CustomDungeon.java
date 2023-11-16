@@ -122,6 +122,7 @@ public class CustomDungeon implements Bundlable {
     public HeroSettings.HeroStartItemsData[] startItems;
 
     public EffectDuration effectDuration = new EffectDuration();
+    public int forceChallenges = 0;
 
     private final Object[] toolbarItems = new Object[QuickSlot.SIZE];
     public int lastSelectedToolbarSlot;
@@ -137,6 +138,7 @@ public class CustomDungeon implements Bundlable {
         heroesEnabled = new boolean[HeroClass.values().length];
         heroSubClassesEnabled = new boolean[heroesEnabled.length * 2];
         Arrays.fill(heroesEnabled, true);
+        Arrays.fill(heroSubClassesEnabled, true);
         startItems = HeroSettings.HeroStartItemsData.getDefault();
     }
 
@@ -517,6 +519,7 @@ public class CustomDungeon implements Bundlable {
     private static final String HERO_SUBCLASSES_ENABLED = "hero_subclasses_enabled";
     private static final String EFFECT_DURATION = "effect_duration";
     private static final String START_ITEMS = "start_items";
+    private static final String FORCE_CHALLENGES = "force_challenges";
     private static final String VIEW_2D = "view_2d";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
@@ -534,6 +537,7 @@ public class CustomDungeon implements Bundlable {
         bundle.put(EFFECT_DURATION, effectDuration);
         bundle.put(START_ITEMS, Arrays.asList(startItems));
         bundle.put(VIEW_2D, view2d);
+        bundle.put(FORCE_CHALLENGES, forceChallenges);
 
         if (scrollRuneLabels != null) {
             String[] labels = new String[scrollRuneLabels.size()];
@@ -610,6 +614,7 @@ public class CustomDungeon implements Bundlable {
         effectDuration.load((EffectDuration) bundle.get(EFFECT_DURATION));
         password = bundle.getString(PASSWORD);
         if (password.isEmpty()) password = null;
+        forceChallenges = bundle.getInt(FORCE_CHALLENGES);
         view2d = bundle.getBoolean(VIEW_2D);
         if (bundle.contains(HEROES_ENABLED)) heroesEnabled = bundle.getBooleanArray(HEROES_ENABLED);
         else {

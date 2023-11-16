@@ -220,6 +220,7 @@ public class HeroSelectScene extends PixelScene {
 		btnOptions.visible = false;
 
 		if (DeviceCompat.isDebug() || Badges.isUnlocked(Badges.Badge.VICTORY) || true){
+			Dungeon.challenges = SPDSettings.challenges(true);
 			add(btnOptions);
 		} else {
 			Dungeon.challenges = 0;
@@ -385,7 +386,7 @@ public class HeroSelectScene extends PixelScene {
 	private void updateOptionsColor(){
 		if (!SPDSettings.customSeed().isEmpty()){
 			btnOptions.icon().hardlight(1f, 1.5f, 0.67f);
-		} else if (SPDSettings.challenges() != 0){
+		} else if (SPDSettings.challenges(true) != 0){
 			btnOptions.icon().hardlight(2f, 1.33f, 0.5f);
 		} else {
 			btnOptions.icon().resetColor();
@@ -735,17 +736,17 @@ public class HeroSelectScene extends PixelScene {
 				StyledButton challengeButton = new StyledButton(Chrome.Type.BLANK, Messages.get(WndChallenges.class, "title"), 6){
 					@Override
 					protected void onClick() {
-						SandboxPixelDungeon.scene().addToFront(new WndChallenges(SPDSettings.challenges(), true) {
+						SandboxPixelDungeon.scene().addToFront(new WndChallenges(SPDSettings.challenges(true), true) {
 							public void onBackPressed() {
 								super.onBackPressed();
-								icon(Icons.get(SPDSettings.challenges() > 0 ? Icons.CHALLENGE_ON : Icons.CHALLENGE_OFF));
+								icon(Icons.get((SPDSettings.challenges(true)) > 0 ? Icons.CHALLENGE_ON : Icons.CHALLENGE_OFF));
 								updateOptionsColor();
 							}
 						} );
 					}
 				};
 				challengeButton.leftJustify = true;
-				challengeButton.icon(Icons.get(SPDSettings.challenges() > 0 ? Icons.CHALLENGE_ON : Icons.CHALLENGE_OFF));
+				challengeButton.icon(Icons.get((SPDSettings.challenges(true)) > 0 ? Icons.CHALLENGE_ON : Icons.CHALLENGE_OFF));
 				add(challengeButton);
 				buttons.add(challengeButton);
 			}
