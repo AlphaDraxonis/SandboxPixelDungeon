@@ -79,7 +79,7 @@ public class CrystalSpire extends Mob {
 		alignment = Alignment.NEUTRAL;
 
 		properties.add(Property.IMMOVABLE);
-		properties.add(Property.MINIBOSS);
+		properties.add(Property.BOSS);
 		properties.add(Property.INORGANIC);
 	}
 
