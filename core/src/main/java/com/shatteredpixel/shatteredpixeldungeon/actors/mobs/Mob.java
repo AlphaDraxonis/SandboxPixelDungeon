@@ -927,11 +927,13 @@ public abstract class Mob extends Char {
 			bleedingCheck = (HP*2 <= HT);
 		} else bleedingCheck = false;
 
-		if (state == SLEEPING) {
-			state = WANDERING;
-		}
-		if (state != HUNTING && !(src instanceof Corruption)) {
-			alerted = true;
+		if (!isInvulnerable(src.getClass())) {
+			if (state == SLEEPING) {
+				state = WANDERING;
+			}
+			if (state != HUNTING && !(src instanceof Corruption)) {
+				alerted = true;
+			}
 		}
 		
 		super.damage( dmg, src );
