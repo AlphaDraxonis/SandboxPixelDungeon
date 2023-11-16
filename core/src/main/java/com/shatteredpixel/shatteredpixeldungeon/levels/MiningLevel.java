@@ -196,7 +196,7 @@ public class MiningLevel extends CavesLevel {
 			losBlocking[cell] = false;
 		}
 		drop( Generator.randomUsingDefaults(Generator.Category.FOOD), cell );
-		if (Blacksmith.Quest.Type() == Blacksmith.Quest.GNOLL){
+		if (questType() == BlacksmithQuest.GNOLL){
 			//drop a second ration for the gnoll quest type, more mining required!
 			drop( Generator.randomUsingDefaults(Generator.Category.FOOD), cell );
 		}
@@ -287,6 +287,8 @@ public class MiningLevel extends CavesLevel {
 				return Messages.get(MiningLevel.class, "wall_desc");
 			case Terrain.WALL_DECO:
 				return super.tileDesc(tile, cell) + "\n\n" +  Messages.get(MiningLevel.class, "gold_extra_desc");
+			case Terrain.BARRICADE:
+				return Messages.get(MiningLevel.class, "barricade_desc");
 			default:
 				return super.tileDesc( tile, cell );
 		}
