@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PlantItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.plants.BlandfruitBush;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
@@ -73,7 +74,9 @@ public enum Plants {
                 Mageroyal.class,
                 Starflower.class,
                 BlandfruitBush.class,
-                Rotberry.class
+                Rotberry.class,
+                WandOfRegrowth.Dewcatcher.class,
+                WandOfRegrowth.Seedpod.class
         };
     }
 
