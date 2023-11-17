@@ -131,6 +131,7 @@ public class CustomDungeon implements Bundlable {
     private String password;
 
     public boolean view2d = false;
+    public boolean seeLevelOnDeath = true;
 
     public CustomDungeon(String name) {
         this.name = name;
@@ -522,6 +523,7 @@ public class CustomDungeon implements Bundlable {
     private static final String START_ITEMS = "start_items";
     private static final String FORCE_CHALLENGES = "force_challenges";
     private static final String VIEW_2D = "view_2d";
+    private static final String SEE_LEVEL_ON_DEATH = "see_level_on_death";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     @Override
@@ -538,6 +540,7 @@ public class CustomDungeon implements Bundlable {
         bundle.put(EFFECT_DURATION, effectDuration);
         bundle.put(START_ITEMS, Arrays.asList(startItems));
         bundle.put(VIEW_2D, view2d);
+        bundle.put(SEE_LEVEL_ON_DEATH, seeLevelOnDeath);
         bundle.put(FORCE_CHALLENGES, forceChallenges);
 
         if (scrollRuneLabels != null) {
@@ -617,6 +620,7 @@ public class CustomDungeon implements Bundlable {
         if (password.isEmpty()) password = null;
         forceChallenges = bundle.getInt(FORCE_CHALLENGES);
         view2d = bundle.getBoolean(VIEW_2D);
+        seeLevelOnDeath = bundle.contains(SEE_LEVEL_ON_DEATH) ? bundle.getBoolean(SEE_LEVEL_ON_DEATH) : true;
         if (bundle.contains(HEROES_ENABLED)) heroesEnabled = bundle.getBooleanArray(HEROES_ENABLED);
         else {
             heroesEnabled = new boolean[HeroClass.values().length];

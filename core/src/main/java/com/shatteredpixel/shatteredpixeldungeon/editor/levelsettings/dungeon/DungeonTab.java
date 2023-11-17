@@ -31,7 +31,7 @@ public class DungeonTab extends MultiWindowTabComp {
 
         StyledButton potionColors, scrollRunes, ringGems;
         StyledButton heroes, durationSettings, forceChallenges;
-        StyledCheckbox view2d;
+        StyledCheckbox view2d, seeLevelOnDeath;
 
         potionColors = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_pot"), 7) {
             @Override
@@ -116,8 +116,18 @@ public class DungeonTab extends MultiWindowTabComp {
         view2d.checked(Dungeon.customDungeon.view2d);
         content.add(view2d);
 
+        seeLevelOnDeath = new StyledCheckbox(Messages.get(DungeonTab.class, "see_level_on_death"), 8){
+            @Override
+            public void checked(boolean value) {
+                super.checked(value);
+                Dungeon.customDungeon.seeLevelOnDeath = value;
+            }
+        };
+        seeLevelOnDeath.checked(Dungeon.customDungeon.seeLevelOnDeath);
+        content.add(seeLevelOnDeath);
+
         mainWindowComps = new Component[]{potionColors, scrollRunes, ringGems, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                heroes, durationSettings, forceChallenges,view2d
+                heroes, durationSettings, forceChallenges, view2d, seeLevelOnDeath
         };
     }
 

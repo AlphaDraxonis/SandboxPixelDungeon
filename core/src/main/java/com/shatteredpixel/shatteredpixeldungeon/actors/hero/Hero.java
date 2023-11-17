@@ -2033,16 +2033,18 @@ public class Hero extends Char {
 		int[] map = Dungeon.level.map;
 		boolean[] visited = Dungeon.level.visited;
 		boolean[] discoverable = Dungeon.level.discoverable;
-		
-		for (int i=0; i < length; i++) {
-			
-			int terr = map[i];
-			
-			if (discoverable[i]) {
-				
-				visited[i] = true;
-				if ((Terrain.flags[terr] & Terrain.SECRET) != 0) {
-					Dungeon.level.discover( i );
+
+		if (Dungeon.customDungeon.seeLevelOnDeath) {
+			for (int i = 0; i < length; i++) {
+
+				int terr = map[i];
+
+				if (discoverable[i]) {
+
+					visited[i] = true;
+					if ((Terrain.flags[terr] & Terrain.SECRET) != 0) {
+						Dungeon.level.discover(i);
+					}
 				}
 			}
 		}
