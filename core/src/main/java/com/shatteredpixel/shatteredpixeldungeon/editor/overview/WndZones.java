@@ -574,21 +574,6 @@ public final class WndZones {
             updateObj();//for resize
         }
 
-        public static TransitionEditPart addTransition(LevelTransition transition, LevelScheme levelScheme, Consumer<LevelTransition> deleteTransition) {
-            //TODO tzz use from EditTileComp
-            //TODO show entrancea nd exits
-            String suggestion = levelScheme.getChasm();
-            if (suggestion == null) suggestion = levelScheme.getDefaultBelow();
-            if (transition.destLevel != null) suggestion = transition.destLevel;
-            return new TransitionEditPart(transition, EditorUtilies.getLevelScheme(suggestion), false,//tzz tz tzztzz tzztzztttztztzzztzz
-                    levelScheme.getDepth()) {
-                @Override
-                protected void deleteTransition(LevelTransition transition) {
-                    deleteTransition.accept(transition);
-                }
-            };
-        }
-
         public static Component[] createComponents(Zone zone, Runnable onColorPickClick) {
 
             RedButton pickColor = new RedButton(Messages.get(EditZoneComp.class, "color")) {

@@ -68,6 +68,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -1091,8 +1092,37 @@ public abstract class Level implements Bundlable {
 		if (checkPath)
 			PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(passable, avoid, null));
 
+		//prefer spawning >>>in zones<<< where no mobs can spawn if at least one zone that can spawn mobs exists
+		if (ch instanceof Hero) {
+			Set<String> safeZonesToSpawn = new HashSet<>(2);
+			boolean spawnHeroInSafePlace = false;
+			for (Zone z : zoneMap.values()){
+				if (z.canSpawnMobs) spawnHeroInSafePlace = true;
+				else safeZonesToSpawn.add(z.getName());
+			}
+			if (spawnHeroInSafePlace && !safeZonesToSpawn.isEmpty()) {
+				int cell = 0;
+				int count = guarantee ? length() : 300;
+				do {
+					if (--count < 0) break;
+					cell = Random.Int( length() );
+
+				} while ((Dungeon.level == this && heroFOV[cell])
+						|| !passable[cell]
+						|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
+						|| Actor.findChar( cell ) != null
+						|| findMob(cell) != null
+						|| (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE)
+						|| zone[cell] == null
+						|| !safeZonesToSpawn.contains(zone[cell].getName()));
+				if (count < 0){
+					if(!guarantee) return -1;
+				} else return cell;
+			}
+		}
+
 		int cell;
-		int count = guarantee ? length() : 300;;
+		int count = guarantee ? length() : 300;
 		do {
 
 			if (--count < 0) {
@@ -1121,7 +1151,7 @@ public abstract class Level implements Bundlable {
 				|| (ch instanceof Piranha && map[cell] != Terrain.WATER)
 				|| findMob(cell) != null
 				|| (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE)
-				|| (!Zone.canSpawnMobs(this, cell) && !(ch instanceof Hero)));
+				|| (!Zone.canSpawnMobs(this, cell) && !(ch instanceof Hero || ch instanceof NPC)));
 
 		return cell;
 	}
@@ -1462,7 +1492,6 @@ public abstract class Level implements Bundlable {
 		Dungeon.hero.pos = -1;
 		int result;
 		do {
-			//TODO confirm tzz
 			result = randomRespawnCell( null );
 			if (result == -1) return -1;
 		} while ((destZone != null && (zone[result] == null || !zone[result].getName().equals(destZone)))

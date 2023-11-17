@@ -406,7 +406,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         this.chasm = chasm;
         LevelScheme newChasm = customDungeon.getFloor(chasm);
         if (revalidateZones && type == CustomLevel.class && level != null) {
-            for (Zone zone : level.zoneMap.values()) {//TODO tzz test this
+            for (Zone zone : level.zoneMap.values()) {
                 if (zone.chasmDestZone != null && (newChasm == null || !newChasm.zones.contains(zone.chasmDestZone)))
                     zone.chasmDestZone = null;
             }

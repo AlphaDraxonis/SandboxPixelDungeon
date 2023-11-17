@@ -923,7 +923,8 @@ public class EditorScene extends PixelScene {
                     else Undo.addActionPart(new ZoneActionPart.Place(selected.getName(), cell));
                     break;
                 case REMOVE:
-                    Undo.addActionPart(new ZoneActionPart.Remove(selected == null ? null : selected.getName(), cell));
+                    Undo.addActionPart(new ZoneActionPart.Remove(null, cell));
+//                    Undo.addActionPart(new ZoneActionPart.Remove(selected == null ? null : selected.getName(), cell));
                     break;
                 case EDIT:
                     onRightClick(cell);
@@ -952,7 +953,7 @@ public class EditorScene extends PixelScene {
 
         @Override
         protected boolean dragClickEnabled() {
-            return ZonePrompt.getSelectedZone() != null;
+            return ZonePrompt.getSelectedZone() != null && ZonePrompt.mode != ZonePrompt.Mode.EDIT;
         }
     };
 
