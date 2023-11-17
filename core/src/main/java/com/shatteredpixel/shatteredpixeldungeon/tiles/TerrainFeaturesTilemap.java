@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
@@ -69,14 +70,17 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 			return plants.get(pos).image + 7*16;
 		}
 
-		if (CustomDungeon.isEditing() && CustomTileItem.findCustomTileAt(pos) == null) return -1;
+		Zone.GrassType grassType = Zone.getGrassType(Dungeon.level, pos);
+		if (grassType == Zone.GrassType.NONE
+				&& CustomDungeon.isEditing()
+				&& CustomTileItem.findCustomTileAt(pos) == null) return -1;
 
 		int stage = Dungeon.curLvlScheme().getRegion() - 1;
-		if (tile == Terrain.HIGH_GRASS) {
+		if (tile == Terrain.HIGH_GRASS || grassType == Zone.GrassType.HIGH_GRASS) {
 			return 9 + 16 * stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
-		} else if (tile == Terrain.FURROWED_GRASS) {
+		} else if (tile == Terrain.FURROWED_GRASS || grassType == Zone.GrassType.FURROWED_GRASS) {
 			return 11 + 16 * stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
-		} else if (tile == Terrain.GRASS) {
+		} else if (tile == Terrain.GRASS || grassType == Zone.GrassType.GRASS) {
 			return 13 + 16 * stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
 		} else if (tile == Terrain.EMBERS) {
 			return 9 * (16 * 5) + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);

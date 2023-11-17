@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
@@ -19,6 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndColorPicker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
@@ -362,7 +364,7 @@ public final class WndZones {
 
     }
 
-    private static void showDuplicateNameWarning(){
+    private static void showDuplicateNameWarning() {
         EditorScene.show(
                 new WndOptions(Icons.get(Icons.WARNING),
                         Messages.get(WndNewDungeon.class, "dup_name_title"),
@@ -392,6 +394,37 @@ public final class WndZones {
                     updateObj();
                 }
             }));
+
+            Spinner grassVisuals = new Spinner(new SpinnerTextIconModel(true, zone.grassType.index, (Object[]) Zone.GrassType.values()) {
+                @Override
+                protected Image getIcon(Object value) {
+                    switch ((Zone.GrassType) value) {
+                        case NONE:
+                            return new Image();
+                        case GRASS:
+                        case HIGH_GRASS:
+                        case FURROWED_GRASS:
+                            return new TileItem(((Zone.GrassType) value).terrain, -1).getSprite();
+                    }
+                    return new Image();
+                }
+
+                @Override
+                protected String getAsString(Object value) {
+                    switch ((Zone.GrassType) value) {
+                        case NONE:
+                            return Messages.get(EditZoneComp.class, "no_grass");
+                        case GRASS:
+                        case HIGH_GRASS:
+                        case FURROWED_GRASS:
+                            return TileItem.getName(((Zone.GrassType) value).terrain, -1);
+                    }
+                    return Messages.NO_TEXT_FOUND;
+                }
+            }, Messages.get(EditZoneComp.class, "grass_label") + ":", 9);
+            grassVisuals.addChangeListener(() -> zone.setGrassType((Zone.GrassType) grassVisuals.getValue()));
+            comps[4] = grassVisuals;
+
             LevelScheme chasm = Dungeon.customDungeon.getFloor(Dungeon.level.levelScheme.getChasm());
             Object[] data;
             int index = 0;
@@ -422,7 +455,7 @@ public final class WndZones {
                 zone.chasmDestZone = (String) chasmDest.getValue();
             });
             chasmDest.enable(chasm != null);
-            comps[4] = chasmDest;
+            comps[5] = chasmDest;
 
             addTransition = new RedButton(Messages.get(EditTileComp.class, "add_transition"), 9) {
                 @Override
@@ -433,8 +466,8 @@ public final class WndZones {
             if (zone.zoneTransition != null) {
                 addTransition(zone.zoneTransition);
             }
-            comps[5] = addTransition;
-            comps[6] = transitionEdit;
+            comps[6] = addTransition;
+            comps[7] = transitionEdit;
 
             rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
                 @Override
@@ -565,11 +598,11 @@ public final class WndZones {
         }
 
         private void addTransition(LevelTransition transition) {
-            transitionEdit = EditTileComp.addTransition(-12345,transition, EditorScene.customLevel().levelScheme, t -> obj.zoneTransition = null);
+            transitionEdit = EditTileComp.addTransition(-12345, transition, EditorScene.customLevel().levelScheme, t -> obj.zoneTransition = null);
             add(transitionEdit);
             obj.zoneTransition = transition;
             addTransition.visible = addTransition.active = false;
-            comps = new Component[]{comps[0], comps[1], comps[2], comps[3], comps[4], comps[5], transitionEdit};
+            comps = new Component[]{comps[0], comps[1], comps[2], comps[3], comps[4], comps[5], comps[6], transitionEdit};
             layout();
             updateObj();//for resize
         }
@@ -615,7 +648,7 @@ public final class WndZones {
             spawnItems.checked(zone.flamable);
 //            spawnItems.icon(new ItemSprite(ItemSpriteSheet.CHEST));
 
-            return new Component[]{pickColor, flamable, spawnMobs, spawnItems, null, null, null};
+            return new Component[]{pickColor, flamable, spawnMobs, spawnItems, null, null, null, null};
         }
     }
 

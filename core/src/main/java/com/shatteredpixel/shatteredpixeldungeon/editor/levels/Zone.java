@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -19,12 +20,27 @@ public class Zone implements Bundlable {
 
     public static final String NONE = "none";
 
+    public enum GrassType {
+        NONE(0, 0),
+        GRASS(1, Terrain.GRASS),
+        HIGH_GRASS(2, Terrain.HIGH_GRASS),
+        FURROWED_GRASS(3, Terrain.FURROWED_GRASS);
+
+        public final int index, terrain;
+
+        GrassType(int index, int terrain) {
+            this.index = index;
+            this.terrain = terrain;
+        }
+    }
+
     private int color = 0x78D2FF;
     public String name;
 
     public boolean flamable = true;
     public boolean canSpawnMobs = true;
     public boolean canSpawnItems = true;
+    public GrassType grassType = GrassType.NONE;
 
     public String chasmDestZone;
     public LevelTransition zoneTransition;//TODO needs to be added when init for play, zones cannot be destination of normal transitions, only for chasms
@@ -41,6 +57,7 @@ public class Zone implements Bundlable {
     public static final String FLAMABLE = "flamable";
     public static final String CAN_SPAWN_MOBS = "can_spawn_mobs";
     public static final String CAN_SPAWN_ITEMS = "can_spawn_items";
+    public static final String GRASS_TYPE = "grass_type";
     public static final String CHASM_DEST_ZONE = "chasm_dest_zone";
     public static final String ZONE_TRANSITION = "zone_transition";
     public static final String CELLS = "cells";
@@ -52,6 +69,7 @@ public class Zone implements Bundlable {
         flamable = bundle.getBoolean(FLAMABLE);
         canSpawnMobs = bundle.getBoolean(CAN_SPAWN_MOBS);
         canSpawnItems = bundle.getBoolean(CAN_SPAWN_ITEMS);
+        grassType = bundle.getEnum(GRASS_TYPE, GrassType.class);
         chasmDestZone = bundle.getString(CHASM_DEST_ZONE);
         zoneTransition = (LevelTransition) bundle.get(ZONE_TRANSITION);
 
@@ -70,6 +88,7 @@ public class Zone implements Bundlable {
         bundle.put(FLAMABLE, flamable);
         bundle.put(CAN_SPAWN_MOBS, canSpawnMobs);
         bundle.put(CAN_SPAWN_ITEMS, canSpawnItems);
+        bundle.put(GRASS_TYPE, grassType);
         bundle.put(CHASM_DEST_ZONE, chasmDestZone);
         bundle.put(ZONE_TRANSITION, zoneTransition);
 
@@ -154,6 +173,13 @@ public class Zone implements Bundlable {
         }
     }
 
+    public void setGrassType(GrassType grassType) {
+        this.grassType = grassType;
+        for (int cell : cells) {
+            EditorScene.updateMap(cell);
+        }
+    }
+
     public static boolean isFlamable(Level level, int cell) {
         Zone z;
         return (z = level.zone[cell]) == null || z.flamable;
@@ -167,5 +193,10 @@ public class Zone implements Bundlable {
     public static boolean canSpawnItems(Level level, int cell) {
         Zone z;
         return (z = level.zone[cell]) == null || z.canSpawnItems;
+    }
+
+    public static GrassType getGrassType(Level level, int cell) {
+        Zone z = level.zone[cell];
+        return z == null ? GrassType.NONE : z.grassType;
     }
 }
