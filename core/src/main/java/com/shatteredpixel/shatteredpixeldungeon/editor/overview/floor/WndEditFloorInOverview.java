@@ -274,7 +274,7 @@ public class WndEditFloorInOverview extends WndTabbed {
 
             float renameWidth = rename.icon().width;
 
-            title.maxWidth((int) (width + renameWidth - 2));
+            title.maxWidth((int) (width - renameWidth - 2));
             title.setPos((title.maxWidth() - title.width()) * 0.5f, 3);
 
             rename.setRect(width - renameWidth, title.top() + (title.height() - rename.icon().height) * 0.5f, renameWidth, rename.icon().height);

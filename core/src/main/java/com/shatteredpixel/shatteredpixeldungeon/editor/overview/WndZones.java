@@ -4,6 +4,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.Wnd
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
@@ -12,6 +13,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitio
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndEditFloorInOverview;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndColorPicker;
@@ -32,7 +35,10 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.SlowExtendWindow;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -40,6 +46,7 @@ import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Point;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -342,13 +349,7 @@ public final class WndZones {
             if (zone != null) {
 
                 if (Dungeon.level.zoneMap.containsKey(zone.getName())) {
-                    EditorScene.show(
-                            new WndOptions(Icons.get(Icons.WARNING),
-                                    Messages.get(WndNewDungeon.class, "dup_name_title"),
-                                    Messages.get(WndNewZone.class, "dup_name_body"),
-                                    Messages.get(WndNewDungeon.class, "dup_name_close")
-                            )
-                    );
+                    showDuplicateNameWarning();
                     return;
                 }
                 Dungeon.level.zoneMap.put(zone.getName(), zone);
@@ -361,12 +362,24 @@ public final class WndZones {
 
     }
 
+    private static void showDuplicateNameWarning(){
+        EditorScene.show(
+                new WndOptions(Icons.get(Icons.WARNING),
+                        Messages.get(WndNewDungeon.class, "dup_name_title"),
+                        Messages.get(WndNewZone.class, "dup_name_body"),
+                        Messages.get(WndNewDungeon.class, "dup_name_close")
+                )
+        );
+    }
+
     public static class EditZoneComp extends DefaultEditComp<Zone> {
 
         private Component[] comps;
 
         protected RedButton addTransition;
         private TransitionEditPart transitionEdit;
+
+        protected IconButton rename, delete;
 
         public EditZoneComp(Zone zone) {
             super(zone);
@@ -423,6 +436,83 @@ public final class WndZones {
             comps[5] = addTransition;
             comps[6] = transitionEdit;
 
+            rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
+                @Override
+                protected void onClick() {
+                    Window w = new WndTextInput(Messages.get(EditZoneComp.class, "rename_title"),
+                            "",
+                            zone.getName(),
+                            100,
+                            false,
+                            Messages.get(WndSelectDungeon.class, "rename_yes"),
+                            Messages.get(WndSelectDungeon.class, "export_no")) {
+                        @Override
+                        public void onSelect(boolean positive, String text) {
+                            if (positive && !text.isEmpty()) {
+                                for (String floorN : Dungeon.level.levelScheme.zones) {
+                                    if (floorN.equals(text)) {
+                                        showDuplicateNameWarning();
+                                        return;
+                                    }
+                                }
+                                if (!text.equals(zone.getName())) {
+                                    Dungeon.customDungeon.renameZone(zone, text);
+                                    WndSelectZone.updateList();
+                                    Window oldW = EditorUtilies.getParentWindow(rename);
+                                    if (oldW != null) {
+                                        oldW.hide();
+                                        EditorScene.show(new EditCompWindow(zone));
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                    else Game.scene().addToFront(w);
+                }
+
+                @Override
+                protected String hoverText() {
+                    return Messages.get(WndSelectDungeon.class, "rename_yes");
+                }
+            };
+            add(rename);
+
+            delete = new IconButton(Icons.CLOSE.get()) {
+                @Override
+                protected void onClick() {
+                    super.onClick();
+
+                    EditorScene.show(new WndOptions(Icons.get(Icons.WARNING),
+                            Messages.get(EditZoneComp.class, "erase_title"),
+                            Messages.get(EditZoneComp.class, "erase_body"),
+                            Messages.get(WndEditFloorInOverview.class, "erase_yes"),
+                            Messages.get(WndGameInProgress.class, "erase_warn_no")) {
+                        @Override
+                        protected void onSelect(int index) {
+                            if (index == 0) {
+                                Window oldW = EditorUtilies.getParentWindow(delete);
+                                if (oldW != null) {
+                                    oldW.hide();//important to hide before deletion
+                                }
+                                try {
+                                    Dungeon.customDungeon.deleteZone(zone);
+                                } catch (IOException e) {
+                                    SandboxPixelDungeon.reportException(e);
+                                }
+                                WndSelectZone.updateList();
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                protected String hoverText() {
+                    return Messages.get(WndGameInProgress.class, "erase");
+                }
+            };
+            add(delete);
+
             for (Component c : comps) {
                 if (c != null) add(c);
             }
@@ -431,6 +521,19 @@ public final class WndZones {
         @Override
         protected void layout() {
             super.layout();
+
+            if (rename == null) return;
+
+            float renameDeleteWidth = rename.icon().width + 2 + delete.icon().width;
+
+            title.setRect(x, y, width - renameDeleteWidth - 2, title.height());
+            desc.setRect(x, title.bottom() + WndTitledMessage.GAP * 2, desc.width(), desc.height());
+
+            height = desc.bottom() + 1;
+
+            rename.setRect(width - renameDeleteWidth, title.top() + (title.height() - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
+            delete.setRect(rename.right() + 2, title.top() + (title.height() - delete.icon().height) * 0.5f, delete.icon().width, delete.icon().height);
+
             layoutCompsLinear(comps);
         }
 

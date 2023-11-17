@@ -604,6 +604,12 @@ public class EditorScene extends PixelScene {
         customLevel().levelScheme.zones.add(zone.getName());
     }
 
+    public static void remove(Zone zone) {
+        customLevel().zoneMap.remove(zone.getName());
+        customLevel().levelScheme.zones.remove(zone.getName());
+        if (scene != null) scene.zoneGroup.updateZoneColors();
+    }
+
     public static void add(Heap heap) {
         if (scene != null) {
             scene.addHeapSprite(heap);

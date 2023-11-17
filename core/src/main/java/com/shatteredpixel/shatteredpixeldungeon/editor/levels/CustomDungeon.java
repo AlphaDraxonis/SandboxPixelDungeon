@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
@@ -293,7 +294,7 @@ public class CustomDungeon implements Bundlable {
                 levelSchemeWithDeletedLevelCreatedBefore == null ? null : levelSchemeWithDeletedLevelCreatedBefore.getName();
     }
 
-    public void initExitsFromPreviousFloor(LevelScheme newlyCreatedFloor){
+    public void initExitsFromPreviousFloor(LevelScheme newlyCreatedFloor) {
         LevelScheme current = getFloor(newlyCreatedFloor.levelCreatedBefore);
         if (current != null) {
             current.setToDefaultExits();
@@ -587,7 +588,7 @@ public class CustomDungeon implements Bundlable {
             i++;
         }
 
-        bundle.put( LAST_SELECTED_TOOLBAR_SLOT, lastSelectedToolbarSlot );
+        bundle.put(LAST_SELECTED_TOOLBAR_SLOT, lastSelectedToolbarSlot);
         for (int j = 0; j < toolbarItems.length; j++) {
             if (toolbarItems[j] != null) {
                 if (toolbarItems[j] instanceof Integer)
@@ -673,7 +674,7 @@ public class CustomDungeon implements Bundlable {
             if ("".equals(ls.levelCreatedBefore) && name.equals(getStart())) ls.levelCreatedBefore = null;
             if ("".equals(ls.levelCreatedAfter) && name.equals(getLastEditedFloor())) ls.levelCreatedAfter = null;
         }
-        lastSelectedToolbarSlot = bundle.getInt( LAST_SELECTED_TOOLBAR_SLOT );
+        lastSelectedToolbarSlot = bundle.getInt(LAST_SELECTED_TOOLBAR_SLOT);
         for (i = 0; i < toolbarItems.length; i++) {
             if (bundle.contains(TOOLBAR_ITEM + i))
                 toolbarItems[i] = bundle.getClass(TOOLBAR_ITEM + i);
@@ -746,6 +747,13 @@ public class CustomDungeon implements Bundlable {
                     if (transition != null && Objects.equals(transition.destLevel, n)) {
                         toRemoveTransitions.add(transition.cell());
                         if (level == EditorScene.customLevel()) EditorScene.remove(transition);
+                    }
+                }
+                for (Zone zone : level.zoneMap.values()) {
+                    if (zone.zoneTransition != null) {
+                        if (Objects.equals(zone.zoneTransition.destLevel, n)) {
+                            zone.zoneTransition = null;
+                        }
                     }
                 }
 
@@ -846,6 +854,100 @@ public class CustomDungeon implements Bundlable {
         return item instanceof Key && ((Key) item).levelName.equals(invalidLevelName);
     }
 
+    public void renameZone(Zone zone, String newName) {
+
+        try {
+            String oldName = zone.getName();
+            zone.name = newName;
+
+            //Remove transitions and keys
+            for (LevelScheme ls : levelSchemes()) {
+
+                if (ls.getType() == CustomLevel.class) {
+                    boolean load = ls.getLevel() == null;
+                    Level level;
+                    if (load) level = ls.loadLevel();
+                    else level = ls.getLevel();
+
+                    boolean needsSave = false;
+
+                    for (Zone z : level.zoneMap.values()) {
+                        if (oldName.equals(z.chasmDestZone)) {
+                            z.chasmDestZone = newName;
+                            needsSave = true;
+                        }
+                        if (z == zone) {
+                            ls.zones.remove(oldName);
+                            ls.zones.add(newName);
+                            needsSave = true;
+                        }
+                    }
+
+                    if (needsSave) CustomDungeonSaves.saveLevel(level);
+                    if (load) ls.unloadLevel();
+                    else if (level == EditorScene.customLevel()) {
+                        Undo.reset();//TODO maybe not best solution to reset all
+                    }
+                } else {
+                    //can't contain zones
+                }
+            }
+
+            EditorScene.updatePathfinder();
+
+            CustomDungeonSaves.saveDungeon(this);
+
+            if (zone == ZonePrompt.getSelectedZone()) ZonePrompt.setSelectedZone(zone);
+
+        } catch (IOException e) {
+            SandboxPixelDungeon.reportException(e);
+        }
+    }
+
+    public void deleteZone(Zone zone) throws IOException {
+        String n = zone.getName();
+
+        //Remove transitions and keys
+        for (LevelScheme ls : levelSchemes()) {
+
+            if (ls.getType() == CustomLevel.class) {
+                boolean load = ls.getLevel() == null;
+                Level level;
+                if (load) level = ls.loadLevel();
+                else level = ls.getLevel();
+
+                boolean needsSave = false;
+
+                for (Zone z : level.zoneMap.values()) {
+                    if (n.equals(z.chasmDestZone)) {
+                        z.chasmDestZone = null;
+                        needsSave = true;
+                    }
+                }
+
+                if (needsSave || Dungeon.level == level) CustomDungeonSaves.saveLevel(level);
+                if (load) ls.unloadLevel();
+                else if (level == EditorScene.customLevel()) {
+                    level.zoneMap.remove(n);
+                    level.levelScheme.zones.remove(n);
+                    if (zone.numCells() > 0) {
+                        Zone.setupZoneArray(level);
+                        Undo.reset();//TODO maybe not best solution to reset all
+                    }
+                    EditorScene.remove(zone);
+                }
+            } else {
+                //can't contain zones
+            }
+        }
+
+        EditorScene.updatePathfinder();
+
+        CustomDungeonSaves.saveDungeon(this);
+
+        if (zone == ZonePrompt.getSelectedZone()) ZonePrompt.setSelectedZone(ZonePrompt.getFirstZoneAvailable(EditorScene.customLevel()));
+    }
+
     public static void deleteDungeon(String name) {
         if (Dungeon.customDungeon != null && Dungeon.customDungeon.name.equals(name))
             Dungeon.customDungeon = null;
@@ -910,6 +1012,18 @@ public class CustomDungeon implements Bundlable {
                             }
                             if (Objects.equals(transition.departLevel, oldName)) {
                                 transition.departLevel = newName;
+                                needsSave = true;
+                            }
+                        }
+                    }
+                    for (Zone zone : level.zoneMap.values()) {
+                        if (zone.zoneTransition != null) {
+                            if (Objects.equals(zone.zoneTransition.destLevel, oldName)) {
+                                zone.zoneTransition.destLevel = newName;
+                                needsSave = true;
+                            }
+                            if (Objects.equals(zone.zoneTransition.departLevel, oldName)) {
+                                zone.zoneTransition.departLevel = newName;
                                 needsSave = true;
                             }
                         }
@@ -1056,7 +1170,7 @@ public class CustomDungeon implements Bundlable {
         return bundle.toString().hashCode();
     }
 
-    public static String calculateHash(String dungeonName){
+    public static String calculateHash(String dungeonName) {
         try {
             return Integer.toHexString(CustomDungeonSaves.loadDungeon(dungeonName).hashCode());
         } catch (Exception e) {

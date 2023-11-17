@@ -46,13 +46,18 @@ public class ZoneView extends Group {
         @Override
         public void resetColor() {
             super.resetColor();
-            if (Dungeon.level.zone[cell] != null)
-                hardlight(Dungeon.level.zone[cell].getColor());
+            if (Dungeon.level.zone[cell] != null) hardlight(Dungeon.level.zone[cell].getColor());
+            else if (cell != 0) {
+                remove();
+                killAndErase();
+                destroy();
+                comps.remove(cell);
+            }
         }
     }
 
     public void updateZoneColors() {
-        for (ZoneComp comp : comps.values()) {
+        for (ZoneComp comp : comps.valueList()) {
             comp.resetColor();
         }
     }
@@ -95,6 +100,7 @@ public class ZoneView extends Group {
             if (destroy != null) {
                 destroy.remove();
                 destroy.killAndErase();
+                destroy.destroy();
                 updateImage(cell, zoneBefore, Dungeon.level.map.length, true);
             }
         }

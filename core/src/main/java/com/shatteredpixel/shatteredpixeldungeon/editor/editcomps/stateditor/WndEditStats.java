@@ -167,7 +167,7 @@ public class WndEditStats extends MultiWindowTabComp {
 
         mainWindowComps = new Component[]{
                 statsScale, speed, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                hp, attackSkill, defenseSkill, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                hp, attackSkill, defenseSkill,
                 armor, dmgMin, dmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 xp, maxLvl, loot
         };

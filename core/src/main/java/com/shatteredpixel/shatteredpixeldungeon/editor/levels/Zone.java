@@ -55,6 +55,8 @@ public class Zone implements Bundlable {
         chasmDestZone = bundle.getString(CHASM_DEST_ZONE);
         zoneTransition = (LevelTransition) bundle.get(ZONE_TRANSITION);
 
+        if ("".equals(chasmDestZone)) chasmDestZone = null;
+
         cells.clear();
         for (int cell : bundle.getIntArray(CELLS)) {
             cells.add(cell);
@@ -117,6 +119,10 @@ public class Zone implements Bundlable {
         z.cells.remove(cell);
         level.zone[cell] = null;
         return z;
+    }
+
+    public int numCells() {
+        return cells.size();
     }
 
     public static void changeMapSize(Level level, IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
