@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndZones;
@@ -130,11 +129,6 @@ public class ZonePrompt extends ToastWithButtons {
     }
 
     public static void setSelectedZone(Zone selectedZone) {
-        //auto select
-        if (selectedZone == null) {
-            selectedZone = getFirstZoneAvailable(Dungeon.level);
-        }
-
         ZonePrompt.selectedZone = selectedZone;
         if (instance != null) {
             instance.destroy();

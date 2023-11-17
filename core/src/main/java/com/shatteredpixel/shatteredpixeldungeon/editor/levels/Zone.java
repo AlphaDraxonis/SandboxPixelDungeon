@@ -26,7 +26,7 @@ public class Zone implements Bundlable {
     public boolean canSpawnMobs = true;
     public boolean canSpawnItems = true;
 
-    public String chasmDestZone;//TODO tzz
+    public String chasmDestZone;
     public LevelTransition zoneTransition;//TODO needs to be added when init for play, zones cannot be destination of normal transitions, only for chasms
 
     private final Set<Integer> cells = new HashSet<>();
@@ -92,6 +92,18 @@ public class Zone implements Bundlable {
         }
         if (Dungeon.level != null && Dungeon.level.zoneMap.containsKey(name)) {
             EditorScene.updateZoneColors();
+        }
+    }
+
+    public void initTransitions(Level level) {
+        if (zoneTransition != null) {
+            for (int cell : cells) {
+                if (!level.transitions.containsKey(cell)) {
+                    LevelTransition t = new LevelTransition(level, cell, zoneTransition.destCell, zoneTransition.destLevel);
+                    t.type = zoneTransition.type;
+                    level.transitions.put(cell, t);
+                }
+            }
         }
     }
 

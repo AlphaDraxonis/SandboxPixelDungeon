@@ -26,11 +26,11 @@ public abstract class TransitionEditPart extends Component {
     protected ChooseDestLevelComp destLevel;
     protected DestCellSpinner destCell;
 
-    protected boolean showEntrances; //else show exits,  showEntrances is true when departCell is exit
+    protected Boolean showEntrances; //else show exits,  showEntrances is true when departCell is exit  null = show both
 
     private final int targetDepth;
 
-    public TransitionEditPart(LevelTransition transition, LevelScheme suggestion, boolean showEntrances, int targetDepth) {
+    public TransitionEditPart(LevelTransition transition, LevelScheme suggestion, Boolean showEntrances, int targetDepth) {
         super();
         this.transition = transition;
         this.showEntrances = showEntrances;
@@ -40,7 +40,7 @@ public abstract class TransitionEditPart extends Component {
             @Override
             public void selectObject(Object object) {
                 super.selectObject(object);
-                if(object instanceof QuestLevels) transition.destBranch = ((QuestLevels) object).ID;
+                if (object instanceof QuestLevels) transition.destBranch = ((QuestLevels) object).ID;
                 else transition.destBranch = 0;
                 updateTransition();
             }
@@ -51,15 +51,17 @@ public abstract class TransitionEditPart extends Component {
                 ArrayList<LevelSchemeLike> ret = new ArrayList<>(levels);
                 for (LevelSchemeLike lvl : levels) {
                     if (lvl == LevelScheme.NO_LEVEL_SCHEME) continue;
-                    if(lvl instanceof LevelScheme) {
-                            int depth = ((LevelScheme) lvl).getDepth();
-                        if (showEntrances) {
-                            if (depth < targetDepth) ret.remove(lvl);
-                        } else if (depth > targetDepth) ret.remove(lvl);
+                    if (lvl instanceof LevelScheme) {
+                        int depth = ((LevelScheme) lvl).getDepth();
+                        if (showEntrances != null) {
+                            if (showEntrances) {
+                                if (depth < targetDepth) ret.remove(lvl);
+                            } else if (depth > targetDepth) ret.remove(lvl);
+                        }
                     }
                 }
-                if (!showEntrances) ret.add(1, LevelScheme.SURFACE_LEVEL_SCHEME);
-                if (showEntrances)  ret.add(1, QuestLevels.MINING);
+                if (showEntrances == null || !showEntrances) ret.add(1, LevelScheme.SURFACE_LEVEL_SCHEME);
+                if (showEntrances == null || showEntrances) ret.add(1, QuestLevels.MINING);
                 return ret;
             }
         };
@@ -67,7 +69,7 @@ public abstract class TransitionEditPart extends Component {
 
         destCell = new DestCellSpinner(new ArrayList<>(), -1);
         destCell.addChangeListener(() -> transition.destCell = (int) destCell.getValue());
-        if (transition.destBranch == 0||true) destCell.setValue(transition.destCell);
+        if (transition.destBranch == 0 || true) destCell.setValue(transition.destCell);
         add(destCell);
 
         if (suggestion != null) {
@@ -111,7 +113,11 @@ public abstract class TransitionEditPart extends Component {
             destCell.setData(new ArrayList<>(2), -1, null);
         } else {
             destCell.enable(true);
-            if (showEntrances) {
+            if (showEntrances == null) {
+                List<Integer> data = new ArrayList<>(destL.exitCells);
+                data.addAll(destL.entranceCells);
+                destCell.setData(data, destL.getSizeIfUnloaded().x, transition.destCell);
+            } else if (showEntrances) {
                 destCell.setData(destL.entranceCells, destL.getSizeIfUnloaded().x, transition.destCell);
             } else
                 destCell.setData(destL.exitCells, destL.getSizeIfUnloaded().x, transition.destCell);
@@ -139,7 +145,7 @@ public abstract class TransitionEditPart extends Component {
                 transition.type = LevelTransition.Type.REGULAR_ENTRANCE;
             else {
                 LevelScheme departLevel = Dungeon.customDungeon.getFloor(transition.departLevel);
-                if (departLevel != null && departLevel.getType() == CustomLevel.class) {
+                if (departLevel != null && departLevel.getType() == CustomLevel.class && transition.departCell != TransitionEditPart.NONE) {
                     if (departLevel.exitCells.contains(transition.departCell))
                         transition.type = LevelTransition.Type.REGULAR_EXIT;
                     else transition.type = LevelTransition.Type.REGULAR_ENTRANCE;

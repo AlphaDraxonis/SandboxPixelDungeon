@@ -739,7 +739,7 @@ public abstract class RegularLevel extends Level {
 	}
 
 	@Override
-	public int fallCell( boolean fallIntoPit ) {
+	public int fallCell( boolean fallIntoPit, String destZone ) {
 		if (fallIntoPit) {
 			List<Room> iter = new ArrayList<>(rooms);
 			Collections.shuffle(iter);//TODO more complex logic: link weak floor and pit rooms
@@ -761,7 +761,7 @@ public abstract class RegularLevel extends Level {
 			}
 		}
 
-		return super.fallCell( fallIntoPit );
+		return super.fallCell( fallIntoPit, destZone );
 	}
 
 	@Override

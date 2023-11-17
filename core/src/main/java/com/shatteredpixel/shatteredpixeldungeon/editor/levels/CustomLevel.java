@@ -253,6 +253,7 @@ public class CustomLevel extends Level {
             locked = level.locked;
             zoneMap.clear();
             zoneMap.putAll(level.zoneMap);
+            levelScheme.zones.addAll(zoneMap.keySet());
             Zone.setupZoneArray(this);
             if (levelTemplate != LastLevel.class && levelTemplate != DeadEndLevel.class)
                 mobRotation = level.getMobRotation();
@@ -1017,30 +1018,18 @@ public class CustomLevel extends Level {
         //Check depart cells
         Map<Integer, LevelTransition> nTrans = new HashMap<>();
         for (LevelTransition transition : level.transitions.values()) {
-            int posDepart = newPosition.get(transition.departCell);
-            int posCenter = newPosition.get(transition.centerCell);
-            //TODO consider the size of the transitions but atm they cant be set!
-//            int left = newPosition.get(transition.left);
-//            int top = newPosition.get(transition.top);
-//            int right = newPosition.get(transition.right);
-//            int bottom = newPosition.get(transition.bottom);
-            if (isPositionValid.test(transition.departCell, posDepart)
-                    && isPositionValid.test(transition.centerCell, posCenter)
-//                    && isPositionValid.test(transition.left, left)
-//                    && isPositionValid.test(transition.right, right)
-//                    && isPositionValid.test(transition.top, top)
-//                    && isPositionValid.test(transition.bottom, bottom)
-            ) {
-                transition.departCell = posDepart;
-                transition.centerCell = posCenter;
-                nTrans.put(transition.departCell, transition);
-                Point p = level.cellToPoint(transition.departCell);
-                transition.set(p.x, p.y, p.x, p.y);
-//                transition.set(left, top, right, bottom);
-            }
+            LevelTransition t = checkLevelTransitionsDepartCell(transition, level, newPosition, isPositionValid);
+            if (t != null) nTrans.put(t.departCell, t);
         }
         level.transitions.clear();
         level.transitions = nTrans;
+
+        for (Zone zone : level.zoneMap.values()) {
+            if (zone.zoneTransition != null) {
+                if (checkLevelTransitionsDepartCell(zone.zoneTransition, level, newPosition, isPositionValid) == null)
+                    zone.zoneTransition = null;
+            }
+        }
 
 
         //Check destCells
@@ -1053,17 +1042,21 @@ public class CustomLevel extends Level {
                 else l = ls.getLevel();
                 boolean changedSth = false;
                 for (LevelTransition transition : l.transitions.values()) {
-                    if (transition != null && Objects.equals(transition.destLevel, level.name)) {
-                        int dest = newPosition.get(transition.destCell);
-                        if (isPositionValid.test(transition.destCell, dest)) {
-                            if (dest != transition.destCell) {
-                                changedSth = true;
-                                transition.destCell = dest;
-                            }
-                        } else {
-                            changedSth = true;
-                            l.transitions.remove(transition.departCell);
+                    Boolean feedback = checkLevelTransitionsDestCell(transition, level, newPosition, isPositionValid);
+                    if (feedback == null) {
+                        feedback = true;
+                        l.transitions.remove(transition.departCell);
+                    }
+                    if (feedback) changedSth = true;
+                }
+                for (Zone zone : level.zoneMap.values()) {
+                    if (zone.zoneTransition != null) {
+                        Boolean feedback = checkLevelTransitionsDestCell(zone.zoneTransition, level, newPosition, isPositionValid);
+                        if (feedback == null) {
+                            feedback = true;
+                            zone.zoneTransition = null;
                         }
+                        if (feedback) changedSth = true;
                     }
                 }
 
@@ -1080,6 +1073,48 @@ public class CustomLevel extends Level {
                 checkRegularLevelTransitions(ls.getExitTransitionRegular(), level.name, newPosition, isPositionValid);
             }
         }
+    }
+
+    private static LevelTransition checkLevelTransitionsDepartCell(LevelTransition transition, Level level,
+                                                     IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+        int posDepart = newPosition.get(transition.departCell);
+        int posCenter = newPosition.get(transition.centerCell);
+        //TODO consider the size of the transitions but atm they cant be set!
+//            int left = newPosition.get(transition.left);
+//            int top = newPosition.get(transition.top);
+//            int right = newPosition.get(transition.right);
+//            int bottom = newPosition.get(transition.bottom);
+        if (isPositionValid.test(transition.departCell, posDepart)
+                && isPositionValid.test(transition.centerCell, posCenter)
+//                    && isPositionValid.test(transition.left, left)
+//                    && isPositionValid.test(transition.right, right)
+//                    && isPositionValid.test(transition.top, top)
+//                    && isPositionValid.test(transition.bottom, bottom)
+        ) {
+            transition.departCell = posDepart;
+            transition.centerCell = posCenter;
+            Point p = level.cellToPoint(transition.departCell);
+            transition.set(p.x, p.y, p.x, p.y);
+//                transition.set(left, top, right, bottom);
+            return transition;
+        }
+        return null;
+    }
+
+    private static Boolean checkLevelTransitionsDestCell(LevelTransition transition, Level level,
+                                                     IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+        if (transition != null && Objects.equals(transition.destLevel, level.name)) {
+            int dest = newPosition.get(transition.destCell);
+            if (isPositionValid.test(transition.destCell, dest)) {
+                if (dest != transition.destCell) {
+                    transition.destCell = dest;
+                    return true;
+                }
+            } else {
+                return null;
+            }
+        }
+        return false;
     }
 
     private static void checkRegularLevelTransitions(LevelTransition transition, String levelWithChanges,

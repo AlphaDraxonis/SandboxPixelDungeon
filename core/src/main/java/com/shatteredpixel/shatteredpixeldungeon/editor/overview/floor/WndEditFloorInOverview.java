@@ -197,7 +197,7 @@ public class WndEditFloorInOverview extends WndTabbed {
                 public void selectObject(Object object) {
                     super.selectObject(object);
                     if (object instanceof LevelScheme)
-                        levelScheme.setChasm(EditorUtilies.getCodeName((LevelScheme) object));
+                        levelScheme.setChasm(EditorUtilies.getCodeName((LevelScheme) object), true);
                 }
 
                 @Override

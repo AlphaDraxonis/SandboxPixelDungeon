@@ -186,6 +186,9 @@ public abstract class Level implements Bundlable {
 
 	public boolean[] openSpace;
 
+	/**
+	 * <b>IMPORTANT: keep keys synchronised with levelScheme.zones!!!</b>
+	 */
 	public final Map<String, Zone> zoneMap = new HashMap<>(3);
 	public Zone[] zone;
 	
@@ -390,6 +393,9 @@ public abstract class Level implements Bundlable {
 	}
 
 	public void initForPlay() {
+		for (Zone z : zoneMap.values()) {
+			z.initTransitions(this);
+		}
 		for (Mob m : mobs) {
 			if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
 			if (m instanceof Blacksmith) ((Blacksmith) m).registerQuest();
@@ -1452,14 +1458,15 @@ public abstract class Level implements Bundlable {
 		return false;
 	}
 	
-	public int fallCell( boolean fallIntoPit ) {
+	public int fallCell( boolean fallIntoPit, String destZone ) {
 		Dungeon.hero.pos = -1;
 		int result;
 		do {
-			//TODO tzz
+			//TODO confirm tzz
 			result = randomRespawnCell( null );
 			if (result == -1) return -1;
-		} while (traps.get(result) != null
+		} while ((destZone != null && (zone[result] == null || !zone[result].getName().equals(destZone)))
+				|| traps.get(result) != null
 				|| findMob(result) != null);
 		return result;
 	}

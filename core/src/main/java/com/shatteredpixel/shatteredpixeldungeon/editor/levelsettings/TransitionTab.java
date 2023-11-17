@@ -79,7 +79,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             public void selectObject(Object object) {
                 super.selectObject(object);
                 if (object instanceof LevelScheme)
-                    EditorScene.customLevel().levelScheme.setChasm(EditorUtilies.getCodeName((LevelScheme) object));
+                    EditorScene.customLevel().levelScheme.setChasm(EditorUtilies.getCodeName((LevelScheme) object), true);
             }
 
             @Override

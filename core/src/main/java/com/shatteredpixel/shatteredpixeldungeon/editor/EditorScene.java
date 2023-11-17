@@ -601,6 +601,7 @@ public class EditorScene extends PixelScene {
 
     public static void add(Zone zone) {
         customLevel().zoneMap.put(zone.getName(), zone);
+        customLevel().levelScheme.zones.add(zone.getName());
     }
 
     public static void add(Heap heap) {

@@ -115,8 +115,10 @@ public class LevelTransition extends Rect implements Bundlable {
     public LevelTransition(Level level, int cell, int destCell, String destLevel) {
         centerCell = cell;
         departCell = cell;
-        Point p = level.cellToPoint(cell);
-        set(p.x, p.y, p.x, p.y);
+        if (cell >= 0) {
+            Point p = level.cellToPoint(cell);
+            set(p.x, p.y, p.x, p.y);
+        }
         this.destCell = destCell;
         departLevel = level.name;
         this.destLevel = destLevel;

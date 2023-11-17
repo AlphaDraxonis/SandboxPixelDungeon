@@ -7,13 +7,19 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndColorPicker;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
@@ -346,20 +352,21 @@ public final class WndZones {
                     return;
                 }
                 Dungeon.level.zoneMap.put(zone.getName(), zone);
+                Dungeon.level.levelScheme.zones.add(zone.getName());
                 WndSelectZone.updateList();
                 ZonePrompt.setSelectedZone(zone);
             }
             hide();
-
-            //tzz
         }
-
 
     }
 
     public static class EditZoneComp extends DefaultEditComp<Zone> {
 
-        private final Component[] comps;
+        private Component[] comps;
+
+        protected RedButton addTransition;
+        private TransitionEditPart transitionEdit;
 
         public EditZoneComp(Zone zone) {
             super(zone);
@@ -372,6 +379,50 @@ public final class WndZones {
                     updateObj();
                 }
             }));
+            LevelScheme chasm = Dungeon.customDungeon.getFloor(Dungeon.level.levelScheme.getChasm());
+            Object[] data;
+            int index = 0;
+            if (chasm != null) {
+                List<String> zones = new ArrayList<>(chasm.zones);
+                if (!zones.isEmpty()) Collections.sort(zones, (a, b) -> a.compareTo(b));
+                zones.add(0, null);
+                data = zones.toArray(EditorUtilies.EMPTY_STRING_ARRAY);
+                if (zone.chasmDestZone != null) {
+                    index++;
+                    for (; index < data.length; index++) {
+                        if (zone.chasmDestZone.equals(data[index])) break;
+                    }
+                    if (index == data.length) {
+                        zone.chasmDestZone = null;
+                        index = 0;
+                    }
+                }
+            } else data = new Object[]{null};
+            Spinner chasmDest = new Spinner(new SpinnerTextModel(true, index, data) {
+                @Override
+                protected String getAsString(Object value) {
+                    if (value == null) return Messages.get(Zone.class, "none_zone");
+                    return super.getAsString(value);
+                }
+            }, Messages.get(EditZoneComp.class, "chasm_dest") + ":", 9);
+            chasmDest.addChangeListener(() -> {
+                zone.chasmDestZone = (String) chasmDest.getValue();
+            });
+            chasmDest.enable(chasm != null);
+            comps[4] = chasmDest;
+
+            addTransition = new RedButton(Messages.get(EditTileComp.class, "add_transition"), 9) {
+                @Override
+                protected void onClick() {
+                    addTransition(new LevelTransition(EditorScene.customLevel(), TransitionEditPart.NONE, TransitionEditPart.DEFAULT, null));
+                }
+            };
+            if (zone.zoneTransition != null) {
+                addTransition(zone.zoneTransition);
+            }
+            comps[5] = addTransition;
+            comps[6] = transitionEdit;
+
             for (Component c : comps) {
                 if (c != null) add(c);
             }
@@ -408,6 +459,31 @@ public final class WndZones {
             }
 
             super.updateObj();
+        }
+
+        private void addTransition(LevelTransition transition) {
+            transitionEdit = EditTileComp.addTransition(-12345,transition, EditorScene.customLevel().levelScheme, t -> obj.zoneTransition = null);
+            add(transitionEdit);
+            obj.zoneTransition = transition;
+            addTransition.visible = addTransition.active = false;
+            comps = new Component[]{comps[0], comps[1], comps[2], comps[3], comps[4], comps[5], transitionEdit};
+            layout();
+            updateObj();//for resize
+        }
+
+        public static TransitionEditPart addTransition(LevelTransition transition, LevelScheme levelScheme, Consumer<LevelTransition> deleteTransition) {
+            //TODO tzz use from EditTileComp
+            //TODO show entrancea nd exits
+            String suggestion = levelScheme.getChasm();
+            if (suggestion == null) suggestion = levelScheme.getDefaultBelow();
+            if (transition.destLevel != null) suggestion = transition.destLevel;
+            return new TransitionEditPart(transition, EditorUtilies.getLevelScheme(suggestion), false,//tzz tz tzztzz tzztzztttztztzzztzz
+                    levelScheme.getDepth()) {
+                @Override
+                protected void deleteTransition(LevelTransition transition) {
+                    deleteTransition.accept(transition);
+                }
+            };
         }
 
         public static Component[] createComponents(Zone zone, Runnable onColorPickClick) {
@@ -451,8 +527,7 @@ public final class WndZones {
             spawnItems.checked(zone.flamable);
 //            spawnItems.icon(new ItemSprite(ItemSpriteSheet.CHEST));
 
-
-            return new Component[]{pickColor, flamable, spawnMobs, spawnItems};
+            return new Component[]{pickColor, flamable, spawnMobs, spawnItems, null, null, null};
         }
     }
 

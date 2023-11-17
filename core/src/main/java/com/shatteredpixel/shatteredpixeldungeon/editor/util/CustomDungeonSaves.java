@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -105,7 +106,7 @@ public class CustomDungeonSaves {
         //checks if all transitions are still valid, can even remove transitions AFTER the game was started if necessary
         if (removeInvalidTransitions) {
             for (LevelTransition t : new ArrayList<>(customLevel.transitions.values())) {
-                if (t.destBranch == 0 && !t.destLevel.equals(Level.SURFACE)) {
+                if (t.destBranch == 0 && !t.destLevel.equals(Level.SURFACE) && t.departCell != TransitionEditPart.NONE) {
                     LevelScheme destLevel = Dungeon.customDungeon.getFloor(t.destLevel);
                     if (destLevel == null
                             || !destLevel.entranceCells.contains(t.destCell)

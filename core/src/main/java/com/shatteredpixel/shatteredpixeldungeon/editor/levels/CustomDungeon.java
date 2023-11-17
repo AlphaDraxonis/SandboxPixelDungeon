@@ -733,7 +733,7 @@ public class CustomDungeon implements Bundlable {
 
         //Remove transitions and keys
         for (LevelScheme ls : fs) {
-            if (n.equals(ls.getChasm())) ls.setChasm(null);
+            if (n.equals(ls.getChasm())) ls.setChasm(null, false);
             if (n.equals(ls.getPassage())) ls.setPassage(null);
 
             if (ls.getType() == CustomLevel.class) {
@@ -883,7 +883,7 @@ public class CustomDungeon implements Bundlable {
 
             //Change transitions and keys
             for (LevelScheme ls : floors.values()) {
-                if (oldName.equals(ls.getChasm())) ls.setChasm(newName);
+                if (oldName.equals(ls.getChasm())) ls.setChasm(newName, false);
                 if (oldName.equals(ls.getPassage())) ls.setPassage(newName);
 
                 if (oldName.equals(ls.levelCreatedBefore)) ls.levelCreatedBefore = newName;

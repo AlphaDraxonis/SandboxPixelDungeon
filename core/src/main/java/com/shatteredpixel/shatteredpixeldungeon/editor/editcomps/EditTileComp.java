@@ -175,7 +175,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             if (suggestion == null) suggestion = levelScheme.getDefaultBelow();
         }
         if (transition.destLevel != null) suggestion = transition.destLevel;
-        return new TransitionEditPart(transition, EditorUtilies.getLevelScheme(suggestion), terrainType != Terrain.ENTRANCE,
+        return new TransitionEditPart(transition, EditorUtilies.getLevelScheme(suggestion),terrainType == -12345 ? null : terrainType != Terrain.ENTRANCE,
                 levelScheme.getDepth()) {
             @Override
             protected void deleteTransition(LevelTransition transition) {

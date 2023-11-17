@@ -77,6 +77,7 @@ public class InterlevelScene extends PixelScene {
     public static int returnPos, returnBranch;
 
 	public static boolean fallIntoPit;
+	public static int fallPosition;
 	
 	private enum Phase {
 		FADE_IN, STATIC, FADE_OUT
@@ -380,6 +381,8 @@ public class InterlevelScene extends PixelScene {
 		Buff.affect( Dungeon.hero, Chasm.Falling.class );
 		Dungeon.saveAll();
 
+		String destZone = Dungeon.level.zone[fallPosition] == null ? null : Dungeon.level.zone[fallPosition].chasmDestZone;
+
         Level level;
 		String oldLvlName = Dungeon.levelName;
 		int oldBranch = Dungeon.branch;
@@ -390,7 +393,7 @@ public class InterlevelScene extends PixelScene {
         } else {
             level = Dungeon.newLevel(oldLvlName, oldBranch);
         }
-        Dungeon.switchLevel(level, level.fallCell(fallIntoPit));
+        Dungeon.switchLevel(level, level.fallCell(fallIntoPit, destZone));
     }
 
     private void ascend() throws IOException {

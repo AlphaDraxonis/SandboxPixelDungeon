@@ -53,8 +53,10 @@ import com.watabou.utils.Reflection;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSchemeLike {
 
@@ -91,6 +93,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private long seed;
     private boolean seedSet = false;
     public List<Integer> entranceCells, exitCells;
+    public Set<String> zones;
 
     public List<Mob> mobsToSpawn;
     public List<Room> roomsToSpawn;//TODO also choose builder
@@ -126,6 +129,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         this.name = name;
         exitCells = new ArrayList<>(3);
         entranceCells = new ArrayList<>(3);
+        zones = new HashSet<>(3);
 
         if (depth == 6 || depth == 11 || depth == 16) roomsToSpawn.add(new ShopRoom());
 
@@ -164,7 +168,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         roomsToSpawn = new ArrayList<>(4);
         itemsToSpawn = new ArrayList<>(4);
         prizeItemsToSpawn = new ArrayList<>(4);
-        if (depth < 26) setChasm(Integer.toString(depth + 1));
+        if (depth < 26) setChasm(Integer.toString(depth + 1), false);
 
         switch (depth) {
             case 1:
@@ -228,6 +232,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
         exitCells = new ArrayList<>(3);
         entranceCells = new ArrayList<>(3);
+        zones = new HashSet<>(3);
         initExitEntranceCellsForRandomLevel();
         if (depth > 1) {
             entranceTransitionRegular.destLevel = Integer.toString(depth - 1);
@@ -254,7 +259,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         String defaultBelow = getDefaultBelow();
         if (customDungeon.getFloor(defaultBelow) == null) return;
 //        if (Objects.equals(getDefaultAbove(),defaultBelow)) return;
-        if (getChasm() == null) setChasm(defaultBelow);
+        if (getChasm() == null) setChasm(defaultBelow, true);
 
         if (type == CustomLevel.class) {
             List<Integer> possibleEntrances = customDungeon.getFloor(defaultBelow).entranceCells;
@@ -397,8 +402,15 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         return shopPriceMultiplier;
     }
 
-    public void setChasm(String chasm) {
+    public void setChasm(String chasm, boolean revalidateZones) {
         this.chasm = chasm;
+        LevelScheme newChasm = customDungeon.getFloor(chasm);
+        if (revalidateZones && type == CustomLevel.class && level != null) {
+            for (Zone zone : level.zoneMap.values()) {//TODO tzz test this
+                if (zone.chasmDestZone != null && (newChasm == null || !newChasm.zones.contains(zone.chasmDestZone)))
+                    zone.chasmDestZone = null;
+            }
+        }
     }
 
     public void setPassage(String passage) {
@@ -624,6 +636,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String LEVEL_CREATED_AFTER = "level_created_after";
     private static final String ENTRANCE_CELLS = "entrance_cells";
     private static final String EXIT_CELLS = "exit_cells";
+    private static final String ZONES = "zones";
     private static final String CHASM = "chasm";
     private static final String DEST_ENTRANCE_REGULAR = "dest_entrance_regular";
     private static final String DEST_EXIT_REGULAR = "dest_exit_regular";
@@ -689,6 +702,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             i++;
         }
         bundle.put(EXIT_CELLS, exits);
+        bundle.put(ZONES, zones.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
 
         bundle.put(MOBS_TO_SPAWN, mobsToSpawn);
         bundle.put(ITEMS_TO_SPAWN, itemsToSpawn);
@@ -734,6 +748,13 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         exitCells = new ArrayList<>(exits.length + 1);
         for (int exit : exits) exitCells.add(exit);
         Collections.sort(exitCells);
+
+        String[] zs = bundle.getStringArray(ZONES);
+        if (zs == null) zones = new HashSet<>(3);
+        else {
+            zones = new HashSet<>(zs.length + 1);
+            Collections.addAll(zones, zs);
+        }
 
         type = bundle.getClass(TYPE);
         numInRegion = bundle.getInt(NUM_IN_REGION);
