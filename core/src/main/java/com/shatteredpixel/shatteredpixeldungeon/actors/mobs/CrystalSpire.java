@@ -299,7 +299,7 @@ public class CrystalSpire extends Mob {
 
 	@Override
 	public boolean isInvulnerable(Class effect) {
-		return effect != Pickaxe.class;
+		return super.isInvulnerable(effect) || effect != Pickaxe.class;
 	}
 
 	@Override
@@ -315,7 +315,6 @@ public class CrystalSpire extends Mob {
 			final Pickaxe p = Dungeon.hero.belongings.getItem(Pickaxe.class);
 
 			if (p == null){
-				//maybe a game log entry here?
 				return true;
 			}
 
