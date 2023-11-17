@@ -1,5 +1,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -14,7 +17,9 @@ import java.util.Set;
 
 public class Zone implements Bundlable {
 
-    public int color = 0x78D2FF;
+    public static final String NONE = "none";
+
+    private int color = 0x78D2FF;
     public String name;
 
     public boolean flamable = true;
@@ -42,38 +47,52 @@ public class Zone implements Bundlable {
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
-        name = bundle.getString( NAME );
-        color = bundle.getInt( COLOR );
-        flamable = bundle.getBoolean( FLAMABLE );
-        canSpawnMobs = bundle.getBoolean( CAN_SPAWN_MOBS );
-        canSpawnItems = bundle.getBoolean( CAN_SPAWN_ITEMS );
-        chasmDestZone = bundle.getString( CHASM_DEST_ZONE );
-        zoneTransition = (LevelTransition) bundle.get( ZONE_TRANSITION );
+        name = bundle.getString(NAME);
+        color = bundle.getInt(COLOR);
+        flamable = bundle.getBoolean(FLAMABLE);
+        canSpawnMobs = bundle.getBoolean(CAN_SPAWN_MOBS);
+        canSpawnItems = bundle.getBoolean(CAN_SPAWN_ITEMS);
+        chasmDestZone = bundle.getString(CHASM_DEST_ZONE);
+        zoneTransition = (LevelTransition) bundle.get(ZONE_TRANSITION);
 
         cells.clear();
-        for(int cell : bundle.getIntArray(CELLS)){
+        for (int cell : bundle.getIntArray(CELLS)) {
             cells.add(cell);
         }
     }
 
     @Override
     public void storeInBundle(Bundle bundle) {
-        bundle.put( NAME, name );
-        bundle.put( COLOR, color );
-        bundle.put( FLAMABLE, flamable );
-        bundle.put( CAN_SPAWN_MOBS, canSpawnMobs );
-        bundle.put( CAN_SPAWN_ITEMS, canSpawnItems );
-        bundle.put( CHASM_DEST_ZONE, chasmDestZone );
-        bundle.put( ZONE_TRANSITION, zoneTransition );
+        bundle.put(NAME, name);
+        bundle.put(COLOR, color);
+        bundle.put(FLAMABLE, flamable);
+        bundle.put(CAN_SPAWN_MOBS, canSpawnMobs);
+        bundle.put(CAN_SPAWN_ITEMS, canSpawnItems);
+        bundle.put(CHASM_DEST_ZONE, chasmDestZone);
+        bundle.put(ZONE_TRANSITION, zoneTransition);
 
         int[] cellsArray = new int[cells.size()];
         int index = 0;
-        for (int cell : cells){
+        for (int cell : cells) {
             cellsArray[index] = cell;
             index++;
         }
-        bundle.put( CELLS, cellsArray );
+        bundle.put(CELLS, cellsArray);
 
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+        if (ZonePrompt.getSelectedZone() == this) {
+            ZonePrompt.setSelectedZone(this);
+        }
+        if (Dungeon.level != null && Dungeon.level.zoneMap.containsKey(name)) {
+            EditorScene.updateZoneColors();
+        }
     }
 
     public void addCell(int cell, Level level) {

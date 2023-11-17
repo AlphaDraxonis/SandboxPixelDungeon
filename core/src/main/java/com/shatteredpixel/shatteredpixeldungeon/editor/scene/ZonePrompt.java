@@ -1,22 +1,20 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene;
 
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndZones;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ToastWithButtons;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
 
 import java.util.Collections;
@@ -24,7 +22,7 @@ import java.util.LinkedList;
 
 public class ZonePrompt extends ToastWithButtons {
 
-    private static Zone selectedZone;//TODO tzz autoselect first available
+    private static Zone selectedZone;
     public static Mode mode = Mode.ADD;
 
     private static ZonePrompt instance;
@@ -35,10 +33,24 @@ public class ZonePrompt extends ToastWithButtons {
         EDIT;
     }
 
+    private ColorBlock zoneColor;
+
     public ZonePrompt() {
         super(createComponents());
         instance = this;
         updateColors();
+
+        zoneColor = new ColorBlock(1, 1, 0x8FD8D8D8) {
+            @Override
+            public void resetColor() {
+                super.resetColor();
+                if (selectedZone != null) hardlight(selectedZone.getColor());
+            }
+        };
+        add(zoneColor);
+        sendToBack(zoneColor);
+        sendToBack(bg);
+        zoneColor.resetColor();
     }
 
     @Override
@@ -100,16 +112,16 @@ public class ZonePrompt extends ToastWithButtons {
         return new Component[]{placeZone, removeZone, editZone, selectZoneButton};
     }
 
-    private static void updateColors(){
+    private static void updateColors() {
 
         Component[] comps = instance.comps;
-        if (mode == Mode.ADD) ((IconButton) comps[0]).icon().brightness( 1.5f );
+        if (mode == Mode.ADD) ((IconButton) comps[0]).icon().brightness(1.5f);
         else ((IconButton) comps[0]).icon().resetColor();
 
-        if (mode == Mode.REMOVE) ((IconButton) comps[1]).icon().brightness( 1.5f );
+        if (mode == Mode.REMOVE) ((IconButton) comps[1]).icon().brightness(1.5f);
         else ((IconButton) comps[1]).icon().resetColor();
 
-        if (mode == Mode.EDIT) ((IconButton) comps[2]).icon().brightness( 1.5f );
+        if (mode == Mode.EDIT) ((IconButton) comps[2]).icon().brightness(1.5f);
         else ((IconButton) comps[2]).icon().resetColor();
     }
 
@@ -123,28 +135,36 @@ public class ZonePrompt extends ToastWithButtons {
             selectedZone = getFirstZoneAvailable(Dungeon.level);
         }
 
-        if(ZonePrompt.selectedZone != selectedZone){
-            ZonePrompt.selectedZone = selectedZone;
-            if (instance != null) {
-                instance.destroy();
-                EditorScene.promptStatic(new ZonePrompt());//changing coordinates didn't work...
-            }
+        ZonePrompt.selectedZone = selectedZone;
+        if (instance != null) {
+            instance.destroy();
+            EditorScene.promptStatic(new ZonePrompt());//changing coordinates didn't work...
         }
     }
 
-    public static Zone getFirstZoneAvailable(Level level){
+    public static Zone getFirstZoneAvailable(Level level) {
         LinkedList<Zone> zones = new LinkedList<>(level.zoneMap.values());
-        if (!zones.isEmpty()){
+        if (!zones.isEmpty()) {
             Collections.sort(zones, (a, b) -> a.getName().compareTo(b.getName()));
             return zones.peekFirst();
         }
         return null;
     }
 
+    @Override
+    protected void layout() {
+        super.layout();
+
+        if (zoneColor != null) {
+            zoneColor.size(width - bg.marginHor() + 4, height - bg.marginVer() + 4);
+            zoneColor.x = x + bg.marginLeft() - 2;
+            zoneColor.y = y + bg.marginTop() - 2;
+            PixelScene.align(zoneColor);
+        }
+    }
+
     private static class SelectZoneButton extends Button {
 
-        private NinePatch bg;
-        private ColorBlock zoneColor;
         private RenderedTextBlock selectedZoneText;
 
         private IconButtonWithPublicMethods changeZone;
@@ -155,15 +175,11 @@ public class ZonePrompt extends ToastWithButtons {
 
             super();
             setSelectedZoneVisually(getSelectedZone());
-
-//            zoneColor.resetColor();
         }
 
         protected void setSelectedZoneVisually(Zone zone) {
             if (selectedZoneText != null) {
-                selectedZoneText.text(zone == null ? "NONEtzz" : zone.getName());
-                if (zone != null)
-                    selectedZoneText.hardlight(zone.color);
+                selectedZoneText.text(zone == null ? Messages.get(Zone.class, "none_zone") : zone.getName());
             }
         }
 
@@ -176,16 +192,6 @@ public class ZonePrompt extends ToastWithButtons {
 
             width = 3 + selectedZoneText.width() + 1 + (height - 2) + 2;
 
-            bg.x = x;
-            bg.y = y;
-            bg.size(width, height);
-            PixelScene.align(bg);
-
-            zoneColor.size(selectedZoneText.width() + 2, height - 2);
-            zoneColor.x = x + 1;
-            zoneColor.y = x + 1;
-            PixelScene.align(zoneColor);
-
             selectedZoneText.setPos(x + 3, y + 2 + (height - 4 - selectedZoneText.height()) * 0.5f);
             PixelScene.align(selectedZoneText);
 
@@ -197,19 +203,6 @@ public class ZonePrompt extends ToastWithButtons {
         protected void createChildren(Object... params) {
 
             super.createChildren(params);
-
-            bg = Chrome.get(Chrome.Type.GREY_BUTTON_TR);
-//            add(bg);
-
-            zoneColor = new ColorBlock(1, 1, Window.TITLE_COLOR) {
-                @Override
-                public void resetColor() {
-                    super.resetColor();
-                    if (selectedZone != null)
-                        hardlight(0x777700);
-                }
-            };
-            add(zoneColor);
 
             changeZone = new IconButtonWithPublicMethods(Icons.FOLD.get()) {
                 {

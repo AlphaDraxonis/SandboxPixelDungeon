@@ -76,7 +76,7 @@ public class WndNewDungeon extends WndTextInput {
                 Game.scene().addToFront(
                         new WndOptions(Icons.get(Icons.WARNING),
                                 Messages.get(WndNewDungeon.class,"dup_name_title"),
-                                Messages.get(WndNewDungeon.class,"dup_name_body", Level.SURFACE,Level.NONE),
+                                Messages.get(WndNewDungeon.class,"dup_name_body", Level.SURFACE, Level.NONE),
                                 Messages.get(WndNewDungeon.class,"dup_name_close")
                         )
                 );

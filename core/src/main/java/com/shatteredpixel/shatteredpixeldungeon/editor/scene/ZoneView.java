@@ -47,7 +47,13 @@ public class ZoneView extends Group {
         public void resetColor() {
             super.resetColor();
             if (Dungeon.level.zone[cell] != null)
-                hardlight(Dungeon.level.zone[cell].color);
+                hardlight(Dungeon.level.zone[cell].getColor());
+        }
+    }
+
+    public void updateZoneColors() {
+        for (ZoneComp comp : comps.values()) {
+            comp.resetColor();
         }
     }
 

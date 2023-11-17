@@ -373,6 +373,10 @@ public class EditorScene extends PixelScene {
         ready();
     }
 
+    public static void updateZoneColors() {
+        if (scene != null) scene.zoneGroup.updateZoneColors();
+    }
+
     public static boolean isDisplayZones() {
         return displayZones;
     }

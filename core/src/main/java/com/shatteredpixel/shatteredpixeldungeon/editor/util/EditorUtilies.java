@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSelectLevelType;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -89,6 +90,11 @@ public final class EditorUtilies {
         if (Level.ANY.equals(specialLevelSchemeName))
             return Messages.get(ChooseDestLevelComp.class, "any_level");
         return specialLevelSchemeName;
+    }
+    public static String getDispayNameForZone(String specialZoneName) {
+        if (Zone.NONE.equals(specialZoneName))
+            return Messages.get(Zone.class, "none_zone");
+        return specialZoneName;
     }
 
     public static String getCodeName(LevelScheme specialLevelScheme) {

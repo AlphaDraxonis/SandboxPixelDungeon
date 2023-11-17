@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndColorPicker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -25,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.SlowExtendWindow;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -38,7 +40,8 @@ import java.util.List;
 
 public final class WndZones {
 
-    private WndZones(){}
+    private WndZones() {
+    }
 
     private static final int MARGIN = 2;
 
@@ -80,7 +83,7 @@ public final class WndZones {
             return true;
         }
 
-        public Camera getContentCamera(){
+        public Camera getContentCamera() {
             return content.camera();
         }
 
@@ -137,7 +140,7 @@ public final class WndZones {
             @Override
             public void onUpdate() {
                 if (zone != null) {
-                    icon.hardlight(zone.color);
+                    icon.hardlight(zone.getColor());
                     label.text(zone.getName());
                 }
                 super.onUpdate();
@@ -160,11 +163,11 @@ public final class WndZones {
 
             super(
                     PixelScene.landscape() ? 200 : Math.min(150, (int) (PixelScene.uiCamera.width * 0.8)),
-                    (int) ((PixelScene.uiCamera.height/2) * 0.85f + posY),
+                    (int) ((PixelScene.uiCamera.height / 2) * 0.85f + posY),
                     Orientation.BOTTOM_TO_TOP,
                     new Point(0, posY));
 
-            speed = endHeight/(TIME_TO_OPEN_WINDOW*100);
+            speed = endHeight / (TIME_TO_OPEN_WINDOW * 100);
 
             instance = this;
 
@@ -222,7 +225,8 @@ public final class WndZones {
 
         protected Component spContent;
         private final ScrollPane sp;
-        protected RenderedTextBlock title;
+        protected IconTitle title;
+        protected Image titleIcon;
         private Component[] comps;
 
         protected RedButton create, cancel;
@@ -233,9 +237,9 @@ public final class WndZones {
             resize(PixelScene.landscape() ? 210 : Math.min(155, (int) (PixelScene.uiCamera.width * 0.88)), 100);
             Zone zone = new Zone();
 
-            title = PixelScene.renderTextBlock(Messages.get(this, "title"), 8);
-            title.hardlight(TITLE_COLOR);
-            title.setHightlighting(false);
+            titleIcon = Icons.ZONE.get();
+            titleIcon.hardlight(zone.getColor());
+            title = new IconTitle(titleIcon, Messages.get(this, "title"));
             add(title);
 
             int textSize = (int) PixelScene.uiCamera.zoom * 9;
@@ -278,7 +282,23 @@ public final class WndZones {
                 }
             };
 
-            comps = EditZoneComp.createComponents(zone);
+            comps = EditZoneComp.createComponents(zone, () -> {
+                textBox.active = false;
+                EditorScene.show(new WndColorPicker(zone.getColor()) {
+                    @Override
+                    public void setSelectedColor(int color) {
+                        super.setSelectedColor(color);
+                        zone.setColor(color);
+                        titleIcon.hardlight(color);
+                    }
+
+                    @Override
+                    public void hide() {
+                        super.hide();
+                        textBox.active = true;
+                    }
+                });
+            });
             for (Component c : comps) {
                 if (c != null) spContent.add(c);
             }
@@ -287,8 +307,7 @@ public final class WndZones {
             add(sp);
 
             float posY = MARGIN;
-            title.maxWidth(width - MARGIN * 2);
-            title.setPos((width - title.width()) * 0.5f, posY);
+            title.setRect(MARGIN, posY, width, title.height());
             posY = title.bottom() + MARGIN * 2;
 
             final float textBoxPos = posY;
@@ -315,6 +334,17 @@ public final class WndZones {
 
         public void create(Zone zone) {
             if (zone != null) {
+
+                if (Dungeon.level.zoneMap.containsKey(zone.getName())) {
+                    EditorScene.show(
+                            new WndOptions(Icons.get(Icons.WARNING),
+                                    Messages.get(WndNewDungeon.class, "dup_name_title"),
+                                    Messages.get(WndNewZone.class, "dup_name_body"),
+                                    Messages.get(WndNewDungeon.class, "dup_name_close")
+                            )
+                    );
+                    return;
+                }
                 Dungeon.level.zoneMap.put(zone.getName(), zone);
                 WndSelectZone.updateList();
                 ZonePrompt.setSelectedZone(zone);
@@ -334,7 +364,14 @@ public final class WndZones {
         public EditZoneComp(Zone zone) {
             super(zone);
 
-            comps = createComponents(zone);
+            comps = createComponents(zone, () -> EditorScene.show(new WndColorPicker(zone.getColor()) {
+                @Override
+                public void setSelectedColor(int color) {
+                    super.setSelectedColor(color);
+                    zone.setColor(color);
+                    updateObj();
+                }
+            }));
             for (Component c : comps) {
                 if (c != null) add(c);
             }
@@ -359,7 +396,7 @@ public final class WndZones {
         @Override
         public Image getIcon() {
             Image icon = Icons.ZONE.get();
-            icon.hardlight(obj.color);
+            icon.hardlight(obj.getColor());
             return icon;
         }
 
@@ -373,7 +410,16 @@ public final class WndZones {
             super.updateObj();
         }
 
-        public static Component[] createComponents(Zone zone) {
+        public static Component[] createComponents(Zone zone, Runnable onColorPickClick) {
+
+            RedButton pickColor = new RedButton(Messages.get(EditZoneComp.class, "color")) {
+                @Override
+                protected void onClick() {
+                    onColorPickClick.run();
+                }
+            };
+            pickColor.icon(Icons.CHANGES.get());
+            pickColor.leftJustify = true;
 
             CheckBox flamable = new CheckBox(Messages.get(EditZoneComp.class, "flamable")) {
                 @Override
@@ -406,7 +452,7 @@ public final class WndZones {
 //            spawnItems.icon(new ItemSprite(ItemSpriteSheet.CHEST));
 
 
-            return new Component[]{flamable, spawnMobs, spawnItems};
+            return new Component[]{pickColor, flamable, spawnMobs, spawnItems};
         }
     }
 
