@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.android;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -33,12 +34,14 @@ import android.view.WindowManager;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidGraphics;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.noosa.Game;
+import com.watabou.utils.Consumer;
 import com.watabou.utils.PlatformSupport;
 
 import java.util.HashMap;
@@ -315,5 +318,16 @@ public class AndroidPlatformSupport extends PlatformSupport {
 			return regularsplitter.split(text);
 		}
 	}
-	
+
+
+	@Override
+	public void selectFile(Consumer<FileHandle> callback) {
+		AndroidLauncher.selectFileCallback = callback;
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+		intent.setType("*/*"); // Set MIME type to all files
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+//		intent.putExtra(Intent.EXTRA_TITLE, "TITLE");
+		AndroidLauncher.instance.startActivityForResult(intent, AndroidLauncher.REQUEST_DIRECTORY);
+	}
 }

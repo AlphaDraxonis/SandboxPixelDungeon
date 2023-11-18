@@ -22,6 +22,7 @@
 package com.watabou.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker;
@@ -51,7 +52,7 @@ public abstract class PlatformSupport {
 		return Gdx.net.openURI( uri );
 	}
 
-//	public FileHandle pickPngFile() {
+	public void selectFile(Consumer<FileHandle> callback) {
 //		JFileChooser dialog = new JFileChooser();
 //		dialog.setDialogTitle("TestTitle");
 //		dialog.setFileFilter(new FileNameExtensionFilter("Images", "png"));
@@ -63,8 +64,7 @@ public abstract class PlatformSupport {
 //			FileHandle dest = FileUtils.getFileHandle("temp_img.png");
 //			new FileHandle(selectedFile).copyTo(dest);
 //		}
-//		return null;
-//	}
+	}
 
 	public void setOnscreenKeyboardVisible(boolean value){
 		Gdx.input.setOnscreenKeyboardVisible(value);

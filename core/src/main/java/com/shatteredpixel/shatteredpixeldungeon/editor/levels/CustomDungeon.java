@@ -103,9 +103,45 @@ public class CustomDungeon implements Bundlable {
     //Backup levels/dungeons
     //import levels
 
-    //grass on every tile: store grass type in inv, add boolean array in level to show that there are grass visuals
+    //improve export/import logic  -> public external dir
 
-    //Maybe I should also suggestion the auto exit and auto entrance, like after the tengu fight, you see a massive staircase leading down.
+    //clarify that regular levels cant be opened
+
+    //Add a option for edit the monster description? Because then you could create like an NPC, using the neutral function, leave it
+    //When the player interacts with an npc, allow them to edit what the npc says.
+    //maybe you could change the dialogue of neutral enemie
+
+    //a simpler and easier way to make custom tiles (like maybe an ingame tile maker) in the star section.
+
+    //A way to make it so bosses don't count as bosses.
+
+    //The 2 tengu items, the bomb and shocker.
+    //The tengu bomb has a setting for when it goes off.
+    //The tengu shocker has a setting for how long it lasts.#
+
+    //see how much a locked door there and how much key there
+
+    //TODO  make zone icons
+
+    //reorder in heaps (add buttons left/right, use HeapActionPart.Modify)
+
+    //WndEditStats size wrong on Tablet
+
+    //add change log
+
+    //add tp for all tp traps
+    //select traps as destination
+    //chain trigger tp traps
+
+    //crystals(cave), and perhaps crystal walls
+
+    //manchmal falsche sprites für custom tiles
+
+    //desktop icon
+
+    //boss levels as templates
+
+    //specify what mobs summoning trap spawns
 
 
     //Scale mobs if their normal stats editor is disabled: not just everything

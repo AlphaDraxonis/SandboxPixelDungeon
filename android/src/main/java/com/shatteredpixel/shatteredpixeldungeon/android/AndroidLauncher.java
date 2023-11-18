@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.android;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -29,12 +30,15 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewConfiguration;
+import android.widget.Toast;
 
 import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.badlogic.gdx.backends.android.AndroidAudio;
 import com.badlogic.gdx.backends.android.AsynchronousAndroidAudio;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
@@ -45,9 +49,13 @@ import com.shatteredpixel.shatteredpixeldungeon.services.updates.UpdateImpl;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.watabou.noosa.Game;
+import com.watabou.utils.Consumer;
 import com.watabou.utils.FileUtils;
 
 public class AndroidLauncher extends AndroidApplication {
+
+	static final int REQUEST_DIRECTORY = 123;
+	static Consumer<FileHandle> selectFileCallback;
 	
 	public static AndroidApplication instance;
 	
@@ -167,5 +175,18 @@ public class AndroidLauncher extends AndroidApplication {
 	public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
 		super.onMultiWindowModeChanged(isInMultiWindowMode);
 		support.updateSystemUI();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == REQUEST_DIRECTORY && resultCode == Activity.RESULT_OK) {
+			FileHandle selectedFile = Gdx.files.absolute(data.getData().getPath());
+			if (selectedFile.extension().equals("dun"))selectFileCallback.accept(selectedFile);
+			else
+				Toast.makeText(this, "Invalid file: Only .dun files are permitted!", Toast.LENGTH_SHORT).show();
+//			selectFileCallback.accept(convertUriToFileHandle(data.getData()));
+		}
 	}
 }
