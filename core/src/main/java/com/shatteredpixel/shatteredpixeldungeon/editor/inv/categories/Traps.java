@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.TeleportationTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ToxicTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WarpingTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WarpwayTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WeakeningTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WornDartTrap;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -103,6 +104,7 @@ public enum Traps {
                 TeleportationTrap.class,
                 WarpingTrap.class,
                 GatewayTrap.class,
+                WarpwayTrap.class,
                 PitfallTrap.class
         };
         EQUIPMENT.classes = new Class[]{

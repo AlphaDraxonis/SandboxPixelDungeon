@@ -21,32 +21,15 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.watabou.utils.BArray;
-
-public class WarpingTrap extends TeleportationTrap {
+public class WarpwayTrap extends GatewayTrap {
 
 	{
-		color = TEAL;
-		shape = STARS;
+		color = WHITE;
+		shape = CROSSHAIR;
 	}
 
 	@Override
 	public void activate() {
-		forgetLayoutAndDoTeleport(pos, super::activate);
-	}
-
-	public static void forgetLayoutAndDoTeleport(int pos, Runnable performTeleport) {
-		if (Dungeon.level.distance(Dungeon.hero.pos, pos) <= 1){
-			BArray.setFalse(Dungeon.level.visited);
-			BArray.setFalse(Dungeon.level.mapped);
-		}
-
-		performTeleport.run();
-
-		GameScene.updateFog(); //just in case hero wasn't moved
-		Dungeon.observe();
-
+		WarpingTrap.forgetLayoutAndDoTeleport(pos, super::activate);
 	}
 }
