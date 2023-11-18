@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -34,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -47,6 +49,8 @@ public class Skeleton extends Mob {
 		attackSkill = 12;
 		damageRollMin = 2;
 		damageRollMax = 10;
+		explosionDamageRollMin = 6;
+		explosionDamageRollMax = 12;
 		damageReductionMax = 5;
 		
 		EXP = 5;
@@ -63,6 +67,8 @@ public class Skeleton extends Mob {
 //	public int damageRoll() {
 //		return Random.NormalIntRange( 2, 10 );
 //	}
+
+	public int explosionDamageRollMin, explosionDamageRollMax;
 	
 	@Override
 	public void die( Object cause ) {
@@ -75,7 +81,7 @@ public class Skeleton extends Mob {
 		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 			Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
 			if (ch != null && ch.isAlive()) {
-				int damage = Math.round(Random.NormalIntRange(6, 12));
+				int damage = Math.round(Random.NormalIntRange(explosionDamageRollMin, explosionDamageRollMax));
 				damage = Math.round( damage * AscensionChallenge.statModifier(this));
 				damage = Math.max( 0,  damage - (ch.drRoll() + ch.drRoll()) );
 				ch.damage( damage, this );
@@ -131,4 +137,24 @@ public class Skeleton extends Mob {
 //		return super.drRoll() + Random.NormalIntRange(0, 5);
 //	}
 
+
+	private static final String EXPLOSION_DAMAGE_ROLL_MIN = "explosion_damage_roll_min";
+	private static final String EXPLOSION_DAMAGE_ROLL_MAX = "explosion_damage_roll_max";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		Skeleton defaultMob = DefaultStatsCache.getDefaultObject(getClass());
+		if (defaultMob != null) {
+			if (defaultMob.explosionDamageRollMin != explosionDamageRollMin) bundle.put(EXPLOSION_DAMAGE_ROLL_MIN, explosionDamageRollMin);
+			if (defaultMob.explosionDamageRollMax != explosionDamageRollMax) bundle.put(EXPLOSION_DAMAGE_ROLL_MAX, explosionDamageRollMax);
+		}
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		if (bundle.contains(EXPLOSION_DAMAGE_ROLL_MIN)) explosionDamageRollMin = bundle.getInt(EXPLOSION_DAMAGE_ROLL_MIN);
+		if (bundle.contains(EXPLOSION_DAMAGE_ROLL_MAX)) explosionDamageRollMax = bundle.getInt(EXPLOSION_DAMAGE_ROLL_MAX);
+	}
 }

@@ -1170,10 +1170,7 @@ public abstract class Mob extends Char {
                 }
             } else {
 
-                if (defaultStats.HT != HT || defaultStats.baseSpeed != baseSpeed
-                        || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
-                        || defaultStats.damageRollMin != damageRollMin || defaultStats.damageRollMax != damageRollMax
-                        || defaultStats.damageReductionMax != damageReductionMax || defaultStats.EXP != EXP
+                if (!DefaultStatsCache.areStatsEqual(defaultStats, this)
                         || loot instanceof LootTableComp.CustomLootInfo) {
                     desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
 
@@ -1184,6 +1181,15 @@ public abstract class Mob extends Char {
                         desc += "\n" + Messages.get(Mob.class, "dmg_min") + ": " + defaultStats.damageRollMin + " -> _" + damageRollMin + "_";
                     if (defaultStats.damageRollMax != damageRollMax)
                         desc += "\n" + Messages.get(Mob.class, "dmg_max") + ": " + defaultStats.damageRollMax + " -> _" + damageRollMax + "_";
+
+					if (this instanceof Skeleton) {
+						Skeleton dies = (Skeleton) this;
+						Skeleton defa = (Skeleton) defaultStats;
+						if (defa.explosionDamageRollMin != dies.explosionDamageRollMin)
+							desc += "\n" + Messages.get(Mob.class, "death_dmg_min") + ": " + defa.explosionDamageRollMin + " -> _" + dies.explosionDamageRollMin + "_";
+						if (defa.explosionDamageRollMax != dies.explosionDamageRollMax)
+							desc += "\n" + Messages.get(Mob.class, "death_dmg_max") + ": " + defa.explosionDamageRollMax + " -> _" + dies.explosionDamageRollMax + "_";
+					}
 
                     if (defaultStats.EXP != EXP)
                         desc += "\n" + Messages.get(Mob.class, "xp") + ": " + defaultStats.EXP + " -> _" + EXP + "_";

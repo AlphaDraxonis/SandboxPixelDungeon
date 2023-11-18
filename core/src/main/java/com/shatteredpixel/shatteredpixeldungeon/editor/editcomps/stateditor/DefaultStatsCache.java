@@ -3,12 +3,12 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bee;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobBasedOnDepth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Skeleton;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
@@ -78,11 +78,15 @@ public class DefaultStatsCache {
                 || mob instanceof Brute
                 || mob instanceof Bee
                 || mob instanceof Wraith
-                || mob instanceof SentryRoom.Sentry
-                || mob instanceof Goo;
+                || mob instanceof SentryRoom.Sentry;
     }
 
     public static boolean areStatsEqual(Mob a, Mob b){
+        if (a instanceof Skeleton) {
+            Skeleton c = (Skeleton) a, d = (Skeleton) b;
+            if (c.explosionDamageRollMin != d.explosionDamageRollMin
+                    || c.explosionDamageRollMax != d.explosionDamageRollMax) return false;
+        }
         return a.statsScale == b.statsScale
                 && a.baseSpeed == b.baseSpeed
                 && a.HT == b.HT

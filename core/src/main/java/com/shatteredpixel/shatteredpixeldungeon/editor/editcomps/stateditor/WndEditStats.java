@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Skeleton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
@@ -58,6 +59,7 @@ public class WndEditStats extends MultiWindowTabComp {
     private RedButton restoreDefaults;
 
     private IntegerSpinner hp, attackSkill, defenseSkill, armor, dmgMin, dmgMax, xp, maxLvl;
+    private IntegerSpinner skeletonDeathDmgMin, skeletonDeathDmgMax;
     private FloatSpinner speed, statsScale;
     private StyledButtonWithIconAndText loot;
 
@@ -132,6 +134,18 @@ public class WndEditStats extends MultiWindowTabComp {
                         0, def.damageRollMax * 10, current.damageRollMax, false);
                 dmgMax.addChangeListener(() -> current.damageRollMax = dmgMax.getAsInt());
                 content.add(dmgMax);
+
+                if (current instanceof Skeleton) {
+                    skeletonDeathDmgMin = new IntegerSpinner(Messages.get(Mob.class, "death_dmg_min"),
+                            0, ((Skeleton) def).explosionDamageRollMin * 10, ((Skeleton) current).explosionDamageRollMin, false);
+                    skeletonDeathDmgMin.addChangeListener(() -> ((Skeleton) current).explosionDamageRollMin = skeletonDeathDmgMin.getAsInt());
+                    content.add(skeletonDeathDmgMin);
+
+                    skeletonDeathDmgMax = new IntegerSpinner(Messages.get(Mob.class, "death_dmg_max"),
+                            0, ((Skeleton) def).explosionDamageRollMax * 10, ((Skeleton) current).explosionDamageRollMax, false);
+                    skeletonDeathDmgMax.addChangeListener(() -> ((Skeleton) current).explosionDamageRollMax = skeletonDeathDmgMax.getAsInt());
+                    content.add(skeletonDeathDmgMax);
+                }
             }
             xp = new IntegerSpinner(Messages.get(Mob.class, "xp"),
                     0, def.EXP * 10, current.EXP, false);
@@ -145,7 +159,7 @@ public class WndEditStats extends MultiWindowTabComp {
 
             if (!(current instanceof Mimic)) {
 
-                loot = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndEditStats.class, "loot"), 9){
+                loot = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndEditStats.class, "loot"), 9) {
                     @Override
                     protected void onClick() {
                         LootTableComp lootTable = new LootTableComp(current);
@@ -168,7 +182,7 @@ public class WndEditStats extends MultiWindowTabComp {
         mainWindowComps = new Component[]{
                 statsScale, speed, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 hp, attackSkill, defenseSkill,
-                armor, dmgMin, dmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                armor, dmgMin, dmgMax, skeletonDeathDmgMin, skeletonDeathDmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 xp, maxLvl, loot
         };
     }
@@ -283,6 +297,10 @@ public class WndEditStats extends MultiWindowTabComp {
                 dmgMin.setValue(def.damageRollMin);
                 dmgMax.setValue(def.damageRollMax);
             }
+            if (skeletonDeathDmgMin != null) {
+                skeletonDeathDmgMin.setValue(((Skeleton) def).explosionDamageRollMin);
+                skeletonDeathDmgMax.setValue(((Skeleton) def).explosionDamageRollMax);
+            }
             if (xp != null) xp.setValue(def.EXP);
         }
     }
@@ -299,10 +317,12 @@ public class WndEditStats extends MultiWindowTabComp {
         }
 
         public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity, float realMin) {
-            super(new SpinnerFloatModel(minimum, maximum, value, false){@Override
-            public float getInputFieldWith(float height) {
-                return Spinner.FILL;
-            }}, name, 9);
+            super(new SpinnerFloatModel(minimum, maximum, value, false) {
+                @Override
+                public float getInputFieldWith(float height) {
+                    return Spinner.FILL;
+                }
+            }, name, 9);
             ((SpinnerIntegerModel) getModel()).setAbsoluteMinimum(realMin);
         }
 
@@ -319,7 +339,7 @@ public class WndEditStats extends MultiWindowTabComp {
         }
 
         public IntegerSpinner(String name, int minimum, int maximum, int value, boolean includeInfinity, int realMin) {
-            super(new IntegerSpinnerModel(minimum, maximum, value, false){
+            super(new IntegerSpinnerModel(minimum, maximum, value, false) {
                 @Override
                 public void displayInputAnyNumberDialog() {
                     displayInputAnyNumberDialog(realMin, Integer.MAX_VALUE);

@@ -54,6 +54,11 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		HP = HT = 100;
 		EXP = 10;
 		defenseSkill = 8;
+		attackSkill = 10;
+		damageRollMin = 1;
+		damageRollMax = 8;
+		damageReductionMax = 2;
+
 		spriteClass = GooSprite.class;
 
 		properties.add(Property.BOSS);
@@ -66,37 +71,37 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public int damageRoll() {
-		int min = 1;
-		int max = (HP*2 <= HT) ? 12 : 8;
+		int min = damageRollMin;
+		float max = damageRollMax * ((HP*2 <= HT) ? 1.5f : 1);
 		if (pumpedUp > 0) {
 			pumpedUp = 0;
 			if (enemy == Dungeon.hero) {
 				Statistics.qualifiedForBossChallengeBadge = false;
 				Statistics.bossScores[0] -= 100;
 			}
-			return Random.NormalIntRange( min*3, max*3 );
+			return Random.NormalIntRange( min*3, (int) (max*3));
 		} else {
-			return Random.NormalIntRange( min, max );
+			return Random.NormalIntRange( min, (int) max);
 		}
 	}
 
 	@Override
 	public int attackSkill( Char target ) {
-		int attack = 10;
-		if (HP*2 <= HT) attack = 15;
+		float attack = super.attackSkill(target);
+		if (HP*2 <= HT) attack *= 1.5f;
 		if (pumpedUp > 0) attack *= 2;
-		return (int) (attack * statsScale);
+		return (int) attack;
 	}
 
 	@Override
 	public int defenseSkill(Char enemy) {
-		return (int)(super.defenseSkill(enemy) * ((HP*2 <= HT)? 1.5 : 1) * statsScale);
+		return (int)(super.defenseSkill(enemy) * ((HP*2 <= HT)? 1.5 : 1));
 	}
 
-	@Override
-	public int drRoll() {
-		return (int) (super.drRoll() + Random.NormalIntRange(0, 2) * statsScale);
-	}
+//	@Override
+//	public int drRoll() {
+//		return (int) (super.drRoll() + Random.NormalIntRange(0, 2) * statsScale);
+//	}
 
 	@Override
 	public void setLevel(int depth) {
@@ -355,6 +360,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		}
 
 		healInc = bundle.getInt(HEALINC);
+		statsScale = 1f;
 	}
 	
 }
