@@ -766,8 +766,12 @@ public class CustomDungeon implements Bundlable {
             }
             if (openS == null) SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
             else {
-                EditorScene.open((CustomLevel) openS.loadLevel());
-                EditorScene.show(new WndSwitchFloor());
+                Level openLevel = openS.loadLevel();
+                if(openLevel == null)  SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
+                else {
+                    EditorScene.open((CustomLevel) openLevel);
+                    EditorScene.show(new WndSwitchFloor());
+                }
             }
 
         }
@@ -782,6 +786,7 @@ public class CustomDungeon implements Bundlable {
                 Level level;
                 if (load) level = ls.loadLevel();
                 else level = ls.getLevel();
+                if (level == null) continue;//skip if level couldn't be loaded
                 Set<Integer> toRemoveTransitions = new HashSet<>(4);
                 for (LevelTransition transition : level.transitions.values()) {
                     if (transition != null && Objects.equals(transition.destLevel, n)) {
@@ -908,6 +913,7 @@ public class CustomDungeon implements Bundlable {
                     Level level;
                     if (load) level = ls.loadLevel();
                     else level = ls.getLevel();
+                    if (level == null) continue;//skip if level couldn't be loaded
 
                     boolean needsSave = false;
 
@@ -955,6 +961,7 @@ public class CustomDungeon implements Bundlable {
                 Level level;
                 if (load) level = ls.loadLevel();
                 else level = ls.getLevel();
+                if (level == null) continue;//skip if level couldn't be loaded
 
                 boolean needsSave = false;
 
@@ -1031,6 +1038,8 @@ public class CustomDungeon implements Bundlable {
                 if (oldName.equals(ls.levelCreatedBefore)) ls.levelCreatedBefore = newName;
                 if (oldName.equals(ls.levelCreatedAfter)) ls.levelCreatedAfter = newName;
 
+                renameInvalidKeys(ls.itemsToSpawn, oldName, newName);
+
                 if (ls.getType() == CustomLevel.class) {
                     boolean load = ls.getLevel() == null;
                     Level level;
@@ -1040,6 +1049,7 @@ public class CustomDungeon implements Bundlable {
                     boolean saveWithOgName = level == null;
                     if (saveWithOgName) {
                         level = CustomDungeonSaves.loadLevelWithOgName(ls.getName());
+                        if (level == null) continue;//skip if level couldn't be loaded
                         level.levelScheme = ls;
                     }
 
@@ -1125,7 +1135,7 @@ public class CustomDungeon implements Bundlable {
                         ls.getExitTransitionRegular().departLevel = newName;
                     }
                 }
-                renameInvalidKeys(ls.itemsToSpawn, oldName, newName);
+
             }
 
             for (ItemDistribution<? extends Bundlable> distr : itemDistributions) {
@@ -1151,9 +1161,11 @@ public class CustomDungeon implements Bundlable {
                 Level level;
                 if (unload) level = levelScheme.loadLevel();
                 else level = levelScheme.getLevel();
-                level.name = newName;
-                CustomDungeonSaves.saveLevel(level);
-                if (unload) levelScheme.unloadLevel();
+                if (level != null) {
+                    level.name = newName;
+                    CustomDungeonSaves.saveLevel(level);
+                    if (unload) levelScheme.unloadLevel();
+                }
             }
 
             if (EditorScene.customLevel() != null) {
@@ -1200,6 +1212,7 @@ public class CustomDungeon implements Bundlable {
             if (floor.getType() == CustomLevel.class) {
                 boolean load = floor.getLevel() == null;
                 if (load) floor.loadLevel();
+                if (floor.getLevel() == null) continue;//skip if level couldn't be loaded
                 bundle.put(Integer.toString(i), floor.getLevel());
                 if (load) floor.unloadLevel();
                 i++;

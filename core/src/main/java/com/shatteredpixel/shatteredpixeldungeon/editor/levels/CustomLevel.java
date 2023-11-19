@@ -1040,6 +1040,7 @@ public class CustomLevel extends Level {
                 Level l;
                 if (load) l = ls.loadLevel(false);
                 else l = ls.getLevel();
+                if (l == null) continue;//skip if level couldn't be loaded
                 boolean changedSth = false;
                 for (LevelTransition transition : l.transitions.values()) {
                     Boolean feedback = checkLevelTransitionsDestCell(transition, level, newPosition, isPositionValid);

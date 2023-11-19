@@ -14,9 +14,13 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
+
+import java.io.IOException;
 
 public class WndSwitchFloor extends Window {
 
@@ -106,7 +110,29 @@ public class WndSwitchFloor extends Window {
         if (levelScheme.getType() == CustomLevel.class) {
             CustomLevel f = (CustomLevel) levelScheme.getLevel();
             if (f == null) f = (CustomLevel) levelScheme.loadLevel();
-            if (f == null) return;
+            if (f == null) {
+                if (levelScheme.levelLoadingException != null){
+                    String errorMsg = levelScheme.levelLoadingException.getClass().getSimpleName()
+                            + (levelScheme.levelLoadingException.getMessage() == null ? ""
+                            : ": _" + levelScheme.levelLoadingException.getMessage().replace('_', '-') + "_");
+                            EditorScene.show(new WndOptions(Icons.WARNING.get(), Messages.get(WndSwitchFloor.class, "loading_error_title"),
+                                    Messages.get(WndSwitchFloor.class, "loading_error_body", errorMsg),
+                                    Messages.get(WndGameInProgress.class, "erase"),
+                                    Messages.get(WndNewDungeon.class, "no")) {
+                                @Override
+                                protected void onSelect(int index) {
+                                    if (index == 0) {
+                                        try {
+                                            levelScheme.getCustomDungeon().delete(levelScheme);
+                                        } catch (IOException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+                                }
+                            });
+                }
+                return;
+            }
             EditorScene.open(f);
         } else listPane.onEdit(levelScheme, listItem);
     }

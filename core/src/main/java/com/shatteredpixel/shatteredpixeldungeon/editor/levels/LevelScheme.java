@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -802,6 +803,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         return ret;
     }
 
+    public Exception levelLoadingException;
+
     public Level loadLevel() {
         return loadLevel(true);
     }
@@ -811,10 +814,16 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             try {
                 level = CustomDungeonSaves.loadLevel(name, removeInvalidTransitions);
                 level.levelScheme = this;
+                levelLoadingException = null;
+            }catch (GdxRuntimeException gdxEx){
+                levelLoadingException = gdxEx.getCause() instanceof IOException ? (Exception) gdxEx.getCause() : gdxEx;
+                SandboxPixelDungeon.reportException(levelLoadingException);
             } catch (IOException e) {
+                levelLoadingException = e;
                 SandboxPixelDungeon.reportException(e);
             } catch (CustomDungeonSaves.RenameRequiredException ex) {
                 ex.showExceptionWindow();
+                levelLoadingException = ex;
             }
         }
         return level;

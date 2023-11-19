@@ -93,6 +93,12 @@ public class DungeonToJsonConverter {
 
     private static void appendFloor(StringBuilder b, LevelScheme l) {
 
+        CustomLevel f = null;
+        if (l.getType() == CustomLevel.class){
+            f = (CustomLevel) l.loadLevel();
+            if (f == null) return;
+        }
+
         appendListHead(b, l.getName());
         appendParam(b, "depth", l.getDepth());
         appendParam(b, "type", l.getType() == CustomLevel.class ? "custom" : "regular");
@@ -100,10 +106,8 @@ public class DungeonToJsonConverter {
         List<Integer> entranceCells = null;
         List<Integer> exitCells = null;
         Map<Integer, LevelTransition> levelTransitions = null;
-        CustomLevel f = null;
         if (l.getType() == CustomLevel.class) {
             appendListHead(b, "custom_layout");
-            f = (CustomLevel) l.loadLevel();
             int width = f.width();
             int height = f.height();
             appendParam(b, "width", width);
