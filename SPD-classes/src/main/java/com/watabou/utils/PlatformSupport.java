@@ -52,6 +52,12 @@ public abstract class PlatformSupport {
 		return Gdx.net.openURI( uri );
 	}
 
+	public void openFileExplorer(FileHandle selectedDirectory){
+	}
+	public boolean supportsOpenFileExplorer(){
+		return false;
+	}
+
 	public void selectFile(Consumer<FileHandle> callback) {
 //		JFileChooser dialog = new JFileChooser();
 //		dialog.setDialogTitle("TestTitle");

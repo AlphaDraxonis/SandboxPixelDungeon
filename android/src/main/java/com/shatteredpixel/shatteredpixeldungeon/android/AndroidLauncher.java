@@ -182,7 +182,7 @@ public class AndroidLauncher extends AndroidApplication {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (requestCode == REQUEST_DIRECTORY && resultCode == Activity.RESULT_OK) {
-			FileHandle selectedFile = Gdx.files.absolute(data.getData().getPath());
+			FileHandle selectedFile = Gdx.files.absolute(("storage/emulated/0/"+data.getData().getPath()).replaceFirst("document/primary:",""));
 			if (selectedFile.extension().equals("dun"))selectFileCallback.accept(selectedFile);
 			else
 				Toast.makeText(this, "Invalid file: Only .dun files are permitted!", Toast.LENGTH_SHORT).show();

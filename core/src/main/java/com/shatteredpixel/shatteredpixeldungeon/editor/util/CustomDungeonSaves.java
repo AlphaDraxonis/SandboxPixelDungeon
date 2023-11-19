@@ -32,6 +32,7 @@ public class CustomDungeonSaves {
 
     private static final String ROOT_DIR = "";
     private static final String FILE_EXTENSION = ".dat";
+    public static final String EXPORT_FILE_EXTENSION = ".dun";
     public static final String DUNGEON_FOLDER = ROOT_DIR + "custom_dungeons/";
     private static final String LEVEL_FOLDER = "levels/";
     private static final String DUNGEON_DATA = "data" + FILE_EXTENSION;
@@ -42,6 +43,7 @@ public class CustomDungeonSaves {
     private static final String DUNGEON = "dungeon";
     private static final String INFO = "info";
     private static final String FLOOR = "floor";
+    static final String EXPORT = "export";
 
     static String curDirectory;
 
@@ -60,6 +62,21 @@ public class CustomDungeonSaves {
         setCurDirectory(DUNGEON_FOLDER + dungeon.getName().replace(' ', '_') + "/");
         FileUtils.bundleToFile(curDirectory + DUNGEON_DATA, bundle);
         FileUtils.bundleToFile(curDirectory + DUNGEON_INFO, bundleInfo);
+    }
+
+    public static void exportDungeon(String dungeonName, String absolutePathDir) throws IOException {
+        try {
+            FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
+            exportDungeon(CustomDungeonSaves.loadDungeon(dungeonName), absolutePathDir);
+        } catch (CustomDungeonSaves.RenameRequiredException e) {
+            e.showExceptionWindow();
+        }
+    }
+
+    public static void exportDungeon(CustomDungeon dungeon, String absolutePathDir) throws IOException {
+        Bundle export = new Bundle();
+        export.put(EXPORT, new ExportDungeonWrapper(dungeon));//TODO tzz location
+        FileUtils.bundleToFile(absolutePathDir + dungeon.getName().replace(' ', '_') + EXPORT_FILE_EXTENSION, export);
     }
 
     public static class RenameRequiredException extends Exception {
@@ -195,6 +212,17 @@ public class CustomDungeonSaves {
             List<String> dungeonDirs = getFilesInDir(DUNGEON_FOLDER);
             List<Info> result = new ArrayList<>();
             for (String path : dungeonDirs) {
+                if (path.endsWith(EXPORT_FILE_EXTENSION)) {
+                    FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path);
+                    if (file.exists() && !file.isDirectory()) {
+                        Info info = ExportDungeonWrapper.doImport(file);
+                        if (info != null) {
+                            result.add(info);
+                            file.delete();
+                        }
+                        continue;
+                    }
+                }
                 FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
                 if (file.exists())
                     result.add((Info) FileUtils.bundleFromStream(file.read()).get(INFO));

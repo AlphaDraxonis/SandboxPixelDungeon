@@ -22,14 +22,19 @@
 package com.shatteredpixel.shatteredpixeldungeon.desktop;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.utils.PlatformSupport;
 import com.watabou.utils.Point;
 
+import java.awt.Desktop;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -144,5 +149,23 @@ public class DesktopPlatformSupport extends PlatformSupport {
 		} else {
 			return regularsplitter.split(text);
 		}
+	}
+
+	@Override
+	public void openFileExplorer(FileHandle selectedDirectory) {
+		Desktop desktop = Desktop.getDesktop();
+		desktop.isSupported(Desktop.Action.OPEN);
+		try {
+			desktop.open(selectedDirectory.file());
+		} catch (IOException e) {
+			Game.runOnRenderThread(() ->
+					Game.scene().addToFront(new WndTitledMessage(Icons.get(Icons.WARNING), "ERROR",
+							"Something went wrong:\n" + e.getMessage())));
+		}
+	}
+
+	@Override
+	public boolean supportsOpenFileExplorer() {
+		return Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN);
 	}
 }
