@@ -63,13 +63,13 @@ public class ChangeMapSize extends Component {
         info = PixelScene.renderTextBlock(Messages.get(ChangeMapSize.class, "info"), 6);
         add(info);
 
-        topSpinner = new Spinner(new OwnSpinnerModel(1, 60, startTop = (int) Math.ceil((EditorScene.customLevel().height() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "n") + " ", 9);
+        topSpinner = new Spinner(new OwnSpinnerModel(1, 65, startTop = (int) Math.ceil((EditorScene.customLevel().height() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "n") + " ", 9);
         add(topSpinner);
-        bottomSpinner = new Spinner(new OwnSpinnerModel(1, 60, startBottom = (int) ((EditorScene.customLevel().height() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "s") + " ", 9);
+        bottomSpinner = new Spinner(new OwnSpinnerModel(1, 65, startBottom = (int) ((EditorScene.customLevel().height() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "s") + " ", 9);
         add(bottomSpinner);
-        leftSpinner = new Spinner(new OwnSpinnerModel(1, 60, startLeft = (int) Math.ceil((EditorScene.customLevel().width() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "w") + " ", 9);
+        leftSpinner = new Spinner(new OwnSpinnerModel(1, 65, startLeft = (int) Math.ceil((EditorScene.customLevel().width() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "w") + " ", 9);
         add(leftSpinner);
-        rightSpinner = new Spinner(new OwnSpinnerModel(1, 60, startRight = (int) ((EditorScene.customLevel().width() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "e") + " ", 9);
+        rightSpinner = new Spinner(new OwnSpinnerModel(1, 65, startRight = (int) ((EditorScene.customLevel().width() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "e") + " ", 9);
         add(rightSpinner);
     }
 

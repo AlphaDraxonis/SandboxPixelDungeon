@@ -259,8 +259,8 @@ public abstract class Mob extends Char {
 		if (bundle.contains(IS_BOSS_MOB)) {
 			isBossMob = bundle.getBoolean(IS_BOSS_MOB);
 			if (isBossMob) {
-				Dungeon.level.bossMob = this;
-				if (Dungeon.level.bossFound) BossHealthBar.assignBoss(this);
+				Level.bossMobStatic = this;
+				if (Level.bossFoundStatic) BossHealthBar.assignBoss(this);
 				if ((HP*2 <= HT)) BossHealthBar.bleed(true);
 			}
 		}

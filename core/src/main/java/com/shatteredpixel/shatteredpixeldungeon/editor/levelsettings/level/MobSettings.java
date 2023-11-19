@@ -24,6 +24,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -409,8 +410,10 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
                 public void onSelect(Integer cell) {
                     if (cell != null) {
                         CustomLevel l = EditorScene.customLevel();
-                        final int oldBoss = l.bossmobAt;
-                        if (cell >= 0 && cell < l.length() && l.findMob(cell) != null) {
+                        if (cell >= 0 && cell < l.length()) {
+                            final int oldBoss = l.bossmobAt;
+                            if (l.findMob(cell) == null) cell = Level.NO_BOSS_MOB;
+                            final int c = cell;
                             ActionPart part = new ActionPart() {
                                 @Override
                                 public void undo() {
@@ -419,12 +422,12 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
 
                                 @Override
                                 public void redo() {
-                                    l.bossmobAt = cell;
+                                    l.bossmobAt = c;
                                 }
 
                                 @Override
                                 public boolean hasContent() {
-                                    return oldBoss != cell;
+                                    return oldBoss != c;
                                 }
                             };
                             Undo.addActionPart(part);

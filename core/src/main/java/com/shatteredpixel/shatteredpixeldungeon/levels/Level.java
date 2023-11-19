@@ -224,6 +224,10 @@ public abstract class Level implements Bundlable {
 	public Mob bossMob;//after initForPlay
 	public boolean bossFound;
 
+	//For loading
+	public static boolean bossFoundStatic;
+	public static Mob bossMobStatic;
+
 	private static final String VERSION     = "version";
 	private static final String WIDTH       = "width";
 	private static final String HEIGHT      = "height";
@@ -512,6 +516,11 @@ public abstract class Level implements Bundlable {
 
 		Dungeon.customDungeon.getFloor(name).setLevel(this);
 
+		if (bundle.contains(BOSS_MOB_AT)) {
+			bossmobAt = bundle.getInt(BOSS_MOB_AT);
+			bossFound = bundle.getBoolean(BOSS_FOUND);
+		}
+
 		transitions = new HashMap<>();
 		for (Bundlable b : bundle.getCollection( TRANSITIONS )){
 			transitions.put(((LevelTransition) b).departCell, (LevelTransition) b);
@@ -565,6 +574,7 @@ public abstract class Level implements Bundlable {
 				mobs.add( mob );
 			}
 		}
+		bossMob = bossMobStatic;
 		
 		collection = bundle.getCollection( BLOBS );
 		for (Bundlable b : collection) {
@@ -579,11 +589,6 @@ public abstract class Level implements Bundlable {
 		}
 
 		feeling = bundle.getEnum( FEELING, Feeling.class );
-
-		if (bundle.contains(BOSS_MOB_AT)) {
-			bossmobAt = bundle.getInt(BOSS_MOB_AT);
-			bossFound = bundle.getBoolean(BOSS_FOUND);
-		}
 
 		if (bundle.contains( "mobs_to_spawn" )) {
 			for (Class<? extends Mob> mob : bundle.getClassArray("mobs_to_spawn")) {
