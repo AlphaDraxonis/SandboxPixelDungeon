@@ -128,6 +128,7 @@ public abstract class Mob extends Char {
 	public int defenseSkill = 0;//evasion
 	public int attackSkill = 0;//accuracy
 	public int damageRollMin = 0, damageRollMax = 0;
+	public int specialDamageRollMin = 0, specialDamageRollMax = 0;
 	public float statsScale = 1f;//only used in subclasses!
 
 	public boolean isBossMob;//only real value while playing, use level.bossmobAt instead!, not meant for shattered bosses except goo!
@@ -167,6 +168,8 @@ public abstract class Mob extends Char {
 	private static final String ATTACK_SKILL = "attack_skill";
 	private static final String DAMAGE_ROLL_MIN = "damage_roll_min";
 	private static final String DAMAGE_ROLL_MAX = "damage_roll_max";
+	private static final String SPECIAL_DAMAGE_ROLL_MIN = "special_damage_roll_min";
+	private static final String SPECIAL_DAMAGE_ROLL_MAX = "special_damage_roll_max";
 	private static final String XP = "xp";
 	private static final String STATS_SCALE = "stats_scale";
 	private static final String IS_BOSS_MOB = "is_boss_mob";
@@ -203,6 +206,8 @@ public abstract class Mob extends Char {
             if (defaultMob.attackSkill != attackSkill) bundle.put(ATTACK_SKILL, attackSkill);
             if (defaultMob.damageRollMin != damageRollMin) bundle.put(DAMAGE_ROLL_MIN, damageRollMin);
             if (defaultMob.damageRollMax != damageRollMax) bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
+            if (defaultMob.specialDamageRollMin != specialDamageRollMin) bundle.put(SPECIAL_DAMAGE_ROLL_MIN, specialDamageRollMin);
+            if (defaultMob.specialDamageRollMax != specialDamageRollMax) bundle.put(SPECIAL_DAMAGE_ROLL_MAX, specialDamageRollMax);
             if (defaultMob.EXP != EXP) bundle.put(XP, EXP);
             if (defaultMob.statsScale != statsScale) bundle.put(STATS_SCALE, statsScale);
         }
@@ -253,6 +258,8 @@ public abstract class Mob extends Char {
 		if (bundle.contains(ATTACK_SKILL)) attackSkill = bundle.getInt(ATTACK_SKILL);
 		if (bundle.contains(DAMAGE_ROLL_MIN)) damageRollMin = bundle.getInt(DAMAGE_ROLL_MIN);
 		if (bundle.contains(DAMAGE_ROLL_MAX)) damageRollMax = bundle.getInt(DAMAGE_ROLL_MAX);
+		if (bundle.contains(SPECIAL_DAMAGE_ROLL_MIN)) specialDamageRollMin = bundle.getInt(SPECIAL_DAMAGE_ROLL_MIN);
+		if (bundle.contains(SPECIAL_DAMAGE_ROLL_MAX)) specialDamageRollMax = bundle.getInt(SPECIAL_DAMAGE_ROLL_MAX);
 		if (bundle.contains(XP)) EXP = bundle.getInt(XP);
 		if (bundle.contains(STATS_SCALE)) statsScale = bundle.getFloat(STATS_SCALE);
 
@@ -1181,15 +1188,10 @@ public abstract class Mob extends Char {
                         desc += "\n" + Messages.get(Mob.class, "dmg_min") + ": " + defaultStats.damageRollMin + " -> _" + damageRollMin + "_";
                     if (defaultStats.damageRollMax != damageRollMax)
                         desc += "\n" + Messages.get(Mob.class, "dmg_max") + ": " + defaultStats.damageRollMax + " -> _" + damageRollMax + "_";
-
-					if (this instanceof Skeleton) {
-						Skeleton dies = (Skeleton) this;
-						Skeleton defa = (Skeleton) defaultStats;
-						if (defa.explosionDamageRollMin != dies.explosionDamageRollMin)
-							desc += "\n" + Messages.get(Mob.class, "death_dmg_min") + ": " + defa.explosionDamageRollMin + " -> _" + dies.explosionDamageRollMin + "_";
-						if (defa.explosionDamageRollMax != dies.explosionDamageRollMax)
-							desc += "\n" + Messages.get(Mob.class, "death_dmg_max") + ": " + defa.explosionDamageRollMax + " -> _" + dies.explosionDamageRollMax + "_";
-					}
+                    if (defaultStats.specialDamageRollMin != specialDamageRollMin)
+                        desc += "\n" + Messages.get(Mob.class, "special_dmg_min") + ": " + defaultStats.specialDamageRollMin + " -> _" + specialDamageRollMin + "_";
+                    if (defaultStats.specialDamageRollMax != specialDamageRollMax)
+                        desc += "\n" + Messages.get(Mob.class, "special_dmg_max") + ": " + defaultStats.specialDamageRollMax + " -> _" + specialDamageRollMax + "_";
 
                     if (defaultStats.EXP != EXP)
                         desc += "\n" + Messages.get(Mob.class, "xp") + ": " + defaultStats.EXP + " -> _" + EXP + "_";

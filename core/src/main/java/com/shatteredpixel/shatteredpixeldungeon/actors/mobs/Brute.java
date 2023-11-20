@@ -44,6 +44,10 @@ public class Brute extends Mob {
 		defenseSkill = 15;
 		attackSkill = 20;
 		damageReductionMax = 8;
+		damageRollMin = 5;
+		damageRollMax = 25;
+		specialDamageRollMin = 15;
+		specialDamageRollMax = 40;
 		
 		EXP = 8;
 		maxLvl = 16;
@@ -56,10 +60,9 @@ public class Brute extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return (int) ((buff(BruteRage.class) != null ?
-					Random.NormalIntRange( 15, 40 ) :
-					Random.NormalIntRange( 5, 25 ))
-				* statsScale);
+		return buff(BruteRage.class) != null ?
+					Random.NormalIntRange( specialDamageRollMin, specialDamageRollMax ) :
+					super.damageRoll();
 	}
 	
 //	@Override

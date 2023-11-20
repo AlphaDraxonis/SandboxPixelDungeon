@@ -54,6 +54,8 @@ public class Warlock extends Mob implements Callback {
 		attackSkill = 25;
 		damageRollMin = 12;
 		damageRollMax = 18;
+		specialDamageRollMin = 12;
+		specialDamageRollMax = 18;
 		damageReductionMax = 8;
 		
 		EXP = 11;
@@ -120,7 +122,7 @@ public class Warlock extends Mob implements Callback {
 				Sample.INSTANCE.play( Assets.Sounds.DEBUFF );
 			}
 			
-			int dmg = Random.NormalIntRange( 12, 18 );
+			int dmg = Random.NormalIntRange( specialDamageRollMin, specialDamageRollMax );
 			dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
 			enemy.damage( dmg, new DarkBolt() );
 			

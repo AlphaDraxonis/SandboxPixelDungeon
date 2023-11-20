@@ -57,6 +57,8 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		attackSkill = 10;
 		damageRollMin = 1;
 		damageRollMax = 8;
+		specialDamageRollMin = damageRollMin * 3;
+		specialDamageRollMax = damageRollMax * 3;
 		damageReductionMax = 2;
 
 		spriteClass = GooSprite.class;
@@ -71,18 +73,18 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public int damageRoll() {
-		int min = damageRollMin;
-		float max = damageRollMax * ((HP*2 <= HT) ? 1.5f : 1);
-		if (pumpedUp > 0) {
+		boolean stronger = pumpedUp > 0;
+		int min = stronger ? specialDamageRollMin : damageRollMin;
+		int max = stronger ? specialDamageRollMax : damageRollMax;
+		if (HP * 2 <= HT) max *= 1.5f;
+		if (stronger) {
 			pumpedUp = 0;
 			if (enemy == Dungeon.hero) {
 				Statistics.qualifiedForBossChallengeBadge = false;
 				Statistics.bossScores[0] -= 100;
 			}
-			return Random.NormalIntRange( min*3, (int) (max*3));
-		} else {
-			return Random.NormalIntRange( min, (int) max);
 		}
+		return Random.NormalIntRange( min, max);
 	}
 
 	@Override

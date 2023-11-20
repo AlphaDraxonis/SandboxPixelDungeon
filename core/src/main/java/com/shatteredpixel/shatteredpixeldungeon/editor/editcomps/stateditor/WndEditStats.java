@@ -3,9 +3,11 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Skeleton;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
@@ -58,8 +60,7 @@ public class WndEditStats extends MultiWindowTabComp {
 
     private RedButton restoreDefaults;
 
-    private IntegerSpinner hp, attackSkill, defenseSkill, armor, dmgMin, dmgMax, xp, maxLvl;
-    private IntegerSpinner skeletonDeathDmgMin, skeletonDeathDmgMax;
+    private IntegerSpinner hp, attackSkill, defenseSkill, armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, xp, maxLvl;
     private FloatSpinner speed, statsScale;
     private StyledButtonWithIconAndText loot;
 
@@ -115,10 +116,6 @@ public class WndEditStats extends MultiWindowTabComp {
 
                 if (!(current instanceof SentryRoom.Sentry)) addSpeedSpinner(def, current);
 
-                if (current instanceof Brute) {
-                    addHPAccuracyEvasionArmorSpinner(def, current);
-                }
-
             } else {
 
                 addSpeedSpinner(def, current);
@@ -135,17 +132,18 @@ public class WndEditStats extends MultiWindowTabComp {
                 dmgMax.addChangeListener(() -> current.damageRollMax = dmgMax.getAsInt());
                 content.add(dmgMax);
 
-                if (current instanceof Skeleton) {
-                    skeletonDeathDmgMin = new IntegerSpinner(Messages.get(Mob.class, "death_dmg_min"),
-                            0, ((Skeleton) def).explosionDamageRollMin * 10, ((Skeleton) current).explosionDamageRollMin, false);
-                    skeletonDeathDmgMin.addChangeListener(() -> ((Skeleton) current).explosionDamageRollMin = skeletonDeathDmgMin.getAsInt());
-                    content.add(skeletonDeathDmgMin);
+                if (current instanceof Skeleton || current instanceof Warlock || current instanceof Brute || current instanceof Goo) {
+                    specialDmgMin = new IntegerSpinner(Messages.get(Mob.class, "special_dmg_min"),
+                            0, def.specialDamageRollMin * 10, current.specialDamageRollMin, false);
+                    specialDmgMin.addChangeListener(() -> current.specialDamageRollMin = specialDmgMin.getAsInt());
+                    content.add(specialDmgMin);
 
-                    skeletonDeathDmgMax = new IntegerSpinner(Messages.get(Mob.class, "death_dmg_max"),
-                            0, ((Skeleton) def).explosionDamageRollMax * 10, ((Skeleton) current).explosionDamageRollMax, false);
-                    skeletonDeathDmgMax.addChangeListener(() -> ((Skeleton) current).explosionDamageRollMax = skeletonDeathDmgMax.getAsInt());
-                    content.add(skeletonDeathDmgMax);
+                    specialDmgMax = new IntegerSpinner(Messages.get(Mob.class, "special_dmg_max"),
+                            0, def.specialDamageRollMax * 10, current.specialDamageRollMax, false);
+                    specialDmgMax.addChangeListener(() -> current.specialDamageRollMax = specialDmgMax.getAsInt());
+                    content.add(specialDmgMax);
                 }
+
             }
             xp = new IntegerSpinner(Messages.get(Mob.class, "xp"),
                     0, def.EXP * 10, current.EXP, false);
@@ -182,7 +180,7 @@ public class WndEditStats extends MultiWindowTabComp {
         mainWindowComps = new Component[]{
                 statsScale, speed, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 hp, attackSkill, defenseSkill,
-                armor, dmgMin, dmgMax, skeletonDeathDmgMin, skeletonDeathDmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 xp, maxLvl, loot
         };
     }
@@ -297,9 +295,9 @@ public class WndEditStats extends MultiWindowTabComp {
                 dmgMin.setValue(def.damageRollMin);
                 dmgMax.setValue(def.damageRollMax);
             }
-            if (skeletonDeathDmgMin != null) {
-                skeletonDeathDmgMin.setValue(((Skeleton) def).explosionDamageRollMin);
-                skeletonDeathDmgMax.setValue(((Skeleton) def).explosionDamageRollMax);
+            if (specialDmgMin != null) {
+                specialDmgMin.setValue(def.specialDamageRollMin);
+                specialDmgMin.setValue(def.specialDamageRollMax);
             }
             if (xp != null) xp.setValue(def.EXP);
         }
