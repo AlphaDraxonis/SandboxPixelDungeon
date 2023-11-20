@@ -735,7 +735,6 @@ public class YogDzewa extends Mob {
 			maxLvl = -2;
 
 			properties.add(Property.DEMONIC);
-			properties.add(Property.BOSS_MINION);
 		}
 
 		private int yogDzewaId;
@@ -751,11 +750,13 @@ public class YogDzewa extends Mob {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			yogDzewaId = bundle.getInt(YOG_DZEWA_ID);
+			if (yogDzewaId > 0) properties.add(Property.BOSS_MINION);
 		}
 
 		@Override
 		public void setId(int id) {
 			yogDzewaId = id;
+			properties.add(Property.BOSS_MINION);
 		}
 
 		@Override

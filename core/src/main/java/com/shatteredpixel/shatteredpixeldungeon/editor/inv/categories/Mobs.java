@@ -278,6 +278,7 @@ public enum Mobs {
                 RipperDemon.class,
                 DemonSpawner.class,
                 YogDzewa.class,
+                YogDzewa.Larva.class,
                 YogFist.SoiledFist.class,
                 YogFist.BurningFist.class,
                 YogFist.RustedFist.class,
