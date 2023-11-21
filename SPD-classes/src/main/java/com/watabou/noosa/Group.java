@@ -325,14 +325,14 @@ public class Group extends Gizmo {
 	}
 
 	//Important for scrollpane fix: add scrollpane last (first add the buttons to the sp, then the sp to the window)
-	public  void redirectPointerEvent(PointerEvent event) {
+	public void redirectPointerEvent(PointerEvent event) {
 		if (members == null) return;
 		for (Gizmo gizmo : new ArrayList<>(members)) {
 			if (gizmo instanceof Group) ((Group) gizmo).redirectPointerEvent(event);
 		}
 	}
 
-	public  void cancelClick() {
+	public void cancelClick() {
 		if (members == null) return;
 		for (Gizmo gizmo : new ArrayList<>(members)) {
 			if (gizmo instanceof Group) ((Group) gizmo).cancelClick();

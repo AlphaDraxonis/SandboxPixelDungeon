@@ -202,6 +202,7 @@ public class ScrollPane extends Component {
         public PointerController() {
             super(0, 0, 0, 0);
             dragThreshold = PixelScene.defaultZoom * 8;
+            doNotHover = true;
         }
 
         @Override
@@ -215,6 +216,22 @@ public class ScrollPane extends Component {
         @Override
         protected void onPointerDown(PointerEvent event) {
             super.onPointerDown(event);
+            if (event != null) {
+                content.redirectPointerEvent(event);
+            }
+        }
+
+        @Override
+        protected void onHoverStart(PointerEvent event) {
+            super.onHoverStart(event);
+            if (event != null) {
+                content.redirectPointerEvent(event);
+            }
+        }
+
+        @Override
+        protected void onHoverEnd(PointerEvent event) {
+            super.onHoverEnd(event);
             if (event != null) {
                 content.redirectPointerEvent(event);
             }

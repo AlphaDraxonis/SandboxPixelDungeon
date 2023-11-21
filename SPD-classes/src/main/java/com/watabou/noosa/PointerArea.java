@@ -32,6 +32,9 @@ public class PointerArea extends Visual implements Signal.Listener<PointerEvent>
     protected PointerEvent curEvent = null;
     protected boolean hovered = false;
 
+    //basically only for ScrollPanes, this prevents the pointer area from controlling hover events by itself, and other pointer areas should do this instead
+    protected boolean doNotHover = false;
+
     public int blockLevel = BLOCK_WHEN_ACTIVE;
     public static final int ALWAYS_BLOCK = 0;       //Always block input to overlapping elements
     public static final int BLOCK_WHEN_ACTIVE = 1;  //Only block when active (default)
@@ -91,14 +94,14 @@ public class PointerArea extends Visual implements Signal.Listener<PointerEvent>
 //                if (curEvent == event) curEvent = null;
 
             } else if (event.type == PointerEvent.Type.HOVER) {
-                if (event.handled && hovered) {
+                if (event.handled && hovered && !doNotHover) {
                     hovered = false;
                     onHoverEnd(event);
                 } else if (!event.handled && !hovered) {
                     hovered = true;
                     onHoverStart(event);
                 }
-                event.handle();
+                if (!doNotHover) event.handle();
             }
 
             return returnValue && blockLevel != NEVER_BLOCK;
