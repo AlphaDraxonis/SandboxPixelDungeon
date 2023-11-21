@@ -83,16 +83,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         if (itemList.size() > sizePrev)
             addItemToUI(item, false);//if it wasnt stacked
         else {
-            //Rearrange slots
-            Map<Item, Slot> slotMap = new HashMap<>();
-            for (Slot slot : slots) {
-                slot.item(slot.item());
-                slotMap.put(slot.item(), slot);
-            }
-            slots.clear();
-            for (Item i : itemList) slots.add(slotMap.get(i));
-            if (reverseUiOrder) Collections.reverse(slots);
-            ItemContainer.this.layout();
+            updateItemListOrder();
         }
     }
 
@@ -109,6 +100,19 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         }
         onSlotNumChange();
         updatePointerPriorityForSp();
+    }
+
+    protected void updateItemListOrder() {
+        //Rearrange slots
+        Map<Item, Slot> slotMap = new HashMap<>();
+        for (Slot slot : slots) {
+            slot.item(slot.item());
+            slotMap.put(slot.item(), slot);
+        }
+        slots.clear();
+        for (Item i : itemList) slots.add(slotMap.get(i));
+        if (reverseUiOrder) Collections.reverse(slots);
+        ItemContainer.this.layout();
     }
 
     @Override

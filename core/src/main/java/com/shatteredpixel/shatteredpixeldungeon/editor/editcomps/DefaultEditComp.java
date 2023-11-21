@@ -50,6 +50,7 @@ public abstract class DefaultEditComp<T> extends Component {
 
     @Override
     protected void layout() {
+        //if you edit this, also check out EditItemComp#layout()
 
         desc.maxWidth((int) width);
 
@@ -61,6 +62,9 @@ public abstract class DefaultEditComp<T> extends Component {
 
     protected final void layoutCompsLinear(Component... comps) {
         height = EditorUtilies.layoutCompsLinear(WndTitledMessage.GAP, this, comps);
+    }
+
+    protected void onShow() {
     }
 
     protected abstract Component createTitle();

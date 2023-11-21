@@ -204,6 +204,34 @@ public class EditCompWindowTabbed extends WndTabbed {
         body.sp.scrollTo(body.sp.content().camera().scroll.x, comps.get(selectedObject).scrollPos);
     }
 
+    public void swapItemTabs(Item item1, Item item2, Heap heap) {
+        if(items == null) return;
+        int index1 = -1;
+        int index2 = -1;
+        for (int i = 0; i < items.length; i++) {
+            if (items[i] == item1) index1 = i;
+            if (items[i] == item2) index2 = i;
+        }
+        if (index1 == -1 || index2 == -1) return;
+
+        items[index1] = item2;
+        items[index2] = item1;
+
+        TabBtn tab1 = comps.get(item1).tabBtn;
+        TabBtn tab2 = comps.get(item2).tabBtn;
+
+        int tabIndex1 = tabs.indexOf(tab1);
+        int tabIndex2 = tabs.indexOf(tab2);
+        tabs.remove(tab1);
+        tabs.add(tabIndex2, tab1);
+        tabs.remove(tab2);
+        tabs.add(tabIndex1, tab2);
+
+        ((EditHeapComp) comps.get(heap).body.content).itemContainer.updateItemListOrder();
+
+        layoutTabs();
+    }
+
 
     public void select(Object object) {
         select(comps.get(object).tabBtn);
@@ -253,12 +281,13 @@ public class EditCompWindowTabbed extends WndTabbed {
             TabBody body = comps.get(obj).body;
             if (visible) comps.get(obj).scrollPos = body.sp.content().camera().scroll.y;
             body.active = body.visible = value;
+            if (value) body.content.onShow();
         }
     }
 
     private class TabBody extends Component {
 
-        private final Component content;
+        private final DefaultEditComp<?> content;
         private Runnable layouter;
         private ScrollPane sp;
 

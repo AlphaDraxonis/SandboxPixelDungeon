@@ -58,7 +58,10 @@ public class IconButton extends Button {
 	
 	@Override
 	protected void onPointerUp() {
-		if (icon != null) icon.resetColor();
+		if (icon != null) {
+			icon.resetColor();
+			icon.alpha( active ? 1.0f : 0.3f );//why Evan why did you not add this?!?!?
+		}
 	}
 	
 	public void enable( boolean value ) {

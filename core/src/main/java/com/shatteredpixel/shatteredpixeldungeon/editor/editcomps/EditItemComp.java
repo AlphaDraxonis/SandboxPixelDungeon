@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ReorderHeapComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.ChargeSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.CurseButton;
@@ -45,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
@@ -57,6 +59,9 @@ import java.util.List;
 public class EditItemComp extends DefaultEditComp<Item> {
 
     private final Heap heap;
+
+    protected final ReorderHeapComp reorderHeapComp;
+
 
     protected final Spinner quantity, quickslotPos;
 
@@ -79,6 +84,11 @@ public class EditItemComp extends DefaultEditComp<Item> {
     public EditItemComp(Item item, Heap heap) {
         super(item);
         this.heap = heap;
+
+        if (heap != null) {
+            reorderHeapComp = new ReorderHeapComp(item, heap);
+            add(reorderHeapComp);
+        } else reorderHeapComp = null;
 
         if (item.stackable) {
             final int quantityMultiplierForGold = item instanceof Gold ? 10 : 1;
@@ -297,8 +307,22 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
     @Override
     protected void layout() {
-        super.layout();
+        desc.maxWidth((int) width);
+
+        if (reorderHeapComp != null) reorderHeapComp.setRect(width - WndTitledMessage.GAP , y, -1, title.height());
+
+        title.setRect(x, y, reorderHeapComp == null ? width : reorderHeapComp.left() - WndTitledMessage.GAP * 2, title.height());
+        desc.setRect(x, title.bottom() + WndTitledMessage.GAP * 2, desc.width(), desc.height());
+
+        height = desc.bottom() + 1;
+
         layoutCompsLinear(comps);
+    }
+
+    @Override
+    protected void onShow() {
+        super.onShow();
+        if (reorderHeapComp != null) reorderHeapComp.updateEnableState();
     }
 
     @Override
