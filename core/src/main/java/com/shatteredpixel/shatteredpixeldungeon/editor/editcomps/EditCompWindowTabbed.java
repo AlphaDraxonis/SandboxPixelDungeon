@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.HeapActionPart;
@@ -12,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -282,6 +284,15 @@ public class EditCompWindowTabbed extends WndTabbed {
             if (visible) comps.get(obj).scrollPos = body.sp.content().camera().scroll.y;
             body.active = body.visible = value;
             if (value) body.content.onShow();
+        }
+
+        @Override
+        protected String hoverText() {
+            if (obj instanceof Item) return ((Item) obj).title();
+            if (obj instanceof Mob) return Messages.titleCase(((Mob) obj).name());
+            if (obj instanceof Trap) return TrapItem.createTitle((Trap) obj);
+            if (obj instanceof Heap) return EditHeapComp.getTitle((Heap) obj);
+            return null;
         }
     }
 

@@ -377,4 +377,9 @@ public class WndEditStats extends MultiWindowTabComp {
     public Image createIcon() {
         return null;
     }
+
+    @Override
+    public String hoverText() {
+        return null;
+    }
 }

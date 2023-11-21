@@ -141,12 +141,16 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
     }
 
     private String getTitle() {
+        return getTitle(obj);
+    }
+
+    public static String getTitle(Heap heap) {
         String title;
-        if (obj.type == Heap.Type.HEAP) title = Messages.get(EditHeapComp.class, "title_heap_open");
-        else if (obj.type == Heap.Type.FOR_SALE)
+        if (heap.type == Heap.Type.HEAP) title = Messages.get(EditHeapComp.class, "title_heap_open");
+        else if (heap.type == Heap.Type.FOR_SALE)
             title = Messages.get(EditHeapComp.class, "title_heap_open");
-        else title = Messages.titleCase(obj.title());
-        return title + " " + EditorUtilies.cellToString(obj.pos);
+        else title = Messages.titleCase(heap.title());
+        return title + " " + EditorUtilies.cellToString(heap.pos);
     }
 
     @Override

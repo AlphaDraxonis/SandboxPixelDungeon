@@ -192,6 +192,11 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
 
     }
 
+    @Override
+    public String hoverText() {
+        return Messages.get(WndNewFloor.class, "title");
+    }
+
     protected void create(boolean positive) {
     }
 

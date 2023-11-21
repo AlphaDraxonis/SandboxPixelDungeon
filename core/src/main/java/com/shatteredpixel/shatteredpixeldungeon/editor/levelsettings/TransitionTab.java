@@ -180,4 +180,9 @@ public class TransitionTab extends WndEditorSettings.TabComp {
     public Image createIcon() {
         return Icons.get(Icons.STAIRS);
     }
+
+    @Override
+    public String hoverText() {
+        return Messages.get(TransitionTab.class, "title");
+    }
 }

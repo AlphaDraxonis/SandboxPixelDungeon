@@ -141,4 +141,9 @@ public class DungeonTab extends MultiWindowTabComp {
         return new ItemSprite(ItemSpriteSheet.KIT);
     }
 
+    @Override
+    public String hoverText() {
+        return Messages.get(DungeonTab.class, "title");
+    }
+
 }

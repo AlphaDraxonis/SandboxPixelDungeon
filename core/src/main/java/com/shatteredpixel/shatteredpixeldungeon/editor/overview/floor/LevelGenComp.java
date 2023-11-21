@@ -378,6 +378,11 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         }
     }
 
+    @Override
+    public String hoverText() {
+        return Messages.get(LevelGenComp.class, "title");
+    }
+
     private interface UpdateTitle {
         void updateTitle(int numSlots);
     }

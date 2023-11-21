@@ -156,4 +156,9 @@ public class LevelTab extends MultiWindowTabComp {
         return Icons.get(Icons.PREFS);
     }
 
+    @Override
+    public String hoverText() {
+        return Messages.get(LevelTab.class, "title");
+    }
+
 }

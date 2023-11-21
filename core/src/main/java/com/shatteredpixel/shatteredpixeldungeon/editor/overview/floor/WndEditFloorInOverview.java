@@ -267,6 +267,11 @@ public class WndEditFloorInOverview extends WndTabbed {
             return new ItemSprite(ItemSpriteSheet.SOMETHING);
         }
 
+        @Override
+        public String hoverText() {
+            return null;
+        }
+
         private static final int GAP_BETWEEN_BUTTON_AND_SP = 2;
 
         @Override

@@ -74,6 +74,11 @@ public class WndEditorSettings extends WndTabbed {
                     ownTabs[index].active = ownTabs[index].visible = value;
                     if (value) last_index = index;
                 }
+
+                @Override
+                protected String hoverText() {
+                    return ownTabs[index].hoverText();
+                }
             };
             add(tabs[i]);
         }
@@ -127,6 +132,8 @@ public class WndEditorSettings extends WndTabbed {
         }
 
         public abstract Image createIcon();
+
+        public abstract String hoverText();
     }
 
     @Override

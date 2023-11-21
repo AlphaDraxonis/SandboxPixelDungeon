@@ -148,4 +148,9 @@ public class ItemTab extends WndEditorSettings.TabComp {
     public Image createIcon() {
         return new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER);
     }
+
+    @Override
+    public String hoverText() {
+        return "NEEDS REWORK";
+    }
 }

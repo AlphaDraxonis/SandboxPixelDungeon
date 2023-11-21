@@ -77,6 +77,11 @@ public class WndNewFloor extends WndTabbed {
                     super.select(value);
                     tbs[index].active = tbs[index].visible = value;
                 }
+
+                @Override
+                protected String hoverText() {
+                    return tbs[index].hoverText();
+                }
             });
         }
 
@@ -205,7 +210,7 @@ public class WndNewFloor extends WndTabbed {
         }
     }
 
-    protected static class OwnTab extends WndEditorSettings.TabComp {
+    protected static abstract class OwnTab extends WndEditorSettings.TabComp {
 
         protected LevelScheme newLevelScheme;
 
