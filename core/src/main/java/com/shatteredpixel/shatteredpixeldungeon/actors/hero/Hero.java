@@ -2342,7 +2342,7 @@ public class Hero extends Char {
 							chance = 1f;
 						
 						//unintentional searches always fail with a cursed talisman
-						} else if (cursed) {
+						} else if (cursed || Dungeon.customDungeon.notRevealSecrets) {
 							chance = 0f;
 							
 						//unintentional trap detection scales from 40% at floor 0 to 30% at floor 25
