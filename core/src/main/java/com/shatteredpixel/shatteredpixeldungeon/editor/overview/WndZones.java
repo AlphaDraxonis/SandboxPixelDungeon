@@ -423,7 +423,7 @@ public final class WndZones {
                 }
             }, Messages.get(EditZoneComp.class, "grass_label") + ":", 9);
             grassVisuals.addChangeListener(() -> zone.setGrassType((Zone.GrassType) grassVisuals.getValue()));
-            comps[4] = grassVisuals;
+            comps[5] = grassVisuals;
 
             LevelScheme chasm = Dungeon.customDungeon.getFloor(Dungeon.level.levelScheme.getChasm());
             Object[] data;
@@ -455,7 +455,7 @@ public final class WndZones {
                 zone.chasmDestZone = (String) chasmDest.getValue();
             });
             chasmDest.enable(chasm != null);
-            comps[5] = chasmDest;
+            comps[6] = chasmDest;
 
             addTransition = new RedButton(Messages.get(EditTileComp.class, "add_transition"), 9) {
                 @Override
@@ -466,8 +466,8 @@ public final class WndZones {
             if (zone.zoneTransition != null) {
                 addTransition(zone.zoneTransition);
             }
-            comps[6] = addTransition;
-            comps[7] = transitionEdit;
+            comps[7] = addTransition;
+            comps[8] = transitionEdit;
 
             rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
                 @Override
@@ -648,7 +648,16 @@ public final class WndZones {
             spawnItems.checked(zone.flamable);
 //            spawnItems.icon(new ItemSprite(ItemSpriteSheet.CHEST));
 
-            return new Component[]{pickColor, flamable, spawnMobs, spawnItems, null, null, null, null};
+            CheckBox teleportTo = new CheckBox(Messages.get(EditZoneComp.class, "teleport_to")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    zone.canTeleportTo = value;
+                }
+            };
+            teleportTo.checked(zone.canSpawnItems);
+
+            return new Component[]{pickColor, flamable, spawnMobs, spawnItems, teleportTo, null, null, null, null};
         }
     }
 

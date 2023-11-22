@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
@@ -239,6 +240,7 @@ public class ScrollOfTeleportation extends Scroll {
 		for (int i = 0; i < Dungeon.level.length(); i++){
 			if (PathFinder.distance[i] < Integer.MAX_VALUE
 					&& !Dungeon.level.secret[i]
+					&& Zone.canTeleportTo(Dungeon.level, i)
 					&& Actor.findChar(i) == null){
 				if (preferNotSeen && !Dungeon.level.visited[i]){
 					notSeenValid.add(i);

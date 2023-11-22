@@ -40,6 +40,7 @@ public class Zone implements Bundlable {
     public boolean flamable = true;
     public boolean canSpawnMobs = true;
     public boolean canSpawnItems = true;
+    public boolean canTeleportTo = true;
     public GrassType grassType = GrassType.NONE;
 
     public String chasmDestZone;
@@ -57,6 +58,7 @@ public class Zone implements Bundlable {
     public static final String FLAMABLE = "flamable";
     public static final String CAN_SPAWN_MOBS = "can_spawn_mobs";
     public static final String CAN_SPAWN_ITEMS = "can_spawn_items";
+    public static final String CAN_TELEPORT_TO = "can_teleport_to";
     public static final String GRASS_TYPE = "grass_type";
     public static final String CHASM_DEST_ZONE = "chasm_dest_zone";
     public static final String ZONE_TRANSITION = "zone_transition";
@@ -69,6 +71,7 @@ public class Zone implements Bundlable {
         flamable = bundle.getBoolean(FLAMABLE);
         canSpawnMobs = bundle.getBoolean(CAN_SPAWN_MOBS);
         canSpawnItems = bundle.getBoolean(CAN_SPAWN_ITEMS);
+        canTeleportTo = bundle.getBoolean(CAN_TELEPORT_TO);
         grassType = bundle.getEnum(GRASS_TYPE, GrassType.class);
         chasmDestZone = bundle.getString(CHASM_DEST_ZONE);
         zoneTransition = (LevelTransition) bundle.get(ZONE_TRANSITION);
@@ -88,6 +91,7 @@ public class Zone implements Bundlable {
         bundle.put(FLAMABLE, flamable);
         bundle.put(CAN_SPAWN_MOBS, canSpawnMobs);
         bundle.put(CAN_SPAWN_ITEMS, canSpawnItems);
+        bundle.put(CAN_TELEPORT_TO, canTeleportTo);
         bundle.put(GRASS_TYPE, grassType);
         bundle.put(CHASM_DEST_ZONE, chasmDestZone);
         bundle.put(ZONE_TRANSITION, zoneTransition);
@@ -193,6 +197,11 @@ public class Zone implements Bundlable {
     public static boolean canSpawnItems(Level level, int cell) {
         Zone z;
         return (z = level.zone[cell]) == null || z.canSpawnItems;
+    }
+
+    public static boolean canTeleportTo(Level level, int cell) {
+        Zone z;
+        return (z = level.zone[cell]) == null || z.canTeleportTo;
     }
 
     public static GrassType getGrassType(Level level, int cell) {
