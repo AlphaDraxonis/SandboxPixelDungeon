@@ -445,8 +445,10 @@ public class Heap implements Bundlable {
 					return Messages.get(this, "crystal_chest_desc", Messages.get(this, "wand") );
 				else if (peek()instanceof Ring)
 					return Messages.get(this, "crystal_chest_desc", Messages.get(this, "ring"));
+				else if (peek() != null)
+					return Messages.get(this, "crystal_chest_desc", Messages.get(this, "sth"));
 				else
-					return Messages.get(this, "locked_chest_desc");
+					return Messages.get(this, "crystal_chest_desc_none");
 			case TOMB:
 				return Messages.get(this, "tomb_desc");
 			case SKELETON:
