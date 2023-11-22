@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.noosa.audio.Sample;
@@ -59,7 +60,8 @@ public abstract class Trap implements Bundlable {
 	public boolean visible;
 	public boolean active = true;
 	public boolean disarmedByActivation = true;
-	
+	public boolean revealedWhenTriggered = true;
+
 	public boolean canBeHidden = true;
 	public boolean canBeSearched = true;
 
@@ -92,7 +94,7 @@ public abstract class Trap implements Bundlable {
 				Sample.INSTANCE.play(Assets.Sounds.TRAP);
 			}
 			if (disarmedByActivation) disarm();
-			Dungeon.level.discover(pos);
+			if (revealedWhenTriggered) Dungeon.level.discover(pos);
 			activate();
 		}
 	}
@@ -122,6 +124,9 @@ public abstract class Trap implements Bundlable {
 	private static final String POS	= "pos";
 	private static final String VISIBLE	= "visible";
 	private static final String ACTIVE = "active";
+	private static final String DISARMED_BY_ACTIVATION = "disarmed_by_activation";
+	private static final String CAN_BE_SEARCHED = "can_be_searched";
+	private static final String REVEALED_WHEN_TRIGGERED = "revealed_when_triggered";
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
@@ -130,6 +135,9 @@ public abstract class Trap implements Bundlable {
 		if (bundle.contains(ACTIVE)){
 			active = bundle.getBoolean(ACTIVE);
 		}
+		if (bundle.contains(DISARMED_BY_ACTIVATION)) disarmedByActivation = bundle.getBoolean(DISARMED_BY_ACTIVATION);
+		if (bundle.contains(CAN_BE_SEARCHED)) canBeSearched = bundle.getBoolean(CAN_BE_SEARCHED);
+		if (bundle.contains(REVEALED_WHEN_TRIGGERED)) revealedWhenTriggered = bundle.getBoolean(REVEALED_WHEN_TRIGGERED);
 	}
 
 	@Override
@@ -137,6 +145,13 @@ public abstract class Trap implements Bundlable {
 		bundle.put( POS, pos );
 		bundle.put( VISIBLE, visible );
 		bundle.put( ACTIVE, active );
+		Trap defaultObj = DefaultStatsCache.getDefaultObject(getClass());
+		if (disarmedByActivation != defaultObj.disarmedByActivation)
+			bundle.put(DISARMED_BY_ACTIVATION, disarmedByActivation);
+		if (canBeSearched != defaultObj.canBeSearched)
+			bundle.put(CAN_BE_SEARCHED, canBeSearched);
+		if (revealedWhenTriggered != defaultObj.revealedWhenTriggered)
+			bundle.put(REVEALED_WHEN_TRIGGERED, revealedWhenTriggered);
 	}
 
 	public Trap getCopy(){

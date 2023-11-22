@@ -24,6 +24,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
 
     protected CheckBox visible, active;
+    protected CheckBox searchable, revealedWhenTriggered, disarmedByActivation;
     protected RedButton gatewayTelePos;
     private Window windowInstance;
 
@@ -67,6 +68,38 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         visible.checked(obj.visible);
         active.checked(obj.active);
 
+        searchable = new CheckBox(Messages.get(EditTrapComp.class, "searchable")) {
+            @Override
+            public void checked(boolean value) {
+                super.checked(value);
+                obj.canBeSearched = value;
+                updateObj();
+            }
+        };
+        add(searchable);
+        revealedWhenTriggered = new CheckBox(Messages.get(EditTrapComp.class, "revealed_when_triggered")) {
+            @Override
+            public void checked(boolean value) {
+                super.checked(value);
+                obj.revealedWhenTriggered = value;
+                updateObj();
+            }
+        };
+        add(revealedWhenTriggered);
+        disarmedByActivation = new CheckBox(Messages.get(EditTrapComp.class, "disarmed_by_activation")) {
+            @Override
+            public void checked(boolean value) {
+                super.checked(value);
+                obj.disarmedByActivation = value;
+                updateObj();
+            }
+        };
+        add(disarmedByActivation);
+
+        searchable.checked(obj.canBeSearched);
+        revealedWhenTriggered.checked(obj.revealedWhenTriggered);
+        disarmedByActivation.checked(obj.disarmedByActivation);
+
         if (obj instanceof GatewayTrap && obj.pos != -1) {
             int telePos = ((GatewayTrap) obj).telePos;
             gatewayTelePos = new RedButton("") {
@@ -85,7 +118,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             add(gatewayTelePos);
         } else gatewayTelePos = null;
 
-        comps = new Component[]{visible, active, gatewayTelePos};
+        comps = new Component[]{visible, active, searchable, revealedWhenTriggered, disarmedByActivation, gatewayTelePos};
     }
 
     @Override
@@ -136,9 +169,13 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.visible != b.visible) return false;
+        if (a.active != b.active) return false;
+        if (a.canBeSearched != b.canBeSearched) return false;
+        if (a.revealedWhenTriggered != b.revealedWhenTriggered) return false;
+        if (a.disarmedByActivation != b.disarmedByActivation) return false;
         if (a instanceof GatewayTrap && ((GatewayTrap) a).telePos != ((GatewayTrap) b).telePos)
             return false;
-        return a.active == b.active;
+        return true;
     }
 
 
