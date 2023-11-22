@@ -251,7 +251,7 @@ public class Notes {
 				return true;
 			}
 		}
-		return compareClass != SkeletonKey.class && searchForKeyAndRemoveIt(compareName, compareCell, SkeletonKey.class);
+		return compareClass != SkeletonKey.class && compareCell != -1 && searchForKeyAndRemoveIt(compareName, compareCell, SkeletonKey.class);
 	}
 	
 	public static int keyCount( Key key ){
@@ -261,7 +261,7 @@ public class Notes {
 		for (KeyRecord record : getRecords(KeyRecord.class)) {
 			if (record.levelName().equals(Level.ANY) || record.levelName().equals(key.levelName)
 					&& (record.keyCell() == -1 || record.keyCell() == key.cell)
-					&& (record.key.getClass() == SkeletonKey.class || key.getClass() == record.key.getClass())) {
+					&& ((record.key.getClass() == SkeletonKey.class && record.keyCell() != -1) || key.getClass() == record.key.getClass())) {
 				quantity += record.quantity();
 			}
 		}
