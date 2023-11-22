@@ -378,6 +378,26 @@ public class CustomLevel extends Level {
 
     @Override
     public String tilesTex() {
+        return tilesTex(region, false);
+    }
+
+    public static String tilesTex(int region, boolean water) {
+        if (water) {
+            switch (region) {
+                case REGION_PRISON:
+                    return Assets.Environment.WATER_PRISON;
+                case REGION_CAVES:
+                    return Assets.Environment.WATER_CAVES;
+                case REGION_CITY:
+                    return Assets.Environment.WATER_CITY;
+                case REGION_HALLS:
+                    return Assets.Environment.WATER_HALLS;
+
+                default:
+                    return Assets.Environment.WATER_SEWERS;
+            }
+        }
+
         switch (region) {
             case REGION_PRISON:
                 return Assets.Environment.TILES_PRISON;
@@ -395,21 +415,7 @@ public class CustomLevel extends Level {
 
     @Override
     public String waterTex() {
-        int w = waterTexture;
-        if (w == REGION_NONE) w = region;
-        switch (w) {
-            case REGION_PRISON:
-                return Assets.Environment.WATER_PRISON;
-            case REGION_CAVES:
-                return Assets.Environment.WATER_CAVES;
-            case REGION_CITY:
-                return Assets.Environment.WATER_CITY;
-            case REGION_HALLS:
-                return Assets.Environment.WATER_HALLS;
-
-            default:
-                return Assets.Environment.WATER_SEWERS;
-        }
+        return tilesTex(waterTexture == REGION_NONE ? region : waterTexture, true);
     }
 
     public int getRegionValue() {

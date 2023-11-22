@@ -1,13 +1,17 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.Function;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -17,6 +21,7 @@ public class EditCustomTileComp extends EditTileComp {
     private final CustomTilemap customTile;
 
     private final Spinner terrain;
+    private final RedButton editSimpleCustomTile;
 
     private final Component[] comps;
 
@@ -24,19 +29,51 @@ public class EditCustomTileComp extends EditTileComp {
         super(new TileItem(customTile.terrain, cell));
         this.customTile = customTile;
 
+        if(customTile instanceof CustomTileLoader.SimpleCustomTile && cell == -1) {
+            terrain = null;
+            editSimpleCustomTile = new RedButton(Messages.get(EditCustomTileComp.class, "edit_simple_tile")){
+                @Override
+                protected void onClick() {
+                    EditorScene.show(new Tiles.WndCreateCustomTile((CustomTileLoader.SimpleCustomTile) customTile,
+                            Messages.get(EditCustomTileComp.class, "edit_simple_tile")){
+                        @Override
+                        public void hide() {
+                            super.hide();
+                            updateObj();
+                            EditorScene.revalidateCustomTiles();
+                        }
+                    });
+                }
+            };
+            add(editSimpleCustomTile);
+        } else {
+            editSimpleCustomTile = null;
+            terrain = createTerrainSpinner(customTile.terrain, " " + Messages.get(EditCustomTileComp.class, "terrain") + ":", value -> {
+                getObj().setTerrainType((Integer) value);
+                return getObj().getSprite();
+            });
+            terrain.addChangeListener(() -> getObj().setTerrainType(customTile.terrain = (int) terrain.getValue()));
+            add(terrain);
+        }
+
+        updateObj();
+
+        comps = new Component[]{terrain, editSimpleCustomTile};
+    }
+
+    public static Spinner createTerrainSpinner(int currentTerrain, String label, Function<Object, Image> getIcon){
         Object[] data = createTerrainDataForSpinner();
         int curIndex = 1;
         for (int i = 0; i < data.length; i++) {
-            if (customTile.terrain == (int) data[i]) {
+            if (currentTerrain == (int) data[i]) {
                 curIndex = i;
                 break;
             }
         }
-        terrain = new Spinner(new SpinnerTextIconModel(true, curIndex, createTerrainDataForSpinner()) {
+        return new Spinner(new SpinnerTextIconModel(true, curIndex, createTerrainDataForSpinner()) {
             @Override
             protected Image getIcon(Object value) {
-                getObj().setTerrainType((Integer) value);
-                return getObj().getSprite();
+                return getIcon.apply(value);
             }
 
             @Override
@@ -48,13 +85,7 @@ public class EditCustomTileComp extends EditTileComp {
             public int getClicksPerSecondWhileHolding() {
                 return 14;
             }
-        }, " " + Messages.get(EditCustomTileComp.class, "terrain") + ":", 8);
-        terrain.addChangeListener(() -> getObj().setTerrainType(customTile.terrain = (int) terrain.getValue()));
-        add(terrain);
-
-        updateObj();
-
-        comps = new Component[]{terrain};
+        }, label, 8);
     }
 
     private static Object[] createTerrainDataForSpinner(){
@@ -118,13 +149,28 @@ public class EditCustomTileComp extends EditTileComp {
         return super.createTitle();
     }
 
+    @Override
+    protected void updateObj() {
+        if (customTile instanceof CustomTileLoader.SimpleCustomTile) {
+            ((CustomTileLoader.SimpleCustomTile) customTile).updateTexture();
+            customTile.create();
+            obj.setTerrainType(customTile.terrain);
+        }
+        super.updateObj();
+    }
+
     public static boolean areEqual(CustomTilemap a, CustomTilemap b) {
         if (a == null && b == null) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.tileX != b.tileX) return false;
         if (a.tileY != b.tileY) return false;
-        return !(a instanceof CustomTileLoader.OwnCustomTile)
-                || ((CustomTileLoader.OwnCustomTile) a).fileName.equals(((CustomTileLoader.OwnCustomTile) b).fileName);
+//        if (a.terrain != b.terrain) return false;
+//        if (a instanceof CustomTileLoader.SimpleCustomTile) {
+//            if (((CustomTileLoader.SimpleCustomTile) a).region != ((CustomTileLoader.SimpleCustomTile) b).region) return false;
+//            if (((CustomTileLoader.SimpleCustomTile) a).imageTerrain != ((CustomTileLoader.SimpleCustomTile) b).imageTerrain) return false;
+//        }
+        return !(a instanceof CustomTileLoader.UserCustomTile)
+                || ((CustomTileLoader.UserCustomTile) a).identifier.equals(((CustomTileLoader.UserCustomTile) b).identifier);
     }
 }

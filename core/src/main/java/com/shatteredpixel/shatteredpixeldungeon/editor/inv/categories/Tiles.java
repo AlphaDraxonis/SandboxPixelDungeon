@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
+import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.BUTTON_HEIGHT;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ALCHEMY;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.BARRICADE;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.BOOKSHELF;
@@ -29,16 +30,28 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL_DECO;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WATER;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WELL;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndItemDistribution;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -47,11 +60,24 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.ui.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,16 +116,6 @@ public enum Tiles {
         return DungeonTileSheet.directFlatVisuals.get(terrainFeature, -1);
     }
 
-    public static int getVisualWithAlts(int visual) {
-        float random = (float) Math.random();
-        if (random >= 0.95f && DungeonTileSheet.rareAltVisuals.containsKey(visual))
-            return DungeonTileSheet.rareAltVisuals.get(visual);
-        else if (random >= 0.5f && DungeonTileSheet.commonAltVisuals.containsKey(visual))
-            return DungeonTileSheet.commonAltVisuals.get(visual);
-        else
-            return visual;
-    }
-
 
     //TODO Icon zeige in inv an, ob brennbar, oder Schlüssel?? -> muss über ListItem gemacht werden!
 
@@ -120,8 +136,8 @@ public enum Tiles {
                 for (Item i : customTileBag.items) {
                     if (i instanceof CustomTileItem) {
                         CustomTilemap customTile = ((CustomTileItem) i).customTile();
-                        if (customTile instanceof CustomTileLoader.OwnCustomTile
-                                && src.equals(((CustomTileLoader.OwnCustomTile) customTile).fileName)) return i;
+                        if (customTile instanceof CustomTileLoader.UserCustomTile
+                                && src.equals(((CustomTileLoader.UserCustomTile) customTile).identifier)) return i;
                     }
                 }
                 return null;
@@ -209,9 +225,9 @@ public enum Tiles {
                 PermaGas.PStormCloud.class));
     }
 
-    private static final Map<String, CustomTileLoader.OwnCustomTile> ownCustomTiles = new HashMap<>();
+    private static final Map<String, CustomTileLoader.UserCustomTile> ownCustomTiles = new HashMap<>();
 
-    public static CustomTileLoader.OwnCustomTile getCustomTile(String fileName) {
+    public static CustomTileLoader.UserCustomTile getCustomTile(String fileName) {
         return ownCustomTiles.get(fileName);
     }
 
@@ -230,8 +246,303 @@ public enum Tiles {
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExitOverhang(), -1));
     }
 
-    public static void addCustomTile(CustomTileLoader.OwnCustomTile customTile) {
-        ownCustomTiles.put(customTile.fileName, customTile);
+    public static void addCustomTile(CustomTileLoader.UserCustomTile customTile) {
+        ownCustomTiles.put(customTile.identifier, customTile);
         customTileBag.items.add(new CustomTileItem(customTile, -1));
+    }
+
+    public static void removeCustomTile(CustomTileItem customTileItem) {
+        ownCustomTiles.remove(((CustomTileLoader.UserCustomTile) customTileItem.customTile()).identifier);
+        customTileBag.items.remove(customTileItem);
+    }
+
+    public static class AddSimpleCustomTileButton extends ScrollingListPane.ListItem {
+
+        protected RedButton button;
+
+        public AddSimpleCustomTileButton() {
+            super(new Image(), "");
+        }
+
+        @Override
+        protected void createChildren(Object... params) {
+            super.createChildren(params);
+            remove(icon);
+            remove(label);
+            hotArea.destroy();
+            hotArea.killAndErase();
+            hotArea.remove();
+            button = new RedButton(Messages.get(WndCreateCustomTile.class, "title")) {
+
+                @Override
+                protected void onClick() {
+                    EditorScene.show(new WndCreateCustomTile(null, Messages.get(WndCreateCustomTile.class, "title")));
+                }
+
+                @Override
+                protected void onPointerDown() {
+                    super.onPointerDown();
+                }
+            };
+            add(button);
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+
+            button.setRect(x + (width - Math.max(width * 0.8f, button.reqWidth())) * 0.5f, y + Math.max(0, (height - button.reqHeight() - 2) * 0.5f),
+                    Math.max(width * 0.8f, button.reqWidth()), Math.min(height, button.reqHeight() + 2));
+            PixelScene.align(button);
+        }
+    }
+
+    public static class WndCreateCustomTile extends Window {
+
+        protected IconTitle title;
+        protected RenderedTextBlock info;
+
+        protected StringInputComp identifier, name, desc;
+        protected Spinner imageTerrain, realTerrain, region;
+        protected RedButton create, cancel;
+
+        protected CustomTileLoader.SimpleCustomTile customTile;
+
+        public WndCreateCustomTile(CustomTileLoader.SimpleCustomTile customTile, String title) {
+            this.customTile = customTile;
+
+            this.title = new IconTitle(new Image(), title);
+            add(this.title);
+
+            if (customTile == null) {
+                identifier = new StringInputComp(Messages.get(WndCreateCustomTile.class, "identifier_label"), null, 100, false) {
+                    @Override
+                    protected void onChange() {
+                        updateLayout();
+                    }
+                };
+                add(identifier);
+                identifier.setText("???");
+            } else {
+//                info = PixelScene.renderTextBlock(Messages.get(WndCreateCustomTile.class, "edit_info"),6);
+//                add(info);
+            }
+
+            name = new StringInputComp(Messages.get(WndCreateCustomTile.class, "name_label"), null, 100, false) {
+                @Override
+                protected void onChange() {
+                    updateLayout();
+                }
+            };
+            add(name);
+            name.setText(customTile == null ? "???" : customTile.name);
+
+            desc = new StringInputComp(Messages.get(WndCreateCustomTile.class, "desc_label"), null, 500, true) {
+                @Override
+                protected void onChange() {
+                    updateLayout();
+                }
+            };
+            add(desc);
+            desc.setText(customTile == null ? "???" : customTile.desc);
+
+            region = new Spinner(new SpinnerIntegerModel(LevelScheme.REGION_SEWERS, LevelScheme.REGION_HALLS,
+                    customTile == null ? EditorScene.customLevel().getRegionValue() : customTile.region, 1, true, null) {
+                @Override
+                public String getDisplayString() {
+                    if (imageTerrain != null) imageTerrain.setValue(imageTerrain.getValue());
+                    if (realTerrain != null) realTerrain.setValue(realTerrain.getValue());
+                    return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) getValue() - 1]);
+                }
+
+                @Override
+                public float getInputFieldWith(float height) {
+                    return Spinner.FILL;
+                }
+            }, Messages.get(WndCreateCustomTile.class, "image_region"), 8);
+            add(region);
+
+            imageTerrain = EditCustomTileComp.createTerrainSpinner(customTile == null ? Terrain.EMPTY : customTile.imageTerrain, Messages.get(WndCreateCustomTile.class, "image_terrain"), value -> {
+                String texture = CustomLevel.tilesTex((int) region.getValue(), (Integer) value == WATER);
+                Image img = new Image(texture);
+                if ((Integer) value == WATER) img.frame(0, 0, DungeonTerrainTilemap.SIZE, DungeonTerrainTilemap.SIZE);
+                else img.frame(CustomLevel.getTextureFilm(texture).get(DungeonTerrainTilemap.tileSlot(-1, (Integer) value)));
+                return img;
+            });
+            add(imageTerrain);
+
+            realTerrain = EditCustomTileComp.createTerrainSpinner(customTile == null ? Terrain.EMPTY : customTile.terrain, Messages.get(WndCreateCustomTile.class, "real_terrain"), value -> {
+                String texture = CustomLevel.tilesTex((int) region.getValue(), (Integer) value == WATER);
+                Image img = new Image(texture);
+                if ((Integer) value == WATER) img.frame(0, 0, DungeonTerrainTilemap.SIZE, DungeonTerrainTilemap.SIZE);
+                else img.frame(CustomLevel.getTextureFilm(texture).get(DungeonTerrainTilemap.tileSlot(-1, (Integer) value)));
+                return img;
+            });
+            add(realTerrain);
+
+            create = new RedButton(customTile == null ? Messages.get(WndNewFloor.class, "create_label") : Messages.get(WndItemDistribution.class, "save")) {
+                @Override
+                protected void onClick() {
+                    create(true);
+                }
+            };
+            add(create);
+
+            cancel = new RedButton(Messages.get(WndNewFloor.class, "cancel_label")) {
+                @Override
+                protected void onClick() {
+                    create(false);
+                }
+            };
+            add(cancel);
+
+            width = PixelScene.landscape() ? 215 : Math.min(160, (int) (PixelScene.uiCamera.width * 0.9));
+            updateLayout();
+        }
+
+        protected void updateLayout() {
+            float posY;
+
+            title.setRect(0, 0, width, -1);
+            posY = title.bottom() + 4;
+
+            if (identifier != null) {
+                identifier.setRect(0, posY, width, -1);
+                posY = identifier.bottom() + 2;
+            }
+
+            if (info != null) {
+                info.setPos(0, posY);
+                posY = info.bottom() + 3;
+            }
+
+            name.setRect(0, posY, width, -1);
+            posY = name.bottom() + 2;
+
+            desc.setRect(0, posY, width, -1);
+            posY = desc.bottom() + 2;
+
+
+            imageTerrain.setRect(0, posY, width, DungeonTerrainTilemap.SIZE + 4);
+            posY = imageTerrain.bottom() + 2;
+
+            region.setRect(0, posY, width, DungeonTerrainTilemap.SIZE + 4);
+            posY = region.bottom() + 2;
+
+            realTerrain.setRect(0, posY, width, DungeonTerrainTilemap.SIZE + 4);
+            posY = realTerrain.bottom() + 4;
+
+            create.setRect(1, posY, (width - 2) / 2, BUTTON_HEIGHT + 1);
+            cancel.setRect(create.right() + 2, posY, (width - 2) / 2, BUTTON_HEIGHT + 1);
+            posY += BUTTON_HEIGHT + 2;
+
+            resize(width, (int) Math.ceil(posY));
+        }
+
+        protected void create(boolean positive) {
+            if (positive) {
+                String id = identifier == null ? "" : identifier.getText();
+                String n = name.getText();
+                String d = desc.getText();
+                if (customTile == null && (id == null || id.trim().isEmpty() || ownCustomTiles.containsKey(id))
+                        || n == null || n.trim().isEmpty()
+                        || desc == null || d.trim().isEmpty()) {
+                    EditorScene.show(new WndError(Messages.get(WndCreateCustomTile.class, "invalid_args")));
+                    return;
+                }
+
+                boolean newCustomTile = customTile == null;
+
+                if (newCustomTile) customTile = new CustomTileLoader.SimpleCustomTile((int) imageTerrain.getValue(), (int) region.getValue(), id);
+                else {
+                    customTile.imageTerrain = (int) imageTerrain.getValue();
+                    customTile.region = (int) region.getValue();
+                }
+                customTile.terrain = (int) realTerrain.getValue();
+                customTile.name = n;
+                customTile.desc = d;
+                if (newCustomTile) {
+                    Tiles.addCustomTile(customTile);
+                    Dungeon.customDungeon.customTiles.add(customTile);
+                    WndEditorInv.updateCurrentTab();
+                }
+            }
+            hide();
+        }
+
+        @Override
+        public void onBackPressed() {
+            if (customTile != null) super.onBackPressed();
+        }
+    }
+
+    private static class StringInputComp extends Component {
+
+        protected RenderedTextBlock label, text;
+        protected IconButton change;
+
+        public StringInputComp(String label, String text, int maxLength, boolean multiline) {
+            this.label = PixelScene.renderTextBlock(8);
+            if (label != null) this.label.text(label);
+            add(this.label);
+
+            this.text = PixelScene.renderTextBlock(7);
+            if (text != null) this.text.text(text);
+            add(this.text);
+
+            change = new IconButton(Icons.CHANGES.get()) {
+                @Override
+                protected void onClick() {
+
+                    EditorScene.show(new WndTextInput(
+                            StringInputComp.this.label.text(),
+                            null,
+                            StringInputComp.this.text.text(),
+                            maxLength, multiline, Messages.get(HeroSelectScene.class, "custom_seed_set"),
+                            Messages.get(WndNewFloor.class, "cancel_label")
+                    ) {
+                        {
+                            if ("???".equals(getText())) {
+                                textBox.selectAll();
+                            }
+                        }
+
+                        @Override
+                        public void onSelect(boolean positive, String text) {
+                            if (positive && text != null && !text.trim().isEmpty()) {
+                                StringInputComp.this.text.text(text);
+                                onChange();
+                            }
+                        }
+                    });
+                }
+            };
+            add(change);
+        }
+
+        @Override
+        protected void layout() {
+
+            label.maxWidth((int) (width - change.icon().width() - 2));
+            text.maxWidth((int) (width - change.icon().width() - 2));
+
+            label.setPos(x, y);
+            text.setPos(x + 2, label.bottom() + 2);
+
+            height = Math.max(change.icon().height(), text.bottom() - y);
+
+            change.setRect(x + width - change.icon().width(), y + (height - change.icon().height()) * 0.5f, change.icon().width(), change.icon().height());
+        }
+
+        public String getText() {
+            return text.text();
+        }
+
+        public void setText(String text) {
+            this.text.text(text);
+        }
+
+        protected void onChange() {
+        }
     }
 }

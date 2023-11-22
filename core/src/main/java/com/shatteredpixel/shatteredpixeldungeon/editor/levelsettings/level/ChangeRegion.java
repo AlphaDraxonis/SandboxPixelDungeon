@@ -22,27 +22,34 @@ public class ChangeRegion extends Component {
     private final Component outsideSp;
 
     private static final int CAT_REGION = 0, CAT_WATER = 1, CAT_MUSIC = 2;
+    public static final String[] REGION_KEYS = {
+            "Sewers",
+            "Prison",
+            "Caves",
+            "City",
+            "Halls"
+    };
     private final AssetCheckbox[][] checkboxes = {
             {
-                    new AssetCheckbox(Document.INTROS.pageTitle("Sewers"), LevelScheme.REGION_SEWERS, CAT_REGION),
-                    new AssetCheckbox(Document.INTROS.pageTitle("Prison"), LevelScheme.REGION_PRISON, CAT_REGION),
-                    new AssetCheckbox(Document.INTROS.pageTitle("Caves"), LevelScheme.REGION_CAVES, CAT_REGION),
-                    new AssetCheckbox(Document.INTROS.pageTitle("City"), LevelScheme.REGION_CITY, CAT_REGION),
-                    new AssetCheckbox(Document.INTROS.pageTitle("Halls"), LevelScheme.REGION_HALLS, CAT_REGION)
+                    new AssetCheckbox(null, LevelScheme.REGION_SEWERS, CAT_REGION),
+                    new AssetCheckbox(null, LevelScheme.REGION_PRISON, CAT_REGION),
+                    new AssetCheckbox(null, LevelScheme.REGION_CAVES, CAT_REGION),
+                    new AssetCheckbox(null, LevelScheme.REGION_CITY, CAT_REGION),
+                    new AssetCheckbox(null, LevelScheme.REGION_HALLS, CAT_REGION)
             }, {
             new AssetCheckbox(Messages.get(ChangeRegion.class, "same"), 0, CAT_WATER),
-            new AssetCheckbox(Document.INTROS.pageTitle("Sewers"), LevelScheme.REGION_SEWERS, CAT_WATER),
-            new AssetCheckbox(Document.INTROS.pageTitle("Prison"), LevelScheme.REGION_PRISON, CAT_WATER),
-            new AssetCheckbox(Document.INTROS.pageTitle("Caves"), LevelScheme.REGION_CAVES, CAT_WATER),
-            new AssetCheckbox(Document.INTROS.pageTitle("City"), LevelScheme.REGION_CITY, CAT_WATER),
-            new AssetCheckbox(Document.INTROS.pageTitle("Halls"), LevelScheme.REGION_HALLS, CAT_WATER)
+            new AssetCheckbox(null, LevelScheme.REGION_SEWERS, CAT_WATER),
+            new AssetCheckbox(null, LevelScheme.REGION_PRISON, CAT_WATER),
+            new AssetCheckbox(null, LevelScheme.REGION_CAVES, CAT_WATER),
+            new AssetCheckbox(null, LevelScheme.REGION_CITY, CAT_WATER),
+            new AssetCheckbox(null, LevelScheme.REGION_HALLS, CAT_WATER)
     }, {
             new AssetCheckbox(Messages.get(ChangeRegion.class, "same"), 0, CAT_MUSIC),
-            new AssetCheckbox(Document.INTROS.pageTitle("Sewers"), LevelScheme.REGION_SEWERS, CAT_MUSIC),
-            new AssetCheckbox(Document.INTROS.pageTitle("Prison"), LevelScheme.REGION_PRISON, CAT_MUSIC),
-            new AssetCheckbox(Document.INTROS.pageTitle("Caves"), LevelScheme.REGION_CAVES, CAT_MUSIC),
-            new AssetCheckbox(Document.INTROS.pageTitle("City"), LevelScheme.REGION_CITY, CAT_MUSIC),
-            new AssetCheckbox(Document.INTROS.pageTitle("Halls"), LevelScheme.REGION_HALLS, CAT_MUSIC),
+            new AssetCheckbox(null, LevelScheme.REGION_SEWERS, CAT_MUSIC),
+            new AssetCheckbox(null, LevelScheme.REGION_PRISON, CAT_MUSIC),
+            new AssetCheckbox(null, LevelScheme.REGION_CAVES, CAT_MUSIC),
+            new AssetCheckbox(null, LevelScheme.REGION_CITY, CAT_MUSIC),
+            new AssetCheckbox(null, LevelScheme.REGION_HALLS, CAT_MUSIC),
             new AssetCheckbox(Messages.get(ChangeRegion.class, "theme_final"), -1, CAT_MUSIC)
     }
     };
@@ -186,7 +193,7 @@ public class ChangeRegion extends Component {
         private final int category;
 
         public AssetCheckbox(String label, int region, int category) {
-            super(Messages.titleCase(label));
+            super(Messages.titleCase(label == null ? Document.INTROS.pageTitle(REGION_KEYS[region]) : label));
             this.region = region;
             this.category = category;
         }

@@ -6,6 +6,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.CustomTileActionPart;
@@ -14,6 +16,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Point;
@@ -52,7 +56,63 @@ public class CustomTileItem extends EditorItem {
 
     @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, name(), getSprite());
+        return new DefaultListItem(this, window, name(), getSprite()) {
+            private IconButton remove;
+
+            @Override
+            protected void createChildren(Object... params) {
+                super.createChildren(params);
+                if (customTile() instanceof CustomTileLoader.SimpleCustomTile) {
+                    remove = new IconButton(Icons.CLOSE.get()) {
+                        @Override
+                        protected void onClick() {
+                            Dungeon.customDungeon.customTiles.remove(customTile());
+                            Tiles.removeCustomTile(CustomTileItem.this);
+                            WndEditorInv.updateCurrentTab();
+                            EditorScene.revalidateCustomTiles();
+                        }
+                    };
+                    add(remove);
+                }
+            }
+
+            @Override
+            protected void layout() {
+                super.layout();
+                if (remove != null) {
+                    float posX;
+                    if (editButton != null) {
+                        editButton.setPos(editButton.left() - ICON_WIDTH - 2, editButton.top());
+                        hotArea.width = editButton.left() - 1;
+                        posX = editButton.right() + 2;
+                    } else {
+                        posX = x + width - ICON_WIDTH;
+                        hotArea.width = width - ICON_WIDTH - 1;
+                    }
+                    remove.setRect(posX + (ICON_WIDTH - remove.icon().width()) * 0.5f, y + (height - remove.icon().height()) * 0.5f,
+                            remove.icon().width(), remove.icon().height());
+                }
+            }
+
+            @Override
+            protected int getLabelMaxWidth() {
+                return super.getLabelMaxWidth() - ICON_WIDTH;
+            }
+
+            @Override
+            public void onUpdate() {
+
+                label.text(name());
+
+                if (icon != null) remove(icon);
+                icon = getSprite();
+                addToBack(icon);
+                remove(bg);
+                addToBack(bg);
+
+                super.onUpdate();
+            }
+        };
     }
 
 
@@ -101,7 +161,7 @@ public class CustomTileItem extends EditorItem {
 
     public static String getName(CustomTilemap customTile, int cell) {
         String defaultName = customTile.name(0, 0);
-        if (defaultName != null) return Messages.titleCase(defaultName)+ EditorUtilies.appendCellToString(cell);
+        if (defaultName != null) return Messages.titleCase(defaultName) + EditorUtilies.appendCellToString(cell);
         return TileItem.getName(customTile.terrain, cell);
     }
 

@@ -226,6 +226,10 @@ public class TextInput extends Component {
 		textField.setCursorPosition(cursorIdx + contents.length());
 	}
 
+	public void selectAll() {
+		textField.selectAll();
+	}
+
 	@Override
 	protected void layout() {
 		super.layout();

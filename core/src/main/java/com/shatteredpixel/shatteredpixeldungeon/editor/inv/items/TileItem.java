@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.PathFinder;
@@ -74,7 +75,7 @@ public class TileItem extends EditorItem {
 
     @Override
     public void randomizeTexture() {
-        image = Tiles.getVisualWithAlts(Tiles.getPlainImage(terrainType));
+        image = DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), -1);
     }
 
 

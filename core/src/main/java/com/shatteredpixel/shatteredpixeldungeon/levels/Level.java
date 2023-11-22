@@ -556,14 +556,14 @@ public abstract class Level implements Bundlable {
 		collection = bundle.getCollection( CUSTOM_TILES );
 		for (Bundlable p : collection) {
 			CustomTilemap vis = (CustomTilemap)p;
-			if(!(vis instanceof CustomTileLoader.OwnCustomTile) || ((CustomTileLoader.OwnCustomTile) vis).fileName != null)
+			if(!(vis instanceof CustomTileLoader.UserCustomTile) || ((CustomTileLoader.UserCustomTile) vis).identifier != null)
 				customTiles.add(vis);
 		}
 
 		collection = bundle.getCollection( CUSTOM_WALLS );
 		for (Bundlable p : collection) {
 			CustomTilemap vis = (CustomTilemap)p;
-			if(!(vis instanceof CustomTileLoader.OwnCustomTile) || ((CustomTileLoader.OwnCustomTile) vis).fileName != null)
+			if(!(vis instanceof CustomTileLoader.UserCustomTile) || ((CustomTileLoader.UserCustomTile) vis).identifier != null)
 				customWalls.add(vis);
 		}
 		

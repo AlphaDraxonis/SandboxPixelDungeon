@@ -48,11 +48,12 @@ public final class Undo {
             EditorScene.updateUndoButtons();
         }
         if (autoSaveCounter == 25) {
-            autoSaveCounter = SPDSettings.autoSave() * 5;
-            if (SPDSettings.powerSaver()) autoSaveCounter /= 2;
             try {
                 EditorScene.customLevel().levelScheme.saveLevel();
+                autoSaveCounter = SPDSettings.autoSave() * 5;
+                if (SPDSettings.powerSaver()) autoSaveCounter *= 2;
             } catch (IOException e) {
+                autoSaveCounter = SPDSettings.autoSave();
             }
         } else if (SPDSettings.autoSave() > 0) autoSaveCounter++;
     }

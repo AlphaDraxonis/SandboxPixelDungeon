@@ -475,8 +475,45 @@ public class EditorScene extends PixelScene {
         customWalls.add(visual.create());
     }
 
+    public static void revalidateCustomTiles(){
+        if (scene == null) return;
+
+        scene.customTiles.parent.erase(scene.customTiles);
+        scene.customTiles.destroy();
+        scene.customTiles = new Group();
+        scene.terrain.add(scene.customTiles);
+
+        scene.customWalls.parent.erase(scene.customWalls);
+        scene.customWalls.destroy();
+        scene.customWalls = new Group();
+        scene.add(scene.customWalls);
+        Set<CustomTilemap> toRemove = new HashSet<>(4);
+        for (CustomTilemap visual : Dungeon.level.customTiles) {
+            if (visual instanceof CustomTileLoader.SimpleCustomTile) {
+                CustomTileLoader.SimpleCustomTile src = (CustomTileLoader.SimpleCustomTile) visual.getCopy();
+                ((CustomTileLoader.SimpleCustomTile) visual).setValues(src);
+                if (src.identifier == null) toRemove.add(visual);
+                else add(src, false);
+            } else add(visual.getCopy(), false);
+
+        }
+        Dungeon.level.customTiles.removeAll(toRemove);
+        toRemove.clear();
+        for (CustomTilemap visual : Dungeon.level.customWalls) {
+            if (visual instanceof CustomTileLoader.SimpleCustomTile) {
+                CustomTileLoader.SimpleCustomTile src = (CustomTileLoader.SimpleCustomTile) visual.getCopy();
+                ((CustomTileLoader.SimpleCustomTile) visual).setValues(src);
+                if (src.identifier == null) toRemove.add(visual);
+                else add(src, true);
+            } else add(visual.getCopy(), true);
+        }
+        Dungeon.level.customWalls.removeAll(toRemove);
+    }
+
     public static void add(CustomTilemap t, boolean wall) {
         if (scene == null) return;
+        if (t instanceof CustomTileLoader.SimpleCustomTile)
+            ((CustomTileLoader.SimpleCustomTile) t).placed = true;
         if (wall) {
             scene.addCustomWall(t);
         } else {
@@ -692,7 +729,7 @@ public class EditorScene extends PixelScene {
     }
 
     public static void show(Window wnd) {
-        if (scene != null) {
+        if (scene != null && Game.scene() instanceof EditorScene) {
             cancel();
 
             //If a window is already present (or was just present)
@@ -793,7 +830,7 @@ public class EditorScene extends PixelScene {
 
     public static EditorItem getObjAsInBag(Object obj) {
         if (obj instanceof Integer || obj instanceof String) return (EditorItem) Tiles.bag.findItem(obj);
-        if (obj instanceof CustomTileLoader.OwnCustomTile) return (EditorItem) Tiles.bag.findItem(((CustomTileLoader.OwnCustomTile) obj).fileName);
+        if (obj instanceof CustomTileLoader.UserCustomTile) return (EditorItem) Tiles.bag.findItem(((CustomTileLoader.UserCustomTile) obj).identifier);
         return getObjAsInBagFromClass(obj.getClass());
     }
 

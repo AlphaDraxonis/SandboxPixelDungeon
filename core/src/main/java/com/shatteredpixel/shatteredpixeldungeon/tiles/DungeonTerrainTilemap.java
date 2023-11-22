@@ -107,8 +107,12 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 
 	public static Image tile(int pos, int tile ) {
 		Image img = new Image( instance.texture );
-		img.frame( instance.tileset.get( instance.getTileVisual( pos, tile, true ) ) );
+		img.frame( instance.tileset.get( tileSlot(pos, tile) ) );
 		return img;
+	}
+
+	public static int tileSlot(int pos, int tile) {
+		return instance.getTileVisual( pos == -1 ? -PathFinder.CIRCLE4[2] - 1 : pos, tile, true);
 	}
 
 	@Override

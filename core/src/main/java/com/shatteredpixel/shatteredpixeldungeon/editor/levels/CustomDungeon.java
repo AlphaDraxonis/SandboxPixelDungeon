@@ -111,8 +111,6 @@ public class CustomDungeon implements Bundlable {
     //When the player interacts with an npc, allow them to edit what the npc says.
     //maybe you could change the dialogue of neutral enemie
 
-    //a simpler and easier way to make custom tiles (like maybe an ingame tile maker) in the star section.
-
     //A way to make it so bosses don't count as bosses.
 
     //The 2 tengu items, the bomb and shocker.
@@ -122,8 +120,6 @@ public class CustomDungeon implements Bundlable {
     //see how much a locked door there and how much key there
 
     //TODO  make zone icons
-
-    //reorder in heaps (add buttons left/right, use HeapActionPart.Modify)
 
     //WndEditStats size wrong on Tablet
 
@@ -143,6 +139,12 @@ public class CustomDungeon implements Bundlable {
 
     //specify what mobs summoning trap spawns
 
+    //Could you add an option to make how much does a prison guard pull you?
+    //Default settings prison guard can only pull their enemies one time
+    //but i want to make it as a boss so i need them can pull you many times
+    //or basically any enemies with abilities
+
+    //Category items (similar to custom loot)
 
     //Scale mobs if their normal stats editor is disabled: not just everything
 
@@ -169,10 +171,13 @@ public class CustomDungeon implements Bundlable {
     public boolean view2d = false;
     public boolean seeLevelOnDeath = true;
 
+    public Set<CustomTileLoader.SimpleCustomTile> customTiles;
+
     public CustomDungeon(String name) {
         this.name = name;
         ratKingLevels = new HashSet<>();
         itemDistributions = new ArrayList<>(5);
+        customTiles = new HashSet<>(5);
         heroesEnabled = new boolean[HeroClass.values().length];
         heroSubClassesEnabled = new boolean[heroesEnabled.length * 2];
         Arrays.fill(heroesEnabled, true);
@@ -512,7 +517,7 @@ public class CustomDungeon implements Bundlable {
         else if (item instanceof BlobItem) toolbarItems[slot] = ((BlobItem) item).blob();
         else if (item instanceof CustomTileItem) {
             CustomTilemap cust = ((CustomTileItem) item).customTile();
-            if (cust instanceof CustomTileLoader.OwnCustomTile) toolbarItems[slot] = ((CustomTileLoader.OwnCustomTile) cust).fileName;
+            if (cust instanceof CustomTileLoader.UserCustomTile) toolbarItems[slot] = ((CustomTileLoader.UserCustomTile) cust).identifier;
             else toolbarItems[slot] = item.getObject().getClass();
         } else toolbarItems[slot] = item.getObject().getClass();
     }
@@ -542,6 +547,7 @@ public class CustomDungeon implements Bundlable {
     private static final String LEVEL_SCHEME = "level_scheme";
     private static final String REMOVE_NEXT_SCROLL = "remove_next_scroll";
     private static final String PASSWORD = "password";
+    private static final String CUSTOM_TILES = "custom_tiles";
 
     private static final String RUNE_LABELS = "rune_labels";
     private static final String RUNE_CLASSES = "rune_classes";
@@ -575,6 +581,7 @@ public class CustomDungeon implements Bundlable {
         bundle.put(HERO_SUBCLASSES_ENABLED, heroSubClassesEnabled);
         bundle.put(EFFECT_DURATION, effectDuration);
         bundle.put(START_ITEMS, Arrays.asList(startItems));
+        bundle.put(CUSTOM_TILES, customTiles);
         bundle.put(VIEW_2D, view2d);
         bundle.put(SEE_LEVEL_ON_DEATH, seeLevelOnDeath);
         bundle.put(FORCE_CHALLENGES, forceChallenges);
@@ -677,6 +684,12 @@ public class CustomDungeon implements Bundlable {
             }
         } else {
             startItems = HeroSettings.HeroStartItemsData.getDefault();
+        }
+        customTiles = new HashSet<>(5);
+        if (bundle.contains(CUSTOM_TILES)) {
+            for (Bundlable b : bundle.getCollection(CUSTOM_TILES)) {
+                customTiles.add((CustomTileLoader.SimpleCustomTile) b);
+            }
         }
 
         if (bundle.contains(RUNE_LABELS)) {

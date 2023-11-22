@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
@@ -37,7 +38,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
@@ -87,7 +87,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
         this.selector = selector;
 
-        offset(0, EditorUtilies.getMaxWindowOffsetYForVisibleToolbar() + (addTabs ? 0 : tabHeight() /5));
+        offset(0, EditorUtilies.getMaxWindowOffsetYForVisibleToolbar() + (addTabs ? 0 : tabHeight() / 5));
         resize(WIDTH, HEIGHT - (addTabs ? tabHeight() : 0) - yOffset - tabHeight());
 
         body = createBody(bag);
@@ -123,7 +123,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
             cats[i] = new CategoryScroller.Category() {
                 @Override
                 protected List<?> getItems() {
-                    List<Item> ret = new ArrayList<>(b.items);
+                    List<Object> ret = new ArrayList<>(b.items);
                     if (selector == null || selector().acceptsNull())
                         ret.add(0, addTabs ? EditorItem.REMOVER_ITEM : EditorItem.NULL_ITEM);
 
@@ -132,6 +132,10 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                             if (i instanceof ItemItem && !selector.itemSelectable(((ItemItem) i).item()))
                                 ret.remove(i);
                         }
+                    }
+
+                    if (b instanceof Tiles.CustomTileBag) {
+                        ret.add(new Tiles.AddSimpleCustomTileButton());
                     }
 
                     return ret;
@@ -143,6 +147,8 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                         EditorItem e = (EditorItem) object;
                         if (!Dungeon.quickslot.contains(e)) e.randomizeTexture();
                         return e.createListItem(WndEditorInv.this);
+                    } else if (object instanceof ScrollingListPane.ListItem) {
+                        return (ScrollingListPane.ListItem) object;
                     } else {
                         Item item = (Item) object;
                         return new DefaultListItem(item, WndEditorInv.this, item.name(), new ItemSprite(item));
@@ -183,6 +189,18 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         if (!tabs.isEmpty()) super.select(index);
     }
 
+    public static void updateCurrentTab() {
+        if (INSTANCE != null) {
+            WndEditorInv w = (WndEditorInv) WndEditorInv.INSTANCE;
+            for (Tab t : w.tabs) {
+                if (((BagTab) t).isSelected()) {
+                    w.onClick(t);
+                    return;
+                }
+            }
+        }
+    }
+
     @Override
     protected void onClick(Tab tab) {
         Trap tempTrapSave = lastTrapForImage;
@@ -193,11 +211,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         lastPlantForImage = tempPlantSave;
         lastItemForImage = tempItemSave;
         Window w = new WndEditorInv((EditorItemBag) ((BagTab) tab).bag, selector, true);
-        if (Game.scene() instanceof EditorScene) {
-            EditorScene.show(w);
-        } else {
-            Game.scene().addToFront(w);
-        }
+        EditorScene.show(w);
     }
 
     private class BagTab extends IconTab {
@@ -237,6 +251,10 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         @Override
         protected void select(boolean value) {
             super.select(value);
+        }
+
+        protected boolean isSelected() {
+            return selected;
         }
 
     }
