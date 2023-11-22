@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.journal;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundlable;
@@ -228,20 +229,21 @@ public class Notes {
 		int keyQuantityToRemove = key.quantity();
 
 		for (int i = 0; i < keyQuantityToRemove; i++) {
-			if (searchForKeyAndRemoveIt(key.levelName, key.cell)) continue;
+			if (searchForKeyAndRemoveIt(key.levelName, key.cell, key.getClass())) continue;
 			if (key.cell != -1) {
-				if (searchForKeyAndRemoveIt(Level.ANY, key.cell)) continue;
-				if (searchForKeyAndRemoveIt(key.levelName, -1)) continue;
+				if (searchForKeyAndRemoveIt(Level.ANY, key.cell, key.getClass())) continue;
+				if (searchForKeyAndRemoveIt(key.levelName, -1, key.getClass())) continue;
 			}
-			if (searchForKeyAndRemoveIt(Level.ANY, -1)) continue;
+			if (searchForKeyAndRemoveIt(Level.ANY, -1, key.getClass())) continue;
 			return Dungeon.customDungeon.permaKey;
 		}
 		return true;
 	}
 
-	private static boolean searchForKeyAndRemoveIt(String compareName, int compareCell){
+	private static boolean searchForKeyAndRemoveIt(String compareName, int compareCell, Class<? extends Key> compareClass){
 		for (KeyRecord record : getRecords(KeyRecord.class)) {
-			if (record.keyCell() == compareCell && record.levelName().equals(compareName)) {
+			if (record.keyCell() == compareCell && record.levelName().equals(compareName)
+					&& record.key.getClass() == compareClass) {
 				record.quantity(record.quantity() - 1);
 				if (record.quantity() <= 0) {
 					records.remove(record);
@@ -249,16 +251,17 @@ public class Notes {
 				return true;
 			}
 		}
-		return false;
+		return compareClass != SkeletonKey.class && searchForKeyAndRemoveIt(compareName, compareCell, SkeletonKey.class);
 	}
 	
 	public static int keyCount( Key key ){
-		if (Dungeon.customDungeon.permaKey) return 1;
+		if (Dungeon.customDungeon.permaKey) return Integer.MAX_VALUE;
 
 		int quantity = 0;
-		for (KeyRecord record : getRecords(KeyRecord.class)){
+		for (KeyRecord record : getRecords(KeyRecord.class)) {
 			if (record.levelName().equals(Level.ANY) || record.levelName().equals(key.levelName)
-					&& (record.keyCell() == -1 || record.keyCell() == key.cell)){
+					&& (record.keyCell() == -1 || record.keyCell() == key.cell)
+					&& (record.key.getClass() == SkeletonKey.class || key.getClass() == record.key.getClass())) {
 				quantity += record.quantity();
 			}
 		}

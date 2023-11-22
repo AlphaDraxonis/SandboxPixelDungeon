@@ -1005,6 +1005,8 @@ public class CustomDungeon implements Bundlable {
 
         CustomDungeonSaves.saveDungeon(this);
 
+        EditorScene.updateMap();
+
         if (zone == ZonePrompt.getSelectedZone()) ZonePrompt.setSelectedZone(ZonePrompt.getFirstZoneAvailable(EditorScene.customLevel()));
     }
 

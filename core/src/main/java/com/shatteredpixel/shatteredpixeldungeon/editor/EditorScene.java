@@ -446,6 +446,14 @@ public class EditorScene extends PixelScene {
         }
     }
 
+    public static void updateMap() {
+        if (scene != null) {
+            scene.tiles.updateMap();
+            scene.visualGrid.updateMap();
+            scene.terrainFeatures.updateMap();
+        }
+    }
+
     public static void updateZoneCell(int cell, Zone zoneBefore) {
         if (scene != null) {
             scene.zoneGroup.updateCell(cell, zoneBefore);
