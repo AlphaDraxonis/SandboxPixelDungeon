@@ -126,7 +126,7 @@ public class ReorderHeapComp extends Component {
 
             EditorScene.updateHeapImage(heap);
             heap.updateSubicon();
-            ((EditCompWindowTabbed) w).swapItemTabs(other, item, heap);
+            ((EditCompWindowTabbed) w).swapItemTabs(index1, item, index2, other, heap);
 
             updateEnableState();
         }

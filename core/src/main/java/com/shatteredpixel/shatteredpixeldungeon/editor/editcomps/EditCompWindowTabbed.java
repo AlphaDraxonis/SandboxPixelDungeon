@@ -206,18 +206,43 @@ public class EditCompWindowTabbed extends WndTabbed {
         body.sp.scrollTo(body.sp.content().camera().scroll.x, comps.get(selectedObject).scrollPos);
     }
 
-    public void swapItemTabs(Item item1, Item item2, Heap heap) {
-        if(items == null) return;
-        int index1 = -1;
-        int index2 = -1;
-        for (int i = 0; i < items.length; i++) {
-            if (items[i] == item1) index1 = i;
-            if (items[i] == item2) index2 = i;
-        }
-        if (index1 == -1 || index2 == -1) return;
+    public void swapItemTabs(int index1, Item item1, int index2, Item item2, Heap heap) {
+        if (items == null) return;
 
-        items[index1] = item2;
-        items[index2] = item1;
+        if (index1 < items.length) items[index1] = item2;
+        if (index2 < items.length) items[index2] = item1;
+
+        //only ONE of the two items should not be inside this window!
+        if (index1 >= items.length) {
+            initComp(new EditItemComp(item1, heap) {
+                @Override
+                protected void updateObj() {
+                    super.updateObj();
+                    if (comps.containsKey(item1)) comps.get(item1).tabBtn.setIcon(getIcon());
+                }
+            });
+            Wrapper wrapper = comps.get(item2);
+            if (wrapper != null) {
+                wrapper.body.remove();
+                wrapper.body.destroy();
+                wrapper.body.killAndErase();
+            }
+        }
+        if (index2 >= items.length) {
+            initComp(new EditItemComp(item2, heap) {
+                @Override
+                protected void updateObj() {
+                    super.updateObj();
+                    if (comps.containsKey(item2)) comps.get(item2).tabBtn.setIcon(getIcon());
+                }
+            });
+            Wrapper wrapper = comps.get(item1);
+            if (wrapper != null) {
+                wrapper.body.remove();
+                wrapper.body.destroy();
+                wrapper.body.killAndErase();
+            }
+        }
 
         TabBtn tab1 = comps.get(item1).tabBtn;
         TabBtn tab2 = comps.get(item2).tabBtn;
@@ -225,12 +250,30 @@ public class EditCompWindowTabbed extends WndTabbed {
         int tabIndex1 = tabs.indexOf(tab1);
         int tabIndex2 = tabs.indexOf(tab2);
         tabs.remove(tab1);
-        tabs.add(tabIndex2, tab1);
+        if (index2 < items.length) {
+            tabs.add(tabIndex2, tab1);
+        } else {
+            tab1.destroy();
+            tab1.killAndErase();
+            comps.remove(item1);
+        }
         tabs.remove(tab2);
-        tabs.add(tabIndex1, tab2);
+        if (index1 < items.length) {
+            tabs.add(tabIndex1, tab2);
+            if (!tab1.alive) select(tab2);
+        } else {
+            tab2.destroy();
+            tab2.killAndErase();
+            comps.remove(item2);
+            select(tab1);
+        }
 
         ((EditHeapComp) comps.get(heap).body.content).itemContainer.updateItemListOrder();
 
+        if (index1 >= items.length || index2 >= items.length) {
+            changeHeight();
+            layoutCurrent();
+        }
         layoutTabs();
     }
 
