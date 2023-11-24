@@ -21,14 +21,18 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.android;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
@@ -43,6 +47,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
 import com.shatteredpixel.shatteredpixeldungeon.services.news.NewsImpl;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.UpdateImpl;
@@ -54,7 +59,9 @@ import com.watabou.utils.FileUtils;
 
 public class AndroidLauncher extends AndroidApplication {
 
-	static final int REQUEST_DIRECTORY = 123;
+	public static final boolean FILE_ACCESS_ENABLED_ON_ANDROID_11 = true;//GPlay doesn't like apps that want to do this
+
+	static final int REQUEST_DIRECTORY = 123, REQUEST_READ_EXTERNAL_STORAGE = 124;
 	static Consumer<FileHandle> selectFileCallback;
 	
 	public static AndroidApplication instance;
@@ -65,6 +72,39 @@ public class AndroidLauncher extends AndroidApplication {
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		//If opened via clicking on a .dun file
+		Intent data = getIntent();
+		if (data != null && data.getData() != null) {
+			if (!hasPermissionReadExternalStorage()) {
+				requestForStoragePermissions();
+				if (!hasPermissionReadExternalStorage()) return;//not granted
+			}
+			FileHandle file = new FileHandle(data.getData().getPath().replaceFirst("device_storage", "storage/emulated"));
+			String error = null;
+			if (!file.exists()) error = "Error: " + data.getData().getPath();
+			else if (!file.file().canRead()) error = "Cannot read the file. Please make sure to GRANT the PERMISSION!";
+			if (error == null) {
+				try {
+					FileHandle fileDest = FileUtils.getFileHandle(FileUtils.getFileTypeForCustomDungeons(),
+							CustomDungeonSaves.DUNGEON_FOLDER + file.name());
+					FileHandle destDungeon = FileUtils.getFileHandle(FileUtils.getFileTypeForCustomDungeons(),
+							CustomDungeonSaves.DUNGEON_FOLDER + file.nameWithoutExtension());
+
+					//copies the file into the dungeon folder so it can be auto-imported when opening the dungeon selection
+					if (!fileDest.exists() && !destDungeon.exists()) {
+						file.copyTo(fileDest);
+					} else error = "Dungeon \"" + file.nameWithoutExtension() + "\" already exists!";
+				} catch (Exception e) {
+					error = e.getMessage();
+				}
+			}
+			if (error == null) {
+				Toast.makeText(this, "Successfully copied file!", Toast.LENGTH_LONG).show();
+			} else {
+				Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+			}
+		}
 
 		try {
 			GdxNativesLoader.load();
@@ -181,12 +221,50 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == REQUEST_DIRECTORY && resultCode == Activity.RESULT_OK) {
-			FileHandle selectedFile = Gdx.files.absolute(("storage/emulated/0/"+data.getData().getPath()).replaceFirst("document/primary:",""));
-			if (selectedFile.extension().equals("dun"))selectFileCallback.accept(selectedFile);
-			else
-				Toast.makeText(this, "Invalid file: Only .dun files are permitted!", Toast.LENGTH_SHORT).show();
+        if (requestCode == REQUEST_DIRECTORY && resultCode == Activity.RESULT_OK) {
+            FileHandle file = Gdx.files.absolute(("storage/emulated/0/" + data.getData().getPath()).replaceFirst("document/primary:", ""));
+            if (file.extension().equals(CustomDungeonSaves.EXPORT_FILE_EXTENSION.replace(".",""))) {
+				String error = null;
+				if (!file.exists()) error = "Error: " + data.getData().getPath();
+				else if (!file.file().canRead()) error = "Cannot read the file. Please make sure to GRANT the PERMISSION!";
+				if (error == null) selectFileCallback.accept(file);
+				else Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+			} else
+				Toast.makeText(this, "Invalid file: Only " + CustomDungeonSaves.EXPORT_FILE_EXTENSION + " files are permitted!", Toast.LENGTH_SHORT).show();
 //			selectFileCallback.accept(convertUriToFileHandle(data.getData()));
+        }
+    }
+
+    public boolean hasPermissionReadExternalStorage() {
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {//Android 11
+				return Environment.isExternalStorageManager();
+			} else {
+				return checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+						&& checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+			}
+		}
+		return false;
+	}
+
+	void requestForStoragePermissions() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+				if (!FILE_ACCESS_ENABLED_ON_ANDROID_11) return;
+				try {
+					Intent intent = new Intent();
+					intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+					Uri uri = Uri.fromParts("package", this.getPackageName(), null);
+					intent.setData(uri);
+					startActivity(intent);
+				} catch (Exception e) {
+					Intent intent = new Intent();
+					intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+					startActivity(intent);
+				}
+			} else {
+				requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_EXTERNAL_STORAGE);
+			}
 		}
 	}
 }

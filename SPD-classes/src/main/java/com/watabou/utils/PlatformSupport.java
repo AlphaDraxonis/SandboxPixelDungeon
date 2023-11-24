@@ -72,6 +72,18 @@ public abstract class PlatformSupport {
 //		}
 	}
 
+	public boolean canReadExternalFilesIfUserGrantsPermission() {
+		return false;
+	}
+
+	public boolean canReadExternalFiles() {
+		return false;
+	}
+
+	public FileHandle getDownloadDirectory(String fileName) {
+		return null;
+	}
+
 	public void setOnscreenKeyboardVisible(boolean value){
 		Gdx.input.setOnscreenKeyboardVisible(value);
 	}

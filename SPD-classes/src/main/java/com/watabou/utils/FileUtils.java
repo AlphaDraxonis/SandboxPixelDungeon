@@ -230,6 +230,25 @@ public class FileUtils {
 			throw new IOException(e);
 		}
 	}
+
+	public static void bundleToFile( FileHandle file, Bundle bundle ) throws IOException{
+		try {
+			//write to a temp file, then move the files.
+			// This helps prevent save corruption if writing is interrupted
+			if (file.exists()){
+				FileHandle temp = getFileHandle(file.name() + ".tmp");
+				bundleToStream(temp.write(false), bundle);
+				file.delete();
+				temp.moveTo(file);
+			} else {
+				bundleToStream(file.write(false), bundle);
+			}
+
+		} catch (GdxRuntimeException e){
+			//game classes expect an IO exception, so wrap the GDX exception in that
+			throw new IOException(e);
+		}
+	}
 	
 	public static void bundleToStream(OutputStream output, Bundle bundle) throws IOException{
 		Bundle.write( bundle, output );

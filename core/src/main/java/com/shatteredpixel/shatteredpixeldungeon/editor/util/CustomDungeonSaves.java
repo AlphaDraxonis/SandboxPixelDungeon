@@ -32,7 +32,7 @@ public class CustomDungeonSaves {
 
     private static final String ROOT_DIR = "";
     private static final String FILE_EXTENSION = ".dat";
-    public static final String EXPORT_FILE_EXTENSION = ".dun";
+    public static final String EXPORT_FILE_EXTENSION = ".dun";//also used in AndroidManifest.xml!!!
     public static final String DUNGEON_FOLDER = ROOT_DIR + "custom_dungeons/";
     private static final String LEVEL_FOLDER = "levels/";
     private static final String DUNGEON_DATA = "data" + FILE_EXTENSION;
@@ -64,19 +64,19 @@ public class CustomDungeonSaves {
         FileUtils.bundleToFile(curDirectory + DUNGEON_INFO, bundleInfo);
     }
 
-    public static void exportDungeon(String dungeonName, String absolutePathDir) throws IOException {
-        try {
-            FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
-            exportDungeon(CustomDungeonSaves.loadDungeon(dungeonName), absolutePathDir);
-        } catch (CustomDungeonSaves.RenameRequiredException e) {
-            e.showExceptionWindow();
-        }
+    public static void exportDungeon(String dungeonName, String pathFromDefaultDir) throws IOException {
+        FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
+        exportDungeon(dungeonName, FileUtils.getFileHandle(pathFromDefaultDir + dungeonName.replace(' ', '_') + EXPORT_FILE_EXTENSION));
     }
 
-    public static void exportDungeon(CustomDungeon dungeon, String absolutePathDir) throws IOException {
-        Bundle export = new Bundle();
-        export.put(EXPORT, new ExportDungeonWrapper(dungeon));//TODO tzz location
-        FileUtils.bundleToFile(absolutePathDir + dungeon.getName().replace(' ', '_') + EXPORT_FILE_EXTENSION, export);
+    public static void exportDungeon(String dungeonName, FileHandle file) throws IOException {
+        try {
+            Bundle export = new Bundle();
+            export.put(EXPORT, new ExportDungeonWrapper(CustomDungeonSaves.loadDungeon(dungeonName)));
+            FileUtils.bundleToFile(file, export);
+        } catch (RenameRequiredException e) {
+            e.showExceptionWindow();
+        }
     }
 
     public static class RenameRequiredException extends Exception {

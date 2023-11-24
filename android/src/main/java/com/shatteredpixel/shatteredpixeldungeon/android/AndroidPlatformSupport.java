@@ -29,6 +29,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
+import android.os.Environment;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -322,6 +323,9 @@ public class AndroidPlatformSupport extends PlatformSupport {
 
 	@Override
 	public void selectFile(Consumer<FileHandle> callback) {
+
+		if (!canReadExternalFiles()) return;
+
 		AndroidLauncher.selectFileCallback = callback;
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 //		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -329,5 +333,24 @@ public class AndroidPlatformSupport extends PlatformSupport {
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
 //		intent.putExtra(Intent.EXTRA_TITLE, "TITLE");
 		AndroidLauncher.instance.startActivityForResult(intent, AndroidLauncher.REQUEST_DIRECTORY);
+	}
+
+	@Override
+	public boolean canReadExternalFilesIfUserGrantsPermission() {
+		return Build.VERSION.SDK_INT < Build.VERSION_CODES.R || AndroidLauncher.FILE_ACCESS_ENABLED_ON_ANDROID_11;
+	}
+
+	@Override
+	public boolean canReadExternalFiles() {
+		if (!((AndroidLauncher) AndroidLauncher.instance).hasPermissionReadExternalStorage()) {
+			((AndroidLauncher) AndroidLauncher.instance).requestForStoragePermissions();
+			return ((AndroidLauncher) AndroidLauncher.instance).hasPermissionReadExternalStorage();
+		}
+		return true;
+	}
+
+	@Override
+	public FileHandle getDownloadDirectory(String fileName) {
+		return new FileHandle(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + fileName);
 	}
 }

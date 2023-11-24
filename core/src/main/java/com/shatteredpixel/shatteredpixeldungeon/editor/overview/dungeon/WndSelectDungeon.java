@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon.DEFAULT_DUNGEON;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -23,11 +24,13 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Consumer;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
@@ -66,7 +69,8 @@ public class WndSelectDungeon extends Window {
             };
             add(createNewDungeonBtn);
 
-            if (SandboxPixelDungeon.platform.supportsOpenFileExplorer() /*|| DeviceCompat.isAndroid()*/) {
+            if (SandboxPixelDungeon.platform.supportsOpenFileExplorer()
+                    || (DeviceCompat.isAndroid() && SandboxPixelDungeon.platform.canReadExternalFilesIfUserGrantsPermission())) {
                 createNewDungeonBtn.setRect(0, height - 18, (width * 9 / 16f) - 2, 18);
                 openFileExplorer = new RedButton(DeviceCompat.isDesktop()
                         ? Messages.get(WndSelectDungeon.class, "open_file_explorer")
@@ -80,13 +84,16 @@ public class WndSelectDungeon extends Window {
                             SandboxPixelDungeon.platform.selectFile(new Consumer<FileHandle>() {
                                 @Override
                                 public void accept(FileHandle fileHandle) {
-                                    CustomDungeonSaves.Info info = ExportDungeonWrapper.doImport(fileHandle);
-                                    if (info != null) {
-                                        allInfos.add(info);
-                                        dungeonNames.add(info.name);
-                                        updateList();
-                                    } else {
-                                        //say: import not successful
+                                    if (fileHandle != null) {
+                                        CustomDungeonSaves.Info info = ExportDungeonWrapper.doImport(fileHandle);
+                                        if (info != null) {
+                                            allInfos.add(info);
+                                            dungeonNames.add(info.name);
+                                            updateList();
+                                            Sample.INSTANCE.play(Assets.Sounds.EVOKE);
+                                        } else {
+                                            Sample.INSTANCE.play(Assets.Sounds.CURSED);
+                                        }
                                     }
                                 }
                             });
@@ -148,7 +155,7 @@ public class WndSelectDungeon extends Window {
         protected void layout() {
             super.layout();
             if (folderName != null) {
-                label.setPos(label.left(), label.top()-1);
+                label.setPos(label.left(), label.top() - 1);
                 folderName.setPos(label.left(), label.bottom() + 2);
             }
         }
@@ -255,37 +262,7 @@ public class WndSelectDungeon extends Window {
                 RedButton exportDun = new RedButton(Messages.get(WndSelectDungeon.class, "export_dun_label")) {
                     @Override
                     protected void onClick() {
-                        String fileName = info.name.replace('_', '-') + CustomDungeonSaves.EXPORT_FILE_EXTENSION;
-                        String destLocation = CustomDungeonSaves.getAbsolutePath("exports/" + fileName).replace('_', '-');
-
-                        //body: export dungeon -no custom tiles can be exported- change location
-                        Window w = new WndOptions(
-                                Messages.get(WndSelectDungeon.class, "export_dun_title", info.name),
-                                Messages.get(WndSelectDungeon.class, "export_dun_body", destLocation),
-                                //change location on android,  open location on desktop
-                                Messages.get(WndSelectDungeon.class, "export_yes"), Messages.get(WndSelectDungeon.class, "export_no")) {
-                            @Override
-                            protected void onSelect(int index) {
-                                if (index == 0) {
-                                    try {
-                                        //on android: ask for permission, export in public file directory
-                                        //on desktop:
-                                        CustomDungeonSaves.exportDungeon(info.name, "exports/");
-
-                                        EditorScene.show(new WndOptions(
-                                                Messages.get(WndSelectDungeon.class, "export_dun_confirm_title", info.name),
-                                                Messages.get(WndSelectDungeon.class, "export_dun_confirm_body", destLocation)
-                                                        + (ExportDungeonWrapper.hasCustomTiles(info.name) ? Messages.get(WndSelectDungeon.class, "export_dun_confirm_custom_tile_hint"):""),
-                                                Messages.get(WndSelectDungeon.class, "export_confirm_close")));
-
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                        SandboxPixelDungeon.reportException(e);
-                                    }
-                                }
-                            }
-                        };
-                        EditorScene.show(w);
+                        EditorScene.show(new WndExportDungeon(info));
                     }
                 };
                 exportDun.enable(info.numLevels > 0);
@@ -412,6 +389,74 @@ public class WndSelectDungeon extends Window {
                     SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
                 else EditorScene.open((CustomLevel) l.getLevel());
             }
+        }
+    }
+
+    private static class WndExportDungeon extends WndOptions {
+
+        private final CustomDungeonSaves.Info info;
+        private String destLocation;
+        private final String fileName;
+
+        public WndExportDungeon(CustomDungeonSaves.Info info) {
+            super( Messages.get(WndSelectDungeon.class, "export_dun_title", info.name),
+                    getMessage(info),
+                    Messages.get(WndSelectDungeon.class, "export_yes"),
+                    Messages.get(WndSelectDungeon.class, "export_" +
+                             (DeviceCompat.isDesktop() ? "open_location" : DeviceCompat.isAndroid() ? "to_downloads" : "yes")),
+                    Messages.get(WndSelectDungeon.class, "export_no"));
+            this.info = info;
+            fileName = info.name.replace('_', '-') + CustomDungeonSaves.EXPORT_FILE_EXTENSION;
+            destLocation = CustomDungeonSaves.getAbsolutePath("exports/" + fileName).replace('_', '-');
+        }
+
+        @Override
+        protected void onSelect(int index) {
+            try {
+                if (index == 0) {
+                    CustomDungeonSaves.exportDungeon(info.name, "exports/");
+                    showSuccessful();
+                } else if (index == 1) {
+                    if (DeviceCompat.isDesktop()) {
+                        if (SandboxPixelDungeon.platform.supportsOpenFileExplorer())
+                            SandboxPixelDungeon.platform.openFileExplorer(FileUtils.getFileHandleWithDefaultPath(
+                                    FileUtils.getFileTypeForCustomDungeons(), "exports/"));
+                    } else if (DeviceCompat.isAndroid()) {
+                        if (!SandboxPixelDungeon.platform.canReadExternalFiles()) {
+                            Game.scene().addToFront(new WndExportDungeon(info));
+                            Sample.INSTANCE.play(Assets.Sounds.CURSED);
+                            return;
+                        }
+                        FileHandle dir = SandboxPixelDungeon.platform.getDownloadDirectory(fileName);
+                        destLocation = dir.file().getAbsolutePath();
+                        CustomDungeonSaves.exportDungeon(info.name, dir);
+                        showSuccessful();
+                    } else {
+                        onSelect(0);
+                    }
+                }
+
+            } catch (IOException e) {
+                Sample.INSTANCE.play(Assets.Sounds.CURSED);
+                e.printStackTrace();
+                SandboxPixelDungeon.reportException(e);
+                Game.scene().addToFront(new WndError(e.getMessage()));
+            }
+        }
+
+        private void showSuccessful() {
+            Sample.INSTANCE.play(Assets.Sounds.EVOKE);
+            EditorScene.show(new WndOptions(
+                    Messages.get(WndSelectDungeon.class, "export_dun_confirm_title", info.name),
+                    Messages.get(WndSelectDungeon.class, "export_dun_confirm_body", destLocation)
+                            + (ExportDungeonWrapper.hasCustomTiles(info.name) ? Messages.get(WndSelectDungeon.class, "export_dun_confirm_custom_tile_hint") : ""),
+                    Messages.get(WndSelectDungeon.class, "export_confirm_close")));
+        }
+
+        private static String getMessage(CustomDungeonSaves.Info info) {
+            String fileName = info.name.replace('_', '-') + CustomDungeonSaves.EXPORT_FILE_EXTENSION;
+            String destLocation = CustomDungeonSaves.getAbsolutePath("exports/" + fileName).replace('_', '-');
+            return Messages.get(WndSelectDungeon.class, "export_dun_body", destLocation);
         }
     }
 }
