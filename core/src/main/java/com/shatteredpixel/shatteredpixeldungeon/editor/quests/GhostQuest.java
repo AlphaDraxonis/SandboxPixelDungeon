@@ -81,9 +81,8 @@ public class GhostQuest extends Quest {
                 }
                 armor.upgrade(itemLevel);
                 if (doEnchant) glyph = Armor.Glyph.random();
-            } else{
-                if (armor.identifyOnStart) armor.identify();
-                AugumentationSpinner.assignRandomAugumentation(armor);
+            } else {
+                armor = (Armor) AugumentationSpinner.assignRandomAugmentation(armor);
             }
             if (weapon == null) {
                 //50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
@@ -96,9 +95,8 @@ public class GhostQuest extends Quest {
                 weapon.cursed = false;
                 weapon.upgrade(itemLevel);
                 if (doEnchant) enchant = Weapon.Enchantment.random();
-            } else{
-                if (weapon.identifyOnStart) weapon.identify();
-                AugumentationSpinner.assignRandomAugumentation(weapon);
+            } else {
+                weapon = (Weapon) AugumentationSpinner.assignRandomAugmentation(weapon);
             }
         }
 

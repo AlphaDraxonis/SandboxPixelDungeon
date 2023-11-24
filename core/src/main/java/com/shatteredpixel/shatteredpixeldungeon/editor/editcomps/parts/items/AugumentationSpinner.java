@@ -1,11 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.FeelingSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -91,15 +94,27 @@ public class AugumentationSpinner extends Spinner {
         }
     }
 
-    public static void assignRandomAugumentation(Item i){
-        Weapon w;
-        if (i instanceof Weapon && (w = (Weapon) i).augment == Weapon.Augment.RANDOM) {
-            w.augment = (Random.Int(2) == 0) ? Weapon.Augment.DAMAGE : Weapon.Augment.SPEED;
-        } else {
+    public static Item assignRandomAugmentation(Item i) {
+        return assignRandomAugmentation(i, false);
+    }
+
+    public static Item assignRandomAugmentation(Item i, boolean identifyOnlyEquipment) {
+        if (i instanceof RandomItem) {
+            i = ((RandomItem<?>) i).generateItem();
+        }
+        if (i instanceof Weapon) {
+            Weapon w;
+            if ((w = (Weapon) i).augment == Weapon.Augment.RANDOM) {
+                w.augment = (Random.Int(2) == 0) ? Weapon.Augment.DAMAGE : Weapon.Augment.SPEED;
+            }
+        } else if (i instanceof Armor) {
             Armor a;
-            if (i instanceof Armor && (a = (Armor) i).augment == Armor.Augment.RANDOM) {
+            if ((a = (Armor) i).augment == Armor.Augment.RANDOM) {
                 a.augment = (Random.Int(2) == 0) ? Armor.Augment.DEFENSE : Armor.Augment.EVASION;
             }
         }
+        if (i == null) return null;
+        if (i.identifyOnStart && (!identifyOnlyEquipment || (i instanceof EquipableItem || i instanceof Wand))) i.identify();
+        return i;
     }
 }

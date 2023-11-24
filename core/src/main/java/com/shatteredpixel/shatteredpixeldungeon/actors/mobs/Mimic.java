@@ -253,6 +253,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 
         if (items != null) {
             for (Item item : items) {
+                if (item.identifyOnStart) item.identify();
                 Dungeon.level.drop(item, pos).sprite.drop();
             }
             items = null;

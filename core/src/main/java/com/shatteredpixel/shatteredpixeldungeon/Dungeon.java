@@ -36,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -292,10 +291,8 @@ public class Dungeon {
         Generator.fullReset();
 
         int indexCurHero =  GamesInProgress.selectedClass.getIndex();
-        AugumentationSpinner.assignRandomAugumentation(Dungeon.customDungeon.startItems[0].weapon);
-        AugumentationSpinner.assignRandomAugumentation(Dungeon.customDungeon.startItems[0].armor);
-        AugumentationSpinner.assignRandomAugumentation(Dungeon.customDungeon.startItems[indexCurHero + 1].weapon);
-        AugumentationSpinner.assignRandomAugumentation(Dungeon.customDungeon.startItems[indexCurHero + 1].armor);
+        Dungeon.customDungeon.startItems[0].initRandoms();
+        Dungeon.customDungeon.startItems[indexCurHero + 1].initRandoms();
 
         Scroll.initLabels();
         Potion.initColors();

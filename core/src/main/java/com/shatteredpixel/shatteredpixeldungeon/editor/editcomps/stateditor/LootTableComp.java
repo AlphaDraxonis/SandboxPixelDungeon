@@ -8,8 +8,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.ItemContainer;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -22,6 +24,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.ui.Component;
@@ -31,6 +34,7 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class LootTableComp extends Component {
@@ -82,9 +86,11 @@ public class LootTableComp extends Component {
     private boolean isInInit = true;//NOT redundant!
 
     protected final Mob mob;
+    protected final RandomItem<?> randomItem;
 
-    public LootTableComp(Mob mob) {
+    public LootTableComp(Mob mob, RandomItem<?> randomItem) {
         this.mob = mob;
+        this.randomItem = randomItem;
 
         initComps();
         isInInit = false;
@@ -92,7 +98,7 @@ public class LootTableComp extends Component {
     }
 
     public Component createTitle() {
-        title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(LootTableComp.class, "title")), 10);
+        title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(LootTableComp.class, "title_" + (randomItem == null ? "loot" : "random"))), 10);
         title.hardlight(Window.TITLE_COLOR);
         return title;
     }
@@ -107,8 +113,7 @@ public class LootTableComp extends Component {
                 addItem = new RedButton(Messages.get(LootTableComp.class, "add_item")) {
                     @Override
                     protected void onClick() {
-
-                        EditorScene.selectItem(new ItemSelector.AnyItemSelectorWnd(Item.class) {
+                        WndBag.ItemSelector selector = new ItemSelector.AnyItemSelectorWnd(randomItem == null ? Item.class : randomItem.getType(), randomItem == null) {
                             @Override
                             public void onSelect(Item item) {
                                 if (item == null) return;
@@ -128,32 +133,43 @@ public class LootTableComp extends Component {
                             public boolean acceptsNull() {
                                 return !hasNullInLoot;
                             }
-                        });
+                        };
+                        if (randomItem != null && randomItem.getType() != Item.class)
+                            ItemSelector.showSelectWindow(selector, ItemSelector.NullTypeSelector.NOTHING, randomItem.getType(),
+                                    Items.bag, new HashSet<>(0), false);
+                        else EditorScene.selectItem(selector);
                     }
                 };
                 add(addItem);
-                restore = new RedButton(Messages.get(LootTableComp.class, "reset_loot")) {
-                    @Override
-                    protected void onClick() {
-                        mob.loot = Reflection.newInstance(mob.getClass()).loot;
-                        WndEditStats wndEditStats = findWndEditStats();
-                        wndEditStats.closeCurrentSubMenu();
-                    }
-                };
-                add(restore);
+                if (mob != null) {
+                    restore = new RedButton(Messages.get(LootTableComp.class, "reset_loot")) {
+                        @Override
+                        protected void onClick() {
+                            mob.loot = Reflection.newInstance(mob.getClass()).loot;
+                            WndEditStats wndEditStats = findWndEditStats();
+                            wndEditStats.closeCurrentSubMenu();
+                        }
+                    };
+                    add(restore);
+                }
             }
 
             @Override
             protected void layout() {
-                addItem.setRect(x, y, (width - GAP) * 3 / 5, BUTTON_HEIGHT);
-                restore.setRect(addItem.right() + GAP, y, width - GAP - addItem.width(), BUTTON_HEIGHT);
+                if (restore == null) {
+                    addItem.setRect(x, y, width, BUTTON_HEIGHT);
+                } else {
+                    addItem.setRect(x, y, (width - GAP) * 3 / 5, BUTTON_HEIGHT);
+                    restore.setRect(addItem.right() + GAP, y, width - GAP - addItem.width(), BUTTON_HEIGHT);
+                }
                 height = BUTTON_HEIGHT;
             }
         };
     }
 
     private void initComps() {
-        if (mob.loot instanceof CustomLootInfo) customLootInfo = (CustomLootInfo) mob.loot;
+        if (randomItem != null) customLootInfo = randomItem.getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI();
+        else if (mob.loot instanceof CustomLootInfo) customLootInfo = (CustomLootInfo) mob.loot;
         else {
             customLootInfo = mob.convertToCustomLootInfo();
             mob.loot = customLootInfo;
@@ -235,7 +251,7 @@ public class LootTableComp extends Component {
         private final ItemWithCount item;
 
         private final ItemContainer<Item> items;
-//        private final Image img;
+        //        private final Image img;
         private final RenderedTextBlock text;
 
         public LootItem(ItemWithCount item) {
@@ -244,7 +260,7 @@ public class LootTableComp extends Component {
 
             if (item.items.contains(EditorItem.NULL_ITEM)) {
                 items = null;
-                text = PixelScene.renderTextBlock(EditorItem.NULL_ITEM.title(),7);
+                text = PixelScene.renderTextBlock(EditorItem.NULL_ITEM.title(), 7);
 //                img = Dungeon.customDungeon.getItemImage(EditorItem.NULL_ITEM);
                 add(text);
 //                add(img);
@@ -252,7 +268,7 @@ public class LootTableComp extends Component {
 //                img = null;
                 text = null;
 
-                items = new ItemContainer<Item>(item.items, null, true){
+                items = new ItemContainer<Item>(item.items, null, true, 1) {
                     @Override
                     protected void onSlotNumChange() {
                         LootItem.this.layout();

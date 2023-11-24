@@ -5,8 +5,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
@@ -324,12 +326,6 @@ public class HeroSettings extends Component {
                     if (startItems != null) {
                         DungeonTab.updateLayout();
                     }
-//                    boolean wasVisible = addBtn.visible;
-//                    addBtn.visible = addBtn.active = getNumSlots() < 4;
-//                    if (addBtn.visible != wasVisible) {
-//                        WndEditorSettings wnd = (WndEditorSettings) EditorUtilies.getParentWindow(this);
-//                        if (wnd != null) wnd.getGeneralTab().layout();
-//                    }
                 }
 
                 @Override
@@ -518,6 +514,21 @@ public class HeroSettings extends Component {
                 startItems[i].maybeInitDefault(i);
             }
             return startItems;
+        }
+
+        public void initRandoms() {
+            weapon = (Weapon) AugumentationSpinner.assignRandomAugmentation(weapon);
+            armor = (Armor) AugumentationSpinner.assignRandomAugmentation(armor);
+            ring = (Ring) AugumentationSpinner.assignRandomAugmentation(ring);
+            artifact = (Artifact) AugumentationSpinner.assignRandomAugmentation(artifact);
+            misc = (KindofMisc) AugumentationSpinner.assignRandomAugmentation(misc);
+            if (weapon != null) weapon.setCursedKnown(true);
+            if (armor != null) armor.setCursedKnown(true);
+            if (ring != null) ring.setCursedKnown(true);
+            if (artifact != null) artifact.setCursedKnown(true);
+            if (misc != null) misc.setCursedKnown(true);
+            RandomItem.replaceRandomItemsInList(items);
+            RandomItem.replaceRandomItemsInList(bags);
         }
 
     }

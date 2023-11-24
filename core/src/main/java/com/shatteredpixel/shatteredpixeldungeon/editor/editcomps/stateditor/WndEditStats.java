@@ -160,7 +160,7 @@ public class WndEditStats extends MultiWindowTabComp {
                 loot = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndEditStats.class, "loot"), 9) {
                     @Override
                     protected void onClick() {
-                        LootTableComp lootTable = new LootTableComp(current);
+                        LootTableComp lootTable = new LootTableComp(current, null);
                         changeContent(lootTable.createTitle(), lootTable, lootTable.getOutsideSp(), 0f, 0.5f);
                     }
                 };
@@ -186,7 +186,7 @@ public class WndEditStats extends MultiWindowTabComp {
     }
 
     @Override
-    protected void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
+    public void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
         restoreDefaults.visible = restoreDefaults.active = false;
         super.changeContent(titleBar, body, outsideSp, alignment, titleAlignmentX);
     }

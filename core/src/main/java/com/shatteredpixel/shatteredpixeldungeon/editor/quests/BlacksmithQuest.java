@@ -1,7 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -114,9 +114,7 @@ public class BlacksmithQuest extends Quest {
             }
         }
 
-        for (Item i : smithRewards) {
-            AugumentationSpinner.assignRandomAugumentation(i);
-        }
+        RandomItem.replaceRandomItemsInList(smithRewards);
 
         if (type == BASED_ON_DEPTH) {
             type = levelScheme.generateBlacksmithQuest();

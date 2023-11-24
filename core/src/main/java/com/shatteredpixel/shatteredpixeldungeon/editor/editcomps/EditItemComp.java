@@ -9,10 +9,13 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.Cur
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.WndChooseEnchant;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
@@ -40,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -75,7 +79,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected final AugumentationSpinner augumentationSpinner;
     protected final RedButton enchantBtn;
     protected final ChooseDestLevelComp keylevel;
-    protected RedButton keyCell;
+    protected final RedButton keyCell;
+    protected final RedButton randomItem;
 
     private final Component[] comps;
 
@@ -142,167 +147,192 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(quickslotPos);
         } else quickslotPos = null;
 
-        if (!(item instanceof MissileWeapon) && (item instanceof Weapon || item instanceof Armor || item instanceof Ring || item instanceof Artifact || item instanceof Wand)) {
-            curseBtn = new CurseButton(item) {
-                @Override
-                protected void onChange() {
-                    updateObj();
-                }
-            };
-            add(curseBtn);
-            cursedKnown = new CheckBox(Messages.get(EditItemComp.class, "cursed_known")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    item.setCursedKnown(value);
-                }
-            };
-            cursedKnown.checked(item.getCursedKnownVar());
-            add(cursedKnown);
-        } else {
-            curseBtn = null;
-            cursedKnown = null;
-        }
-
-        if (item instanceof Wand) {
-            chargeSpinner = new ChargeSpinner((Wand) item) {
-                @Override
-                protected void onChange() {
-                    updateObj();
-                }
-            };
-        } else if (item instanceof Artifact && ((Artifact) item).chargeCap() > 0) {
-            chargeSpinner = new ChargeSpinner((Artifact) item) {
-                @Override
-                protected void onChange() {
-                    updateObj();
-                }
-            };
-        } else chargeSpinner = null;
-        if (chargeSpinner != null) add(chargeSpinner);
-
-        if (item.isUpgradable() || item instanceof Artifact) {
-            levelSpinner = new LevelSpinner(item) {
-                @Override
-                protected void onChange() {
-                    updateObj();
-                    if (chargeSpinner != null) chargeSpinner.adjustMaximum(item);
-                }
-            };
-            add(levelSpinner);
-        } else levelSpinner = null;
-
-        if (item instanceof Potion || item instanceof Scroll || item instanceof Ring || item instanceof Wand || item instanceof Artifact
-                || (item instanceof Weapon && !(item instanceof MissileWeapon || item instanceof SpiritBow))
-                || (item instanceof Armor && !(item instanceof ClassArmor))) {
-//      if (!DefaultStatsCache.getDefaultObject(item.getClass()).isIdentified()) { // always returns true while editing
-            autoIdentify = new CheckBox(Messages.get(EditItemComp.class, "auto_identify")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    item.identifyOnStart = value;
-                }
-            };
-            autoIdentify.checked(item.identifyOnStart);
-            add(autoIdentify);
-        } else autoIdentify = null;
-
-        if (item instanceof Weapon || item instanceof Armor) {//Missiles support enchantments too
-            enchantBtn = new RedButton(Messages.get(EditItemComp.class, "enchant")) {
-                @Override
-                protected void onClick() {
-                    Window w = new WndChooseEnchant(item) {
-                        @Override
-                        protected void finish() {
-                            super.finish();
-                            updateObj();
-                        }
-                    };
-                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                    else Game.scene().addToFront(w);
-                }
-            };
-            add(enchantBtn);
-        } else enchantBtn = null;
-
-        if (ScrollOfEnchantment.enchantable(item)) {
-            augumentationSpinner = new AugumentationSpinner(item) {
-                @Override
-                protected void onChange() {
-                    updateObj();
-                }
-            };
-            add(augumentationSpinner);
-        } else augumentationSpinner = null;
-
-        if (item instanceof Ankh) {
-            blessed = new CheckBox(Messages.get(EditItemComp.class, "blessed")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    ((Ankh) item).blessed = value;
-                    updateObj();
-                }
-            };
-            blessed.checked(((Ankh) item).blessed);
-            add(blessed);
-        } else blessed = null;
-
-        if (item instanceof Key) {
-            keylevel = new ChooseDestLevelComp(Messages.get(EditItemComp.class, "floor")) {
-                @Override
-                protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
-                    List<LevelSchemeLike> ret = new ArrayList<>(levels);
-                    ret.add(0, LevelScheme.ANY_LEVEL_SCHEME);
-                    return ret;
-                }
-
-                @Override
-                public void selectObject(Object object) {
-                    super.selectObject(object);
-                    if (object instanceof LevelScheme) {
-                        ((Key) item).levelName = EditorUtilies.getCodeName((LevelScheme) object);
-                    }
-                    if (keyCell != null) {
-                        boolean canChangeKeyCell = !Level.ANY.equals(((Key) item).levelName);
-                        if (!canChangeKeyCell && ((Key) item).cell != -1) {
-                            ((Key) item).cell = -1;
-                            keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
-                        }
-                        keyCell.enable(canChangeKeyCell);
-                    }
-                    updateObj();
-                }
-            };
-            keylevel.selectObject(((Key) item).levelName);
-            add(keylevel);
-
-            if (heap != null && heap.pos != -1) {
-                int cell = ((Key) item).cell;
-                if (EditorScene.customLevel() == null || cell >= EditorScene.customLevel().length()) cell = ((Key) item).cell = -1;
-                keyCell = new RedButton("") {
+        if(!(item instanceof RandomItem)) {
+            if (!(item instanceof MissileWeapon) && (item instanceof Weapon || item instanceof Armor || item instanceof Ring || item instanceof Artifact || item instanceof Wand)) {
+                curseBtn = new CurseButton(item) {
                     @Override
-                    protected void onClick() {
-                        EditorScene.selectCell(gatewayTelePosListener);
-                        windowInstance = EditorUtilies.getParentWindow(keyCell);
-                        windowInstance.active = false;
-                        if (windowInstance instanceof WndTabbed)
-                            ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
-                        Game.scene().remove(windowInstance);
+                    protected void onChange() {
+                        updateObj();
                     }
                 };
-                if (cell == -1) keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
-                else keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilies.cellToString(cell)));
-                add(keyCell);
-            } else keyCell = null;
+                add(curseBtn);
+                cursedKnown = new CheckBox(Messages.get(EditItemComp.class, "cursed_known")) {
+                    @Override
+                    public void checked(boolean value) {
+                        super.checked(value);
+                        item.setCursedKnown(value);
+                    }
+                };
+                cursedKnown.checked(item.getCursedKnownVar());
+                add(cursedKnown);
+            } else {
+                curseBtn = null;
+                cursedKnown = null;
+            }
 
+            if (item instanceof Wand) {
+                chargeSpinner = new ChargeSpinner((Wand) item) {
+                    @Override
+                    protected void onChange() {
+                        updateObj();
+                    }
+                };
+            } else if (item instanceof Artifact && ((Artifact) item).chargeCap() > 0) {
+                chargeSpinner = new ChargeSpinner((Artifact) item) {
+                    @Override
+                    protected void onChange() {
+                        updateObj();
+                    }
+                };
+            } else chargeSpinner = null;
+            if (chargeSpinner != null) add(chargeSpinner);
+
+            if (item.isUpgradable() || item instanceof Artifact) {
+                levelSpinner = new LevelSpinner(item) {
+                    @Override
+                    protected void onChange() {
+                        updateObj();
+                        if (chargeSpinner != null) chargeSpinner.adjustMaximum(item);
+                    }
+                };
+                add(levelSpinner);
+            } else levelSpinner = null;
+
+            if (item instanceof Potion || item instanceof Scroll || item instanceof Ring || item instanceof Wand || item instanceof Artifact
+                    || (item instanceof Weapon && !(item instanceof MissileWeapon || item instanceof SpiritBow))
+                    || (item instanceof Armor && !(item instanceof ClassArmor))) {
+//      if (!DefaultStatsCache.getDefaultObject(item.getClass()).isIdentified()) { // always returns true while editing
+                autoIdentify = new CheckBox(Messages.get(EditItemComp.class, "auto_identify")) {
+                    @Override
+                    public void checked(boolean value) {
+                        super.checked(value);
+                        item.identifyOnStart = value;
+                    }
+                };
+                autoIdentify.checked(item.identifyOnStart);
+                add(autoIdentify);
+            } else autoIdentify = null;
+
+            if (item instanceof Weapon || item instanceof Armor) {//Missiles support enchantments too
+                enchantBtn = new RedButton(Messages.get(EditItemComp.class, "enchant")) {
+                    @Override
+                    protected void onClick() {
+                        Window w = new WndChooseEnchant(item) {
+                            @Override
+                            protected void finish() {
+                                super.finish();
+                                updateObj();
+                            }
+                        };
+                        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
+                        else Game.scene().addToFront(w);
+                    }
+                };
+                add(enchantBtn);
+            } else enchantBtn = null;
+
+            if (ScrollOfEnchantment.enchantable(item)) {
+                augumentationSpinner = new AugumentationSpinner(item) {
+                    @Override
+                    protected void onChange() {
+                        updateObj();
+                    }
+                };
+                add(augumentationSpinner);
+            } else augumentationSpinner = null;
+
+            if (item instanceof Ankh) {
+                blessed = new CheckBox(Messages.get(EditItemComp.class, "blessed")) {
+                    @Override
+                    public void checked(boolean value) {
+                        super.checked(value);
+                        ((Ankh) item).blessed = value;
+                        updateObj();
+                    }
+                };
+                blessed.checked(((Ankh) item).blessed);
+                add(blessed);
+            } else blessed = null;
+
+            if (item instanceof Key) {
+                keylevel = new ChooseDestLevelComp(Messages.get(EditItemComp.class, "floor")) {
+                    @Override
+                    protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
+                        List<LevelSchemeLike> ret = new ArrayList<>(levels);
+                        ret.add(0, LevelScheme.ANY_LEVEL_SCHEME);
+                        return ret;
+                    }
+
+                    @Override
+                    public void selectObject(Object object) {
+                        super.selectObject(object);
+                        if (object instanceof LevelScheme) {
+                            ((Key) item).levelName = EditorUtilies.getCodeName((LevelScheme) object);
+                        }
+                        if (keyCell != null) {
+                            boolean canChangeKeyCell = !Level.ANY.equals(((Key) item).levelName);
+                            if (!canChangeKeyCell && ((Key) item).cell != -1) {
+                                ((Key) item).cell = -1;
+                                keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
+                            }
+                            keyCell.enable(canChangeKeyCell);
+                        }
+                        updateObj();
+                    }
+                };
+                keylevel.selectObject(((Key) item).levelName);
+                add(keylevel);
+
+                if (heap != null && heap.pos != -1) {
+                    int cell = ((Key) item).cell;
+                    if (EditorScene.customLevel() == null || cell >= EditorScene.customLevel().length()) cell = ((Key) item).cell = -1;
+                    keyCell = new RedButton("") {
+                        @Override
+                        protected void onClick() {
+                            EditorScene.selectCell(gatewayTelePosListener);
+                            windowInstance = EditorUtilies.getParentWindow(keyCell);
+                            windowInstance.active = false;
+                            if (windowInstance instanceof WndTabbed)
+                                ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
+                            Game.scene().remove(windowInstance);
+                        }
+                    };
+                    if (cell == -1) keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
+                    else keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilies.cellToString(cell)));
+                    add(keyCell);
+                } else keyCell = null;
+
+            } else {
+                keylevel = null;
+                keyCell = null;
+            }
+            randomItem = null;
         } else {
-            keylevel = null;
+            randomItem = new RedButton(Messages.get(EditItemComp.class, "edit_random")) {
+                @Override
+                protected void onClick() {
+                    LootTableComp lootTable = new LootTableComp(null, (RandomItem<?>) item);
+                    SimpleWindow w = new SimpleWindow((int) Math.ceil(width), (int) (PixelScene.uiCamera.height * 0.75));
+                    w.initComponents(lootTable.createTitle(), lootTable, lootTable.getOutsideSp(), 0f, 0.5f);
+                    w.offset(EditorUtilies.getParentWindow(EditItemComp.this).getOffset());
+                    EditorScene.show(w);
+                }
+            };
+            add(randomItem);
             keyCell = null;
+            keylevel = null;
+            chargeSpinner = null;
+            levelSpinner = null;
+            augumentationSpinner = null;
+            curseBtn = null;
+            cursedKnown = null;
+            autoIdentify = null;
+            enchantBtn = null;
+            blessed = null;
         }
 
         comps = new Component[]{quantity, quickslotPos, keylevel, keyCell, chargeSpinner, levelSpinner, augumentationSpinner,
-                curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed};
+                curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed, randomItem};
     }
 
     @Override
@@ -415,6 +445,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
         if (a instanceof Key)
             return ((Key) a).levelName.equals(((Key) b).levelName) && ((Key) a).cell == ((Key) b).cell;
+        if (a instanceof RandomItem) return a.equals(b);
         return true;
     }
 }

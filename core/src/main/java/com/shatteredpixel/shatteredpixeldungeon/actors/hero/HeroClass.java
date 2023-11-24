@@ -133,8 +133,8 @@ public enum HeroClass {
         collectStartEq(hero, generalItems);
         collectStartEq(hero, classItems);
 
-        collectStartItems(hero, classItems);
-        collectStartItems(hero, generalItems);
+        collectStartItems(classItems);
+        collectStartItems(generalItems);
 
         int plusLvl = generalItems.plusLvl + classItems.plusLvl;
         if (plusLvl != 0) {
@@ -393,7 +393,7 @@ public enum HeroClass {
         toRemove.cursed = cursed;
     }
 
-    private static void collectStartItems(Hero hero, HeroSettings.HeroStartItemsData startItems) {
+    private static void collectStartItems(HeroSettings.HeroStartItemsData startItems) {
         for (Item i : startItems.items) {
             if (!Challenges.isItemBlocked(i)) {
                 i.reset();
@@ -408,7 +408,7 @@ public enum HeroClass {
     }
 
     private static void maybePutIntoToolbar(Item item){
-        if (item.reservedQuickslot > 0) Dungeon.quickslot.setSlot(item.reservedQuickslot - 1, item);
+        if (item.reservedQuickslot > 0 && item.defaultAction() != null && !(item instanceof Key)) Dungeon.quickslot.setSlot(item.reservedQuickslot - 1, item);
         else if (SPDSettings.quickslotWaterskin() && item instanceof Waterskin)
             for (int s = 0; s < QuickSlot.SIZE; s++) {
                 if (Dungeon.quickslot.getItem(s) == null) {

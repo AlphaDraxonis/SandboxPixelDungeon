@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
@@ -20,11 +21,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
@@ -535,17 +534,13 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         for (Mob m : mobsToSpawn) {
             initRandStatsForMob(m);
         }
-        for (Item i : itemsToSpawn) {
-            AugumentationSpinner.assignRandomAugumentation(i);
-        }
+        RandomItem.replaceRandomItemsInList(itemsToSpawn);
         if (type == CustomLevel.class) {
             for (Mob m : level.mobs) {
                 initRandStatsForMob(m);
             }
             for (Heap h : level.heaps.valueList()) {
-                for (Item i : h.items) {
-                    AugumentationSpinner.assignRandomAugumentation(i);
-                }
+                RandomItem.replaceRandomItemsInList(h.items);
             }
         }
         Random.popGenerator();
@@ -555,15 +550,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
         if (m instanceof Mimic) {
             if (((Mimic) m).items != null) {
-                for (Item i : ((Mimic) m).items) {
-                    if (i.identifyOnStart && (i instanceof EquipableItem || i instanceof Wand)) i.identify();
-                    AugumentationSpinner.assignRandomAugumentation(i);
-                }
+                RandomItem.replaceRandomItemsInList(((Mimic) m).items, true);
             }
-        } else if (m instanceof Thief){
-            Item i = ((Thief) m).item;
-            if ((i instanceof EquipableItem || i instanceof Wand) && i.identifyOnStart) i.identify();
-            AugumentationSpinner.assignRandomAugumentation(i);
+        } else if (m instanceof Thief) {
+            ((Thief) m).item = AugumentationSpinner.assignRandomAugmentation(((Thief) m).item, true);
         }
     }
 

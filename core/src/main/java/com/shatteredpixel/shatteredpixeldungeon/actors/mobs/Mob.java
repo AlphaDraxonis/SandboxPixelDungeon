@@ -1034,8 +1034,8 @@ public abstract class Mob extends Char {
 				List<Item> loot = createActualLoot();
 				for (Item l : loot) {
 					if (l == null) continue;
-					if (l.identifyOnStart) l.identify();
-					AugumentationSpinner.assignRandomAugumentation(l);
+					l = AugumentationSpinner.assignRandomAugmentation(l);
+					if (l == null) continue;
 					increaseLimitedDropCount(l);
 					Dungeon.level.drop(l, pos).sprite.drop();
 				}

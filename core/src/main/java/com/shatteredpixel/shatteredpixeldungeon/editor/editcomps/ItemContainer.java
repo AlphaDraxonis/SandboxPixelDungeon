@@ -33,6 +33,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
 
     private final DefaultEditComp<?> editComp;
     protected final boolean reverseUiOrder;
+    protected final int maxSlots;
 
     public final Class<T> typeParameterClass;
     protected List<T> itemList;
@@ -59,9 +60,14 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
     }
 
     public ItemContainer(List<T> itemList, DefaultEditComp<?> editComp, boolean reverseUiOrder) {
+        this(itemList, editComp, reverseUiOrder, Integer.MAX_VALUE);
+    }
+
+    public ItemContainer(List<T> itemList, DefaultEditComp<?> editComp, boolean reverseUiOrder, int maxSlots) {
         this.itemList = itemList;
         this.editComp = editComp;
         this.reverseUiOrder = reverseUiOrder;
+        this.maxSlots = Math.max(itemList.size(), maxSlots);
         slots = new LinkedList<>();
 
         addBtn = new IconButton(Icons.get(Icons.PLUS)) {
@@ -94,6 +100,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         if (last) slots.add(slot);
         else slots.add(0, slot);
         add(slot);
+        if (slots.size() >= maxSlots) addBtn.visible = addBtn.active = false;
         if (editComp != null) {
             editComp.layout();
             editComp.updateObj();
@@ -203,6 +210,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         itemList.remove(slot.item());
         remove(slot);
         slot.destroy();
+        if (itemList.size() < maxSlots) addBtn.visible = addBtn.active = true;
         if (editComp != null) {
             editComp.layout();
             editComp.updateObj();

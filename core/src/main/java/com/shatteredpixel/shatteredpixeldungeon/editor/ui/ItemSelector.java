@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItem
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -48,7 +49,7 @@ public class ItemSelector extends Component {
         this.itemClasses = itemClasses;
         this.nullTypeSelector = nullTypeSelector;
 
-        selector = new AnyItemSelectorWnd(itemClasses) {
+        selector = new AnyItemSelectorWnd(itemClasses, true) {
             @Override
             public void onSelect(Item item) {
                 if (item == null) return;//if window is canceled
@@ -170,6 +171,14 @@ public class ItemSelector extends Component {
     }
 
     public static EditorInventoryWindow showSelectWindow(WndBag.ItemSelectorInterface selector, NullTypeSelector nullTypeSelector, Class<?> itemClasses, EditorItemBag bag, Collection<Class<?>> excludeItems) {
+        return showSelectWindow(selector, nullTypeSelector, itemClasses, bag, excludeItems, true);
+    }
+
+    /**
+     * <b>includeRandomItem only works if itemClasses is a SUBCLASS of item</b>
+     */
+    public static EditorInventoryWindow showSelectWindow(WndBag.ItemSelectorInterface selector, NullTypeSelector nullTypeSelector, Class<?> itemClasses,
+                                                         EditorItemBag bag, Collection<Class<?>> excludeItems, boolean includeRandomItem) {
         final int WIDTH = Math.min(160, (int) (PixelScene.uiCamera.width * 0.9));
         final int HEIGHT = (int) (PixelScene.uiCamera.height * 0.8f);
 
@@ -183,6 +192,12 @@ public class ItemSelector extends Component {
             sp.addItem(EditorItem.NULL_ITEM.createListItem(w));
         else if (nullTypeSelector == NullTypeSelector.RANDOM)
             sp.addItem(EditorItem.RANDOM_ITEM.createListItem(w));
+
+        if (includeRandomItem && itemClasses != Item.class && Item.class.isAssignableFrom(itemClasses)) {
+            RandomItem<?> randomItem = RandomItem.getNewRandomItem((Class<? extends Item>) itemClasses);
+            sp.addItem(new ItemItem((Item) randomItem).createListItem(w));//bypass any restrictions
+        }
+
         for (Item bagitem : bag.items) {
             if (bagitem instanceof Bag) {
                 for (Item i : (Bag) bagitem) {
@@ -220,12 +235,14 @@ public class ItemSelector extends Component {
         }
     }
 
-    public static abstract class AnyItemSelectorWnd  extends WndBag.ItemSelector {
+    public static abstract class AnyItemSelectorWnd extends WndBag.ItemSelector {
         protected final Class<? extends Item> itemClasses;
         public Class<? extends Bag> preferredBag;
+        protected final boolean allowRandomItem;
 
-        public AnyItemSelectorWnd(Class<? extends Item> itemClasses) {
+        public AnyItemSelectorWnd(Class<? extends Item> itemClasses, boolean allowRandomItem) {
             this.itemClasses = itemClasses;
+            this.allowRandomItem = allowRandomItem;
             preferredBag = Items.bag.getClass();
         }
 
@@ -236,10 +253,10 @@ public class ItemSelector extends Component {
 
         @Override
         public boolean itemSelectable(Item item) {
-            return itemClasses.isAssignableFrom(
-                    item instanceof EditorItem
-                            ? ((EditorItem) item).getObject().getClass()
-                            : item.getClass());
+            Object obj = item;
+            if(obj instanceof EditorItem) obj = ((EditorItem) obj).getObject();
+            return itemClasses.isAssignableFrom(obj.getClass())
+                    && (allowRandomItem || !(obj instanceof RandomItem));
         }
 
         @Override

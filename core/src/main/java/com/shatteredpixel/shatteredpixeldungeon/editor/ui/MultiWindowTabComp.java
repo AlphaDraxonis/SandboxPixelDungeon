@@ -125,7 +125,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
         changeContent(titleBar, body, outsideSp, 0.5f, 0.5f);
     }
 
-    protected void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
+    public void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
         title.visible = title.active = false;
         content.visible = content.active = false;
         sp.visible = sp.active = false;

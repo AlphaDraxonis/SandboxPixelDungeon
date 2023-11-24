@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -274,7 +275,7 @@ public class ItemSlot extends Button {
             itemIcon.frame(ItemSpriteSheet.Icons.film.get(item.icon));
             add(itemIcon);
 
-        } else if (item instanceof Weapon || item instanceof Armor) {
+        } else if ((item instanceof Weapon || item instanceof Armor) && !(item instanceof RandomItem)) {
 
             if (item.levelKnown()) {
                 int str = item instanceof Weapon ? ((Weapon) item).STRReq() : ((Armor) item).STRReq();
