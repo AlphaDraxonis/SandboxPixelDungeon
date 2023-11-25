@@ -44,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSettings;
 import com.watabou.glwrap.Blending;
@@ -58,6 +59,7 @@ import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.PointF;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -378,8 +380,16 @@ public class TitleScene extends PixelScene {
         protected void onClick() {
             EditorScene.start();
 
-            List<CustomDungeonSaves.Info> allInfos = CustomDungeonSaves.getAllInfos();
-            if (allInfos.isEmpty()) {
+			List<CustomDungeonSaves.Info> allInfos;
+			try {
+				allInfos = CustomDungeonSaves.getAllInfos();
+			} catch (IOException e) {
+				SandboxPixelDungeon.scene().addToFront(new WndError(
+						"Could not retrieve the available dungeons:\n"
+								+ e.getClass().getSimpleName() + ": " + e.getMessage()));
+				return;
+			}
+			if (allInfos.isEmpty()) {
                 Game.scene().addToFront(new WndNewDungeon(EMPTY_HASHSET));
             } else Game.scene().addToFront(new WndSelectDungeon(allInfos, true));
         }

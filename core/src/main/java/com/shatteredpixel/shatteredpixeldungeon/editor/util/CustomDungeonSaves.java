@@ -3,7 +3,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -206,34 +205,28 @@ public class CustomDungeonSaves {
         return result;
     }
 
-    public static List<Info> getAllInfos() {
+    public static List<Info> getAllInfos() throws IOException {
 
-        try {
-            List<String> dungeonDirs = getFilesInDir(DUNGEON_FOLDER);
-            List<Info> result = new ArrayList<>();
-            for (String path : dungeonDirs) {
-                if (path.endsWith(EXPORT_FILE_EXTENSION)) {
-                    FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path);
-                    if (file.exists() && !file.isDirectory()) {
-                        Info info = ExportDungeonWrapper.doImport(file);
-                        if (info != null) {
-                            result.add(info);
-                            file.delete();
-                        }
-                        continue;
+        List<String> dungeonDirs = getFilesInDir(DUNGEON_FOLDER);
+        List<Info> result = new ArrayList<>();
+        for (String path : dungeonDirs) {
+            if (path.endsWith(EXPORT_FILE_EXTENSION)) {
+                FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path);
+                if (file.exists() && !file.isDirectory()) {
+                    Info info = ExportDungeonWrapper.doImport(file);
+                    if (info != null) {
+                        result.add(info);
+                        file.delete();
                     }
+                    continue;
                 }
-                FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
-                if (file.exists())
-                    result.add((Info) FileUtils.bundleFromStream(file.read()).get(INFO));
             }
-            Collections.sort(result);
-            return result;
-        } catch (IOException e) {
-            e.printStackTrace();
-            SandboxPixelDungeon.reportException(e);
-            return null;
+            FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
+            if (file.exists())
+                result.add((Info) FileUtils.bundleFromStream(file.read()).get(INFO));
         }
+        Collections.sort(result);
+        return result;
     }
 
     public static void copyLevelsForNewGame(String dungeonName, String dirDestination) throws IOException {

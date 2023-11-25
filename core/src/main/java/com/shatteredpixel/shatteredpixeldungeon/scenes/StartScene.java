@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.BitmapText;
@@ -299,7 +300,15 @@ public class StartScene extends PixelScene {
 
 	public static void showWndSelectDungeon(int slot, HeroClass selectClass) {
 		EditorScene.close();
-		List<CustomDungeonSaves.Info> allInfos = CustomDungeonSaves.getAllInfos();
+		List<CustomDungeonSaves.Info> allInfos;
+		try {
+			allInfos = CustomDungeonSaves.getAllInfos();
+		} catch (IOException e) {
+			SandboxPixelDungeon.scene().add(new WndError(
+					"Could not retrieve the available dungeons:\n"
+							+ e.getClass().getSimpleName() + ": " + e.getMessage()));
+			return;
+		}
 		if (allInfos.isEmpty()) {
 			SandboxPixelDungeon.scene().add(new WndOptions(Icons.get(Icons.WARNING),
 					Messages.get(StartScene.class, "wnd_no_dungeon_title"),
