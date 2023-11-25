@@ -9,6 +9,8 @@ import com.watabou.noosa.Game;
 
 public class SpinnerFloatModel extends SpinnerIntegerModel {
 
+    public static final float ABSOLUTE_MAXIMUM = 9_999_999f;
+
     //Number of allowed decimal places
     private final int precision;
     private final String precisionFormat;
@@ -21,7 +23,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
                 convertToInt(stepSize, precision), includeInfinity, includeInfinity ? INFINITY : null);
         this.precision = precision;
         precisionFormat = "%." + precision + "f";
-        setAbsoluteMaximum(9_999_999f);
+        setAbsoluteMaximum(ABSOLUTE_MAXIMUM);
     }
 
     public static int convertToInt(float val, int precision) {

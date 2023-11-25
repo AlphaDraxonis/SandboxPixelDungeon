@@ -122,10 +122,12 @@ public class Golem extends Mob {
 	private boolean teleporting = false;
 	private int selfTeleCooldown = 0;
 	private int enemyTeleCooldown = 0;
+	public int maxTeleCooldown = 20;//selfTele *1.5f
 
 	private static final String TELEPORTING = "teleporting";
 	private static final String SELF_COOLDOWN = "self_cooldown";
 	private static final String ENEMY_COOLDOWN = "enemy_cooldown";
+	private static final String MAX_TELE_COOLDOWN = "max_tele_cooldown";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
@@ -133,6 +135,7 @@ public class Golem extends Mob {
 		bundle.put(TELEPORTING, teleporting);
 		bundle.put(SELF_COOLDOWN, selfTeleCooldown);
 		bundle.put(ENEMY_COOLDOWN, enemyTeleCooldown);
+		bundle.put(MAX_TELE_COOLDOWN, maxTeleCooldown);
 	}
 
 	@Override
@@ -141,6 +144,7 @@ public class Golem extends Mob {
 		teleporting = bundle.getBoolean( TELEPORTING );
 		selfTeleCooldown = bundle.getInt( SELF_COOLDOWN );
 		enemyTeleCooldown = bundle.getInt( ENEMY_COOLDOWN );
+		maxTeleCooldown = bundle.getInt( MAX_TELE_COOLDOWN );
 	}
 
 	@Override
@@ -151,7 +155,7 @@ public class Golem extends Mob {
 			((GolemSprite)sprite).teleParticles(false);
 			if (Actor.findChar(target) == null && Dungeon.level.openSpace[target]) {
 				ScrollOfTeleportation.appear(this, target);
-				selfTeleCooldown = 30;
+				selfTeleCooldown = (int) (maxTeleCooldown * 1.5f);
 			} else {
 				target = Dungeon.level.randomDestination(this);
 			}
@@ -192,7 +196,7 @@ public class Golem extends Mob {
 			}
 		}
 
-		enemyTeleCooldown = 20;
+		enemyTeleCooldown = maxTeleCooldown;
 	}
 
 	private boolean canTele(int target){

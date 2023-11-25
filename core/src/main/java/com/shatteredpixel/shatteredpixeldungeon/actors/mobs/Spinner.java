@@ -76,15 +76,18 @@ public class Spinner extends Mob {
 //	}
 
 	private int webCoolDown = 0;
+	public int maxWebCoolDown = 10;
 	private int lastEnemyPos = -1;
 
 	private static final String WEB_COOLDOWN = "web_cooldown";
+	private static final String MAX_WEB_COOLDOWN = "max_web_cooldown";
 	private static final String LAST_ENEMY_POS = "last_enemy_pos";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(WEB_COOLDOWN, webCoolDown);
+		bundle.put(MAX_WEB_COOLDOWN, maxWebCoolDown);
 		bundle.put(LAST_ENEMY_POS, lastEnemyPos);
 	}
 
@@ -199,7 +202,7 @@ public class Spinner extends Mob {
 			if (Dungeon.level.passable[webPos])  GameScene.add(Blob.seed(webPos, 20, Web.class));
 			if (Dungeon.level.passable[rightPos])GameScene.add(Blob.seed(rightPos, 20, Web.class));
 			
-			webCoolDown = 10;
+			webCoolDown = maxWebCoolDown;
 
 			if (Dungeon.level.heroFOV[enemy.pos]){
 				Dungeon.hero.interrupt();

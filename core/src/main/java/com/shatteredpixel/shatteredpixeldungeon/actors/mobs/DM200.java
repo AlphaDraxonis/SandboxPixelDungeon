@@ -109,19 +109,23 @@ public class DM200 extends DMMob {
 	}
 
 	private int ventCooldown = 0;
+	public int maxVentCooldown = 30;
 
 	private static final String VENT_COOLDOWN = "vent_cooldown";
+	private static final String MAX_VENT_COOLDOWN = "max_vent_cooldown";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(VENT_COOLDOWN, ventCooldown);
+		bundle.put(MAX_VENT_COOLDOWN, maxVentCooldown);
 	}
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		ventCooldown = bundle.getInt( VENT_COOLDOWN );
+		maxVentCooldown = bundle.getInt( MAX_VENT_COOLDOWN );
 	}
 
 	@Override
@@ -137,7 +141,7 @@ public class DM200 extends DMMob {
 
 	private void zap( ){
 		spend( TICK );
-		ventCooldown = 30;
+		ventCooldown = maxVentCooldown;
 
 		Ballistica trajectory = new Ballistica(pos, enemy.pos, Ballistica.STOP_TARGET);
 

@@ -43,8 +43,9 @@ import com.watabou.utils.Callback;
 
 public class Guard extends Mob {
 
-	//they can only use their chains once
-	private boolean chainsUsed = false;
+	//they can only use their chains once in Shattered
+	private int chainCooldown = 0;
+	public int maxChainCooldown = Integer.MAX_VALUE;
 
 	{
 		spriteClass = GuardSprite.class;
@@ -73,7 +74,7 @@ public class Guard extends Mob {
 //	}
 
 	private boolean chain(int target){
-		if (chainsUsed || enemy.properties().contains(Property.IMMOVABLE))
+		if (chainCooldown > 0 || enemy.properties().contains(Property.IMMOVABLE))
 			return false;
 
 		Ballistica chain = new Ballistica(pos, target, Ballistica.PROJECTILE);
@@ -119,7 +120,7 @@ public class Guard extends Mob {
 				}
 			}
 		}
-		chainsUsed = true;
+		chainCooldown = maxChainCooldown;
 		return true;
 	}
 
@@ -170,26 +171,40 @@ public class Guard extends Mob {
 		super.increaseLimitedDropCount(generatedLoot);
 	}
 
-	private final String CHAINSUSED = "chainsused";
+	private final String CHAIN_COOLDOWN = "chain_cooldown";
+	private final String MAX_CHAIN_COOLDOWN = "max_chain_cooldown";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
-		bundle.put(CHAINSUSED, chainsUsed);
+		bundle.put(CHAIN_COOLDOWN, chainCooldown);
+		bundle.put(MAX_CHAIN_COOLDOWN, maxChainCooldown);
 	}
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
-		chainsUsed = bundle.getBoolean(CHAINSUSED);
+		if (bundle.contains("chainsused")){
+			chainCooldown = bundle.getBoolean("chainsused") ? 0 : Integer.MAX_VALUE;
+			maxChainCooldown = Integer.MAX_VALUE;
+		} else {
+			chainCooldown = bundle.getInt(CHAIN_COOLDOWN);
+			maxChainCooldown = bundle.getInt(MAX_CHAIN_COOLDOWN);
+		}
 	}
-	
+
+	@Override
+	protected boolean act() {
+		chainCooldown--;
+		return super.act();
+	}
+
 	private class Hunting extends Mob.Hunting{
 		@Override
 		public boolean act( boolean enemyInFOV, boolean justAlerted ) {
 			enemySeen = enemyInFOV;
 			
-			if (!chainsUsed
+			if (chainCooldown <= 0
 					&& enemyInFOV
 					&& !isCharmedBy( enemy )
 					&& !canAttack( enemy )

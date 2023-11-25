@@ -3,7 +3,10 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
@@ -98,6 +101,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final CheckBox spawnQuestRoom;
 
     private final Spinner sentryRange, sentryDelay;
+    private final Spinner abilityCooldown;
     private final ItemSelector summonMob;
     private final Spinner tenguPhase, tenguRange;
     private final CheckBox dm300destroyWalls;
@@ -395,6 +399,62 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             sentryDelay = null;
         }
 
+        if (mob instanceof Guard) {
+            abilityCooldown = new Spinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Guard) mob).maxChainCooldown, 1, false, null) {
+                {
+                    setAbsoluteMinimum(1f);
+                }
+                @Override
+                public float getInputFieldWith(float height) {
+                    return height * 2.5f;
+                }
+            },
+                    " " + Messages.get(EditMobComp.class, "chains_cd") + ":", 9);
+            abilityCooldown.addChangeListener(() -> ((Guard) mob).maxChainCooldown = (int) abilityCooldown.getValue());
+            add(abilityCooldown);
+        } else if (mob instanceof DM200) {
+            abilityCooldown = new Spinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((DM200) mob).maxVentCooldown, 1, false, null) {
+                {
+                    setAbsoluteMinimum(1f);
+                }
+                @Override
+                public float getInputFieldWith(float height) {
+                    return height * 2.5f;
+                }
+            },
+                    " " + Messages.get(EditMobComp.class, "vent_cd") + ":", 9);
+            abilityCooldown.addChangeListener(() -> ((DM200) mob).maxVentCooldown = (int) abilityCooldown.getValue());
+            add(abilityCooldown);
+        } else if (mob instanceof Golem) {
+            abilityCooldown = new Spinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Golem) mob).maxTeleCooldown, 1, false, null) {
+                {
+                    setAbsoluteMinimum(1f);
+                }
+                @Override
+                public float getInputFieldWith(float height) {
+                    return height * 2.5f;
+                }
+            },
+                    " " + Messages.get(EditMobComp.class, "tele_cd") + ":", 9);
+            abilityCooldown.addChangeListener(() -> ((Golem) mob).maxTeleCooldown = (int) abilityCooldown.getValue());
+            add(abilityCooldown);
+        } else if (mob instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) {
+            com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner m = (com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) mob;
+            abilityCooldown = new Spinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, m.maxWebCoolDown, 1, false, null) {
+                {
+                    setAbsoluteMinimum(1f);
+                }
+                @Override
+                public float getInputFieldWith(float height) {
+                    return height * 2.5f;
+                }
+            },
+                    " " + Messages.get(EditMobComp.class, "web_cd") + ":", 9);
+            abilityCooldown.addChangeListener(() -> m.maxWebCoolDown = (int) abilityCooldown.getValue());
+            add(abilityCooldown);
+        }
+        else abilityCooldown = null;
+
         if (mob instanceof SpawnerMob) {
             Mob necroMob = ((SpawnerMob) mob).summonTemplate;
             summonMob = new ItemSelector(Messages.get(EditMobComp.class, "summon_mob"), MobItem.class, necroMob == null ? null : new MobItem(necroMob), ItemSelector.NullTypeSelector.NOTHING) {
@@ -613,7 +673,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, summonMob,
                 lotusLevelSpinner, sheepLifespan,
                 yogSpawnersAlive, yogNormalFists, yogChallengeFists,
-                mobStateSpinner, playerAlignment, sentryRange, sentryDelay,
+                mobStateSpinner, playerAlignment, sentryRange, sentryDelay, abilityCooldown,
                 tenguPhase, tenguRange,
                 questSpinner, questItem1, questItem2, spawnQuestRoom, blacksmithQuestRewards,
                 dm300pylonsNeeded, dm300destroyWalls, pylonAlwaysActive, addBuffs, editStats};
