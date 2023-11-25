@@ -39,7 +39,7 @@ public class Toast extends Component {
 	protected float maxWidth;
 
 	public Toast( String text ) {
-		this(text, PixelScene.uiCamera.width);
+		this(text, PixelScene.uiCamera.width - 48);
 	}
 
 	public Toast( String text, float maxWidth ) {

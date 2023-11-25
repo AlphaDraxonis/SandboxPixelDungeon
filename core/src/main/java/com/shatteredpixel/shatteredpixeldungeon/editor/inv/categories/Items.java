@@ -833,9 +833,11 @@ public enum Items {
         }
     }
 
-    private static void maybeUpdateKeyLevel(Item i, String oldLvlName, String newLvlName){
+    public static void maybeUpdateKeyLevel(Item i, String oldLvlName, String newLvlName){
         if (i instanceof Key && (oldLvlName == null || ((Key) i).levelName == null || ((Key) i).levelName.equals(oldLvlName))) {
             ((Key) i).levelName = newLvlName;
+        } else if (i instanceof RandomItem<?>){
+            ((RandomItem<?>) i).updateInvalidKeys(oldLvlName, newLvlName);
         }
     }
 

@@ -21,6 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
@@ -143,8 +144,6 @@ public class CustomDungeon implements Bundlable {
     //Default settings prison guard can only pull their enemies one time
     //but i want to make it as a boss so i need them can pull you many times
     //or basically any enemies with abilities
-
-    //Category items (similar to custom loot)
 
     //Scale mobs if their normal stats editor is disabled: not just everything
 
@@ -835,9 +834,14 @@ public class CustomDungeon implements Bundlable {
                     if (m instanceof Mimic && ((Mimic) m).items != null) {
                         if (removeInvalidKeys(((Mimic) m).items, n)) removedItems = true;
                     }
-                    if (m instanceof Thief && isInvalidKey(((Thief) m).item, n)) {
-                        ((Thief) m).item = null;
-                        removedItems = true;
+                    if (m instanceof Thief) {
+                        if (isInvalidKey(((Thief) m).item, n)) {
+                            ((Thief) m).item = null;
+                            removedItems = true;
+                        }
+                        if (((Thief) m).item instanceof RandomItem<?>) {
+                            if (((RandomItem<?>) ((Thief) m).item).removeInvalidKeys(n)) removedItems = true;
+                        }
                     }
                     if (m.loot instanceof LootTableComp.CustomLootInfo) {
                         Set<LootTableComp.ItemWithCount> toRemove = new HashSet<>(4);
@@ -899,13 +903,15 @@ public class CustomDungeon implements Bundlable {
         CustomDungeonSaves.saveDungeon(this);
     }
 
-    private boolean removeInvalidKeys(List<Item> items, String invalidLevelName) {
+    public static boolean removeInvalidKeys(List<Item> items, String invalidLevelName) {
         if (items == null) return false;
         boolean removedSth = false;
         for (Item i : new ArrayList<>(items)) {
             if (isInvalidKey(i, invalidLevelName)) {
                 items.remove(i);
                 removedSth = true;
+            } else if (i instanceof RandomItem<?>) {
+                return ((RandomItem<?>) i).removeInvalidKeys(invalidLevelName);
             }
         }
         return removedSth;
@@ -1109,9 +1115,14 @@ public class CustomDungeon implements Bundlable {
                         if (m instanceof Mimic && ((Mimic) m).items != null) {
                             if (renameInvalidKeys(((Mimic) m).items, oldName, newName))
                                 needsSave = true;
-                        } else if (m instanceof Thief && isInvalidKey(((Thief) m).item, oldName)) {
-                            ((Key) ((Thief) m).item).levelName = newName;
-                            needsSave = true;
+                        } else if (m instanceof Thief) {
+                            if (isInvalidKey(((Thief) m).item, oldName)) {
+                                ((Key) ((Thief) m).item).levelName = newName;
+                                needsSave = true;//TODO tzz
+                            }
+                            if (((Thief) m).item instanceof RandomItem<?>) {
+                                if (((RandomItem<?>) ((Thief) m).item).renameInvalidKeys(oldName, newName)) needsSave = true;
+                            }
                         }
                         if (m.loot instanceof LootTableComp.CustomLootInfo) {
                             for (LootTableComp.ItemWithCount itemsWithCount : ((LootTableComp.CustomLootInfo) m.loot).lootList) {
@@ -1206,13 +1217,16 @@ public class CustomDungeon implements Bundlable {
 
     }
 
-    private boolean renameInvalidKeys(List<Item> items, String invalidLevelName, String newName) {
+    public static boolean renameInvalidKeys(List<Item> items, String invalidLevelName, String newName) {
         if (items == null) return false;
         boolean removedSth = false;
         for (Item i : new ArrayList<>(items)) {
             if (isInvalidKey(i, invalidLevelName)) {
                 ((Key) i).levelName = newName;
                 removedSth = true;
+            }
+            if (i instanceof RandomItem<?>) {
+                ((RandomItem<?>) i).renameInvalidKeys(invalidLevelName, newName);
             }
         }
         return removedSth;

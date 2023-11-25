@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Swarm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.ItemWithPos;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
@@ -182,6 +183,9 @@ public class SacrificialFire extends Blob {
 				prizes.remove(cell);
 				removedSth = true;
 			}
+			if (i instanceof RandomItem<?>) {
+				if (((RandomItem<?>) i).removeInvalidKeys(invalidLevelName)) removedSth = true;
+			}
 		}
 		return removedSth;
 	}
@@ -192,7 +196,7 @@ public class SacrificialFire extends Blob {
 			Item i = prizes.get(cell);
 			if (CustomDungeon.isInvalidKey(i, invalidLevelName)) {
 				((Key) i).levelName = newName;
-				removedSth = true;
+				removedSth = true;//TODO tzz
 			}
 		}
 		return removedSth;

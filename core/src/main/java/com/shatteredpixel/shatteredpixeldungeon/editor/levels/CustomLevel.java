@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
@@ -922,6 +923,8 @@ public class CustomLevel extends Level {
                             int nCell = newPosition.get(cell);
                             ((Key) i).cell = isPositionValid.test(cell, nCell) ? nCell : -1;
                         }
+                    } else if (i instanceof RandomItem<?>) {
+                        ((RandomItem<?>) i).repositionKeyCells(newPosition, isPositionValid);
                     }
                 }
 
@@ -994,6 +997,17 @@ public class CustomLevel extends Level {
                 if (b instanceof SacrificialFire) {
                     Map<Integer, Item> prizes = ((SacrificialFire) b).getPrizes();
                     Map<Integer, Item> newPrizePositions = new HashMap<>(3);
+                    for (Item i : prizes.values()){
+                        if (i instanceof Key) {
+                            int cell = ((Key) i).cell;
+                            if (cell != -1) {
+                                int nCell = newPosition.get(cell);
+                                ((Key) i).cell = isPositionValid.test(cell, nCell) ? nCell : -1;
+                            }
+                        } else if (i instanceof RandomItem<?>) {
+                            ((RandomItem<?>) i).repositionKeyCells(newPosition, isPositionValid);
+                        }
+                    }
                     for (Integer oldPos : prizes.keySet()) {
                         int nPos = newPosition.get(oldPos);
                         if (isPositionValid.test(oldPos, nPos)) {
