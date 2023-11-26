@@ -202,9 +202,7 @@ public class TileItem extends EditorItem {
                 final LevelTransition transition = level.transitions.get(cell);
                 final LevelScheme levelScheme = level.levelScheme;
 
-
                 String defaultBelowOrAbove;
-
 
                 LevelTransition defaultTransition; //only if new exit or entrance was placed
                 LevelScheme defaultDestlevelScheme;
@@ -336,8 +334,6 @@ public class TileItem extends EditorItem {
                 moreActions.addActionPart(blobEditPart);
             }
 
-            EditorScene.updateMap(cell);
-
             for (int i : PathFinder.NEIGHBOURS9) {
                 Mob m = level.findMob(i + cell);
                 if (m != null && MobItem.invalidPlacement(m, level, m.pos)) {
@@ -379,6 +375,8 @@ public class TileItem extends EditorItem {
                     part.redo();
                 }
             }
+
+            EditorScene.updateMap(cell);
         }
 
         @Override
