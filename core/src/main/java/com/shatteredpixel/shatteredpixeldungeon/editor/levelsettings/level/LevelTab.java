@@ -44,6 +44,7 @@ public class LevelTab extends MultiWindowTabComp {
         Spinner viewDistance, depth, shopPrice;
         StyledButton changeSize;
         StyledCheckbox hungerDepletion, naturalRegen;
+        StyledButton bossLevelRetexture;
 
         final CustomLevel level = EditorScene.customLevel();
 
@@ -104,6 +105,17 @@ public class LevelTab extends MultiWindowTabComp {
         changeSize.icon(Icons.RULER.get());
         content.add(changeSize);
 
+        bossLevelRetexture = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(BossLevelRetexture.class, "title"), 8) {
+
+            @Override
+            protected void onClick() {
+                BossLevelRetexture content = new BossLevelRetexture();
+                changeContent(BossLevelRetexture.createTitle(), content, null);
+            }
+        };
+//        bossLevelRetexture.icon(Icons.SKULL.get());
+        content.add(bossLevelRetexture);
+
 
         viewDistance = new StyledSpinner(new SpinnerIntegerModel(1, 20, level.viewDistance, 1, false, null) {
             @Override
@@ -141,7 +153,7 @@ public class LevelTab extends MultiWindowTabComp {
 
         mainWindowComps = new Component[]{
                 region, mobSpawn, changeSize,
-                hungerDepletion, naturalRegen, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                hungerDepletion, naturalRegen, bossLevelRetexture, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 depth, viewDistance, shopPrice
         };
     }

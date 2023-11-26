@@ -53,6 +53,7 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Rect;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 
 public class CityBossLevel extends Level {
@@ -427,7 +428,7 @@ public class CityBossLevel extends Level {
 		return visuals;
 	}
 
-	public static class CustomGroundVisuals extends CustomTilemap {
+	public static class CustomGroundVisuals extends CustomTilemap implements CustomTilemap.BossLevelVisuals {
 
 		{
 			texture = Assets.Environment.CITY_BOSS;
@@ -440,128 +441,151 @@ public class CityBossLevel extends Level {
 		@Override
 		public Tilemap create() {
 			Tilemap v = super.create();
-			int[] data = new int[tileW*tileH];
-
-			int[] map = Dungeon.level.map;
-
-			int stairsTop = -1;
-
-			//upper part of the level, mostly demon halls tiles
-			for (int i = tileW; i < tileW*22; i++){
-
-				if (map[i] == Terrain.EXIT && stairsTop == -1){
-					stairsTop = i;
-				}
-
-				//pillars
-				if (map[i] == Terrain.WALL && map[i-tileW] == Terrain.CHASM){
-					data[i] = 13*8 + 6;
-					data[++i] = 13*8 + 7;
-				} else if (map[i] == Terrain.WALL && map[i-tileW] == Terrain.WALL){
-					data[i] = 14*8 + 6;
-					data[++i] = 14*8 + 7;
-				} else if (i > tileW && map[i] == Terrain.CHASM && map[i-tileW] == Terrain.WALL) {
-					data[i] = 15*8 + 6;
-					data[++i] = 15*8 + 7;
-
-				//imp's pedestal
-				} else if (map[i] == Terrain.PEDESTAL) {
-					data[i] = 12*8 + 5;
-
-				//skull piles
-				} else if (map[i] == Terrain.STATUE) {
-					data[i] = 15*8 + 5;
-
-				//ground tiles
-				} else if (map[i] == Terrain.EMPTY || map[i] == Terrain.EMPTY_DECO
-						|| map[i] == Terrain.EMBERS || map[i] == Terrain.GRASS
-						|| map[i] == Terrain.HIGH_GRASS || map[i] == Terrain.FURROWED_GRASS){
-
-					//final ground stiching with city tiles
-					if (i/tileW == 21){
-						data[i] = 11*8 + 0;
-						data[++i] = 11*8 + 1;
-						data[++i] = 11*8 + 2;
-						data[++i] = 11*8 + 3;
-						data[++i] = 11*8 + 4;
-						data[++i] = 11*8 + 5;
-						data[++i] = 11*8 + 6;
-					} else {
-
-						//regular ground tiles
-						if (map[i - 1] == Terrain.CHASM) {
-							data[i] = 12 * 8 + 1;
-						} else if (map[i + 1] == Terrain.CHASM) {
-							data[i] = 12 * 8 + 3;
-						} else if (map[i] == Terrain.EMPTY_DECO) {
-							data[i] = 12 * 8 + 4;
-						} else {
-							data[i] = 12 * 8 + 2;
-						}
-					}
-
-					//otherwise no tile here
-				} else {
-					data[i] = -1;
-				}
-			}
-
-			//custom for stairs
-			for (int i = 0; i < STAIR_ROWS; i++){
-				for (int j = 0; j < 7; j++){
-					data[stairsTop+j] = (i+4)*8 + j;
-				}
-				stairsTop += tileW;
-			}
-
-			//lower part: statues, pedestals, and carpets
-			for (int i = tileW*22; i < tileW * tileH; i++){
-
-				//pedestal spawners
-				if (map[i] == Terrain.PEDESTAL){
-					data[i] = 13*8 + 4;
-
-				//statues that should face left instead of right
-				} else if (map[i] == Terrain.STATUE && i%tileW > 7) {
-					data[i] = 15 * 8 + 4;
-
-				//carpet tiles
-				} else if (map[i] == Terrain.EMPTY_SP) {
-					//top row of DK's throne
-					if (map[i + 1] == Terrain.EMPTY_SP && map[i + tileW] == Terrain.EMPTY_SP) {
-						data[i] = 13 * 8 + 1;
-						data[++i] = 13 * 8 + 2;
-						data[++i] = 13 * 8 + 3;
-
-					//mid row of DK's throne
-					}else if (map[i + 1] == Terrain.CUSTOM_DECO) {
-						data[i] = 14 * 8 + 1;
-						data[++i] = 14 * 8 + 2;
-						data[++i] = 14 * 8 + 3;
-
-					//bottom row of DK's throne
-					} else if (map[i+1] == Terrain.EMPTY_SP && map[i-tileW] == Terrain.EMPTY_SP){
-						data[i] = 15*8 + 1;
-						data[++i] = 15*8 + 2;
-						data[++i] = 15*8 + 3;
-
-					//otherwise entrance carpet
-					} else if (map[i-tileW] != Terrain.EMPTY_SP){
-						data[i] = 13*8 + 0;
-					} else if (map[i+tileW] != Terrain.EMPTY_SP){
-						data[i] = 15*8 + 0;
-					} else {
-						data[i] = 14*8 + 0;
-					}
-
-					//otherwise no tile here
-				} else {
-					data[i] = -1;
-				}
-			}
-
-			v.map( data, tileW );
+			updateState();
 			return v;
+		}
+
+		@Override
+		public void updateState() {
+			if (vis != null) {
+				int[] data = new int[tileW*tileH];
+
+				int[] map = Dungeon.level.map;
+
+				int stairsTop = -1;
+				int stairsWidth = 0;
+
+				int indexStitchingWithCityTiles = -1;
+
+				//upper part of the level, mostly demon halls tiles
+				for (int i = tileW; i < tileW*Math.min(22, tileH); i++){
+
+					if (indexStitchingWithCityTiles >= 0)
+						indexStitchingWithCityTiles = (indexStitchingWithCityTiles + 1) % 7;
+
+					if (map[i] == Terrain.EXIT && stairsTop == -1){
+						stairsTop = i;
+					}
+                    if (stairsWidth <= 0 && stairsTop != -1) {
+                        if (map[i] == Terrain.EXIT && i / tileW == (i + 1) / tileW) stairsWidth--;
+                        else stairsWidth = -stairsWidth;
+                    }
+
+					//pillars
+					if (map[i] == Terrain.WALL && map[i-tileW] == Terrain.CHASM){
+						data[i] = 13*8 + 6;
+						if (++i < data.length) data[i] = 13*8 + 7;
+					} else if (map[i] == Terrain.WALL && map[i-tileW] == Terrain.WALL){
+						data[i] = 14*8 + 6;
+						if (++i < data.length) data[i] = 14*8 + 7;
+					} else if (i > tileW && map[i] == Terrain.CHASM && map[i-tileW] == Terrain.WALL) {
+						data[i] = 15*8 + 6;
+						if (++i < data.length) data[i] = 15*8 + 7;
+
+						//imp's pedestal
+					} else if (map[i] == Terrain.PEDESTAL) {
+						data[i] = 12*8 + 5;
+
+						//skull piles
+					} else if (map[i] == Terrain.STATUE) {
+						data[i] = 15*8 + 5;
+
+						//ground tiles
+					} else if (map[i] == Terrain.EMPTY || map[i] == Terrain.EMPTY_DECO
+							|| map[i] == Terrain.EMBERS || map[i] == Terrain.GRASS
+							|| map[i] == Terrain.HIGH_GRASS || map[i] == Terrain.FURROWED_GRASS){
+
+						//final ground stiching with city tiles
+						if (i/tileW == 21){
+							if(indexStitchingWithCityTiles == -1) indexStitchingWithCityTiles = 0;
+							data[i] = 11*8 + indexStitchingWithCityTiles;
+						} else {
+
+							//regular ground tiles
+							if (map[i - 1] == Terrain.CHASM) {
+								data[i] = 12 * 8 + 1;
+							} else if (i + 1 >= map.length || map[i + 1] == Terrain.CHASM) {
+								data[i] = 12 * 8 + 3;
+							} else if (map[i] == Terrain.EMPTY_DECO) {
+								data[i] = 12 * 8 + 4;
+							} else {
+								data[i] = 12 * 8 + 2;
+							}
+						}
+
+						//otherwise no tile here
+					} else {
+						data[i] = -1;
+					}
+				}
+
+				//custom for stairs
+				for (int i = 0; i < STAIR_ROWS; i++){
+					for (int j = 0; j < stairsWidth; j++){
+						if (stairsTop + j < data.length) data[stairsTop+j] = (i+4)*8 + j;
+					}
+					stairsTop += tileW;
+				}
+
+				//lower part: statues, pedestals, and carpets
+				for (int i = tileW*Math.min(22, tileH); i < tileW * tileH; i++){
+
+					//pedestal spawners
+					if (map[i] == Terrain.PEDESTAL){
+						data[i] = 13*8 + 4;
+
+						//statues that should face left instead of right
+					} else if (map[i] == Terrain.STATUE && i%tileW > tileW/2) {
+						data[i] = 15 * 8 + 4;
+
+						//carpet tiles
+					} else if (map[i] == Terrain.EMPTY_SP) {
+						if (i + 1 < map.length) {
+							//top row of DK's throne
+							if (map[i + 1] == Terrain.EMPTY_SP && i + tileW < map.length && map[i + tileW] == Terrain.EMPTY_SP) {
+								data[i] = 13 * 8 + 1;
+								data[++i] = 13 * 8 + 2;
+								if (++i < data.length) data[i] = 13 * 8 + 3;
+
+								//mid row of DK's throne
+							} else if (map[i + 1] == Terrain.CUSTOM_DECO) {
+								data[i] = 14 * 8 + 1;
+								data[++i] = 14 * 8 + 2;
+								if (++i < data.length) data[i] = 14 * 8 + 3;
+
+								//bottom row of DK's throne
+							} else if (map[i + 1] == Terrain.EMPTY_SP && map[i - tileW] == Terrain.EMPTY_SP) {
+								data[i] = 15 * 8 + 1;
+								data[++i] = 15 * 8 + 2;
+								if (++i < data.length) data[i] = 15 * 8 + 3;
+							}
+							//otherwise entrance carpet
+							else if (map[i-tileW] != Terrain.EMPTY_SP){
+								data[i] = 13*8 + 0;
+							} else if (i+tileW < map.length && map[i+tileW] != Terrain.EMPTY_SP){
+								data[i] = 15*8 + 0;
+							} else {
+								data[i] = 14*8 + 0;
+							}
+
+						}
+						//otherwise entrance carpet
+						else if (map[i-tileW] != Terrain.EMPTY_SP){
+							data[i] = 13*8 + 0;
+						} else if (i+tileW < map.length && map[i+tileW] != Terrain.EMPTY_SP){
+							data[i] = 15*8 + 0;
+						} else {
+							data[i] = 14*8 + 0;
+						}
+
+						//otherwise no tile here
+					} else {
+						data[i] = -1;
+					}
+				}
+
+				vis.map( data, tileW );
+			}
 		}
 
 		@Override
@@ -613,7 +637,7 @@ public class CityBossLevel extends Level {
 		}
 	}
 
-	public static class CustomWallVisuals extends CustomTilemap {
+	public static class CustomWallVisuals extends CustomTilemap implements CustomTilemap.BossLevelVisuals {
 		{
 			texture = Assets.Environment.CITY_BOSS;
 			tileW = 15;
@@ -623,71 +647,89 @@ public class CityBossLevel extends Level {
 		@Override
 		public Tilemap create() {
 			Tilemap v = super.create();
-			int[] data = new int[tileW*tileH];
+			updateState();
+			return v;
+		}
 
-			int[] map = Dungeon.level.map;
+		@Override
+		public void updateState() {
+			if (vis != null) {
+				int[] data = new int[tileW * tileH];
+				Arrays.fill(data, -1);
 
-			int shadowTop = -1;
+				int[] map = Dungeon.level.map;
 
-			//upper part of the level, mostly demon halls tiles
-			for (int i = tileW; i < tileW*21; i++) {
+				int shadowTop = -1;
+				int shadowWidth = 0;
+                int cutShadow = 0;
 
-				if (map[i] == Terrain.EXIT && shadowTop == -1){
-					shadowTop = i - tileW*4;
+				//upper part of the level, mostly demon halls tiles
+				for (int i = tileW; i < tileW * 21; i++) {
+
+					if (map[i] == Terrain.EXIT && shadowTop == -1) {
+                        cutShadow = Math.max(0, 4 - i / tileW);
+						shadowTop = i - tileW * (4-cutShadow);
+					}
+                    if (shadowWidth <= 0 && shadowTop != -1) {
+                        if (map[i] == Terrain.EXIT && i / tileW == (i + 1) / tileW) shadowWidth--;
+                        else shadowWidth = -shadowWidth;
+                    }
+
+					//pillars
+					if (i + tileW < map.length && map[i] == Terrain.CHASM && map[i + tileW] == Terrain.WALL) {
+						data[i] = 12 * 8 + 6;
+						data[++i] = 12 * 8 + 7;
+					} else if (map[i] == Terrain.WALL && map[i - tileW] == Terrain.CHASM) {
+						data[i] = 13 * 8 + 6;
+						data[++i] = 13 * 8 + 7;
+
+					//skull tops
+					} else if (i + tileW < map.length && map[i + tileW] == Terrain.STATUE) {
+						data[i] = 14 * 8 + 5;
+
+					//otherwise no tile here
+					} else {
+						data[i] = -1;
+					}
 				}
 
-				//pillars
-				if (map[i] == Terrain.CHASM && map[i+tileW] == Terrain.WALL) {
-					data[i] = 12*8 + 6;
-					data[++i] = 12*8 + 7;
-				} else if (map[i] == Terrain.WALL && map[i-tileW] == Terrain.CHASM) {
-					data[i] = 13 * 8 + 6;
-					data[++i] = 13 * 8 + 7;
+				//custom shadow  for stairs
+				for (int i = cutShadow; i < 8; i++) {
+					if (i < 4 - cutShadow) {
+						data[shadowTop] = i * 8 + 0;
+                        for (int j = 1; j < shadowWidth-1; j++) {
+                            if (shadowTop + j < data.length) data[shadowTop + j] = i * 8 + 1;
+                        }
+                        if (shadowTop + shadowWidth < data.length) data[shadowTop + shadowWidth] = i * 8 + 2;
+					} else {
+						int j = i - 4;
+						data[shadowTop] = j * 8 + 3;
+                        for (int k = 1; k < shadowWidth-1; k++) {
+                            if (shadowTop + k < data.length) data[shadowTop + k] = j * 8 + 4;
+                        }
+                        if (shadowTop + shadowWidth < data.length) data[shadowTop + shadowWidth] = j * 8 + 5;
+					}
 
-				//skull tops
-				} else if (map[i+tileW] == Terrain.STATUE) {
-					data[i] = 14*8 + 5;
+					shadowTop += tileW;
+                    if (shadowTop >= data.length) break;
+				}
 
-				//otherwise no tile here
-				} else {
+				//lower part. Statues and DK's throne
+				for (int i = tileW * 21; i < tileW * tileH; i++) {
+
+					//Statues that need to face left instead of right
+					if (map[i] == Terrain.STATUE && i % tileW > 7) {
+						data[i - tileW] = 14 * 8 + 4;
+					} else if (map[i] == Terrain.CUSTOM_DECO) {
+						data[i - tileW] = 13 * 8 + 5;
+					}
+
+					//always no tile here (as the above statements are modifying previous tiles)
 					data[i] = -1;
 				}
+
+				vis.map(data, tileW);
 			}
-
-			//custom shadow  for stairs
-			for (int i = 0; i < 8; i++){
-				if (i < 4){
-					data[shadowTop] = i*8 + 0;
-					data[shadowTop+1] = data[shadowTop+2] = data[shadowTop+3] = data[shadowTop+4] =
-							data[shadowTop+5] = data[shadowTop+6] = i*8 + 1;
-					data[shadowTop+7] = i*8 + 2;
-				} else {
-					int j = i - 4;
-					data[shadowTop] = j*8 + 3;
-					data[shadowTop+1] = data[shadowTop+2] = data[shadowTop+3] = data[shadowTop+4] =
-							data[shadowTop+5] = data[shadowTop+6] = j*8 + 4;
-					data[shadowTop+7] = j*8 + 5;
-				}
-
-				shadowTop += tileW;
-			}
-
-			//lower part. Statues and DK's throne
-			for (int i = tileW*21; i < tileW * tileH; i++){
-
-				//Statues that need to face left instead of right
-				if (map[i] == Terrain.STATUE && i%tileW > 7){
-					data[i-tileW] = 14*8 + 4;
-				} else if (map[i] == Terrain.CUSTOM_DECO){
-					data[i-tileW] = 13*8 + 5;
-				}
-
-				//always no tile here (as the above statements are modifying previous tiles)
-				data[i] = -1;
-			}
-
-			v.map( data, tileW );
-			return v;
 		}
 	}
 

@@ -32,7 +32,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.FigureEightBuilder;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.SewerPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
@@ -42,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.SewerBoss
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.SewerBossExitRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.audio.Music;
@@ -218,14 +218,20 @@ public class SewerBossLevel extends SewerLevel {
 	@Override
 	public Group addVisuals() {
 		super.addVisuals();
-		LevelTransition t = getTransition(LevelTransition.Type.REGULAR_EXIT);
-		if (t != null && t.type == LevelTransition.Type.REGULAR_EXIT) {
-			if (map[t.cell() - 1] != Terrain.WALL_DECO)
-				visuals.add(new PrisonLevel.Torch(t.cell() - 1));
-			if (map[t.cell() + 1] != Terrain.WALL_DECO)
-				visuals.add(new PrisonLevel.Torch(t.cell() + 1));
-		}
+		addSewerBossVisuals(this, visuals);
 		return visuals;
+	}
+
+	public static void addSewerBossVisuals(Level level, Group visuals) {
+		if (level.customTiles != null) {
+			for (CustomTilemap customTile : level.customTiles) {
+				if (customTile instanceof SewerBossExitRoom.SewerExit) {
+					int pos = customTile.tileX + 1 + customTile.tileY * level.width();
+					visuals.add(new PrisonLevel.Torch(pos - 1));
+					visuals.add(new PrisonLevel.Torch(pos + 1));
+				}
+			}
+		}
 	}
 	
 	@Override

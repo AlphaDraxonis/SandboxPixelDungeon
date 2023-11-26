@@ -250,6 +250,7 @@ public class EditorScene extends PixelScene {
         customTiles = new Group();
         terrain.add(customTiles);
 
+        customBossTilemap = customBossWallsTilemap = null;
         for (CustomTilemap visual : customLevel().customTiles) {
             addCustomTile(visual);
         }
@@ -439,6 +440,7 @@ public class EditorScene extends PixelScene {
     }
 
     public static void updateMap(int cell) {
+        revalidateBossCustomTiles();
         if (scene != null) {
             scene.tiles.updateMapCell(cell);
             scene.visualGrid.updateMapCell(cell);
@@ -447,6 +449,7 @@ public class EditorScene extends PixelScene {
     }
 
     public static void updateMap() {
+        revalidateBossCustomTiles();
         if (scene != null) {
             scene.tiles.updateMap();
             scene.visualGrid.updateMap();
@@ -477,10 +480,14 @@ public class EditorScene extends PixelScene {
 
     public void addCustomTile(CustomTilemap visual) {
         customTiles.add(visual.create());
+        if (visual instanceof CustomTilemap.BossLevelVisuals)
+            customBossTilemap = (CustomTilemap.BossLevelVisuals) visual;
     }
 
     public void addCustomWall(CustomTilemap visual) {
         customWalls.add(visual.create());
+        if (visual instanceof CustomTilemap.BossLevelVisuals)
+            customBossWallsTilemap = (CustomTilemap.BossLevelVisuals) visual;
     }
 
     public static void revalidateCustomTiles(){
@@ -502,7 +509,7 @@ public class EditorScene extends PixelScene {
                 ((CustomTileLoader.SimpleCustomTile) visual).setValues(src);
                 if (src.identifier == null) toRemove.add(visual);
                 else add(src, false);
-            } else add(visual.getCopy(), false);
+            } else add(visual, false);
 
         }
         Dungeon.level.customTiles.removeAll(toRemove);
@@ -513,9 +520,21 @@ public class EditorScene extends PixelScene {
                 ((CustomTileLoader.SimpleCustomTile) visual).setValues(src);
                 if (src.identifier == null) toRemove.add(visual);
                 else add(src, true);
-            } else add(visual.getCopy(), true);
+            } else add(visual, true);
         }
         Dungeon.level.customWalls.removeAll(toRemove);
+    }
+
+    private static CustomTilemap.BossLevelVisuals customBossTilemap, customBossWallsTilemap;
+    public static void revalidateBossCustomTiles() {
+        if(scene == null || EditorScene.customLevel() == null) return;
+
+        if (customBossTilemap != null) {
+            customBossTilemap.updateState();
+        }
+        if (customBossWallsTilemap != null) {
+            customBossWallsTilemap.updateState();
+        }
     }
 
     public static void add(CustomTilemap t, boolean wall) {

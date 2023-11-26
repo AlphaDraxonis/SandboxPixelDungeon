@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -113,8 +114,7 @@ public class CustomLevel extends Level {
     private boolean ignoreTerrainForExploringScore = false;//ignores Barricades, Locked doors and secret doors in isFullyExplored()
     //Achtung: direkt auf map[] arbeiten!
 
-    public boolean[] isRoom;//variable of cell to differantiate between room and hallway, used for spawning different stuff or traps TODO unused!
-    public boolean[] canSpawnThings;//variable of cell  TODO unused
+    public CustomTilemap bossGroundVisuals, bossWallsVisuals;
 
     private Painter decorationPainter;//used for decoration and placing water and grass, not for painting rooms; usually one of the 5 default painters, or null
 
@@ -266,9 +266,10 @@ public class CustomLevel extends Level {
             plants = level.plants;
             traps = level.traps;
             signs = level.signs;
+            blobs = level.blobs;
             customTiles = level.customTiles;
             customWalls = level.customWalls;
-            blobs = level.blobs;
+            assignBossCustomTiles();
 
 //           TODO  respawner!!
 
@@ -301,6 +302,25 @@ public class CustomLevel extends Level {
             levelScheme.setFeeling(this.feeling);
         }
 
+    }
+
+    private void assignBossCustomTiles() {
+        if (customTiles != null) {
+            for (CustomTilemap cust : customTiles) {
+                if (cust instanceof CustomTilemap.BossLevelVisuals) {
+                    bossGroundVisuals = cust;
+                    break;
+                }
+            }
+        }
+        if (customWalls != null) {
+            for (CustomTilemap cust : customWalls) {
+                if (cust instanceof CustomTilemap.BossLevelVisuals) {
+                    bossWallsVisuals = cust;
+                    break;
+                }
+            }
+        }
     }
 
 //    public CustomLevel(CustomLevel customLevel) {
@@ -506,6 +526,7 @@ public class CustomLevel extends Level {
         if (waterTexture == REGION_HALLS && region != REGION_HALLS) {
             HallsLevel.addHallsVisuals(this, g);//(only) HallsLevel adds WaterVisuals
         }
+        SewerBossLevel.addSewerBossVisuals(this, g);
         return g;
     }
 
@@ -655,23 +676,6 @@ public class CustomLevel extends Level {
         return respawnCooldown;
     }
 
-    @Override
-    public void setSize(int w, int h) {
-        super.setSize(w, h);
-        isRoom = new boolean[passable.length];
-        canSpawnThings = new boolean[passable.length];
-    }
-
-    @Override
-    public void buildFlagMaps() {
-        super.buildFlagMaps();
-
-        for (int i = 0; i < length(); i++) {
-            isRoom[i] = true;
-            canSpawnThings[i] = true;
-        }
-    }
-
     public List<ItemWithPos> getItems() {
         List<ItemWithPos> ret = new ArrayList<>();
         for (Heap h : heaps.valueList()) {
@@ -712,6 +716,7 @@ public class CustomLevel extends Level {
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
+        assignBossCustomTiles();
 
         region = bundle.getInt(REGION);
         waterTexture = bundle.getInt(WATER_TEXTUTE);
@@ -798,6 +803,21 @@ public class CustomLevel extends Level {
         if (newHeight != level.height()) changeMapHeight(level, newHeight, addTop);
         if (newWidth != level.width()) changeMapWidth(level, newWidth, addLeft);
 
+        if (level instanceof CustomLevel) {
+            if (((CustomLevel) level).bossGroundVisuals != null) {
+                ((CustomLevel) level).bossGroundVisuals.tileX = 0;
+                ((CustomLevel) level).bossGroundVisuals.tileY = 0;
+                ((CustomLevel) level).bossGroundVisuals.tileW = newWidth;
+                ((CustomLevel) level).bossGroundVisuals.tileH = newHeight;
+            }
+            if (((CustomLevel) level).bossWallsVisuals != null) {
+                ((CustomLevel) level).bossWallsVisuals.tileX = 0;
+                ((CustomLevel) level).bossWallsVisuals.tileY = 0;
+                ((CustomLevel) level).bossWallsVisuals.tileW = newWidth;
+                ((CustomLevel) level).bossWallsVisuals.tileH = newHeight;
+            }
+        }
+
         PathFinder.setMapSize(newWidth, newHeight);
 
         level.buildFlagMaps();
@@ -829,15 +849,17 @@ public class CustomLevel extends Level {
         Set<CustomTilemap> removeCustomTiles = new HashSet<>(5);
         for (CustomTilemap customTile : level.customTiles) {
             customTile.tileY += addTop;
-            if (customTile.tileY < 0 || customTile.tileY + customTile.tileH > newHeight)
-                removeCustomTiles.add(customTile);
+            if (customTile.tileY < 0 || customTile.tileY + customTile.tileH > newHeight) {
+                if (!(customTile instanceof CustomTilemap.BossLevelVisuals)) removeCustomTiles.add(customTile);
+            }
         }
         level.customTiles.removeAll(removeCustomTiles);
         removeCustomTiles.clear();
         for (CustomTilemap customTile : level.customWalls) {
             customTile.tileY += addTop;
-            if (customTile.tileY < 0 || customTile.tileY + customTile.tileH > newHeight)
-                removeCustomTiles.add(customTile);
+            if (customTile.tileY < 0 || customTile.tileY + customTile.tileH > newHeight) {
+                if (!(customTile instanceof CustomTilemap.BossLevelVisuals)) removeCustomTiles.add(customTile);
+            }
         }
         level.customWalls.removeAll(removeCustomTiles);
 
@@ -872,15 +894,17 @@ public class CustomLevel extends Level {
         Set<CustomTilemap> removeCustomTiles = new HashSet<>(5);
         for (CustomTilemap customTile : level.customTiles) {
             customTile.tileX += addLeft;
-            if (customTile.tileX < 0 || customTile.tileX + customTile.tileW > newWidth)
-                removeCustomTiles.add(customTile);
+            if (customTile.tileX < 0 || customTile.tileX + customTile.tileW > newWidth){
+                if (!(customTile instanceof CustomTilemap.BossLevelVisuals)) removeCustomTiles.add(customTile);
+            }
         }
         level.customTiles.removeAll(removeCustomTiles);
         removeCustomTiles.clear();
         for (CustomTilemap customTile : level.customWalls) {
             customTile.tileX += addLeft;
-            if (customTile.tileX < 0 || customTile.tileX + customTile.tileW > newWidth)
-                removeCustomTiles.add(customTile);
+            if (customTile.tileX < 0 || customTile.tileX + customTile.tileW > newWidth){
+                if (!(customTile instanceof CustomTilemap.BossLevelVisuals)) removeCustomTiles.add(customTile);
+            }
         }
         level.customWalls.removeAll(removeCustomTiles);
 
@@ -1062,7 +1086,7 @@ public class CustomLevel extends Level {
                 else l = ls.getLevel();
                 if (l == null) continue;//skip if level couldn't be loaded
                 boolean changedSth = false;
-                for (LevelTransition transition : l.transitions.values()) {
+                for (LevelTransition transition : new HashSet<>(l.transitions.values())) {
                     Boolean feedback = checkLevelTransitionsDestCell(transition, level, newPosition, isPositionValid);
                     if (feedback == null) {
                         feedback = true;

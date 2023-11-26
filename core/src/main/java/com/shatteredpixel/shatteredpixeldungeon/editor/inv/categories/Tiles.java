@@ -143,6 +143,16 @@ public enum Tiles {
                 return null;
             }
             int val = (int) src;
+            if (val == Terrain.CUSTOM_DECO) {
+                if (EditorScene.customLevel().bossGroundVisuals instanceof CityBossLevel.CustomGroundVisuals)
+                    return findItem(CityBossLevel.KingsThrone.class);
+                val = Terrain.WALL;
+            }
+            if (val == TRAP || val == INACTIVE_TRAP || val == SECRET_TRAP) {
+                if (EditorScene.customLevel().bossGroundVisuals instanceof CavesBossLevel.ArenaVisuals)
+                    return findItem(CavesBossLevel.TrapTile.class);
+                val = Terrain.EMPTY;
+            }
             for (Item bag : items) {
                 for (Item i : ((Bag) bag).items) {
                     if (((TileItem) i).terrainType() == val) return i;

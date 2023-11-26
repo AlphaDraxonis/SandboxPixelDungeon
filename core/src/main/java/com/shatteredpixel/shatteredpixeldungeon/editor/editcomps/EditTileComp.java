@@ -219,6 +219,16 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                     }
                 }
             }
+            for (CustomTilemap i : Dungeon.level.customWalls) {
+                if ((x >= i.tileX && x < i.tileX + i.tileW) &&
+                        (y >= i.tileY && y < i.tileY + i.tileH)) {
+                    if (i.image(x - i.tileX, y - i.tileY) != null) {
+                        x -= i.tileX;
+                        y -= i.tileY;
+                        return new CustomTilemapAndPosWrapper(x, y, i);
+                    }
+                }
+            }
         }
         return null;
     }

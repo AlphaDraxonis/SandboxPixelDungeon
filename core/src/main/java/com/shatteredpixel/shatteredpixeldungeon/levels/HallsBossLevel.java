@@ -196,7 +196,8 @@ public class HallsBossLevel extends Level {
 		}
 
 		//ensures a path to the exit exists
-		return (PathFinder.getStep(entrance(), exit(), passable) != -1);
+		int realEntrance = entrance(), realExit = exit();
+		return (PathFinder.getStep(entrance(), realEntrance == realExit ? exitCell : realExit, passable) != -1);
 	}
 
 	@Override

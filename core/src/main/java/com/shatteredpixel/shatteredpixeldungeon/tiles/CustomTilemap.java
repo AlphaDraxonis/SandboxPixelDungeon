@@ -43,6 +43,11 @@ public abstract class CustomTilemap implements Bundlable {
 	protected Object texture;
 	protected Tilemap vis = null;
 
+	//for boss level custom tiles, so the EditorScene just ignores them, a level should only have one of each, should always fill the full map
+	public interface BossLevelVisuals{
+		void updateState();
+	}
+
 	public void pos(int pos) {
 		pos( pos, Dungeon.level );
 	}

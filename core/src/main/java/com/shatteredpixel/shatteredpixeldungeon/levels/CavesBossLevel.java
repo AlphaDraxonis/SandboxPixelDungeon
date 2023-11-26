@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -68,7 +69,9 @@ import com.watabou.utils.Rect;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CavesBossLevel extends Level {
 
@@ -171,16 +174,12 @@ public class CavesBossLevel extends Level {
 			exit.set(14, 0, 18, 2);
 		}
 
-		CustomTilemap customVisuals = new CityEntrance();
-		customVisuals.setRect(0, 0, width(), 11);
-		customTiles.add(customVisuals);
-
-		customVisuals = new EntranceOverhang();
-		customVisuals.setRect(0, 0, width(), 11);
+		CustomTilemap customVisuals = new EntranceOverhang();
+		customVisuals.setRect(0, 0, width(), HEIGHT);
 		customWalls.add(customVisuals);
 
 		customVisuals = customArenaVisuals = new ArenaVisuals();
-		customVisuals.setRect(0, 12, width(), 27);
+		customVisuals.setRect(0, 0, width(), HEIGHT);
 		customTiles.add(customVisuals);
 
 		//ensures that all pylons can be reached without stepping over water or wires
@@ -693,7 +692,7 @@ public class CavesBossLevel extends Level {
 
 	}
 
-	public static class EntranceOverhang extends CustomTilemap{
+	public static class EntranceOverhang extends CustomTilemap implements CustomTilemap.BossLevelVisuals {
 
 		{
 			texture = Assets.Environment.CAVES_BOSS;
@@ -716,30 +715,44 @@ public class CavesBossLevel extends Level {
 		@Override
 		public Tilemap create() {
 			Tilemap v = super.create();
-			int[] data = new int[tileW*tileH];
-			int entryPos = 0;
-			for (int i = 0; i < data.length; i++){
-
-				//copy over this row of the entryway
-				if (i % tileW == tileW/2 - 2){
-					data[i++] = entryWay[entryPos++];
-					data[i++] = entryWay[entryPos++];
-					data[i++] = entryWay[entryPos++];
-					data[i++] = entryWay[entryPos++];
-					data[i] = entryWay[entryPos++];
-				} else {
-					data[i] = -1;
-				}
-			}
-			v.map( data, tileW );
+			updateState();
 			return v;
 		}
 
+		@Override
+		public void updateState() {
+			if (vis != null) {
+				int[] data = new int[tileW * tileH];
+				Arrays.fill(data, -1);
+				int length = 11 * tileW;
+				for (int i = 0; i < length; i++) {
+
+					if (i / tileW == 0) {
+						if (Dungeon.level.map[i] == Terrain.WALL) {
+							if (i % tileW <= tileW / 2)data[i] = Dungeon.level.map[i + 1] == Terrain.WALL ? -1 : 0;
+							else data[i] = Dungeon.level.map[i - 1] == Terrain.WALL ? -1 : 4;
+						} else data[i] = 7;
+					} else if (i / tileW == 1) {
+						if (Dungeon.level.map[i] == Terrain.WALL) {
+							if (i % tileW <= tileW / 2)data[i] = Dungeon.level.map[i + 1] == Terrain.WALL ? -1 : 0;
+							else data[i] = Dungeon.level.map[i - 1] == Terrain.WALL ? -1 : 4;
+						} else data[i] = 15;
+					} else if (i / tileW == 2) {
+						if (Dungeon.level.map[i] == Terrain.WALL) data[i] = -1;
+						else data[i] = 23;
+					} else if (Dungeon.level.map[i + Dungeon.level.width()] == Terrain.STATUE) {
+						if (i % tileW <= tileW / 2) data[i] = 6;
+						else data[i] = 14;
+					} else data[i] = -1;
+				}
+				vis.map( data, tileW );
+			}
+		}
 	}
 
 	private static final int IMG_INACTIVE_TRAP = 37;
 
-	public static class ArenaVisuals extends CustomTilemap {
+	public static class ArenaVisuals extends CustomTilemap implements CustomTilemap.BossLevelVisuals {
 
 		{
 			texture = Assets.Environment.CAVES_BOSS;
@@ -749,18 +762,88 @@ public class CavesBossLevel extends Level {
 		public Tilemap create() {
 			Tilemap v = super.create();
 			updateState( );
-
 			return v;
 		}
 
+		@Override
 		public void updateState( ){
+			Set<Integer> pylons = new HashSet<>(7);
+			for (Mob m : Dungeon.level.mobs) {
+				if (m instanceof Pylon
+						&& !((Pylon) m).alwaysActive
+						&& m.playerAlignment == Mob.NORMAL_ALIGNMENT
+						&& m.alignment == Char.Alignment.NEUTRAL)
+					pylons.add(m.pos);
+			}
+
 			if (vis != null){
 				int[] data = new int[tileW*tileH];
-				int j = Dungeon.level.width() * tileY;
-				for (int i = 0; i < data.length; i++){
+				Arrays.fill(data, -1);
+				int j = Dungeon.level.width() * (tileY == 0 ? 12 : tileY);
+
+				if (tileY == 0) {
+					//upper part of the level, mostly city tiles
+					int width = Dungeon.level.width();
+					int length = 11 * width;
+					for (int i = 0; i < length; i++){
+
+						//Do not override statues, empty or empty_sp
+
+						if (Dungeon.level.map[i] == Terrain.EMPTY) {
+							if (i / tileW == 10) {
+								if (Dungeon.level.map[i - 1] == Terrain.CHASM) data[i] = 24;
+								else if (data[i - 1] == 24) data[i] = 25;
+								else if (Dungeon.level.map[i - 1] == Terrain.EMPTY_SP) data[i] = 27;
+								else if (data[i - 1] == 27) data[i] = 28;
+								else if (i % tileW <= tileW / 2) data[i] = 16;
+								else data[i] = 20;
+							} else {
+								if (i % tileW <= tileW / 2) data[i] = 16;
+								else data[i] = 20;
+							}
+						} else if (Dungeon.level.map[i] == Terrain.STATUE) {
+							if (i % tileW <= tileW / 2) data[i] = 17;
+							else data[i] = 19;
+						} else if (Dungeon.level.map[i] == Terrain.EMPTY_SP || Dungeon.level.map[i] == Terrain.EXIT) {
+							if (i / tileW == 0) data[i] = 7;
+							else {
+								int neighbours = EditorUtilies.stitchNeighbours(i, Terrain.EMPTY_SP, Dungeon.level)
+										| EditorUtilies.stitchNeighbours(i, Terrain.EXIT, Dungeon.level);
+								if ((neighbours & EditorUtilies.BOTTOM) == 0) {
+									if ((neighbours & EditorUtilies.RIGHT) != 0) data[i] = 9;
+									else if ((neighbours & EditorUtilies.LEFT) != 0) data[i] = 11;
+									else data[i] = 26;
+								} else if ((neighbours & EditorUtilies.LEFT) == 0) {
+									if ((neighbours & EditorUtilies.RIGHT) == 0) data[i] = 18;
+									else data[i] = 1;
+								} else if ((neighbours & EditorUtilies.RIGHT) == 0) {
+									data[i] = 3;
+								} else if ((neighbours & EditorUtilies.BOTTOM_RIGHT) == 0 && (neighbours & EditorUtilies.BOTTOM_LEFT) == 0) {
+									data[i] = 10;
+								} else data[i] = 2;
+							}
+
+						} else {
+							//Override walls in row 2 and 3
+							if (i / tileW == 2) data[i] = 13;
+							else if (i / tileW == 3) data[i] = 21;
+							else data[i] = -1;
+						}
+					}
+				}
+
+				int gatePos = -1;
+				boolean gateClosed = true;
+				int start = tileY == 12 ? 0 : 12 * Dungeon.level.width();
+				for (int i = start; i < data.length; i++){
+					//There is a gap between both tilemaps
+//					if (tileY == 0 && i < Dungeon.level.width()) {
+////						data[i] = -1;
+//						continue;
+//					}
 
 					if (Dungeon.level.map[j] == Terrain.EMPTY_SP) {
-						for (int k : pylonPositions) {
+						for (int k : pylons) {
 							if (k == j) {
 								if (Dungeon.level.locked
 										&& !(Actor.findChar(k) instanceof Pylon)) {
@@ -776,13 +859,12 @@ public class CavesBossLevel extends Level {
 					} else if (Dungeon.level.map[j] == Terrain.INACTIVE_TRAP){
 						data[i] = IMG_INACTIVE_TRAP;
 					} else if (gate.inside(Dungeon.level.cellToPoint(j))){
-						int idx = Dungeon.level.solid[j] ? 40 : 32;
-						data[i++] = idx++;
-						data[i++] = idx++;
-						data[i++] = idx++;
-						data[i++] = idx++;
-						data[i] = idx;
-						j += 4;
+						if (gatePos == -1){
+							gateClosed = Dungeon.level.solid[j];
+							gatePos = i - (gateClosed ? 40 : 32);
+						}
+						if (Dungeon.level.solid[i] == gateClosed) data[i] = i - gatePos;
+						else data[i] = -1;
 					} else {
 						data[i] = -1;
 					}
@@ -807,6 +889,8 @@ public class CavesBossLevel extends Level {
 
 		@Override
 		public String desc(int tileX, int tileY) {
+			if (tileY < 12) return super.desc(tileX, tileY);
+
 			int i = tileX + tileW*(tileY + this.tileY);
 			if (Dungeon.level.map[i] == Terrain.INACTIVE_TRAP){
 				return Messages.get(CavesBossLevel.class, "wires_desc");

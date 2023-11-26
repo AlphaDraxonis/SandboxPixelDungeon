@@ -67,7 +67,7 @@ public abstract class WndSelectLevelType extends WndChooseOneInCategories {
             return new Object[][]{
                     {null, LastLevel.class, DeadEndLevel.class},
                     {SewerLevel.class, PrisonLevel.class, CavesLevel.class, CityLevel.class, HallsLevel.class},
-//                    {SewerBossLevel.class, PrisonBossLevel.class, CavesBossLevel.class, CityBossLevel.class, HallsBossLevel.class}
+                    {SewerBossLevel.class, PrisonBossLevel.class, CavesBossLevel.class, CityBossLevel.class, HallsBossLevel.class}
             };
         }
         return new Object[][]{

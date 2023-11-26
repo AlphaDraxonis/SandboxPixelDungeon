@@ -173,6 +173,7 @@ public class CustomTileItem extends EditorItem {
 
     private static CustomTilemap findCustomTileAt(Point p, Set<CustomTilemap> customTiles) {
         for (CustomTilemap cust : customTiles) {
+            if (cust instanceof CustomTilemap.BossLevelVisuals) continue;
             Point custPoint = new Point(p);
             custPoint.x -= cust.tileX;
             custPoint.y -= cust.tileY;

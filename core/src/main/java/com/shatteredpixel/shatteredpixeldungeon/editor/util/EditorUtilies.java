@@ -230,4 +230,26 @@ public final class EditorUtilies {
         }
         return pos;
     }
+
+    public static final int TOP = 1, TOP_RIGHT = 2, RIGHT = 4, BOTTOM_RIGHT = 8, BOTTOM = 16, BOTTOM_LEFT = 32, LEFT = 64, TOP_LEFT = 128;
+    public static int stitchNeighbours(int cell, int terrain, Level level) {
+        int result = 0;
+        int width = level.width();
+        int length = level.length();
+        boolean rightEdge = (cell + 1) % width == 0;
+        boolean leftEdge = (cell - 1) % width == width - 1;
+        if (cell >= width && terrain == level.map[cell - width]) result += TOP;
+        if (!rightEdge) {
+            if (cell - width + 1 > 0 && terrain == level.map[cell - width + 1]) result += TOP_RIGHT;
+            if (cell + 1 < length && terrain == level.map[cell + 1]) result += RIGHT;
+            if (cell + 1 + width < length && terrain == level.map[cell + 1 + width]) result += BOTTOM_RIGHT;
+        }
+        if (cell + width < length && terrain == level.map[cell + width]) result += BOTTOM;
+        if (!leftEdge) {
+            if (cell - 1 + width < length && terrain == level.map[cell - 1 + width]) result += BOTTOM_LEFT;
+            if (cell - 1 > 0 && terrain == level.map[cell - 1]) result += LEFT;
+            if (cell - 1 - width > 0 && terrain == level.map[cell - 1 - width]) result += TOP_LEFT;
+        }
+        return result;
+    }
 }

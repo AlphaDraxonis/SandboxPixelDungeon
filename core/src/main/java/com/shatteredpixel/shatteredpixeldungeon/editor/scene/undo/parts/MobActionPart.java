@@ -39,6 +39,7 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
     private static void place(Mob mob) {
         EditorScene.add(mob);
         Dungeon.level.occupyCell(mob);
+        EditorScene.updateMap(mob.pos);
     }
 
     private static void remove(Mob mob) {
@@ -46,6 +47,7 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
         mob.sprite.hideEmo();
         mob.sprite.killAndErase();
         if (mob.pos == Dungeon.level.bossmobAt) Dungeon.level.bossmobAt = Level.NO_BOSS_MOB;
+        EditorScene.updateMap(mob.pos);
     }
 
     @Override
