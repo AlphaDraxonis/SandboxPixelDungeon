@@ -173,13 +173,23 @@ public class TimekeepersHourglass extends Artifact {
 
 	@Override
 	public Item upgrade() {
-		chargeCap+= 1;
+		chargeCap+= 1;//also change level(int)
 
 		//for artifact transmutation.
 		while (level()+1 > sandBags)
 			sandBags ++;
 
 		return super.upgrade();
+	}
+
+	@Override
+	public void level(int value) {
+		chargeCap = 5+Math.min(5, value);
+
+		//for artifact transmutation.
+		sandBags = Math.max(sandBags, value);
+
+		super.level(value);
 	}
 
 	@Override

@@ -116,6 +116,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
             } catch (NumberFormatException ex) {
                 char[] cs = s.toCharArray();
                 if (cs.length == 0) return "";
+                if (cs.length == 1 && isVorzeichen(cs[0], min, max)) return s;
                 StringBuilder b = new StringBuilder();
                 boolean decimalPointUsed = false;
                 for (int i = 0; i < cs.length; i++) {

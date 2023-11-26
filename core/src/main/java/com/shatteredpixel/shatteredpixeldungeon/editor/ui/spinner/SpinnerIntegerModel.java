@@ -43,7 +43,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         this.showWhenNull = showWhenNull;
 
         absoluteMaximum = Integer.MAX_VALUE;
-        absoluteMinimum = 0;
+        absoluteMinimum = minimum;
     }
 
     @Override
@@ -281,6 +281,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
                             || i == 0 && isVorzeichen(cs[i], min, max)) b.append(cs[i]);
                 }
                 s = b.toString();
+                if (s.length() == 1 && isVorzeichen(s.charAt(0), min, max)) return s;
                 while (true) {
                     try {
                         int val = Integer.parseInt(s);

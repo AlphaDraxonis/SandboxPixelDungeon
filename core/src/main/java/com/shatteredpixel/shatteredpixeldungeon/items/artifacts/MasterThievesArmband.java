@@ -235,8 +235,14 @@ public class MasterThievesArmband extends Artifact {
 
 	@Override
 	public Item upgrade() {
-		chargeCap = 5 + (level()+1)/2;
-		return super.upgrade();
+		level(level()+1);
+		return this;
+	}
+
+	@Override
+	public void level(int value) {
+		chargeCap = 5 + Math.min(10, value)/2;
+		super.level(value);
 	}
 
 	@Override

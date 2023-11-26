@@ -195,8 +195,14 @@ public class CloakOfShadows extends Artifact {
 	
 	@Override
 	public Item upgrade() {
-		chargeCap = Math.min(chargeCap + 1, 10);
-		return super.upgrade();
+		level(level()+1);
+		return this;
+	}
+
+	@Override
+	public void level(int value) {
+		chargeCap = Math.min(value+3, 10);
+		super.level(value);
 	}
 
 	private static final String STEALTHED = "stealthed";

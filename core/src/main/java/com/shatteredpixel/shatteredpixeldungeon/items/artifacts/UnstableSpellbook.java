@@ -236,13 +236,24 @@ public class UnstableSpellbook extends Artifact {
 
 	@Override
 	public Item upgrade() {
-		chargeCap = (int)((level()+1)*0.6f)+2;
+		chargeCap = (int)((level()+1)*0.6f)+2;//also change level(int)
 
 		//for artifact transmutation.
 		while (!scrolls.isEmpty() && scrolls.size() > (levelCap-1-level()))
 			scrolls.remove(0);
 
 		return super.upgrade();
+	}
+
+	@Override
+	public void level(int value) {
+		chargeCap = (int)(Math.min(10, value)*0.6f)+2;
+
+		//for artifact transmutation.
+		while (!scrolls.isEmpty() && scrolls.size() > (levelCap-Math.min(10, value)))
+			scrolls.remove(0);
+
+		super.level(value);
 	}
 
 	@Override

@@ -289,10 +289,17 @@ public class LloydsBeacon extends Artifact {
 
 	@Override
 	public Item upgrade() {
-		if (level() == levelCap) return this;
-		chargeCap ++;
-		GLog.p( Messages.get(this, "levelup") );
-		return super.upgrade();
+		if (level() != levelCap) {
+			level(level()+1);
+			GLog.p( Messages.get(this, "levelup") );
+		}
+		return this;
+	}
+
+	@Override
+	public void level(int value) {
+		chargeCap = 3+Math.min(levelCap, value);
+		super.level(value);
 	}
 
 	@Override
