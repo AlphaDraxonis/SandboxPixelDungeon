@@ -407,6 +407,7 @@ public class Dungeon {
 
         if (branch == 0) Statistics.qualifiedForNoKilling = !bossLevel();
         Statistics.qualifiedForBossChallengeBadge = false;
+		Statistics.qualifiedForBossRemainsBadge = false;
 
         return level;
     }
