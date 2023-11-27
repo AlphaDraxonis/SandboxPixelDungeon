@@ -97,11 +97,11 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 		loot = new TengusMask();
 		lootChance = 1f;
-		
+
 		HUNTING = new Hunting();
 		WANDERING = new Wandering();
 		state = HUNTING;
-		
+
 		flying = true; //doesn't literally fly, but he is fleet-of-foot enough to avoid hazards
 		
 		properties.add(Property.BOSS);
@@ -114,7 +114,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	private int initialPos;
 	private int stepsToDo;//only if state is Wandering
 	private boolean attackedPlayer;
-	
+
 //	@Override
 //	public int damageRoll() {
 //		return Random.NormalIntRange( 6, 12 );
@@ -128,7 +128,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			return attackSkill;
 		}
 	}
-
+	
 	@Override
 	public void setLevel(int depth) {
 		initialPos = pos;
@@ -136,7 +136,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) HP = HT = (int) (HP * 1.25f);
 	}
 
-	//	@Override
+//	@Override
 //	public int drRoll() {
 //		return super.drRoll() + Random.NormalIntRange(0, 5);
 //	}
@@ -164,31 +164,34 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		else state = phase == 1 ? PrisonBossLevel.State.FIGHT_START : PrisonBossLevel.State.FIGHT_ARENA;
 
 		int hpBracket = Math.max(2, HT / 8);
-		
+
+		int curbracket = HP / hpBracket;
 		int beforeHitHP = HP;
 		super.damage(dmg, src);
-		dmg = beforeHitHP - HP;
-		
-		//tengu cannot be hit through multiple brackets at a time
-		if ((beforeHitHP/hpBracket - HP/hpBracket) >= 2){
-			HP = hpBracket * ((beforeHitHP/hpBracket)-1) + 1;
+
+		//cannot be hit through multiple brackets at a time
+		if (HP <= (curbracket-1)*hpBracket){
+			HP = (curbracket-1)*hpBracket + 1;
 		}
-		
+
+		int newBracket =  HP / hpBracket;
+		dmg = beforeHitHP - HP;
+
 		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
 		if (lock != null) {
 			if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES))   lock.addTime(2*dmg/3f);
 			else                                                    lock.addTime(dmg);
 		}
-		
+
 		//phase 2 of the fight is over
 		if (HP == 0 && state == PrisonBossLevel.State.FIGHT_ARENA) {
 			//let full attack action complete first
 			Actor.add(new Actor() {
-				
+
 				{
 					actPriority = VFX_PRIO;
 				}
-				
+
 				@Override
 				protected boolean act() {
 					Actor.remove(this);
@@ -199,7 +202,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			});
 			return;
 		}
-		
+
 		//phase 1 of the fight is over
 		if (state == PrisonBossLevel.State.FIGHT_START && (HP <= HT/2 && normalFight || HP <= 0 && !normalFight)){
 			if (normalFight) {
@@ -212,7 +215,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			} else PrisonBossLevel.killTengu(Dungeon.level, Tengu.this);
 			
 		//if tengu has lost a certain amount of hp, jump
-		} else if (beforeHitHP / hpBracket != HP / hpBracket) {
+		} else if (newBracket != curbracket) {
 			//let full attack action complete first
 			Actor.add(new Actor() {
 
@@ -250,7 +253,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			Badges.validateBossChallengeCompleted(Tengu.class);
 		}
 		Statistics.bossScores[1] += 2000;
-		
+
 		yell( Messages.get(this, "defeated") );
 
 		if (!(Dungeon.level instanceof PrisonBossLevel)) {
@@ -371,7 +374,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			move( newPos );
 
 			if (arenaJumps < 6) arenaJumps++;
-			
+
 			if (level.heroFOV[newPos]) CellEmitter.get( newPos ).burst( Speck.factory( Speck.WOOL ), 6 );
 			Sample.INSTANCE.play( Assets.Sounds.PUFF );
 			
@@ -419,7 +422,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	private static final String STEPS_TO_DO      = "steps_to_do";
 	private static final String ATTACKED_PLAYER  = "attacked_player";
 
-	
+
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
@@ -463,7 +466,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			if (enemyInFOV && !isCharmedBy( enemy ) && canAttack( enemy )) {
 
 				if (enemy instanceof Hero) attackedPlayer = true;
-				
+
 				if (canUseAbility()){
 					return useAbility();
 				}
@@ -692,7 +695,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			bundle.put(THROWER_ID, throwerId);
 		}
 	}
-	
+
 	//******************
 	//***Bomb Ability***
 	//******************
@@ -1162,7 +1165,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		protected Group getGroupToAddVisuals() {
 			return target.sprite.parent;
 		}
-		
+
 		private static final String SHOCKER_POS = "shocker_pos";
 		private static final String SHOCKING_ORDINALS = "shocking_ordinals";
 		private static final String QUANTITY = "quantity";
@@ -1191,7 +1194,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			}
 
 			protected int[] cur2;
-			
+
 			@Override
 			protected void evolve() {
 
@@ -1245,7 +1248,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			public void actAfterThrow() {
 				spendConstant(-1f);
 			}
-			
+
 			@Override
 			public void use(BlobEmitter emitter) {
 				super.use(emitter);
