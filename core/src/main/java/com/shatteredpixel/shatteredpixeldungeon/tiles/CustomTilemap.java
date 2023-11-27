@@ -123,7 +123,7 @@ public abstract class CustomTilemap implements Bundlable {
 	}
 
 	public Image fullImage(){
-		if (vis == null) create();
+		if (vis == null || !vis.alive) create();
 		return vis.biggerImage(tileW, tileH);
 	}
 
