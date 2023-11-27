@@ -225,17 +225,33 @@ public class ScrollOfTeleportation extends Scroll {
 			return false;
 		}
 
+		int pos = teleportInNonRegularLevel(ch.pos, preferNotSeen, Char.hasProp(ch, Char.Property.LARGE)
+				? BArray.or(Dungeon.level.passable, Dungeon.level.openSpace, null) : Dungeon.level.passable, ch instanceof Hero);
+
+		if (pos == -1) return false;
+
+		appear( ch, pos );
+		Dungeon.level.occupyCell( ch );
+
+		Buff.detach(ch, Roots.class);
+
+		if (ch == Dungeon.hero) {
+			GLog.i( Messages.get(ScrollOfTeleportation.class, "tele") );
+
+			Dungeon.observe();
+			GameScene.updateFog();
+			Dungeon.hero.interrupt();
+		}
+
+		return true;
+	}
+
+	public static int teleportInNonRegularLevel(int from, boolean preferNotSeen, boolean[] passable, boolean writeGameLog){
 		ArrayList<Integer> visibleValid = new ArrayList<>();
 		ArrayList<Integer> notVisibleValid = new ArrayList<>();
 		ArrayList<Integer> notSeenValid = new ArrayList<>();
 
-		boolean[] passable = Dungeon.level.passable;
-
-		if (Char.hasProp(ch, Char.Property.LARGE)){
-			passable = BArray.or(passable, Dungeon.level.openSpace, null);
-		}
-
-		PathFinder.buildDistanceMap(ch.pos, passable);
+		PathFinder.buildDistanceMap(from, passable);
 
 		for (int i = 0; i < Dungeon.level.length(); i++){
 			if (PathFinder.distance[i] < Integer.MAX_VALUE
@@ -261,25 +277,12 @@ public class ScrollOfTeleportation extends Scroll {
 		} else if (!visibleValid.isEmpty()){
 			pos = Random.element(visibleValid);
 		} else {
-			GLog.w( Messages.get(ScrollOfTeleportation.class, "no_tele") );
-			return false;
+			if (writeGameLog)
+				GLog.w( Messages.get(ScrollOfTeleportation.class, "no_tele") );
+			return -1;
 		}
 
-		appear( ch, pos );
-		Dungeon.level.occupyCell( ch );
-
-		Buff.detach(ch, Roots.class);
-
-		if (ch == Dungeon.hero) {
-			GLog.i( Messages.get(ScrollOfTeleportation.class, "tele") );
-
-			Dungeon.observe();
-			GameScene.updateFog();
-			Dungeon.hero.interrupt();
-		}
-
-		return true;
-
+		return pos;
 	}
 
 	public static void appear( Char ch, int pos ) {

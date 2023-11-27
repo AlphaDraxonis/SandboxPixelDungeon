@@ -70,9 +70,12 @@ public class GatewayTrap extends Trap {
 				if (heap != null && heap.type == Heap.Type.HEAP){
 					int cell = Dungeon.level.randomRespawnCell( null );
 
-					Item item = heap.pickUp();
+					if (cell == -1) {
+						cell = ScrollOfTeleportation.teleportInNonRegularLevel(heap.pos, false, Dungeon.level.passable, false);
+					}
 
 					if (cell != -1) {
+						Item item = heap.pickUp();
 						Dungeon.level.drop( item, cell );
 						telePos = cell;
 						break;
