@@ -1547,7 +1547,7 @@ public abstract class Level implements Bundlable {
 			}
 		}
 
-		if (ch.isAlive() && ch instanceof Piranha && !water[ch.pos]){
+		if (ch.isAlive() && ch instanceof Piranha && !water[ch.pos] && !CustomDungeon.isEditing()){
 			((Piranha) ch).dieOnLand();
 		}
 	}
