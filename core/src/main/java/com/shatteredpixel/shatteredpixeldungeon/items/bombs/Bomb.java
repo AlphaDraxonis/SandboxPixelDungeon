@@ -309,8 +309,10 @@ public class Bomb extends Item {
 		}
 
 		protected void trigger(Heap heap){
-			heap.remove(bomb);
-			bomb.explode(heap.pos);
+			if (heap != null) {
+				heap.remove(bomb);
+				bomb.explode(heap.pos);
+			}
 			Actor.remove(this);
 		}
 

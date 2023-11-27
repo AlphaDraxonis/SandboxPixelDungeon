@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FakeTenguShocker;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
@@ -76,6 +77,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected final CheckBox autoIdentify;
     protected final CheckBox cursedKnown;
     protected final CheckBox blessed;
+    protected final Spinner shockerDuration;
     protected final AugumentationSpinner augumentationSpinner;
     protected final RedButton enchantBtn;
     protected final ChooseDestLevelComp keylevel;
@@ -254,6 +256,18 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 add(blessed);
             } else blessed = null;
 
+            if(item instanceof FakeTenguShocker) {
+                shockerDuration = new Spinner(new SpinnerIntegerModel(1, 100, ((FakeTenguShocker) item).duration, 1, false, null) {
+                    @Override
+                    public float getInputFieldWith(float height) {
+                        return height * 1.4f;
+                    }
+                },
+                        " " + Messages.get(EditItemComp.class, "duration") + ":", 10);
+                shockerDuration.addChangeListener(() -> ((FakeTenguShocker) item).duration = (int) shockerDuration.getValue());
+                add(shockerDuration);
+            } else shockerDuration = null;
+
             if (item instanceof Key) {
                 keylevel = new ChooseDestLevelComp(Messages.get(EditItemComp.class, "floor")) {
                     @Override
@@ -329,9 +343,10 @@ public class EditItemComp extends DefaultEditComp<Item> {
             autoIdentify = null;
             enchantBtn = null;
             blessed = null;
+            shockerDuration = null;
         }
 
-        comps = new Component[]{quantity, quickslotPos, keylevel, keyCell, chargeSpinner, levelSpinner, augumentationSpinner,
+        comps = new Component[]{quantity, quickslotPos, keylevel, keyCell, shockerDuration, chargeSpinner, levelSpinner, augumentationSpinner,
                 curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed, randomItem};
     }
 

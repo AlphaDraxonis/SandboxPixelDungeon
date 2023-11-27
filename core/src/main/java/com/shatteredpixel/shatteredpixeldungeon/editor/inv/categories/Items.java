@@ -65,6 +65,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.ArcaneBomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FakeTenguBomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FakeTenguShocker;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Firebomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Flashbang;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FrostBomb;
@@ -699,7 +701,9 @@ public enum Items {
                 ShockBomb.class,
                 HolyBomb.class,
                 ArcaneBomb.class,
-                ShrapnelBomb.class
+                ShrapnelBomb.class,
+                FakeTenguBomb.class,
+                FakeTenguShocker.class
         };
 
         QUEST.classes = new Class[]{

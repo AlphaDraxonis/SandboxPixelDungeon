@@ -69,6 +69,7 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
@@ -746,7 +747,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		public int bombPos = -1;
 		private int timer = 3;
 
-		private ArrayList<Emitter> smokeEmitters = new ArrayList<>();
+		protected ArrayList<Emitter> smokeEmitters = new ArrayList<>();
 		
 		@Override
 		public boolean act() {
@@ -777,8 +778,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 							}
 
 							if (ch == Dungeon.hero){
-								Statistics.qualifiedForBossChallengeBadge = false;
-								Statistics.bossScores[1] -= 100;
+								reduceBossScore();
 
 								if (!ch.isAlive()) {
 									Dungeon.fail(Tengu.class);
@@ -823,6 +823,11 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 					e.burst(BlastParticle.FACTORY, 2);
 				}
 			}
+		}
+
+		protected void reduceBossScore(){
+			Statistics.qualifiedForBossChallengeBadge = false;
+			Statistics.bossScores[1] -= 100;
 		}
 
 		private static final String BOMB_POS = "bomb_pos";
@@ -870,6 +875,10 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			
 			@Override
 			public Emitter emitter() {
+				return staticEmitter();
+			}
+
+			public static Emitter staticEmitter(){
 				Emitter emitter = new Emitter();
 				emitter.pos(7.5f, 3.5f);
 				emitter.fillTarget = false;
@@ -1113,8 +1122,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				spreadblob();
 			} else if (shockingOrdinals){
 				
-				target.sprite.parent.add(new Lightning(shockerPos - 1 - Dungeon.level.width(), shockerPos + 1 + Dungeon.level.width(), null));
-				target.sprite.parent.add(new Lightning(shockerPos - 1 + Dungeon.level.width(), shockerPos + 1 - Dungeon.level.width(), null));
+				getGroupToAddVisuals().add(new Lightning(shockerPos - 1 - Dungeon.level.width(), shockerPos + 1 + Dungeon.level.width(), null));
+				getGroupToAddVisuals().add(new Lightning(shockerPos - 1 + Dungeon.level.width(), shockerPos + 1 - Dungeon.level.width(), null));
 				
 				if (Dungeon.level.distance(Dungeon.hero.pos, shockerPos) <= 1){
 					Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
@@ -1124,8 +1133,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				spreadblob();
 			} else {
 				
-				target.sprite.parent.add(new Lightning(shockerPos - Dungeon.level.width(), shockerPos + Dungeon.level.width(), null));
-				target.sprite.parent.add(new Lightning(shockerPos - 1, shockerPos + 1, null));
+				getGroupToAddVisuals().add(new Lightning(shockerPos - Dungeon.level.width(), shockerPos + Dungeon.level.width(), null));
+				getGroupToAddVisuals().add(new Lightning(shockerPos - 1, shockerPos + 1, null));
 				
 				if (Dungeon.level.distance(Dungeon.hero.pos, shockerPos) <= 1){
 					Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
@@ -1139,13 +1148,21 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			return true;
 		}
 		
-		private void spreadblob(){
-			GameScene.add(Blob.seed(shockerPos, 1, ShockerBlob.class));
+		protected void spreadblob(){
+			GameScene.add(Blob.seed(shockerPos, 1, getBlobClass()));
 			for (int i = shockingOrdinals ? 0 : 1; i < PathFinder.CIRCLE8.length; i += 2){
 				if (!Dungeon.level.solid[shockerPos+PathFinder.CIRCLE8[i]]) {
-					GameScene.add(Blob.seed(shockerPos + PathFinder.CIRCLE8[i], 2, ShockerBlob.class));
+					GameScene.add(Blob.seed(shockerPos + PathFinder.CIRCLE8[i], 2, getBlobClass()));
 				}
 			}
+		}
+
+		protected Class<? extends Blob> getBlobClass(){
+			return ShockerBlob.class;
+		}
+
+		protected Group getGroupToAddVisuals() {
+			return target.sprite.parent;
 		}
 		
 		private static final String SHOCKER_POS = "shocker_pos";
@@ -1196,8 +1213,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 								ch.damage(2 + Dungeon.scalingDepth(), new Electricity());
 								
 								if (ch == Dungeon.hero){
-									Statistics.qualifiedForBossChallengeBadge = false;
-									Statistics.bossScores[1] -= 100;
+									reduceBossScore();
 									if (!ch.isAlive()) {
 										Dungeon.fail(Tengu.class);
 										GLog.n(Messages.get(Electricity.class, "ondeath"));
@@ -1223,6 +1239,11 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			@Override
 			public String tileDesc() {
 				return Messages.get(this, "desc");
+			}
+
+			protected void reduceBossScore() {
+				Statistics.qualifiedForBossChallengeBadge = false;
+				Statistics.bossScores[1] -= 100;
 			}
 		}
 		
