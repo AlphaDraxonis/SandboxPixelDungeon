@@ -3,12 +3,15 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipeList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckbox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -30,7 +33,7 @@ public class DungeonTab extends MultiWindowTabComp {
         add(title);
 
         StyledButton potionColors, scrollRunes, ringGems;
-        StyledButton heroes, durationSettings, forceChallenges;
+        StyledButton heroes, durationSettings, forceChallenges, customRecipes;
         StyledCheckbox view2d, seeLevelOnDeath, autoRevealSecrets;
 
         potionColors = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_pot"), 7) {
@@ -91,7 +94,7 @@ public class DungeonTab extends MultiWindowTabComp {
             protected void onClick() {
                 int forceChallenges = Dungeon.customDungeon.forceChallenges;//prevent cbs from being disabled
                 Dungeon.customDungeon.forceChallenges = 0;
-                        EditorScene.show(new WndChallenges(forceChallenges, true) {
+                EditorScene.show(new WndChallenges(forceChallenges, true) {
                     {
                         title.text(Messages.get(DungeonTab.class, "force_challenges"));
                     }
@@ -105,6 +108,16 @@ public class DungeonTab extends MultiWindowTabComp {
         };
         forceChallenges.icon(Icons.CHALLENGE_ON.get());
         content.add(forceChallenges);
+
+        customRecipes = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "custom_recipes"), 8){
+            @Override
+            protected void onClick() {
+                CustomRecipeList crl = new CustomRecipeList();
+                changeContent(crl.createTitle(), crl, crl.getOutsideSp(), 0f, 0.5f);
+            }
+        };
+        customRecipes.icon(new ItemSprite(EditorScene.customLevel().tilesTex(), new TileItem(Terrain.ALCHEMY, -1)));
+        content.add(customRecipes);
 
         view2d = new StyledCheckbox(Messages.get(DungeonTab.class, "enable_2d"), 8){
             @Override
@@ -137,7 +150,7 @@ public class DungeonTab extends MultiWindowTabComp {
         content.add(autoRevealSecrets);
 
         mainWindowComps = new Component[]{potionColors, scrollRunes, ringGems, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                heroes, durationSettings, forceChallenges, view2d, seeLevelOnDeath, autoRevealSecrets
+                heroes, durationSettings, forceChallenges, customRecipes, view2d, seeLevelOnDeath, autoRevealSecrets
         };
     }
 

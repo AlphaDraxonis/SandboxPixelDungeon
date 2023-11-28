@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -299,7 +300,7 @@ public class QuickRecipe extends Component {
 							public String name(){
 								return Messages.get(Blandfruit.class, "cooked");
 							}
-							
+
 							@Override
 							public String info() {
 								return "";
@@ -390,6 +391,11 @@ public class QuickRecipe extends Component {
 				result.add(new QuickRecipe(new MagicalInfusion.Recipe()));
 				result.add(new QuickRecipe(new CurseInfusion.Recipe()));
 				result.add(new QuickRecipe(new Recycle.Recipe()));
+				return result;
+			case 10:
+				for (CustomRecipe recipe : Dungeon.customDungeon.recipes) {
+					result.add(new QuickRecipe(recipe));
+				}
 				return result;
 		}
 	}

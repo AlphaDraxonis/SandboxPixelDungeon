@@ -216,7 +216,7 @@ public class WndJournal extends WndTabbed {
 		private RedButton[] pageButtons;
 		private static final int NUM_BUTTONS = 10;
 		
-		private static final int[] spriteIndexes = {10, 12, 7, 9, 11, 8, 3, 13, 14, 15};
+		private static final int[] spriteIndexes = {10, 12, 7, 9, 11, 8, 3, 13, 14, 15, 0};
 		
 		public static int currentPageIdx   = 0;
 		
@@ -228,8 +228,8 @@ public class WndJournal extends WndTabbed {
 		
 		@Override
 		protected void createChildren(Object... params) {
-			pageButtons = new RedButton[NUM_BUTTONS];
-			for (int i = 0; i < NUM_BUTTONS; i++){
+			pageButtons = new RedButton[NUM_BUTTONS +  (Dungeon.customDungeon.recipes.isEmpty() ? 0 : 1)];
+			for (int i = 0; i < pageButtons.length; i++){
 				final int idx = i;
 				pageButtons[i] = new RedButton( "" ){
 					@Override
@@ -263,7 +263,7 @@ public class WndJournal extends WndTabbed {
 			
 			if (PixelScene.landscape()){
 				float buttonWidth = width()/pageButtons.length;
-				for (int i = 0; i < NUM_BUTTONS; i++) {
+				for (int i = 0; i < pageButtons.length; i++) {
 					pageButtons[i].setRect(i*buttonWidth, 0, buttonWidth, ITEM_HEIGHT);
 					PixelScene.align(pageButtons[i]);
 				}
@@ -272,7 +272,7 @@ public class WndJournal extends WndTabbed {
 				float buttonWidth = width()/5;
 				float y = 0;
 				float x = 0;
-				for (int i = 0; i < NUM_BUTTONS; i++) {
+				for (int i = 0; i < pageButtons.length; i++) {
 					pageButtons[i].setRect(x, y, buttonWidth, ITEM_HEIGHT);
 					PixelScene.align(pageButtons[i]);
 					x += buttonWidth;
@@ -284,19 +284,20 @@ public class WndJournal extends WndTabbed {
 				}
 			}
 			
-			list.setRect(0, pageButtons[NUM_BUTTONS-1].bottom() + 1, width,
-					height - pageButtons[NUM_BUTTONS-1].bottom() - 1);
+			list.setRect(0, pageButtons[pageButtons.length-1].bottom() + 1, width,
+					height - pageButtons[pageButtons.length-1].bottom() - 1);
 			
 			updateList();
 		}
 		
 		private void updateList() {
 
-			if (currentPageIdx != -1 && !Document.ALCHEMY_GUIDE.isPageFound(currentPageIdx)){
+			if (currentPageIdx != -1 && !Document.ALCHEMY_GUIDE.isPageFound(currentPageIdx)
+					|| currentPageIdx == 10 && Dungeon.customDungeon.recipes.isEmpty()){
 				currentPageIdx = -1;
 			}
 
-			for (int i = 0; i < NUM_BUTTONS; i++) {
+			for (int i = 0; i < pageButtons.length; i++) {
 				if (i == currentPageIdx) {
 					pageButtons[i].icon().color(TITLE_COLOR);
 				} else {

@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
+import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipe;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -173,11 +174,14 @@ public class CustomDungeon implements Bundlable {
 
     public Set<CustomTileLoader.SimpleCustomTile> customTiles;
 
+    public List<CustomRecipe> recipes;
+
     public CustomDungeon(String name) {
         this.name = name;
         ratKingLevels = new HashSet<>();
         itemDistributions = new ArrayList<>(5);
         customTiles = new HashSet<>(5);
+        recipes = new ArrayList<>(5);
         heroesEnabled = new boolean[HeroClass.values().length];
         heroSubClassesEnabled = new boolean[heroesEnabled.length * 2];
         Arrays.fill(heroesEnabled, true);
@@ -548,6 +552,7 @@ public class CustomDungeon implements Bundlable {
     private static final String REMOVE_NEXT_SCROLL = "remove_next_scroll";
     private static final String PASSWORD = "password";
     private static final String CUSTOM_TILES = "custom_tiles";
+    private static final String RECIPIES = "recipies";
 
     private static final String RUNE_LABELS = "rune_labels";
     private static final String RUNE_CLASSES = "rune_classes";
@@ -583,6 +588,7 @@ public class CustomDungeon implements Bundlable {
         bundle.put(EFFECT_DURATION, effectDuration);
         bundle.put(START_ITEMS, Arrays.asList(startItems));
         bundle.put(CUSTOM_TILES, customTiles);
+        bundle.put(RECIPIES, recipes);
         bundle.put(VIEW_2D, view2d);
         bundle.put(SEE_LEVEL_ON_DEATH, seeLevelOnDeath);
         bundle.put(NOT_REVEAL_SECRETS, notRevealSecrets);
@@ -692,6 +698,12 @@ public class CustomDungeon implements Bundlable {
         if (bundle.contains(CUSTOM_TILES)) {
             for (Bundlable b : bundle.getCollection(CUSTOM_TILES)) {
                 customTiles.add((CustomTileLoader.SimpleCustomTile) b);
+            }
+        }
+        recipes = new ArrayList<>();
+        if (bundle.contains(RECIPIES)) {
+            for (Bundlable b : bundle.getCollection(RECIPIES)) {
+                recipes.add((CustomRecipe) b);
             }
         }
 
@@ -1118,7 +1130,7 @@ public class CustomDungeon implements Bundlable {
                         } else if (m instanceof Thief) {
                             if (isInvalidKey(((Thief) m).item, oldName)) {
                                 ((Key) ((Thief) m).item).levelName = newName;
-                                needsSave = true;//TODO tzz
+                                needsSave = true;
                             }
                             if (((Thief) m).item instanceof RandomItem<?>) {
                                 if (((RandomItem<?>) ((Thief) m).item).renameInvalidKeys(oldName, newName)) needsSave = true;

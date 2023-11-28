@@ -44,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
+import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipe;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
@@ -245,6 +246,10 @@ public class Dungeon {
 //                SandboxPixelDungeon.reportException(e);
 //            }
 //        }
+
+        for (CustomRecipe recipe : Dungeon.customDungeon.recipes.toArray(new CustomRecipe[0])) {
+            if (!recipe.isRecipeValid()) Dungeon.customDungeon.recipes.remove(recipe);
+        }
 
         visited = new String[]{};
         completed = new String[]{};

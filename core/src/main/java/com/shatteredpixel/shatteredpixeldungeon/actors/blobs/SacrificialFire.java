@@ -196,7 +196,10 @@ public class SacrificialFire extends Blob {
 			Item i = prizes.get(cell);
 			if (CustomDungeon.isInvalidKey(i, invalidLevelName)) {
 				((Key) i).levelName = newName;
-				removedSth = true;//TODO tzz
+				removedSth = true;
+			}
+			if (i instanceof RandomItem) {
+				if (((RandomItem<?>) i).renameInvalidKeys(invalidLevelName, newName)) removedSth = true;
 			}
 		}
 		return removedSth;

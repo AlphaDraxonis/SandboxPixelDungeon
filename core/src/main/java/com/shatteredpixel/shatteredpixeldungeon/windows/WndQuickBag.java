@@ -77,6 +77,7 @@ public class WndQuickBag extends Window {
 			expectedHeight -= rows;
 		}
 
+		//TODO @Evan: fix if there are no items!
 		for (Item i : items){
 			InventorySlot slot = new InventorySlot(i){
 				@Override

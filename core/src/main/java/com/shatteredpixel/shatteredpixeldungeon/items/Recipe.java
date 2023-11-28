@@ -21,7 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Blandfruit;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
@@ -79,7 +81,7 @@ public abstract class Recipe {
 		protected int[] inQuantity;
 		
 		protected int cost;
-		
+
 		protected Class<?extends Item> output;
 		protected int outQuantity;
 		//***
@@ -148,7 +150,7 @@ public abstract class Recipe {
 		}
 		
 		//ingredients are ignored, as output doesn't vary
-		public final Item sampleOutput(ArrayList<Item> ingredients){
+		public Item sampleOutput(ArrayList<Item> ingredients){
 			try {
 				Item result = Reflection.newInstance(output);
 				result.quantity(outQuantity);
@@ -217,6 +219,7 @@ public abstract class Recipe {
 	public static ArrayList<Recipe> findRecipes(ArrayList<Item> ingredients){
 
 		ArrayList<Recipe> result = new ArrayList<>();
+		int numIngredients = ingredients.size();
 
 		for (Recipe recipe : variableRecipes){
 			if (recipe.testIngredients(ingredients)){
@@ -224,21 +227,28 @@ public abstract class Recipe {
 			}
 		}
 
-		if (ingredients.size() == 1){
+		//When this is reached, all invalid recipes are already filtered out
+		for (CustomRecipe recipe : Dungeon.customDungeon.recipes){
+			if (recipe.numIngredients() == numIngredients && recipe.testIngredients(ingredients)){
+				result.add(recipe);
+			}
+		}
+
+		if (numIngredients == 1){
 			for (Recipe recipe : oneIngredientRecipes){
 				if (recipe.testIngredients(ingredients)){
 					result.add(recipe);
 				}
 			}
 			
-		} else if (ingredients.size() == 2){
+		} else if (numIngredients == 2){
 			for (Recipe recipe : twoIngredientRecipes){
 				if (recipe.testIngredients(ingredients)){
 					result.add(recipe);
 				}
 			}
 			
-		} else if (ingredients.size() == 3){
+		} else if (numIngredients == 3){
 			for (Recipe recipe : threeIngredientRecipes){
 				if (recipe.testIngredients(ingredients)){
 					result.add(recipe);
@@ -252,7 +262,8 @@ public abstract class Recipe {
 	public static boolean usableInRecipe(Item item){
 		if (item instanceof EquipableItem){
 			//only thrown weapons and wands allowed among equipment items
-			return item.isIdentified() && !item.cursed && item instanceof MissileWeapon;
+			return item.isIdentified() && !item.cursed
+					&& (item instanceof MissileWeapon || !item.isEquipped(Dungeon.hero) && !Dungeon.customDungeon.recipes.isEmpty());
 		} else if (item instanceof Wand) {
 			return item.isIdentified() && !item.cursed;
 		} else {
