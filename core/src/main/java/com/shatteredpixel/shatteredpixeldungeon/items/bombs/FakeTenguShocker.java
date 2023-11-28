@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -65,6 +66,11 @@ public class FakeTenguShocker extends Bomb {
     @Override
     public String desc() {
         return Messages.get(Tengu.ShockerAbility.ShockerItem.class, "desc");
+    }
+
+    @Override
+    public boolean isSimilar(Item item) {
+        return super.isSimilar(item) && ((FakeTenguShocker) item).duration == duration;
     }
 
     public static class TenguShockerFuse extends Fuse {

@@ -256,7 +256,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 add(blessed);
             } else blessed = null;
 
-            if(item instanceof FakeTenguShocker) {
+            if (item instanceof FakeTenguShocker) {
                 shockerDuration = new Spinner(new SpinnerIntegerModel(1, 100, ((FakeTenguShocker) item).duration, 1, false, null) {
                     @Override
                     public float getInputFieldWith(float height) {
