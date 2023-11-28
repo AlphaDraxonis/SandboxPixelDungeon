@@ -105,7 +105,7 @@ public class StoneOfAugmentation extends InventoryStone {
 			
 			if (toAugment instanceof Weapon){
 				for (final Weapon.Augment aug : Weapon.Augment.values()){
-					if (((Weapon) toAugment).augment != aug){
+					if (aug != Weapon.Augment.RANDOM && ((Weapon) toAugment).augment != aug){
 						RedButton btnSpeed = new RedButton( Messages.get(this, aug.name()) ) {
 							@Override
 							protected void onClick() {
@@ -122,7 +122,7 @@ public class StoneOfAugmentation extends InventoryStone {
 				
 			} else if (toAugment instanceof Armor){
 				for (final Armor.Augment aug : Armor.Augment.values()){
-					if (((Armor) toAugment).augment != aug){
+					if (aug != Armor.Augment.RANDOM && ((Armor) toAugment).augment != aug){
 						RedButton btnSpeed = new RedButton( Messages.get(this, aug.name()) ) {
 							@Override
 							protected void onClick() {
