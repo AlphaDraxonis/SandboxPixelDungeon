@@ -206,17 +206,22 @@ public class YogDzewa extends Mob {
 			summonCooldown = -15; //summon a burst of minions!
 			phase = 5;
 			BossHealthBar.bleed(true);
-			Game.runOnRenderThread(new Callback() {
-				@Override
-				public void call() {
-					Music.INSTANCE.fadeOut(0.5f, new Callback() {
-						@Override
-						public void call() {
-							Music.INSTANCE.play(Assets.Music.HALLS_BOSS_FINALE, true);
-						}
-					});
-				}
-			});
+			if (Dungeon.level instanceof HallsBossLevel) {
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						Music.INSTANCE.fadeOut(0.5f, new Callback() {
+							@Override
+							public void call() {
+								Music.INSTANCE.play(Assets.Music.HALLS_BOSS_FINALE, true);
+							}
+						});
+					}
+				});
+			} else if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
+				Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS);
+				Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS_FINAL);
+			}
 		}
 
 		if (phase == 0){
@@ -598,7 +603,9 @@ public class YogDzewa extends Mob {
 
 		yell( Messages.get(this, "defeated") );
 
-		if (!(Dungeon.level instanceof HallsBossLevel)) Dungeon.level.playLevelMusic();
+		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof HallsBossLevel)) {
+			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS_FINAL);
+		}
 	}
 
 	@Override
@@ -625,7 +632,10 @@ public class YogDzewa extends Mob {
 				abilityCooldown = Random.NormalFloat(MIN_ABILITY_CD, MAX_ABILITY_CD);
 			}
 		}
-		if (!(Dungeon.level instanceof HallsBossLevel)) Dungeon.level.seal();
+		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof HallsBossLevel)) {
+			Dungeon.level.seal();
+			Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
+		}
 	}
 
 	@Override

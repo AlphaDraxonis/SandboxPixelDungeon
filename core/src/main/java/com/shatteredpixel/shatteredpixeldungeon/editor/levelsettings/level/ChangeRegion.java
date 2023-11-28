@@ -66,7 +66,7 @@ public class ChangeRegion extends Component {
                 f.getWaterTextureValue(),
                 f.getMusicValue()
         };
-        int oldMusicVariant = f.getMusicVariant();
+        int oldMusicVariant = f.musicVariant;
 
 
         outsideSp = new Component() {
@@ -91,7 +91,7 @@ public class ChangeRegion extends Component {
                                 f.setRegion(newValues[CAT_REGION]);
                                 f.setWaterTexture(newValues[CAT_WATER]);
                                 f.setMusic(newValues[CAT_MUSIC]);
-                                f.setMusicVariant(newMusicVariant);
+                                f.musicVariant = newMusicVariant;
                                 Game.switchScene(EditorScene.class);
                                 return;
                             }

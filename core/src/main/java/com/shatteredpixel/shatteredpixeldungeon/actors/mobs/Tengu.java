@@ -68,9 +68,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.TenguSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
-import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.BArray;
@@ -112,6 +110,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	public int arenaRadius = 10;//ONLY used for non PrisonBossLevels
 	private int initialPos;
 	private int stepsToDo;//only if state is Wandering
+	private boolean attackedPlayer;
 	
 //	@Override
 //	public int damageRoll() {
@@ -265,6 +264,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 					}
 				}
 			}
+			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS);
 		}
 	}
 	
@@ -401,7 +401,6 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		}
 		if (!(Dungeon.level instanceof PrisonBossLevel)) {
 			Dungeon.level.seal();
-			Game.runOnRenderThread(() -> Music.INSTANCE.play(Assets.Music.PRISON_BOSS, true));
 		}
 	}
 	
@@ -419,6 +418,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	private static final String ARENA_RADIUS     = "arena_radius";
 	private static final String INITIAL_POS      = "initial_pos";
 	private static final String STEPS_TO_DO      = "steps_to_do";
+	private static final String ATTACKED_PLAYER  = "attacked_player";
 
 	
 	@Override
@@ -432,6 +432,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		bundle.put(ARENA_RADIUS, arenaRadius);
 		bundle.put(INITIAL_POS, initialPos);
 		bundle.put(STEPS_TO_DO, stepsToDo);
+		bundle.put(ATTACKED_PLAYER, attackedPlayer);
 	}
 	
 	@Override
@@ -447,6 +448,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		arenaRadius = bundle.getInt(ARENA_RADIUS);
 		initialPos = bundle.getInt(INITIAL_POS);
 		stepsToDo = bundle.getInt(STEPS_TO_DO);
+		attackedPlayer = bundle.getBoolean(ATTACKED_PLAYER);
 
 		if (playerAlignment == NORMAL_ALIGNMENT  && (enemyID == -1 || HP < HT)) {
 			BossHealthBar.assignBoss(this);
@@ -465,6 +467,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			
 			enemySeen = enemyInFOV;
 			if (enemyInFOV && !isCharmedBy( enemy ) && canAttack( enemy )) {
+
+				if (enemy instanceof Hero) attackedPlayer = true;
 				
 				if (canUseAbility()){
 					return useAbility();

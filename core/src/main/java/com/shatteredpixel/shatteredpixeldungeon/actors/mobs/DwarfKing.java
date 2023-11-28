@@ -52,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -558,6 +559,9 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 				}
 			}
 		}
+		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof CityBossLevel)) {
+			Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
+		}
 	}
 
 	@Override
@@ -634,17 +638,22 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			Sample.INSTANCE.play( Assets.Sounds.CHALLENGE );
 			yell(  Messages.get(this, "enraged", Dungeon.hero.name()) );
 			BossHealthBar.bleed(true);
-			Game.runOnRenderThread(new Callback() {
-				@Override
-				public void call() {
-					Music.INSTANCE.fadeOut(0.5f, new Callback() {
-						@Override
-						public void call() {
-							Music.INSTANCE.play(Assets.Music.CITY_BOSS_FINALE, true);
-						}
-					});
-				}
-			});
+			if (Dungeon.level instanceof CityBossLevel) {
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						Music.INSTANCE.fadeOut(0.5f, new Callback() {
+							@Override
+							public void call() {
+								Music.INSTANCE.play(Assets.Music.CITY_BOSS_FINALE, true);
+							}
+						});
+					}
+				});
+			} else if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
+				Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS);
+				Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS_FINAL);
+			}
 		} else if (phase == 3 && preHP > 20 && HP < 20){
 			yell( Messages.get(this, "losing") );
 		}
@@ -691,6 +700,10 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		}
 
 		yell( Messages.get(this, "defeated") );
+
+		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof CityBossLevel)) {
+			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS_FINAL);
+		}
 	}
 
 	@Override

@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CAVES;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CITY;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_HALLS;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_NONE;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_PRISON;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_SEWERS;
 
@@ -66,6 +65,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobBasedOnDepth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
@@ -139,6 +139,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -199,6 +200,8 @@ public abstract class Level implements Bundlable {
 
 	//when a boss level has become locked.
 	public boolean locked = false;
+	public int musicVariant = 0;//so bosses can play boss music while they are alive
+	private final LinkedList<Integer> musicRequests = new LinkedList<>();//bosses can add their music request in notice(), and remove it in die(), always the last element is played
 	
 	public HashSet<Mob> mobs;
 	public SparseArray<Heap> heaps;
@@ -250,6 +253,8 @@ public abstract class Level implements Bundlable {
 	private static final String BOSS_MOB_AT = "boss_mob_at";
 	private static final String BOSS_FOUND  = "boss_found";
 	private static final String ZONES       = "zones";
+	private static final String MUSIC_VARIANT = "music_variant";
+	private static final String MUSIC_REQUESTS = "music_requests";
 
 
 	public void create() {
@@ -405,6 +410,7 @@ public abstract class Level implements Bundlable {
 			if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
 			if (m instanceof Blacksmith) ((Blacksmith) m).registerQuest();
 			else if (m instanceof Pylon && ((Pylon) m).alwaysActive && m.playerAlignment == Mob.NORMAL_ALIGNMENT) m.alignment = Char.Alignment.ENEMY;
+			else if (m instanceof Tengu && m.playerAlignment == Mob.NORMAL_ALIGNMENT) playSpecialMusic(Level.MUSIC_BOSS);
 			if (m.pos == bossmobAt) {
 				bossMob = m;
 				bossMob.isBossMob = !(m instanceof Goo || m instanceof DwarfKing);
@@ -435,12 +441,16 @@ public abstract class Level implements Bundlable {
 			{Assets.Music.CITY_TENSE, Assets.Music.CITY_BOSS, Assets.Music.CITY_BOSS_FINALE},
 			{Assets.Music.HALLS_TENSE, Assets.Music.HALLS_BOSS, Assets.Music.HALLS_BOSS_FINALE}
 	};
+	public static final int MUSIC_NORMAL = 0, MUSIC_TENSE = 1, MUSIC_BOSS = 2, MUSIC_BOSS_FINAL = 3;
+	private int currentVariant;
 	public void playLevelMusic(int region, int variant) {
 		//variant = 0: normal
 		//variant = 1: tense
 		//variant = 2: boss normal
 		//variant = 3: boss final
 		//region = -1: theme final
+		if (!musicRequests.isEmpty()) variant = musicRequests.getLast();
+		currentVariant = variant;
 
 		boolean hasTransitionToSurface = false;
 		for (LevelTransition transition : transitions.values()) {
@@ -483,12 +493,25 @@ public abstract class Level implements Bundlable {
 		}
 	}
 
-	public int playsMusicFromRegion(){
-		if (this instanceof CustomLevel) {
-			int music = ((CustomLevel) this).getMusicValue();
-			return music == REGION_NONE ? ((CustomLevel) this).getRegionValue() : music;
-		}
+	public int playsMusicFromRegion() {
 		return LevelScheme.getRegion(this);
+	}
+
+	public void playSpecialMusic(int variant) {
+		musicRequests.add(variant);
+		if (currentVariant != variant) {
+			Music.INSTANCE.end();
+			playLevelMusic();
+		}
+	}
+
+	public void stopSpecialMusic(int variant) {
+		musicRequests.removeLastOccurrence(variant);
+		int nowPlaying = musicRequests.isEmpty() ? musicVariant : musicRequests.getLast();
+		if (nowPlaying != variant) {
+			Music.INSTANCE.end();
+			playLevelMusic();
+		}
 	}
 	
 	@Override
@@ -513,6 +536,12 @@ public abstract class Level implements Bundlable {
 		mapped	= bundle.getBooleanArray( MAPPED );
 		name = bundle.getString( NAME );
 		viewDistance = bundle.getInt( VIEW_DISTANCE );
+		musicVariant = bundle.getInt( MUSIC_VARIANT );
+		int[] intArray = bundle.getIntArray(MUSIC_REQUESTS);
+		if (intArray != null) {
+			for (int i : intArray)
+				musicRequests.add(i);
+		}
 
 		Dungeon.customDungeon.getFloor(name).setLevel(this);
 
@@ -632,6 +661,14 @@ public abstract class Level implements Bundlable {
 		bundle.put( "mobs_to_spawn", mobsToSpawn.toArray(new Class[0]));
 		bundle.put( "respawner", respawner );
 		bundle.put( VIEW_DISTANCE, viewDistance );
+		bundle.put(MUSIC_VARIANT, musicVariant);
+		int[] intArray = new int[musicRequests.size()];
+		int index = 0;
+		for (int i : musicRequests) {
+			intArray[index] = i;
+			index++;
+		}
+		bundle.put(MUSIC_REQUESTS, intArray);
 	}
 	
 	public int tunnelTile() {

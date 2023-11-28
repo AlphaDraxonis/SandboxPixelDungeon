@@ -35,6 +35,8 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GooBlob;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -318,6 +320,10 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		Statistics.bossScores[0] += 1000;
 		
 		yell( Messages.get(this, "defeated") );
+
+		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof SewerBossLevel)) {
+			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS);
+		}
 	}
 	
 	@Override
@@ -334,6 +340,10 @@ public class Goo extends Mob implements MobBasedOnDepth {
 					((DriedRose.GhostHero) ch).sayBoss();
 				}
 			}
+		}
+
+		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof SewerBossLevel)) {
+			Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
 		}
 	}
 

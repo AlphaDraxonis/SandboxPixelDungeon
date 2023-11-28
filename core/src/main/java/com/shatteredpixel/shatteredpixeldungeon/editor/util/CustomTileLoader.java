@@ -134,7 +134,7 @@ public final class CustomTileLoader {
             ownCustomTile.identifier = file.name();
             Tiles.addCustomTile(ownCustomTile);
         } catch (Exception ignored) {
-            throw new RuntimeException(ignored);
+//            throw new RuntimeException(ignored);
         }
     }
 

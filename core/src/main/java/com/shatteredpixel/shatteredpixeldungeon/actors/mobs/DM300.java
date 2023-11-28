@@ -369,6 +369,9 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 				}
 			}
 		}
+		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof CavesBossLevel)) {
+			Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
+		}
 	}
 
 	public void onZapComplete(){
@@ -565,17 +568,25 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		} else {
 			yell(Messages.get(this, "pylons_destroyed"));
 			BossHealthBar.bleed(true);
-			Game.runOnRenderThread(new Callback() {
-				@Override
-				public void call() {
-					Music.INSTANCE.fadeOut(0.5f, new Callback() {
-						@Override
-						public void call() {
-							Music.INSTANCE.play(Assets.Music.CAVES_BOSS_FINALE, true);
-						}
-					});
+			if (Dungeon.level instanceof CavesBossLevel) {
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						Music.INSTANCE.fadeOut(0.5f, new Callback() {
+							@Override
+							public void call() {
+								Music.INSTANCE.play(Assets.Music.CAVES_BOSS_FINALE, true);
+							}
+						});
+					}
+				});
+			} else {
+				if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
+					Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS);
+					Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS_FINAL);
 				}
-			});
+			}
+
 		}
 	}
 
@@ -609,6 +620,10 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		Statistics.bossScores[2] += 3000;
 
 		yell( Messages.get(this, "defeated") );
+
+		if (!(Dungeon.level instanceof CavesBossLevel)) {
+			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS_FINAL);
+		}
 	}
 
 	@Override
