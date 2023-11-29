@@ -115,7 +115,7 @@ public class WndEditFloorInOverview extends WndTabbed {
         protected ChooseDestLevelComp passage, chasm;
         protected RedButton delete, open;
 
-        protected IconButton rename;
+        protected IconButton rename, copy;
 
         public General() {
         }
@@ -169,6 +169,55 @@ public class WndEditFloorInOverview extends WndTabbed {
                 }
             };
             add(rename);
+
+            copy = new IconButton(Icons.PASTE.get()) {
+                @Override
+                protected void onClick() {
+                    Window w = new WndTextInput(Messages.get(WndSelectDungeon.class, "copy_title"),
+                            "",
+                            levelScheme.getName() + " " + Messages.get(WndSelectDungeon.class, "copy_extension"),
+                            50,
+                            false,
+                            Messages.get(WndSelectDungeon.class, "copy_yes"),
+                            Messages.get(WndSelectDungeon.class, "export_no")) {
+                        {
+                            textBox.selectAll();
+                        }
+                        @Override
+                        public void onSelect(boolean positive, String text) {
+                            if (positive && !text.isEmpty()) {
+                                for (String floorN : levelScheme.getCustomDungeon().floorNames()) {
+                                    if (!floorN.equals(levelScheme.getName()) && floorN.replace(' ', '_').equals(text.replace(' ', '_'))) {
+                                        WndNewDungeon.showNameWarnig();
+                                        return;
+                                    }
+                                }
+                                if (!text.equals(levelScheme.getName())) {
+                                    LevelScheme newLevel = levelScheme.getCustomDungeon().copyLevel(levelScheme, text);
+                                    if (newLevel == null) return;
+                                    WndEditFloorInOverview.this.hide();
+
+                                    if (newLevel.getType() == CustomLevel.class) {
+                                        //open level
+                                        WndSwitchFloor.selectLevelScheme(newLevel, listItem, listPane);
+                                    } else {
+                                        //show editing window
+                                        listPane.updateList();
+                                        EditorScene.show(new WndEditFloorInOverview(newLevel, listItem, listPane));
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    EditorScene.show(w);
+                }
+
+                @Override
+                protected String hoverText() {
+                    return Messages.get(WndSelectDungeon.class, "copy_yes");
+                }
+            };
+            add(copy);
 
             depth = new DepthSpinner(levelScheme.getDepth(), 8) {
                 @Override
@@ -277,12 +326,13 @@ public class WndEditFloorInOverview extends WndTabbed {
         @Override
         public void layout() {
 
-            float renameWidth = rename.icon().width;
+            float iconWidh = rename.icon().width + copy.icon().width + 2;
 
-            title.maxWidth((int) (width - renameWidth - 2));
+            title.maxWidth((int) (width - iconWidh - 2));
             title.setPos((title.maxWidth() - title.width()) * 0.5f, 3);
 
-            rename.setRect(width - renameWidth, title.top() + (title.height() - rename.icon().height) * 0.5f, renameWidth, rename.icon().height);
+            rename.setRect(width - iconWidh, title.top() + (title.height() - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
+            copy.setRect(rename.right() + 2, title.top() + (title.height() - copy.icon().height) * 0.5f, copy.icon().width, copy.icon().height);
             float titlePos = title.bottom() + 5;
 
             float pos = 0;

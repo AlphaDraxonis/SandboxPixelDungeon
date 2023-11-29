@@ -69,40 +69,44 @@ public class WndSelectDungeon extends Window {
             };
             add(createNewDungeonBtn);
 
-            if (SandboxPixelDungeon.platform.supportsOpenFileExplorer()
-                    || (DeviceCompat.isAndroid() && SandboxPixelDungeon.platform.canReadExternalFilesIfUserGrantsPermission())) {
-                createNewDungeonBtn.setRect(0, height - 18, (width * 9 / 16f) - 2, 18);
-                openFileExplorer = new RedButton(DeviceCompat.isDesktop()
-                        ? Messages.get(WndSelectDungeon.class, "open_file_explorer")
-                        : Messages.get(WndSelectDungeon.class, "import")) {
-                    @Override
-                    protected void onClick() {
-                        if (DeviceCompat.isDesktop()) {
-                            SandboxPixelDungeon.platform.openFileExplorer(FileUtils.getFileHandleWithDefaultPath(
-                                    FileUtils.getFileTypeForCustomDungeons(), CustomDungeonSaves.DUNGEON_FOLDER));
-                        } else {
-                            SandboxPixelDungeon.platform.selectFile(new Consumer<FileHandle>() {
-                                @Override
-                                public void accept(FileHandle fileHandle) {
-                                    if (fileHandle != null) {
-                                        CustomDungeonSaves.Info info = ExportDungeonWrapper.doImport(fileHandle);
-                                        if (info != null) {
-                                            allInfos.add(info);
-                                            dungeonNames.add(info.name);
-                                            updateList();
-                                            Sample.INSTANCE.play(Assets.Sounds.EVOKE);
-                                        } else {
-                                            Sample.INSTANCE.play(Assets.Sounds.CURSED);
+            try {
+                if (SandboxPixelDungeon.platform.supportsOpenFileExplorer()
+                        || (DeviceCompat.isAndroid() && SandboxPixelDungeon.platform.canReadExternalFilesIfUserGrantsPermission())) {
+                    createNewDungeonBtn.setRect(0, height - 18, (width * 9 / 16f) - 2, 18);
+                    openFileExplorer = new RedButton(DeviceCompat.isDesktop()
+                            ? Messages.get(WndSelectDungeon.class, "open_file_explorer")
+                            : Messages.get(WndSelectDungeon.class, "import")) {
+                        @Override
+                        protected void onClick() {
+                            if (DeviceCompat.isDesktop()) {
+                                SandboxPixelDungeon.platform.openFileExplorer(FileUtils.getFileHandleWithDefaultPath(
+                                        FileUtils.getFileTypeForCustomDungeons(), CustomDungeonSaves.DUNGEON_FOLDER));
+                            } else {
+                                SandboxPixelDungeon.platform.selectFile(new Consumer<FileHandle>() {
+                                    @Override
+                                    public void accept(FileHandle fileHandle) {
+                                        if (fileHandle != null) {
+                                            CustomDungeonSaves.Info info = ExportDungeonWrapper.doImport(fileHandle);
+                                            if (info != null) {
+                                                allInfos.add(info);
+                                                dungeonNames.add(info.name);
+                                                updateList();
+                                                Sample.INSTANCE.play(Assets.Sounds.EVOKE);
+                                            } else {
+                                                Sample.INSTANCE.play(Assets.Sounds.CURSED);
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
-                    }
-                };
-                add(openFileExplorer);
-                openFileExplorer.setRect(createNewDungeonBtn.right() + 2, height - 18, width - createNewDungeonBtn.width() - 2, 18);
-            } else {
+                    };
+                    add(openFileExplorer);
+                    openFileExplorer.setRect(createNewDungeonBtn.right() + 2, height - 18, width - createNewDungeonBtn.width() - 2, 18);
+                } else {
+                    createNewDungeonBtn.setRect(0, height - 18, width, 18);
+                }
+            } catch (Exception ignored) {
                 createNewDungeonBtn.setRect(0, height - 18, width, 18);
             }
         }
@@ -312,13 +316,62 @@ public class WndSelectDungeon extends Window {
                     }
                 };
                 add(rename);
-                float iconWidth = rename.icon().width;
+
+                IconButton copy = new IconButton(Icons.PASTE.get()) {
+                    @Override
+                    protected void onClick() {
+                        Window w = new WndTextInput(Messages.get(WndSelectDungeon.class, "copy_title"),
+                                "",
+                                info.name + " " + Messages.get(WndSelectDungeon.class, "copy_extension"),
+                                50,
+                                false,
+                                Messages.get(WndSelectDungeon.class, "copy_yes"),
+                                Messages.get(WndSelectDungeon.class, "export_no")) {
+                            {
+                                textBox.selectAll();
+                            }
+                            @Override
+                            public void onSelect(boolean positive, String text) {
+                                if (positive && !text.isEmpty()) {
+                                    for (String dungeonN : dungeonNames) {
+                                        if (!dungeonN.equals(info.name) && dungeonN.replace(' ', '_').equals(text.replace(' ', '_'))) {
+                                            WndNewDungeon.showNameWarnig();
+                                            return;
+                                        }
+                                    }
+                                    if (text.equals(DEFAULT_DUNGEON))
+                                        WndNewDungeon.showNameWarnig();
+                                    else if (!text.equals(info.name)) {
+                                        CustomDungeonSaves.Info newInfo = CustomDungeon.copyDungeon(info.name, text);
+                                        if (newInfo != null) {
+                                            dungeonNames.add(newInfo.name);
+                                            allInfos.add(newInfo);
+                                            updateList();
+                                            WndInfoDungeon.this.hide();
+                                            EditorScene.show(new WndInfoDungeon(newInfo));
+                                        }
+                                    }
+                                }
+                            }
+                        };
+                        EditorScene.show(w);
+                    }
+
+                    @Override
+                    protected String hoverText() {
+                        return Messages.get(WndSelectDungeon.class, "copy_yes");
+                    }
+                };
+                add(copy);
+
+                float iconWidth = rename.icon().width + copy.icon().width + 2;
 
                 float pos = 2;
                 title.maxWidth((int) (width - iconWidth - 2));
                 title.setPos((title.maxWidth() - title.width()) * 0.5f, pos);
 
-                rename.setRect(width - iconWidth, title.top() + (title.height() - rename.icon().height) * 0.5f, iconWidth, rename.icon().height);
+                rename.setRect(width - iconWidth, title.top() + (title.height() - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
+                copy.setRect(rename.right() + 2, title.top() + (title.height() - rename.icon().height) * 0.5f, copy.icon().width, copy.icon().height);
                 pos = title.bottom() + GAP;
 
                 pos = statSlot(Messages.get(WndSelectDungeon.class, "num_floors"), Integer.toString(info.numLevels), pos) + GAP * 3;

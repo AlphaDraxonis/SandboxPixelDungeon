@@ -809,6 +809,8 @@ public class CustomDungeon implements Bundlable {
             if (n.equals(ls.getChasm())) ls.setChasm(null, false);
             if (n.equals(ls.getPassage())) ls.setPassage(null);
 
+            removeInvalidKeys(ls.itemsToSpawn, n);
+
             if (ls.getType() == CustomLevel.class) {
                 boolean load = ls.getLevel() == null;
                 Level level;
@@ -872,8 +874,6 @@ public class CustomDungeon implements Bundlable {
                 if (sacrificialFire != null) {
                     if (sacrificialFire.removeInvalidKeys(n)) removedItems = true;
                 }
-
-                if (removeInvalidKeys(ls.itemsToSpawn, n)) removedItems = true;
 
                 boolean save = removedItems || !toRemoveTransitions.isEmpty();
                 for (int key : toRemoveTransitions) level.transitions.remove(key);
@@ -1038,6 +1038,99 @@ public class CustomDungeon implements Bundlable {
         CustomDungeonSaves.deleteDungeonFile(name);
     }
 
+    public static CustomDungeonSaves.Info copyDungeon(String oldName, String newName) {
+        try {
+            CustomDungeon dungeon = null;
+            try {
+                dungeon = CustomDungeonSaves.loadDungeon(oldName);
+                CustomDungeonSaves.copyLevelsForNewGame(oldName, CustomDungeonSaves.DUNGEON_FOLDER + newName.replace(' ', '_') + "/");
+            } catch (CustomDungeonSaves.RenameRequiredException e) {
+                return null;
+            }
+            dungeon.name = newName;
+            CustomDungeonSaves.saveDungeon(dungeon);
+            return dungeon.createInfo();
+        } catch (IOException e) {
+            SandboxPixelDungeon.reportException(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public LevelScheme copyLevel(LevelScheme levelScheme, String newName) {
+        Bundle bundle = new Bundle();
+        bundle.put("LevelScheme", levelScheme);
+        LevelScheme ls = (LevelScheme) bundle.get("LevelScheme");
+        ls.name = newName;
+        addFloor(ls);
+
+        String oldName = levelScheme.getName();
+
+        if (oldName.equals(ls.getChasm())) ls.setChasm(newName, false);
+        if (oldName.equals(ls.getPassage())) ls.setPassage(newName);
+
+        if (oldName.equals(ls.levelCreatedBefore)) ls.levelCreatedBefore = newName;
+        if (oldName.equals(ls.levelCreatedAfter)) ls.levelCreatedAfter = newName;
+
+        renameInvalidKeys(ls.itemsToSpawn, oldName, newName);
+
+        try {
+            if (levelScheme.getType() == CustomLevel.class) {
+                Level level = levelScheme.loadLevel();
+                level.name = newName;
+                level.levelScheme = ls;
+
+                //TODO refactor to use the same as renaming logic!
+                for (LevelTransition transition : level.transitions.values()) {
+                    if (transition != null) {
+                        if (Objects.equals(transition.destLevel, oldName))
+                            transition.destLevel = newName;
+                        if (Objects.equals(transition.departLevel, oldName))
+                            transition.departLevel = newName;
+                    }
+                }
+                for (Zone zone : level.zoneMap.values()) {
+                    if (zone.zoneTransition != null) {
+                        if (Objects.equals(zone.zoneTransition.destLevel, oldName))
+                            zone.zoneTransition.destLevel = newName;
+                        if (Objects.equals(zone.zoneTransition.departLevel, oldName))
+                            zone.zoneTransition.departLevel = newName;
+                    }
+                }
+
+                //Change invalid keys in heaps
+                for (Heap h : level.heaps.valueList()) {
+                    renameInvalidKeys(h.items, oldName, newName);
+                }
+                //Change invalid keys in mob containers
+                for (Mob m : level.mobs) {
+                    if (m instanceof Mimic && ((Mimic) m).items != null) {
+                        renameInvalidKeys(((Mimic) m).items, oldName, newName);
+                    } else if (m instanceof Thief) {
+                        if (isInvalidKey(((Thief) m).item, oldName)) ((Key) ((Thief) m).item).levelName = newName;
+                        if (((Thief) m).item instanceof RandomItem<?>)
+                            ((RandomItem<?>) ((Thief) m).item).renameInvalidKeys(oldName, newName);
+                    }
+                    if (m.loot instanceof LootTableComp.CustomLootInfo) {
+                        for (LootTableComp.ItemWithCount itemsWithCount : ((LootTableComp.CustomLootInfo) m.loot).lootList) {
+                            renameInvalidKeys(itemsWithCount.items, oldName, newName);
+                        }
+                    }
+                }
+
+                //Remove invalid keys as sacrificial fire reward
+                SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.getOnly(SacrificialFire.class);
+                if (sacrificialFire != null) sacrificialFire.renameInvalidKeys(oldName, newName);
+
+                CustomDungeonSaves.saveLevel(level);
+            }
+            lastEditedFloor = newName;
+            CustomDungeonSaves.saveDungeon(this);
+            return ls;
+        } catch (IOException e) {
+            throw new RuntimeException(e);//tzz
+        }
+    }
+
     public static void renameDungeon(String oldName, String newName) {
         try {
             CustomDungeon dungeon = CustomDungeonSaves.renameDungeon(oldName, newName);
@@ -1069,6 +1162,7 @@ public class CustomDungeon implements Bundlable {
 
             //Change transitions and keys
             for (LevelScheme ls : floors.values()) {
+
                 if (oldName.equals(ls.getChasm())) ls.setChasm(newName, false);
                 if (oldName.equals(ls.getPassage())) ls.setPassage(newName);
 

@@ -500,8 +500,7 @@ public final class WndZones {
                             }
                         }
                     };
-                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                    else Game.scene().addToFront(w);
+                    EditorScene.show(w);
                 }
 
                 @Override
