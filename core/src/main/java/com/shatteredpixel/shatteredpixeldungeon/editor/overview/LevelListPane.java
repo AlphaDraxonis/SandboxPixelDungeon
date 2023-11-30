@@ -1,16 +1,19 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.overview;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndEditFloorInOverview;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.watabou.noosa.Game;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,9 +61,22 @@ public abstract class LevelListPane extends ScrollingListPane {
     protected abstract void onSelect(LevelSchemeLike levelScheme, LevelListPane.ListItem listItem);
 
     public boolean onEdit(LevelScheme levelScheme, LevelListPane.ListItem listItem) {
-        if (Game.scene() instanceof EditorScene)
+        if (SPDSettings.tutorialOpenRegularLevel()) {
             EditorScene.show(new WndEditFloorInOverview(levelScheme, listItem, this));
-        else Game.scene().addToFront(new WndEditFloorInOverview(levelScheme, listItem, this));
+        } else {
+            final long time = System.currentTimeMillis();
+            EditorScene.show(new WndOptions(
+                    Messages.get(WndSwitchFloor.class, "tutorial_cant_open_regular_title"),
+                    Messages.get(WndSwitchFloor.class, "tutorial_cant_open_regular_body"),
+                    Messages.get(WndSwitchFloor.class, "tutorial_cant_open_regular_close")){
+                @Override
+                public void hide() {
+                    super.hide();
+                    if (time + 1100 < System.currentTimeMillis()) SPDSettings.tutorialOpenRegularLevel(true);
+                    EditorScene.show(new WndEditFloorInOverview(levelScheme, listItem, LevelListPane.this));
+                }
+            });
+        }
         return true;
     }
 

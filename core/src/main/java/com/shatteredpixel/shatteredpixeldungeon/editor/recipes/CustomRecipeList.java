@@ -37,22 +37,37 @@ public class CustomRecipeList extends Component {
     public CustomRecipeList() {
 
         outsideSp = new Component() {
-            private RedButton btn;
+            private RedButton addBtn;
+            private IconButton disableRecipes;
 
             @Override
             protected void createChildren(Object... params) {
-                btn = new RedButton(Messages.get(CustomRecipeList.class, "add_recipe")) {
+                addBtn = new RedButton(Messages.get(CustomRecipeList.class, "add_recipe")) {
                     @Override
                     protected void onClick() {
                         addRecipe();
                     }
                 };
-                add(btn);
+                add(addBtn);
+
+                disableRecipes = new IconButton(Icons.MORE.get()) {
+                    @Override
+                    protected void onClick() {
+                        EditorScene.show(new WndDisableRecipes());
+                    }
+
+                    @Override
+                    protected String hoverText() {
+                        return Messages.get(WndDisableRecipes.class, "title");
+                    }
+                };
+                add(disableRecipes);
             }
 
             @Override
             protected void layout() {
-                btn.setRect(x + 1, y, width - 2, 18);
+                addBtn.setRect(x + 1, y, width - 4 - disableRecipes.icon().width(), 18);
+                disableRecipes.setRect(addBtn.right() + 2, y, disableRecipes.icon().width(), 18);
                 height = 18;
             }
         };
@@ -189,19 +204,20 @@ public class CustomRecipeList extends Component {
                 }
             }
 
+            spinnerImage.x = posX + 3;
+            spinnerImage.y = y + (height - spinnerImage.height()) * 0.5f;
+            PixelScene.align(spinnerImage);
+
+            cost.setRect(spinnerImage.x + spinnerImage.width() + 2, y + (height - ItemSpriteSheet.SIZE) * 0.5f, 50, ItemSpriteSheet.SIZE);
+            PixelScene.align(cost);
+            posX = cost.right() + 2;
+
             remove.setRect(width - 2 - remove.icon().width(), y + (height - remove.icon().height()) * 0.5f, remove.icon().width(), remove.icon().height());
             PixelScene.align(remove);
 
             output.setRect(remove.left() - ItemSpriteSheet.SIZE - 3, y + (height - ItemSpriteSheet.SIZE) * 0.5f, ItemSpriteSheet.SIZE, ItemSpriteSheet.SIZE);
 
-            cost.setRect(output.left() - 50, y + (height - ItemSpriteSheet.SIZE) * 0.5f, 50, ItemSpriteSheet.SIZE);
-            PixelScene.align(cost);
-
-            spinnerImage.x = cost.left() - spinnerImage.width() - 2;
-            spinnerImage.y = y + (height - spinnerImage.height()) * 0.5f;
-            PixelScene.align(spinnerImage);
-
-            arrow.x = posX + (spinnerImage.x - posX - arrow.width()) * 0.5f;
+            arrow.x = posX + (output.left() - posX - arrow.width()) * 0.5f;
             arrow.y = y + (height - arrow.height()) * 0.5f;
             PixelScene.align(arrow);
         }

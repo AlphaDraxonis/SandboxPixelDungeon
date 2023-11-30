@@ -39,6 +39,7 @@ public class SPDSettings extends GameSettings {
 	
 	public static final String KEY_VERSION         = "version";
 	public static final String KEY_DISCORD_CLICKED = "discord_clicked";
+	public static final String KEY_TUTORIAL_OPENED_REGULAR_LEVEL = "key_tutorial_opened_regular_level";
 
 	public static void version( int value)  {
 		put( KEY_VERSION, value );
@@ -54,6 +55,14 @@ public class SPDSettings extends GameSettings {
 
 	public static boolean discordClicked() {
 		return getBoolean( KEY_DISCORD_CLICKED, false );
+	}
+
+	public static void tutorialOpenRegularLevel( boolean value) {
+		put( KEY_TUTORIAL_OPENED_REGULAR_LEVEL, value);
+	}
+
+	public static boolean tutorialOpenRegularLevel() {
+		return getBoolean( KEY_TUTORIAL_OPENED_REGULAR_LEVEL, false );
 	}
 
 	//Display

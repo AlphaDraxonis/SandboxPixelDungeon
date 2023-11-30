@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
@@ -70,7 +71,7 @@ public abstract class ChooseOneInCategoriesBody extends Component {
             }
         };
         add(scrollDown);
-        cancel = new RedButton(Messages.get(ChooseOneInCategoriesBody.class,"cancel"), 7) {
+        cancel = new RedButton(Messages.get(this,"cancel"), 7) {
             @Override
             protected void onClick() {
                 onCancel();
@@ -218,7 +219,7 @@ public abstract class ChooseOneInCategoriesBody extends Component {
 
     public static class BtnRow extends Component {
 
-        private RedButton btn;
+        protected StyledButton btn;
         private IconButton infoBtn;
 
         private String name, info;

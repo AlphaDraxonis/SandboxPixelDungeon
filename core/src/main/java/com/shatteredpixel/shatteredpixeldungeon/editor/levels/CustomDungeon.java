@@ -65,7 +65,6 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.Random;
 
 import java.io.IOException;
@@ -86,67 +85,59 @@ public class CustomDungeon implements Bundlable {
 
     public boolean damageImmune, seeSecrets, permaMindVision, permaInvis, permaKey;// maybe add ScrollOfDebug?
 
-    {
-        if (DeviceCompat.isDebug() && false) {
-            damageImmune = seeSecrets = permaMindVision = permaInvis = permaKey = true;
-        }
-    }
-
     //FIXME: Was noch zu tun ist  FIXME FIXME TODO System.err.println()
     //general floor overview stuff
     //settings für EditorScene
     //select builder and painter
-    //Category items/mobs/rooms
 
     //Custom mob attacks: externalise
     //and search: used so resistances can differentiate between melee and magical attacks
 
-    //Copy levels/dungeons
-    //Backup levels/dungeons
-    //import levels
-
-    //improve export/import logic  -> public external dir
-
-    //clarify that regular levels cant be opened
-
+    //2 Std
     //Add a option for edit the monster description? Because then you could create like an NPC, using the neutral function, leave it
     //When the player interacts with an npc, allow them to edit what the npc says.
     //maybe you could change the dialogue of neutral enemie
 
+    //place backpack, tengu's traps, ignited bombs
+
+    //4 Std
+    //Goo, evil eye and some other mobs have different way to drop items, like when they drop around their corpse, not on the same tile
+    //Make it possible to edit what they drop and perhaps make it possible to every mob do this thing
+
+    //6h
+    //all gas types for traps
+
+    //45 min
     //A way to make it so bosses don't count as bosses.
 
-    //The 2 tengu items, the bomb and shocker.
-    //The tengu bomb has a setting for when it goes off.
-    //The tengu shocker has a setting for how long it lasts.#
-
+    //???
     //see how much a locked door there and how much key there
 
+    //4 Std
     //TODO  make zone icons
 
-    //WndEditStats size wrong on Tablet
-
-    //add change log
-
-    //add tp for all tp traps
-    //select traps as destination
-    //chain trigger tp traps
-
+    //8 Std
     //crystals(cave), and perhaps crystal walls
 
-    //manchmal falsche sprites für custom tiles
-
-    //desktop icon
-
-    //boss levels as templates
-
+    //4 Std
     //specify what mobs summoning trap spawns
 
-    //Could you add an option to make how much does a prison guard pull you?
-    //Default settings prison guard can only pull their enemies one time
-    //but i want to make it as a boss so i need them can pull you many times
-    //or basically any enemies with abilities
-
     //Scale mobs if their normal stats editor is disabled: not just everything
+
+    //And about bombs. I want to make a mob that drops ignited bomb after death
+
+    //you currently can't change boss drop, it's pointless.
+
+
+    //Custom Alchemy:
+    //Show warning that no item attributes can be used
+
+
+    //if possible make a release that can be downloaded in this format (taken ShPD for example) -> as .exe  no
+
+    //"Hero creator" chocked with a pixel editor for the hero, basic starting equipment, abilities, talents, and subclasses
+    //Alternative talents would be pretty neat
+    //Subclasses tho will not work properly, it requires a lot of work around the code ig
 
     private String name;
     private String lastEditedFloor;
@@ -175,6 +166,7 @@ public class CustomDungeon implements Bundlable {
     public Set<CustomTileLoader.SimpleCustomTile> customTiles;
 
     public List<CustomRecipe> recipes;
+    public Set<Integer> blockedRecipes;
 
     public CustomDungeon(String name) {
         this.name = name;
@@ -182,6 +174,7 @@ public class CustomDungeon implements Bundlable {
         itemDistributions = new ArrayList<>(5);
         customTiles = new HashSet<>(5);
         recipes = new ArrayList<>(5);
+        blockedRecipes = new HashSet<>(5);
         heroesEnabled = new boolean[HeroClass.values().length];
         heroSubClassesEnabled = new boolean[heroesEnabled.length * 2];
         Arrays.fill(heroesEnabled, true);
@@ -552,7 +545,8 @@ public class CustomDungeon implements Bundlable {
     private static final String REMOVE_NEXT_SCROLL = "remove_next_scroll";
     private static final String PASSWORD = "password";
     private static final String CUSTOM_TILES = "custom_tiles";
-    private static final String RECIPIES = "recipies";
+    private static final String RECIPES = "recipes";
+    private static final String BLOCKED_RECIPES = "blocked_recipes";
 
     private static final String RUNE_LABELS = "rune_labels";
     private static final String RUNE_CLASSES = "rune_classes";
@@ -588,11 +582,19 @@ public class CustomDungeon implements Bundlable {
         bundle.put(EFFECT_DURATION, effectDuration);
         bundle.put(START_ITEMS, Arrays.asList(startItems));
         bundle.put(CUSTOM_TILES, customTiles);
-        bundle.put(RECIPIES, recipes);
+        bundle.put(RECIPES, recipes);
         bundle.put(VIEW_2D, view2d);
         bundle.put(SEE_LEVEL_ON_DEATH, seeLevelOnDeath);
         bundle.put(NOT_REVEAL_SECRETS, notRevealSecrets);
         bundle.put(FORCE_CHALLENGES, forceChallenges);
+
+        int[] intArray = new int[blockedRecipes.size()];
+        int index = 0;
+        for (int i : blockedRecipes) {
+            intArray[index] = i;
+            index++;
+        }
+        bundle.put(BLOCKED_RECIPES, intArray);
 
         if (scrollRuneLabels != null) {
             String[] labels = new String[scrollRuneLabels.size()];
@@ -700,11 +702,17 @@ public class CustomDungeon implements Bundlable {
                 customTiles.add((CustomTileLoader.SimpleCustomTile) b);
             }
         }
-        recipes = new ArrayList<>();
-        if (bundle.contains(RECIPIES)) {
-            for (Bundlable b : bundle.getCollection(RECIPIES)) {
+        recipes = new ArrayList<>(5);
+        if (bundle.contains(RECIPES)) {
+            for (Bundlable b : bundle.getCollection(RECIPES)) {
                 recipes.add((CustomRecipe) b);
             }
+        }
+        blockedRecipes = new HashSet<>(5);
+        int[] intArray = bundle.getIntArray(BLOCKED_RECIPES);
+        if (intArray != null) {
+            for (int i : intArray)
+                blockedRecipes.add(i);
         }
 
         if (bundle.contains(RUNE_LABELS)) {
@@ -1127,7 +1135,8 @@ public class CustomDungeon implements Bundlable {
             CustomDungeonSaves.saveDungeon(this);
             return ls;
         } catch (IOException e) {
-            throw new RuntimeException(e);//tzz
+            SandboxPixelDungeon.reportException(e);
+            return null;
         }
     }
 
