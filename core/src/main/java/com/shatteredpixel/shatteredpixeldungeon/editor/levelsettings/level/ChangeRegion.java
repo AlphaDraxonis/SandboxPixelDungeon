@@ -193,7 +193,7 @@ public class ChangeRegion extends Component {
         private final int category;
 
         public AssetCheckbox(String label, int region, int category) {
-            super(Messages.titleCase(label == null ? Document.INTROS.pageTitle(REGION_KEYS[region]) : label));
+            super(Messages.titleCase(label == null ? Document.INTROS.pageTitle(REGION_KEYS[region-1]) : label));
             this.region = region;
             this.category = category;
         }

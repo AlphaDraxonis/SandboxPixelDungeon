@@ -55,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Swarm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -244,22 +245,22 @@ public class AscensionChallenge extends Buff {
 			} else {
 				stacks += 2f;
 
-				//clears any existing mobs from the level and adds one initial one
-				//this helps balance difficulty between levels with lots of mobs left, and ones with few
-				for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
-					if (!mob.reset()) {
-						Dungeon.level.mobs.remove( mob );
+				if (!(Dungeon.level instanceof CustomLevel)) {
+					//clears any existing mobs from the level and adds one initial one
+					//this helps balance difficulty between levels with lots of mobs left, and ones with few
+					for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
+						if (!mob.reset()) {
+							Dungeon.level.mobs.remove( mob );
+						}
 					}
+					Dungeon.level.spawnMob(12);
 				}
-				Dungeon.level.spawnMob(12);
 
 			}
 		}
-		if (Statistics.highestAscent < 20){
-			for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])){
-				if (m instanceof Shopkeeper){
-					((Shopkeeper) m).flee();
-				}
+		for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
+			if (m instanceof Shopkeeper) {
+				((Shopkeeper) m).flee();
 			}
 		}
 

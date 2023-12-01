@@ -329,7 +329,8 @@ public class TileItem extends EditorItem {
 
             if (terrainType != Terrain.WELL) {
                 ActionPartModify blobEditPart = new BlobEditPart.Modify(cell);
-                BlobEditPart.clearWellWaterAtCell(cell);
+                if (level.solid[cell]) BlobEditPart.clearAllAtCell(cell);
+                else BlobEditPart.clearWellWaterAtCell(cell);
                 blobEditPart.finish();
                 moreActions.addActionPart(blobEditPart);
             }
