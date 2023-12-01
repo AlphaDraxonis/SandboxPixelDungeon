@@ -3,8 +3,11 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GatewayTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -26,6 +29,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
     protected CheckBox visible, active;
     protected CheckBox searchable, revealedWhenTriggered, disarmedByActivation;
     protected RedButton gatewayTelePos;
+    protected Spinner pitfallRadius, pitfallDelay;
     private Window windowInstance;
 
     private final TrapItem trapItem;//used for linking the item with the sprite in the toolbar
@@ -118,7 +122,33 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             add(gatewayTelePos);
         } else gatewayTelePos = null;
 
-        comps = new Component[]{visible, active, searchable, revealedWhenTriggered, disarmedByActivation, gatewayTelePos};
+        if (obj instanceof PitfallTrap) {
+            pitfallRadius = new Spinner(new SpinnerIntegerModel(0, 100, ((PitfallTrap) obj).radius, 1, false, null) {
+                {
+                    setAbsoluteMaximum(100f);
+                }
+                @Override
+                public int getClicksPerSecondWhileHolding() {
+                    return 30;
+                }
+            }, " " + Messages.get(EditMobComp.class, "radius") + ":", 9);
+            pitfallRadius.addChangeListener(() -> ((PitfallTrap) obj).radius = (int) pitfallRadius.getValue());
+            add(pitfallRadius);
+
+            pitfallDelay = new Spinner(new SpinnerIntegerModel(0, 100, ((PitfallTrap) obj).delay, 1, false, null) {
+                @Override
+                public int getClicksPerSecondWhileHolding() {
+                    return 30;
+                }
+            }, " " + Messages.get(EditMobComp.class, "delay") + ":", 9);
+            pitfallDelay.addChangeListener(() -> ((PitfallTrap) obj).delay = (int) pitfallDelay.getValue());
+            add(pitfallDelay);
+        } else {
+            pitfallDelay = null;
+            pitfallRadius = null;
+        }
+
+        comps = new Component[]{visible, active, searchable, revealedWhenTriggered, disarmedByActivation, gatewayTelePos, pitfallRadius, pitfallDelay};
     }
 
     @Override
@@ -175,6 +205,9 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         if (a.disarmedByActivation != b.disarmedByActivation) return false;
         if (a instanceof GatewayTrap && ((GatewayTrap) a).telePos != ((GatewayTrap) b).telePos)
             return false;
+        if (a instanceof PitfallTrap) {
+            return ((PitfallTrap) a).radius == ((PitfallTrap) b).radius && ((PitfallTrap) a).delay == ((PitfallTrap) b).delay;
+        }
         return true;
     }
 

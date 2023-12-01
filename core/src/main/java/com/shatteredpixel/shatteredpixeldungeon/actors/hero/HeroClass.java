@@ -371,7 +371,7 @@ public enum HeroClass {
                 hero.belongings.misc.activate(hero);
             }
         } else if (hero.belongings.misc.getClass() != artifact.getClass()
-                && hero.belongings.artifact.getClass() != artifact.getClass()) {
+                && hero.belongings.artifact != null && hero.belongings.artifact.getClass() != artifact.getClass()) {
             overrideEq(hero, hero.belongings.misc);
             hero.belongings.misc = artifact;
             hero.belongings.misc.activate(hero);
@@ -380,7 +380,7 @@ public enum HeroClass {
             hero.belongings.misc = artifact;
             hero.belongings.misc.activate(hero);
         } else {
-            overrideEq(hero, hero.belongings.artifact);
+            if (hero.belongings.artifact != null) overrideEq(hero, hero.belongings.artifact);
             hero.belongings.artifact = artifact;
             hero.belongings.artifact.activate(hero);
         }

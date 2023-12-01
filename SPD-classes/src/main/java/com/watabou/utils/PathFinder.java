@@ -22,7 +22,9 @@
 package com.watabou.utils;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class PathFinder {
 	
@@ -72,6 +74,8 @@ public class PathFinder {
 
 		CIRCLE4 = new int[]{-width, +1, +width, -1};
 		CIRCLE8 = new int[]{-width-1, -width, -width+1, +1, +width+1, +width, +width-1, -1};
+
+		cellRadiusCache.clear();
 	}
 
 	public static Path find( int from, int to, boolean[] passable ) {
@@ -409,6 +413,26 @@ public class PathFinder {
 					
 			}
 		}
+	}
+
+	private static final Map<Integer, int[]> cellRadiusCache = new HashMap<>(5);
+	public static int[] GET_ALL_CELLS_IN_RADIUS(int radius){
+		if (radius == 1) return PathFinder.NEIGHBOURS9;
+		if (radius == 0) return new int[]{0};
+		if (cellRadiusCache.containsKey(radius)) return cellRadiusCache.get(radius);
+		int sideLength = 2*radius+1;
+		int[] result = new int[sideLength * sideLength];
+		int posX = 0, posY = 0;
+		for (int i = 0; i < result.length; i++) {
+			result[i] = posX-radius + (posY-radius)*width;
+			posX++;
+			if (posX == sideLength) {
+				posY++;
+				posX = 0;
+			}
+		}
+		cellRadiusCache.put(radius, result);
+		return result;
 	}
 	
 	@SuppressWarnings("serial")

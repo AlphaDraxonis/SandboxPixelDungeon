@@ -375,6 +375,8 @@ public class InterlevelScene extends PixelScene {
 	}
 
 	private void fall() throws IOException {
+
+		if (!Dungeon.hero.isAlive()) return;
 		
 		Mob.holdAllies( Dungeon.level );
 		

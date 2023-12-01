@@ -45,6 +45,8 @@ public class PitfallTrap extends Trap {
 		shape = DIAMOND;
 	}
 
+	public int delay = 1, radius = 1;
+
 	@Override
 	public void activate() {
 
@@ -53,14 +55,18 @@ public class PitfallTrap extends Trap {
 			return;
 		}
 
-		DelayedPit p = Buff.append(Dungeon.hero, DelayedPit.class, 1);
+		DelayedPit p = Buff.append(Dungeon.hero, DelayedPit.class, delay);
 		p.activatedOn = Dungeon.levelName;
 		p.branch = Dungeon.branch;
 		p.pos = pos;
+		p.radius = radius;
+		if (delay == 0) p.act();
 
-		for (int i : PathFinder.NEIGHBOURS9){
-			if (!Dungeon.level.solid[pos+i] || Dungeon.level.passable[pos+i]){
-				CellEmitter.floor(pos+i).burst(PitfallParticle.FACTORY4, 8);
+		for (int i : PathFinder.GET_ALL_CELLS_IN_RADIUS(radius)){
+			int cell = pos + i;
+			if (cell < 0 || cell > Dungeon.level.length()) continue;
+			if (!Dungeon.level.solid[cell] || Dungeon.level.passable[cell]){
+				CellEmitter.floor(cell).burst(PitfallParticle.FACTORY4, 8);
 			}
 		}
 
@@ -81,15 +87,25 @@ public class PitfallTrap extends Trap {
 		int pos;
 		String activatedOn;
 		int branch;
+		int radius, delay;
 
 		@Override
 		public boolean act() {
+			delay--;
 
 			boolean herofell = false;
 			if (activatedOn.equals(Dungeon.levelName) && branch == Dungeon.branch) {
-				for (int i : PathFinder.NEIGHBOURS9) {
+				for (int i : PathFinder.GET_ALL_CELLS_IN_RADIUS(radius)) {
 
 					int cell = pos + i;
+					if (cell < 0 || cell > Dungeon.level.length()) continue;
+
+					if (delay > 0 ) {
+						if (!Dungeon.level.solid[cell] || Dungeon.level.passable[cell]){
+							CellEmitter.floor(cell).burst(PitfallParticle.FACTORY4, 8);
+						}
+						continue;
+					}
 
 					if (Dungeon.level.solid[pos+i] && !Dungeon.level.passable[pos+i]){
 						continue;
@@ -141,6 +157,8 @@ public class PitfallTrap extends Trap {
 			bundle.put(POS, pos);
 			bundle.put(ACTIVATED_ON, activatedOn);
 			bundle.put(BRANCH, branch);
+			bundle.put(RADIUS, radius);
+			bundle.put(DELAY, delay);
 		}
 
 		@Override
@@ -149,7 +167,28 @@ public class PitfallTrap extends Trap {
 			pos = bundle.getInt(POS);
 			activatedOn = bundle.getString(ACTIVATED_ON);
 			branch = bundle.getInt(BRANCH);
+			radius = bundle.getInt(RADIUS);
+			delay = bundle.getInt(DELAY);
 		}
 
+	}
+
+	private static final String RADIUS = "radius";
+	private static final String DELAY = "delay";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put(RADIUS, radius);
+		bundle.put(DELAY, delay);
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		if (bundle.contains(RADIUS)) {
+			radius = bundle.getInt(RADIUS);
+			delay = bundle.getInt(DELAY);
+		}
 	}
 }
