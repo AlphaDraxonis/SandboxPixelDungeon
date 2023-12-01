@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ChangeMobNameDesc;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.FistSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.LotusLevelSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.MobStateSpinner;
@@ -45,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelectorList;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
@@ -69,6 +71,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
@@ -81,6 +85,7 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class EditMobComp extends DefaultEditComp<Mob> {
@@ -716,6 +721,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     ((PylonSprite) pylon.sprite).activate();
                 else ((PylonSprite) pylon.sprite).deactivate();
             }
+            ((MobTitleEditor) title).setText(obj.name());
         }
         desc.text(createDescription());
         if (statueWeapon != null) statueWeapon.updateItem();
@@ -755,6 +761,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (!DefaultStatsCache.areStatsEqual(a, b)) return false;
         if (a.alignment != b.alignment) return false;
         if (a.playerAlignment != b.playerAlignment) return false;
+        if (!Objects.equals(a.customName, b.customName)) return false;
+        if (!Objects.equals(a.customDesc, b.customDesc)) return false;
+        if (!Objects.equals(a.dialog, b.dialog)) return false;
         Set<Class<? extends Buff>> aBuffs = new HashSet<>(4);
         Set<Class<? extends Buff>> bBuffs = new HashSet<>(4);
         for (Buff buff : a.buffs()) aBuffs.add(buff.getClass());
@@ -803,8 +812,30 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
     private class MobTitleEditor extends WndInfoMob.MobTitle {
 
+        protected IconButton rename;
+
         public MobTitleEditor(Mob mob) {
             super(mob, false);
+        }
+
+        @Override
+        protected void createChildren(Object... params) {
+            super.createChildren(params);
+            rename = new IconButton(Icons.RENAME_ON.get()) {
+                @Override
+                protected void onClick() {
+                    SimpleWindow w = new SimpleWindow((int) Math.ceil(EditMobComp.this.width - 10), (int) Math.ceil(EditMobComp.this.height - 10)){
+                        @Override
+                        public void hide() {
+                            super.hide();
+                            updateObj();
+                        }
+                    };
+                    w.initComponents(ChangeMobNameDesc.createTitle(), new ChangeMobNameDesc(obj), null, 0f, 0.5f);
+                    EditorScene.show(w);
+                }
+            };
+            add(rename);
         }
 
         @Override
@@ -814,6 +845,14 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         protected String createTitle(Mob mob) {
             return super.createTitle(mob) + EditorUtilies.appendCellToString(mob.pos);
+        }
+
+        @Override
+        protected void layout() {
+            width -= rename.icon().width + 3;
+            super.layout();
+            rename.setRect(x + width + 2, y + (height - rename.icon().height)*0.5f, rename.icon().width, rename.icon().height);
+            width += rename.icon().width + 3;
         }
     }
 }

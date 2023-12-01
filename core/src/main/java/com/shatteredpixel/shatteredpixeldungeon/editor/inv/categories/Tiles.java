@@ -46,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndItemDistribution;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StringInputComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
@@ -61,13 +62,11 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoo
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
@@ -75,9 +74,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.ui.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -332,7 +329,6 @@ public enum Tiles {
                     }
                 };
                 add(identifier);
-                identifier.setText("???");
             } else {
 //                info = PixelScene.renderTextBlock(Messages.get(WndCreateCustomTile.class, "edit_info"),6);
 //                add(info);
@@ -345,7 +341,6 @@ public enum Tiles {
                 }
             };
             add(name);
-            name.setText(customTile == null ? "???" : customTile.name);
 
             desc = new StringInputComp(Messages.get(WndCreateCustomTile.class, "desc_label"), null, 500, true) {
                 @Override
@@ -354,7 +349,6 @@ public enum Tiles {
                 }
             };
             add(desc);
-            desc.setText(customTile == null ? "???" : customTile.desc);
 
             region = new Spinner(new SpinnerIntegerModel(LevelScheme.REGION_SEWERS, LevelScheme.REGION_HALLS,
                     customTile == null ? EditorScene.customLevel().getRegionValue() : customTile.region, 1, true, null) {
@@ -486,73 +480,4 @@ public enum Tiles {
         }
     }
 
-    private static class StringInputComp extends Component {
-
-        protected RenderedTextBlock label, text;
-        protected IconButton change;
-
-        public StringInputComp(String label, String text, int maxLength, boolean multiline) {
-            this.label = PixelScene.renderTextBlock(8);
-            if (label != null) this.label.text(label);
-            add(this.label);
-
-            this.text = PixelScene.renderTextBlock(7);
-            if (text != null) this.text.text(text);
-            add(this.text);
-
-            change = new IconButton(Icons.CHANGES.get()) {
-                @Override
-                protected void onClick() {
-
-                    EditorScene.show(new WndTextInput(
-                            StringInputComp.this.label.text(),
-                            null,
-                            StringInputComp.this.text.text(),
-                            maxLength, multiline, Messages.get(HeroSelectScene.class, "custom_seed_set"),
-                            Messages.get(WndNewFloor.class, "cancel_label")
-                    ) {
-                        {
-                            if ("???".equals(getText())) {
-                                textBox.selectAll();
-                            }
-                        }
-
-                        @Override
-                        public void onSelect(boolean positive, String text) {
-                            if (positive && text != null && !text.trim().isEmpty()) {
-                                StringInputComp.this.text.text(text);
-                                onChange();
-                            }
-                        }
-                    });
-                }
-            };
-            add(change);
-        }
-
-        @Override
-        protected void layout() {
-
-            label.maxWidth((int) (width - change.icon().width() - 2));
-            text.maxWidth((int) (width - change.icon().width() - 2));
-
-            label.setPos(x, y);
-            text.setPos(x + 2, label.bottom() + 2);
-
-            height = Math.max(change.icon().height(), text.bottom() - y);
-
-            change.setRect(x + width - change.icon().width(), y + (height - change.icon().height()) * 0.5f, change.icon().width(), change.icon().height());
-        }
-
-        public String getText() {
-            return text.text();
-        }
-
-        public void setText(String text) {
-            this.text.text(text);
-        }
-
-        protected void onChange() {
-        }
-    }
 }

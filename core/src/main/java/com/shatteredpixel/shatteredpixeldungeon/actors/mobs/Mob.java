@@ -131,6 +131,8 @@ public abstract class Mob extends Char {
 	public int specialDamageRollMin = 0, specialDamageRollMax = 0;
 	public float statsScale = 1f;//only used in subclasses!
 
+
+	public String customName, customDesc, dialog;
 	public boolean isBossMob;//only real value while playing, use level.bossmobAt instead!, not meant for shattered bosses except goo!
 
 	//Normal, Neutral, or Friedly; Neutral enemies behave similar as RatKing, cannot have boss bars
@@ -176,6 +178,9 @@ public abstract class Mob extends Char {
 	private static final String PLAYER_ALIGNMENT = "player_alignment";
 	private static final String FOLLOWING = "following";
 	private static final String LOOT = "loot";
+	private static final String CUSTOM_NAME = "custom_name";
+	private static final String CUSTOM_DESC = "custom_desc";
+	private static final String DIALOG = "dialog";
 
 	private static final String ENEMY_ID	= "enemy_id";
 	
@@ -216,6 +221,10 @@ public abstract class Mob extends Char {
         bundle.put(PLAYER_ALIGNMENT, playerAlignment);
 
         if (loot instanceof LootTableComp.CustomLootInfo) bundle.put(LOOT, (Bundlable) loot);
+
+		if (customName != null) bundle.put(CUSTOM_NAME, customName);
+		if (customDesc != null) bundle.put(CUSTOM_DESC, customDesc);
+		if (dialog != null) bundle.put(DIALOG, dialog);
 
         if (enemy != null) {
             bundle.put(ENEMY_ID, enemy.id());
@@ -262,6 +271,10 @@ public abstract class Mob extends Char {
 		if (bundle.contains(SPECIAL_DAMAGE_ROLL_MAX)) specialDamageRollMax = bundle.getInt(SPECIAL_DAMAGE_ROLL_MAX);
 		if (bundle.contains(XP)) EXP = bundle.getInt(XP);
 		if (bundle.contains(STATS_SCALE)) statsScale = bundle.getFloat(STATS_SCALE);
+
+		if (bundle.contains(CUSTOM_NAME)) customName = bundle.getString(CUSTOM_NAME);
+		if (bundle.contains(CUSTOM_DESC)) customDesc = bundle.getString(CUSTOM_DESC);
+		if (bundle.contains(DIALOG)) dialog = bundle.getString(DIALOG);
 
 		if (bundle.contains(IS_BOSS_MOB)) {
 			isBossMob = bundle.getBoolean(IS_BOSS_MOB);
@@ -349,7 +362,7 @@ public abstract class Mob extends Char {
 					notice();
 					yell(Messages.get(RatKing.class, "not_sleeping"));
 					state = WANDERING;
-				} else yell(Messages.get(this, "what_is_it"));
+				} else yell(dialog == null ? Messages.get(this, "what_is_it") : dialog);
 			}
 		}
 		if (playerAlignment != NEUTRAL_ALIGNMENT || c != Dungeon.hero) {
@@ -1128,9 +1141,14 @@ public abstract class Mob extends Char {
 		}
 		target = cell;
 	}
-	
+
+	@Override
+	public String name() {
+		return customName == null ? super.name() : customName;
+	}
+
 	public String description() {
-		return Messages.get(this, "desc");
+		return customDesc == null ? Messages.get(this, "desc") : customDesc;
 	}
 
 	public String info(){

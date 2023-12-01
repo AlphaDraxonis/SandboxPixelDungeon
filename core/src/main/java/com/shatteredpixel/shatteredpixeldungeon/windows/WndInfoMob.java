@@ -105,5 +105,9 @@ public class WndInfoMob extends WndTitledMessage {
 
 			height = hasHealth ? Math.max(image.y + image.height(), health.bottom()) : name.bottom() + 2 * GAP;
 		}
+
+        public void setText(String text) {
+            name.text(text);
+        }
 	}
 }
