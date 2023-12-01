@@ -51,9 +51,10 @@ public class Bones {
 	private static String level = Level.SURFACE;
 	private static int depth = -1;
 	private static int branch = -1;
+
 	private static Item item;
 	private static HeroClass heroClass;
-	
+
 	public static void leave() {
 
 		//remains will usually drop on the floor the hero died on
@@ -73,9 +74,9 @@ public class Bones {
 
 		Bundle bundle = new Bundle();
 		bundle.put( LEVEL, level );
-		bundle.put(BRANCH, branch);
+		bundle.put( BRANCH, branch );
 		bundle.put( ITEM, item );
-		bundle.put( HERO_CLASS, heroClass );
+		bundle.put( HERO_CLASS, Dungeon.hero.heroClass );
 
 		try {
 			FileUtils.bundleToFile( BONES_FILE, bundle );
