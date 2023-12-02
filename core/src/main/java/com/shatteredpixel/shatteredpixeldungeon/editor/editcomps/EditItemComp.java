@@ -76,6 +76,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
     protected final CheckBox autoIdentify;
     protected final CheckBox cursedKnown;
+    protected final CheckBox spreadIfLoot;
     protected final CheckBox blessed;
     protected final Spinner shockerDuration;
     protected final AugumentationSpinner augumentationSpinner;
@@ -148,6 +149,18 @@ public class EditItemComp extends DefaultEditComp<Item> {
             });
             add(quickslotPos);
         } else quickslotPos = null;
+
+        if (heap == null) {
+           spreadIfLoot = new CheckBox(Messages.get(EditItemComp.class, "spread_if_loot")){
+               @Override
+               public void checked(boolean value) {
+                   super.checked(value);
+                   item.spreadIfLoot = value;
+               }
+           };
+           spreadIfLoot.checked(item.spreadIfLoot);
+           add(spreadIfLoot);
+        } else spreadIfLoot = null;
 
         if(!(item instanceof RandomItem)) {
             if (!(item instanceof MissileWeapon) && (item instanceof Weapon || item instanceof Armor || item instanceof Ring || item instanceof Artifact || item instanceof Wand)) {
@@ -347,7 +360,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
 
         comps = new Component[]{quantity, quickslotPos, keylevel, keyCell, shockerDuration, chargeSpinner, levelSpinner, augumentationSpinner,
-                curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed, randomItem};
+                curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed, spreadIfLoot, randomItem};
     }
 
     @Override
@@ -442,6 +455,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (a.level() != b.level()) return false;
         if (a.getCursedKnownVar() != b.getCursedKnownVar()) return false;
         if (a.levelKnown != b.levelKnown) return false;
+        if (a.spreadIfLoot != b.spreadIfLoot) return false;
         if (a instanceof Weapon) {
             Weapon aa = (Weapon) a, bb = (Weapon) b;
             if (aa.augment != bb.augment) return false;

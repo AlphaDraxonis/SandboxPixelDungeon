@@ -77,7 +77,6 @@ public class Slime extends Mob {
 	
 	@Override
 	public Item createLoot() {
-		Generator.Category c = Generator.Category.WEP_T2;
 		MeleeWeapon w = (MeleeWeapon)Generator.randomUsingDefaults(Generator.Category.WEP_T2);
 		w.level(0);
 		return w;

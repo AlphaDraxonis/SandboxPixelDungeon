@@ -61,7 +61,7 @@ public class SewerBossLevel extends SewerLevel {
 	
 	@Override
 	public void playLevelMusic() {
-		if (locked){
+		if (locked()){
 			Music.INSTANCE.play(Assets.Music.SEWERS_BOSS, true);
 			return;
 		}
@@ -172,11 +172,12 @@ public class SewerBossLevel extends SewerLevel {
 		}
 	}
 
-	
-	public void seal() {
-		if (!locked) {
 
-			super.seal();
+	@Override
+	public void seal() {
+		super.seal();
+
+		if (lockedCount == 1) {
 
 			Statistics.qualifiedForBossChallengeBadge = true;
 
@@ -194,9 +195,9 @@ public class SewerBossLevel extends SewerLevel {
 	}
 	
 	public void unseal() {
-		if (locked) {
+		super.unseal();
 
-			super.unseal();
+		if (!locked()) {
 
 			set( entrance(), Terrain.ENTRANCE );
 			GameScene.updateMap( entrance() );

@@ -43,10 +43,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.EarthParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
@@ -90,6 +92,9 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		damageRollMin = 15;
 		damageRollMax = 25;
 		damageReductionMax = 10;
+
+		lootChance = 1f;
+		//special loot logic, see createActualLoot()
 
 		pylonsNeeded = 2;
 
@@ -603,16 +608,6 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		GameScene.bossSlain();
 		Dungeon.level.unseal();
 
-		//60% chance of 2 shards, 30% chance of 3, 10% chance for 4. Average of 2.5
-		int shards = Random.chances(new float[]{0, 0, 6, 3, 1});
-		for (int i = 0; i < shards; i++){
-			int ofs;
-			do {
-				ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
-			} while (!Dungeon.level.passable[pos + ofs]);
-			Dungeon.level.drop( new MetalShard(), pos + ofs ).sprite.drop( pos );
-		}
-
 		Badges.validateBossSlain(DM300.class);
 		if (Statistics.qualifiedForBossChallengeBadge){
 			Badges.validateBossChallengeCompleted(DM300.class);
@@ -624,6 +619,36 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		if (!(Dungeon.level instanceof CavesBossLevel)) {
 			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS_FINAL);
 		}
+	}
+
+	@Override
+	public List<Item> createActualLoot() {
+		if (loot == null) return convertToCustomLootInfo().generateLoot();
+		else return super.createActualLoot();
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = new LootTableComp.CustomLootInfo();
+
+		//60% chance of 2 shards, 30% chance of 3, 10% chance for 4. Average of 2.5
+
+		LootTableComp.ItemWithCount itemWithCount = new LootTableComp.ItemWithCount();
+		itemWithCount.items.add(new MetalShard().quantity(2));
+		itemWithCount.setCount(6);
+		customLootInfo.lootList.add(itemWithCount);
+
+		itemWithCount = new LootTableComp.ItemWithCount();
+		itemWithCount.items.add(new MetalShard().quantity(3));
+		itemWithCount.setCount(3);
+		customLootInfo.lootList.add(itemWithCount);
+
+		itemWithCount = new LootTableComp.ItemWithCount();
+		itemWithCount.items.add(new MetalShard().quantity(4));
+		itemWithCount.setCount(1);
+		customLootInfo.lootList.add(itemWithCount);
+
+		return customLootInfo;
 	}
 
 	@Override

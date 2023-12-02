@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.DM201Sprite;
@@ -118,11 +119,31 @@ public class DM201 extends DM200 {
 
 		super.rollToDropLoot();
 
-		int ofs;
-		do {
-			ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
-		} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
-		Dungeon.level.drop( new MetalShard(), pos + ofs ).sprite.drop( pos );
+		if (!(loot instanceof LootTableComp.CustomLootInfo)) {
+			int ofs;
+			do {
+				ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
+			} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
+			Dungeon.level.drop(new MetalShard(), pos + ofs).sprite.drop(pos);
+		}
+	}
+
+	@Override
+	public float lootChance() {
+		if (this.lootChance == 1f) return 1f;
+		return super.lootChance();
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		for (LootTableComp.ItemWithCount item : customLootInfo.lootList) {
+			item.items.add(new MetalShard());
+		}
+		int noLootChance = (int) ((1f - customLootInfo.lootChance()) * customLootInfo.calculateSum());
+		customLootInfo.addItem(new MetalShard(), noLootChance);
+		customLootInfo.setLootChance(0);
+		return customLootInfo;
 	}
 
 }

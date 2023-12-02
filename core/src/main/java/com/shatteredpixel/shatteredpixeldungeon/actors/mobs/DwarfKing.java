@@ -90,6 +90,9 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		damageRollMax = 25;
 		damageReductionMax = 10;
 
+		loot = new KingsCrown();
+		lootChance = 1f;
+
 		properties.add(Property.BOSS);
 		properties.add(Property.UNDEAD);
 	}
@@ -681,12 +684,6 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			h.destroy();
 		}
 
-		if (Dungeon.level.solid[pos]){
-			Dungeon.level.drop(new KingsCrown(), pos + Dungeon.level.width()).sprite.drop(pos);
-		} else {
-			Dungeon.level.drop(new KingsCrown(), pos).sprite.drop();
-		}
-
 		Badges.validateBossSlain(DwarfKing.class);
 		if (Statistics.qualifiedForBossChallengeBadge){
 			Badges.validateBossChallengeCompleted(DwarfKing.class);
@@ -703,6 +700,16 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof CityBossLevel)) {
 			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS_FINAL);
+		}
+	}
+
+	@Override
+	protected void doDropLoot(Item item) {
+		if (item.spreadIfLoot) super.doDropLoot(item);
+		if (Dungeon.level.solid[pos]) {
+			Dungeon.level.drop(item, pos + Dungeon.level.width()).sprite.drop(pos);
+		} else {
+			Dungeon.level.drop(item, pos).sprite.drop();
 		}
 	}
 

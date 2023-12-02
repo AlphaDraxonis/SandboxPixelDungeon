@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GooBlob;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CausticSlimeSprite;
 import com.watabou.utils.PathFinder;
@@ -34,7 +35,7 @@ public class CausticSlime extends Slime {
 	
 	{
 		spriteClass = CausticSlimeSprite.class;
-		
+
 		properties.add(Property.ACIDIC);
 	}
 	
@@ -47,17 +48,38 @@ public class CausticSlime extends Slime {
 		
 		return super.attackProc( enemy, damage );
 	}
-	
+
 	@Override
 	public void rollToDropLoot() {
 		if (Dungeon.hero.lvl > maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL) return;
-		
+
 		super.rollToDropLoot();
-		
-		int ofs;
-		do {
-			ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
-		} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
-		Dungeon.level.drop( new GooBlob(), pos + ofs ).sprite.drop( pos );
+
+		if (!(loot instanceof LootTableComp.CustomLootInfo)) {
+			int ofs;
+			do {
+				ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
+			} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
+			Dungeon.level.drop(new GooBlob(), pos + ofs).sprite.drop(pos);
+		}
 	}
+
+	@Override
+	public float lootChance() {
+		if (this.lootChance == 1f) return 1f;
+		return super.lootChance();
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		for (LootTableComp.ItemWithCount item : customLootInfo.lootList) {
+			item.items.add(new GooBlob());
+		}
+		int noLootChance = (int) ((1f - customLootInfo.lootChance()) * customLootInfo.calculateSum());
+		customLootInfo.addItem(new GooBlob(), noLootChance);
+		customLootInfo.setLootChance(0);
+		return customLootInfo;
+	}
+
 }

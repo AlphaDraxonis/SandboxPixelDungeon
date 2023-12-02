@@ -29,6 +29,8 @@ public class GooBlob extends Item {
 	{
 		image = ItemSpriteSheet.BLOB;
 		stackable = true;
+
+		spreadIfLoot = true;
 	}
 	
 	@Override

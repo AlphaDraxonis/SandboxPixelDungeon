@@ -23,6 +23,8 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SpectralNecromancerSprite;
 import com.watabou.utils.Bundle;
@@ -71,11 +73,35 @@ public class SpectralNecromancer extends Necromancer {
 
 		super.rollToDropLoot();
 
-		int ofs;
-		do {
-			ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
-		} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
-		Dungeon.level.drop( new ScrollOfRemoveCurse(), pos + ofs ).sprite.drop( pos );
+		if (!(loot instanceof LootTableComp.CustomLootInfo)) {
+			int ofs;
+			do {
+				ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
+			} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
+			Dungeon.level.drop(new ScrollOfRemoveCurse(), pos + ofs).sprite.drop(pos);
+		}
+	}
+
+	@Override
+	public float lootChance() {
+		if (this.lootChance == 1f) return 1f;
+		return super.lootChance();
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		for (LootTableComp.ItemWithCount item : customLootInfo.lootList) {
+			Item scroll = new ScrollOfRemoveCurse();
+			scroll.spreadIfLoot = true;
+			item.items.add(scroll);
+		}
+		int noLootChance = (int) ((1f - customLootInfo.lootChance()) * customLootInfo.calculateSum());
+		Item scroll = new ScrollOfRemoveCurse();
+		scroll.spreadIfLoot = true;
+		customLootInfo.addItem(scroll, noLootChance);
+		customLootInfo.setLootChance(0);
+		return customLootInfo;
 	}
 
 	@Override

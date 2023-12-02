@@ -101,6 +101,8 @@ public class Item implements Bundlable {
     // only for hero start items, 0 means not in toolbar, first index is 1
     public int reservedQuickslot;
 
+    public boolean spreadIfLoot = false;//drops to adjacent cells, used by Eye, Goo or DM300 in Shattered for example, ONLY used if part of mob loot
+
     public static final Comparator<Item> itemComparator = new Comparator<Item>() {
         @Override
         public int compare(Item lhs, Item rhs) {
@@ -576,6 +578,7 @@ public class Item implements Bundlable {
     private static final String QUICKSLOT = "quickslotpos";
     private static final String KEPT_LOST = "kept_lost";
     private static final String RESERVED_QUICKSLOT = "reserved_quickslot";
+    private static final String SPREAD_IF_LOOT = "spread_if_loot";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -590,6 +593,7 @@ public class Item implements Bundlable {
         }
         bundle.put(KEPT_LOST, keptThoughLostInvent);
         bundle.put(RESERVED_QUICKSLOT, reservedQuickslot);
+        bundle.put(SPREAD_IF_LOOT, spreadIfLoot);
     }
 
     @Override
@@ -617,6 +621,7 @@ public class Item implements Bundlable {
 
         keptThoughLostInvent = bundle.getBoolean(KEPT_LOST);
         reservedQuickslot = bundle.getInt(RESERVED_QUICKSLOT);
+        spreadIfLoot = bundle.getBoolean(SPREAD_IF_LOOT);
     }
 
     public Item getCopy(){

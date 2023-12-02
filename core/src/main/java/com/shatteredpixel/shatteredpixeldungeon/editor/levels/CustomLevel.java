@@ -251,7 +251,7 @@ public class CustomLevel extends Level {
             water = level.water;
             pit = level.pit;
             openSpace = level.openSpace;
-            locked = level.locked;
+            lockedCount = level.lockedCount;
             zoneMap.clear();
             zoneMap.putAll(level.zoneMap);
             levelScheme.zones.addAll(zoneMap.keySet());

@@ -89,7 +89,7 @@ public class CityBossLevel extends Level {
 
 	@Override
 	public void playLevelMusic() {
-		if (locked){
+		if (locked()){
 			if (BossHealthBar.isBleeding()){
 				Music.INSTANCE.play(Assets.Music.CITY_BOSS_FINALE, true);
 			} else {
@@ -356,28 +356,30 @@ public class CityBossLevel extends Level {
 	public void unseal() {
 		super.unseal();
 
-		set( bottomDoor, Terrain.DOOR );
-		GameScene.updateMap( bottomDoor );
+		if (!locked()) {
+			set(bottomDoor, Terrain.DOOR);
+			GameScene.updateMap(bottomDoor);
 
-		set( topDoor, Terrain.DOOR );
-		GameScene.updateMap( topDoor );
+			set(topDoor, Terrain.DOOR);
+			GameScene.updateMap(topDoor);
 
-		if (ImpQuest.completedOnce()) {
-			spawnShop();
-		}
-		Dungeon.observe();
-
-		Game.runOnRenderThread(new Callback() {
-			@Override
-			public void call() {
-				Music.INSTANCE.fadeOut(5f, new Callback() {
-					@Override
-					public void call() {
-						Music.INSTANCE.end();
-					}
-				});
+			if (ImpQuest.completedOnce()) {
+				spawnShop();
 			}
-		});
+			Dungeon.observe();
+
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					Music.INSTANCE.fadeOut(5f, new Callback() {
+						@Override
+						public void call() {
+							Music.INSTANCE.end();
+						}
+					});
+				}
+			});
+		}
 	}
 
 	private void spawnShop(){

@@ -82,7 +82,7 @@ public class CavesBossLevel extends Level {
 
 	@Override
 	public void playLevelMusic() {
-		if (locked){
+		if (locked()){
 			if (BossHealthBar.isBleeding()){
 				Music.INSTANCE.play(Assets.Music.CAVES_BOSS_FINALE, true);
 			} else {
@@ -268,7 +268,7 @@ public class CavesBossLevel extends Level {
 	public void occupyCell(Char ch) {
 		//seal the level when the hero moves near to a pylon, the level isn't already sealed, and the gate hasn't been destroyed
 		int gatePos = pointToCell(new Point(gate.left, gate.top));
-		if (ch == Dungeon.hero && !locked && solid[gatePos]){
+		if (ch == Dungeon.hero && !locked() && solid[gatePos]){
 			for (int pos : pylonPositions){
 				if (Dungeon.level.distance(ch.pos, pos) <= 3){
 					seal();
@@ -335,33 +335,35 @@ public class CavesBossLevel extends Level {
 	public void unseal() {
 		super.unseal();
 
-		blobs.getOnly(PylonEnergy.class).fullyClear();
+		if (!locked()) {
+			blobs.getOnly(PylonEnergy.class).fullyClear();
 
-		set( entrance(), Terrain.ENTRANCE );
-		int i = 14 + 13*width();
-		for (int j = 0; j < 5; j++){
-			set( i+j, Terrain.EMPTY );
-			if (Dungeon.level.heroFOV[i+j]){
-				CellEmitter.get(i+j).burst(BlastParticle.FACTORY, 10);
+			set(entrance(), Terrain.ENTRANCE);
+			int i = 14 + 13 * width();
+			for (int j = 0; j < 5; j++) {
+				set(i + j, Terrain.EMPTY);
+				if (Dungeon.level.heroFOV[i + j]) {
+					CellEmitter.get(i + j).burst(BlastParticle.FACTORY, 10);
+				}
 			}
+			GameScene.updateMap();
+
+			if (customArenaVisuals != null) customArenaVisuals.updateState();
+
+			Dungeon.observe();
+
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					Music.INSTANCE.fadeOut(5f, new Callback() {
+						@Override
+						public void call() {
+							Music.INSTANCE.end();
+						}
+					});
+				}
+			});
 		}
-		GameScene.updateMap();
-
-		if (customArenaVisuals != null) customArenaVisuals.updateState();
-
-		Dungeon.observe();
-
-		Game.runOnRenderThread(new Callback() {
-			@Override
-			public void call() {
-				Music.INSTANCE.fadeOut(5f, new Callback() {
-					@Override
-					public void call() {
-						Music.INSTANCE.end();
-					}
-				});
-			}
-		});
 
 	}
 
@@ -845,7 +847,7 @@ public class CavesBossLevel extends Level {
 					if (Dungeon.level.map[j] == Terrain.EMPTY_SP) {
 						for (int k : pylons) {
 							if (k == j) {
-								if (Dungeon.level.locked
+								if (Dungeon.level.locked()
 										&& !(Actor.findChar(k) instanceof Pylon)) {
 									data[i] = 38;
 								} else {

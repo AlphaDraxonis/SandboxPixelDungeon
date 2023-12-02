@@ -93,16 +93,7 @@ public class CustomDungeon implements Bundlable {
     //Custom mob attacks: externalise
     //and search: used so resistances can differentiate between melee and magical attacks
 
-    //2 Std
-    //Add a option for edit the monster description? Because then you could create like an NPC, using the neutral function, leave it
-    //When the player interacts with an npc, allow them to edit what the npc says.
-    //maybe you could change the dialogue of neutral enemie
-
-    //place backpack, tengu's traps, ignited bombs
-
-    //4 Std
-    //Goo, evil eye and some other mobs have different way to drop items, like when they drop around their corpse, not on the same tile
-    //Make it possible to edit what they drop and perhaps make it possible to every mob do this thing
+    //place ignited bombs, I want to make a mob that drops ignited bomb after death
 
     //6h
     //all gas types for traps
@@ -124,9 +115,7 @@ public class CustomDungeon implements Bundlable {
 
     //Scale mobs if their normal stats editor is disabled: not just everything
 
-    //And about bombs. I want to make a mob that drops ignited bomb after death
-
-    //you currently can't change boss drop, it's pointless.
+    //level coloring
 
 
     //Custom Alchemy:

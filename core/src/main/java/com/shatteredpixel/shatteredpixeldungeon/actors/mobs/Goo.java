@@ -31,7 +31,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GooBlob;
@@ -47,8 +49,9 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
-import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+
+import java.util.List;
 
 public class Goo extends Mob implements MobBasedOnDepth {
 
@@ -62,6 +65,9 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		specialDamageRollMin = damageRollMin * 3;
 		specialDamageRollMax = damageRollMax * 3;
 		damageReductionMax = 2;
+
+		//special loot logic, see createActualLoot()
+		lootChance = 1f;
 
 		spriteClass = GooSprite.class;
 
@@ -301,17 +307,6 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		Dungeon.level.unseal();
 		
 		GameScene.bossSlain();
-		Dungeon.level.drop( new SkeletonKey(), pos ).sprite.drop();
-		
-		//60% chance of 2 blobs, 30% chance of 3, 10% chance for 4. Average of 2.5
-		int blobs = Random.chances(new float[]{0, 0, 6, 3, 1});
-		for (int i = 0; i < blobs; i++){
-			int ofs;
-			do {
-				ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
-			} while (!Dungeon.level.passable[pos + ofs]);
-			Dungeon.level.drop( new GooBlob(), pos + ofs ).sprite.drop( pos );
-		}
 		
 		Badges.validateBossSlain(Goo.class);
 		if (Statistics.qualifiedForBossChallengeBadge){
@@ -374,5 +369,38 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		healInc = bundle.getInt(HEALINC);
 		statsScale = 1f;
 	}
-	
+
+	@Override
+	public List<Item> createActualLoot() {
+		if (loot == null) return convertToCustomLootInfo().generateLoot();
+		else return super.createActualLoot();
+	}
+
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		LootTableComp.CustomLootInfo customLootInfo = new LootTableComp.CustomLootInfo();
+
+		//60% chance of 2 blobs, 30% chance of 3, 10% chance for 4. Average of 2.5
+		// + 1 SkeletonKey
+
+		LootTableComp.ItemWithCount itemWithCount = new LootTableComp.ItemWithCount();
+		itemWithCount.items.add(new SkeletonKey());
+		itemWithCount.items.add(new GooBlob().quantity(2));
+		itemWithCount.setCount(6);
+		customLootInfo.lootList.add(itemWithCount);
+
+		itemWithCount = new LootTableComp.ItemWithCount();
+		itemWithCount.items.add(new SkeletonKey());
+		itemWithCount.items.add(new GooBlob().quantity(3));
+		itemWithCount.setCount(3);
+		customLootInfo.lootList.add(itemWithCount);
+
+		itemWithCount = new LootTableComp.ItemWithCount();
+		itemWithCount.items.add(new SkeletonKey());
+		itemWithCount.items.add(new GooBlob().quantity(4));
+		itemWithCount.setCount(1);
+		customLootInfo.lootList.add(itemWithCount);
+
+		return customLootInfo;
+	}
 }

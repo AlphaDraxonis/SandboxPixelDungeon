@@ -39,7 +39,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -94,6 +93,9 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		damageRollMin = 6;
 		damageRollMax = 12;
 		damageReductionMax = 5;
+
+		loot = new TengusMask();
+		lootChance = 1f;
 		
 		HUNTING = new Hunting();
 		WANDERING = new Wandering();
@@ -238,10 +240,6 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public void die( Object cause ) {
-		
-		if (Dungeon.hero.subClass == HeroSubClass.NONE) {
-			Dungeon.level.drop( new TengusMask(), pos ).sprite.drop();
-		}
 		
 		GameScene.bossSlain();
 		super.die( cause );

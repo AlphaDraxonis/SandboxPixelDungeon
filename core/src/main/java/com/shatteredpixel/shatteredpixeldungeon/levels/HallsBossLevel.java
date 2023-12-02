@@ -71,7 +71,7 @@ public class HallsBossLevel extends Level {
 
 	@Override
 	public void playLevelMusic() {
-		if (locked && BossHealthBar.isAssigned()){
+		if (locked() && BossHealthBar.isAssigned()){
 			if (BossHealthBar.isBleeding()){
 				Music.INSTANCE.play(Assets.Music.HALLS_BOSS_FINALE, true);
 			} else {
@@ -286,39 +286,41 @@ public class HallsBossLevel extends Level {
 	@Override
 	public void unseal() {
 		super.unseal();
-		set( entrance(), Terrain.ENTRANCE );
-		GameScene.updateMap( entrance() );
+		if (!locked()) {
+			set(entrance(), Terrain.ENTRANCE);
+			GameScene.updateMap(entrance());
 
-		set( exit(), Terrain.EXIT );
-		GameScene.updateMap( exit() );
+			set(exit(), Terrain.EXIT);
+			GameScene.updateMap(exit());
 
-		CellEmitter.get(exit()-1).burst(ShadowParticle.UP, 25);
-		CellEmitter.get(exit()).burst(ShadowParticle.UP, 100);
-		CellEmitter.get(exit()+1).burst(ShadowParticle.UP, 25);
-		for( CustomTilemap t : customTiles){
-			if (t instanceof CenterPieceVisuals){
-				((CenterPieceVisuals) t).updateState();
+			CellEmitter.get(exit() - 1).burst(ShadowParticle.UP, 25);
+			CellEmitter.get(exit()).burst(ShadowParticle.UP, 100);
+			CellEmitter.get(exit() + 1).burst(ShadowParticle.UP, 25);
+			for (CustomTilemap t : customTiles) {
+				if (t instanceof CenterPieceVisuals) {
+					((CenterPieceVisuals) t).updateState();
+				}
 			}
+			for (CustomTilemap t : customWalls) {
+				if (t instanceof CenterPieceWalls) {
+					((CenterPieceWalls) t).updateState();
+				}
+			}
+
+			Dungeon.observe();
+
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					Music.INSTANCE.fadeOut(5f, new Callback() {
+						@Override
+						public void call() {
+							Music.INSTANCE.play(Assets.Music.THEME_FINALE, true);
+						}
+					});
+				}
+			});
 		}
-		for( CustomTilemap t : customWalls){
-			if (t instanceof CenterPieceWalls){
-				((CenterPieceWalls) t).updateState();
-			}
-		}
-
-		Dungeon.observe();
-
-		Game.runOnRenderThread(new Callback() {
-			@Override
-			public void call() {
-				Music.INSTANCE.fadeOut(5f, new Callback() {
-					@Override
-					public void call() {
-						Music.INSTANCE.play(Assets.Music.THEME_FINALE, true);
-					}
-				});
-			}
-		});
 	}
 
 	@Override

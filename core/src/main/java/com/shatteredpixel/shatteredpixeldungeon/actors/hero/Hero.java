@@ -1310,7 +1310,7 @@ public class Hero extends Char {
 			ready();
 			return false;
 
-		} else if (!Dungeon.level.locked && transition != null && transition.inside(pos)) {
+		} else if (!Dungeon.level.locked() && transition != null && transition.inside(pos)) {
 
 			if (Dungeon.level.activateTransition(this, transition)){
 				curAction = null;
@@ -1783,7 +1783,7 @@ public class Hero extends Char {
 		} else if (Dungeon.level.getTransition(cell) != null
 				//moving to a transition doesn't automatically trigger it when enemies are near
 				&& (visibleEnemies.size() == 0 || cell == pos)
-				&& !Dungeon.level.locked) {
+				&& !Dungeon.level.locked()) {
 
 			curAction = new HeroAction.LvlTransition( cell );
 			
@@ -2387,7 +2387,7 @@ public class Hero extends Char {
 		if (intentional) {
 			sprite.showStatus( CharSprite.DEFAULT, Messages.get(this, "search") );
 			sprite.operate( pos );
-			if (!Dungeon.level.locked) {
+			if (!Dungeon.level.locked()) {
 				if (cursed) {
 					GLog.n(Messages.get(this, "search_distracted"));
 					Buff.affect(this, Hunger.class).affectHunger(TIME_TO_SEARCH - (2 * HUNGER_FOR_SEARCH));

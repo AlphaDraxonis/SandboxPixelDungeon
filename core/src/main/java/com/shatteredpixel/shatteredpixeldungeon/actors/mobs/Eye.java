@@ -34,17 +34,39 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfBlast;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfBlink;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfClairvoyance;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfDeepSleep;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfDisarming;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfFear;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfFlock;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfShock;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Fadeleaf;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Firebloom;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Icecap;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Mageroyal;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Sorrowmoss;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Starflower;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Stormvine;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Sungrass;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.EyeSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+
+import java.util.List;
 
 public class Eye extends Mob {
 	
@@ -65,9 +87,9 @@ public class Eye extends Mob {
 		flying = true;
 
 		HUNTING = new Hunting();
-		
-		loot = new Dewdrop();
+
 		lootChance = 1f;
+		//special loot logic, see createActualLoot()
 
 		properties.add(Property.DEMONIC);
 	}
@@ -217,35 +239,76 @@ public class Eye extends Mob {
 	}
 
 	//generates an average of 1 dew, 0.25 seeds, and 0.25 stones
-	@Override
-	public Item createLoot() {
-		Item loot;
-		switch(Random.Int(4)){
-			case 0: case 1: default:
-				loot = new Dewdrop();
-				int ofs;
-				do {
-					ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
-				} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
-				if (Dungeon.level.heaps.get(pos+ofs) == null) {
-					Dungeon.level.drop(new Dewdrop(), pos + ofs).sprite.drop(pos);
-				} else {
-					Dungeon.level.drop(new Dewdrop(), pos + ofs).sprite.drop(pos + ofs);
-				}
-				break;
-			case 2:
-				loot = Generator.randomUsingDefaults(Generator.Category.SEED);
-				break;
-			case 3:
-				loot = Generator.randomUsingDefaults(Generator.Category.STONE);
-				break;
-		}
-		return loot;
-	}
+//	@Override
+//	public Item createLoot() {
+//		Item loot;
+//		switch(Random.Int(4)){
+//			case 0: case 1: default:
+//				loot = new Dewdrop();
+//				int ofs;
+//				do {
+//					ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
+//				} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
+//				if (Dungeon.level.heaps.get(pos+ofs) == null) {
+//					Dungeon.level.drop(new Dewdrop(), pos + ofs).sprite.drop(pos);
+//				} else {
+//					Dungeon.level.drop(new Dewdrop(), pos + ofs).sprite.drop(pos + ofs);
+//				}
+//				break;
+//			case 2:
+//				loot = Generator.randomUsingDefaults(Generator.Category.SEED);
+//				break;
+//			case 3:
+//				loot = Generator.randomUsingDefaults(Generator.Category.STONE);
+//				break;
+//		}
+//		return loot;
+//	}
 
 	@Override
+	public List<Item> createActualLoot() {
+		if (loot == null) return convertToCustomLootInfo().generateLoot();
+		else return super.createActualLoot();
+	}
+
+	//generates an average of 1 dew, 0.25 seeds, and 0.25 stones
+	@Override
 	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		return new LootTableComp.CustomLootInfo();
+		LootTableComp.CustomLootInfo customLootInfo = new LootTableComp.CustomLootInfo();
+
+		int seedWeight = 50;
+		//11 items, 25% chance, weight=52
+		customLootInfo.addItem(new Sungrass.Seed(), (int)Generator.Category.SEED.defaultProbs[1] * seedWeight);
+		customLootInfo.addItem(new Fadeleaf.Seed(), (int)Generator.Category.SEED.defaultProbs[2] * seedWeight);
+		customLootInfo.addItem(new Icecap.Seed(), (int)Generator.Category.SEED.defaultProbs[3] * seedWeight);
+		customLootInfo.addItem(new Firebloom.Seed(), (int)Generator.Category.SEED.defaultProbs[4] * seedWeight);
+		customLootInfo.addItem(new Sorrowmoss.Seed(), (int)Generator.Category.SEED.defaultProbs[5] * seedWeight);
+		customLootInfo.addItem(new Swiftthistle.Seed(), (int)Generator.Category.SEED.defaultProbs[6] * seedWeight);
+		customLootInfo.addItem(new Blindweed.Seed(), (int)Generator.Category.SEED.defaultProbs[7] * seedWeight);
+		customLootInfo.addItem(new Stormvine.Seed(), (int)Generator.Category.SEED.defaultProbs[8] * seedWeight);
+		customLootInfo.addItem(new Earthroot.Seed(), (int)Generator.Category.SEED.defaultProbs[9] * seedWeight);
+		customLootInfo.addItem(new Mageroyal.Seed(), (int)Generator.Category.SEED.defaultProbs[10] * seedWeight);
+		customLootInfo.addItem(new Starflower.Seed(), (int)Generator.Category.SEED.defaultProbs[11] * seedWeight);
+
+		int stoneWeight = 52;
+		//10 items, 25% chance, weight=50
+		customLootInfo.addItem(new StoneOfIntuition(), (int)Generator.Category.STONE.defaultProbs[1] * stoneWeight);
+		customLootInfo.addItem(new StoneOfDisarming(), (int)Generator.Category.STONE.defaultProbs[2] * stoneWeight);
+		customLootInfo.addItem(new StoneOfFlock(), (int)Generator.Category.STONE.defaultProbs[3] * stoneWeight);
+		customLootInfo.addItem(new StoneOfShock(), (int)Generator.Category.STONE.defaultProbs[4] * stoneWeight);
+		customLootInfo.addItem(new StoneOfBlink(), (int)Generator.Category.STONE.defaultProbs[5] * stoneWeight);
+		customLootInfo.addItem(new StoneOfDeepSleep(), (int)Generator.Category.STONE.defaultProbs[6] * stoneWeight);
+		customLootInfo.addItem(new StoneOfClairvoyance(), (int)Generator.Category.STONE.defaultProbs[7] * stoneWeight);
+		customLootInfo.addItem(new StoneOfAggression(), (int)Generator.Category.STONE.defaultProbs[8] * stoneWeight);
+		customLootInfo.addItem(new StoneOfBlast(), (int)Generator.Category.STONE.defaultProbs[9] * stoneWeight);
+		customLootInfo.addItem(new StoneOfFear(), (int)Generator.Category.STONE.defaultProbs[10] * stoneWeight);
+
+		//50% dew
+		Dewdrop dew = new Dewdrop();
+		dew.spreadIfLoot = true;
+		customLootInfo.addItem(dew, customLootInfo.calculateSum());
+
+		return customLootInfo;
 	}
 
 	private static final String BEAM_TARGET     = "beamTarget";

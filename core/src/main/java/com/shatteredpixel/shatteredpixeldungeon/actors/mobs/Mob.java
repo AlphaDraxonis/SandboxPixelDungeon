@@ -1050,7 +1050,7 @@ public abstract class Mob extends Char {
 					l = AugumentationSpinner.assignRandomAugmentation(l);
 					if (l == null) continue;
 					increaseLimitedDropCount(l);
-					Dungeon.level.drop(l, pos).sprite.drop();
+					doDropLoot(l);
 				}
 			}
 		}
@@ -1079,6 +1079,32 @@ public abstract class Mob extends Char {
 			Talent.onFoodEaten(Dungeon.hero, 0, null);
 		}
 
+	}
+
+	protected void doDropLoot(Item item) {
+		if (item.spreadIfLoot) {
+			int tries = 50;
+			int quantity = item.quantity();
+			while (quantity > 0) {
+
+				tries--;
+				int cell = pos + PathFinder.NEIGHBOURS8[Random.Int(8)];
+				if (Dungeon.level.passable[cell]) {
+					Item toDrop = item.getCopy();
+					toDrop.quantity(1);
+					quantity--;
+					tries = 50;
+					Dungeon.level.drop( toDrop, cell ).sprite.drop( Dungeon.level.heaps.get(cell) == null ? pos : cell);
+				}
+				else if (tries < 0) {
+					break;
+				}
+
+			}
+			if (tries > 0) return;
+			item.quantity(quantity);
+		}
+		Dungeon.level.drop(item, pos).sprite.drop();
 	}
 	
 	public Object loot = null;

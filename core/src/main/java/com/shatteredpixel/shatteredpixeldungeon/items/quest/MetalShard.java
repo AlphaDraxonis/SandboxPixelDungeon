@@ -29,6 +29,8 @@ public class MetalShard extends Item {
 	{
 		image = ItemSpriteSheet.SHARD;
 		stackable = true;
+
+		spreadIfLoot = true;
 	}
 	
 	@Override

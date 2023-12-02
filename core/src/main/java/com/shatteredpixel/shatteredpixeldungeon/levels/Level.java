@@ -199,7 +199,7 @@ public abstract class Level implements Bundlable {
 	public Map<Integer, LevelTransition> transitions;
 
 	//when a boss level has become locked.
-	public boolean locked = false;
+	public int lockedCount = 0;//  <= 0 -> not locked
 	public int musicVariant = 0;//so bosses can play boss music while they are alive
 	private final LinkedList<Integer> musicRequests = new LinkedList<>();//bosses can add their music request in notice(), and remove it in die(), always the last element is played
 	
@@ -239,7 +239,7 @@ public abstract class Level implements Bundlable {
 	private static final String VISITED		= "visited";
 	private static final String MAPPED		= "mapped";
 	private static final String TRANSITIONS	= "transitions";
-	private static final String LOCKED      = "locked";
+	private static final String LOCKED_COUNT= "locked_count";
 	private static final String HEAPS		= "heaps";
 	private static final String PLANTS		= "plants";
 	private static final String TRAPS       = "traps";
@@ -555,7 +555,8 @@ public abstract class Level implements Bundlable {
 			transitions.put(((LevelTransition) b).departCell, (LevelTransition) b);
 		}
 
-		locked      = bundle.getBoolean( LOCKED );
+		lockedCount = bundle.getInt( LOCKED_COUNT );
+		if (bundle.getBoolean("locked")) lockedCount++;
 		
 		Collection<Bundlable> collection = bundle.getCollection( HEAPS );
 		for (Bundlable h : collection) {
@@ -645,7 +646,7 @@ public abstract class Level implements Bundlable {
 		bundle.put( VISITED, visited );
 		bundle.put( MAPPED, mapped );
 		bundle.put( TRANSITIONS, transitions.values() );
-		bundle.put( LOCKED, locked );
+		bundle.put( LOCKED_COUNT, lockedCount );
 		bundle.put( HEAPS, heaps.valueList() );
 		bundle.put( PLANTS, plants.valueList() );
 		bundle.put( TRAPS, traps.valueList() );
@@ -782,7 +783,7 @@ public abstract class Level implements Bundlable {
 
 	//returns true if we immediately transition, false otherwise
 	public boolean activateTransition(Hero hero, LevelTransition transition){
-		if (locked){
+		if (lockedCount > 0){
 			return false;
 		}
 
@@ -958,19 +959,23 @@ public abstract class Level implements Bundlable {
 	}
 
 	public void seal(){
-		if (!locked) {
-			locked = true;
+		lockedCount++;
+		if (lockedCount == 1) {
 			Buff.affect(Dungeon.hero, LockedFloor.class);
 		}
 	}
 
 	public void unseal(){
-		if (locked) {
-			locked = false;
+		lockedCount--;
+		if (lockedCount == 0) {
 			if (Dungeon.hero.buff(LockedFloor.class) != null){
 				Dungeon.hero.buff(LockedFloor.class).detach();
 			}
 		}
+	}
+
+	public boolean locked() {
+		return lockedCount > 0;
 	}
 
 	public ArrayList<Item> getItemsToPreserveFromSealedResurrect(){
