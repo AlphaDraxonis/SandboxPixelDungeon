@@ -124,6 +124,12 @@ public class ZonePrompt extends ToastWithButtons {
         else ((IconButton) comps[2]).icon().resetColor();
     }
 
+    public static void updateSelectedZoneColor() {
+        if (instance != null && getSelectedZone() != null) {
+            instance.zoneColor.hardlight(getSelectedZone().getColor());
+        }
+    }
+
     public static Zone getSelectedZone() {
         return selectedZone;
     }

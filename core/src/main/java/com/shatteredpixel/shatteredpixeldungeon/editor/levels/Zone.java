@@ -113,7 +113,7 @@ public class Zone implements Bundlable {
     public void setColor(int color) {
         this.color = color;
         if (ZonePrompt.getSelectedZone() == this) {
-            ZonePrompt.setSelectedZone(this);
+            ZonePrompt.updateSelectedZoneColor();
         }
         if (Dungeon.level != null && Dungeon.level.zoneMap.containsKey(name)) {
             EditorScene.updateZoneColors();
