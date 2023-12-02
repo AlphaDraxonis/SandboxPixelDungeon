@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
@@ -45,6 +46,7 @@ public class LevelTab extends MultiWindowTabComp {
         StyledButton changeSize;
         StyledCheckbox hungerDepletion, naturalRegen;
         StyledButton bossLevelRetexture;
+        StyledButton levelColoring;
 
         final CustomLevel level = EditorScene.customLevel();
 
@@ -151,10 +153,19 @@ public class LevelTab extends MultiWindowTabComp {
         shopPrice.addChangeListener(() -> level.levelScheme.setShopPriceMultiplier(((SpinnerFloatModel) shopPrice.getModel()).getAsFloat()));
         content.add(shopPrice);
 
+        levelColoring = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(ChangeLevelColoring.class, "title"), 8) {
+            @Override
+            protected void onClick() {
+                ChangeLevelColoring content = new ChangeLevelColoring(Dungeon.level.levelScheme);
+                changeContent(ChangeLevelColoring.createTitle(), content, null);
+            }
+        };
+        content.add(levelColoring);
+
         mainWindowComps = new Component[]{
                 region, mobSpawn, changeSize,
                 hungerDepletion, naturalRegen, bossLevelRetexture, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                depth, viewDistance, shopPrice
+                depth, viewDistance, shopPrice,  levelColoring
         };
     }
 

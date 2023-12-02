@@ -95,6 +95,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public List<Integer> entranceCells, exitCells;
     public Set<String> zones;
 
+    public int floorColor, wallColor, waterColor;
+    public float floorAlpha = 0f, wallAlpha = 0f, waterAlpha = 0f;
+
     public List<Mob> mobsToSpawn;
     public List<Room> roomsToSpawn;//TODO also choose builder
     public List<Item> itemsToSpawn, prizeItemsToSpawn;
@@ -657,6 +660,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String AFFECTED_BY_NO_SCROLLS = "affected_by_no_scrolls";
     private static final String ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE = "roll_for_champion_if_champion_challenge";
 
+    private static final String LEVEL_COLORING = "level_coloring";
+    private static final String LEVEL_COLORING_ALPHA = "level_coloring_alpha";
+
     @Override
     public void storeInBundle(Bundle bundle) {
         bundle.put(NAME, name);
@@ -678,6 +684,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(REDUCE_VIEW_DISTANCE_IF_DARKNESS, reduceViewDistanceIfDarkness);
         bundle.put(AFFECTED_BY_NO_SCROLLS, affectedByNoScrolls);
         bundle.put(ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE, rollForChampionIfChampionChallenge);
+
+        bundle.put(LEVEL_COLORING, new int[] {floorColor, waterColor, waterColor});
+        bundle.put(LEVEL_COLORING_ALPHA, new float[] {floorAlpha, waterAlpha, waterAlpha});
 
         int[] entrances = new int[entranceCells.size()];
         int i = 0;
@@ -729,6 +738,17 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         reduceViewDistanceIfDarkness = bundle.getBoolean(REDUCE_VIEW_DISTANCE_IF_DARKNESS);
         affectedByNoScrolls = bundle.getBoolean(AFFECTED_BY_NO_SCROLLS);
         rollForChampionIfChampionChallenge = bundle.getBoolean(ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE);
+
+        int[] intArray = bundle.getIntArray(LEVEL_COLORING);
+        if (intArray != null) {
+            floorColor = intArray[0];
+            wallColor = intArray[1];
+            waterColor = intArray[2];
+            float[] floatArray = bundle.getFloatArray(LEVEL_COLORING_ALPHA);
+            floorAlpha = floatArray[0];
+            wallAlpha = floatArray[1];
+            waterAlpha = floatArray[2];
+        }
 
         int[] entrances = bundle.getIntArray(ENTRANCE_CELLS);
         entranceCells = new ArrayList<>(entrances.length + 1);

@@ -324,7 +324,7 @@ public class SideControlPane extends Component {
         @Override
         protected String hoverText() {
             return super.hoverText()
-                    + " " + Messages.get(ScrollOfMagicMapping.class, "name");
+                    + " " + Messages.titleCase(Messages.get(ScrollOfMagicMapping.class, "name"));
         }
     }
 

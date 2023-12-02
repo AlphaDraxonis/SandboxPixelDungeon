@@ -24,6 +24,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndZones;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.EditorCellSelector;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.LevelColoring;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.SideControlPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.UndoPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
@@ -244,6 +245,8 @@ public class EditorScene extends PixelScene {
         water.autoAdjust = true;
         terrain.add(water);
 
+        terrain.add(LevelColoring.getWater());
+
         tiles = new DungeonTerrainTilemap();
         terrain.add(tiles);
 
@@ -260,6 +263,9 @@ public class EditorScene extends PixelScene {
 
         terrainFeatures = new TerrainFeaturesTilemap(customLevel().plants, customLevel().traps);
         terrain.add(terrainFeatures);
+
+        terrain.add(LevelColoring.getFloor());
+        terrain.add(LevelColoring.getWall());
 
         transitionIndicators = new Group();
         add(transitionIndicators);
@@ -445,6 +451,7 @@ public class EditorScene extends PixelScene {
             scene.tiles.updateMapCell(cell);
             scene.visualGrid.updateMapCell(cell);
             scene.terrainFeatures.updateMapCell(cell);
+            LevelColoring.allUpdateMapCell(cell);
         }
     }
 
@@ -454,6 +461,7 @@ public class EditorScene extends PixelScene {
             scene.tiles.updateMap();
             scene.visualGrid.updateMap();
             scene.terrainFeatures.updateMap();
+            LevelColoring.allUpdateMap();
         }
     }
 
@@ -527,7 +535,7 @@ public class EditorScene extends PixelScene {
 
     private static CustomTilemap.BossLevelVisuals customBossTilemap, customBossWallsTilemap;
     public static void revalidateBossCustomTiles() {
-        if(scene == null || EditorScene.customLevel() == null) return;
+        if (scene == null || EditorScene.customLevel() == null) return;
 
         if (customBossTilemap != null) {
             customBossTilemap.updateState();

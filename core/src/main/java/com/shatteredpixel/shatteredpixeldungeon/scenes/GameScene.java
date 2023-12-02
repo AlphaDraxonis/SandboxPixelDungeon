@@ -44,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.LevelColoring;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.SideControlPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
@@ -257,6 +258,8 @@ public class GameScene extends PixelScene {
 		water.autoAdjust = true;
 		terrain.add( water );
 
+		terrain.add( LevelColoring.getWater() );
+
 		ripples = new Group();
 		terrain.add( ripples );
 
@@ -277,6 +280,10 @@ public class GameScene extends PixelScene {
 
 		terrainFeatures = new TerrainFeaturesTilemap(Dungeon.level.plants, Dungeon.level.traps);
 		terrain.add(terrainFeatures);
+
+		terrain.add( LevelColoring.getFloor() );
+
+		if (Dungeon.customDungeon.view2d) add( LevelColoring.getWall() );
 		
 		levelVisuals = Dungeon.level.addVisuals();
 		add(levelVisuals);
@@ -1182,6 +1189,7 @@ public class GameScene extends PixelScene {
 			scene.terrainFeatures.updateMap();
 			scene.raisedTerrain.updateMap();
 			scene.walls.updateMap();
+			LevelColoring.allUpdateMap();
 			updateFog();
 		}
 	}
@@ -1193,6 +1201,7 @@ public class GameScene extends PixelScene {
 			scene.terrainFeatures.updateMapCell( cell );
 			scene.raisedTerrain.updateMapCell( cell );
 			scene.walls.updateMapCell( cell );
+			LevelColoring.allUpdateMapCell( cell );
 			//update adjacent cells too
 			updateFog( cell, 1 );
 		}

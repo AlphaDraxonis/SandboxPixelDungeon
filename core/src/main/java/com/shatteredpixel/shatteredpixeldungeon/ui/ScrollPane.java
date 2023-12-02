@@ -275,7 +275,7 @@ public class ScrollPane extends Component {
 
                 scroll(event.current);
 
-            } else if (PointF.distance(event.current, event.start) > dragThreshold) {
+            } else if (PointF.distance(event.current, event.start) > dragThreshold && !event.handled) {
 
                 dragging = true;
                 lastPos.set(event.current);

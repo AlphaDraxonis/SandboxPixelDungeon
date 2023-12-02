@@ -49,9 +49,14 @@ public abstract class OptionSlider extends Component {
     private ColorBlock sliderBG;
     private ColorBlock[] sliderTicks;
     private float tickDist;
+    private final int maxNumSliderTicks;
 
 
     public OptionSlider(String title, String minTxt, String maxTxt, int minVal, int maxVal) {
+        this(title, minTxt, maxTxt, minVal, maxVal, Integer.MAX_VALUE);
+    }
+
+    public OptionSlider(String title, String minTxt, String maxTxt, int minVal, int maxVal, int maxNumSliderTicks) {
         super();
 
         //shouldn't function if this happens.
@@ -67,7 +72,9 @@ public abstract class OptionSlider extends Component {
         this.minVal = minVal;
         this.maxVal = maxVal;
 
-        sliderTicks = new ColorBlock[(maxVal - minVal) + 1];
+        this.maxNumSliderTicks = maxNumSliderTicks;
+
+        sliderTicks = new ColorBlock[Math.min((maxVal - minVal) + 1, maxNumSliderTicks)];
         for (int i = 0; i < sliderTicks.length; i++) {
             add(sliderTicks[i] = new ColorBlock(1, 9, 0xFF222222));
         }
@@ -75,6 +82,9 @@ public abstract class OptionSlider extends Component {
     }
 
     protected abstract void onChange();
+
+    protected void immediatlyOnChange(int currentVal) {
+    }
 
     public int getSelectedValue() {
         return selectedVal;
@@ -134,6 +144,8 @@ public abstract class OptionSlider extends Component {
                 if (pressed) {
                     PointF p = camera().screenToCamera((int) event.current.x, (int) event.current.y);
                     sliderNode.x = GameMath.gate(sliderBG.x - 2, p.x - sliderNode.width() / 2, sliderBG.x + sliderBG.width() - 2);
+
+                    immediatlyOnChange(minVal + Math.round((sliderNode.x - x) / tickDist));
                 }
             }
         };
@@ -160,12 +172,26 @@ public abstract class OptionSlider extends Component {
         sliderBG.y = y + height() - 7;
         sliderBG.x = x + 2;
         sliderBG.size(width - 5, 1);
+
         tickDist = sliderBG.width() / (maxVal - minVal);
-        for (int i = 0; i < sliderTicks.length; i++) {
-            sliderTicks[i].y = sliderBG.y - 4;
-            sliderTicks[i].x = x + 2 + (tickDist * i);
-            PixelScene.align(sliderTicks[i]);
+        int numValues = (maxVal - minVal) + 1;
+        float ticksLeftOutPerTick = (numValues - sliderTicks.length) / (float)(sliderTicks.length-2);
+        float posNextSliderTick = x + 2;
+        int indexNextSliderTick = 0;
+        for (int i = 0; i < numValues; i++) {
+            float xPos = x + 2 + (tickDist * i);
+            if (xPos >= posNextSliderTick) {
+                sliderTicks[indexNextSliderTick].y = sliderBG.y - 4;
+                sliderTicks[indexNextSliderTick].x = xPos;
+                PixelScene.align(sliderTicks[indexNextSliderTick]);
+                indexNextSliderTick++;
+                posNextSliderTick += tickDist * ticksLeftOutPerTick;
+            }
         }
+        sliderTicks[sliderTicks.length-1].y = sliderBG.y - 4;
+        sliderTicks[sliderTicks.length-1].x = x + 2 + (tickDist * (numValues-1));;
+        PixelScene.align(sliderTicks[sliderTicks.length-1]);
+
 
         minTxt.setPos(
                 x + 1,
@@ -189,6 +215,12 @@ public abstract class OptionSlider extends Component {
         BG.x = x;
         BG.y = y;
 
+    }
+
+    @Override
+    public void redirectPointerEvent(PointerEvent event) {
+        super.redirectPointerEvent(event);
+        if (pointerArea.onSignal(event)) event.handled = true;
     }
 
     @Override

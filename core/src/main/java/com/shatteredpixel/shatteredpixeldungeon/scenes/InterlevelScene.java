@@ -156,7 +156,7 @@ public class InterlevelScene extends PixelScene {
 		if (DeviceCompat.isDebug()&&false){
 			fadeTime = 0f;
 		} else if (Dungeon.isLevelTesting()){
-			fadeTime /= 2f;
+			fadeTime /= 3.5f;
 		}
 		
 		SkinnedBlock bg = new SkinnedBlock(Camera.main.width, Camera.main.height, loadingAsset ){
