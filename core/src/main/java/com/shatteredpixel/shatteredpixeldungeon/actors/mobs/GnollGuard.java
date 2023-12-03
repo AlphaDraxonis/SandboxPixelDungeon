@@ -40,10 +40,10 @@ public class GnollGuard extends Mob {
 		HP = HT = 35;
 		defenseSkill = 15;
 		attackSkill = 20;
-		damageRollMin = 3;
-		damageRollMax = 12;
+		damageRollMin = 5;
+		damageRollMax = 10;
 		specialDamageRollMin = 10;
-		specialDamageRollMax = 25;
+		specialDamageRollMax = 20;
 		damageReductionMax = 6;
 
 		EXP = 7;
