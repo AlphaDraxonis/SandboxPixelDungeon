@@ -44,7 +44,7 @@ public class LevelTab extends MultiWindowTabComp {
         StyledButton mobSpawn;
         Spinner viewDistance, depth, shopPrice;
         StyledButton changeSize;
-        StyledCheckbox hungerDepletion, naturalRegen;
+        StyledCheckbox hungerDepletion, naturalRegen, allowPickaxeMining;
         StyledButton bossLevelRetexture;
         StyledButton levelColoring;
 
@@ -95,6 +95,16 @@ public class LevelTab extends MultiWindowTabComp {
             naturalRegen.icon(icon);
         }
         content.add(naturalRegen);
+
+        allowPickaxeMining = new StyledCheckbox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "mining"), 8, level.levelScheme.allowPickaxeMining) {
+            @Override
+            public void checked(boolean value) {
+                super.checked(value);
+                level.levelScheme.allowPickaxeMining = value;
+            }
+        };
+        allowPickaxeMining.icon(new ItemSprite(ItemSpriteSheet.PICKAXE));
+        content.add(allowPickaxeMining);
 
         changeSize = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(ChangeMapSize.class, "title"), 8) {
 
@@ -164,8 +174,8 @@ public class LevelTab extends MultiWindowTabComp {
 
         mainWindowComps = new Component[]{
                 region, mobSpawn, changeSize,
-                hungerDepletion, naturalRegen, bossLevelRetexture, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                depth, viewDistance, shopPrice,  levelColoring
+                hungerDepletion, naturalRegen, allowPickaxeMining, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                depth, viewDistance, shopPrice,  levelColoring, bossLevelRetexture
         };
     }
 

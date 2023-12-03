@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.EarthParticle;
@@ -688,6 +689,8 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 							}
 						} else {
 							if (!Dungeon.level.insideMap(pos + i))
+								continue;
+							if (!Zone.canDestroyWall(Dungeon.level, pos + i))
 								continue;
 						}
 						Level.set(pos+i, Terrain.EMPTY_DECO);

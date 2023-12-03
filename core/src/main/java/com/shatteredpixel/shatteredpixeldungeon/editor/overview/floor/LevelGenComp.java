@@ -466,7 +466,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             title.hardlight(Window.TITLE_COLOR);
             add(title);
 
-            stand = new CheckBox(Messages.get(LevelGenComp.class, "room_settings_standart"));
+            stand = new CheckBox(Messages.get(LevelGenComp.class, "room_settings_standard"));
             stand.checked(standart);
             add(stand);
 

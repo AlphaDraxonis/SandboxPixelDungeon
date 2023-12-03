@@ -423,7 +423,7 @@ public final class WndZones {
                 }
             }, Messages.get(EditZoneComp.class, "grass_label") + ":", 9);
             grassVisuals.addChangeListener(() -> zone.setGrassType((Zone.GrassType) grassVisuals.getValue()));
-            comps[5] = grassVisuals;
+            comps[6] = grassVisuals;
 
             LevelScheme chasm = Dungeon.customDungeon.getFloor(Dungeon.level.levelScheme.getChasm());
             Object[] data;
@@ -455,7 +455,7 @@ public final class WndZones {
                 zone.chasmDestZone = (String) chasmDest.getValue();
             });
             chasmDest.enable(chasm != null);
-            comps[6] = chasmDest;
+            comps[7] = chasmDest;
 
             addTransition = new RedButton(Messages.get(EditTileComp.class, "add_transition"), 9) {
                 @Override
@@ -466,8 +466,8 @@ public final class WndZones {
             if (zone.zoneTransition != null) {
                 addTransition(zone.zoneTransition);
             }
-            comps[7] = addTransition;
-            comps[8] = transitionEdit;
+            comps[8] = addTransition;
+            comps[9] = transitionEdit;
 
             rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
                 @Override
@@ -644,7 +644,7 @@ public final class WndZones {
                     zone.canSpawnItems = value;
                 }
             };
-            spawnItems.checked(zone.flamable);
+            spawnItems.checked(zone.canSpawnItems);
 //            spawnItems.icon(new ItemSprite(ItemSpriteSheet.CHEST));
 
             CheckBox teleportTo = new CheckBox(Messages.get(EditZoneComp.class, "teleport_to")) {
@@ -654,9 +654,18 @@ public final class WndZones {
                     zone.canTeleportTo = value;
                 }
             };
-            teleportTo.checked(zone.canSpawnItems);
+            teleportTo.checked(zone.canTeleportTo);
 
-            return new Component[]{pickColor, flamable, spawnMobs, spawnItems, teleportTo, null, null, null, null};
+            CheckBox destroyWalls = new CheckBox(Messages.get(EditZoneComp.class, "destroy_walls")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    zone.canDestroyWalls = value;
+                }
+            };
+            destroyWalls.checked(zone.canDestroyWalls);
+
+            return new Component[]{pickColor, flamable, spawnMobs, spawnItems, teleportTo, destroyWalls, null, null, null, null};
         }
     }
 

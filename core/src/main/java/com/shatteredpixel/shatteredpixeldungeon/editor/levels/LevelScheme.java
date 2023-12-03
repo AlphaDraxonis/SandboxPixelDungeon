@@ -105,6 +105,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public boolean spawnStandartRooms = true, spawnSecretRooms = true, spawnSpecialRooms = true;
     public boolean spawnMobs = true, spawnItems = true;
     public boolean hungerDepletion = true, naturalRegeneration = true;
+    public boolean allowPickaxeMining = false;
 
     public Class<? extends Builder> builder;
 
@@ -642,6 +643,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String SEED = "seed";
     private static final String SEED_SET = "seed_set";
     private static final String SHOP_PRICE_MULTIPLIER = "shop_price_multiplier";
+    private static final String ALLOW_PICKAXE_MINING = "allow_pickaxe_mining";
 
     private static final String MOBS_TO_SPAWN = "mobs_to_spawn";
     private static final String ROOMS_TO_SPAWN = "rooms_to_spawn";
@@ -680,6 +682,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(SEED_SET, seedSet);
         bundle.put(FEELING, feeling);
         bundle.put(SHOP_PRICE_MULTIPLIER, shopPriceMultiplier);
+        bundle.put(ALLOW_PICKAXE_MINING, allowPickaxeMining);
         bundle.put(SPAWN_TORCH_IF_DARKNESS, spawnTorchIfDarkness);
         bundle.put(REDUCE_VIEW_DISTANCE_IF_DARKNESS, reduceViewDistanceIfDarkness);
         bundle.put(AFFECTED_BY_NO_SCROLLS, affectedByNoScrolls);
@@ -734,6 +737,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         depth = bundle.getInt(DEPTH);
         if (bundle.contains(FEELING)) feeling = bundle.getEnum(FEELING, Level.Feeling.class);
         shopPriceMultiplier = bundle.getFloat(SHOP_PRICE_MULTIPLIER);
+        allowPickaxeMining = bundle.getBoolean(ALLOW_PICKAXE_MINING);
         spawnTorchIfDarkness = bundle.getBoolean(SPAWN_TORCH_IF_DARKNESS);
         reduceViewDistanceIfDarkness = bundle.getBoolean(REDUCE_VIEW_DISTANCE_IF_DARKNESS);
         affectedByNoScrolls = bundle.getBoolean(AFFECTED_BY_NO_SCROLLS);
