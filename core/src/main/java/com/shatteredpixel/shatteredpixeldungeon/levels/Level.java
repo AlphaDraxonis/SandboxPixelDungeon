@@ -449,6 +449,12 @@ public abstract class Level implements Bundlable {
 		//variant = 2: boss normal
 		//variant = 3: boss final
 		//region = -1: theme final
+		//region == -2 do nothing
+		if (region == -2) {
+			Music.INSTANCE.end();
+			return;
+		}
+
 		if (!musicRequests.isEmpty()) variant = musicRequests.getLast();
 		currentVariant = variant;
 

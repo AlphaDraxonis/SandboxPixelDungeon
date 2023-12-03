@@ -229,6 +229,7 @@ public final class CustomTileLoader {
         private static final String IDENTIFIER = "identifier";
         private static final String PLACED = "placed";
         private static final String IMAGE_TERRAIN = "image_terrain";
+        private static final String REAL_TERRAIN = "real_terrain";
         private static final String REGION = "region";
         private static final String NAME = "name";
         private static final String DESC = "desc";
@@ -243,6 +244,7 @@ public final class CustomTileLoader {
                 bundle.put(NAME, name);
                 bundle.put(DESC, desc);
                 bundle.put(IMAGE_TERRAIN, imageTerrain);
+                bundle.put(REAL_TERRAIN, terrain);
                 bundle.put(REGION, region);
             }
         }
@@ -257,6 +259,7 @@ public final class CustomTileLoader {
                 name = bundle.getString(NAME);
                 desc = bundle.getString(DESC);
                 imageTerrain = bundle.getInt(IMAGE_TERRAIN);
+                terrain = bundle.getInt(REAL_TERRAIN);
                 region = bundle.getInt(REGION);
                 updateTexture();
             } else {

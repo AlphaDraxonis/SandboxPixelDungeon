@@ -50,7 +50,8 @@ public class ChangeRegion extends Component {
             new AssetCheckbox(null, LevelScheme.REGION_CAVES, CAT_MUSIC),
             new AssetCheckbox(null, LevelScheme.REGION_CITY, CAT_MUSIC),
             new AssetCheckbox(null, LevelScheme.REGION_HALLS, CAT_MUSIC),
-            new AssetCheckbox(Messages.get(ChangeRegion.class, "theme_final"), -1, CAT_MUSIC)
+            new AssetCheckbox(Messages.get(ChangeRegion.class, "theme_final"), -1, CAT_MUSIC),
+            new AssetCheckbox(Messages.get(ChangeRegion.class, "none"), -2, CAT_MUSIC)
     }
     };
 

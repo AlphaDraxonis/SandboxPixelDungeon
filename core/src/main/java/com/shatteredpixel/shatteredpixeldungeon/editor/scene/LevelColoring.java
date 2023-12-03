@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.scene;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.ColorBlock;
@@ -19,6 +20,10 @@ public class LevelColoring extends Group {
                     @Override
                     protected void updateColor(ColorBlock img, int cell) {
                         if (!Dungeon.level.solid[cell]) super.updateColor(img, cell);
+//                        else if (Dungeon.hero != null) {
+//                            img.hardlight(Dungeon.level.levelScheme.wallColor);
+//                            img.alpha(Dungeon.level.levelScheme.wallAlpha);
+//                        }
                         else img.alpha(0f);
                     }
 
@@ -41,8 +46,46 @@ public class LevelColoring extends Group {
                 wall = new LevelColoring(Dungeon.level.levelScheme.wallColor, Dungeon.level.levelScheme.wallAlpha) {
                     @Override
                     protected void updateColor(ColorBlock img, int cell) {
-                        if (Dungeon.level.solid[cell]) super.updateColor(img, cell);
-                        else img.alpha(0f);
+                        if (Dungeon.hero == null || Dungeon.customDungeon.view2d) {
+                            if (Dungeon.level.solid[cell]) super.updateColor(img, cell);
+                            else img.alpha(0f);
+                        } else {
+                            img.size(DungeonTilemap.SIZE, DungeonTilemap.SIZE);
+                            img.x = (cell % Dungeon.level.width()) * DungeonTilemap.SIZE;
+                            img.y = (cell / Dungeon.level.width()) * DungeonTilemap.SIZE;
+                            int mapWidth = Dungeon.level.width();
+                            int[] map = Dungeon.level.map;
+
+                            int result = 0;
+                            if (DungeonTileSheet.wallStitcheable((cell + 1) % mapWidth != 0 ? map[cell + 1] : -1)) result += 1;
+                            if (DungeonTileSheet.wallStitcheable((cell + 1) % mapWidth != 0 && cell + mapWidth < map.length ? map[cell + 1 + mapWidth] : -1))
+                                result += 2;
+                            if (DungeonTileSheet.wallStitcheable(cell % mapWidth != 0 && cell + mapWidth < map.length ? map[cell - 1 + mapWidth] : -1))
+                                result += 4;
+                            if (DungeonTileSheet.wallStitcheable(cell % mapWidth != 0 ? map[cell - 1] : -1)) result += 8;
+                            if (DungeonTileSheet.wallStitcheable(cell + mapWidth < map.length ? map[cell + mapWidth] : -1)) result += 16;
+
+
+                            if (DungeonTileSheet.wallStitcheable(map[cell])) {
+                                super.updateColor(img, cell);
+                                if ((result & 16) != 0) {
+                                    img.size(5, img.width());
+                                    if ((result & 8) != 0 && (result & 4) != 0) {
+                                        img.x += DungeonTilemap.SIZE - 5;
+                                    }
+                                } else {
+                                    img.alpha(0f);
+                                }
+
+                            } else if (cell + Dungeon.level.width() < Dungeon.level.solid.length && Dungeon.level.solid[cell + Dungeon.level.width()]) {
+                                //here, height and posY is changed
+                                super.updateColor(img, cell);
+                                int h = cell + 2 * Dungeon.level.width() < Dungeon.level.solid.length && Dungeon.level.solid[cell + Dungeon.level.width() * 2] ? 5 : 8;
+                                img.size(img.width(), h);
+                                img.y += 8;
+
+                            } else img.alpha(0f);
+                        }
                     }
 
                     @Override

@@ -688,8 +688,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(AFFECTED_BY_NO_SCROLLS, affectedByNoScrolls);
         bundle.put(ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE, rollForChampionIfChampionChallenge);
 
-        bundle.put(LEVEL_COLORING, new int[] {floorColor, waterColor, waterColor});
-        bundle.put(LEVEL_COLORING_ALPHA, new float[] {floorAlpha, waterAlpha, waterAlpha});
+        bundle.put(LEVEL_COLORING, new int[] {floorColor, wallColor, waterColor});
+        bundle.put(LEVEL_COLORING_ALPHA, new float[] {floorAlpha, wallAlpha, waterAlpha});
 
         int[] entrances = new int[entranceCells.size()];
         int i = 0;

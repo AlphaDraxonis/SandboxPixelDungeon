@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.watabou.utils.Random;
@@ -330,7 +331,7 @@ public class DungeonTileSheet {
 
 		if (tile == Terrain.BOOKSHELF || below == Terrain.BOOKSHELF)        result = WALL_INTERNAL_WOODEN;
 		//TODO currently this line on triggers on mining floors, do we want to make it universal?
-		else if (Dungeon.branch == QuestLevels.MINING.ID && tile == Terrain.WALL_DECO)          result = WALL_INTERNAL_DECO;
+		else if (Dungeon.curLvlScheme().getRegion() == LevelScheme.REGION_CAVES && tile == Terrain.WALL_DECO) result = WALL_INTERNAL_DECO;
 		else                                                                result = WALL_INTERNAL;
 
 		if (!wallStitcheable(right))        result += 1;

@@ -322,7 +322,7 @@ public enum Tiles {
             add(this.title);
 
             if (customTile == null) {
-                identifier = new StringInputComp(Messages.get(WndCreateCustomTile.class, "identifier_label"), null, 100, false) {
+                identifier = new StringInputComp(Messages.get(WndCreateCustomTile.class, "identifier_label"), null, 100, false, "???") {
                     @Override
                     protected void onChange() {
                         updateLayout();
@@ -334,7 +334,7 @@ public enum Tiles {
 //                add(info);
             }
 
-            name = new StringInputComp(Messages.get(WndCreateCustomTile.class, "name_label"), null, 100, false) {
+            name = new StringInputComp(Messages.get(WndCreateCustomTile.class, "name_label"), null, 100, false, customTile == null ? "???" : customTile.name) {
                 @Override
                 protected void onChange() {
                     updateLayout();
@@ -342,7 +342,7 @@ public enum Tiles {
             };
             add(name);
 
-            desc = new StringInputComp(Messages.get(WndCreateCustomTile.class, "desc_label"), null, 500, true) {
+            desc = new StringInputComp(Messages.get(WndCreateCustomTile.class, "desc_label"), null, 500, true, customTile == null ? "???" : customTile.desc) {
                 @Override
                 protected void onChange() {
                     updateLayout();
