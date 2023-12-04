@@ -394,7 +394,7 @@ public class QuickRecipe extends Component {
 				return result;
 			case 10:
 				for (CustomRecipe recipe : Dungeon.customDungeon.recipes) {
-					result.add(new QuickRecipe(recipe));
+					result.add(new QuickRecipe(recipe, recipe.getIngredients(), recipe.sampleOutput(null)));
 				}
 				return result;
 		}

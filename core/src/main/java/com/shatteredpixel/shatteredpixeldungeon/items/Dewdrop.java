@@ -71,9 +71,28 @@ public class Dewdrop extends Item {
 		} else {
 
 			int terr = Dungeon.level.map[pos];
-			if (!consumeDew(1, hero, terr == Terrain.ENTRANCE|| terr == Terrain.EXIT || terr == Terrain.UNLOCKED_EXIT)){
-				return false;
+			boolean force = terr == Terrain.ENTRANCE|| terr == Terrain.EXIT || terr == Terrain.UNLOCKED_EXIT;
+			int result = 0;
+			int[] lastResult = new int[1];
+			int totalHealing = 0, totalShield = 0;
+			while (quantity > 0 && (lastResult = consumeDew(1, hero, force))[0] > 0){
+				quantity--;
+				result |= lastResult[0];
+				totalHealing += lastResult[1];
+				totalShield += lastResult[2];
 			}
+			if (result > 0 || lastResult[0] == -1) {
+				if (result == 3) hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "both", totalHealing, totalShield) );
+				else if (result == 2) hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "heal", totalHealing) );
+				else if (result == 1) hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "shield", totalShield) );
+
+				if (totalShield > 0) Buff.affect(hero, Barrier.class).incShield(totalShield);
+				hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+
+				Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
+				hero.spendAndNext( TIME_TO_PICK_UP );
+			}
+			return quantity == 0;
 			
 		}
 		
@@ -83,7 +102,7 @@ public class Dewdrop extends Item {
 		return true;
 	}
 
-	public static boolean consumeDew(int quantity, Hero hero, boolean force){
+	public static int[] consumeDew(int quantity, Hero hero, boolean force){
 		//20 drops for a full heal
 		int heal = Math.round( hero.HT * 0.05f * quantity );
 
@@ -98,22 +117,20 @@ public class Dewdrop extends Item {
 		}
 		if (effect > 0 || shield > 0) {
 			hero.HP += effect;
-			if (shield > 0) Buff.affect(hero, Barrier.class).incShield(shield);
-			hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
 			if (effect > 0 && shield > 0){
-				hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "both", effect, shield) );
+				return new int[]{3, effect, shield};
 			} else if (effect > 0){
-				hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "heal", effect) );
+				return new int[]{2, effect, shield};
 			} else {
-				hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "shield", shield) );
+				return new int[]{1, effect, shield};
 			}
 
 		} else if (!force) {
 			GLog.i( Messages.get(Dewdrop.class, "already_full") );
-			return false;
+			return new int[]{0, effect, shield};
 		}
 
-		return true;
+		return new int[]{-1, effect, shield};
 	}
 
 	@Override

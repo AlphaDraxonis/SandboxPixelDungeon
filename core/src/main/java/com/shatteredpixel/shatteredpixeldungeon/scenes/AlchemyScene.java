@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LiquidMetal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
@@ -436,7 +437,9 @@ public class AlchemyScene extends PixelScene {
 			Sample.INSTANCE.play( Assets.Sounds.PUFF );
 
 			int resultQuantity = result.quantity();
-			if (!result.collect()){
+			if (result instanceof Dewdrop) {
+				if (!result.doPickUp(Dungeon.hero)) Dungeon.level.drop(result.getCopy(), Dungeon.hero.pos);
+			} else if (!result.collect()){
 				Dungeon.level.drop(result, Dungeon.hero.pos);
 			}
 

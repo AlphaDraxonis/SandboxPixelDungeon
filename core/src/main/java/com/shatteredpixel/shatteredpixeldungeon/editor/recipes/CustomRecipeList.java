@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.recipes;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
@@ -12,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -23,7 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,9 +117,9 @@ public class CustomRecipeList extends Component {
     public class RecipeListItem extends Component {
 
         protected IconButton remove;
-        protected IngedientSlot[] ingredients;
+        protected IngredientSlot[] ingredients;
         protected Image arrow;
-        protected IngedientSlot output;
+        protected IngredientSlot output;
         protected Spinner cost;
         protected Image spinnerImage;
 
@@ -129,8 +130,7 @@ public class CustomRecipeList extends Component {
         public RecipeListItem(CustomRecipe recipe) {
             this.recipe = recipe;
 
-
-            cost = new Spinner(new SpinnerIntegerModel(0, 100, recipe.getCost(), 1, false, null) {
+            cost = new Spinner(new SpinnerIntegerModel(0, 100, recipe.cost(null), 1, false, null) {
 
                 @Override
                 public int getClicksPerSecondWhileHolding() {
@@ -170,12 +170,12 @@ public class CustomRecipeList extends Component {
             arrow.angle = 180;
             add(arrow);
 
-            output = new IngedientSlot(null, 999);
+            output = new IngredientSlot(null, 999);
             add(output);
 
-            ingredients = new IngedientSlot[3];
+            ingredients = new IngredientSlot[3];
             for (int i = 0; i < ingredients.length; i++) {
-                ingredients[i] = new IngedientSlot(null, i);
+                ingredients[i] = new IngredientSlot(null, i);
                 add(ingredients[i]);
             }
 
@@ -230,17 +230,36 @@ public class CustomRecipeList extends Component {
             }
         }
 
-        private class IngedientSlot extends InventorySlot {
+        private class IngredientSlot extends InventorySlot {
 
             private final int slot;
 
-            public IngedientSlot(Item item, int slot) {
+            public IngredientSlot(Item item, int slot) {
                 super(item);
                 this.slot = slot;
             }
 
             @Override
             protected void onClick() {
+                if (item != null) {
+                    boolean wasStackable = item.stackable;
+                    if (slot != 999) item.stackable = false;
+                    EditorScene.show(new EditCompWindow(item) {
+                        {
+                            item.stackable = wasStackable;//don't show quantity spinner
+                        }
+
+                        @Override
+                        protected void onUpdate() {
+                            super.onUpdate();
+                            item(item);
+                        }
+                    });
+                } else onLongClick();
+            }
+
+            @Override
+            protected boolean onLongClick() {
                 EditorScene.selectItem(new WndBag.ItemSelectorInterface() {
                     @Override
                     public String textPrompt() {
@@ -261,10 +280,10 @@ public class CustomRecipeList extends Component {
                     public void onSelect(Item item) {
                         if (item == EditorItem.NULL_ITEM) item = null;
                         else if (item instanceof ItemItem) item = ((ItemItem) item).item();
-                        item(Reflection.newInstance(item == null ? null : item.getClass()));
+                        if (item != null) item = item.getCopy();
                         if (slot == 999) recipe.itemOutput = item;
-                        else recipe.itemInputs[slot] = item;
-                        recipe.updateQuantities();
+                        else recipe.setInput(slot, item);
+                        item(item);
                     }
 
                     @Override
@@ -277,15 +296,21 @@ public class CustomRecipeList extends Component {
                         return true;
                     }
                 });
+                return true;
             }
 
             @Override
             public void item(Item item) {
-                if (item != null)
+                if (item == null)
+                    ((ItemSprite) sprite).view(ItemSpriteSheet.SOMETHING, null);
+                else
                     item.image = Dungeon.customDungeon.getItemSpriteOnSheet(item);
                 super.item(item);
+
                 bg.visible = true;
                 enable(visible);
+
+                if (item == null) layout();
             }
         }
 

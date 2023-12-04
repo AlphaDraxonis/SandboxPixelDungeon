@@ -447,10 +447,14 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
 
     public static boolean areEqual(Item a, Item b) {
+        return areEqual(a,b, false);
+    }
+
+    public static boolean areEqual(Item a, Item b, boolean ignoreQuantity) {
         if (a == null && b == null) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
-        if (a.quantity() != b.quantity()) return false;
+        if (!ignoreQuantity && a.quantity() != b.quantity()) return false;
         if (a.cursed != b.cursed) return false;
         if (a.level() != b.level()) return false;
         if (a.getCursedKnownVar() != b.getCursedKnownVar()) return false;
@@ -474,6 +478,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
         if (a instanceof Key)
             return ((Key) a).levelName.equals(((Key) b).levelName) && ((Key) a).cell == ((Key) b).cell;
+        if (a instanceof Ankh) return ((Ankh) a).blessed == ((Ankh) b).blessed;
         if (a instanceof RandomItem) return a.equals(b);
         return true;
     }
