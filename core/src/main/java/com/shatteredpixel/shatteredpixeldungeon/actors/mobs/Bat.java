@@ -23,10 +23,12 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BatSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 
 public class Bat extends Mob {
 
@@ -59,7 +61,7 @@ public class Bat extends Mob {
 //	public int attackSkill( Char target ) {
 //		return 16;
 //	}
-	
+
 //	@Override
 //	public int drRoll() {
 //		return super.drRoll() + Random.NormalIntRange(0, 4);
@@ -73,6 +75,7 @@ public class Bat extends Mob {
 		if (reg > 0) {
 			HP += reg;
 			sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+			sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(reg), FloatingText.HEALING);
 		}
 		
 		return damage;
@@ -82,10 +85,11 @@ public class Bat extends Mob {
 	public float lootChance(){
 		return super.lootChance() * ((7f - Dungeon.LimitedDrops.BAT_HP.count) / 7f);
 	}
-
+	
 	@Override
 	public void increaseLimitedDropCount(Item generatedLoot) {
 		if (generatedLoot instanceof PotionOfHealing) Dungeon.LimitedDrops.BAT_HP.count++;
 		super.increaseLimitedDropCount(generatedLoot);
 	}
+	
 }

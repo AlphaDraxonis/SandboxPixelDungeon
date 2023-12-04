@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -391,7 +392,9 @@ public class Combo extends Buff implements ActionIndicator.Action {
 							if (!ch.isAlive()) {
 								if (hero.hasTalent(Talent.LETHAL_DEFENSE) && hero.buff(BrokenSeal.WarriorShield.class) != null) {
 									BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
-									shield.supercharge(Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE) / 3f));
+									int shieldAmt = Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE) / 3f);
+									shield.supercharge(shieldAmt);
+									hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(shieldAmt), FloatingText.SHIELDING);
 								}
 							}
 						}
@@ -446,7 +449,9 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		if (!enemy.isAlive() || (!wasAlly && enemy.alignment == target.alignment)) {
 			if (hero.hasTalent(Talent.LETHAL_DEFENSE) && hero.buff(BrokenSeal.WarriorShield.class) != null){
 				BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
-				shield.supercharge(Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE)/3f));
+				int shieldAmt = Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE) / 3f);
+				shield.supercharge(shieldAmt);
+				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(shieldAmt), FloatingText.SHIELDING);
 			}
 		}
 

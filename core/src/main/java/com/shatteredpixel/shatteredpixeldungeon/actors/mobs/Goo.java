@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
@@ -137,6 +138,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 			if (Dungeon.level.heroFOV[pos] ){
 				sprite.emitter().burst( Speck.factory( Speck.HEALING ), healInc );
+				sprite.showStatusWithIcon( CharSprite.POSITIVE, String.valueOf(healInc), FloatingText.HEALING );
 			}
 			if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) && healInc < 3) {
 				healInc++;

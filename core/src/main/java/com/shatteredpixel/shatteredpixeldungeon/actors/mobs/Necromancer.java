@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -37,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.NecromancerSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -54,7 +56,7 @@ public class Necromancer extends SpawnerMob {
 		HP = HT = 40;
 		defenseSkill = 14;
 		damageReductionMax = 5;
-		
+
 		EXP = 7;
 		maxLvl = 14;
 		
@@ -173,9 +175,12 @@ public class Necromancer extends SpawnerMob {
 			if (sprite.visible || mySummon.sprite.visible) {
 				sprite.parent.add(new Beam.HealthRay(sprite.center(), mySummon.sprite.center()));
 			}
-			
+
 			mySummon.HP = Math.min(mySummon.HP + mySummon.HT/5, mySummon.HT);
-			if (mySummon.sprite.visible) mySummon.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+			if (mySummon.sprite.visible) {
+				mySummon.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+				mySummon.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString( mySummon.HT/5 ), FloatingText.HEALING );
+			}
 			
 		//otherwise give it adrenaline
 		} else if (mySummon.buff(Adrenaline.class) == null) {

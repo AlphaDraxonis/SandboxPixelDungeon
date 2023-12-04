@@ -24,9 +24,12 @@ package com.shatteredpixel.shatteredpixeldungeon.items.food;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barkskin;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class PhantomMeat extends Food {
@@ -48,12 +51,11 @@ public class PhantomMeat extends Food {
 
 	public static void effect(Hero hero){
 
-		Buff.affect( hero, Barkskin.class ).set( hero.HT / 4, 1 );
 		Barkskin.conditionallyAppend( hero, hero.HT / 4, 1 );
-		if (hero.HP < hero.HT) {
-			hero.HP = Math.min( hero.HP + hero.HT / 4, hero.HT );
-		}
+		Buff.affect( hero, Invisibility.class, Invisibility.DURATION );
+		hero.HP = Math.min( hero.HP + hero.HT / 4, hero.HT );
 		hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+		hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, String.valueOf(hero.HT / 4), FloatingText.HEALING );
 		PotionOfHealing.cure(hero);
 
 	}

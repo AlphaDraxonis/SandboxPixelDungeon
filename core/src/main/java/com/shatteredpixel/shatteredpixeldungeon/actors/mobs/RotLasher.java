@@ -28,7 +28,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.RotLasherSprite;
 
 public class RotLasher extends Mob {
@@ -59,6 +61,7 @@ public class RotLasher extends Mob {
 	protected boolean act() {
 		if (enemy == null || !Dungeon.level.adjacent(pos, enemy.pos)) {
 			HP = Math.min(HT, HP + 5);
+			sprite.showStatusWithIcon(CharSprite.POSITIVE, "5", FloatingText.HEALING);
 		}
 		return super.act();
 	}
