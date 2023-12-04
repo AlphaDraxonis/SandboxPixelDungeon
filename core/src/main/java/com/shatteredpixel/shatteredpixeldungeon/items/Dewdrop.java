@@ -27,7 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -86,14 +86,19 @@ public class Dewdrop extends Item {
 				else if (result == 2) hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "heal", totalHealing) );
 				else if (result == 1) hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "shield", totalShield) );
 
-				if (totalShield > 0) Buff.affect(hero, Barrier.class).incShield(totalShield);
-				hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+				if (totalHealing > 0){
+					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, String.valueOf(totalHealing), FloatingText.HEALING);
+				}
+				if (totalShield > 0) {
+					Buff.affect(hero, Barrier.class).incShield(totalShield);
+					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, String.valueOf(totalShield), FloatingText.SHIELDING );
+				}
 
 				Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
 				hero.spendAndNext( TIME_TO_PICK_UP );
 			}
 			return quantity == 0;
-			
+
 		}
 		
 		Sample.INSTANCE.play( Assets.Sounds.DEWDROP );
