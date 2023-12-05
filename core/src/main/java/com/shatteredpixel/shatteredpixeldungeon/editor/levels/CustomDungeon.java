@@ -93,10 +93,8 @@ public class CustomDungeon implements Bundlable {
     //Custom mob attacks: externalise
     //and search: used so resistances can differentiate between melee and magical attacks
 
-    //place ignited bombs, I want to make a mob that drops ignited bomb after death
-
     //6h
-    //all gas types for traps
+    //place ignited bombs, I want to make a mob that drops ignited bomb after death
 
     //45 min
     //A way to make it so bosses don't count as bosses.
@@ -110,16 +108,7 @@ public class CustomDungeon implements Bundlable {
     //8 Std
     //crystals(cave), and perhaps crystal walls
 
-    //4 Std
-    //specify what mobs summoning trap spawns
-
     //Scale mobs if their normal stats editor is disabled: not just everything
-
-    //level coloring
-
-
-    //Custom Alchemy:
-    //Show warning that no item attributes can be used
 
 
     //if possible make a release that can be downloaded in this format (taken ShPD for example) -> as .exe  no
