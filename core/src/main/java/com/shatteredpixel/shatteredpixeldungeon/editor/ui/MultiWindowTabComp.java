@@ -67,7 +67,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
             if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth((int) width);
             title.setRect(x, posY, width, title.height());
 
-            EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, mainWindowComps);
+            content.setSize(width, EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, mainWindowComps));
 
             sp.setRect(x, title.bottom() + GAP, width, height - title.bottom() - GAP - 1);
 
@@ -103,7 +103,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
         float result;
         if (layoutOwnMenu) {
             result = title.height() + GAP + 1;//+1 is gap to bottom
-            EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, mainWindowComps);
+            content.setSize(width, EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, mainWindowComps));
             result += content.height();
         } else {
             otherBody.setSize(width, -1);

@@ -36,7 +36,7 @@ public class DungeonTab extends MultiWindowTabComp {
         StyledButton heroes, durationSettings, forceChallenges, customRecipes;
         StyledCheckbox view2d, seeLevelOnDeath, autoRevealSecrets;
 
-        potionColors = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_pot"), 7) {
+        potionColors = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_pot"), 8) {
             @Override
             protected void onClick() {
                 SetPotionScrollRingType change = SetPotionScrollRingType.createPotionWnd(() -> closeCurrentSubMenu());
@@ -47,7 +47,7 @@ public class DungeonTab extends MultiWindowTabComp {
         potionColors.icon(new ItemSprite(ItemSpriteSheet.POTION_AMBER));
         content.add(potionColors);
 
-        scrollRunes = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_scroll"), 7) {
+        scrollRunes = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_scroll"), 8) {
             @Override
             protected void onClick() {
                 SetPotionScrollRingType change = SetPotionScrollRingType.createScrollWnd(() -> closeCurrentSubMenu());
@@ -58,7 +58,7 @@ public class DungeonTab extends MultiWindowTabComp {
         scrollRunes.icon(new ItemSprite(ItemSpriteSheet.SCROLL_BERKANAN));
         content.add(scrollRunes);
 
-        ringGems = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_ring"), 7) {
+        ringGems = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_ring"), 8) {
             @Override
             protected void onClick() {
                 SetPotionScrollRingType change = SetPotionScrollRingType.createRingWnd(() -> closeCurrentSubMenu());

@@ -29,10 +29,15 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SummoningTrap extends Trap {
 
@@ -43,8 +48,12 @@ public class SummoningTrap extends Trap {
 		shape = WAVES;
 	}
 
+	public List<Mob> spawnMobs;
+
 	@Override
 	public void activate() {
+
+		boolean useCustomConfig = !spawnMobs.isEmpty();
 
 		int nMobs = 1;
 		if (Random.Int( 2 ) == 0) {
@@ -53,6 +62,7 @@ public class SummoningTrap extends Trap {
 				nMobs++;
 			}
 		}
+		if (useCustomConfig) nMobs = spawnMobs.size();
 
 		ArrayList<Integer> candidates = new ArrayList<>();
 
@@ -73,11 +83,22 @@ public class SummoningTrap extends Trap {
 		}
 
 		ArrayList<Mob> mobs = new ArrayList<>();
+		LinkedList<Mob> largeMobsAddLater = new LinkedList<>();
 
+		int index = 0;
 		for (Integer point : respawnPoints) {
-			Mob mob = Dungeon.level.createMob();
-			while (Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[point]){
-				mob = Dungeon.level.createMob();
+			Mob mob;
+			if (Dungeon.level.openSpace[point] && !largeMobsAddLater.isEmpty()) mob = largeMobsAddLater.removeFirst();
+			else {
+				boolean repeat;
+				int tries = 20;
+				do {
+					mob = useCustomConfig ? spawnMobs.get(index) : Dungeon.level.createMob();
+					index++;
+					tries--;
+					repeat = Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[point];
+					if (repeat) largeMobsAddLater.add(mob);
+				} while (repeat && (tries > 0 || useCustomConfig));
 			}
 			if (mob != null) {
 				mob.state = mob.WANDERING;
@@ -105,5 +126,22 @@ public class SummoningTrap extends Trap {
 			GLog.w(Messages.get(this, "no_mobs"));
 		}
 
+	}
+
+	private static final String SPAWN_MOBS = "spawn_mobs";
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		Collection<Bundlable> collection = bundle.getCollection( SPAWN_MOBS );
+		spawnMobs = new ArrayList<>();
+		for (Bundlable b : collection)
+			spawnMobs.add((Mob) b);
+	}
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put( SPAWN_MOBS, spawnMobs );
 	}
 }

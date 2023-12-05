@@ -385,11 +385,10 @@ public class HeroSettings extends Component {
                 PixelScene.align(subClassesEnabled);
                 posY = subClassesEnabled.bottom() + gap;
             }
-            itemSelectorParent.setPos(x, posY);
-            EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
+            itemSelectorParent.setRect(x, posY, width,  EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
                     new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                             startGold, startEnergy, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                            plusLvl, plusStr});
+                            plusLvl, plusStr}));
             PixelScene.align(itemSelectorParent);
             posY = itemSelectorParent.bottom() + gap;
             startBags.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);

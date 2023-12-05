@@ -24,9 +24,9 @@ public class FistSelector extends ItemSelectorList<MobItem> {
         this.fists = fists;
     }
 
-    private static List<MobItem> createMobItems(List<? extends Mob> fists) {
+    public static List<MobItem> createMobItems(List<? extends Mob> mobs) {
         List<MobItem> ret = new ArrayList<>(5);
-        for (Mob m : fists) ret.add(new MobItem(m));
+        for (Mob m : mobs) ret.add(new MobItem(m));
         return ret;
     }
 

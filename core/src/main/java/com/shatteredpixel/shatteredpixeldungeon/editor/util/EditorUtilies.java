@@ -161,7 +161,8 @@ public final class EditorUtilies {
         return parent.height();
     }
 
-    public static void layoutStyledCompsInRectangles(int gap, float width, Component parent, Component[] comps) {
+    public static float layoutStyledCompsInRectangles(int gap, float width, Component parent, Component[] comps) {
+        if (comps == null) return parent.height();
 
         final int compsPerRow = PixelScene.landscape() ? 3 : 2;
 
@@ -180,7 +181,7 @@ public final class EditorUtilies {
             if (c != null) c.setSize(widthOnePart, maxCompHeight);
         }
 
-        float posY = parent.top();
+        float posY = parent.top() + parent.height() + gap * 2 - 1;
         float posX = parent.left();
         int indexInRow = 0;
         for (Component c : comps) {
@@ -202,7 +203,7 @@ public final class EditorUtilies {
             }
         }
 
-        parent.setSize(width, posY + (indexInRow == 0 ? -gap : maxCompHeight) - parent.top());
+        return posY + (indexInRow == 0 ? -gap : maxCompHeight) - parent.top();
     }
 
     public static class ParagraphIndicator extends Component {
