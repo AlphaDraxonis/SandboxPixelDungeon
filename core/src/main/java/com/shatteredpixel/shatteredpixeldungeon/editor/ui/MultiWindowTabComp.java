@@ -67,6 +67,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
             if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth((int) width);
             title.setRect(x, posY, width, title.height());
 
+            content.setSize(width,0);
             content.setSize(width, EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, mainWindowComps));
 
             sp.setRect(x, title.bottom() + GAP, width, height - title.bottom() - GAP - 1);

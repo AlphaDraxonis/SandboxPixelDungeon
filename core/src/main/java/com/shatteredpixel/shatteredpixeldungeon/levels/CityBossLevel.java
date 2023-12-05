@@ -696,24 +696,26 @@ public class CityBossLevel extends Level {
 				}
 
 				//custom shadow  for stairs
-				for (int i = cutShadow; i < 8; i++) {
-					if (i < 4 - cutShadow) {
-						data[shadowTop] = i * 8 + 0;
-                        for (int j = 1; j < shadowWidth-1; j++) {
-                            if (shadowTop + j < data.length) data[shadowTop + j] = i * 8 + 1;
-                        }
-                        if (shadowTop + shadowWidth < data.length) data[shadowTop + shadowWidth] = i * 8 + 2;
-					} else {
-						int j = i - 4;
-						data[shadowTop] = j * 8 + 3;
-                        for (int k = 1; k < shadowWidth-1; k++) {
-                            if (shadowTop + k < data.length) data[shadowTop + k] = j * 8 + 4;
-                        }
-                        if (shadowTop + shadowWidth < data.length) data[shadowTop + shadowWidth] = j * 8 + 5;
-					}
+				if (shadowTop != -1) {
+					for (int i = cutShadow; i < 8; i++) {
+						if (i < 4 - cutShadow) {
+							data[shadowTop] = i * 8 + 0;
+							for (int j = 1; j < shadowWidth - 1; j++) {
+								if (shadowTop + j < data.length) data[shadowTop + j] = i * 8 + 1;
+							}
+							if (shadowTop + shadowWidth < data.length) data[shadowTop + shadowWidth] = i * 8 + 2;
+						} else {
+							int j = i - 4;
+							data[shadowTop] = j * 8 + 3;
+							for (int k = 1; k < shadowWidth - 1; k++) {
+								if (shadowTop + k < data.length) data[shadowTop + k] = j * 8 + 4;
+							}
+							if (shadowTop + shadowWidth < data.length) data[shadowTop + shadowWidth] = j * 8 + 5;
+						}
 
-					shadowTop += tileW;
-                    if (shadowTop >= data.length) break;
+						shadowTop += tileW;
+						if (shadowTop >= data.length) break;
+					}
 				}
 
 				//lower part. Statues and DK's throne
