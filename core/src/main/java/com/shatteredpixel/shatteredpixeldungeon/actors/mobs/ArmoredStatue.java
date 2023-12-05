@@ -147,7 +147,7 @@ public class ArmoredStatue extends Statue {
 
 	@Override
 	public String description() {
-		return Messages.get(this, "desc", weapon.name(), armor.name());
+		return customDesc == null ? Messages.get(this, "desc", weapon.name(), armor.name()) : customDesc;
 	}
 
 }

@@ -19,23 +19,23 @@ public class ChangeMobNameDesc extends Component {
     public ChangeMobNameDesc(Mob mob) {
         this.mob = mob;
 
-        name = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "name_label"), null, 100, false, mob.name()){
+        name = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "name_label"), null, 100, false, Messages.titleCase(mob.name())){
             @Override
             protected void onChange() {
                 super.onChange();
                 mob.customName = getText();
-                if (mob.customName.equals("")) mob.customName = null;
+                if (mob.customName.trim().isEmpty()) mob.customName = null;
                 updateLayout();
             }
         };
         add(name);
 
-        desc = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "desc_label"), null, 500, true, mob.customDesc) {
+        desc = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "desc_label"), null, 500, true, mob.description()) {
             @Override
             protected void onChange() {
                 super.onChange();
                 mob.customDesc = getText();
-                if (mob.customDesc.equals("")) mob.customDesc = null;
+                if (mob.customDesc.trim().isEmpty()) mob.customDesc = null;
                 updateLayout();
             }
         };
@@ -46,7 +46,7 @@ public class ChangeMobNameDesc extends Component {
             protected void onChange() {
                 super.onChange();
                 mob.dialog = getText();
-                if (mob.dialog.equals("")) mob.dialog = null;
+                if (mob.dialog.trim().isEmpty()) mob.dialog = null;
                 updateLayout();
             }
         };
@@ -55,7 +55,7 @@ public class ChangeMobNameDesc extends Component {
 
     protected void updateLayout(){
         Window w = EditorUtilies.getParentWindow(this);
-        if(w instanceof SimpleWindow) ((SimpleWindow) w).layout();
+        if (w instanceof SimpleWindow) ((SimpleWindow) w).layout();
     }
 
     @Override

@@ -252,6 +252,8 @@ public class SpiritHawk extends ArmorAbility {
 
 		@Override
 		public String description() {
+			if (customDesc != null) return customDesc;
+
 			String message = Messages.get(this, "desc", (int)timeRemaining);
 			if (dodgesUsed < 2*Dungeon.hero.pointsInTalent(Talent.SWIFT_SPIRIT)){
 				message += "\n" + Messages.get(this, "desc_dodges", (2*Dungeon.hero.pointsInTalent(Talent.SWIFT_SPIRIT) - dodgesUsed));

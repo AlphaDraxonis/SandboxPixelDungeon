@@ -161,6 +161,7 @@ public abstract class Shaman extends Mob {
 	
 	@Override
 	public String description() {
+		if (customDesc != null) return customDesc;
 		return super.description() + "\n\n" + Messages.get(this, "spell_desc");
 	}
 	

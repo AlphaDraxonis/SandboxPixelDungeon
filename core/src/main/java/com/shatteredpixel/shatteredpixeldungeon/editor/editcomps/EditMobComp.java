@@ -721,7 +721,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     ((PylonSprite) pylon.sprite).activate();
                 else ((PylonSprite) pylon.sprite).deactivate();
             }
-            ((MobTitleEditor) title).setText(obj.name());
+            ((MobTitleEditor) title).setText(((MobTitleEditor) title).createTitle(obj));
         }
         desc.text(createDescription());
         if (statueWeapon != null) statueWeapon.updateItem();

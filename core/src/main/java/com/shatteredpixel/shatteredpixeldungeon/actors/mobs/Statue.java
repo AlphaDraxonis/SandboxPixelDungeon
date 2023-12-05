@@ -187,7 +187,7 @@ public class Statue extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public String description() {
-		return Messages.get(this, "desc", weapon.name());
+		return customDesc == null ? Messages.get(this, "desc", weapon.name()) : customDesc;
 	}
 
 	{

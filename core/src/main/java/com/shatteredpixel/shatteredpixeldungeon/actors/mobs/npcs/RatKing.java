@@ -154,7 +154,7 @@ public class RatKing extends NPC {
 
     @Override
     public String description() {
-        return !CustomDungeon.isEditing() && ((RatKingSprite) sprite).festive ?
+        return !CustomDungeon.isEditing() && ((RatKingSprite) sprite).festive && customDesc == null ?
                 Messages.get(this, "desc_festive")
                 : super.description();
     }

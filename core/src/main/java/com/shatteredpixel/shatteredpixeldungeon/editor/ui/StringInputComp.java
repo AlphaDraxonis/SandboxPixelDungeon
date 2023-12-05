@@ -55,8 +55,8 @@ public class StringInputComp extends Component {
 
                         @Override
                         public void onSelect(boolean positive, String text) {
-                            if (positive && text != null && !text.trim().isEmpty()) {
-                                StringInputComp.this.text.text(text);
+                            if (positive && text != null) {
+                                StringInputComp.this.text.text("".equals(text) ? " " : text);
                                 onChange();
                             }
                         }

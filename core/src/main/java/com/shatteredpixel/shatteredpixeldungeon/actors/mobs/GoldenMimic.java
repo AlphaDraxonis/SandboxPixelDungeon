@@ -58,7 +58,7 @@ public class GoldenMimic extends Mimic {
 
 	@Override
 	public String description() {
-		if (alignment == Alignment.NEUTRAL){
+		if (alignment == Alignment.NEUTRAL && customDesc == null){
 			return Messages.get(Heap.class, "locked_chest_desc") + "\n\n" + Messages.get(this, "hidden_hint");
 		} else {
 			return super.description();
