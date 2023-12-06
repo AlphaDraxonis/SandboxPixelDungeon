@@ -35,6 +35,11 @@ public class AugumentationSpinner extends StyledSpinner {
         });
     }
 
+    public void updateValue(Item item) {
+        if (item instanceof Weapon) setValue(((Weapon) item).augment);
+        else if (item instanceof Armor) setValue(((Armor) item).augment);
+    }
+
     protected void onChange() {
     }
 
@@ -52,7 +57,7 @@ public class AugumentationSpinner extends StyledSpinner {
 
         @Override
         public Component createInputField(int fontSize) {
-            return super.createInputField(fontSize-2);
+            return super.createInputField(fontSize - 2);
         }
 
         @Override
@@ -85,7 +90,7 @@ public class AugumentationSpinner extends StyledSpinner {
 
         @Override
         public Component createInputField(int fontSize) {
-            return super.createInputField(fontSize-2);
+            return super.createInputField(fontSize - 2);
         }
 
         @Override

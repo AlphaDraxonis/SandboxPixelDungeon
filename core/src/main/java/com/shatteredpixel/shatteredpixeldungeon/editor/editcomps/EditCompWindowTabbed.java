@@ -39,6 +39,8 @@ public class EditCompWindowTabbed extends WndTabbed {
 
     private Item[] items;
 
+    private boolean fullyInitialized = false;
+
 
     public EditCompWindowTabbed(TileItem tileItem, Heap heap, Mob mob, Trap trap, Plant plant, int numTabs) {
         actionPartModifyList.clear();
@@ -172,6 +174,8 @@ public class EditCompWindowTabbed extends WndTabbed {
         select(toSelect);
 
         layoutTabs();
+
+        fullyInitialized = true;
     }
 
     private void initComp(DefaultEditComp<?> comp) {
@@ -289,6 +293,7 @@ public class EditCompWindowTabbed extends WndTabbed {
             super.select(tab);
             selectedObject = obj;
             layoutCurrent();
+            comps.get(selectedObject).body.content.onShow(fullyInitialized);
         }
     }
 
@@ -326,7 +331,6 @@ public class EditCompWindowTabbed extends WndTabbed {
             TabBody body = comps.get(obj).body;
             if (visible) comps.get(obj).scrollPos = body.sp.content().camera().scroll.y;
             body.active = body.visible = value;
-            if (value) body.content.onShow();
         }
 
         @Override

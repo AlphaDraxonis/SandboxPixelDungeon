@@ -89,7 +89,9 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
 
             @Override
             public String getDisplayString() {
-                float price = heap.items.getLast().getCopy().value() * 5 * EditorScene.customLevel().levelScheme.getPriceMultiplier();
+                Item copy = heap.items.getLast().getCopy();
+                copy.identify(false);
+                float price = copy.value() * 5 * EditorScene.customLevel().levelScheme.getPriceMultiplier();
                 return super.getDisplayString() + " = " + ((int)(getAsFloat() * price) + " " + Messages.get(Gold.class, "name"));
             }
         }, Messages.get(LevelTab.class, "shop_price"), 8);
@@ -112,7 +114,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
                 EditorScene.updateHeapImage(obj);
                 super.onUpdateItem();
                 obj.updateSubicon();
-//                updateObj();
+                updateObj();
             }
 
             @Override
@@ -172,7 +174,18 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         updateHauntedEnabledState();
         obj.updateSubicon();
 
+        priceMultiplier.setValue(SpinnerFloatModel.convertToInt(obj.priceMultiplier, 2));
+
         super.updateObj();
+    }
+
+    @Override
+    protected void onShow(boolean fullyInitialized) {
+        super.onShow(fullyInitialized);
+        if (fullyInitialized) {
+            updateObj();
+            itemContainer.updateItemListOrder();
+        }
     }
 
     private void updateHauntedEnabledState() {

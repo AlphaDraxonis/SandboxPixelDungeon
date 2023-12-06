@@ -388,9 +388,13 @@ public class EditItemComp extends DefaultEditComp<Item> {
     }
 
     @Override
-    protected void onShow() {
-        super.onShow();
+    protected void onShow(boolean fullyInitialized) {
+        super.onShow(fullyInitialized);
         if (reorderHeapComp != null) reorderHeapComp.updateEnableState();
+        if (fullyInitialized) {
+            updateObj();
+            updateStates();
+        }
     }
 
     @Override
@@ -420,6 +424,27 @@ public class EditItemComp extends DefaultEditComp<Item> {
             EditorScene.updateHeapImage(heap);
         }
         super.updateObj();
+    }
+
+    private void updateStates() {
+        if (quantity != null) quantity.setValue(obj.quantity());
+        if (quickslotPos != null) quickslotPos.setValue(obj.reservedQuickslot);
+        if (curseBtn != null) curseBtn.checked(obj.cursed);
+        if (levelSpinner != null) levelSpinner.setValue(obj.level());
+        if (chargeSpinner != null) chargeSpinner.updateValue(obj);
+        if (augumentationSpinner != null) augumentationSpinner.updateValue(obj);
+        if (autoIdentify != null) autoIdentify.checked(obj.identifyOnStart);
+        if (cursedKnown != null) cursedKnown.checked(obj.getCursedKnownVar());
+        if (spreadIfLoot != null) spreadIfLoot.checked(obj.spreadIfLoot);
+        if (blessed != null) blessed.checked(((Ankh) obj).blessed);
+        if (igniteBombOnDrop != null) igniteBombOnDrop.checked(((Bomb) obj).igniteOnDrop);
+        if (shockerDuration != null) shockerDuration.setValue(((FakeTenguShocker) obj).duration);
+        if (keylevel != null) keylevel.selectObject(((Key) obj).levelName);
+        if (keyCell != null) {
+            int cell = ((Key) obj).cell;
+            if (cell == -1) keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
+            else keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilies.cellToString(cell)));
+        }
     }
 
     private final CellSelector.Listener gatewayTelePosListener = new CellSelector.Listener() {

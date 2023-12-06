@@ -280,7 +280,6 @@ public class Bomb extends Item {
 		if (bundle.contains( FUSE ))
 			Actor.add( fuse = ((Fuse)bundle.get(FUSE)).ignite(this) );
 		igniteOnDrop = bundle.getBoolean( IGNITE_ON_DROP );
-		igniteOnDrop = true;
 	}
 
 	//used to track the death from friendly magic badge

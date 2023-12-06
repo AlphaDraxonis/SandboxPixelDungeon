@@ -32,6 +32,12 @@ public class ChargeSpinner extends StyledSpinner {
         });
     }
 
+    public void updateValue(Item item) {
+        if (item instanceof Wand) setValue(((Wand) item).curCharges);
+        else if (item instanceof Artifact) setValue(((Artifact) item).charge());
+        adjustMaximum(item);
+    }
+
     protected void onChange() {
     }
 

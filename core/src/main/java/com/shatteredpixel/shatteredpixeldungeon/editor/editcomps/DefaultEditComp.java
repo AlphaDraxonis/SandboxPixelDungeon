@@ -68,7 +68,7 @@ public abstract class DefaultEditComp<T> extends Component {
         height = EditorUtilies.layoutStyledCompsInRectangles(WndTitledMessage.GAP, width, this, comps);
     }
 
-    protected void onShow() {
+    protected void onShow(boolean fullyInitialized) {
     }
 
     protected abstract Component createTitle();

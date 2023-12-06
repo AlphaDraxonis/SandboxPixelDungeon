@@ -423,6 +423,10 @@ public abstract class Level implements Bundlable {
 		}
 		for (Heap h : heaps.valueList()) {
 			h.seen = false;
+			if (h.type == Heap.Type.FOR_SALE){
+				Item i = h.items.getLast();
+				if ((i instanceof EquipableItem || i instanceof Wand)) i.identifyOnStart = true;
+ 			}
 			for (Item i : h.items) {
 				if (i.identifyOnStart && (i instanceof EquipableItem || i instanceof Wand)) i.identify();
 				if (i instanceof Bomb) {
