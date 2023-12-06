@@ -193,6 +193,9 @@ public class Heap implements Bundlable {
 			TippedDart.lostDarts = 0;
 			drop(d);
 		}
+
+		if (item instanceof Bomb && ((Bomb) item).igniteOnDrop && !CustomDungeon.isEditing())
+			((Bomb) item).trigger();
 	}
 	
 	public void replace( Item a, Item b ) {

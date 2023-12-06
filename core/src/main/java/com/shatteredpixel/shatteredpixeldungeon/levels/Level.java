@@ -425,7 +425,10 @@ public abstract class Level implements Bundlable {
 			h.seen = false;
 			for (Item i : h.items) {
 				if (i.identifyOnStart && (i instanceof EquipableItem || i instanceof Wand)) i.identify();
-				if (i.getClass() == Bomb.class && i.quantity() >= 2) i.image = ItemSpriteSheet.DBL_BOMB;
+				if (i instanceof Bomb) {
+					if (i.getClass() == Bomb.class && i.quantity() >= 2) i.image = ItemSpriteSheet.DBL_BOMB;
+					if (((Bomb) i).igniteOnDrop) ((Bomb) i).trigger();
+				}
 			}
 		}
 	}

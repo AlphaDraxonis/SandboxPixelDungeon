@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
@@ -73,6 +74,7 @@ public class Bomb extends Item {
 	}
 
 	public Fuse fuse;
+	public boolean igniteOnDrop;
 
 	//FIXME using a static variable for this is kinda gross, should be a better way
 	private static boolean lightingFuse = false;
@@ -81,7 +83,7 @@ public class Bomb extends Item {
 
 	@Override
 	public boolean isSimilar(Item item) {
-		return super.isSimilar(item) && this.fuse == ((Bomb) item).fuse;
+		return super.isSimilar(item) && this.fuse == ((Bomb) item).fuse && this.igniteOnDrop == ((Bomb) item).igniteOnDrop;
 	}
 	
 	public boolean explodesDestructively(){
@@ -127,8 +129,17 @@ public class Bomb extends Item {
 			super.onThrow( cell );
 	}
 
+	public void trigger() {
+		Actor.addDelayed(fuse = createFuse().ignite(this), 2);
+	}
+
 	@Override
 	public boolean doPickUp(Hero hero, int pos) {
+		if (igniteOnDrop) {
+			GLog.w( Messages.get(Tengu.BombAbility.BombItem.class, "cant_pickup") );
+			return false;
+		}
+
 		if (fuse != null) {
 			GLog.w( Messages.get(this, "snuff_fuse") );
 			fuse = null;
@@ -187,7 +198,7 @@ public class Bomb extends Item {
 					continue;
 				}
 
-				int dmg = Random.NormalIntRange(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth()*2);
+				int dmg = Random.NormalIntRange(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth()*2) * quantity();
 
 				//those not at the center of the blast take less damage
 				if (ch.pos != cell){
@@ -237,7 +248,7 @@ public class Bomb extends Item {
 
 	@Override
 	public ItemSprite.Glowing glowing() {
-		return fuse != null ? new ItemSprite.Glowing( 0xFF0000, 0.6f) : null;
+		return fuse != null || igniteOnDrop ? new ItemSprite.Glowing( 0xFF0000, 0.6f) : null;
 	}
 
 	@Override
@@ -247,18 +258,20 @@ public class Bomb extends Item {
 	
 	@Override
 	public String desc() {
-		if (fuse == null)
+		if (fuse == null  && !igniteOnDrop)
 			return super.desc()+ "\n\n" + Messages.get(this, "desc_fuse");
 		else
 			return super.desc() + "\n\n" + Messages.get(this, "desc_burning");
 	}
 
 	private static final String FUSE = "fuse";
+	private static final String IGNITE_ON_DROP = "ignite_on_drop";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put( FUSE, fuse );
+		bundle.put( IGNITE_ON_DROP, igniteOnDrop );
 	}
 
 	@Override
@@ -266,6 +279,8 @@ public class Bomb extends Item {
 		super.restoreFromBundle(bundle);
 		if (bundle.contains( FUSE ))
 			Actor.add( fuse = ((Fuse)bundle.get(FUSE)).ignite(this) );
+		igniteOnDrop = bundle.getBoolean( IGNITE_ON_DROP );
+		igniteOnDrop = true;
 	}
 
 	//used to track the death from friendly magic badge

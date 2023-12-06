@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FakeTenguShocker;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
@@ -479,6 +480,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (a instanceof Key)
             return ((Key) a).levelName.equals(((Key) b).levelName) && ((Key) a).cell == ((Key) b).cell;
         if (a instanceof Ankh) return ((Ankh) a).blessed == ((Ankh) b).blessed;
+        if (a instanceof Bomb) return ((Bomb) a).igniteOnDrop == ((Bomb) b).igniteOnDrop;
         if (a instanceof RandomItem) return a.equals(b);
         return true;
     }

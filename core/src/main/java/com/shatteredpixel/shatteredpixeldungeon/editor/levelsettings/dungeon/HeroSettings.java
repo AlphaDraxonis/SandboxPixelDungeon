@@ -385,6 +385,7 @@ public class HeroSettings extends Component {
                 PixelScene.align(subClassesEnabled);
                 posY = subClassesEnabled.bottom() + gap;
             }
+            itemSelectorParent.setSize(width, -1);
             itemSelectorParent.setRect(x, posY, width,  EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
                     new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                             startGold, startEnergy, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
