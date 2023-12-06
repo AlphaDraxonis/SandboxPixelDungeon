@@ -93,9 +93,6 @@ public class CustomDungeon implements Bundlable {
     //Custom mob attacks: externalise
     //and search: used so resistances can differentiate between melee and magical attacks
 
-    //6h
-    //place ignited bombs, I want to make a mob that drops ignited bomb after death
-
     //45 min
     //A way to make it so bosses don't count as bosses.
 
@@ -107,6 +104,8 @@ public class CustomDungeon implements Bundlable {
 
     //8 Std
     //crystals(cave), and perhaps crystal walls
+
+    //maybe ability to randomize loot drops between some amounts like 1-9 quantity for example
 
     //Scale mobs if their normal stats editor is disabled: not just everything
 
@@ -1111,6 +1110,9 @@ public class CustomDungeon implements Bundlable {
             }
             lastEditedFloor = newName;
             CustomDungeonSaves.saveDungeon(this);
+
+            EditorScene.updatePathfinder();
+
             return ls;
         } catch (IOException e) {
             SandboxPixelDungeon.reportException(e);
@@ -1135,9 +1137,6 @@ public class CustomDungeon implements Bundlable {
         try {
             String oldName = levelScheme.getName();
             boolean savedItself = false;
-
-            if (levelScheme.getType() == CustomLevel.class)
-                CustomDungeonSaves.renameLevel(oldName, newName);
 
             if (ratKingLevels.contains(oldName)) {
                 ratKingLevels.remove(oldName);
@@ -1302,6 +1301,10 @@ public class CustomDungeon implements Bundlable {
             EditorScene.updateDepthIcon();
 
             EditorScene.updatePathfinder();
+
+            if (levelScheme.getType() == CustomLevel.class)
+                CustomDungeonSaves.deleteLevelFile(oldName);
+
             CustomDungeonSaves.saveDungeon(this);
 
         } catch (IOException e) {

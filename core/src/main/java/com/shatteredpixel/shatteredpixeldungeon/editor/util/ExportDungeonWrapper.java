@@ -96,7 +96,6 @@ public class ExportDungeonWrapper implements Bundlable {
             CustomDungeonSaves.saveDungeon(export.dungeon);
 
             for (Level l : export.customLevels) {
-                Dungeon.level = l;
                 CustomDungeonSaves.saveLevel(l);
             }
 

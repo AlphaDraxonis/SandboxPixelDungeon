@@ -150,7 +150,9 @@ public class CustomDungeonSaves {
 
     public static void saveLevel(Level level) throws IOException {
         Bundle bundle = new Bundle();
+        Dungeon.level = level;
         bundle.put(FLOOR, level);
+        Dungeon.level = EditorScene.customLevel();
         FileUtils.bundleToFile(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, level.name.replace(' ', '_')), bundle);
     }
 
@@ -176,7 +178,7 @@ public class CustomDungeonSaves {
                 FileUtils.getFileHandle(DUNGEON_FOLDER + newName.replace(' ', '_') + "/" + DUNGEON_DATA).read()).get(DUNGEON);
     }
 
-    public static void renameLevel(String oldName, String newName) throws IOException {
+    public static void moveLevel(String oldName, String newName) {
         FileHandle fileOld = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, oldName.replace(' ', '_')));
         FileHandle fileNew = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, newName.replace(' ', '_')));
         fileOld.moveTo(fileNew);
