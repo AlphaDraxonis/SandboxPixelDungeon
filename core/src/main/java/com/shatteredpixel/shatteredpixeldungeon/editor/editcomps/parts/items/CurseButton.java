@@ -1,17 +1,19 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckbox;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.TormentedSpiritSprite;
 
-public class CurseButton extends CheckBox {
+public class CurseButton extends StyledCheckbox {
 
     private Item item;
 
     public CurseButton(Item item) {
-        super(Messages.get(CurseButton.class, "label"));
+        super(Messages.get(CurseButton.class, "label"), 9);
         this.item = item;
         checked(item.cursed);
+        icon(new TormentedSpiritSprite());
     }
 
     @Override

@@ -1,17 +1,21 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
-public class ChargeSpinner extends Spinner {
+public class ChargeSpinner extends StyledSpinner {
 
 
     public ChargeSpinner(Wand wand) {
-        super(new LevelSpinner.LevelSpinnerModel(wand.curCharges, wand.maxCharges), " " + Messages.get(ChargeSpinner.class, "label") + ":", 10);
+        super(new LevelSpinner.LevelSpinnerModel(wand.curCharges, wand.maxCharges),
+                Messages.get(ChargeSpinner.class, "label"), 9, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.SCROLL_RECHARGE));
+        icon.scale.set(9f / icon.height());
         addChangeListener(() -> {
             wand.curCharges = (int) getValue();
             onChange();
@@ -19,7 +23,9 @@ public class ChargeSpinner extends Spinner {
     }
 
     public ChargeSpinner(Artifact artifact) {
-        super(new LevelSpinner.LevelSpinnerModel(artifact.charge(), artifact.chargeCap()), " " + Messages.get(ChargeSpinner.class, "label") + ":", 10);
+        super(new LevelSpinner.LevelSpinnerModel(artifact.charge(), artifact.chargeCap()),
+                Messages.get(ChargeSpinner.class, "label"), 9, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.SCROLL_RECHARGE));
+        icon.scale.set(9f / icon.height());
         addChangeListener(() -> {
             artifact.charge((int) getValue());
             onChange();

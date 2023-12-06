@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ReorderHeapComp;
@@ -16,8 +17,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckbox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
@@ -41,14 +43,15 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
@@ -69,24 +72,25 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected final ReorderHeapComp reorderHeapComp;
 
 
-    protected final Spinner quantity, quickslotPos;
+    protected final StyledSpinner quantity, quickslotPos;
 
     protected final CurseButton curseBtn;
     protected final LevelSpinner levelSpinner;
     protected final ChargeSpinner chargeSpinner;
 
-    protected final CheckBox autoIdentify;
-    protected final CheckBox cursedKnown;
-    protected final CheckBox spreadIfLoot;
-    protected final CheckBox blessed;
-    protected final Spinner shockerDuration;
+    protected final StyledCheckbox autoIdentify;
+    protected final StyledCheckbox cursedKnown;
+    protected final StyledCheckbox spreadIfLoot;
+    protected final StyledCheckbox blessed;
+    protected final StyledCheckbox igniteBombOnDrop;
+    protected final StyledSpinner shockerDuration;
     protected final AugumentationSpinner augumentationSpinner;
-    protected final RedButton enchantBtn;
+    protected final StyledButton enchantBtn;
     protected final ChooseDestLevelComp keylevel;
-    protected final RedButton keyCell;
-    protected final RedButton randomItem;
+    protected final StyledButton keyCell;
+    protected final StyledButton randomItem;
 
-    private final Component[] comps;
+    private final Component[] rectComps, linearComps;
 
     private Window windowInstance;
 
@@ -101,17 +105,12 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
         if (item.stackable) {
             final int quantityMultiplierForGold = item instanceof Gold ? 10 : 1;
-            quantity = new Spinner(new SpinnerIntegerModel(1, 100 * quantityMultiplierForGold, item.quantity(), 1, false, null) {
-                @Override
-                public float getInputFieldWith(float height) {
-                    return height * 1.4f;
-                }
-
+            quantity = new StyledSpinner(new SpinnerIntegerModel(1, 100 * quantityMultiplierForGold, item.quantity(), 1, false, null) {
                 @Override
                 public int getClicksPerSecondWhileHolding() {
                     return 15 * quantityMultiplierForGold;
                 }
-            }, " " + Messages.get(EditItemComp.class, "quantity") + ":", 10);
+            }, Messages.get(EditItemComp.class, "quantity"), 9);
             ((SpinnerIntegerModel) quantity.getModel()).setAbsoluteMinAndMax(1f, 1_000_000f);
             quantity.addChangeListener(() -> {
                 item.quantity((int) quantity.getValue());
@@ -122,12 +121,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
         //only for start items
         if (item.reservedQuickslot != 0 && item.defaultAction() != null && !(item instanceof Key)) {//use -1 to indicate 0 while still enabling this
-            quickslotPos = new Spinner(new SpinnerIntegerModel(0, 6, item.reservedQuickslot == -1 ? 0 : item.reservedQuickslot, 1, false, null) {
-                @Override
-                public float getInputFieldWith(float height) {
-                    return height * 1.4f;
-                }
-
+            quickslotPos = new StyledSpinner(new SpinnerIntegerModel(0, 6, item.reservedQuickslot == -1 ? 0 : item.reservedQuickslot, 1, false, null) {
                 @Override
                 public void displayInputAnyNumberDialog() {
                     //do nothing
@@ -143,7 +137,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 public int getClicksPerSecondWhileHolding() {
                     return 14;
                 }
-            }, " " + Messages.get(EditItemComp.class, "quickslot") + ":", 10);
+            }, Messages.get(EditItemComp.class, "quickslot"), 9);
             quickslotPos.addChangeListener(() -> {
                 item.reservedQuickslot = (int) quickslotPos.getValue();
                 if (item.reservedQuickslot == 0) item.reservedQuickslot = -1;
@@ -152,18 +146,18 @@ public class EditItemComp extends DefaultEditComp<Item> {
         } else quickslotPos = null;
 
         if (heap == null) {
-           spreadIfLoot = new CheckBox(Messages.get(EditItemComp.class, "spread_if_loot")){
-               @Override
-               public void checked(boolean value) {
-                   super.checked(value);
-                   item.spreadIfLoot = value;
-               }
-           };
-           spreadIfLoot.checked(item.spreadIfLoot);
-           add(spreadIfLoot);
+            spreadIfLoot = new StyledCheckbox(Messages.get(EditItemComp.class, "spread_if_loot"), 9) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    item.spreadIfLoot = value;
+                }
+            };
+            spreadIfLoot.checked(item.spreadIfLoot);
+            add(spreadIfLoot);
         } else spreadIfLoot = null;
 
-        if(!(item instanceof RandomItem)) {
+        if (!(item instanceof RandomItem)) {
             if (!(item instanceof MissileWeapon) && (item instanceof Weapon || item instanceof Armor || item instanceof Ring || item instanceof Artifact || item instanceof Wand)) {
                 curseBtn = new CurseButton(item) {
                     @Override
@@ -172,7 +166,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     }
                 };
                 add(curseBtn);
-                cursedKnown = new CheckBox(Messages.get(EditItemComp.class, "cursed_known")) {
+                cursedKnown = new StyledCheckbox(Messages.get(EditItemComp.class, "cursed_known"), 9) {
                     @Override
                     public void checked(boolean value) {
                         super.checked(value);
@@ -218,19 +212,20 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     || (item instanceof Weapon && !(item instanceof MissileWeapon || item instanceof SpiritBow))
                     || (item instanceof Armor && !(item instanceof ClassArmor))) {
 //      if (!DefaultStatsCache.getDefaultObject(item.getClass()).isIdentified()) { // always returns true while editing
-                autoIdentify = new CheckBox(Messages.get(EditItemComp.class, "auto_identify")) {
+                autoIdentify = new StyledCheckbox(Messages.get(EditItemComp.class, "auto_identify"), 9) {
                     @Override
                     public void checked(boolean value) {
                         super.checked(value);
                         item.identifyOnStart = value;
                     }
                 };
+                autoIdentify.icon(new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ));
                 autoIdentify.checked(item.identifyOnStart);
                 add(autoIdentify);
             } else autoIdentify = null;
 
             if (item instanceof Weapon || item instanceof Armor) {//Missiles support enchantments too
-                enchantBtn = new RedButton(Messages.get(EditItemComp.class, "enchant")) {
+                enchantBtn = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditItemComp.class, "enchant")) {
                     @Override
                     protected void onClick() {
                         Window w = new WndChooseEnchant(item) {
@@ -244,6 +239,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                         else Game.scene().addToFront(w);
                     }
                 };
+                enchantBtn.icon(new ItemSprite(ItemSpriteSheet.STYLUS));
                 add(enchantBtn);
             } else enchantBtn = null;
 
@@ -258,7 +254,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             } else augumentationSpinner = null;
 
             if (item instanceof Ankh) {
-                blessed = new CheckBox(Messages.get(EditItemComp.class, "blessed")) {
+                blessed = new StyledCheckbox(Messages.get(EditItemComp.class, "blessed"), 9) {
                     @Override
                     public void checked(boolean value) {
                         super.checked(value);
@@ -266,18 +262,28 @@ public class EditItemComp extends DefaultEditComp<Item> {
                         updateObj();
                     }
                 };
+                blessed.icon(Icons.TALENT.get());
                 blessed.checked(((Ankh) item).blessed);
                 add(blessed);
             } else blessed = null;
 
-            if (item instanceof FakeTenguShocker) {
-                shockerDuration = new Spinner(new SpinnerIntegerModel(1, 100, ((FakeTenguShocker) item).duration, 1, false, null) {
+            if (item instanceof Bomb) {
+                igniteBombOnDrop = new StyledCheckbox(Messages.get(EditItemComp.class, "ignite_bomb_on_drop"), 9) {
                     @Override
-                    public float getInputFieldWith(float height) {
-                        return height * 1.4f;
+                    public void checked(boolean value) {
+                        super.checked(value);
+                        ((Bomb) item).igniteOnDrop = value;
+                        updateObj();
                     }
-                },
-                        " " + Messages.get(EditItemComp.class, "duration") + ":", 10);
+                };
+                igniteBombOnDrop.icon(new ItemSprite(ItemSpriteSheet.BOMB, new ItemSprite.Glowing(0xFF0000, 0.6f)));
+                igniteBombOnDrop.checked(((Bomb) item).igniteOnDrop);
+                add(igniteBombOnDrop);
+            } else igniteBombOnDrop = null;
+
+            if (item instanceof FakeTenguShocker) {
+                shockerDuration = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((FakeTenguShocker) item).duration, 1, false, null),
+                        Messages.get(EditItemComp.class, "duration"), 9);
                 shockerDuration.addChangeListener(() -> ((FakeTenguShocker) item).duration = (int) shockerDuration.getValue());
                 add(shockerDuration);
             } else shockerDuration = null;
@@ -298,7 +304,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                             ((Key) item).levelName = EditorUtilies.getCodeName((LevelScheme) object);
                         }
                         if (keyCell != null) {
-                            boolean canChangeKeyCell = !Level.ANY.equals(((Key) item).levelName);
+                            boolean canChangeKeyCell = EditorScene.customLevel().name.equals(((Key) item).levelName);
                             if (!canChangeKeyCell && ((Key) item).cell != -1) {
                                 ((Key) item).cell = -1;
                                 keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
@@ -358,24 +364,27 @@ public class EditItemComp extends DefaultEditComp<Item> {
             enchantBtn = null;
             blessed = null;
             shockerDuration = null;
+            igniteBombOnDrop = null;
         }
 
-        comps = new Component[]{quantity, quickslotPos, keylevel, keyCell, shockerDuration, chargeSpinner, levelSpinner, augumentationSpinner,
-                curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed, spreadIfLoot, randomItem};
+        rectComps = new Component[]{quantity, quickslotPos, shockerDuration, chargeSpinner, levelSpinner, augumentationSpinner,
+                curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed, igniteBombOnDrop, spreadIfLoot};
+        linearComps = new Component[]{randomItem, keylevel, keyCell};
     }
 
     @Override
     protected void layout() {
         desc.maxWidth((int) width);
 
-        if (reorderHeapComp != null) reorderHeapComp.setRect(width - WndTitledMessage.GAP , y, -1, title.height());
+        if (reorderHeapComp != null) reorderHeapComp.setRect(width - WndTitledMessage.GAP, y, -1, title.height());
 
         title.setRect(x, y, reorderHeapComp == null ? width : reorderHeapComp.left() - WndTitledMessage.GAP * 2, title.height());
         desc.setRect(x, title.bottom() + WndTitledMessage.GAP * 2, desc.width(), desc.height());
 
         height = desc.bottom() + 1;
 
-        layoutCompsLinear(comps);
+        layoutCompsInRectangles(rectComps);
+        layoutCompsLinear(linearComps);
     }
 
     @Override
@@ -422,7 +431,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 boolean validPos;
                 Heap h = EditorScene.customLevel().heaps.get(cell);
                 if (key instanceof GoldenKey) validPos = h != null && h.type == Heap.Type.LOCKED_CHEST;
-                else if (key instanceof CrystalKey) validPos = Dungeon.level.map[cell] == Terrain.CRYSTAL_DOOR || h != null && h.type == Heap.Type.CRYSTAL_CHEST;
+                else if (key instanceof CrystalKey)
+                    validPos = Dungeon.level.map[cell] == Terrain.CRYSTAL_DOOR || h != null && h.type == Heap.Type.CRYSTAL_CHEST;
                 else if (key instanceof IronKey) validPos = Dungeon.level.map[cell] == Terrain.LOCKED_DOOR;
                 else if (key instanceof SkeletonKey) validPos = Dungeon.level.map[cell] == Terrain.LOCKED_EXIT;
                 else validPos = false;
@@ -448,7 +458,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
 
     public static boolean areEqual(Item a, Item b) {
-        return areEqual(a,b, false);
+        return areEqual(a, b, false);
     }
 
     public static boolean areEqual(Item a, Item b, boolean ignoreQuantity) {

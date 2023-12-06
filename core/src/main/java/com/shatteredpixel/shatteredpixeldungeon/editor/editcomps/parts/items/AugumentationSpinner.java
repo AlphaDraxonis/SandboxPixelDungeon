@@ -2,8 +2,8 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.FeelingSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -14,18 +14,20 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Random;
 
 import java.util.Locale;
 
-public class AugumentationSpinner extends Spinner {
+public class AugumentationSpinner extends StyledSpinner {
 
 
     public AugumentationSpinner(Item item) {
         super(item instanceof Weapon ?
                         new WeaponAugSpinnerModel((Weapon) item) :
                         new ArmorAugSpinnerModel((Armor) item),
-                " " + Messages.get(AugumentationSpinner.class, "label") + ":", 10);
+                Messages.get(AugumentationSpinner.class, "label"), 9,
+                new ItemSprite(ItemSpriteSheet.STONE_AUGMENTATION));
 
         addChangeListener(() -> {
             ((Runnable) getModel()).run();
@@ -46,6 +48,11 @@ public class AugumentationSpinner extends Spinner {
             this.item = item;
             setValue(item.augment);
 
+        }
+
+        @Override
+        public Component createInputField(int fontSize) {
+            return super.createInputField(fontSize-2);
         }
 
         @Override
@@ -74,6 +81,11 @@ public class AugumentationSpinner extends Spinner {
             super(true, new Object[]{Armor.Augment.NONE, Armor.Augment.EVASION, Armor.Augment.DEFENSE, Armor.Augment.RANDOM});
             this.item = item;
             setValue(item.augment);
+        }
+
+        @Override
+        public Component createInputField(int fontSize) {
+            return super.createInputField(fontSize-2);
         }
 
         @Override
