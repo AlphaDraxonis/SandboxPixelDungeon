@@ -93,9 +93,6 @@ public class CustomDungeon implements Bundlable {
     //Custom mob attacks: externalise
     //and search: used so resistances can differentiate between melee and magical attacks
 
-    //45 min
-    //A way to make it so bosses don't count as bosses.
-
     //???
     //see how much a locked door there and how much key there
 

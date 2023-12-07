@@ -8,7 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSe
 import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipeList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckbox;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -34,7 +34,7 @@ public class DungeonTab extends MultiWindowTabComp {
 
         StyledButton potionColors, scrollRunes, ringGems;
         StyledButton heroes, durationSettings, forceChallenges, customRecipes;
-        StyledCheckbox view2d, seeLevelOnDeath, autoRevealSecrets;
+        StyledCheckBox view2d, seeLevelOnDeath, autoRevealSecrets;
 
         potionColors = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_pot"), 8) {
             @Override
@@ -119,7 +119,7 @@ public class DungeonTab extends MultiWindowTabComp {
         customRecipes.icon(new ItemSprite(EditorScene.customLevel().tilesTex(), new TileItem(Terrain.ALCHEMY, -1)));
         content.add(customRecipes);
 
-        view2d = new StyledCheckbox(Messages.get(DungeonTab.class, "enable_2d"), 8){
+        view2d = new StyledCheckBox(Messages.get(DungeonTab.class, "enable_2d"), 8){
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -129,7 +129,7 @@ public class DungeonTab extends MultiWindowTabComp {
         view2d.checked(Dungeon.customDungeon.view2d);
         content.add(view2d);
 
-        seeLevelOnDeath = new StyledCheckbox(Messages.get(DungeonTab.class, "see_level_on_death"), 8){
+        seeLevelOnDeath = new StyledCheckBox(Messages.get(DungeonTab.class, "see_level_on_death"), 8){
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -139,7 +139,7 @@ public class DungeonTab extends MultiWindowTabComp {
         seeLevelOnDeath.checked(Dungeon.customDungeon.seeLevelOnDeath);
         content.add(seeLevelOnDeath);
 
-        autoRevealSecrets = new StyledCheckbox(Messages.get(DungeonTab.class, "reveal_secrets"), 8){
+        autoRevealSecrets = new StyledCheckBox(Messages.get(DungeonTab.class, "reveal_secrets"), 8){
             @Override
             public void checked(boolean value) {
                 super.checked(value);

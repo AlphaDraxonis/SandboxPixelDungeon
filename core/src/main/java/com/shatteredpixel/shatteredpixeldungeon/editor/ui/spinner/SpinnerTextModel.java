@@ -99,7 +99,7 @@ public class SpinnerTextModel extends AbstractSpinnerModel {
 
     @Override
     public Component createInputField(int fontSize) {
-        inputField = new Spinner.SpinnerTextBlock(Chrome.get(getChromeType()), 10);
+        inputField = new Spinner.SpinnerTextBlock(Chrome.get(getChromeType()), fontSize);
         return inputField;
     }
 

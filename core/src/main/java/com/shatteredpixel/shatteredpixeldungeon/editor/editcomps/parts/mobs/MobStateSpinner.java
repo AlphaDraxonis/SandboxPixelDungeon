@@ -1,17 +1,19 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.noosa.ui.Component;
 
 import java.util.Locale;
 
-public class MobStateSpinner extends Spinner {
+public class MobStateSpinner extends StyledSpinner {
 
 
     public MobStateSpinner(Mob mob) {
-        super(new MobStateSpinnerModel(mob), " " + Messages.get(MobStateSpinner.class, "label"), 10);
+        super(new MobStateSpinnerModel(mob), Messages.get(MobStateSpinner.class, "label"), 9);
+        setButtonWidth(9f);
 
         addChangeListener(() -> ((States) getValue()).applyChange(mob));
     }
@@ -27,9 +29,9 @@ public class MobStateSpinner extends Spinner {
         public static int getIndex(Mob mob) {
             if (mob.following) return 5;
             if (mob.state == mob.SLEEPING) return 0;
-            if (mob.state == mob.HUNTING)  return 1;
-            if (mob.state == mob.PASSIVE)  return 3;
-            if (mob.state == mob.FLEEING)  return 4;
+            if (mob.state == mob.HUNTING) return 1;
+            if (mob.state == mob.PASSIVE) return 3;
+            if (mob.state == mob.FLEEING) return 4;
             return 2;//Wandering is default
         }
 
@@ -72,8 +74,8 @@ public class MobStateSpinner extends Spinner {
         }
 
         @Override
-        public float getInputFieldWith(float height) {
-            return height * 2.5f;
+        public Component createInputField(int fontSize) {
+            return super.createInputField(fontSize - 1);
         }
     }
 }

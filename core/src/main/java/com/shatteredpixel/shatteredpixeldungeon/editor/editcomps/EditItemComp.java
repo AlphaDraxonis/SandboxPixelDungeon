@@ -17,7 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckbox;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
@@ -78,11 +78,11 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected final LevelSpinner levelSpinner;
     protected final ChargeSpinner chargeSpinner;
 
-    protected final StyledCheckbox autoIdentify;
-    protected final StyledCheckbox cursedKnown;
-    protected final StyledCheckbox spreadIfLoot;
-    protected final StyledCheckbox blessed;
-    protected final StyledCheckbox igniteBombOnDrop;
+    protected final StyledCheckBox autoIdentify;
+    protected final StyledCheckBox cursedKnown;
+    protected final StyledCheckBox spreadIfLoot;
+    protected final StyledCheckBox blessed;
+    protected final StyledCheckBox igniteBombOnDrop;
     protected final StyledSpinner shockerDuration;
     protected final AugumentationSpinner augumentationSpinner;
     protected final StyledButton enchantBtn;
@@ -110,7 +110,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 public int getClicksPerSecondWhileHolding() {
                     return 15 * quantityMultiplierForGold;
                 }
-            }, Messages.get(EditItemComp.class, "quantity"), 9);
+            }, Messages.get(EditItemComp.class, "quantity"));
             ((SpinnerIntegerModel) quantity.getModel()).setAbsoluteMinAndMax(1f, 1_000_000f);
             quantity.addChangeListener(() -> {
                 item.quantity((int) quantity.getValue());
@@ -137,7 +137,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 public int getClicksPerSecondWhileHolding() {
                     return 14;
                 }
-            }, Messages.get(EditItemComp.class, "quickslot"), 9);
+            }, Messages.get(EditItemComp.class, "quickslot"));
             quickslotPos.addChangeListener(() -> {
                 item.reservedQuickslot = (int) quickslotPos.getValue();
                 if (item.reservedQuickslot == 0) item.reservedQuickslot = -1;
@@ -146,7 +146,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         } else quickslotPos = null;
 
         if (heap == null) {
-            spreadIfLoot = new StyledCheckbox(Messages.get(EditItemComp.class, "spread_if_loot"), 9) {
+            spreadIfLoot = new StyledCheckBox(Messages.get(EditItemComp.class, "spread_if_loot")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -166,7 +166,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     }
                 };
                 add(curseBtn);
-                cursedKnown = new StyledCheckbox(Messages.get(EditItemComp.class, "cursed_known"), 9) {
+                cursedKnown = new StyledCheckBox(Messages.get(EditItemComp.class, "cursed_known")) {
                     @Override
                     public void checked(boolean value) {
                         super.checked(value);
@@ -212,7 +212,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     || (item instanceof Weapon && !(item instanceof MissileWeapon || item instanceof SpiritBow))
                     || (item instanceof Armor && !(item instanceof ClassArmor))) {
 //      if (!DefaultStatsCache.getDefaultObject(item.getClass()).isIdentified()) { // always returns true while editing
-                autoIdentify = new StyledCheckbox(Messages.get(EditItemComp.class, "auto_identify"), 9) {
+                autoIdentify = new StyledCheckBox(Messages.get(EditItemComp.class, "auto_identify")) {
                     @Override
                     public void checked(boolean value) {
                         super.checked(value);
@@ -254,7 +254,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             } else augumentationSpinner = null;
 
             if (item instanceof Ankh) {
-                blessed = new StyledCheckbox(Messages.get(EditItemComp.class, "blessed"), 9) {
+                blessed = new StyledCheckBox(Messages.get(EditItemComp.class, "blessed")) {
                     @Override
                     public void checked(boolean value) {
                         super.checked(value);
@@ -268,7 +268,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             } else blessed = null;
 
             if (item instanceof Bomb) {
-                igniteBombOnDrop = new StyledCheckbox(Messages.get(EditItemComp.class, "ignite_bomb_on_drop"), 9) {
+                igniteBombOnDrop = new StyledCheckBox(Messages.get(EditItemComp.class, "ignite_bomb_on_drop")) {
                     @Override
                     public void checked(boolean value) {
                         super.checked(value);
@@ -283,7 +283,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
             if (item instanceof FakeTenguShocker) {
                 shockerDuration = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((FakeTenguShocker) item).duration, 1, false, null),
-                        Messages.get(EditItemComp.class, "duration"), 9);
+                        Messages.get(EditItemComp.class, "duration"));
                 shockerDuration.addChangeListener(() -> ((FakeTenguShocker) item).duration = (int) shockerDuration.getValue());
                 add(shockerDuration);
             } else shockerDuration = null;

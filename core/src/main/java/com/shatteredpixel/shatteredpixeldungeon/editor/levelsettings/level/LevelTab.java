@@ -8,7 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckbox;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -44,7 +44,7 @@ public class LevelTab extends MultiWindowTabComp {
         StyledButton mobSpawn;
         Spinner viewDistance, depth, shopPrice;
         StyledButton changeSize;
-        StyledCheckbox hungerDepletion, naturalRegen, allowPickaxeMining;
+        StyledCheckBox hungerDepletion, naturalRegen, allowPickaxeMining;
         StyledButton bossLevelRetexture;
         StyledButton levelColoring;
 
@@ -70,7 +70,7 @@ public class LevelTab extends MultiWindowTabComp {
         mobSpawn.icon(new GnollSprite());
         content.add(mobSpawn);
 
-        hungerDepletion = new StyledCheckbox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "hunger"), 8, level.levelScheme.hungerDepletion) {
+        hungerDepletion = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "hunger"), 8, level.levelScheme.hungerDepletion) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -80,7 +80,7 @@ public class LevelTab extends MultiWindowTabComp {
         hungerDepletion.icon(new ItemSprite(ItemSpriteSheet.RATION));
         content.add(hungerDepletion);
 
-        naturalRegen = new StyledCheckbox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "regeneration"), 8, level.levelScheme.naturalRegeneration) {
+        naturalRegen = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "regeneration"), 8, level.levelScheme.naturalRegeneration) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -96,7 +96,7 @@ public class LevelTab extends MultiWindowTabComp {
         }
         content.add(naturalRegen);
 
-        allowPickaxeMining = new StyledCheckbox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "mining"), 8, level.levelScheme.allowPickaxeMining) {
+        allowPickaxeMining = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "mining"), 8, level.levelScheme.allowPickaxeMining) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);

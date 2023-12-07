@@ -2,8 +2,8 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.FloatFunction;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -11,7 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
-public class QuestSpinner extends Spinner {
+public class QuestSpinner extends StyledSpinner {
 
 
     public QuestSpinner(Quest quest, FloatFunction<Float> inputFiledWith) {
@@ -20,7 +20,8 @@ public class QuestSpinner extends Spinner {
             public float getInputFieldWith(float height) {
                 return inputFiledWith.get(height);
             }
-        }, " " + Messages.get(QuestSpinner.class, "label"), 10);
+        }, Messages.get(QuestSpinner.class, "label"));
+        setButtonWidth(9f);
     }
 
     private static class QuestSpinnerModel extends SpinnerTextIconModel {
@@ -63,7 +64,7 @@ public class QuestSpinner extends Spinner {
 
         @Override
         public Component createInputField(int fontSize) {
-            inputField = new ShowField(Chrome.get(getChromeType()), 8);
+            inputField = new ShowField(Chrome.get(getChromeType()), fontSize-2);
             return inputField;
         }
     }

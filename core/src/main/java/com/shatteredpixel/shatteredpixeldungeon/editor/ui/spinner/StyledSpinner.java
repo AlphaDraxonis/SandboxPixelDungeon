@@ -16,6 +16,10 @@ public class StyledSpinner extends Spinner {
     protected Image icon;
 
 
+    public StyledSpinner(SpinnerModel model, String name) {
+        this(model, name, 9);
+    }
+
     public StyledSpinner(SpinnerModel model, String name, int textSize) {
         this(model, name, textSize, null);
     }

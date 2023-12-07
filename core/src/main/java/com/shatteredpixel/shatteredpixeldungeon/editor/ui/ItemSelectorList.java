@@ -26,6 +26,10 @@ public class ItemSelectorList<T extends Item> extends Component {
 
     protected final List<T> list;
 
+    public ItemSelectorList(List<T> list, String label) {
+        this(list, label, 9);
+    }
+
     public ItemSelectorList(List<T> list, String label, int fontSize) {
 
         this.list = list;

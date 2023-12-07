@@ -45,7 +45,7 @@ public class Guard extends Mob {
 
 	//they can only use their chains once in Shattered
 	private int chainCooldown = 0;
-	public int maxChainCooldown = Integer.MAX_VALUE;
+	public int maxChainCooldown = 1_000_000;
 
 	{
 		spriteClass = GuardSprite.class;
@@ -185,8 +185,8 @@ public class Guard extends Mob {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		if (bundle.contains("chainsused")){
-			chainCooldown = bundle.getBoolean("chainsused") ? 0 : Integer.MAX_VALUE;
-			maxChainCooldown = Integer.MAX_VALUE;
+			chainCooldown = bundle.getBoolean("chainsused") ? 0 : 1_000_000;
+			maxChainCooldown = 1_000_000;
 		} else {
 			chainCooldown = bundle.getInt(CHAIN_COOLDOWN);
 			maxChainCooldown = bundle.getInt(MAX_CHAIN_COOLDOWN);

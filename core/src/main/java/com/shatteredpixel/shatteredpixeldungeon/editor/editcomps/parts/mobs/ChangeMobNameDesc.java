@@ -19,7 +19,8 @@ public class ChangeMobNameDesc extends Component {
     public ChangeMobNameDesc(Mob mob) {
         this.mob = mob;
 
-        name = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "name_label"), null, 100, false, Messages.titleCase(mob.name())){
+        name = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "name_label"), null, 100, false,
+                mob.customDesc == null ? Messages.titleCase(mob.name()) : mob.name()) {
             @Override
             protected void onChange() {
                 super.onChange();
@@ -53,7 +54,7 @@ public class ChangeMobNameDesc extends Component {
         add(dialog);
     }
 
-    protected void updateLayout(){
+    protected void updateLayout() {
         Window w = EditorUtilies.getParentWindow(this);
         if (w instanceof SimpleWindow) ((SimpleWindow) w).layout();
     }

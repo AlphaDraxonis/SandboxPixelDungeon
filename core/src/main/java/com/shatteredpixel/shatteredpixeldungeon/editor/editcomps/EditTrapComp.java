@@ -10,7 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckbox;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
@@ -42,8 +42,8 @@ import com.watabou.noosa.ui.Component;
 public class EditTrapComp extends DefaultEditComp<Trap> {
 
 
-    protected StyledCheckbox visible, active;
-    protected StyledCheckbox searchable, revealedWhenTriggered, disarmedByActivation;
+    protected StyledCheckBox visible, active;
+    protected StyledCheckBox searchable, revealedWhenTriggered, disarmedByActivation;
     protected StyledButton gatewayTelePos;
     protected Spinner pitfallRadius, pitfallDelay;
     protected ItemContainer<MobItem> summonMobs;
@@ -66,7 +66,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
     }
 
     private void initComps() {
-        visible = new StyledCheckbox(Messages.get(EditTrapComp.class, "visible"), 8) {
+        visible = new StyledCheckBox(Messages.get(EditTrapComp.class, "visible")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -76,7 +76,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         };
         visible.icon(new BuffIcon(BuffIndicator.FORESIGHT, true));
         add(visible);
-        active = new StyledCheckbox(Messages.get(EditTrapComp.class, "active"), 8) {
+        active = new StyledCheckBox(Messages.get(EditTrapComp.class, "active")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -92,7 +92,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         visible.checked(obj.visible);
         active.checked(obj.active);
 
-        searchable = new StyledCheckbox(Messages.get(EditTrapComp.class, "searchable"), 8) {
+        searchable = new StyledCheckBox(Messages.get(EditTrapComp.class, "searchable")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -103,7 +103,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         searchable.icon(Icons.MAGNIFY.get());
         searchable.icon().scale.set(ItemSpriteSheet.SIZE / searchable.icon().width());
         add(searchable);
-        revealedWhenTriggered = new StyledCheckbox(Messages.get(EditTrapComp.class, "revealed_when_triggered"), 8) {
+        revealedWhenTriggered = new StyledCheckBox(Messages.get(EditTrapComp.class, "revealed_when_triggered")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -112,7 +112,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             }
         };
         add(revealedWhenTriggered);
-        disarmedByActivation = new StyledCheckbox(Messages.get(EditTrapComp.class, "disarmed_by_activation"), 8) {
+        disarmedByActivation = new StyledCheckBox(Messages.get(EditTrapComp.class, "disarmed_by_activation")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -156,7 +156,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                 public int getClicksPerSecondWhileHolding() {
                     return 30;
                 }
-            }, Messages.get(EditMobComp.class, "radius") + ":", 9);
+            }, Messages.get(EditMobComp.class, "radius"));
             pitfallRadius.addChangeListener(() -> ((PitfallTrap) obj).radius = (int) pitfallRadius.getValue());
             add(pitfallRadius);
 

@@ -1,5 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
@@ -43,16 +45,21 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelectorList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -66,16 +73,18 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWea
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MimicSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SpawnerSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
-import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
@@ -94,82 +103,31 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
 
     //TODO demon spawner should set their cooldown here!
-    private final ItemSelector statueWeapon, statueArmor;
-    private final ItemSelector thiefItem;
     private final MobStateSpinner mobStateSpinner;
-    private final Spinner playerAlignment;
-    private final RedButton addBuffs, editStats;
+    private final StyledSpinner playerAlignment;
+    private final StyledButton addBuffs, editStats;
 
     private final ItemContainer<Item> mimicItems;
+    private final StyledItemSelector statueWeapon, statueArmor, thiefItem;
     private final LotusLevelSpinner lotusLevelSpinner;
-    private final Spinner sheepLifespan;
+    private final StyledSpinner sheepLifespan;
     private final QuestSpinner questSpinner;
-    private final ItemSelector questItem1, questItem2;
-    private final CheckBox spawnQuestRoom;
-
-    private final Spinner sentryRange, sentryDelay;
-    private final Spinner abilityCooldown;
-    private final ItemSelector summonMob;
-    private final Spinner tenguPhase, tenguRange;
-    private final CheckBox dm300destroyWalls;
-    private final Spinner dm300pylonsNeeded;
-    private final Spinner yogSpawnersAlive;
-    private final ItemSelectorList<MobItem> yogNormalFists, yogChallengeFists;
-    private final CheckBox pylonAlwaysActive;
-    private final CheckBox showBossBar;
-
+    private final StyledItemSelector questItem1, questItem2;
+    private final StyledCheckBox spawnQuestRoom;
     private final ItemSelectorList<Item> blacksmithQuestRewards;
 
-    private final Component[] comps;
+    private final StyledSpinner sentryRange, sentryDelay;
+    private final StyledSpinner abilityCooldown;
+    private final StyledItemSelector summonMob;
+    private final StyledSpinner tenguPhase, tenguRange, dm300pylonsNeeded, yogSpawnersAlive;
+    private final ItemSelectorList<MobItem> yogNormalFists, yogChallengeFists;
+    private final StyledCheckBox dm300destroyWalls, pylonAlwaysActive, showBossBar;
+
+
+    private final Component[] rectComps, linearComps;
 
     public EditMobComp(Mob mob) {
         super(mob);
-
-        if (mob instanceof Statue) {
-            statueWeapon = new ItemSelector(" " + Messages.get(EditMobComp.class, "weapon") + ":",
-                    Weapon.class, ((Statue) mob).weapon, ItemSelector.NullTypeSelector.NONE) {
-                @Override
-                public void setSelectedItem(Item selectedItem) {
-                    super.setSelectedItem(selectedItem);
-                    ((Statue) mob).weapon = (Weapon) selectedItem;
-                    EditMobComp.this.updateObj();
-                }
-            };
-            add(statueWeapon);
-            if (mob instanceof ArmoredStatue) {
-                statueArmor = new ItemSelector(" " + Messages.get(EditMobComp.class, "armor") + ":",
-                        Armor.class, ((ArmoredStatue) mob).armor, ItemSelector.NullTypeSelector.NONE) {
-                    @Override
-                    public void setSelectedItem(Item selectedItem) {
-                        super.setSelectedItem(selectedItem);
-                        ((ArmoredStatue) mob).armor = (Armor) selectedItem;
-                        EditMobComp.this.updateObj();
-                    }
-                };
-                add(statueArmor);
-            } else statueArmor = null;
-        } else {
-            statueWeapon = null;
-            statueArmor = null;
-        }
-
-        if (mob instanceof Thief) {
-            thiefItem = new ItemSelector(" " + Messages.get(EditMobComp.class, "item") + ":",
-                    Item.class, ((Thief) mob).item, ItemSelector.NullTypeSelector.NONE) {
-                @Override
-                public void setSelectedItem(Item selectedItem) {
-                    super.setSelectedItem(selectedItem);
-                    ((Thief) mob).item = selectedItem;
-                    EditMobComp.this.updateObj();
-                }
-
-                @Override
-                public void change() {
-                    EditorScene.selectItem(selector);
-                }
-            };
-            add(thiefItem);
-        } else thiefItem = null;
 
         if (mob instanceof Mimic) {
             if (((Mimic) mob).items == null) ((Mimic) mob).items = new ArrayList<>();
@@ -192,6 +150,52 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             };
             add(mimicItems);
         } else mimicItems = null;
+
+        if (mob instanceof Statue) {
+            statueWeapon = new StyledItemSelector(Messages.get(EditMobComp.class, "weapon"),
+                    Weapon.class, ((Statue) mob).weapon, ItemSelector.NullTypeSelector.NONE) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    ((Statue) mob).weapon = (Weapon) selectedItem;
+                    EditMobComp.this.updateObj();
+                }
+            };
+            add(statueWeapon);
+            if (mob instanceof ArmoredStatue) {
+                statueArmor = new StyledItemSelector(Messages.get(EditMobComp.class, "armor"),
+                        Armor.class, ((ArmoredStatue) mob).armor, ItemSelector.NullTypeSelector.NONE) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+                        super.setSelectedItem(selectedItem);
+                        ((ArmoredStatue) mob).armor = (Armor) selectedItem;
+                        EditMobComp.this.updateObj();
+                    }
+                };
+                add(statueArmor);
+            } else statueArmor = null;
+        } else {
+            statueWeapon = null;
+            statueArmor = null;
+        }
+
+        if (mob instanceof Thief) {
+            thiefItem = new StyledItemSelector(Messages.get(EditMobComp.class, "item"),
+                    Item.class, ((Thief) mob).item, ItemSelector.NullTypeSelector.NONE) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    ((Thief) mob).item = selectedItem;
+                    EditMobComp.this.updateObj();
+                }
+
+                @Override
+                public void change() {
+                    EditorScene.selectItem(selector);
+                }
+            };
+            add(thiefItem);
+        } else thiefItem = null;
 
         if (!(mob instanceof Pylon)) {//mob (Pylon) should not be instanceof QuestNPC!!!
             mobStateSpinner = new MobStateSpinner(mob);
@@ -218,21 +222,14 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof Sheep) {
-            sheepLifespan = new Spinner(
-                    new SpinnerIntegerModel(0, 600, (int) ((Sheep) mob).lifespan, 1, false, null) {
-                        @Override
-                        public float getInputFieldWith(float height) {
-                            return height * 2.5f;
-                        }
-
-                        @Override
-                        public int getClicksPerSecondWhileHolding() {
-                            return 120;
-                        }
-                    },
-                    " " + Messages.get(EditMobComp.class, "sheep_lifespan") + ":", 9);
+            sheepLifespan = new StyledSpinner(new SpinnerIntegerModel(0, 600, (int) ((Sheep) mob).lifespan, 1, false, null) {
+                @Override
+                public int getClicksPerSecondWhileHolding() {
+                    return 120;
+                }
+            }, Messages.get(EditMobComp.class, "sheep_lifespan"), 9, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_HEALING));
+            sheepLifespan.icon().scale.set(9f / sheepLifespan.icon().height());
             sheepLifespan.addChangeListener(() -> ((Sheep) mob).lifespan = (int) sheepLifespan.getValue());
-            sheepLifespan.setAlignmentSpinnerX(1f);
             add(sheepLifespan);
         } else sheepLifespan = null;
 
@@ -241,7 +238,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(questSpinner);
             if (mob instanceof Wandmaker) {
                 if (mob.pos < 0) {
-                    spawnQuestRoom = new CheckBox(Messages.get(EditMobComp.class, "spawn_quest_room")) {
+                    spawnQuestRoom = new StyledCheckBox(Messages.get(EditMobComp.class, "spawn_quest_room")) {
                         @Override
                         public void checked(boolean value) {
                             super.checked(value);
@@ -257,7 +254,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                         } else spawnQuestRoom.enable(true);
                     });
                 } else spawnQuestRoom = null;
-                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "wand_1") + ":",
+                questItem1 = new StyledItemSelector(Messages.get(EditMobComp.class, "wand_1"),
                         Wand.class, ((Wandmaker) mob).quest.wand1, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
@@ -267,7 +264,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
                 };
                 add(questItem1);
-                questItem2 = new ItemSelector(" " + Messages.get(EditMobComp.class, "wand_2") + ":",
+                questItem2 = new StyledItemSelector(Messages.get(EditMobComp.class, "wand_2"),
                         Wand.class, ((Wandmaker) mob).quest.wand2, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
@@ -282,7 +279,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 blacksmithQuestRewards = null;
 
             } else if (mob instanceof Ghost) {
-                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "weapon") + ":",
+                questItem1 = new StyledItemSelector(Messages.get(EditMobComp.class, "weapon"),
                         Weapon.class, ((Ghost) mob).quest.weapon, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
@@ -292,7 +289,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
                 };
                 add(questItem1);
-                questItem2 = new ItemSelector(" " + Messages.get(EditMobComp.class, "armor") + ":",
+                questItem2 = new StyledItemSelector(Messages.get(EditMobComp.class, "armor"),
                         Armor.class, ((Ghost) mob).quest.armor, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
@@ -307,7 +304,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 spawnQuestRoom = null;
                 blacksmithQuestRewards = null;
             } else if (mob instanceof Imp) {
-                questItem1 = new ItemSelector(" " + Messages.get(EditMobComp.class, "ring") + ":", Ring.class,
+                questItem1 = new StyledItemSelector(Messages.get(EditMobComp.class, "ring"), Ring.class,
                         ((Imp) mob).quest.reward, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
@@ -329,7 +326,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     BlacksmithQuest quest = ((Blacksmith) mob).quest;
                     if (quest.smithRewards == null) quest.smithRewards = new ArrayList<>(3);
                     while (quest.smithRewards.size() < 3) quest.smithRewards.add(new Item());
-                    blacksmithQuestRewards = new ItemSelectorList<Item>(quest.smithRewards, " " + Messages.get(EditMobComp.class, "blacksmith_items") + ":", 9) {
+                    blacksmithQuestRewards = new ItemSelectorList<Item>(quest.smithRewards, Messages.get(EditMobComp.class, "blacksmith_items")) {
                         @Override
                         public void change(int index) {
                             ItemSelector.showSelectWindow(new WndBag.ItemSelector() {
@@ -389,17 +386,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof SentryRoom.Sentry) {
-            sentryRange = new Spinner(new SpinnerIntegerModel(1, 100, ((SentryRoom.Sentry) mob).range, 1, false, null) {
-                @Override
-                public float getInputFieldWith(float height) {
-                    return height * 2.5f;
-                }
-            },
-                    " " + Messages.get(EditMobComp.class, "range") + ":", 9);
+            sentryRange = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((SentryRoom.Sentry) mob).range, 1, false, null),
+                    Messages.get(EditMobComp.class, "range"));
             sentryRange.addChangeListener(() -> ((SentryRoom.Sentry) mob).range = (int) sentryRange.getValue());
             add(sentryRange);
-            sentryDelay = new Spinner(new SpinnerFloatModel(0f, 100f, ((SentryRoom.Sentry) mob).getInitialChargeDelay() - 1, false),
-                    " " + Messages.get(EditMobComp.class, "delay") + ":", 9);
+            sentryDelay = new StyledSpinner(new SpinnerFloatModel(0f, 100f, ((SentryRoom.Sentry) mob).getInitialChargeDelay() - 1, false),
+                    Messages.get(EditMobComp.class, "delay"));
             sentryDelay.addChangeListener(() -> ((SentryRoom.Sentry) mob).setInitialChargeDelay(((SpinnerFloatModel) sentryDelay.getModel()).getAsFloat() + 1));
             add(sentryDelay);
         } else {
@@ -408,64 +400,32 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof Guard) {
-            abilityCooldown = new Spinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Guard) mob).maxChainCooldown, 1, false, null) {
-                {
-                    setAbsoluteMinimum(1f);
-                }
-                @Override
-                public float getInputFieldWith(float height) {
-                    return height * 2.5f;
-                }
-            },
-                    " " + Messages.get(EditMobComp.class, "chains_cd") + ":", 9);
+            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Guard) mob).maxChainCooldown, 1, false, null),
+                    Messages.get(EditMobComp.class, "chains_cd"),8);
             abilityCooldown.addChangeListener(() -> ((Guard) mob).maxChainCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof DM200) {
-            abilityCooldown = new Spinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((DM200) mob).maxVentCooldown, 1, false, null) {
-                {
-                    setAbsoluteMinimum(1f);
-                }
-                @Override
-                public float getInputFieldWith(float height) {
-                    return height * 2.5f;
-                }
-            },
-                    " " + Messages.get(EditMobComp.class, "vent_cd") + ":", 9);
+            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((DM200) mob).maxVentCooldown, 1, false, null),
+                    Messages.get(EditMobComp.class, "vent_cd"),8);
             abilityCooldown.addChangeListener(() -> ((DM200) mob).maxVentCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof Golem) {
-            abilityCooldown = new Spinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Golem) mob).maxTeleCooldown, 1, false, null) {
-                {
-                    setAbsoluteMinimum(1f);
-                }
-                @Override
-                public float getInputFieldWith(float height) {
-                    return height * 2.5f;
-                }
-            },
-                    " " + Messages.get(EditMobComp.class, "tele_cd") + ":", 9);
+            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Golem) mob).maxTeleCooldown, 1, false, null),
+                    Messages.get(EditMobComp.class, "tele_cd"),8);
             abilityCooldown.addChangeListener(() -> ((Golem) mob).maxTeleCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) {
             com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner m = (com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) mob;
-            abilityCooldown = new Spinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, m.maxWebCoolDown, 1, false, null) {
-                {
-                    setAbsoluteMinimum(1f);
-                }
-                @Override
-                public float getInputFieldWith(float height) {
-                    return height * 2.5f;
-                }
-            },
-                    " " + Messages.get(EditMobComp.class, "web_cd") + ":", 9);
+            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, m.maxWebCoolDown, 1, false, null),
+                    Messages.get(EditMobComp.class, "web_cd"),8);
             abilityCooldown.addChangeListener(() -> m.maxWebCoolDown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
-        }
-        else abilityCooldown = null;
+        } else abilityCooldown = null;
 
         if (mob instanceof SpawnerMob) {
             Mob necroMob = ((SpawnerMob) mob).summonTemplate;
-            summonMob = new ItemSelector(Messages.get(EditMobComp.class, "summon_mob"), MobItem.class, necroMob == null ? null : new MobItem(necroMob), ItemSelector.NullTypeSelector.NOTHING) {
+            summonMob = new StyledItemSelector(Messages.get(EditMobComp.class, "summon_mob"), MobItem.class,
+                    necroMob == null ? null : new MobItem(necroMob), ItemSelector.NullTypeSelector.NOTHING) {
                 {
                     selector.preferredBag = Mobs.bag.getClass();
                 }
@@ -487,27 +447,16 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         } else summonMob = null;
 
         if (mob instanceof Tengu) {
-            tenguPhase = new Spinner(new SpinnerIntegerModel(1, 2, ((Tengu) mob).phase, 1, true, null) {
-                @Override
-                public float getInputFieldWith(float height) {
-                    return height * 2.5f;
-                }
-
+            tenguPhase = new StyledSpinner(new SpinnerIntegerModel(1, 2, ((Tengu) mob).phase, 1, true, null) {
                 @Override
                 public void displayInputAnyNumberDialog() {
                     //disabled
                 }
-            },
-                    " " + Messages.get(EditMobComp.class, "phase") + ":", 9);
+            }, Messages.get(EditMobComp.class, "phase"));
             tenguPhase.addChangeListener(() -> ((Tengu) mob).phase = (int) tenguPhase.getValue());
             add(tenguPhase);
-            tenguRange = new Spinner(new SpinnerIntegerModel(1, 100, ((Tengu) mob).arenaRadius, 1, false, null) {
-                @Override
-                public float getInputFieldWith(float height) {
-                    return height * 2.5f;
-                }
-            },
-                    " " + Messages.get(EditMobComp.class, "range") + ":", 9);
+            tenguRange = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((Tengu) mob).arenaRadius, 1, false, null),
+                    Messages.get(EditMobComp.class, "range"));
             tenguRange.addChangeListener(() -> ((Tengu) mob).arenaRadius = (int) tenguRange.getValue());
             add(tenguRange);
         } else {
@@ -516,23 +465,19 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof DM300) {
-            dm300destroyWalls = new CheckBox(Messages.get(EditMobComp.class, "dm300_destroy_walls")) {
+            dm300destroyWalls = new StyledCheckBox(Messages.get(EditMobComp.class, "dm300_destroy_walls")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
                     ((DM300) mob).destroyWalls = value;
                 }
             };
+            dm300destroyWalls.icon(new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(-1, DungeonTileSheet.FLAT_WALL, -1)));
             dm300destroyWalls.checked(((DM300) mob).destroyWalls);
             add(dm300destroyWalls);
 
-            dm300pylonsNeeded = new Spinner(new SpinnerIntegerModel(0, 4, ((DM300) mob).pylonsNeeded, 1, false, null) {
-                @Override
-                public float getInputFieldWith(float height) {
-                    return height * 2.5f;
-                }
-            },
-                    " " + Messages.get(EditMobComp.class, "dm300_pylons_needed") + ":", 9);
+            dm300pylonsNeeded = new StyledSpinner(new SpinnerIntegerModel(0, 4, ((DM300) mob).pylonsNeeded, 1, false, null),
+                    Messages.get(EditMobComp.class, "dm300_pylons_needed"));
             dm300pylonsNeeded.addChangeListener(() -> ((DM300) mob).pylonsNeeded = (int) dm300pylonsNeeded.getValue());
             add(dm300pylonsNeeded);
 
@@ -543,24 +488,23 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (mob instanceof YogDzewa) {
             int spAlive = ((YogDzewa) mob).spawnersAlive;
-            yogSpawnersAlive = new Spinner(new SpinnerIntegerModel(0, 4, spAlive == -1 ? null : spAlive, 1, true,
+            yogSpawnersAlive = new StyledSpinner(new SpinnerIntegerModel(0, 4, spAlive == -1 ? null : spAlive, 1, true,
                     Messages.get(DestCellSpinner.class, "default")) {
-                @Override
-                public float getInputFieldWith(float height) {
-                    return height * 2.5f;
-                }
-
                 @Override
                 public void displayInputAnyNumberDialog() {
                 }
-            },
-                    " " + Messages.get(EditMobComp.class, "spawners_alive") + ":", 7 + (PixelScene.landscape() ? 2 : 0));
+
+                @Override
+                public float getInputFieldWith(float height) {
+                    return Spinner.FILL;
+                }
+            }, Messages.get(EditMobComp.class, "spawners_alive"), 6 + (PixelScene.landscape() ? 2 : 0), new SpawnerSprite());
             yogSpawnersAlive.addChangeListener(() -> {
                 Integer val = (Integer) yogSpawnersAlive.getValue();
                 if (val == null) val = -1;
                 ((YogDzewa) mob).spawnersAlive = val;
             });
-            yogSpawnersAlive.setButtonWidth(10f);
+            yogSpawnersAlive.setButtonWidth(9f);
             add(yogSpawnersAlive);
 
             yogNormalFists = new FistSelector(((YogDzewa) mob).fistSummons, " " + Messages.get(EditMobComp.class, "normal_fists") + ":", 7 + (PixelScene.landscape() ? 2 : 0));
@@ -574,7 +518,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof Pylon) {
-            pylonAlwaysActive = new CheckBox(Messages.get(EditMobComp.class, "pylon_always_active")) {
+            pylonAlwaysActive = new StyledCheckBox(Messages.get(EditMobComp.class, "pylon_always_active")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -589,7 +533,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof Goo || mob instanceof Tengu || mob instanceof DM300 || mob instanceof DwarfKing || mob instanceof YogDzewa) {
-            showBossBar = new CheckBox(Messages.get(EditMobComp.class, "show_boss_bar")) {
+            showBossBar = new StyledCheckBox(Messages.get(EditMobComp.class, "show_boss_bar")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -605,28 +549,36 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper || mob instanceof SentryRoom.Sentry)) {
 
             if (!(mob instanceof YogFist || mob instanceof Mimic)) {
-                playerAlignment = new Spinner(new SpinnerIntegerModel(Mob.NORMAL_ALIGNMENT, Mob.FRIENDLY_ALIGNMENT, mob.playerAlignment, 1, true, null) {
+                playerAlignment = new StyledSpinner(new SpinnerIntegerModel(Mob.NORMAL_ALIGNMENT, Mob.FRIENDLY_ALIGNMENT, mob.playerAlignment, 1, true, null) {
                     @Override
                     public void displayInputAnyNumberDialog() {
                     }
 
                     @Override
-                    public String getDisplayString() {
-                        switch ((int) getValue()) {
-                            case Mob.NORMAL_ALIGNMENT: return Messages.get(EditMobComp.class, "player_alignment_normal");
-                            case Mob.NEUTRAL_ALIGNMENT: return Messages.get(EditMobComp.class, "player_alignment_neutral");
-                            case Mob.FRIENDLY_ALIGNMENT: return Messages.get(EditMobComp.class, "player_alignment_friendly");
-                        }
-                        return super.getDisplayString();
+                    public Component createInputField(int fontSize) {
+                        return super.createInputField(fontSize - 1);
                     }
 
                     @Override
                     public float getInputFieldWith(float height) {
-                        return height * 2.5f;
+                        return Spinner.FILL;
                     }
-                },
-                        " " + Messages.get(EditMobComp.class, "player_alignment") + ":", 10);
-                playerAlignment.addChangeListener(()-> {
+
+                    @Override
+                    public String getDisplayString() {
+                        switch ((int) getValue()) {
+                            case Mob.NORMAL_ALIGNMENT:
+                                return Messages.get(EditMobComp.class, "player_alignment_normal");
+                            case Mob.NEUTRAL_ALIGNMENT:
+                                return Messages.get(EditMobComp.class, "player_alignment_neutral");
+                            case Mob.FRIENDLY_ALIGNMENT:
+                                return Messages.get(EditMobComp.class, "player_alignment_friendly");
+                        }
+                        return super.getDisplayString();
+                    }
+                }, Messages.get(EditMobComp.class, "player_alignment"));
+                playerAlignment.setButtonWidth(9f);
+                playerAlignment.addChangeListener(() -> {
                     mob.setPlayerAlignment((int) playerAlignment.getValue());
                     updateObj();
                 });
@@ -634,7 +586,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             } else playerAlignment = null;
 
             if (!(mob instanceof Tengu || mob instanceof Pylon)) {
-                addBuffs = new RedButton(Messages.get(EditMobComp.class, "add_buff")) {
+                addBuffs = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditMobComp.class, "add_buff")) {
                     @Override
                     protected void onClick() {
                         Set<Class<? extends Buff>> buffsToIgnore = new HashSet<>();
@@ -679,7 +631,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         Mob defaultStats = DefaultStatsCache.getDefaultObject(mob.getClass());
         if (defaultStats != null) {
-            editStats = new RedButton(Messages.get(EditMobComp.class, "edit_stats")) {
+            editStats = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditMobComp.class, "edit_stats")) {
                 @Override
                 protected void onClick() {
                     Window w = WndEditStats.createWindow((int) Math.ceil(EditMobComp.this.width),
@@ -691,19 +643,47 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(editStats);
         } else editStats = null;
 
-        comps = new Component[]{statueWeapon, statueArmor, thiefItem, mimicItems, summonMob,
-                lotusLevelSpinner, sheepLifespan,
-                yogSpawnersAlive, yogNormalFists, yogChallengeFists,
-                mobStateSpinner, playerAlignment, sentryRange, sentryDelay, abilityCooldown,
-                tenguPhase, tenguRange,
-                questSpinner, questItem1, questItem2, spawnQuestRoom, blacksmithQuestRewards,
-                dm300pylonsNeeded, dm300destroyWalls, pylonAlwaysActive, showBossBar, addBuffs, editStats};
+        rectComps = new Component[]{
+
+                mobStateSpinner, playerAlignment,
+
+                yogSpawnersAlive,
+                pylonAlwaysActive,
+                tenguRange,
+                abilityCooldown,
+                dm300pylonsNeeded,
+
+                questSpinner == null && playerAlignment != null && statueArmor == null
+                        ? EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE : null,
+
+                addBuffs, editStats,
+
+                mob instanceof SentryRoom.Sentry ? EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE : null,
+
+                showBossBar,
+
+                statueWeapon, statueArmor, thiefItem,
+                summonMob,
+                lotusLevelSpinner, sheepLifespan, sentryRange, sentryDelay,
+                dm300destroyWalls,
+
+                tenguPhase,
+
+                questSpinner, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE, questItem1, questItem2, spawnQuestRoom,
+
+        };
+        linearComps = new Component[]{
+                mimicItems,
+                yogNormalFists, yogChallengeFists,
+                blacksmithQuestRewards
+        };
     }
 
     @Override
     protected void layout() {
         super.layout();
-        layoutCompsLinear(comps);
+        layoutCompsInRectangles(rectComps);
+        layoutCompsLinear(linearComps);
     }
 
     @Override
@@ -840,7 +820,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             rename = new IconButton(Icons.RENAME_ON.get()) {
                 @Override
                 protected void onClick() {
-                    SimpleWindow w = new SimpleWindow((int) Math.ceil(EditMobComp.this.width - 10), (int) Math.ceil(EditMobComp.this.height - 10)){
+                    Window parent = EditorUtilies.getParentWindow(this);
+                    SimpleWindow w = new SimpleWindow(parent.camera().width - 10, parent.camera().height - 10) {
                         @Override
                         public void hide() {
                             super.hide();
@@ -867,7 +848,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         protected void layout() {
             width -= rename.icon().width + 3;
             super.layout();
-            rename.setRect(x + width + 2, y + (height - rename.icon().height)*0.5f, rename.icon().width, rename.icon().height);
+            rename.setRect(x + width + 2, y + (height - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
             width += rename.icon().width + 3;
         }
     }

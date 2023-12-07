@@ -59,7 +59,7 @@ public class ItemSelector extends Component {
             }
         };
 
-        renderedTextBlock = PixelScene.renderTextBlock(text, 10);
+        renderedTextBlock = PixelScene.renderTextBlock(text, 9);
         add(renderedTextBlock);
 
         itemSlot = new InventorySlot(startItem) {

@@ -7,21 +7,25 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.watabou.noosa.Image;
 
-public class StyledCheckbox extends StyledButton {
+public class StyledCheckBox extends StyledButton {
 
     private boolean checked = false;
 
     protected Image checkboxIcon;
 
-    public StyledCheckbox(String label, int size) {
+    public StyledCheckBox(String label) {
+        this(Chrome.Type.GREY_BUTTON_TR, label, 9);
+    }
+
+    public StyledCheckBox(String label, int size) {
         this(Chrome.Type.GREY_BUTTON_TR, label, size);
     }
 
-    public StyledCheckbox(Chrome.Type type, String label, int size) {
+    public StyledCheckBox(Chrome.Type type, String label, int size) {
         this(type, label, size, false);
     }
 
-    public StyledCheckbox(Chrome.Type type, String label, int size, boolean checked) {
+    public StyledCheckBox(Chrome.Type type, String label, int size, boolean checked) {
         super(type, label, size);
         text.align(RenderedTextBlock.CENTER_ALIGN);
         checkboxIcon(Icons.UNCHECKED.get());

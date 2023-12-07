@@ -48,11 +48,6 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
         return getValue() == null ? super.getDisplayString() : String.format(Languages.getCurrentLocale(), precisionFormat, getAsFloat());
     }
 
-    @Override
-    public float getInputFieldWith(float height) {
-        return height * 1.4f;
-    }
-
 
     private static char getNumberDecimalSeparator(){
         return String.format(Languages.getCurrentLocale(), "%.1f", 1.1f).charAt(1);
