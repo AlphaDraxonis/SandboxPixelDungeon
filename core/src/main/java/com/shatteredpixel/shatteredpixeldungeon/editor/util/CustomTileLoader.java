@@ -267,7 +267,7 @@ public final class CustomTileLoader {
             }
         }
 
-        public void updateValues(){
+        public void updateValues() {
             SimpleCustomTile template = (SimpleCustomTile) Tiles.getCustomTile(identifier);
             if (template == null) identifier = null;
             else {

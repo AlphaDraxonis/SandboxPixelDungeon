@@ -87,7 +87,7 @@ public class ZonePrompt extends ToastWithButtons {
                 updateColors();
             }
         };
-        IconButton editZone = new IconButton(Icons.PLUS.get()) {//tzz
+        IconButton editZone = new IconButton(Icons.EDIT.get()) {
             @Override
             protected void onClick() {
                 mode = Mode.EDIT;
