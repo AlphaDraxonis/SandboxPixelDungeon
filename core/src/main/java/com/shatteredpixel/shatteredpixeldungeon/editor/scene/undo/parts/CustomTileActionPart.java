@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileC
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 
@@ -23,15 +24,19 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
     public static void place(CustomTilemap customTile, int cell, int terrain) {
         customTile.setRect(cell % Dungeon.level.width(), cell / Dungeon.level.width(),
                 customTile.tileW, customTile.tileH);
+        if (customTile instanceof CustomTileLoader.SimpleCustomTile) {
+            ((CustomTileLoader.SimpleCustomTile) customTile).updateValues();
+        }
         Dungeon.level.customTiles.add(customTile);
         EditorScene.add(customTile, terrain == Terrain.WALL);
         EditorScene.updateMap(cell);
     }
 
     public static void remove(CustomTilemap customTile, int terrain) {
-        if (terrain == Terrain.WALL) Dungeon.level.customWalls.remove(customTile);
+        boolean wall = Dungeon.level.customWalls.contains(customTile);
+        if (wall) Dungeon.level.customWalls.remove(customTile);
         else Dungeon.level.customTiles.remove(customTile);
-        EditorScene.remove(customTile, terrain == Terrain.WALL);
+        EditorScene.remove(customTile, wall);
     }
 
     public static class Place extends CustomTileActionPart {

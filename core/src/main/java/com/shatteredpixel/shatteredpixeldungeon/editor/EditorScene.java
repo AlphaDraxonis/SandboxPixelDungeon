@@ -513,21 +513,18 @@ public class EditorScene extends PixelScene {
         Set<CustomTilemap> toRemove = new HashSet<>(4);
         for (CustomTilemap visual : Dungeon.level.customTiles) {
             if (visual instanceof CustomTileLoader.SimpleCustomTile) {
-                CustomTileLoader.SimpleCustomTile src = (CustomTileLoader.SimpleCustomTile) visual.getCopy();
-                ((CustomTileLoader.SimpleCustomTile) visual).setValues(src);
-                if (src.identifier == null) toRemove.add(visual);
-                else add(src, false);
+                ((CustomTileLoader.SimpleCustomTile) visual).updateValues();
+                if (((CustomTileLoader.SimpleCustomTile) visual).identifier == null) toRemove.add(visual);
+                else add(visual, false);
             } else add(visual, false);
-
         }
         Dungeon.level.customTiles.removeAll(toRemove);
         toRemove.clear();
         for (CustomTilemap visual : Dungeon.level.customWalls) {
             if (visual instanceof CustomTileLoader.SimpleCustomTile) {
-                CustomTileLoader.SimpleCustomTile src = (CustomTileLoader.SimpleCustomTile) visual.getCopy();
-                ((CustomTileLoader.SimpleCustomTile) visual).setValues(src);
-                if (src.identifier == null) toRemove.add(visual);
-                else add(src, true);
+                ((CustomTileLoader.SimpleCustomTile) visual).updateValues();
+                if (((CustomTileLoader.SimpleCustomTile) visual).identifier == null) toRemove.add(visual);
+                else add(visual, false);
             } else add(visual, true);
         }
         Dungeon.level.customWalls.removeAll(toRemove);
