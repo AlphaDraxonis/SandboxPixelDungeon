@@ -144,7 +144,7 @@ public class WndEditFloorInOverview extends WndTabbed {
                             if (positive && !text.isEmpty()) {
                                 for (String floorN : levelScheme.getCustomDungeon().floorNames()) {
                                     if (!floorN.equals(levelScheme.getName()) && floorN.replace(' ', '_').equals(text.replace(' ', '_'))) {
-                                        WndNewDungeon.showNameWarnig();
+                                        WndNewDungeon.showNameWarning();
                                         return;
                                     }
                                 }
@@ -188,7 +188,7 @@ public class WndEditFloorInOverview extends WndTabbed {
                             if (positive && !text.isEmpty()) {
                                 for (String floorN : levelScheme.getCustomDungeon().floorNames()) {
                                     if (!floorN.equals(levelScheme.getName()) && floorN.replace(' ', '_').equals(text.replace(' ', '_'))) {
-                                        WndNewDungeon.showNameWarnig();
+                                        WndNewDungeon.showNameWarning();
                                         return;
                                     }
                                 }

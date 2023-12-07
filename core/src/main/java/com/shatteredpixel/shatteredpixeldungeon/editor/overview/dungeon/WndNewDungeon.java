@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.noosa.Game;
@@ -48,11 +49,11 @@ public class WndNewDungeon extends WndTextInput {
         if (positive && !text.isEmpty() && !text.contains("\"")) {
             for (String dungeonN : dungeonNames) {
                 if (dungeonN.replace(' ', '_').equals(text.replace(' ', '_'))) {
-                    WndNewDungeon.showNameWarnig();
+                    WndNewDungeon.showNameWarning();
                     return;
                 }
             }
-            if (text.equals(DEFAULT_DUNGEON)) showNameWarnig();
+            if (text.equals(DEFAULT_DUNGEON)) showNameWarning();
             else createAndOpenNewCustomDungeon(text);
         }
     }
@@ -62,14 +63,18 @@ public class WndNewDungeon extends WndTextInput {
         try {
             CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
         } catch (IOException e) {
+            Game.scene().addToFront(new WndError(e.getClass().getSimpleName()
+                    + (e.getCause() == null ? "" : " caused by " + e.getCause().getClass().getSimpleName())
+                    + "\n" + e.getMessage()));
             SandboxPixelDungeon.reportException(e);
+            return;
         }
         EditorScene.start();
         CustomTileLoader.loadTiles(true);
         SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
     }
 
-    public static void showNameWarnig() {
+    public static void showNameWarning() {
         Game.runOnRenderThread(new Callback() {
             @Override
             public void call() {

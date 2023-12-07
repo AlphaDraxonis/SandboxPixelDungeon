@@ -286,12 +286,12 @@ public class WndSelectDungeon extends Window {
                                 if (positive && !text.isEmpty()) {
                                     for (String dungeonN : dungeonNames) {
                                         if (!dungeonN.equals(info.name) && dungeonN.replace(' ', '_').equals(text.replace(' ', '_'))) {
-                                            WndNewDungeon.showNameWarnig();
+                                            WndNewDungeon.showNameWarning();
                                             return;
                                         }
                                     }
                                     if (text.equals(DEFAULT_DUNGEON))
-                                        WndNewDungeon.showNameWarnig();
+                                        WndNewDungeon.showNameWarning();
                                     else if (!text.equals(info.name)) {
                                         CustomDungeon.renameDungeon(info.name, text);
                                         dungeonNames.remove(info.name);
@@ -335,12 +335,12 @@ public class WndSelectDungeon extends Window {
                                 if (positive && !text.isEmpty()) {
                                     for (String dungeonN : dungeonNames) {
                                         if (!dungeonN.equals(info.name) && dungeonN.replace(' ', '_').equals(text.replace(' ', '_'))) {
-                                            WndNewDungeon.showNameWarnig();
+                                            WndNewDungeon.showNameWarning();
                                             return;
                                         }
                                     }
                                     if (text.equals(DEFAULT_DUNGEON))
-                                        WndNewDungeon.showNameWarnig();
+                                        WndNewDungeon.showNameWarning();
                                     else if (!text.equals(info.name)) {
                                         CustomDungeonSaves.Info newInfo = CustomDungeon.copyDungeon(info.name, text);
                                         if (newInfo != null) {

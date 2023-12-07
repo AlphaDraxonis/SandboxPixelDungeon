@@ -97,12 +97,12 @@ public class WndNewFloor extends WndTabbed {
 
             for (String floors : owner.floorNames()) {
                 if (floors.replace(' ', '_').equals(name.replace(' ', '_'))) {
-                    WndNewDungeon.showNameWarnig();
+                    WndNewDungeon.showNameWarning();
                     return;
                 }
             }
             if (name.equals(Level.SURFACE) || name.equals(Level.NONE) || name.equals(Level.ANY) ||  name.contains("\"")) {
-                WndNewDungeon.showNameWarnig();
+                WndNewDungeon.showNameWarning();
                 return;
             }
 
