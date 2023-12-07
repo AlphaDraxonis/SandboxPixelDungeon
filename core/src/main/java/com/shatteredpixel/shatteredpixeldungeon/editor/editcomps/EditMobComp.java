@@ -5,7 +5,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -114,6 +116,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final Spinner yogSpawnersAlive;
     private final ItemSelectorList<MobItem> yogNormalFists, yogChallengeFists;
     private final CheckBox pylonAlwaysActive;
+    private final CheckBox showBossBar;
 
     private final ItemSelectorList<Item> blacksmithQuestRewards;
 
@@ -585,6 +588,19 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             pylonAlwaysActive = null;
         }
 
+        if (mob instanceof Goo || mob instanceof Tengu || mob instanceof DM300 || mob instanceof DwarfKing || mob instanceof YogDzewa) {
+            showBossBar = new CheckBox(Messages.get(EditMobComp.class, "show_boss_bar")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    mob.showBossBar = value;
+                    updateObj();
+                }
+            };
+            showBossBar.checked(mob.showBossBar);
+            add(showBossBar);
+        } else showBossBar = null;
+
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
                 mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper || mob instanceof SentryRoom.Sentry)) {
 
@@ -681,7 +697,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 mobStateSpinner, playerAlignment, sentryRange, sentryDelay, abilityCooldown,
                 tenguPhase, tenguRange,
                 questSpinner, questItem1, questItem2, spawnQuestRoom, blacksmithQuestRewards,
-                dm300pylonsNeeded, dm300destroyWalls, pylonAlwaysActive, addBuffs, editStats};
+                dm300pylonsNeeded, dm300destroyWalls, pylonAlwaysActive, showBossBar, addBuffs, editStats};
     }
 
     @Override

@@ -49,7 +49,7 @@ public class SummoningTrap extends Trap {
 		shape = WAVES;
 	}
 
-	public List<Mob> spawnMobs;
+	public List<Mob> spawnMobs = new ArrayList<>(5);
 
 	@Override
 	public void activate() {
@@ -136,7 +136,6 @@ public class SummoningTrap extends Trap {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		Collection<Bundlable> collection = bundle.getCollection( SPAWN_MOBS );
-		spawnMobs = new ArrayList<>();
 		for (Bundlable b : collection)
 			spawnMobs.add((Mob) b);
 	}

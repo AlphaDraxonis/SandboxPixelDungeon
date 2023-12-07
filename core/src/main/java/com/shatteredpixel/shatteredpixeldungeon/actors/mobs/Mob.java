@@ -134,6 +134,7 @@ public abstract class Mob extends Char {
 
 	public String customName, customDesc, dialog;
 	public boolean isBossMob;//only real value while playing, use level.bossmobAt instead!, not meant for shattered bosses except goo!
+	public boolean showBossBar = true;
 
 	//Normal, Neutral, or Friedly; Neutral enemies behave similar as RatKing, cannot have boss bars
 	public static final int NORMAL_ALIGNMENT   = 0;
@@ -175,6 +176,7 @@ public abstract class Mob extends Char {
 	private static final String XP = "xp";
 	private static final String STATS_SCALE = "stats_scale";
 	private static final String IS_BOSS_MOB = "is_boss_mob";
+	private static final String SHOW_BOSS_BAR = "show_boss_bar";
 	private static final String PLAYER_ALIGNMENT = "player_alignment";
 	private static final String FOLLOWING = "following";
 	private static final String LOOT = "loot";
@@ -218,6 +220,7 @@ public abstract class Mob extends Char {
         }
 
         bundle.put(IS_BOSS_MOB, isBossMob);
+        bundle.put(SHOW_BOSS_BAR, showBossBar);
         bundle.put(PLAYER_ALIGNMENT, playerAlignment);
 
         if (loot instanceof LootTableComp.CustomLootInfo) bundle.put(LOOT, (Bundlable) loot);
@@ -275,6 +278,8 @@ public abstract class Mob extends Char {
 		if (bundle.contains(CUSTOM_NAME)) customName = bundle.getString(CUSTOM_NAME);
 		if (bundle.contains(CUSTOM_DESC)) customDesc = bundle.getString(CUSTOM_DESC);
 		if (bundle.contains(DIALOG)) dialog = bundle.getString(DIALOG);
+
+		if (bundle.contains(SHOW_BOSS_BAR)) showBossBar = bundle.getBoolean(SHOW_BOSS_BAR);
 
 		if (bundle.contains(IS_BOSS_MOB)) {
 			isBossMob = bundle.getBoolean(IS_BOSS_MOB);
