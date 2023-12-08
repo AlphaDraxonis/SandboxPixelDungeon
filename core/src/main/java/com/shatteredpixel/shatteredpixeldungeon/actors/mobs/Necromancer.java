@@ -228,7 +228,7 @@ public class Necromancer extends SpawnerMob {
 
 				Char blocker = Actor.findChar(summoningPos);
 				if (blocker.alignment != alignment){
-					blocker.damage( Random.NormalIntRange(2, 10), this );
+					blocker.damage( Random.NormalIntRange(2, 10), new SummoningBlockDamage() );
 					if (blocker == Dungeon.hero && !blocker.isAlive()){
 						Badges.validateDeathFromEnemyMagic();
 						Dungeon.fail(this);
@@ -265,6 +265,8 @@ public class Necromancer extends SpawnerMob {
 	protected void finishSummoning(){
 		((NecromancerSprite)sprite).finishSummoning();
 	}
+
+	public static class SummoningBlockDamage{}
 	
 	private class Hunting extends Mob.Hunting{
 		

@@ -948,7 +948,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 					}
 				} else {
 					Char ch = Actor.findChar(pos);
-					ch.damage(Random.NormalIntRange(20, 40), target);
+					ch.damage(Random.NormalIntRange(20, 40), this);
 					if (((DwarfKing)target).phase == 2){
 						target.damage((int) Math.ceil(target.HT/(Dungeon.isChallenged(Challenges.STRONGER_BOSSES)? 18d : 12d)),
 								new KingDamager(kingID));
