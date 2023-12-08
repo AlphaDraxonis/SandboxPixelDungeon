@@ -214,18 +214,6 @@ public class MiningLevel extends CavesLevel {
 	}
 
 	@Override
-	public String tileName( int tile ) {
-		switch (tile) {
-			case Terrain.MINE_CRYSTAL:
-				return Messages.get(MiningLevel.class, "crystal_name");
-			case Terrain.MINE_BOULDER:
-				return Messages.get(MiningLevel.class, "boulder_name");
-			default:
-				return super.tileName( tile );
-		}
-	}
-
-	@Override
 	public boolean activateTransition(Hero hero, LevelTransition transition) {
 		if (transition.type == LevelTransition.Type.BRANCH_ENTRANCE
 				&& !quest.completed() && questType() >= BlacksmithQuest.CRYSTAL) {
@@ -295,10 +283,6 @@ public class MiningLevel extends CavesLevel {
 				return Messages.get(MiningLevel.class, "wall_desc");
 			case Terrain.WALL_DECO:
 				return super.tileDesc(tile, cell) + "\n\n" +  Messages.get(MiningLevel.class, "gold_extra_desc");
-			case Terrain.MINE_CRYSTAL:
-				return Messages.get(MiningLevel.class, "crystal_desc");
-			case Terrain.MINE_BOULDER:
-				return Messages.get(MiningLevel.class, "boulder_desc");
 			default:
 				return super.tileDesc( tile, cell );
 		}

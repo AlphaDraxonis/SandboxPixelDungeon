@@ -48,6 +48,9 @@ public class CrystalGuardian extends Mob{
 
 		HP = HT = 100;
 		defenseSkill = 14;
+		attackSkill = 20;
+		damageRollMin = 10;
+		damageRollMax = 16;
 
 		EXP = 10;
 		maxLvl = -2;
@@ -83,15 +86,15 @@ public class CrystalGuardian extends Mob{
 		return super.act();
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 10, 16 );
-	}
-
-	@Override
-	public int attackSkill( Char target ) {
-		return 20;
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 10, 16 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 20;
+//	}
 
 	@Override
 	public int defenseSkill(Char enemy) {
@@ -105,10 +108,10 @@ public class CrystalGuardian extends Mob{
 		else            return super.surprisedBy(enemy, attacking);
 	}
 
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 10);
-	}
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 10);
+//	}
 
 	@Override
 	public boolean reset() {

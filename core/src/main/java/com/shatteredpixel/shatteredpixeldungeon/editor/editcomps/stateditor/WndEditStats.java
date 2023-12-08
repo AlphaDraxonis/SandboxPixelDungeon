@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalWisp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -110,7 +111,7 @@ public class WndEditStats extends MultiWindowTabComp {
             if (DefaultStatsCache.useStatsScale(current)) {
 
                 statsScale = new FloatSpinner(Messages.get(Mob.class, "stats_scale"),
-                        0.1f, def.statsScale * 10, current.statsScale, false, 0.1f);
+                        0.1f, Math.max(10, def.statsScale * 10), current.statsScale, false, 0.1f);
                 statsScale.addChangeListener(() -> current.statsScale = statsScale.getAsFloat());
                 content.add(statsScale);
 
@@ -123,30 +124,31 @@ public class WndEditStats extends MultiWindowTabComp {
                 addHPAccuracyEvasionArmorSpinner(def, current);
 
                 dmgMin = new IntegerSpinner(Messages.get(Mob.class, "dmg_min"),
-                        0, def.damageRollMin * 10, current.damageRollMin, false);
+                        0, Math.max(10, def.damageRollMin * 10), current.damageRollMin, false);
                 dmgMin.addChangeListener(() -> current.damageRollMin = dmgMin.getAsInt());
                 content.add(dmgMin);
 
                 dmgMax = new IntegerSpinner(Messages.get(Mob.class, "dmg_max"),
-                        0, def.damageRollMax * 10, current.damageRollMax, false);
+                        0, Math.max(10, def.damageRollMax * 10), current.damageRollMax, false);
                 dmgMax.addChangeListener(() -> current.damageRollMax = dmgMax.getAsInt());
                 content.add(dmgMax);
 
-                if (current instanceof Skeleton || current instanceof Warlock || current instanceof Brute || current instanceof Goo) {
+                if (current instanceof Skeleton || current instanceof Warlock || current instanceof Brute
+                        || current instanceof Goo || current instanceof CrystalWisp) {
                     specialDmgMin = new IntegerSpinner(Messages.get(Mob.class, "special_dmg_min"),
-                            0, def.specialDamageRollMin * 10, current.specialDamageRollMin, false);
+                            0, Math.max(10, def.specialDamageRollMin * 10), current.specialDamageRollMin, false);
                     specialDmgMin.addChangeListener(() -> current.specialDamageRollMin = specialDmgMin.getAsInt());
                     content.add(specialDmgMin);
 
                     specialDmgMax = new IntegerSpinner(Messages.get(Mob.class, "special_dmg_max"),
-                            0, def.specialDamageRollMax * 10, current.specialDamageRollMax, false);
+                            0, Math.max(10, def.specialDamageRollMax * 10), current.specialDamageRollMax, false);
                     specialDmgMax.addChangeListener(() -> current.specialDamageRollMax = specialDmgMax.getAsInt());
                     content.add(specialDmgMax);
                 }
 
             }
             xp = new IntegerSpinner(Messages.get(Mob.class, "xp"),
-                    0, def.EXP * 10, current.EXP, false);
+                    0, Math.max(10, def.EXP * 10), current.EXP, false);
             xp.addChangeListener(() -> current.EXP = xp.getAsInt());
             content.add(xp);
 
@@ -239,7 +241,7 @@ public class WndEditStats extends MultiWindowTabComp {
 
     private void addSpeedSpinner(Mob def, Mob current) {
         speed = new FloatSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "speed"),
-                0.1f, def.baseSpeed * 10, current.baseSpeed, false);
+                0.1f, Math.max(10, def.baseSpeed * 10), current.baseSpeed, false);
         speed.addChangeListener(() -> current.baseSpeed = speed.getAsFloat());
         content.add(speed);
     }
@@ -247,7 +249,7 @@ public class WndEditStats extends MultiWindowTabComp {
     private void addHPAccuracyEvasionArmorSpinner(Mob def, Mob current) {
 
         hp = new IntegerSpinner(Messages.get(Mob.class, "hp"),
-                1, def.HT * 10, current.HT, true, 1);
+                1, Math.max(10, def.HT * 10), current.HT, true, 1);
         hp.addChangeListener(() -> {
             int val = hp.getAsInt();
             if (val == -1) val = Char.INFINITE_HP;
@@ -256,7 +258,7 @@ public class WndEditStats extends MultiWindowTabComp {
         content.add(hp);
 
         attackSkill = new IntegerSpinner(Messages.get(Mob.class, "accuracy"),
-                0, def.attackSkill * 10, current.attackSkill, true);
+                0, Math.max(10, def.attackSkill * 10), current.attackSkill, true);
         attackSkill.addChangeListener(() -> {
             int val = attackSkill.getAsInt();
             if (val == -1) val = Char.INFINITE_ACCURACY;
@@ -265,7 +267,7 @@ public class WndEditStats extends MultiWindowTabComp {
         content.add(attackSkill);
 
         defenseSkill = new IntegerSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "evasion"),
-                0, def.defenseSkill * 10, current.defenseSkill, true);
+                0, Math.max(10, def.defenseSkill * 10), current.defenseSkill, true);
         defenseSkill.addChangeListener(() -> {
             int val = defenseSkill.getAsInt();
             if (val == -1) val = Char.INFINITE_EVASION;
@@ -274,7 +276,7 @@ public class WndEditStats extends MultiWindowTabComp {
         content.add(defenseSkill);
 
         armor = new IntegerSpinner(Messages.get(Mob.class, "armor"),
-                0, def.damageReductionMax * 10, current.damageReductionMax, false);
+                0, Math.max(10, def.damageReductionMax * 10), current.damageReductionMax, false);
         armor.addChangeListener(() -> current.damageReductionMax = armor.getAsInt());
         content.add(armor);
     }
@@ -300,6 +302,7 @@ public class WndEditStats extends MultiWindowTabComp {
                 specialDmgMin.setValue(def.specialDamageRollMax);
             }
             if (xp != null) xp.setValue(def.EXP);
+            if (maxLvl != null) maxLvl.setValue(def.maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL);
         }
     }
 

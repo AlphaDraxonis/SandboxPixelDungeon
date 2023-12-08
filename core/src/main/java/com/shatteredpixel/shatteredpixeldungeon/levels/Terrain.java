@@ -62,7 +62,7 @@ public class Terrain {
 	public static final int STATUE			= 25;
 	public static final int STATUE_SP		= 26;
 	//These decorations are environment-specific
-	//33 and 34 are reserved for future statue-like decorations
+	//33 and 34 are reserved for future statue-like decorations WARNING
 	public static final int MINE_CRYSTAL    = 35;
 	public static final int MINE_BOULDER    = 36;
 

@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
@@ -532,7 +533,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             pylonAlwaysActive = null;
         }
 
-        if (mob instanceof Goo || mob instanceof Tengu || mob instanceof DM300 || mob instanceof DwarfKing || mob instanceof YogDzewa) {
+        if (mob instanceof Goo || mob instanceof Tengu || mob instanceof DM300
+                || mob instanceof DwarfKing || mob instanceof YogDzewa || mob instanceof CrystalSpire) {
             showBossBar = new StyledCheckBox(Messages.get(EditMobComp.class, "show_boss_bar")) {
                 @Override
                 public void checked(boolean value) {
@@ -548,7 +550,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
                 mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper || mob instanceof SentryRoom.Sentry)) {
 
-            if (!(mob instanceof YogFist || mob instanceof Mimic)) {
+            if (!(mob instanceof YogFist || mob instanceof Mimic || mob instanceof CrystalSpire)) {
                 playerAlignment = new StyledSpinner(new SpinnerIntegerModel(Mob.NORMAL_ALIGNMENT, Mob.FRIENDLY_ALIGNMENT, mob.playerAlignment, 1, true, null) {
                     @Override
                     public void displayInputAnyNumberDialog() {
@@ -585,7 +587,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 add(playerAlignment);
             } else playerAlignment = null;
 
-            if (!(mob instanceof Tengu || mob instanceof Pylon)) {
+            if (!(mob instanceof Tengu || mob instanceof Pylon || mob instanceof CrystalSpire)) {
                 addBuffs = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditMobComp.class, "add_buff")) {
                     @Override
                     protected void onClick() {

@@ -1990,6 +1990,10 @@ public abstract class Level implements Bundlable {
 				return Messages.get(Level.class, "bookshelf_name");
 			case Terrain.ALCHEMY:
 				return Messages.get(Level.class, "alchemy_name");
+			case Terrain.MINE_CRYSTAL:
+				return Messages.get(MiningLevel.class, "crystal_name");
+			case Terrain.MINE_BOULDER:
+				return Messages.get(MiningLevel.class, "boulder_name");
 			default:
 				return Messages.get(Level.class, "default_name");
 		}
@@ -2032,6 +2036,10 @@ public abstract class Level implements Bundlable {
 				return Messages.get(Level.class, "alchemy_desc");
 			case Terrain.EMPTY_WELL:
 				return Messages.get(Level.class, "empty_well_desc");
+			case Terrain.MINE_CRYSTAL:
+				return Messages.get(MiningLevel.class, "crystal_desc");
+			case Terrain.MINE_BOULDER:
+				return Messages.get(MiningLevel.class, "boulder_desc");
 			default:
 				return "";
 		}

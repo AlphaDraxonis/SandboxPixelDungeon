@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -41,6 +42,12 @@ public class CrystalWisp extends Mob{
 
 		HP = HT = 30;
 		defenseSkill = 16;
+		attackSkill = 18;
+		damageRollMin = 5;
+		damageRollMax = 10;
+		specialDamageRollMin = 5;
+		specialDamageRollMax = 10;
+		damageReductionMax = 5;
 
 		EXP = 7;
 		maxLvl = -2;
@@ -66,6 +73,24 @@ public class CrystalWisp extends Mob{
 	}
 
 	@Override
+	public Actor getCopy() {
+		CrystalWisp copy = (CrystalWisp) super.getCopy();
+		//TODO remove this when sprite class can be changed
+		switch (Random.Int(3)){
+			case 0: default:
+				copy.spriteClass = CrystalWispSprite.Blue.class;
+				break;
+			case 1:
+				copy.spriteClass = CrystalWispSprite.Green.class;
+				break;
+			case 2:
+				copy.spriteClass = CrystalWispSprite.Red.class;
+				break;
+		}
+		return copy;
+	}
+
+	@Override
 	public boolean[] modifyPassable(boolean[] passable) {
 		for (int i = 0; i < Dungeon.level.length(); i++){
 			passable[i] = passable[i] || Dungeon.level.map[i] == Terrain.MINE_CRYSTAL;
@@ -73,20 +98,20 @@ public class CrystalWisp extends Mob{
 		return passable;
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 5, 10 );
-	}
-
-	@Override
-	public int attackSkill( Char target ) {
-		return 18;
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 5);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 5, 10 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 18;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 5);
+//	}
 
 	@Override
 	protected boolean canAttack( Char enemy ) {
@@ -123,7 +148,7 @@ public class CrystalWisp extends Mob{
 		Char enemy = this.enemy;
 		if (Char.hit( this, enemy, true )) {
 
-			int dmg = Random.NormalIntRange( 5, 10 );
+			int dmg = Random.NormalIntRange( specialDamageRollMin, specialDamageRollMax );
 			enemy.damage( dmg, new LightBeam() );
 
 			if (!enemy.isAlive() && enemy == Dungeon.hero) {

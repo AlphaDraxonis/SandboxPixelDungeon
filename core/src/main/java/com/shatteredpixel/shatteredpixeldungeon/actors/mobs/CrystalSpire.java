@@ -67,6 +67,8 @@ public class CrystalSpire extends Mob {
 		spriteClass = CrystalSpireSprite.class;
 
 		EXP = 20;
+		damageRollMin = 6;
+		damageRollMax = 15;
 
 		//acts after other mobs, which makes baiting crystal guardians more consistent
 		actPriority = MOB_PRIO-1;
@@ -126,7 +128,7 @@ public class CrystalSpire extends Mob {
 				Char ch = Actor.findChar(i);
 
 				if (ch != null && !(ch instanceof CrystalWisp || ch instanceof CrystalSpire)){
-					int dmg = Random.NormalIntRange(6, 15);
+					int dmg = Random.NormalIntRange(damageRollMin, damageRollMax);
 
 					//guardians are hit harder by the attack
 					if (ch instanceof CrystalGuardian) {
@@ -456,6 +458,24 @@ public class CrystalSpire extends Mob {
 				spriteClass = CrystalSpireSprite.Red.class;
 				break;
 		}
+	}
+
+	@Override
+	public Actor getCopy() {
+		CrystalSpire copy = (CrystalSpire) super.getCopy();
+		//TODO remove this when sprite class can be changed
+		switch (Random.Int(3)){
+			case 0: default:
+				copy.spriteClass = CrystalSpireSprite.Blue.class;
+				break;
+			case 1:
+				copy.spriteClass = CrystalSpireSprite.Green.class;
+				break;
+			case 2:
+				copy.spriteClass = CrystalSpireSprite.Red.class;
+				break;
+		}
+		return copy;
 	}
 
 	@Override
