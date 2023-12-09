@@ -15,7 +15,7 @@ allprojects {
         appName = 'Sandbox Pixel Dungeon'
         appPackageName = 'com.alphadraxonis.sandboxpd'
 
-        appVersionCode = 759
+        appVersionCode = 760
         appVersionName = '1.0.0'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
