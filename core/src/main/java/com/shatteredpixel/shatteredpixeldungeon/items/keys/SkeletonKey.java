@@ -23,7 +23,9 @@ package com.shatteredpixel.shatteredpixeldungeon.items.keys;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
@@ -62,6 +64,11 @@ public class SkeletonKey extends Key {
 //		}
 		
 		return super.doPickUp(hero, pos);
+	}
+
+	@Override
+	public String desc() {
+		return CustomDungeon.isEditing() ? EditorUtilies.addSkeletonKeyDescription(super.desc(), Dungeon.level) : super.desc();
 	}
 
 }

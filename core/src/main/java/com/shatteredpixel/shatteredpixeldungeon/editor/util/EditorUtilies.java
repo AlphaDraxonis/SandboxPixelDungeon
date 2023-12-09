@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -11,8 +12,15 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSelectLevelType;
+import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -82,6 +90,7 @@ public final class EditorUtilies {
         QuestLevels questLevel = QuestLevels.get(transition.destBranch);
         return questLevel == null ? "Branch=" + transition.destBranch : questLevel.getName();
     }
+
     public static String getDispayName(String specialLevelSchemeName) {
         if (Level.NONE.equals(specialLevelSchemeName))
             return Messages.get(ChooseDestLevelComp.class, "none_level");
@@ -91,6 +100,7 @@ public final class EditorUtilies {
             return Messages.get(ChooseDestLevelComp.class, "any_level");
         return specialLevelSchemeName;
     }
+
     public static String getDispayNameForZone(String specialZoneName) {
         if (Zone.NONE.equals(specialZoneName))
             return Messages.get(Zone.class, "none_zone");
@@ -124,13 +134,78 @@ public final class EditorUtilies {
 //
 //    }
 
+    public static int getNumTiles(int terrain, Level level) {
+        int numFound = 0;
+        for (int i = 0; i < level.map.length; i++) {
+            if (level.map[i] == terrain) numFound++;
+        }
+        return numFound;
+    }
+
+    public static int getNumContainer(Heap.Type type, Level level) {
+        int numFound = 0;
+        for (Heap h : level.heaps.values()) {
+            if (h.type == type) numFound++;
+        }
+        return numFound;
+    }
+
+    public static int getNumKeys(Class<? extends Key> type, Level level) {
+        int numFound = 0;
+        for (Heap h : level.heaps.values()) {
+            for (Item i : h.items) {
+                if (i.getClass() == type
+                        && (Level.ANY.equals(((Key) i).levelName) || level.name.equals(((Key) i).levelName))) numFound += i.quantity();
+            }
+        }
+        return numFound;
+    }
+
+    public static String addIronKeyDescription(String desc, Level level) {
+        int numLockedDoors = EditorUtilies.getNumTiles(Terrain.LOCKED_DOOR, level);
+        int numIronKeys = EditorUtilies.getNumKeys(IronKey.class, level);
+        if (desc.length() > 0) desc += "\n";
+        desc += "\n" + Messages.get(EditTileComp.class, "num_locked_doors") + ": " + numLockedDoors;
+        desc += "\n" + Messages.get(EditTileComp.class, "num_iron_keys") + ": " + numIronKeys;
+        return desc;
+    }
+
+    public static String addGoldKeyDescription(String desc, Level level) {
+        int numLockedChests = EditorUtilies.getNumContainer(Heap.Type.LOCKED_CHEST, level);
+        int numIronKeys = EditorUtilies.getNumKeys(GoldenKey.class, level);
+        if (desc.length() > 0) desc += "\n";
+        desc += "\n" + Messages.get(EditTileComp.class, "num_gold_containers") + ": " + numLockedChests;
+        desc += "\n" + Messages.get(EditTileComp.class, "num_gold_keys") + ": " + numIronKeys;
+        return desc;
+    }
+
+    public static String addCrystalKeyDescription(String desc, Level level) {
+        int numLockedDoors = EditorUtilies.getNumTiles(Terrain.CRYSTAL_DOOR, level);
+        int numCrystalContainers = EditorUtilies.getNumContainer(Heap.Type.CRYSTAL_CHEST, level);
+        int numCrystalKeys = EditorUtilies.getNumKeys(CrystalKey.class, level);
+        if (desc.length() > 0) desc += "\n";
+        desc += "\n" + Messages.get(EditTileComp.class, "num_crystal_doors") + ": " + numLockedDoors;
+        desc += "\n" + Messages.get(EditTileComp.class, "num_crystal_containers") + ": " + numCrystalContainers;
+        desc += "\n" + Messages.get(EditTileComp.class, "num_crystal_keys") + ": " + numCrystalKeys;
+        return desc;
+    }
+
+    public static String addSkeletonKeyDescription(String desc, Level level) {
+        int numLockedDoors = EditorUtilies.getNumTiles(Terrain.LOCKED_EXIT, level);
+        int numSkeleKeys = EditorUtilies.getNumKeys(SkeletonKey.class, level);
+        if (desc.length() > 0) desc += "\n";
+        desc += "\n" + Messages.get(EditTileComp.class, "num_locked_exits") + ": " + numLockedDoors;
+        desc += "\n" + Messages.get(EditTileComp.class, "num_skeleton_keys") + ": " + numSkeleKeys;
+        return desc;
+    }
+
     public static <K, V> V getOrDefault(Map<K, V> map, K key, V defaultValue) {
         V val = map.get(key);
         return val == null ? defaultValue : val;
     }
 
     public static int getMaxWindowOffsetYForVisibleToolbar() {
-        return -11;
+        return -11;//toolbar height
     }
 
     public static Window getParentWindow(Gizmo g) {
@@ -212,7 +287,7 @@ public final class EditorUtilies {
     public static final ParagraphIndicator PARAGRAPH_INDICATOR_INSTANCE = new ParagraphIndicator();
 
 
-    public static int getRandomCellGuranteed(Level level){
+    public static int getRandomCellGuranteed(Level level) {
         int pos;
         int tries = level.length();
         do {
@@ -233,6 +308,7 @@ public final class EditorUtilies {
     }
 
     public static final int TOP = 1, TOP_RIGHT = 2, RIGHT = 4, BOTTOM_RIGHT = 8, BOTTOM = 16, BOTTOM_LEFT = 32, LEFT = 64, TOP_LEFT = 128;
+
     public static int stitchNeighbours(int cell, int terrain, Level level) {
         int result = 0;
         int width = level.width();

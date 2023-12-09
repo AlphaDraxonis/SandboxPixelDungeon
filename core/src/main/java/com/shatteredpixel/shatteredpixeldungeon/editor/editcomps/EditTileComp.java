@@ -269,6 +269,11 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
         } else desc = level.tileDesc(obj.terrainType(), obj.cell());
 
+        //TODO make own statistic page
+        if (obj.terrainType() == Terrain.LOCKED_DOOR) desc = EditorUtilies.addIronKeyDescription(desc, level);
+        else if (obj.terrainType() == Terrain.CRYSTAL_DOOR) desc = EditorUtilies.addCrystalKeyDescription(desc, level);
+        else if (obj.terrainType() == Terrain.LOCKED_EXIT) desc = EditorUtilies.addSkeletonKeyDescription(desc, level);
+
         if (obj.cell() >= 0) {
             for (Blob blob : Dungeon.level.blobs.values()) {
                 if (blob.volume > 0 && blob.cur[obj.cell()] > 0 && blob.tileDesc() != null) {

@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab;
@@ -139,6 +140,8 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         if (obj.type == Heap.Type.HEAP) return Messages.get(EditHeapComp.class, "desc_heap_open");
         if (obj.type == Heap.Type.FOR_SALE)
             return Messages.get(EditHeapComp.class, "desc_heap_for_sale");
+        if (obj.type == Heap.Type.LOCKED_CHEST) return EditorUtilies.addGoldKeyDescription(obj.info(), Dungeon.level);
+        if (obj.type == Heap.Type.CRYSTAL_CHEST) return EditorUtilies.addCrystalKeyDescription(obj.info(), Dungeon.level);
         return obj.info();
     }
 

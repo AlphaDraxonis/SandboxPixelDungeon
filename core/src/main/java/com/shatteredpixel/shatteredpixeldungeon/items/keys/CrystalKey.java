@@ -22,7 +22,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.keys;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
@@ -41,6 +43,11 @@ public class CrystalKey extends Key {
         if (Level.NONE.equals(levelName)) this.levelName = CustomLevel.tempDungeonNameForKey;
         else this.levelName = levelName;
         this.cell = cell;
+    }
+
+    @Override
+    public String desc() {
+        return CustomDungeon.isEditing() ? EditorUtilies.addCrystalKeyDescription(super.desc(), Dungeon.level) : super.desc();
     }
 
 }
