@@ -111,7 +111,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     return 15 * quantityMultiplierForGold;
                 }
             }, Messages.get(EditItemComp.class, "quantity"));
-            ((SpinnerIntegerModel) quantity.getModel()).setAbsoluteMinAndMax(1f, 1_000_000f);
+            ((SpinnerIntegerModel) quantity.getModel()).setAbsoluteMaximum(2_000_000_000f);
             quantity.addChangeListener(() -> {
                 item.quantity((int) quantity.getValue());
                 updateObj();

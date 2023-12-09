@@ -201,6 +201,7 @@ public class Item implements Bundlable {
     public Item merge(Item other) {
         if (isSimilar(other)) {
             quantity += other.quantity;
+            if (quantity < 0 && other.quantity > 0 || quantity > 2_000_000_000) quantity = 2_000_000_000;
             other.quantity = 0;
         }
         return this;
@@ -285,7 +286,7 @@ public class Item implements Bundlable {
         return collect(Dungeon.hero.belongings.backpack);
     }
 
-    //returns a new item if the split was sucessful and there are now 2 items, otherwise null
+    //returns a new item if the split was successful and there are now 2 items, otherwise null
     public Item split(int amount) {
         if (amount <= 0 || amount >= quantity()) {
             return null;
