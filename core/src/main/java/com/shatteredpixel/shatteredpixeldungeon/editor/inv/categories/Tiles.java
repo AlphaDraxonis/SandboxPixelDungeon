@@ -57,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
@@ -317,6 +318,8 @@ public enum Tiles {
 
         protected CustomTileLoader.SimpleCustomTile customTile;
 
+        private boolean nameSet = false, descSet = false;
+
         public WndCreateCustomTile(CustomTileLoader.SimpleCustomTile customTile, String title) {
             this.customTile = customTile;
 
@@ -330,6 +333,7 @@ public enum Tiles {
                         updateLayout();
                     }
                 };
+                identifier.setHighlightingEnabled(false);
                 add(identifier);
             } else {
 //                info = PixelScene.renderTextBlock(Messages.get(WndCreateCustomTile.class, "edit_info"),6);
@@ -339,17 +343,21 @@ public enum Tiles {
             name = new StringInputComp(Messages.get(WndCreateCustomTile.class, "name_label"), null, 100, false, customTile == null ? "???" : customTile.name) {
                 @Override
                 protected void onChange() {
+                    nameSet = true;
                     updateLayout();
                 }
             };
+            name.setHighlightingEnabled(false);
             add(name);
 
             desc = new StringInputComp(Messages.get(WndCreateCustomTile.class, "desc_label"), null, 500, true, customTile == null ? "???" : customTile.desc) {
                 @Override
                 protected void onChange() {
+                    descSet = true;
                     updateLayout();
                 }
             };
+            desc.setHighlightingEnabled(false);
             add(desc);
 
             region = new Spinner(new SpinnerIntegerModel(LevelScheme.REGION_SEWERS, LevelScheme.REGION_HALLS,
@@ -362,7 +370,7 @@ public enum Tiles {
                 }
 
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
             }, Messages.get(WndCreateCustomTile.class, "image_region"), 8);
@@ -373,6 +381,8 @@ public enum Tiles {
                 Image img = new Image(texture);
                 if ((Integer) value == WATER) img.frame(0, 0, DungeonTerrainTilemap.SIZE, DungeonTerrainTilemap.SIZE);
                 else img.frame(CustomLevel.getTextureFilm(texture).get(DungeonTerrainTilemap.tileSlot(-1, (Integer) value)));
+                if (!nameSet) name.setText(Level.getFullMessageKey((int) region.getValue(), (int) value, false));
+                if (!descSet) desc.setText(Level.getFullMessageKey((int) region.getValue(), (int) value, true));
                 return img;
             });
             add(imageTerrain);

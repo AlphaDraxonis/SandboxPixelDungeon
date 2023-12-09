@@ -496,7 +496,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 }
 
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
             }, Messages.get(EditMobComp.class, "spawners_alive"), 6 + (PixelScene.landscape() ? 2 : 0), new SpawnerSprite());
@@ -562,7 +562,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
 
                     @Override
-                    public float getInputFieldWith(float height) {
+                    public float getInputFieldWidth(float height) {
                         return Spinner.FILL;
                     }
 
@@ -588,7 +588,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             } else playerAlignment = null;
 
             if (!(mob instanceof Tengu || mob instanceof Pylon || mob instanceof CrystalSpire)) {
-                addBuffs = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditMobComp.class, "add_buff")) {
+                addBuffs = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditMobComp.class, "add_buff"), PixelScene.landscape() ? 9 : 8) {
                     @Override
                     protected void onClick() {
                         Set<Class<? extends Buff>> buffsToIgnore = new HashSet<>();
@@ -633,7 +633,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         Mob defaultStats = DefaultStatsCache.getDefaultObject(mob.getClass());
         if (defaultStats != null) {
-            editStats = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditMobComp.class, "edit_stats")) {
+            editStats = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditMobComp.class, "edit_stats"), PixelScene.landscape() ? 9 : 8) {
                 @Override
                 protected void onClick() {
                     Window w = WndEditStats.createWindow((int) Math.ceil(EditMobComp.this.width),

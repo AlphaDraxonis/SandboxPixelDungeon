@@ -126,7 +126,7 @@ public class WndEditFloorInOverview extends WndTabbed {
 
             title = PixelScene.renderTextBlock(levelScheme.getName() + " (" + levelScheme.getType().getSimpleName() + ")", 9);
             title.hardlight(Window.TITLE_COLOR);
-            title.setHightlighting(false);
+            title.setHighlighting(false);
             add(title);
 
             rename = new IconButton(Icons.get(Icons.RENAME_ON)) {

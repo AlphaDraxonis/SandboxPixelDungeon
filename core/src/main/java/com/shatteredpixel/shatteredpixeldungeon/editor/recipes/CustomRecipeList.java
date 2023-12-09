@@ -138,7 +138,7 @@ public class CustomRecipeList extends Component {
                 }
 
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
             }, "", 8);

@@ -14,10 +14,8 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.ui.Component;
 
@@ -238,16 +236,16 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
 
         @Override
         protected void onClick() {
-            Window w = new EditCompWindow(item, editComp == null ? null : editComp.advancedListPaneItem) {
+            if (parent != null && parent.parent != null)
+                EditItemComp.showSpreadIfLoot = parent.parent.getClass().getSimpleName().contains("Loot");
+            EditorScene.show(new EditCompWindow(item, editComp == null ? null : editComp.advancedListPaneItem) {
                 @Override
                 protected void onUpdate() {
                     super.onUpdate();
                     item(item);
                     onUpdateItem();
                 }
-            };
-            if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-            else Game.scene().addToFront(w);
+            });
         }
 
         @Override

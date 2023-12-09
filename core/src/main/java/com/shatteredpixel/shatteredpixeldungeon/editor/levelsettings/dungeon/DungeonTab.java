@@ -89,20 +89,12 @@ public class DungeonTab extends MultiWindowTabComp {
         durationSettings.icon(new ItemSprite(ItemSpriteSheet.POTION_JADE));
         content.add(durationSettings);
 
-        forceChallenges = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "force_challenges"), 8){
+        forceChallenges = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndForceChallenges.class, "title"), 8){
             @Override
             protected void onClick() {
                 int forceChallenges = Dungeon.customDungeon.forceChallenges;//prevent cbs from being disabled
                 Dungeon.customDungeon.forceChallenges = 0;
-                EditorScene.show(new WndChallenges(forceChallenges, true) {
-                    {
-                        title.text(Messages.get(DungeonTab.class, "force_challenges"));
-                    }
-                    public void onBackPressed() {
-                        hide();
-                        Dungeon.customDungeon.forceChallenges = getSelectedValues();
-                    }
-                } );
+                EditorScene.show(new WndForceChallenges(forceChallenges));
                 Dungeon.customDungeon.forceChallenges = forceChallenges;
             }
         };
@@ -119,31 +111,46 @@ public class DungeonTab extends MultiWindowTabComp {
         customRecipes.icon(new ItemSprite(EditorScene.customLevel().tilesTex(), new TileItem(Terrain.ALCHEMY, -1)));
         content.add(customRecipes);
 
-        view2d = new StyledCheckBox(Messages.get(DungeonTab.class, "enable_2d"), 8){
+        view2d = new StyledCheckBox(Messages.get(DungeonTab.class, "enable_2d")){
             @Override
             public void checked(boolean value) {
                 super.checked(value);
                 Dungeon.customDungeon.view2d = value;
             }
+
+            @Override
+            protected int textSize() {
+                return 8;
+            }
         };
         view2d.checked(Dungeon.customDungeon.view2d);
         content.add(view2d);
 
-        seeLevelOnDeath = new StyledCheckBox(Messages.get(DungeonTab.class, "see_level_on_death"), 8){
+        seeLevelOnDeath = new StyledCheckBox(Messages.get(DungeonTab.class, "see_level_on_death")){
             @Override
             public void checked(boolean value) {
                 super.checked(value);
                 Dungeon.customDungeon.seeLevelOnDeath = value;
             }
+
+            @Override
+            protected int textSize() {
+                return 8;
+            }
         };
         seeLevelOnDeath.checked(Dungeon.customDungeon.seeLevelOnDeath);
         content.add(seeLevelOnDeath);
 
-        autoRevealSecrets = new StyledCheckBox(Messages.get(DungeonTab.class, "reveal_secrets"), 8){
+        autoRevealSecrets = new StyledCheckBox(Messages.get(DungeonTab.class, "reveal_secrets")){
             @Override
             public void checked(boolean value) {
                 super.checked(value);
                 Dungeon.customDungeon.notRevealSecrets = !value;
+            }
+
+            @Override
+            protected int textSize() {
+                return 8;
             }
         };
         autoRevealSecrets.checked(!Dungeon.customDungeon.notRevealSecrets);
@@ -167,6 +174,18 @@ public class DungeonTab extends MultiWindowTabComp {
     @Override
     public String hoverText() {
         return Messages.get(DungeonTab.class, "title");
+    }
+
+    private static class WndForceChallenges extends WndChallenges {
+
+        public WndForceChallenges(int checked) {
+            super(checked, true);
+        }
+
+        public void onBackPressed() {
+            hide();
+            Dungeon.customDungeon.forceChallenges = getSelectedValues();
+        }
     }
 
 }

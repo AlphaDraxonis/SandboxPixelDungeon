@@ -496,6 +496,11 @@ public class InterlevelScene extends PixelScene {
 				Dungeon.hero.pos = level.randomRespawnCell(Dungeon.hero);
 				tries++;
 
+				if (tries >= 10000) {
+					Dungeon.hero.pos = -1;
+					break;
+				}
+
                 //prevents spawning on traps or plants, prefers farther locations first
             } while (Dungeon.hero.pos == -1
                     || level.traps.get(Dungeon.hero.pos) != null

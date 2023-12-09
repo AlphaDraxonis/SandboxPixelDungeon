@@ -1,4 +1,4 @@
 image="Prison_Entrance.png"
-name="levels.level.entrace_name"
+name="levels.level.entrance_name"
 desc="levels.level.entrance_desc"
 terrain="7"

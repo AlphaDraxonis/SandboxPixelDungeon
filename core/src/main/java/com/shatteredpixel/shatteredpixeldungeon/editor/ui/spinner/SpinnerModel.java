@@ -5,7 +5,7 @@ import com.watabou.noosa.ui.Component;
 //is javax.swing.SpinnerModel
 public interface SpinnerModel {
 
-    float getInputFieldWith(float height);
+    float getInputFieldWidth(float height);
 
     Component createInputField(int fontSize);
 

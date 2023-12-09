@@ -78,6 +78,8 @@ public class Eye extends Mob {
 		attackSkill = 30;
 		damageRollMin = 20;
 		damageRollMax = 30;
+		specialDamageRollMin = 30;
+		specialDamageRollMax = 50;
 		damageReductionMax = 10;
 		viewDistance = Light.DISTANCE;
 		
@@ -211,7 +213,7 @@ public class Eye extends Mob {
 			}
 
 			if (hit( this, ch, true )) {
-				int dmg = Random.NormalIntRange( 30, 50 );
+				int dmg = Random.NormalIntRange( specialDamageRollMin, specialDamageRollMax );
 				dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
 				ch.damage( dmg, new DeathGaze() );
 

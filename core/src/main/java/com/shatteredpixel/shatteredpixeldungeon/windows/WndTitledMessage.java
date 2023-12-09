@@ -78,6 +78,6 @@ public class WndTitledMessage extends Window {
     }
 
     public void setHighligtingEnabled(boolean enableHighligthing){
-        text.setHightlighting(enableHighligthing);
+        text.setHighlighting(enableHighligthing);
     }
 }

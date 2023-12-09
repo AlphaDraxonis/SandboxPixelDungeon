@@ -46,7 +46,7 @@ public class FloatingText extends RenderedTextBlock {
 	
 	public FloatingText() {
 		super(9*PixelScene.defaultZoom);
-		setHightlighting(false);
+		setHighlighting(false);
 	}
 	
 	@Override

@@ -129,7 +129,7 @@ public class HeroSettings extends Component {
 
     public Component createTitle() {
         int index = outsideSp == null ? 0 : outsideSp.getCurrentIndex();
-        return title = new IconTitle(createTabIcon(index), getTabName(index));
+        return title = new IconTitle(createTabIcon(index), Messages.titleCase(getTabName(index)));
     }
 
     public Component getOutsideSp() {
@@ -194,6 +194,7 @@ public class HeroSettings extends Component {
                         EditorScene.show(w);
                     }
                 };
+                subClassesEnabled.leftJustify = true;
                 add(subClassesEnabled);
             }
 
@@ -254,7 +255,7 @@ public class HeroSettings extends Component {
 
             startGold = new StyledSpinner(new SpinnerIntegerModel(0, 10000, data.gold, 1, false, null) {
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
 
@@ -268,7 +269,7 @@ public class HeroSettings extends Component {
             itemSelectorParent.add(startGold);
             startEnergy = new StyledSpinner(new SpinnerIntegerModel(0, 1000, data.energy, 1, false, null) {
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
 
@@ -286,7 +287,7 @@ public class HeroSettings extends Component {
                     setAbsoluteMinimum(1);
                 }
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
 
@@ -300,7 +301,7 @@ public class HeroSettings extends Component {
 
             plusStr = new StyledSpinner(new SpinnerIntegerModel(0, 100, Hero.STARTING_STR + data.plusStr, 1, false, null) {
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
 
@@ -407,7 +408,7 @@ public class HeroSettings extends Component {
         int activeSubCls = 0;
         for (HeroSubClass cls : heroClass.subClasses())
             if (Dungeon.customDungeon.heroSubClassesEnabled[cls.getIndex()]) activeSubCls++;
-        return Messages.get(WndHeroInfo.class, "subclasses")
+        return Messages.titleCase(Messages.get(WndHeroInfo.class, "subclasses"))
                 + " (" + activeSubCls + "/" + heroClass.subClasses().length + ")";
     }
 

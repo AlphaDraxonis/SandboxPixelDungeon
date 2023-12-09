@@ -301,7 +301,7 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
 
             moblimit = new Spinner(new SpinnerIntegerModel(0, 100, f.mobLimit(), 1, false, null) {
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return height * 1.1f;
                 }
             }, " " + Messages.get(MobSettings.class, "limit") + ":", 9);
@@ -309,7 +309,7 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
             add(moblimit);
             respawnTime = new Spinner(new SpinnerIntegerModel(1, 100, (int) f.respawnCooldown(), 1, false, null) {
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return height * 1.1f;
                 }
 
@@ -676,7 +676,7 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
             }
 
             @Override
-            public float getInputFieldWith(float height) {
+            public float getInputFieldWidth(float height) {
                 return height * 2f;
             }
 

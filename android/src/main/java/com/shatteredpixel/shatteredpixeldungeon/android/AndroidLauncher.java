@@ -80,9 +80,9 @@ public class AndroidLauncher extends AndroidApplication {
 				requestForStoragePermissions();
 				if (!hasPermissionReadExternalStorage()) return;//not granted
 			}
-			FileHandle file = new FileHandle(data.getData().getPath().replaceFirst("device_storage", "storage/emulated"));
 			String error = null;
-			if (!file.exists()) error = "Error: " + data.getData().getPath();
+			FileHandle file = getFileHandleFromIntentData(data.getData());
+			if (!file.exists()) error = "Error: " + data.getData().getPath() + " - File not found (Code: 11)";
 			else if (!file.file().canRead()) error = "Cannot read the file. Please make sure to GRANT the PERMISSION!";
 			if (error == null) {
 				try {
@@ -222,10 +222,10 @@ public class AndroidLauncher extends AndroidApplication {
 		super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_DIRECTORY && resultCode == Activity.RESULT_OK) {
-            FileHandle file = Gdx.files.absolute(("storage/emulated/0/" + data.getData().getPath()).replaceFirst("document/primary:", ""));
+			FileHandle file = getFileHandleFromIntentData(data.getData());
             if (file.extension().equals(CustomDungeonSaves.EXPORT_FILE_EXTENSION.replace(".",""))) {
 				String error = null;
-				if (!file.exists()) error = "Error: " + data.getData().getPath();
+				if (!file.exists()) error = "Error: " + data.getData().getPath() + " - File not found (Code: 2)";
 				else if (!file.file().canRead()) error = "Cannot read the file. Please make sure to GRANT the PERMISSION!";
 				if (error == null) selectFileCallback.accept(file);
 				else Toast.makeText(this, error, Toast.LENGTH_LONG).show();
@@ -266,5 +266,15 @@ public class AndroidLauncher extends AndroidApplication {
 				requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_EXTERNAL_STORAGE);
 			}
 		}
+	}
+
+	private static FileHandle getFileHandleFromIntentData(Uri data) {
+		String path = data.getPath();
+		if (path.startsWith("/document/")) path = path.replaceFirst("/document/.*:", "");
+		if (!path.contains("storage/emulated")) path = path.replaceFirst("device_storage", "storage/emulated");
+		int indexStart = path.indexOf("storage/emulated/0");
+		if (indexStart == -1) path = "storage/emulated/0/" + path;
+		else path = path.substring(indexStart);//cut everything in front of storage/emulated
+		return Gdx.files.absolute(path);
 	}
 }

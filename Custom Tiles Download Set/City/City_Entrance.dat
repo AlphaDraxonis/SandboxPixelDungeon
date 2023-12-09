@@ -1,4 +1,4 @@
 image="City_Entrance.png"
-name="levels.level.entrace_name"
+name="levels.level.entrance_name"
 desc="levels.citylevel.entrance_desc"
 terrain="7"

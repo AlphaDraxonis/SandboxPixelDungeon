@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndSupportPrompt;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
@@ -152,7 +153,7 @@ public class WndSelectDungeon extends Window {
         @Override
         protected void createChildren(Object... params) {
             super.createChildren(params);
-            label.setHightlighting(false);
+            label.setHighlighting(false);
         }
 
         @Override
@@ -243,7 +244,7 @@ public class WndSelectDungeon extends Window {
                                                 Messages.get(WndSelectDungeon.class, "export_json_confirm_title", exportedName),
                                                 Messages.get(WndSelectDungeon.class, "export_json_confirm_body", exportedName) +
                                                         (info.name.equals("dungeon") ? "" : Messages.get(WndSelectDungeon.class, "export_json_confirm_rename_hint")),
-                                                Messages.get(WndSelectDungeon.class, "export_confirm_close"));
+                                                Messages.get(WndSupportPrompt.class, "close"));
                                         if (Game.scene() instanceof EditorScene)
                                             EditorScene.show(win);
                                         else Game.scene().addToFront(win);
@@ -503,7 +504,7 @@ public class WndSelectDungeon extends Window {
                     Messages.get(WndSelectDungeon.class, "export_dun_confirm_title", info.name),
                     Messages.get(WndSelectDungeon.class, "export_dun_confirm_body", destLocation)
                             + (ExportDungeonWrapper.hasCustomTiles(info.name) ? Messages.get(WndSelectDungeon.class, "export_dun_confirm_custom_tile_hint") : ""),
-                    Messages.get(WndSelectDungeon.class, "export_confirm_close")));
+                    Messages.get(WndSupportPrompt.class, "close")));
         }
 
         private static String getMessage(CustomDungeonSaves.Info info) {

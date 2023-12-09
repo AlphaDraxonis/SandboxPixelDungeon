@@ -167,11 +167,11 @@ public class RenderedTextBlock extends Component {
 		}
 	}
 	
-	public synchronized void setHightlighting(boolean enabled){
-		setHightlighting(enabled, Window.TITLE_COLOR);
+	public synchronized void setHighlighting(boolean enabled){
+		setHighlighting(enabled, Window.TITLE_COLOR);
 	}
 	
-	public synchronized void setHightlighting(boolean enabled, int color){
+	public synchronized void setHighlighting(boolean enabled, int color){
 		if (enabled != highlightingEnabled || color != hightlightColor) {
 			hightlightColor = color;
 			highlightingEnabled = enabled;

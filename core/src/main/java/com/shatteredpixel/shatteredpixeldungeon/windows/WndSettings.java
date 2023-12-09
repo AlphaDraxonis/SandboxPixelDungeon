@@ -1138,8 +1138,8 @@ public class WndSettings extends WndTabbed {
 			else if (currLang.status() == Languages.Status.UNFINISHED) info += Messages.get(this, "unfinished");
 			txtLangInfo.text(info);
 
-			if (currLang.status() == Languages.Status.UNREVIEWED) txtLangInfo.setHightlighting(true, CharSprite.WARNING);
-			else if (currLang.status() == Languages.Status.UNFINISHED) txtLangInfo.setHightlighting(true, CharSprite.NEGATIVE);
+			if (currLang.status() == Languages.Status.UNREVIEWED) txtLangInfo.setHighlighting(true, CharSprite.WARNING);
+			else if (currLang.status() == Languages.Status.UNFINISHED) txtLangInfo.setHighlighting(true, CharSprite.NEGATIVE);
 			add(txtLangInfo);
 
 			sep2 = new ColorBlock(1, 1, 0xFF000000);

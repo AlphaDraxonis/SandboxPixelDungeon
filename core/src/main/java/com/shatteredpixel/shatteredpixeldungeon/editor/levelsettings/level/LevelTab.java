@@ -72,23 +72,35 @@ public class LevelTab extends MultiWindowTabComp {
         mobSpawn.icon(new GnollSprite());
         content.add(mobSpawn);
 
-        hungerDepletion = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "hunger"), 8, level.levelScheme.hungerDepletion) {
+        hungerDepletion = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "hunger")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
                 level.levelScheme.hungerDepletion = value;
             }
+
+            @Override
+            protected int textSize() {
+                return 8;
+            }
         };
+        hungerDepletion.checked(level.levelScheme.hungerDepletion);
         hungerDepletion.icon(new ItemSprite(ItemSpriteSheet.RATION));
         content.add(hungerDepletion);
 
-        naturalRegen = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "regeneration"), 8, level.levelScheme.naturalRegeneration) {
+        naturalRegen = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "regeneration")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
                 level.levelScheme.naturalRegeneration = value;
             }
+
+            @Override
+            protected int textSize() {
+                return 8;
+            }
         };
+        naturalRegen.checked(level.levelScheme.naturalRegeneration);
         RectF r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.POTION_HEALING);
         if (r != null) {
             Image icon = new Image(Assets.Sprites.ITEM_ICONS);
@@ -98,14 +110,19 @@ public class LevelTab extends MultiWindowTabComp {
         }
         content.add(naturalRegen);
 
-        allowPickaxeMining = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "mining"),
-                SPDSettings.language() == Languages.GERMAN ? 6 : 8, level.levelScheme.allowPickaxeMining) {
+        allowPickaxeMining = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "mining")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
                 level.levelScheme.allowPickaxeMining = value;
             }
+
+            @Override
+            protected int textSize() {
+                return SPDSettings.language() == Languages.GERMAN ? 6 : 8;
+            }
         };
+        allowPickaxeMining.checked(level.levelScheme.allowPickaxeMining);
         allowPickaxeMining.icon(new ItemSprite(ItemSpriteSheet.PICKAXE));
         content.add(allowPickaxeMining);
 
@@ -134,7 +151,7 @@ public class LevelTab extends MultiWindowTabComp {
 
         viewDistance = new StyledSpinner(new SpinnerIntegerModel(1, 20, level.viewDistance, 1, false, null) {
             @Override
-            public float getInputFieldWith(float height) {
+            public float getInputFieldWidth(float height) {
                 return Spinner.FILL;
             }
 
@@ -153,7 +170,7 @@ public class LevelTab extends MultiWindowTabComp {
 
         shopPrice = new StyledSpinner(new SpinnerFloatModel(0.1f, 10f, level.levelScheme.getPriceMultiplier(),2,0.1f, false) {
             @Override
-            public float getInputFieldWith(float height) {
+            public float getInputFieldWidth(float height) {
                 return Spinner.FILL;
             }
 

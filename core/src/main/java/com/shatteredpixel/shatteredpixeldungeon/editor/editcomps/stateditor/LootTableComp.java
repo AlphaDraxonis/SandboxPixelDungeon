@@ -373,7 +373,7 @@ public class LootTableComp extends Component {
         }
 
         @Override
-        public float getInputFieldWith(float height) {
+        public float getInputFieldWidth(float height) {
             return height * 2f;
         }
 

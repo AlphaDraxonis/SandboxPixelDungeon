@@ -221,7 +221,7 @@ public class WndColorPicker extends Window {
                 }
 
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return FILL;
                 }
             }, "", 9);

@@ -39,11 +39,13 @@ public class StyledButton extends Button {
 	public boolean multiline;
 	
 	public StyledButton(Chrome.Type type, String label ) {
-		this(type, label, 9);
+		this(type, label, -1);
 	}
 	
 	public StyledButton(Chrome.Type type, String label, int size ){
 		super();
+
+		if (size == -1) size = textSize();
 		
 		bg = Chrome.get( type );
 		addToBack( bg );
@@ -51,6 +53,10 @@ public class StyledButton extends Button {
 		text = PixelScene.renderTextBlock( size );
 		text.text( label );
 		add( text );
+	}
+
+	protected int textSize() {
+		return 9;
 	}
 	
 	@Override

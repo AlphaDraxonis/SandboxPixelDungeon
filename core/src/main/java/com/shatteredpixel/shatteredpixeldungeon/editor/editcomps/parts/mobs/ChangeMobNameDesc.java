@@ -29,6 +29,7 @@ public class ChangeMobNameDesc extends Component {
                 updateLayout();
             }
         };
+        name.setHighlightingEnabled(false);
         add(name);
 
         desc = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "desc_label"), null, 500, true, mob.description()) {

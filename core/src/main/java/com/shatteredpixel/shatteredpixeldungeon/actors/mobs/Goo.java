@@ -306,7 +306,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		
 		Dungeon.level.unseal();
 		
-		GameScene.bossSlain();
+		if (showBossBar) GameScene.bossSlain();
 		
 		Badges.validateBossSlain(Goo.class);
 		if (Statistics.qualifiedForBossChallengeBadge){

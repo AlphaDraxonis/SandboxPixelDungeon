@@ -91,7 +91,7 @@ public class Spinner extends Component {
         if (bw == SQUARE) bw = height;
         else bw = Math.max(bw, 6);
 
-        float txtWidth = model.getInputFieldWith(height);
+        float txtWidth = model.getInputFieldWidth(height);
         if (txtWidth == FILL) txtWidth = width - bw * 2 - 1 - label.width() - gap;
 
         label.setRect(x, y + (height - label.height()) / 2, label.width(), height);
@@ -193,7 +193,7 @@ public class Spinner extends Component {
             add(bg);
 
             textBlock = PixelScene.renderTextBlock(fontSize);
-            textBlock.setHightlighting(false);
+            textBlock.setHighlighting(false);
             addToFront(textBlock);
         }
 

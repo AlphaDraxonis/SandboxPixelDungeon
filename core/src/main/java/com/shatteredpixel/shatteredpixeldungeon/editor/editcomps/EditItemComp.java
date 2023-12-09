@@ -67,6 +67,8 @@ import java.util.List;
 
 public class EditItemComp extends DefaultEditComp<Item> {
 
+    public static boolean showSpreadIfLoot;
+
     private final Heap heap;
 
     protected final ReorderHeapComp reorderHeapComp;
@@ -145,7 +147,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(quickslotPos);
         } else quickslotPos = null;
 
-        if (heap == null) {
+        if (heap == null && showSpreadIfLoot) {
             spreadIfLoot = new StyledCheckBox(Messages.get(EditItemComp.class, "spread_if_loot")) {
                 @Override
                 public void checked(boolean value) {
@@ -156,6 +158,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             spreadIfLoot.checked(item.spreadIfLoot);
             add(spreadIfLoot);
         } else spreadIfLoot = null;
+        showSpreadIfLoot = false;
 
         if (!(item instanceof RandomItem)) {
             if (!(item instanceof MissileWeapon) && (item instanceof Weapon || item instanceof Armor || item instanceof Ring || item instanceof Artifact || item instanceof Wand)) {
@@ -225,7 +228,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             } else autoIdentify = null;
 
             if (item instanceof Weapon || item instanceof Armor) {//Missiles support enchantments too
-                enchantBtn = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditItemComp.class, "enchant")) {
+                enchantBtn = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditItemComp.class, "enchant"), PixelScene.landscape() ? 9 : 8) {
                     @Override
                     protected void onClick() {
                         Window w = new WndChooseEnchant(item) {

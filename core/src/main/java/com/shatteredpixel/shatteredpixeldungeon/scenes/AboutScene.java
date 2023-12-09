@@ -330,7 +330,7 @@ public class AboutScene extends PixelScene {
 			}
 
 			this.body = PixelScene.renderTextBlock(body, 6);
-			if (highlight != -1) this.body.setHightlighting(true, highlight);
+			if (highlight != -1) this.body.setHighlighting(true, highlight);
 			if (large) this.body.align(RenderedTextBlock.CENTER_ALIGN);
 			add(this.body);
 

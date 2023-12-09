@@ -44,13 +44,9 @@ public interface RandomItem<T extends Item> {
     //I need random classes to extend classes like weapon or armor so I can still use these types everywhere else
     //ok maybe an alternative would be to create wrapper classes that extend each of these types and use a reference to the only real random class
 
-    static void replaceRandomItemsInList(List<? extends Item> items) {
-        replaceRandomItemsInList(items, false);
-    }
-
-    static <T extends Item> void replaceRandomItemsInList(List<T> items, boolean identifyOnlyEquipment) {
+    static <T extends Item> void replaceRandomItemsInList(List<T> items) {
         for (Item i : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {//i is also of type T
-            T item = (T) AugumentationSpinner.assignRandomAugmentation(i, identifyOnlyEquipment);//always returns <? extends T>
+            T item = (T) AugumentationSpinner.assignRandomAugmentation(i);//always returns <? extends T>
             if (item != i) {
                 if (item == null) items.remove(i);
                 else items.set(items.indexOf(i), item);

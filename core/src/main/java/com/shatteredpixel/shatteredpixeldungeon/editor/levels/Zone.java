@@ -45,7 +45,7 @@ public class Zone implements Bundlable {
     public GrassType grassType = GrassType.NONE;
 
     public String chasmDestZone;
-    public LevelTransition zoneTransition;//TODO needs to be added when init for play, zones cannot be destination of normal transitions, only for chasms
+    public LevelTransition zoneTransition;
 
     private final Set<Integer> cells = new HashSet<>();
 

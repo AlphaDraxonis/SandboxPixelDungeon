@@ -17,7 +17,7 @@ public class QuestSpinner extends StyledSpinner {
     public QuestSpinner(Quest quest, FloatFunction<Float> inputFiledWith) {
         super(new QuestSpinnerModel(quest) {
             @Override
-            public float getInputFieldWith(float height) {
+            public float getInputFieldWidth(float height) {
                 return inputFiledWith.get(height);
             }
         }, Messages.get(QuestSpinner.class, "label"));

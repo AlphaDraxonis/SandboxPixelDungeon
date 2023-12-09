@@ -42,7 +42,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
 
         SpinnerIntegerModel spinnerModel = new SpinnerIntegerModel(1, 500, (int) buff.visualcooldown(), 1, true, INFINITY) {
             @Override
-            public float getInputFieldWith(float height) {
+            public float getInputFieldWidth(float height) {
                 return height * 1.4f;
             }
         };

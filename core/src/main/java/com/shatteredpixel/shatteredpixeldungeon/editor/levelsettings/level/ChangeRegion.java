@@ -225,7 +225,7 @@ public class ChangeRegion extends Component {
                 }
 
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
             }, Messages.get(MusicVariantSpinner.class, "label"), 9);

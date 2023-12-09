@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -43,6 +44,11 @@ public class LevelSpinner extends StyledSpinner {
         @Override
         public int getClicksPerSecondWhileHolding() {
             return 12;
+        }
+
+        @Override
+        public float getInputFieldWidth(float height) {
+            return Spinner.FILL;
         }
     }
 }

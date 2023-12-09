@@ -31,7 +31,7 @@ public class FeelingSpinner extends Spinner {
         }
 
         @Override
-        public float getInputFieldWith(float height) {
+        public float getInputFieldWidth(float height) {
             return Spinner.FILL;
         }
 

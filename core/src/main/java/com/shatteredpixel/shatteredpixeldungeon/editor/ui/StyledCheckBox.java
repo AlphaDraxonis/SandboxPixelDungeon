@@ -14,19 +14,11 @@ public class StyledCheckBox extends StyledButton {
     protected Image checkboxIcon;
 
     public StyledCheckBox(String label) {
-        this(Chrome.Type.GREY_BUTTON_TR, label, 9);
+        this(Chrome.Type.GREY_BUTTON_TR, label);
     }
 
-    public StyledCheckBox(String label, int size) {
-        this(Chrome.Type.GREY_BUTTON_TR, label, size);
-    }
-
-    public StyledCheckBox(Chrome.Type type, String label, int size) {
-        this(type, label, size, false);
-    }
-
-    public StyledCheckBox(Chrome.Type type, String label, int size, boolean checked) {
-        super(type, label, size);
+    public StyledCheckBox(Chrome.Type type, String label) {
+        super(type, label);
         text.align(RenderedTextBlock.CENTER_ALIGN);
         checkboxIcon(Icons.UNCHECKED.get());
 
@@ -37,6 +29,11 @@ public class StyledCheckBox extends StyledButton {
     protected void createChildren(Object... params) {
         multiline = true;
         super.createChildren(params);
+    }
+
+    @Override
+    protected int textSize() {
+        return PixelScene.landscape() ? 9 : 8;
     }
 
     @Override

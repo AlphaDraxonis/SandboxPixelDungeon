@@ -589,7 +589,7 @@ public class YogDzewa extends Mob {
 
 		updateVisibility(Dungeon.level);
 
-		GameScene.bossSlain();
+		if (showBossBar) GameScene.bossSlain();
 
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES) && spawnersAlive == 4){
 			Badges.validateBossChallengeCompleted(YogDzewa.class);

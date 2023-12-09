@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.ui.Component;
@@ -44,6 +45,7 @@ public class SimpleWindow extends Window {
         float posY = 0;
 
         posY += GAP * 2;
+        if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth(width);
         title.setRect(Math.max(GAP, (width - title.width()) * titleAlignment), posY, width - GAP, title.height());
         posY = title.bottom() + GAP * 3;
 

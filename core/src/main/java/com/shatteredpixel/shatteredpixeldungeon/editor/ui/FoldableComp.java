@@ -76,8 +76,8 @@ public class FoldableComp extends Component {
     }
 
     protected void showBody(boolean flag) {
-        fold.visible = fold.active = flag;
-        expand.visible = expand.active = !flag;
+        fold.enable(fold.visible = flag);
+        expand.enable(expand.visible = !flag);
         body.visible = body.active = flag;
     }
 

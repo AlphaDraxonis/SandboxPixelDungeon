@@ -63,7 +63,7 @@ public class StyledSpinner extends Spinner {
         if (bw == SQUARE) bw = spinnerHeight;
         else bw = Math.max(bw, 6);
 
-        float txtWidth = getModel().getInputFieldWith(spinnerHeight);
+        float txtWidth = getModel().getInputFieldWidth(spinnerHeight);
         if (txtWidth == FILL) txtWidth = width - bw * 2 - bg.marginHor();
 
         float conW = bw * 2 - 1;

@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndSupportPrompt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +61,7 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
                         Messages.get(WndDisableRecipes.class, "cat_4"),
                         Messages.get(WndDisableRecipes.class, "cat_5"),
                 });
+        body.setCancelText(Messages.get(WndSupportPrompt.class, "close"));
     }
 
     @Override

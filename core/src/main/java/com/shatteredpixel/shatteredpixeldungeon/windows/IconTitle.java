@@ -76,7 +76,7 @@ public class IconTitle extends Component {
 
         tfLabel = PixelScene.renderTextBlock((int) FONT_SIZE);
         tfLabel.hardlight(Window.TITLE_COLOR);
-        tfLabel.setHightlighting(false);
+        tfLabel.setHighlighting(false);
         add(tfLabel);
 
         health = new HealthBar();

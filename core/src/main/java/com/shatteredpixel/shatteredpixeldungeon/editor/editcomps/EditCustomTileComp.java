@@ -78,7 +78,7 @@ public class EditCustomTileComp extends EditTileComp {
 
             @Override
             protected String getAsString(Object value) {
-                return TileItem.getName((int) value, -1) + " (" + value + ")";
+                return TileItem.getName((int) value, -1);
             }
 
             @Override
@@ -92,14 +92,14 @@ public class EditCustomTileComp extends EditTileComp {
         return new Object[]{
                 Terrain.CHASM,
                 Terrain.EMPTY,
-//                Terrain.EMPTY_DECO,
+                Terrain.EMPTY_DECO,
                 Terrain.WATER,
                 Terrain.GRASS,
                 Terrain.HIGH_GRASS,
                 Terrain.FURROWED_GRASS,
                 Terrain.EMPTY_SP,
-//                Terrain.PEDESTAL,
-//                Terrain.EMBERS,
+                Terrain.PEDESTAL,
+                Terrain.EMBERS,
 
 //                Terrain.TRAP,
 //                Terrain.SECRET_TRAP,
@@ -107,18 +107,21 @@ public class EditCustomTileComp extends EditTileComp {
 
                 Terrain.ENTRANCE,
                 Terrain.EXIT,
+                Terrain.UNLOCKED_EXIT,
                 Terrain.EMPTY_WELL,
                 Terrain.WELL,
                 Terrain.ALCHEMY,
                 Terrain.SIGN,
 //                Terrain.SIGN_SP,
+                Terrain.MINE_CRYSTAL,
+                Terrain.MINE_BOULDER,
 
                 Terrain.WALL,
                 Terrain.WALL_DECO,
                 Terrain.BOOKSHELF,
                 Terrain.BARRICADE,
                 Terrain.STATUE,
-//                Terrain.STATUE_SP,
+                Terrain.STATUE_SP,
         };
     }
 

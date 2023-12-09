@@ -32,7 +32,7 @@ public abstract class DepthSpinner extends Spinner {
                 setAbsoluteMaximum(10000f);
             }
             @Override
-            public float getInputFieldWith(float height) {
+            public float getInputFieldWidth(float height) {
                 return getInputFieldWith.apply(height);
             }
 

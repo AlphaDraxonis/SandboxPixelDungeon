@@ -126,6 +126,10 @@ public abstract class ChooseOneInCategoriesBody extends Component {
         sp.setRect(0, posY, width, height - posY - 2 * GAP - bh);
     }
 
+    public void setCancelText(String cancelText) {
+        cancel.text(cancelText);
+    }
+
 
     public void scrollUp() {
         float y = getCurrentViewY() - 3 * GAP;

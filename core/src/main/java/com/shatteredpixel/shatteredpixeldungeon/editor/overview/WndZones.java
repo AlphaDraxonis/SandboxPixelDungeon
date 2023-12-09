@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndSupportPrompt;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Camera;
@@ -114,7 +115,7 @@ public final class WndZones {
                 super(Icons.get(Icons.ZONE), null, zone.getName());
                 this.zone = zone;
                 this.listPane = listPane;
-                label.setHightlighting(false);
+                label.setHighlighting(false);
 
                 onUpdate();
             }
@@ -369,7 +370,7 @@ public final class WndZones {
                 new WndOptions(Icons.get(Icons.WARNING),
                         Messages.get(WndNewDungeon.class, "dup_name_title"),
                         Messages.get(WndNewZone.class, "dup_name_body"),
-                        Messages.get(WndNewDungeon.class, "dup_name_close")
+                        Messages.get(WndSupportPrompt.class, "close")
                 )
         );
     }
@@ -465,9 +466,9 @@ public final class WndZones {
             };
             if (zone.zoneTransition != null) {
                 addTransition(zone.zoneTransition);
+            } else {
+                comps[8] = addTransition;
             }
-            comps[8] = addTransition;
-            comps[9] = transitionEdit;
 
             rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
                 @Override
@@ -601,7 +602,7 @@ public final class WndZones {
             add(transitionEdit);
             obj.zoneTransition = transition;
             addTransition.visible = addTransition.active = false;
-            comps = new Component[]{comps[0], comps[1], comps[2], comps[3], comps[4], comps[5], comps[6], transitionEdit};
+            comps = new Component[]{comps[0], comps[1], comps[2], comps[3], comps[4], comps[5], comps[6], comps[7], transitionEdit};
             layout();
             updateObj();//for resize
         }
@@ -665,7 +666,7 @@ public final class WndZones {
             };
             destroyWalls.checked(zone.canDestroyWalls);
 
-            return new Component[]{pickColor, flamable, spawnMobs, spawnItems, teleportTo, destroyWalls, null, null, null, null};
+            return new Component[]{pickColor, flamable, spawnMobs, spawnItems, teleportTo, destroyWalls, null, null, null};
         }
     }
 

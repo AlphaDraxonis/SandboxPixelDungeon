@@ -545,6 +545,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             }
             for (Heap h : level.heaps.valueList()) {
                 RandomItem.replaceRandomItemsInList(h.items);
+                if (h.items.isEmpty()) h.destroy();
             }
         }
         Random.popGenerator();
@@ -554,10 +555,10 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
         if (m instanceof Mimic) {
             if (((Mimic) m).items != null) {
-                RandomItem.replaceRandomItemsInList(((Mimic) m).items, true);
+                RandomItem.replaceRandomItemsInList(((Mimic) m).items);
             }
         } else if (m instanceof Thief) {
-            ((Thief) m).item = AugumentationSpinner.assignRandomAugmentation(((Thief) m).item, true);
+            ((Thief) m).item = AugumentationSpinner.assignRandomAugmentation(((Thief) m).item);
         }
     }
 

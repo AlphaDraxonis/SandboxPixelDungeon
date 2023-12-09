@@ -256,7 +256,7 @@ public class WndKeyBindings extends Window {
 			gameAction = action;
 
 			actionName = PixelScene.renderTextBlock(Messages.get(WndKeyBindings.class, action.name()), 6 );
-			actionName.setHightlighting(false);
+			actionName.setHighlighting(false);
 			add(actionName);
 
 			ArrayList<Integer> keys;

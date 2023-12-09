@@ -10,7 +10,7 @@ public class CurseButton extends StyledCheckBox {
     private Item item;
 
     public CurseButton(Item item) {
-        super(Messages.get(CurseButton.class, "label"), 9);
+        super(Messages.get(CurseButton.class, "label"));
         this.item = item;
         checked(item.cursed);
         icon(new TormentedSpiritSprite());

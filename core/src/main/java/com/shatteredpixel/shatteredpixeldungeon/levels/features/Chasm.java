@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.MobSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndSupportPrompt;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
@@ -112,7 +113,7 @@ public class Chasm implements Hero.Doom {
                             new WndOptions(Icons.get(Icons.WARNING),
                                     Messages.get(Chasm.class,"no_chasm_title"),
                                     Messages.get(Chasm.class,"no_chasm_body"),
-                                    Messages.get(Chasm.class,"no_chasm_close")
+                                    Messages.get(WndSupportPrompt.class,"close")
                             ) {
 
                                 private float elapsed = 0f;

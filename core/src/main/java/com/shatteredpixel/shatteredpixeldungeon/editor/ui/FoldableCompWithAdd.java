@@ -57,9 +57,9 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
 
 
         adder.visible = adder.active = false;
-        remover.visible = remover.active = true;
+        remover.enable(remover.visible = true);
 
-        fold.visible = fold.active = true;
+        fold.enable(fold.visible = true);
         expand.visible = expand.active = false;
 
         if (!initialAdding) layoutParent();
@@ -75,7 +75,7 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
             body = null;
         }
 
-        adder.visible = adder.active = true;
+        adder.enable(adder.visible = true);
         remover.visible = remover.active = false;
 
         fold.visible = fold.active = false;

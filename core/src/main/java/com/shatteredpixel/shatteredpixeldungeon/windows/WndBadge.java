@@ -61,7 +61,7 @@ public class WndBadge extends Window {
 		info.align(RenderedTextBlock.CENTER_ALIGN);
 		if (!unlocked) {
 			info.hardlight( 0x888888 );
-			info.setHightlighting( true, 0x888822 );
+			info.setHighlighting( true, 0x888822 );
 		}
 		add(info);
 		

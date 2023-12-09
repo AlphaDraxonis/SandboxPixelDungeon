@@ -606,7 +606,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 
 		super.die( cause );
 
-		GameScene.bossSlain();
+		if (showBossBar) GameScene.bossSlain();
 		Dungeon.level.unseal();
 
 		Badges.validateBossSlain(DM300.class);

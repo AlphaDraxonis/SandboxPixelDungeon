@@ -29,6 +29,7 @@ public class DefaultListItem extends AdvancedListPaneItem {
                 Messages.titleCase(title));
         this.item = item;
         this.window = window;
+        label.setHighlighting(false);
 
         if (item instanceof EditorItem) {
             editButton = new IconButton(Icons.get(Icons.RENAME_ON)) {

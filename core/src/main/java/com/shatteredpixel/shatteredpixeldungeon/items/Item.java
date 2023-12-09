@@ -126,6 +126,8 @@ public class Item implements Bundlable {
     }
 
     public boolean doPickUp(Hero hero, int pos) {
+        if (identifyOnStart) identify();
+
         if (collect(hero.belongings.backpack)) {
 
             if (hero.sprite != null) {

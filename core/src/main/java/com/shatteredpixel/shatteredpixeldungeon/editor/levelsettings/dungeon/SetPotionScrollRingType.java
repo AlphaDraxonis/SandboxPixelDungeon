@@ -213,7 +213,7 @@ public class SetPotionScrollRingType extends Component {
         }
 
         @Override
-        public float getInputFieldWith(float height) {
+        public float getInputFieldWidth(float height) {
             return height;//Should return ~23
         }
 

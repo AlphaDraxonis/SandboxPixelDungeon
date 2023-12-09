@@ -166,7 +166,7 @@ public class WndGameInProgress extends Window {
 		
 		RenderedTextBlock txt = PixelScene.renderTextBlock( label, 8 );
 		txt.setPos(0, pos);
-		txt.setHightlighting(false);
+		txt.setHighlighting(false);
 		add( txt );
 
 		int size = 8;

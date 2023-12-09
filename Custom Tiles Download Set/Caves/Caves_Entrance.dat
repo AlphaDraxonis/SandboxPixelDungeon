@@ -1,4 +1,4 @@
 image="Caves_Entrance.png"
-name="levels.level.entrace_name"
+name="levels.level.entrance_name"
 desc="levels.caveslevel.entrance_desc"
 terrain="7"

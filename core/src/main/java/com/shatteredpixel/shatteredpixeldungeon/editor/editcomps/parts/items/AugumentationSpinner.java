@@ -4,11 +4,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.FeelingSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -112,10 +110,6 @@ public class AugumentationSpinner extends StyledSpinner {
     }
 
     public static Item assignRandomAugmentation(Item i) {
-        return assignRandomAugmentation(i, false);
-    }
-
-    public static Item assignRandomAugmentation(Item i, boolean identifyOnlyEquipment) {
         if (i instanceof RandomItem) {
             i = ((RandomItem<?>) i).generateItem();
         }
@@ -130,8 +124,6 @@ public class AugumentationSpinner extends StyledSpinner {
                 a.augment = (Random.Int(2) == 0) ? Armor.Augment.DEFENSE : Armor.Augment.EVASION;
             }
         }
-        if (i == null) return null;
-        if (i.identifyOnStart && (!identifyOnlyEquipment || (i instanceof EquipableItem || i instanceof Wand))) i.identify();
         return i;
     }
 }

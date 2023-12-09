@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalWisp;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -134,7 +135,7 @@ public class WndEditStats extends MultiWindowTabComp {
                 content.add(dmgMax);
 
                 if (current instanceof Skeleton || current instanceof Warlock || current instanceof Brute
-                        || current instanceof Goo || current instanceof CrystalWisp) {
+                        || current instanceof Goo || current instanceof CrystalWisp || current instanceof Eye) {
                     specialDmgMin = new IntegerSpinner(Messages.get(Mob.class, "special_dmg_min"),
                             0, Math.max(10, def.specialDamageRollMin * 10), current.specialDamageRollMin, false);
                     specialDmgMin.addChangeListener(() -> current.specialDamageRollMin = specialDmgMin.getAsInt());
@@ -311,7 +312,7 @@ public class WndEditStats extends MultiWindowTabComp {
         public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity) {
             super(new SpinnerFloatModel(minimum, maximum, value, false) {
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
             }, name, 9);
@@ -320,7 +321,7 @@ public class WndEditStats extends MultiWindowTabComp {
         public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity, float realMin) {
             super(new SpinnerFloatModel(minimum, maximum, value, false) {
                 @Override
-                public float getInputFieldWith(float height) {
+                public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
             }, name, 9);
@@ -371,7 +372,7 @@ public class WndEditStats extends MultiWindowTabComp {
         }
 
         @Override
-        public float getInputFieldWith(float height) {
+        public float getInputFieldWidth(float height) {
             return Spinner.FILL;
         }
     }

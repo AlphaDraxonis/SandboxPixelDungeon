@@ -7,7 +7,7 @@ import com.watabou.noosa.ui.Component;
 
 public abstract class WndChooseOneInCategories extends Window {
 
-    private final ChooseOneInCategoriesBody body;
+    protected final ChooseOneInCategoriesBody body;
 
     public WndChooseOneInCategories(String title, String desc,Object[][] categories, String[] categoryNames){
         this(PixelScene.renderTextBlock(Messages.titleCase( title),10),desc,categories,categoryNames);

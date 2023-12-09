@@ -425,10 +425,9 @@ public abstract class Level implements Bundlable {
 			h.seen = false;
 			if (h.type == Heap.Type.FOR_SALE){
 				Item i = h.items.getLast();
-				if ((i instanceof EquipableItem || i instanceof Wand)) i.identifyOnStart = true;
+				if ((i instanceof EquipableItem || i instanceof Wand)) i.identify();
  			}
 			for (Item i : h.items) {
-				if (i.identifyOnStart && (i instanceof EquipableItem || i instanceof Wand)) i.identify();
 				if (i instanceof Bomb) {
 					if (i.getClass() == Bomb.class && i.quantity() >= 2) i.image = ItemSpriteSheet.DBL_BOMB;
 					if (((Bomb) i).igniteOnDrop) ((Bomb) i).trigger();
@@ -1156,12 +1155,10 @@ public abstract class Level implements Bundlable {
 		//prefer spawning >>>in zones<<< where no mobs can spawn if at least one zone that can spawn mobs exists
 		if (ch instanceof Hero) {
 			Set<String> safeZonesToSpawn = new HashSet<>(2);
-			boolean spawnHeroInSafePlace = false;
 			for (Zone z : zoneMap.values()){
-				if (z.canSpawnMobs) spawnHeroInSafePlace = true;
-				else safeZonesToSpawn.add(z.getName());
+				safeZonesToSpawn.add(z.getName());
 			}
-			if (spawnHeroInSafePlace && !safeZonesToSpawn.isEmpty()) {
+			if (!safeZonesToSpawn.isEmpty()) {
 				int cell = 0;
 				int count = guarantee ? length() : 300;
 				do {
@@ -1176,8 +1173,8 @@ public abstract class Level implements Bundlable {
 						|| (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE)
 						|| zone[cell] == null
 						|| !safeZonesToSpawn.contains(zone[cell].getName()));
-				if (count < 0){
-					if(!guarantee) return -1;
+				if (count < 0) {
+					if (!guarantee) return -1;
 				} else return cell;
 			}
 		}
@@ -1212,7 +1209,7 @@ public abstract class Level implements Bundlable {
 				|| (ch instanceof Piranha && map[cell] != Terrain.WATER)
 				|| findMob(cell) != null
 				|| (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE)
-				|| (!Zone.canSpawnMobs(this, cell) && !(ch instanceof Hero || ch instanceof NPC)));
+				|| (!Zone.canSpawnMobs(this, cell) && !(ch == null || ch instanceof Hero || ch instanceof NPC)));
 
 		return cell;
 	}
@@ -1551,11 +1548,18 @@ public abstract class Level implements Bundlable {
 	
 	public int fallCell( boolean fallIntoPit, String destZone ) {
 		Dungeon.hero.pos = -1;
+		int tries = 100;
 		int result;
 		do {
-			result = randomRespawnCell( null );
-			if (result == -1) return -1;
-		} while ((destZone != null && (zone[result] == null || !zone[result].getName().equals(destZone)))
+			result = randomRespawnCell(null);
+			if (tries-- < 0) {
+				if (destZone != null) {
+					destZone = null;
+					tries = 100;
+				} else return -1;
+			}
+		} while (result == -1
+				|| (destZone != null && (zone[result] == null || !zone[result].getName().equals(destZone)))
 				|| traps.get(result) != null
 				|| findMob(result) != null);
 		return result;
@@ -1953,7 +1957,7 @@ public abstract class Level implements Bundlable {
 			case Terrain.OPEN_DOOR:
 				return Messages.get(Level.class, "open_door_name");
 			case Terrain.ENTRANCE:
-				return Messages.get(Level.class, "entrace_name");
+				return Messages.get(Level.class, "entrance_name");
 			case Terrain.EXIT:
 				return Messages.get(Level.class, "exit_name");
 			case Terrain.EMBERS:
@@ -2047,5 +2051,73 @@ public abstract class Level implements Bundlable {
 
 	public String appendNoTransWarning(int cell) {
 		return cell >= 0 && transitions.get(cell) == null ? "\n" + Messages.get(Hero.class, "no_trans_warning") : "";
+	}
+
+	public static String getMessageKey(int terrain, boolean desc) {
+		switch (terrain) {//name and desc available
+			case Terrain.CHASM: return "chasm";
+			case Terrain.WATER: return "water";
+			case Terrain.ENTRANCE: return "entrance";
+			case Terrain.EXIT:
+			case Terrain.UNLOCKED_EXIT: return "exit";
+			case Terrain.EMBERS: return "embers";
+			case Terrain.CRYSTAL_DOOR: return "crystal_door";
+			case Terrain.LOCKED_DOOR: return "locked_door";
+			case Terrain.LOCKED_EXIT: return "locked_exit";
+			case Terrain.BARRICADE: return "barricade";
+			case Terrain.INACTIVE_TRAP: return "inactive_trap";
+			case Terrain.SIGN:
+			case Terrain.SIGN_SP: return "sign";
+			case Terrain.STATUE:
+			case Terrain.STATUE_SP: return "statue";
+			case Terrain.ALCHEMY: return "alchemy";
+			case Terrain.EMPTY_WELL: return "empty_well";
+			case Terrain.HIGH_GRASS:
+			case Terrain.FURROWED_GRASS: return "high_grass";
+			case Terrain.MINE_CRYSTAL: return "crystal";
+			case Terrain.MINE_BOULDER: return "boulder_desc";
+		}
+
+		if (desc) return "";
+
+		switch (terrain) {//only name available
+			case Terrain.EMPTY:
+			case Terrain.EMPTY_SP:
+			case Terrain.EMPTY_DECO:
+			case Terrain.CUSTOM_DECO_EMPTY:
+			case Terrain.SECRET_TRAP: return "floor";
+			case Terrain.GRASS: return "grass";
+			case Terrain.WALL:
+			case Terrain.WALL_DECO:
+			case Terrain.SECRET_DOOR: return "wall";
+			case Terrain.DOOR: return "closed_door";
+			case Terrain.OPEN_DOOR: return "open_door";
+			case Terrain.PEDESTAL: return "pedestal";
+			case Terrain.WELL: return "well";
+			case Terrain.BOOKSHELF: return "bookshelf";
+			default: return "";
+		}
+	}
+
+	public static String getFullMessageKey(int region, int terrain, boolean desc) {
+		String level;
+		switch (region) {
+			case REGION_SEWERS: level = "sewerlevel"; break;
+			case REGION_PRISON: level = "prisonlevel"; break;
+			case REGION_CAVES: level = "caveslevel"; break;
+			case REGION_CITY: level = "citylevel"; break;
+			case REGION_HALLS: level = "hallslevel"; break;
+			default: return null;
+		}
+
+		String key = "levels." + level + "." + getMessageKey(terrain, desc) + "_" + (desc ? "desc" : "name");
+		if (Messages.NO_TEXT_FOUND.equals(Messages.get(key))) {
+			key = "levels.level." + getMessageKey(terrain, desc) + "_" + (desc ? "desc" : "name");
+			if (Messages.NO_TEXT_FOUND.equals(Messages.get(key))) {
+				return desc ? "windows.wndinfocell.nothing" : "levels.level.default_name";
+			}
+		}
+		return key;
+
 	}
 }

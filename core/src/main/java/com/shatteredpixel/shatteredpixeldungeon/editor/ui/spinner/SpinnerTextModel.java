@@ -93,7 +93,7 @@ public class SpinnerTextModel extends AbstractSpinnerModel {
     }
 
     @Override
-    public float getInputFieldWith(float height) {
+    public float getInputFieldWidth(float height) {
         return Spinner.FILL;
     }
 

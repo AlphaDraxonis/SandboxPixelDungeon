@@ -93,19 +93,22 @@ public class CustomDungeon implements Bundlable {
     //Custom mob attacks: externalise
     //and search: used so resistances can differentiate between melee and magical attacks
 
-    //???
-    //see how much a locked door there and how much key there
-
-    //4 Std
-    //TODO  make zone icons
-
-    //8 Std
-    //crystals(cave), and perhaps crystal walls
-
     //maybe ability to randomize loot drops between some amounts like 1-9 quantity for example
 
     //Scale mobs if their normal stats editor is disabled: not just everything
 
+    //Scroll of Debug with interface, reference table and commands, use reflection to access ALL methods
+    //surround method calls with try-catch-block, say warning that some variables might have been modified if method not @pure
+    //add simple ways to add new enemies to map, or find one
+
+    //add way to share dungeons in game:
+    //check GithubUpdates for code examples for server
+    //access via new button directly from title scene
+    //wnd with loading screen, sending request to server
+    //ui for selecting dungeons (simple list, no search option in beginning)
+    //preview with image? and download button
+    //option to upload raw files or converted as .dun
+    //upload as bug report
 
     //if possible make a release that can be downloaded in this format (taken ShPD for example) -> as .exe  no
 

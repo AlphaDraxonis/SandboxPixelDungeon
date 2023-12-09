@@ -240,8 +240,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public void die( Object cause ) {
-		
-		GameScene.bossSlain();
+
+		if (showBossBar) GameScene.bossSlain();
 		super.die( cause );
 		
 		Badges.validateBossSlain(Tengu.class);
