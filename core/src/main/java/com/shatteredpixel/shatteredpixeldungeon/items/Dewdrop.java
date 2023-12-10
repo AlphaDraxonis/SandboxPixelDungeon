@@ -87,11 +87,11 @@ public class Dewdrop extends Item {
 				else if (result == 1) hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "shield", totalShield) );
 
 				if (totalHealing > 0){
-					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, String.valueOf(totalHealing), FloatingText.HEALING);
+					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalHealing), FloatingText.HEALING);
 				}
 				if (totalShield > 0) {
 					Buff.affect(hero, Barrier.class).incShield(totalShield);
-					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, String.valueOf(totalShield), FloatingText.SHIELDING );
+					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalShield), FloatingText.SHIELDING );
 				}
 
 				Sample.INSTANCE.play( Assets.Sounds.DEWDROP );

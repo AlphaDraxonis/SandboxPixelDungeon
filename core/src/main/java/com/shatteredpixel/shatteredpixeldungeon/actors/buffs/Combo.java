@@ -394,7 +394,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 									BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
 									int shieldAmt = Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE) / 3f);
 									shield.supercharge(shieldAmt);
-									hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(shieldAmt), FloatingText.SHIELDING);
+									hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldAmt), FloatingText.SHIELDING);
 								}
 							}
 						}
@@ -451,7 +451,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 				BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
 				int shieldAmt = Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE) / 3f);
 				shield.supercharge(shieldAmt);
-				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(shieldAmt), FloatingText.SHIELDING);
+				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldAmt), FloatingText.SHIELDING);
 			}
 		}
 
