@@ -23,7 +23,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
                 convertToInt(stepSize, precision), includeInfinity, includeInfinity ? INFINITY : null);
         this.precision = precision;
         precisionFormat = "%." + precision + "f";
-        setAbsoluteMaximum(ABSOLUTE_MAXIMUM);
+        setAbsoluteMinAndMax(minimum, ABSOLUTE_MAXIMUM);
     }
 
     public static int convertToInt(float val, int precision) {

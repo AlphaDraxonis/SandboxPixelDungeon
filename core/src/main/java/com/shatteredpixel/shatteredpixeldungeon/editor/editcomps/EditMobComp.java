@@ -51,6 +51,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelectorList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
@@ -89,6 +90,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -133,7 +135,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (mob instanceof Mimic) {
             if (((Mimic) mob).items == null) ((Mimic) mob).items = new ArrayList<>();
             ArrayList<Item> mimicItemList = ((Mimic) mob).items;
-            mimicItems = new ItemContainer<Item>(mimicItemList, this, true) {
+            mimicItems = new ItemContainerWithLabel<Item>(mimicItemList, this, true, Messages.get(WndJournal.class, "items") + ":") {
                 @Override
                 protected void doAddItem(Item item) {
                     //From Heap#drop()
@@ -402,23 +404,23 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (mob instanceof Guard) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Guard) mob).maxChainCooldown, 1, false, null),
-                    Messages.get(EditMobComp.class, "chains_cd"),8);
+                    Messages.get(EditMobComp.class, "chains_cd"), 8);
             abilityCooldown.addChangeListener(() -> ((Guard) mob).maxChainCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof DM200) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((DM200) mob).maxVentCooldown, 1, false, null),
-                    Messages.get(EditMobComp.class, "vent_cd"),8);
+                    Messages.get(EditMobComp.class, "vent_cd"), 8);
             abilityCooldown.addChangeListener(() -> ((DM200) mob).maxVentCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof Golem) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Golem) mob).maxTeleCooldown, 1, false, null),
-                    Messages.get(EditMobComp.class, "tele_cd"),8);
+                    Messages.get(EditMobComp.class, "tele_cd"), 8);
             abilityCooldown.addChangeListener(() -> ((Golem) mob).maxTeleCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) {
             com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner m = (com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) mob;
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, m.maxWebCoolDown, 1, false, null),
-                    Messages.get(EditMobComp.class, "web_cd"),8);
+                    Messages.get(EditMobComp.class, "web_cd"), 8);
             abilityCooldown.addChangeListener(() -> m.maxWebCoolDown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else abilityCooldown = null;

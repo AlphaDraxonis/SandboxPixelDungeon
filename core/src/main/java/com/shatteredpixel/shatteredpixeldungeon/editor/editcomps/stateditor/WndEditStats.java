@@ -112,7 +112,7 @@ public class WndEditStats extends MultiWindowTabComp {
             if (DefaultStatsCache.useStatsScale(current)) {
 
                 statsScale = new FloatSpinner(Messages.get(Mob.class, "stats_scale"),
-                        0.1f, Math.max(10, def.statsScale * 10), current.statsScale, false, 0.1f);
+                        0.1f, Math.max(10, def.statsScale * 10), current.statsScale, false);
                 statsScale.addChangeListener(() -> current.statsScale = statsScale.getAsFloat());
                 content.add(statsScale);
 
@@ -250,7 +250,7 @@ public class WndEditStats extends MultiWindowTabComp {
     private void addHPAccuracyEvasionArmorSpinner(Mob def, Mob current) {
 
         hp = new IntegerSpinner(Messages.get(Mob.class, "hp"),
-                1, Math.max(10, def.HT * 10), current.HT, true, 1);
+                1, Math.max(10, def.HT * 10), current.HT, true);
         hp.addChangeListener(() -> {
             int val = hp.getAsInt();
             if (val == -1) val = Char.INFINITE_HP;
@@ -318,16 +318,6 @@ public class WndEditStats extends MultiWindowTabComp {
             }, name, 9);
         }
 
-        public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity, float realMin) {
-            super(new SpinnerFloatModel(minimum, maximum, value, false) {
-                @Override
-                public float getInputFieldWidth(float height) {
-                    return Spinner.FILL;
-                }
-            }, name, 9);
-            ((SpinnerIntegerModel) getModel()).setAbsoluteMinimum(realMin);
-        }
-
         protected float getAsFloat() {
             return ((SpinnerFloatModel) getModel()).getAsFloat();
         }
@@ -338,15 +328,6 @@ public class WndEditStats extends MultiWindowTabComp {
 
         public IntegerSpinner(String name, int minimum, int maximum, int value, boolean includeInfinity) {
             super(new IntegerSpinnerModel(minimum, maximum, value, false), name, 9);
-        }
-
-        public IntegerSpinner(String name, int minimum, int maximum, int value, boolean includeInfinity, int realMin) {
-            super(new IntegerSpinnerModel(minimum, maximum, value, false) {
-                @Override
-                public void displayInputAnyNumberDialog() {
-                    displayInputAnyNumberDialog(realMin, Integer.MAX_VALUE);
-                }
-            }, name, 9);
         }
 
         protected int getAsInt() {

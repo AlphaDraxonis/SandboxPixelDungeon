@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -59,8 +60,8 @@ public interface RandomItem<T extends Item> {
         if (itemClass == MeleeWeapon.class) return new RandomMeleeWeapon();
         if (itemClass == Armor.class) return new RandomArmor();
         if (itemClass == Ring.class) return new RandomRing();
-        if (itemClass == Artifact.class) return new RandomArmor();
-        if (itemClass == EquipableItem.class) return new RandomEqItem();
+        if (itemClass == Artifact.class) return new RandomArtifact();
+        if (itemClass == KindofMisc.class) return new RandomEqMiscItem();
         if (itemClass == Wand.class) return new RandomWand();
         if (itemClass == Bag.class) return new RandomBag();
         return new RandomItemAny();
@@ -683,7 +684,7 @@ public interface RandomItem<T extends Item> {
     }
 
 
-    class RandomEqItem extends EquipableItem implements RandomItem<EquipableItem> {
+    class RandomEqMiscItem extends KindofMisc implements RandomItem<KindofMisc> {
 
         {
             image = ItemSpriteSheet.SOMETHING;
@@ -692,13 +693,13 @@ public interface RandomItem<T extends Item> {
         //can only have one item per slot, and no RandomItem
         private LootTableComp.CustomLootInfo internalRandomItem = new LootTableComp.CustomLootInfo();
 
-        private EquipableItem generatedItem;
+        private KindofMisc generatedItem;
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
             internalRandomItem = (LootTableComp.CustomLootInfo) bundle.get(INTERNAL_RANDOM_ITEM);
-            generatedItem = (EquipableItem) bundle.get(GENERATED_ITEM);
+            generatedItem = (KindofMisc) bundle.get(GENERATED_ITEM);
         }
 
         @Override
@@ -712,8 +713,8 @@ public interface RandomItem<T extends Item> {
         public boolean equals(Object obj) {
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomEqItem) obj).internalRandomItem)
-                    && EditItemComp.areEqual(generatedItem, ((RandomEqItem) obj).generatedItem);
+            return internalRandomItem.equals(((RandomEqMiscItem) obj).internalRandomItem)
+                    && EditItemComp.areEqual(generatedItem, ((RandomEqMiscItem) obj).generatedItem);
         }
 
         @Override
@@ -722,12 +723,12 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public EquipableItem generateItem() {
+        public KindofMisc generateItem() {
             if (generatedItem != null) return generatedItem;
             if (Random.Float() >= internalRandomItem.lootChance()) return generatedItem = null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
-            generatedItem = (EquipableItem) result.get(0);
+            generatedItem = (KindofMisc) result.get(0);
             if (reservedQuickslot > 0) generatedItem.reservedQuickslot = reservedQuickslot;
             return generatedItem;
         }

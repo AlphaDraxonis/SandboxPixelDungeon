@@ -13,7 +13,8 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
 
     public static final String INFINITY = "∞";
 
-    private Integer minimum, maximum, value, absoluteMinimum, absoluteMaximum;
+    private Integer minimum, maximum, value;
+    private float absoluteMinimum, absoluteMaximum;
     private int stepSize;
     private boolean cycle;
     private String showWhenNull;
@@ -206,11 +207,11 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     }
 
     public void setAbsoluteMaximum(float absoluteMaximum) {
-        this.absoluteMaximum = (int) absoluteMaximum;
+        this.absoluteMaximum = absoluteMaximum;
     }
 
     public void setAbsoluteMinimum(float absoluteMinimum) {
-        this.absoluteMinimum = (int) absoluteMinimum;
+        this.absoluteMinimum = absoluteMinimum;
     }
 
     public void setAbsoluteMinAndMax(float absoluteMinimum, float absoluteMaximum) {
@@ -218,11 +219,11 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         setAbsoluteMaximum(absoluteMaximum);
     }
 
-    public Integer getAbsoluteMaximum() {
+    public float getAbsoluteMaximum() {
         return absoluteMaximum;
     }
 
-    public Integer getAbsoluteMinimum() {
+    public float getAbsoluteMinimum() {
         return absoluteMinimum;
     }
 

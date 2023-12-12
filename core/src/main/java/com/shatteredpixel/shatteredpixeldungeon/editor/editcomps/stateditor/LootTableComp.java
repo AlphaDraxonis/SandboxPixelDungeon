@@ -225,7 +225,7 @@ public class LootTableComp extends Component {
 
     private void addLootItem(ItemWithCount item) {
         if (item.items.contains(EditorItem.NULL_ITEM)) hasNullInLoot = true;
-        item.lootComp = new LootItem(item);
+        item.lootComp = new LootItem(item, randomItem == null ? Integer.MAX_VALUE : 1);
         add(item.lootComp);
         item.lootComp.setSize(width, ROW_HEIGHT);
     }
@@ -254,7 +254,7 @@ public class LootTableComp extends Component {
         //        private final Image img;
         private final RenderedTextBlock text;
 
-        public LootItem(ItemWithCount item) {
+        public LootItem(ItemWithCount item, int maxSlots) {
 
             this.item = item;
 
@@ -268,7 +268,7 @@ public class LootTableComp extends Component {
 //                img = null;
                 text = null;
 
-                items = new ItemContainer<Item>(item.items, null, true, 1) {
+                items = new ItemContainer<Item>(item.items, null, true, maxSlots) {
                     @Override
                     protected void onSlotNumChange() {
                         LootItem.this.layout();
