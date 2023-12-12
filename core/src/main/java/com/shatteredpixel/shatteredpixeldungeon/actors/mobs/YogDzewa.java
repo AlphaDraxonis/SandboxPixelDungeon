@@ -205,7 +205,7 @@ public class YogDzewa extends Mob {
 			yell(Messages.get(this, "hope"));
 			summonCooldown = -15; //summon a burst of minions!
 			phase = 5;
-			BossHealthBar.bleed(true);
+			bleeding = true;
 			if (Dungeon.level instanceof HallsBossLevel) {
 				Game.runOnRenderThread(new Callback() {
 					@Override
@@ -612,8 +612,8 @@ public class YogDzewa extends Mob {
 	public void notice() {
 		if (playerAlignment != NORMAL_ALIGNMENT) return;
 
-		if (!BossHealthBar.isAssigned()) {
-			BossHealthBar.assignBoss(this);
+		if (!BossHealthBar.isAssigned(this)) {
+			BossHealthBar.addBoss(this);
 			yell(Messages.get(this, "notice"));
 			for (Char ch : Actor.chars()){
 				if (ch instanceof DriedRose.GhostHero){
@@ -696,10 +696,6 @@ public class YogDzewa extends Mob {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		phase = bundle.getInt(PHASE);
-		if (phase != 0 && playerAlignment == NORMAL_ALIGNMENT && (enemyID == -1 || HP < HT)) {
-			BossHealthBar.assignBoss(this);
-			if (phase == 5) BossHealthBar.bleed(true);
-		}
 		spawnersAlive = bundle.getInt(SPAWNERS_ALIVE);
 		if (spawnersAlive == -1 && !CustomDungeon.isEditing() && !(Game.scene() instanceof TitleScene)) spawnersAlive = Statistics.spawnersAlive;
 

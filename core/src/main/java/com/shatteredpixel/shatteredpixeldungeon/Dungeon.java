@@ -72,6 +72,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toolbar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
@@ -329,6 +330,8 @@ public class Dungeon {
         WandmakerQuest.reset();
         BlacksmithQuest.reset();
         ImpQuest.reset();
+
+        BossHealthBar.reset();
 
 		hero = new Hero();
 		hero.live();
@@ -673,6 +676,8 @@ public class Dungeon {
             ImpQuest.storeStatics(quests);
             bundle.put(QUESTS, quests);
 
+            BossHealthBar.storeInBundle(bundle);
+
             SpecialRoom.storeRoomsInBundle(bundle);
             SecretRoom.storeRoomsInBundle(bundle);
 
@@ -786,6 +791,8 @@ public class Dungeon {
                 BlacksmithQuest.reset();
                 ImpQuest.reset();
             }
+
+            BossHealthBar.restoreFromBundle(bundle);
 
             SpecialRoom.restoreRoomsFromBundle(bundle);
             SecretRoom.restoreRoomsFromBundle(bundle);

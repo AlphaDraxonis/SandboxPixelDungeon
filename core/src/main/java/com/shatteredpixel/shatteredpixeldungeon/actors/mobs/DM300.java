@@ -172,11 +172,6 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		turnsSinceLastAbility = bundle.getInt(TURNS_SINCE_LAST_ABILITY);
 		abilityCooldown = bundle.getInt(ABILITY_COOLDOWN);
 		lastAbility = bundle.getInt(LAST_ABILITY);
-
-		if (turnsSinceLastAbility != -1 && playerAlignment == NORMAL_ALIGNMENT && (enemyID == -1 || HP < HT)){
-			BossHealthBar.assignBoss(this);
-			if (!supercharged && pylonsActivated == totalPylonsToActivate()) BossHealthBar.bleed(true);
-		}
 	}
 
 	@Override
@@ -365,8 +360,8 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		super.notice();
 		if (playerAlignment != NORMAL_ALIGNMENT) return;
 
-		if (!BossHealthBar.isAssigned()) {
-			BossHealthBar.assignBoss(this);
+		if (!BossHealthBar.isAssigned(this)) {
+			BossHealthBar.addBoss(this);
 			turnsSinceLastAbility = 0;
 			yell(Messages.get(this, "notice"));
 			for (Char ch : Actor.chars()){
@@ -480,7 +475,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 
 	@Override
 	public void damage(int dmg, Object src) {
-		if (!BossHealthBar.isAssigned()){
+		if (!BossHealthBar.isAssigned(this)){
 			notice();
 		}
 
@@ -573,7 +568,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 			yell(Messages.get(this, "charge_lost"));
 		} else {
 			yell(Messages.get(this, "pylons_destroyed"));
-			BossHealthBar.bleed(true);
+			bleeding = true;
 			if (Dungeon.level instanceof CavesBossLevel) {
 				Game.runOnRenderThread(new Callback() {
 					@Override

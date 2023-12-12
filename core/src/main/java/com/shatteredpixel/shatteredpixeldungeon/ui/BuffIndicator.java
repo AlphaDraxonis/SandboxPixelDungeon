@@ -353,12 +353,10 @@ public class BuffIndicator extends Component {
 	}
 
 	public static void refreshBoss(){
-		if (bossInstance != null) {
-			bossInstance.needsRefresh = true;
-		}
+		BossHealthBar.refresh();
 	}
 
-	public static void setBossInstance(BuffIndicator boss){
-		bossInstance = boss;
+	public static void refreshBoss(BuffIndicator bossBuffIndicator){
+		bossBuffIndicator.needsRefresh = true;
 	}
 }

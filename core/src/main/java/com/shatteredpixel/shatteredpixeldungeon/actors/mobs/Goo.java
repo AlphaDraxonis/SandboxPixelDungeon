@@ -143,7 +143,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 				healInc++;
 			}
 			if (HP*2 > HT) {
-				BossHealthBar.bleed(false);
+				bleeding = false;
 				((GooSprite)sprite).spray(false);
 				HP = Math.min(HP, HT);
 			}
@@ -280,14 +280,14 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public void damage(int dmg, Object src) {
-		if (!BossHealthBar.isAssigned()){
-			BossHealthBar.assignBoss( this );
+		if (!BossHealthBar.isAssigned(this)){
+			BossHealthBar.addBoss( this );
 			Dungeon.level.seal();
 		}
-		boolean bleeding = (HP*2 <= HT);
+		boolean bleedingCheck = (HP*2 <= HT);
 		super.damage(dmg, src);
-		if ((HP*2 <= HT) && !bleeding){
-			BossHealthBar.bleed(true);
+		if ((HP*2 <= HT) && !bleedingCheck){
+			bleeding = true;
 			sprite.showStatus(CharSprite.NEGATIVE, Messages.get(this, "enraged"));
 			((GooSprite)sprite).spray(true);
 			yell(Messages.get(this, "gluuurp"));
@@ -326,8 +326,8 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		super.notice();
 		if (playerAlignment != NORMAL_ALIGNMENT) return;
 
-		if (!BossHealthBar.isAssigned()) {
-			BossHealthBar.assignBoss(this);
+		if (!BossHealthBar.isAssigned(this)) {
+			BossHealthBar.addBoss(this);
 			Dungeon.level.seal();
 			yell(Messages.get(this, "notice"));
 			for (Char ch : Actor.chars()){
@@ -360,11 +360,6 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		super.restoreFromBundle( bundle );
 
 		pumpedUp = bundle.getInt( PUMPEDUP );
-
-		if (playerAlignment == NORMAL_ALIGNMENT && (enemyID == -1 || HP < HT)) {
-			if (state != SLEEPING) BossHealthBar.assignBoss(this);
-			if ((HP * 2 <= HT)) BossHealthBar.bleed(true);
-		}
 
 		healInc = bundle.getInt(HEALINC);
 		statsScale = 1f;

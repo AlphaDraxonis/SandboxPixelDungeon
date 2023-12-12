@@ -183,7 +183,7 @@ public class DriedRose extends Artifact {
 						firstSummon = true;
 						
 					} else {
-						if (BossHealthBar.isAssigned()) {
+						if (BossHealthBar.bossBarActive()) {
 							ghost.sayBoss();
 						} else {
 							ghost.sayAppeared();
@@ -825,7 +825,7 @@ public class DriedRose extends Artifact {
 		}
 		
 		public void sayDefeated(){
-			if (BossHealthBar.isAssigned()){
+			if (BossHealthBar.bossBarActive()){
 				yell( Messages.get( this, "defeated_by_boss_" + Random.IntRange(1, 3) ));
 			} else {
 				yell( Messages.get( this, "defeated_by_enemy_" + Random.IntRange(1, 3) ));

@@ -83,7 +83,7 @@ public class CavesBossLevel extends Level {
 	@Override
 	public void playLevelMusic() {
 		if (locked()){
-			if (BossHealthBar.isBleeding()){
+			if (BossHealthBar.bleedingActive()){
 				Music.INSTANCE.play(Assets.Music.CAVES_BOSS_FINALE, true);
 			} else {
 				Music.INSTANCE.play(Assets.Music.CAVES_BOSS, true);

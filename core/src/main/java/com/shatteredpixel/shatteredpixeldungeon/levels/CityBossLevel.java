@@ -90,7 +90,7 @@ public class CityBossLevel extends Level {
 	@Override
 	public void playLevelMusic() {
 		if (locked()){
-			if (BossHealthBar.isBleeding()){
+			if (BossHealthBar.bleedingActive()){
 				Music.INSTANCE.play(Assets.Music.CITY_BOSS_FINALE, true);
 			} else {
 				Music.INSTANCE.play(Assets.Music.CITY_BOSS, true);

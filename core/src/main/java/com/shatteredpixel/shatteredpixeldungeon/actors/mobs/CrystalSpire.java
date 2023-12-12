@@ -377,7 +377,7 @@ public class CrystalSpire extends Mob {
 							Sample.INSTANCE.play( Assets.Sounds.ROCKS );
 							PixelScene.shake( 3, 0.7f );
 							GLog.n(Messages.get(CrystalSpire.class, "alert"));
-							BossHealthBar.assignBoss(CrystalSpire.this);
+							BossHealthBar.addBoss(CrystalSpire.this);
 
 							abilityCooldown = 1; //dely first attack by 1 turn
 						}
@@ -510,10 +510,6 @@ public class CrystalSpire extends Mob {
 		super.restoreFromBundle(bundle);
 		spriteClass = bundle.getClass(SPRITE);
 		hits = bundle.getInt(HITS);
-
-		if (hits >= 3){
-			BossHealthBar.assignBoss(this);
-		}
 
 		abilityCooldown = bundle.getFloat(ABILITY_COOLDOWN);
 		targetedCells.clear();

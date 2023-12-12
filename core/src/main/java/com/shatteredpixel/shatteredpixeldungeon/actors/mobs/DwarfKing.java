@@ -158,11 +158,6 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		yelledWavePhase2 = bundle.getBoolean(YELLED);
 
 		if (phase == 2) properties.add(Property.IMMOVABLE);
-
-		if (playerAlignment == NORMAL_ALIGNMENT && (enemyID == -1 || HP < HT)) {
-			BossHealthBar.assignBoss(this);
-			if (phase == 3) BossHealthBar.bleed(true);
-		}
 	}
 
 	@Override
@@ -553,8 +548,8 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		phase = Math.max(phase, 1);
 		if (playerAlignment != NORMAL_ALIGNMENT) return;
 
-		if (!BossHealthBar.isAssigned()) {
-			BossHealthBar.assignBoss(this);
+		if (!BossHealthBar.isAssigned(this)) {
+			BossHealthBar.addBoss(this);
 			yell(Messages.get(this, "notice"));
 			for (Char ch : Actor.chars()){
 				if (ch instanceof DriedRose.GhostHero){
@@ -640,7 +635,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			sprite.centerEmitter().start( Speck.factory( Speck.SCREAM ), 0.4f, 2 );
 			Sample.INSTANCE.play( Assets.Sounds.CHALLENGE );
 			yell(  Messages.get(this, "enraged", Dungeon.hero.name()) );
-			BossHealthBar.bleed(true);
+			bleeding = true;
 			if (Dungeon.level instanceof CityBossLevel) {
 				Game.runOnRenderThread(new Callback() {
 					@Override

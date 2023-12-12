@@ -135,6 +135,7 @@ public abstract class Mob extends Char {
 	public String customName, customDesc, dialog;
 	public boolean isBossMob;//only real value while playing, use level.bossmobAt instead!, not meant for shattered bosses except goo!
 	public boolean showBossBar = true;
+	public boolean bleeding;
 
 	//Normal, Neutral, or Friedly; Neutral enemies behave similar as RatKing, cannot have boss bars
 	public static final int NORMAL_ALIGNMENT   = 0;
@@ -177,6 +178,7 @@ public abstract class Mob extends Char {
 	private static final String STATS_SCALE = "stats_scale";
 	private static final String IS_BOSS_MOB = "is_boss_mob";
 	private static final String SHOW_BOSS_BAR = "show_boss_bar";
+	private static final String BLEEDING = "bleeding";
 	private static final String PLAYER_ALIGNMENT = "player_alignment";
 	private static final String FOLLOWING = "following";
 	private static final String LOOT = "loot";
@@ -221,6 +223,7 @@ public abstract class Mob extends Char {
 
         bundle.put(IS_BOSS_MOB, isBossMob);
         bundle.put(SHOW_BOSS_BAR, showBossBar);
+        bundle.put(BLEEDING, bleeding);
         bundle.put(PLAYER_ALIGNMENT, playerAlignment);
 
         if (loot instanceof LootTableComp.CustomLootInfo) bundle.put(LOOT, (Bundlable) loot);
@@ -280,15 +283,9 @@ public abstract class Mob extends Char {
 		if (bundle.contains(DIALOG)) dialog = bundle.getString(DIALOG);
 
 		if (bundle.contains(SHOW_BOSS_BAR)) showBossBar = bundle.getBoolean(SHOW_BOSS_BAR);
+		bleeding = bundle.getBoolean(BLEEDING);
 
-		if (bundle.contains(IS_BOSS_MOB)) {
-			isBossMob = bundle.getBoolean(IS_BOSS_MOB);
-			if (isBossMob) {
-				Level.bossMobStatic = this;
-				if (Level.bossFoundStatic) BossHealthBar.assignBoss(this);
-				if ((HP*2 <= HT)) BossHealthBar.bleed(true);
-			}
-		}
+		if (bundle.contains(IS_BOSS_MOB)) isBossMob = bundle.getBoolean(IS_BOSS_MOB);
 
 		if (bundle.contains(LOOT)) loot = bundle.get(LOOT);
 		if (bundle.contains("neutral_enemy")) playerAlignment = bundle.getBoolean("neutral_enemy") ? NEUTRAL_ALIGNMENT : NORMAL_ALIGNMENT;
@@ -317,7 +314,7 @@ public abstract class Mob extends Char {
 	protected boolean act() {
 
 		if (isBossMob && HP*2 > HT) {
-			BossHealthBar.bleed(false);
+			bleeding = false;
 //            ((GooSprite)sprite).spray(false);
 		}
 
@@ -889,12 +886,12 @@ public abstract class Mob extends Char {
 	@Override
 	public void damage( int dmg, Object src ) {
 
-		boolean bleeding;
-		if (isBossMob && !BossHealthBar.isAssigned()){
-			BossHealthBar.assignBoss( this );
+		boolean bleedingCheck;
+		if (isBossMob && !BossHealthBar.isAssigned(this)){
+			BossHealthBar.addBoss( this );
 			Dungeon.level.seal();
-			bleeding = (HP*2 <= HT);
-		} else bleeding = false;
+			bleedingCheck = (HP*2 <= HT);
+		} else bleedingCheck = false;
 
 		if (state == SLEEPING) {
 			state = WANDERING;
@@ -906,8 +903,8 @@ public abstract class Mob extends Char {
 		super.damage( dmg, src );
 
 		if (isBossMob) {
-			if ((HP * 2 <= HT) && !bleeding) {
-				BossHealthBar.bleed(true);
+			if ((HP * 2 <= HT) && !bleedingCheck) {
+				bleeding = true;
 				sprite.showStatus(CharSprite.NEGATIVE, Messages.get(this, "enraged"));
 //                ((GooSprite) sprite).spray(true);
 			}
@@ -1278,8 +1275,8 @@ public abstract class Mob extends Char {
 		if (playerAlignment != NORMAL_ALIGNMENT) return;
 
 		if (isBossMob) {
-            if (!BossHealthBar.isAssigned()) {
-                BossHealthBar.assignBoss(this);
+            if (!BossHealthBar.isAssigned(this)) {
+                BossHealthBar.addBoss(this);
                 Dungeon.level.seal();
 //                yell(Messages.get(this, "notice"));
 //                for (Char ch : Actor.chars()) {

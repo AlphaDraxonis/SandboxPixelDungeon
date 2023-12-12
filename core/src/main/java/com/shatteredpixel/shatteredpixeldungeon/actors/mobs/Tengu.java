@@ -206,7 +206,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				yell(Messages.get(this, "interesting"));
 				((PrisonBossLevel) Dungeon.level).progress();
 
-				BossHealthBar.bleed(true);
+				bleeding = true;
 
 			} else PrisonBossLevel.killTengu(Dungeon.level, Tengu.this);
 			
@@ -229,7 +229,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 		}
 		if (!normalFight && HP > 0 && HP <= HT / 2) {
-			BossHealthBar.bleed(true);
+			bleeding = true;
 		}
 	}
 	
@@ -383,9 +383,9 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		super.notice();
 		if (playerAlignment != NORMAL_ALIGNMENT) return;
 
-		if (!BossHealthBar.isAssigned()) {
-			BossHealthBar.assignBoss(this);
-			if (HP <= HT/2) BossHealthBar.bleed(true);
+		if (!BossHealthBar.isAssigned(this)) {
+			BossHealthBar.addBoss(this);
+			if (HP <= HT/2) bleeding = true;
 			if (HP == HT) {
 				yell(Messages.get(this, "notice_gotcha", Dungeon.hero.name()));
 				for (Char ch : Actor.chars()){
@@ -447,11 +447,6 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		initialPos = bundle.getInt(INITIAL_POS);
 		stepsToDo = bundle.getInt(STEPS_TO_DO);
 		attackedPlayer = bundle.getBoolean(ATTACKED_PLAYER);
-
-		if (playerAlignment == NORMAL_ALIGNMENT  && (enemyID == -1 || HP < HT)) {
-			BossHealthBar.assignBoss(this);
-			if (HP <= HT / 2) BossHealthBar.bleed(true);
-		}
 	}
 	
 	//don't bother bundling this, as its purely cosmetic
