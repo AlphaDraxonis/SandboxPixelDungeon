@@ -85,10 +85,10 @@ public class PhantomPiranha extends Piranha {
 
 	@Override
 	public void dieOnLand() {
-		teleportAway();
+		if (!teleportAway()) super.dieOnLand();
 	}
 
-	private void teleportAway(){
+	private boolean teleportAway(){
 
 		ArrayList<Integer> inFOVCandidates = new ArrayList<>();
 		ArrayList<Integer> outFOVCandidates = new ArrayList<>();
@@ -107,7 +107,8 @@ public class PhantomPiranha extends Piranha {
 			ScrollOfTeleportation.appear(this, Random.element(outFOVCandidates));
 		} else if (!inFOVCandidates.isEmpty()){
 			ScrollOfTeleportation.appear(this, Random.element(inFOVCandidates));
-		}
+		} else return false;
 
+		return true;
 	}
 }

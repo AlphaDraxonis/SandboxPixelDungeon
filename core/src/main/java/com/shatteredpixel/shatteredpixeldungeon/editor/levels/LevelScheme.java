@@ -448,6 +448,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     }
 
     public Level initLevel() {
+        int oldHeroPos = Dungeon.hero.pos;
+        Dungeon.hero.pos = -1;
         if (type != CustomLevel.class) {
             Random.pushGenerator(seed);
             Dungeon.levelName = name;
@@ -528,6 +530,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (Dungeon.isChallenged(Challenges.NO_SCROLLS) && affectedByNoScrolls) {
             customDungeon.removeEverySecondSoU(level);
         }
+        Dungeon.hero.pos = oldHeroPos;
         level.initForPlay();
         return level;
     }

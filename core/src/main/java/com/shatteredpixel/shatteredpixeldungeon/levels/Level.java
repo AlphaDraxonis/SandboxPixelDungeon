@@ -430,7 +430,7 @@ public abstract class Level implements Bundlable {
 			for (Item i : h.items) {
 				if (i instanceof Bomb) {
 					if (i.getClass() == Bomb.class && i.quantity() >= 2) i.image = ItemSpriteSheet.DBL_BOMB;
-					if (((Bomb) i).igniteOnDrop) ((Bomb) i).trigger();
+					if (((Bomb) i).igniteOnDrop) ((Bomb) i).trigger(h.pos);
 				}
 			}
 		}

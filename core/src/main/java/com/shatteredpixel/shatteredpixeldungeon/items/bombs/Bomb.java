@@ -129,7 +129,7 @@ public class Bomb extends Item {
 			super.onThrow( cell );
 	}
 
-	public void trigger() {
+	public void trigger(int cell) {
 		Actor.addDelayed(fuse = createFuse().ignite(this), 2);
 	}
 

@@ -69,6 +69,7 @@ public class CrystalSpire extends Mob {
 		EXP = 20;
 		damageRollMin = 6;
 		damageRollMax = 15;
+		maxLvl = 29;
 
 		//acts after other mobs, which makes baiting crystal guardians more consistent
 		actPriority = MOB_PRIO-1;
@@ -443,6 +444,12 @@ public class CrystalSpire extends Mob {
 
 		}
 		return true;
+	}
+
+	@Override
+	public void die(Object cause) {
+		if (alignment == Alignment.NEUTRAL) rollToDropLoot();
+		super.die(cause);
 	}
 
 	public CrystalSpire(){

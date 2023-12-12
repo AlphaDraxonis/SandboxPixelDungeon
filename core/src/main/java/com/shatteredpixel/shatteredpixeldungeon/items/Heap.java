@@ -195,7 +195,7 @@ public class Heap implements Bundlable {
 		}
 
 		if (item instanceof Bomb && ((Bomb) item).igniteOnDrop && !CustomDungeon.isEditing())
-			((Bomb) item).trigger();
+			((Bomb) item).trigger(pos);
 	}
 	
 	public void replace( Item a, Item b ) {

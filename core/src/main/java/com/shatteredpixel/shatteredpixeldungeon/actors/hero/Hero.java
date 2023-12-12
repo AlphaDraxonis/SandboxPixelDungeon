@@ -1750,10 +1750,12 @@ public class Hero extends Char {
 			}
 
 		//TODO perhaps only trigger this if hero is already adjacent? reducing mistaps
-		} else if ((Dungeon.level instanceof MiningLevel
-				|| Dungeon.level.levelScheme.allowPickaxeMining && Zone.canDestroyWall(Dungeon.level, cell)) &&
-					belongings.getItem(Pickaxe.class) != null &&
-				(Dungeon.level.map[cell] == Terrain.WALL
+		} else if ((Dungeon.level instanceof MiningLevel//only on mining level
+				|| (Dungeon.level.levelScheme.allowPickaxeMining//or if enabled
+				|| Dungeon.level.map[cell] == Terrain.MINE_CRYSTAL || Dungeon.level.map[cell] == Terrain.MINE_BOULDER)//or crystals/bolder
+				&& Zone.canDestroyWall(Dungeon.level, cell)) &&//but only if not blocked by a zone
+					belongings.getItem(Pickaxe.class) != null &&//and has pickaxe
+				(Dungeon.level.map[cell] == Terrain.WALL//and mineable terrain
 						|| Dungeon.level.map[cell] == Terrain.WALL_DECO
 						|| Dungeon.level.map[cell] == Terrain.MINE_CRYSTAL
 						|| Dungeon.level.map[cell] == Terrain.MINE_BOULDER)){
