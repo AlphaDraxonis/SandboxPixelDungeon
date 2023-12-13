@@ -2,7 +2,6 @@ package com.shatteredpixel.shatteredpixeldungeon.items.bombs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -30,9 +29,9 @@ public class FakeTenguShocker extends Bomb {
     private int throwPos;//we do not need to bundle this
 
     @Override
-    protected void onThrow(int cell) {
+    public void trigger(int cell) {
         throwPos = cell;
-        super.onThrow(cell);
+        super.trigger(cell);
     }
 
     @Override
@@ -40,7 +39,8 @@ public class FakeTenguShocker extends Bomb {
         TenguShockerFuse fuse = new TenguShockerFuse();
         fuse.timer = duration;
         fuse.shockerPos = throwPos;
-        fuse.actAfterThrow();
+        fuse.quantity = quantity();
+        fuse.actAfterThrow(!igniteOnDrop);
         return fuse;
     }
 
@@ -79,7 +79,7 @@ public class FakeTenguShocker extends Bomb {
             actPriority = BUFF_PRIO;//same as Tengu.BombAbility
         }
 
-        private int shockerPos;
+        private int shockerPos, quantity;
         private TenguShockerAbilityBuff shockerAbility;
         private int bombAbilityId = -1;
         private float timer;
@@ -93,11 +93,10 @@ public class FakeTenguShocker extends Bomb {
         @Override
         protected boolean act() {
             if (shockerAbility == null) {
-                if (bombAbilityId == -1) {
+                if (bombAbilityId == -1 || (shockerAbility = (TenguShockerAbilityBuff) Actor.findById(bombAbilityId)) == null) {
                     shockerAbility = new TenguShockerAbilityBuff();
                     shockerAbility.shockerPos = shockerPos;
-                } else {
-                    shockerAbility = (TenguShockerAbilityBuff) Actor.findById(bombAbilityId);
+                    shockerAbility.quantity = quantity;
                 }
             } else spend(TICK);
 
@@ -115,10 +114,17 @@ public class FakeTenguShocker extends Bomb {
             timer -= time;
         }
 
-        private void actAfterThrow() {
+        private void actAfterThrow(boolean evolveBlob) {
+            Tengu.ShockerAbility.ShockerBlob blob = Dungeon.level.blobs.getOnly(FakeShockerBlob.class);
+            boolean newBlob = blob == null;
             clearTime();
             act();
             spendConstant(-1f);
+
+            if (newBlob && evolveBlob) {
+                blob = Dungeon.level.blobs.getOnly(FakeShockerBlob.class);
+                blob.actAfterThrow();
+            }
         }
 
         private static final String BOMB_ABILITY = "bomb_ability";
@@ -128,7 +134,7 @@ public class FakeTenguShocker extends Bomb {
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
-            bundle.put(BOMB_ABILITY, shockerAbility.id());
+            bundle.put(BOMB_ABILITY, shockerAbility == null ? -1 : shockerAbility.id());
             bundle.put(SHOCKER_POS, shockerPos);
             bundle.put(TIMER, timer);
         }
@@ -145,20 +151,42 @@ public class FakeTenguShocker extends Bomb {
     public static class TenguShockerAbilityBuff extends Tengu.ShockerAbility {
 
         boolean stopSpreading = false;
+        private boolean firstSpread = true;
 
         @Override
-        protected void spreadblob() {
-            if (!stopSpreading) super.spreadblob();
+        protected void spreadblob(int quantity) {
+            if (!stopSpreading) {
+                super.spreadblob(quantity);
+                if (firstSpread) {
+                    ShockerBlob blob = Dungeon.level.blobs.getOnly(getBlobClass());
+                    blob.seedNoCooldown(shockerPos, quantity);
+                    firstSpread = false;
+                }
+            }
         }
 
         @Override
-        protected Class<? extends Blob> getBlobClass() {
+        protected Class<? extends ShockerBlob> getBlobClass() {
             return FakeShockerBlob.class;
         }
 
         @Override
         protected Group getGroupToAddVisuals() {
             return Dungeon.hero.sprite.parent;
+        }
+
+        private static final String FIRST_SPREAD = "first_spread";
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put(FIRST_SPREAD, firstSpread);
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            firstSpread = bundle.getBoolean(FIRST_SPREAD);
         }
     }
 

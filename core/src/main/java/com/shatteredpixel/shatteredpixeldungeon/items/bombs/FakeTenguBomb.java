@@ -21,9 +21,9 @@ public class FakeTenguBomb extends Bomb {
     private int throwPos;//we do not need to bundle this
 
     @Override
-    protected void onThrow(int cell) {
+    public void trigger(int cell) {
         throwPos = cell;
-        super.onThrow(cell);
+        super.trigger(cell);
     }
 
     @Override
@@ -87,14 +87,11 @@ public class FakeTenguBomb extends Bomb {
         @Override
         protected boolean act() {
             if (bombAbility == null) {
-                if (bombAbilityId == -1) {
+                if (bombAbilityId == -1 || (bombAbility = (TenguBombAbilityBuff) Actor.findById(bombAbilityId)) == null) {
                     bombAbility = new TenguBombAbilityBuff();
                     bombAbility.bombPos = bombPos;
-                    bombAbility.fuse = this;
-                } else {
-                    bombAbility = (TenguBombAbilityBuff) Actor.findById(bombAbilityId);
-                    bombAbility.fuse = this;
                 }
+                bombAbility.fuse = this;
             }
             else spend(TICK);
             return bombAbility.act();
@@ -112,7 +109,7 @@ public class FakeTenguBomb extends Bomb {
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
-            bundle.put(BOMB_ABILITY, bombAbility.id());
+            bundle.put(BOMB_ABILITY, bombAbility == null ? -1 : bombAbility.id());
             bundle.put(BOMB_POS, bombPos);
         }
 

@@ -29,8 +29,8 @@ public class BlobStoreMap {
         return result.toArray(EMPTY_BLOB_ARRAY);
     }
 
-    public Blob getOnly(Class<? extends Blob> clazz) {
-        return blobs.get(clazz);
+    public <T> T getOnly(Class<? extends T> clazz) {
+        return (T) blobs.get(clazz);
     }
 
     public void doOnEach(Class<? extends Blob> clazz, Consumer<Blob> whatToDo){

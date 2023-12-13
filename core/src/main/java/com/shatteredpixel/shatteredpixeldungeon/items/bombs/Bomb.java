@@ -115,8 +115,8 @@ public class Bomb extends Item {
 
 	@Override
 	protected void onThrow( int cell ) {
-		if (!Dungeon.level.pit[ cell ] && lightingFuse) {
-			Actor.addDelayed(fuse = createFuse().ignite(this), 2);
+		if (!Dungeon.level.pit[ cell ] && lightingFuse && !igniteOnDrop) {
+			trigger(cell);
 		}
 		if (Actor.findChar( cell ) != null && !(Actor.findChar( cell ) instanceof Hero) ){
 			ArrayList<Integer> candidates = new ArrayList<>();

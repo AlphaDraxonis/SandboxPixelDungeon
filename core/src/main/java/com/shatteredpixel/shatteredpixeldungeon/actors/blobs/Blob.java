@@ -43,7 +43,7 @@ public class Blob extends Actor {
 	
 	public int volume = 0;
 	
-	public int[] cur;
+	public int[] cur, cur2;
 	protected int[] off;
 	
 	public BlobEmitter emitter;
@@ -77,15 +77,15 @@ public class Blob extends Actor {
 			
 			bundle.put( START, start );
 			bundle.put( LENGTH, cur.length );
-			bundle.put( CUR, trim( start, end + 1 ) );
+			bundle.put( CUR, trim( start, end + 1, cur ) );
 			
 		}
 	}
 	
-	private int[] trim( int start, int end ) {
+	protected static int[] trim(int start, int end, int[] array) {
 		int len = end - start;
 		int[] copy = new int[len];
-		System.arraycopy( cur, start, copy, 0, len );
+		System.arraycopy( array, start, copy, 0, len );
 		return copy;
 	}
 	

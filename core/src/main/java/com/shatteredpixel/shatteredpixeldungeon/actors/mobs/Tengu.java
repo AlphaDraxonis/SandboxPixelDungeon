@@ -1107,7 +1107,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	
 	public static class ShockerAbility extends Buff {
 	
-		public int shockerPos;
+		public int shockerPos, quantity = 1;
 		private Boolean shockingOrdinals = null;
 		
 		@Override
@@ -1116,7 +1116,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			if (shockingOrdinals == null){
 				shockingOrdinals = Random.Int(2) == 1;
 				
-				spreadblob();
+				spreadblob(quantity);
 			} else if (shockingOrdinals){
 				
 				getGroupToAddVisuals().add(new Lightning(shockerPos - 1 - Dungeon.level.width(), shockerPos + 1 + Dungeon.level.width(), null));
@@ -1127,7 +1127,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				}
 				
 				shockingOrdinals = false;
-				spreadblob();
+				spreadblob(quantity);
 			} else {
 				
 				getGroupToAddVisuals().add(new Lightning(shockerPos - Dungeon.level.width(), shockerPos + Dungeon.level.width(), null));
@@ -1138,23 +1138,23 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				}
 				
 				shockingOrdinals = true;
-				spreadblob();
+				spreadblob(quantity);
 			}
 			
 			spend(TICK);
 			return true;
 		}
 		
-		protected void spreadblob(){
-			GameScene.add(Blob.seed(shockerPos, 1, getBlobClass()));
+		protected void spreadblob(int quantity){
+			GameScene.add(Blob.seed(shockerPos, quantity, getBlobClass()));
 			for (int i = shockingOrdinals ? 0 : 1; i < PathFinder.CIRCLE8.length; i += 2){
 				if (!Dungeon.level.solid[shockerPos+PathFinder.CIRCLE8[i]]) {
-					GameScene.add(Blob.seed(shockerPos + PathFinder.CIRCLE8[i], 2, getBlobClass()));
+					GameScene.add(Blob.seed(shockerPos + PathFinder.CIRCLE8[i], quantity, getBlobClass()));
 				}
 			}
 		}
 
-		protected Class<? extends Blob> getBlobClass(){
+		protected Class<? extends ShockerBlob> getBlobClass(){
 			return ShockerBlob.class;
 		}
 
@@ -1164,11 +1164,13 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		
 		private static final String SHOCKER_POS = "shocker_pos";
 		private static final String SHOCKING_ORDINALS = "shocking_ordinals";
-		
+		private static final String QUANTITY = "quantity";
+
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put( SHOCKER_POS, shockerPos );
+			bundle.put( QUANTITY, quantity );
 			if (shockingOrdinals != null) bundle.put( SHOCKING_ORDINALS, shockingOrdinals );
 		}
 		
@@ -1176,6 +1178,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			shockerPos = bundle.getInt( SHOCKER_POS );
+			quantity = Math.max(1, bundle.getInt( QUANTITY ));
 			if (bundle.contains(SHOCKING_ORDINALS)) shockingOrdinals = bundle.getBoolean( SHOCKING_ORDINALS );
 		}
 		
@@ -1185,6 +1188,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				actPriority = BUFF_PRIO - 1;
 				alwaysVisible = true;
 			}
+
+			protected int[] cur2;
 			
 			@Override
 			protected void evolve() {
@@ -1195,19 +1200,23 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				for (int i = area.left; i < area.right; i++){
 					for (int j = area.top; j < area.bottom; j++){
 						cell = i + j* Dungeon.level.width();
-						off[cell] = cur[cell] > 0 ? cur[cell] - 1 : 0;
+
+						int dmg = (int) ((cur2[cell]+1)/2f);
+						cur2[cell] = Math.max(0, cur[cell] - 1);
+						off[cell] = cur2[cell] >= 1 ? 1 : 0;
+						cur[cell] = 0;
 						
 						if (off[cell] > 0) {
 							volume += off[cell];
 						}
 						
-						if (cur[cell] > 0 && off[cell] == 0){
+						if (dmg > 0){
 
 							shocked = true;
 							
 							Char ch = Actor.findChar(cell);
 							if (ch != null && !(ch instanceof Tengu)){
-								ch.damage(2 + Dungeon.scalingDepth(), new Electricity());
+								ch.damage((2 + Dungeon.scalingDepth()) * dmg, new Electricity());
 								
 								if (ch == Dungeon.hero){
 									reduceBossScore();
@@ -1225,6 +1234,16 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				if (shocked) Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 				
 			}
+
+			public void seedNoCooldown(int cell, int amount) {
+				seed(Dungeon.level, cell, 0);
+				cur2[cell] += amount * 2;
+				off[cell] = cur2[cell];
+			}
+
+			public void actAfterThrow() {
+				spendConstant(-1f);
+			}
 			
 			@Override
 			public void use(BlobEmitter emitter) {
@@ -1241,6 +1260,66 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			protected void reduceBossScore() {
 				Statistics.qualifiedForBossChallengeBadge = false;
 				Statistics.bossScores[1] -= 100;
+			}
+
+			private static final String CUR2	= "cur2";
+			private static final String START2  = "start2";
+			private static final String LENGTH2	= "length2";
+
+			@Override
+			public void storeInBundle( Bundle bundle ) {
+				super.storeInBundle( bundle );
+				if (volume > 0) {
+					int start;
+					for (start=0; start < Dungeon.level.length(); start++) {
+						if (cur2[start] > 0) {
+							break;
+						}
+					}
+					int end;
+					for (end=Dungeon.level.length()-1; end > start; end--) {
+						if (cur[end] > 0) {
+							break;
+						}
+					}
+					bundle.put( START2, start );
+					bundle.put( LENGTH2, cur.length );
+					bundle.put( CUR2, trim( start, end + 1, cur2 ) );
+				}
+			}
+
+			@Override
+			public void restoreFromBundle( Bundle bundle ) {
+				super.restoreFromBundle( bundle );
+				if (bundle.contains( CUR2 )) {
+					cur2 = new int[bundle.getInt(LENGTH2)];
+					int[] data = bundle.getIntArray(CUR2);
+					int start = bundle.getInt(START2);
+					System.arraycopy(data, 0, cur2, start, data.length);
+				}
+			}
+
+			public void setupArea(){
+				super.setupArea();
+				for (int cell=0; cell < cur2.length; cell++) {
+					if (cur2[cell] != 0){
+						area.union(cell%Dungeon.level.width(), cell/Dungeon.level.width());
+					}
+				}
+			}
+			public void seed( Level level, int cell, int amount ) {
+				if (cur2 == null) cur2 = new int[level.length()];
+				super.seed(level, cell, amount * 2);
+			}
+
+			public void clear( int cell ) {
+				super.clear(cell);
+				cur2[cell] = 0;
+			}
+
+			public void fullyClear(){
+				super.fullyClear();
+				cur2 = new int[Dungeon.level.length()];
 			}
 		}
 		

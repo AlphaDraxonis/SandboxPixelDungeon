@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -71,8 +72,10 @@ public final class TileModify implements ActionPartModify {
 
     @Override
     public void finish() {
-        LevelTransition newTrans = EditorScene.customLevel().transitions.get(cell);
-        if (newTrans != null) transitionAfter = newTrans.getCopy();
-        blobsAfter = new BlobEditPart.BlobData(cell);
+        if (cell < Dungeon.level.length()) {
+            LevelTransition newTrans = EditorScene.customLevel().transitions.get(cell);
+            if (newTrans != null) transitionAfter = newTrans.getCopy();
+            blobsAfter = new BlobEditPart.BlobData(cell);
+        }
     }
 }

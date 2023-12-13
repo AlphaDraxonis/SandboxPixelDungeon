@@ -116,6 +116,9 @@ public class CustomDungeon implements Bundlable {
     //Alternative talents would be pretty neat
     //Subclasses tho will not work properly, it requires a lot of work around the code ig
 
+
+    //TODO FIXME tzz tengu shocker dmg stacken, better formular!
+
     private String name;
     private String lastEditedFloor;
 
