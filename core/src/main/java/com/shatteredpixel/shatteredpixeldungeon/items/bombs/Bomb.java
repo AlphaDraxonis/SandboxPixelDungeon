@@ -212,7 +212,7 @@ public class Bomb extends Item {
 				}
 				
 				if (ch == Dungeon.hero && !ch.isAlive()) {
-					if (this instanceof MagicalBomb){
+					if (this instanceof ConjuredBomb){
 						Badges.validateDeathFromFriendlyMagic();
 					}
 					GLog.n(Messages.get(this, "ondeath"));
@@ -282,8 +282,8 @@ public class Bomb extends Item {
 		igniteOnDrop = bundle.getBoolean( IGNITE_ON_DROP );
 	}
 
-	//used to track the death from friendly magic badge
-	public static class MagicalBomb extends Bomb{};
+	//used to track the death from friendly magic badge, if an explosion was conjured by magic
+	public static class ConjuredBomb extends Bomb{};
 
 	public static class Fuse extends Actor{
 
