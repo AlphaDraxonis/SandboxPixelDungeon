@@ -49,6 +49,11 @@ public class SandboxPixelDungeon extends Game {
 	public SandboxPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
 
+		//pre-v2.3.0
+		com.watabou.utils.Bundle.addAlias(
+				com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb.ConjuredBomb.class,
+				"com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb$MagicalBomb" );
+
 		//pre-v2.2.0
 		com.watabou.utils.Bundle.addAlias(
 				com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom.QuestEntrance.class,
