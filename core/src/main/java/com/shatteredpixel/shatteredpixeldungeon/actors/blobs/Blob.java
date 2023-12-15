@@ -43,7 +43,7 @@ public class Blob extends Actor {
 	
 	public int volume = 0;
 	
-	public int[] cur, cur2;
+	public int[] cur;
 	protected int[] off;
 	
 	public BlobEmitter emitter;
