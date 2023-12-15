@@ -859,6 +859,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public static final int REGION_NONE = 0, REGION_SEWERS = 1, REGION_PRISON = 2, REGION_CAVES = 3, REGION_CITY = 4, REGION_HALLS = 5;
 
     public static int getRegion(Level level) {
+        if (Dungeon.branch != 0) {
+            if (Dungeon.branch == QuestLevels.MINING.ID) return REGION_CAVES;
+        }
         if (level instanceof CustomLevel) return ((CustomLevel) level).region;
         if (level instanceof SewerLevel) return REGION_SEWERS;
         if (level instanceof PrisonLevel || level instanceof PrisonBossLevel) return REGION_PRISON;

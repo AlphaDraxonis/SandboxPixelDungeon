@@ -699,7 +699,6 @@ public class EditorScene extends PixelScene {
     public static Emitter emitter() {
 
         if (scene != null) {
-            scene.emitters.visible = false;
             Emitter emitter = (Emitter) scene.emitters.recycle(Emitter.class);
             emitter.revive();
             return emitter;
@@ -1058,20 +1057,29 @@ public class EditorScene extends PixelScene {
                 EditorItem item = (EditorItem) selected;
                 int lvlWidth = level.width();
 
-                if (TileItem.isTrapTerrainCell(level.map[cell])) {
+                CustomTilemap customTile = CustomTileItem.findCustomTileAt(cell);
 
+                if (customTile != null) {
                     while (!queue.isEmpty()) {
                         int c = queue.iterator().next();
                         queue.remove(c);
-                        fillAllWithOneTerrainQueue(c, level.map[c], item, level.map, level.traps.get(c).getClass(), lvlWidth);
+                        fillAllWithOneTerrainQueue(c, level.map[c], level.map, customTile, lvlWidth);
+                    }
+                } else if (TileItem.isTrapTerrainCell(level.map[cell]) && level.traps.get(cell) != null) {
+                    while (!queue.isEmpty()) {
+                        int c = queue.iterator().next();
+                        queue.remove(c);
+                        fillAllWithOneTerrainQueue(c, level.map[c], level.map, level.traps.get(c).getClass(), lvlWidth);
                     }
                 } else {
                     while (!queue.isEmpty()) {
                         int c = queue.iterator().next();
                         queue.remove(c);
-                        fillAllWithOneTerrainQueue(c, level.map[c], item, level.map, lvlWidth);
+                        fillAllWithOneTerrainQueue(c, level.map[c], level.map, lvlWidth);
                     }
                 }
+                for (int c : changedCells)
+                    item.place(c);
                 changedCells.clear();
             }
         }
@@ -1080,22 +1088,20 @@ public class EditorScene extends PixelScene {
     private static Set<Integer> changedCells = new HashSet<>();
     private static Set<Integer> queue = new HashSet<>();//avoid StackOverflowError
 
-    public static void fillAllWithOneTerrainQueue(int cell, int terrainClick, EditorItem place, int[] map, int lvlWidth) {
+    public static void fillAllWithOneTerrainQueue(int cell, int terrainClick, int[] map, int lvlWidth) {
 
         changedCells.add(cell);
         for (int i : PathFinder.CIRCLE4) {
             int neighbor = i + cell;
             int xCoord = cell % lvlWidth;
             if (neighbor >= 0 && neighbor < map.length && !changedCells.contains(neighbor)
-                    && (Math.abs(neighbor % lvlWidth - xCoord) <= 1) && map[neighbor] == terrainClick) {
+                    && (Math.abs(neighbor % lvlWidth - xCoord) <= 1) && map[neighbor] == terrainClick
+                    && CustomTileItem.findCustomTileAt(neighbor) == null)
                 queue.add(neighbor);
-            }
         }
-        place.place(cell);
-
     }
 
-    public static void fillAllWithOneTerrainQueue(int cell, int terrainClick, EditorItem place, int[] map, Class<? extends Trap> onTrapClicked, int lvlWidth) {
+    public static void fillAllWithOneTerrainQueue(int cell, int terrainClick, int[] map, Class<? extends Trap> onTrapClicked, int lvlWidth) {
 
         changedCells.add(cell);
         for (int i : PathFinder.CIRCLE4) {
@@ -1104,11 +1110,28 @@ public class EditorScene extends PixelScene {
             if (neighbor >= 0 && neighbor < map.length && !changedCells.contains(neighbor)
                     && map[neighbor] == terrainClick
                     && (Math.abs(neighbor % lvlWidth - xCoord) <= 1)
-                    && customLevel().traps.get(neighbor).getClass() == onTrapClicked)
+                    && customLevel().traps.get(neighbor).getClass() == onTrapClicked
+                    && CustomTileItem.findCustomTileAt(neighbor) == null)
                 queue.add(neighbor);
         }
-        place.place(cell);
+    }
 
+    public static void fillAllWithOneTerrainQueue(int cell, int terrainClick, int[] map, CustomTilemap customTile, int lvlWidth) {
+
+        changedCells.add(cell);
+        for (int i : PathFinder.CIRCLE4) {
+            int neighbor = i + cell;
+            int xCoord = cell % lvlWidth;
+            CustomTilemap found;
+            if (neighbor >= 0 && neighbor < map.length && !changedCells.contains(neighbor)
+                    && map[neighbor] == terrainClick
+                    && (Math.abs(neighbor % lvlWidth - xCoord) <= 1)
+                    && (found = CustomTileItem.findCustomTileAt(neighbor)) != null
+                    && found.getClass() == customTile.getClass()
+            && (!(found instanceof CustomTileLoader.UserCustomTile)
+                    || ((CustomTileLoader.UserCustomTile) found).identifier.equals(((CustomTileLoader.UserCustomTile) customTile).identifier)))
+                queue.add(neighbor);
+        }
     }
 
     public static void updatePathfinder() {

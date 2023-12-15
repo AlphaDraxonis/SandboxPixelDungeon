@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.overview;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
@@ -61,7 +62,7 @@ public abstract class LevelListPane extends ScrollingListPane {
     protected abstract void onSelect(LevelSchemeLike levelScheme, LevelListPane.ListItem listItem);
 
     public boolean onEdit(LevelScheme levelScheme, LevelListPane.ListItem listItem) {
-        if (SPDSettings.tutorialOpenRegularLevel()) {
+        if (SPDSettings.tutorialOpenRegularLevel() || levelScheme.getType() == CustomLevel.class) {
             EditorScene.show(new WndEditFloorInOverview(levelScheme, listItem, this));
         } else {
             final long time = System.currentTimeMillis();

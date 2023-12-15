@@ -105,11 +105,11 @@ public class LevelColoring extends Group {
     public static LevelColoring getWater() {
         return water == null ?
                 water = new LevelColoring(Dungeon.level.levelScheme.waterColor, Dungeon.level.levelScheme.waterAlpha) {
-                    @Override
-                    protected void updateColor(ColorBlock img, int cell) {
-                        if (Dungeon.level.water[cell]) super.updateColor(img, cell);
-                        else img.alpha(0f);
-                    }
+//                    @Override
+//                    protected void updateColor(ColorBlock img, int cell) {
+//                        if (Dungeon.level.water[cell]) super.updateColor(img, cell);
+//                        else img.alpha(0f);
+//                    }
 
                     @Override
                     public void setColor(int color) {

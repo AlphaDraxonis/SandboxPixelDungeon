@@ -38,7 +38,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GooBlob;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -149,10 +148,6 @@ public class Goo extends Mob implements MobBasedOnDepth {
 			}
 		} else {
 			healInc = 1;
-		}
-		
-		if (state != SLEEPING){
-			Dungeon.level.seal();
 		}
 
 		return super.act();
@@ -316,7 +311,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		
 		yell( Messages.get(this, "defeated") );
 
-		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof SewerBossLevel)) {
+		if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
 			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS);
 		}
 	}
@@ -337,9 +332,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 			}
 		}
 
-		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof SewerBossLevel)) {
-			Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
-		}
+		Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
 	}
 
 	private final String PUMPEDUP = "pumpedup";
