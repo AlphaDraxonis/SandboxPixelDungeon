@@ -236,7 +236,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 			((GooSprite)sprite).pumpUp( pumpedUp );
 
 			if (Dungeon.level.heroFOV[pos]) {
-				sprite.showStatus( CharSprite.NEGATIVE, Messages.get(this, "!!!") );
+				sprite.showStatus( CharSprite.WARNING, Messages.get(this, "!!!") );
 				GLog.n( Messages.get(this, "pumpup") );
 			}
 
@@ -285,7 +285,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		super.damage(dmg, src);
 		if ((HP*2 <= HT) && !bleedingCheck){
 			bleeding = true;
-			sprite.showStatus(CharSprite.NEGATIVE, Messages.get(this, "enraged"));
+			sprite.showStatus(CharSprite.WARNING, Messages.get(this, "enraged"));
 			((GooSprite)sprite).spray(true);
 			yell(Messages.get(this, "gluuurp"));
 		}
