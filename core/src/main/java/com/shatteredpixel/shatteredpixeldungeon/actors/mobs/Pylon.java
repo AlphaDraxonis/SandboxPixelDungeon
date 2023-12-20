@@ -97,6 +97,7 @@ public class Pylon extends Mob {
 		//end of char/mob logic
 
 		if (alignment == Alignment.NEUTRAL && !alwaysActive){
+			spend(TICK);
 			return true;
 		}
 
