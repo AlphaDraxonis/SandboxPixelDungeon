@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Spear;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollGuardSprite;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -103,6 +104,15 @@ public class GnollGuard extends Mob {
 //	public int drRoll() {
 //		return super.drRoll() + Random.NormalIntRange(0, 6);
 //	}
+
+	@Override
+	public int attackProc(Char enemy, int damage) {
+		int dmg = super.attackProc(enemy, damage);
+		if (enemy == Dungeon.hero && !Dungeon.level.adjacent(pos, enemy.pos) && dmg > 12){
+			GLog.n(Messages.get(this, "spear_warn"));
+		}
+		return dmg;
+	}
 
 	@Override
 	protected boolean canAttack( Char enemy ) {
