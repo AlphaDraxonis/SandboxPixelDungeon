@@ -232,7 +232,6 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 							lastAbility = GAS;
 							turnsSinceLastAbility = 0;
 
-							GLog.w(Messages.get(this, "vent"));
 							if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
 								sprite.zap(enemy.pos);
 								return false;
@@ -246,7 +245,6 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 						} else if (enemy.paralysed <= 0) {
 							lastAbility = ROCKS;
 							turnsSinceLastAbility = 0;
-							GLog.w(Messages.get(this, "rocks"));
 							if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
 								((DM300Sprite)sprite).slam(enemy.pos);
 								return false;
@@ -282,7 +280,6 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 						abilityCooldown = Random.NormalIntRange(MIN_COOLDOWN, MAX_COOLDOWN);
 
 						if (lastAbility == GAS) {
-							GLog.w(Messages.get(this, "vent"));
 							if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
 								sprite.zap(enemy.pos);
 								return false;
@@ -292,7 +289,6 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 								return true;
 							}
 						} else {
-							GLog.w(Messages.get(this, "rocks"));
 							if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
 								((DM300Sprite)sprite).slam(enemy.pos);
 								return false;
