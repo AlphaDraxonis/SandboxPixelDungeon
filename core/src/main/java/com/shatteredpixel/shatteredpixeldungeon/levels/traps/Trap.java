@@ -103,7 +103,7 @@ public abstract class Trap implements Bundlable {
 
 	public void disarm(){
 		active = false;
-		Dungeon.level.disarmTrap(pos);
+		Dungeon.level.disarmTrap(pos, visible || revealedWhenTriggered);
 	}
 
 	//returns the depth value the trap should use for determining its power

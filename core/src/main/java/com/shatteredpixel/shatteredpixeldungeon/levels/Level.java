@@ -1511,8 +1511,8 @@ public abstract class Level implements Bundlable {
 		return trap;
 	}
 
-	public void disarmTrap( int pos ) {
-		set(pos, Terrain.INACTIVE_TRAP);
+	public void disarmTrap( int pos, boolean reveal ) {
+		set(pos, reveal ? Terrain.INACTIVE_TRAP : Terrain.EMPTY);
 		GameScene.updateMap(pos);
 	}
 
