@@ -447,7 +447,7 @@ public class TitleScene extends PixelScene {
 
 		@Override
 		protected void onClick() {
-			UploadDungeon.showUploadWindow(ServerCommunication.UploadType.REPORT_BUG);
+			UploadDungeon.showUploadWindow(ServerCommunication.UploadType.REPORT_BUG, null);
 		}
 	}
 

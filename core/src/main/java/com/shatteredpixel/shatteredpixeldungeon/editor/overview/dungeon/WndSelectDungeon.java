@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.DungeonToJsonConverter;
@@ -18,6 +19,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.ExportDungeonWrapper
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -272,6 +274,15 @@ public class WndSelectDungeon extends Window {
                 };
                 exportDun.enable(info.numLevels > 0);
 
+                RedButton upload = new RedButton(Messages.get(WndSelectDungeon.class, "upload_label")) {
+                    @Override
+                    protected void onClick() {
+                        UploadDungeon.showUploadWindow(ServerCommunication.UploadType.UPLOAD, info.name);
+                    }
+                };
+                upload.enable(!info.downloaded && info.numLevels > 0);
+                upload.icon(Icons.UPLOAD.get());
+
                 IconButton rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
                     @Override
                     protected void onClick() {
@@ -395,8 +406,12 @@ public class WndSelectDungeon extends Window {
 
                 exportDun.setRect(0, pos, width, 20);
                 add(exportDun);
+                pos = exportDun.bottom() + 2;
 
-                resize(width, (int) exportDun.bottom() + 1);
+                upload.setRect(0, pos, width, 20);
+                add(upload);
+
+                resize(width, (int) upload.bottom() + 1);
             }
 
             private float statSlot(String label, String value, float pos) {

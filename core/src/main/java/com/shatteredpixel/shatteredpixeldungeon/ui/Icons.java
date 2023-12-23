@@ -75,6 +75,7 @@ public enum Icons {
     RIGHTARROW,
     CALENDAR,
     DOWNLOAD,
+    UPLOAD,
     BUG,
 
     //misc icons, mainly used for buttons, spacing for 16x16 until the smaller icons at the end
@@ -271,8 +272,11 @@ public enum Icons {
             case DOWNLOAD:
                 icon.frame(icon.texture.uvRectBySize(224, 16, 9, 16));
                 break;
+            case UPLOAD:
+                icon.frame(icon.texture.uvRectBySize(208, 16, 11, 15));
+                break;
             case BUG:
-                icon.frame(icon.texture.uvRectBySize(208, 16, 16, 16));
+                icon.frame(icon.texture.uvRectBySize(192, 16, 16, 16));
                 break;
 
             case UNCHECKED:

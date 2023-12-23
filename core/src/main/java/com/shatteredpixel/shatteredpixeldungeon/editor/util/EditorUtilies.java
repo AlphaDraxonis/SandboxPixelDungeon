@@ -208,10 +208,16 @@ public final class EditorUtilies {
         long minutes = seconds / 60;
         long hours = minutes / 60;
         long days = hours / 24;
+        long weeks = days / 7;
+        long years = seconds / 31556952;
 
         if (timeDifferenceMillis < 0) {
-            if (timeDifferenceMillis > -20000) return Messages.get(EditorUtilies.class, "time_diff_seconds_true", 0);
+            if (timeDifferenceMillis > -15000) return Messages.get(EditorUtilies.class, "time_diff_seconds_true", 0);
             return Messages.get(EditorUtilies.class, "time_diff_future", days, hours % 24, minutes % 60);
+        } else if (years > 0) {
+            return Messages.get(EditorUtilies.class, "time_diff_years_" + (years != 1), years);
+        } else if (weeks > 0) {
+            return Messages.get(EditorUtilies.class, "time_diff_weeks_" + (weeks != 1), weeks);
         } else if (days > 0) {
             return Messages.get(EditorUtilies.class, "time_diff_days_" + (days != 1), days);
         } else if (hours > 0) {

@@ -248,20 +248,21 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         return false;
     }
 
-    public static void showUploadWindow(ServerCommunication.UploadType type) {
+    public static void showUploadWindow(ServerCommunication.UploadType type, String preselectDungeon) {
         if (type != ServerCommunication.UploadType.CHANGE) {
-            if (!EditorUtilies.shouldConnectToInternet(() -> forceShowWindow(type))) return;
+            if (!EditorUtilies.shouldConnectToInternet(() -> forceShowWindow(type, preselectDungeon))) return;
         }
-        forceShowWindow(type);
+        forceShowWindow(type, preselectDungeon);
     }
 
-    private static void forceShowWindow(ServerCommunication.UploadType type) {
+    private static void forceShowWindow(ServerCommunication.UploadType type, String preselectDungeon) {
         SimpleWindow w = new SimpleWindow(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f)) {
             @Override
             public void onBackPressed() {
             }
         };
         UploadDungeon uploadDungeon = new UploadDungeon(w, type, null, null, null, w::hide, null);
+        uploadDungeon.selectDungeon.selectObject(preselectDungeon);
         w.initComponents(uploadDungeon.createTitle(), uploadDungeon, uploadDungeon.getOutsideSp());
         Game.scene().addToFront(w);
     }
