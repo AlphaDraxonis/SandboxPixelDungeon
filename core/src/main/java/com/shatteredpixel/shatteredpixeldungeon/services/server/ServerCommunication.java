@@ -231,7 +231,7 @@ public final class ServerCommunication {
                                     Bundle bundle = Bundle.class.getConstructor(String.class).newInstance(b.getString("content"));
                                     ExportDungeonWrapper dungeon = (ExportDungeonWrapper) bundle.get(CustomDungeonSaves.EXPORT);
                                     if (dungeon == null) throw new Exception("Could not download the dungeon!");
-                                    CustomDungeonSaves.Info info = dungeon.doImport();
+                                    CustomDungeonSaves.Info info = dungeon.doImport(true);
                                     if (info == null) throw new Exception("Failed to import dungeon!");
                                     callback.accept(info);
                                     return;

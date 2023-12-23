@@ -94,6 +94,9 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                 List<CustomDungeonSaves.Info> allInfos;
                 allInfos = CustomDungeonSaves.getAllInfos();
                 if (allInfos == null) return;
+                for (CustomDungeonSaves.Info info : allInfos.toArray(new CustomDungeonSaves.Info[0])) {
+                    if (info.downloaded) allInfos.remove(info);
+                }
                 Game.scene().addToFront(new WndSelectDungeon(allInfos, false) {
                     @Override
                     protected void select(String customDungeonName) {

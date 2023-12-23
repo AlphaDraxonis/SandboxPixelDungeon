@@ -138,6 +138,7 @@ public class CustomDungeon implements Bundlable {
     public int lastSelectedToolbarSlot;
 
     private String password;
+    public boolean downloaded;
 
     public boolean view2d = false;
     public boolean seeLevelOnDeath = true;
@@ -524,6 +525,7 @@ public class CustomDungeon implements Bundlable {
     private static final String LEVEL_SCHEME = "level_scheme";
     private static final String REMOVE_NEXT_SCROLL = "remove_next_scroll";
     private static final String PASSWORD = "password";
+    private static final String DOWNLOADED = "downloaded";
     private static final String CUSTOM_TILES = "custom_tiles";
     private static final String RECIPES = "recipes";
     private static final String BLOCKED_RECIPES = "blocked_recipes";
@@ -556,7 +558,8 @@ public class CustomDungeon implements Bundlable {
         bundle.put(RAT_KING_LEVELS, ratKingLevels.toArray(EMPTY_STRING_ARRAY));
         bundle.put(ITEM_DISTRIBUTION, itemDistributions);
         bundle.put(REMOVE_NEXT_SCROLL, removeNextScroll);
-        bundle.put(PASSWORD, password);
+//        bundle.put(PASSWORD, password);
+        bundle.put(DOWNLOADED, downloaded);
         bundle.put(HEROES_ENABLED, heroesEnabled);
         bundle.put(HERO_SUBCLASSES_ENABLED, heroSubClassesEnabled);
         bundle.put(EFFECT_DURATION, effectDuration);
@@ -649,7 +652,8 @@ public class CustomDungeon implements Bundlable {
         }
         removeNextScroll = bundle.getBoolean(REMOVE_NEXT_SCROLL);
         effectDuration.load((EffectDuration) bundle.get(EFFECT_DURATION));
-        password = bundle.getString(PASSWORD);
+//        password = bundle.getString(PASSWORD);
+        downloaded = bundle.getBoolean(DOWNLOADED);
         if (password.isEmpty()) password = null;
         forceChallenges = bundle.getInt(FORCE_CHALLENGES);
         view2d = bundle.getBoolean(VIEW_2D);
@@ -742,7 +746,7 @@ public class CustomDungeon implements Bundlable {
     }
 
     public CustomDungeonSaves.Info createInfo() {
-        return new CustomDungeonSaves.Info(getName(), 1, getNumFloors(), 0/*hashCode()*/);
+        return new CustomDungeonSaves.Info(getName(), 1, getNumFloors(), 0/*hashCode()*/, downloaded);
     }
 
     void addRatKingLevel(String name) {
