@@ -65,11 +65,11 @@ public final class ServerCommunication {
 
     public static String getURL() {
         if (URL == null) {
-            if (loadURL(true)){
-                new Thread(()-> {
+            if (loadURL(true)) {
+                new Thread(() -> {
                     try {
                         int tries = 50;
-                        while (URL ==  null && tries > 0) {
+                        while (URL == null && tries > 0) {
                             Thread.sleep(100);
                             tries--;
                         }
@@ -78,7 +78,7 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return URL == null ? "https://script.google.com/macros/s/AKfycbw8ciyPINgbXzC2ZexrUv_1NkKI9xjTmhEDTSRaoTUdhi6rUfxssDdqQjks9RATYNPjLw/exec" : URL;
+        return URL == null ? "https://script.google.com/macros/s/AKfycbwT0aQYl-MyyYTz2vtzqE8M_R8060PfA8vq5SmN7c6oF5g5UvYeL0SvJt3JZ78NfdftBw/exec" : URL;
     }
 
     public static abstract class ConnectionCallback {
@@ -244,7 +244,7 @@ public final class ServerCommunication {
                     } catch (IOException e) {
                         Game.runOnRenderThread(() -> callback.failed(e.getMessage() == null ? new Exception(Messages.get(ServerCommunication.class, "download_error")) : e));
                     }
-                } else  Game.runOnRenderThread(() -> callback.failed(new IOException(String.valueOf(statusCode))));
+                } else Game.runOnRenderThread(() -> callback.failed(new IOException(String.valueOf(statusCode))));
             }
 
             @Override
@@ -337,6 +337,36 @@ public final class ServerCommunication {
                     + "&pw=" + URLEncoder.encode(password, "UTF-8") + "&oldSalt=" + oldDungeonPreview.title.hashCode() + "&newSalt=" + newDungeonName.hashCode()
                     + uploadPreview.writeArgumentsForURL()
             );
+            httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
+            httpRequest.setContent("dungeon=" + dungeonAsBundle);
+
+            callback.showWindow(httpRequest);
+
+            Gdx.net.sendHttpRequest(httpRequest, new UploadDataListener(callback));
+        } catch (IOException e) {
+            Game.runOnRenderThread(() -> callback.failed(e));
+        } catch (CustomDungeonSaves.RenameRequiredException e) {
+            Game.runOnRenderThread(() -> {
+                callback.hideWindow();
+                e.showExceptionWindow();
+            });
+        }
+    }
+
+    public static void reportBug(String dungeonName, String description, UploadCallback callback) {
+        try {
+            Bundle dungeonAsBundle = dungeonName == null ? null : CustomDungeonSaves.getExportDungeonBundle(dungeonName);
+            String fileName = URLEncoder.encode(description.substring(0, Math.min(20, description.length())), "UTF-8");
+
+            DungeonPreview uploadPreview = new DungeonPreview();
+            uploadPreview.title = fileName;
+            uploadPreview.description = description;
+            uploadPreview.version = Game.version;
+            uploadPreview.uploader = "null";
+
+            Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
+            httpRequest.setUrl(getURL() + "?action=bug_report&fileName=" + URLEncoder.encode(fileName, "UTF-8")
+                    + uploadPreview.writeArgumentsForURL());
             httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
             httpRequest.setContent("dungeon=" + dungeonAsBundle);
 

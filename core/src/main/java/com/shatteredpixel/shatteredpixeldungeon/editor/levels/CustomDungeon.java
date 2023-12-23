@@ -95,6 +95,86 @@ public class CustomDungeon implements Bundlable {
 
     //maybe ability to randomize loot drops between some amounts like 1-9 quantity for example
 
+    //TODO if dungeon list is empty, show button to be the first uploader
+
+    //FIXME after uploading a dungeon with own custom tiles, they disappperard from the map! and the tile tab was hidde
+
+    //make you able to change enemy view distance or tiles until enemies notice your presence
+    //also turns to wake up before enemies notice you
+
+    //TODO make the tool that allows to select a thing from placed things automatically copy a mob's stats when selecting it
+
+    //killing bosses doesn't remove the floor lock
+
+    //make random item as loot list
+
+    //halls boss level does not spawn yog if as template
+
+    //Crystals etc not display on halls level custom tile
+
+    //Make halls boss custom tile as normal ct
+
+    //strictly differentiate between custom tiles/walls
+    //Make all tiles walls????
+
+    //TODO rename foliage to ShaftsOfLight
+
+    //Shrouding fog trap instantly crashes the game
+
+    //color walls
+
+    //Barrier:
+    //Walls in your level that can be placed over traps, chasms, or floors.  You can see it in the editor but the barrier is invisible to you when playing the level (red x maybe).
+    //You can see beyond the barrier.
+
+    //Custom music
+
+    //The option to edit the description of all items should be good, like editing plants, maybe making it so that when you touch an ice plant for example,
+    // it can drop an item, I don't already have it, But if not, it would be great!
+
+    //A couple visual effects:
+    //Water splash (when a mob or player steps over the tile, it makes a splash sound and shows the rings)
+    //Chasm Fog (those weird particles above the Chasm)
+
+    //add change-log
+
+    //make you able to change what mobs will spawn in some areas
+    //for an example, b areas can spawn an ally dm 300
+
+    //Changeable stats on the mob rotation
+    //ontop pf that, a way to make some of them allys too.
+
+    //[] Hero inaccessible (acts like a wall for players that they can see through)
+    //
+    //[] Mob inaccessible (acts like a wall for monsters that they can see through)
+    //
+    //[☑] Sight (when checked off, makes it so the player can't see passed this zone, on by default]
+    //
+    //[] Player buff (adds buffs (or debuffs) to a player when they enter the cell.  Each debuff/buff lasts permanently until they leave the cell, which then will disappear after they leave) (buffs applied prior to entering will also be removed, so be careful)
+    //
+    //[] Mob buff (same as above, but for monsters).
+    //
+    //[] Monster Cycle (allows mobs of a completely seperate mob cycle to spawn in this zone, ignoring the levels current mob cycle).
+
+    //Custom alchemy for specific pots
+    //Maybe even custom sprites for items
+
+    //Enemy buff ideas: Amok, Corrupted, Confusion, Prismatic Image, Terror
+    //
+    //Enemy Glyph ideas: Enemy just gains the Glyph that can be applied to an armor.
+
+    //Suggestion:  for summoner type enemies, allow us to cycle what they summon (like I want an enemy to summon a skeleton AND a wraith)
+
+    //Similar to random items, how about some random traps?
+    //
+    //a random trap cell will have a cell be any trap among ones chosen by the map creator.
+    //
+    //Random traps take [Visibility], [Active], [Searchable] [Revealed when activated], and [Disarmed when activated] buttons.
+    // For teleporting traps like gateway/warpway, it will always default to random.
+    //On another note... Unstable Trap [gray color]: when this trap is stepped on, it will activate a random trap effect (like the Unstable enchantment).
+    // Description: "This trap radiates chaotic energy, acting as a different trap when stepped on"
+
+
     //Scale mobs if their normal stats editor is disabled: not just everything
 
     //Scroll of Debug with interface, reference table and commands, use reflection to access ALL methods
@@ -115,9 +195,6 @@ public class CustomDungeon implements Bundlable {
     //"Hero creator" chocked with a pixel editor for the hero, basic starting equipment, abilities, talents, and subclasses
     //Alternative talents would be pretty neat
     //Subclasses tho will not work properly, it requires a lot of work around the code ig
-
-
-    //TODO FIXME tzz tengu shocker dmg stacken, better formular!
 
     private String name;
     private String lastEditedFloor;
@@ -653,11 +730,11 @@ public class CustomDungeon implements Bundlable {
         removeNextScroll = bundle.getBoolean(REMOVE_NEXT_SCROLL);
         effectDuration.load((EffectDuration) bundle.get(EFFECT_DURATION));
 //        password = bundle.getString(PASSWORD);
+//        if (password.isEmpty()) password = null;
         downloaded = bundle.getBoolean(DOWNLOADED);
-        if (password.isEmpty()) password = null;
         forceChallenges = bundle.getInt(FORCE_CHALLENGES);
         view2d = bundle.getBoolean(VIEW_2D);
-        seeLevelOnDeath = bundle.contains(SEE_LEVEL_ON_DEATH) ? bundle.getBoolean(SEE_LEVEL_ON_DEATH) : true;
+        seeLevelOnDeath = !bundle.contains(SEE_LEVEL_ON_DEATH) || bundle.getBoolean(SEE_LEVEL_ON_DEATH);
         notRevealSecrets = bundle.getBoolean(NOT_REVEAL_SECRETS);
         if (bundle.contains(HEROES_ENABLED)) heroesEnabled = bundle.getBooleanArray(HEROES_ENABLED);
         else {

@@ -110,6 +110,7 @@ public class WndPreview extends Component {
                 });
             }
         };
+        download.icon(Icons.DOWNLOAD.get());
         add(download);
 
         edit = new IconButton(Icons.EDIT.get()) {

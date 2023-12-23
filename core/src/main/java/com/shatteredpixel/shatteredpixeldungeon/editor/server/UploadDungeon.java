@@ -13,9 +13,11 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.DungeonPreview;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
@@ -42,9 +44,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
 
     protected StringInputComp password;
 
-    protected RenderedTextBlock legalInfo;
-
-    private String dungeon;
+    protected RenderedTextBlock info, legalInfo;
     private final MultiWindowTabComp.BackPressImplemented onBackPressed;
     private final DungeonPreview preview;
 
@@ -88,7 +88,13 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
             }
         };
 
-        selectDungeon = new ChooseObjectComp(Messages.get(UploadDungeon.class, "dungeon") + ":") {
+        if (type == ServerCommunication.UploadType.REPORT_BUG) {
+            info = PixelScene.renderTextBlock(Messages.get(UploadDungeon.class, "report_bug_info"), 6);
+            add(info);
+        }
+
+        selectDungeon = new ChooseObjectComp(Messages.get(UploadDungeon.class, "dungeon"
+                + (type == ServerCommunication.UploadType.REPORT_BUG ? "_bug" : "")) + ":") {
             @Override
             protected void doChange() {
                 List<CustomDungeonSaves.Info> allInfos;
@@ -106,7 +112,6 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                 });
             }
         };
-        selectDungeon.selectObject(dungeon);
         add(selectDungeon);
 
         description = new StringInputComp(Messages.get(UploadDungeon.class, type.id() + "_desc_label"), desc, 500, true, null) {
@@ -128,6 +133,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                 {
                     textFilter = (textField, ch) -> ch >= 32 && ch <= 123;
                 }
+
                 @Override
                 protected void onChange() {
                     UploadDungeon.this.enteredPassword = password.getText();
@@ -144,12 +150,19 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
 
     @Override
     protected void layout() {
-        if (legalInfo != null) legalInfo.maxWidth((int) width);
         height = 0;
-        height = EditorUtilies.layoutCompsLinear(4, this, selectDungeon, description, userName, password, legalInfo) + 1;
+        if (info != null) {
+            info.maxWidth((int) width);
+            height -= 4;
+        }
+        if (legalInfo != null) legalInfo.maxWidth((int) width);
+        height = EditorUtilies.layoutCompsLinear(4, this, info, selectDungeon, description, userName, password, legalInfo) + 1;
     }
 
     public Component createTitle() {
+        if (type == ServerCommunication.UploadType.REPORT_BUG) {
+            return new IconTitle(Icons.BUG.get(), Messages.get(UploadDungeon.class, type.id() + "_title"));
+        }
         RenderedTextBlock title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(UploadDungeon.class, type.id() + "_title")), 12);
         title.hardlight(Window.TITLE_COLOR);
         return title;
@@ -213,6 +226,19 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                     Game.scene().addToFront(new WndMessage(Messages.get(UploadDungeon.class, "update_successful")));
                 }
             });
+        } else if (type == ServerCommunication.UploadType.REPORT_BUG) {
+            String desc = description.getText();
+            if (desc == null || desc.trim().isEmpty()) {
+                Game.scene().addToFront(new WndMessage(Messages.get(UploadDungeon.class, "no_bug_desc")));
+                return;
+            }
+            ServerCommunication.reportBug((String) selectDungeon.getObject(), desc, new ServerCommunication.UploadCallback() {
+                @Override
+                protected void onSuccessful(String dungeonFileID) {
+                    onSuccessful.run();
+                    Game.scene().addToFront(new WndMessage(Messages.get(UploadDungeon.class, "bug_report_successful")));
+                }
+            });
         }
     }
 
@@ -222,14 +248,21 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         return false;
     }
 
-    public static void showUploadWindow() {
+    public static void showUploadWindow(ServerCommunication.UploadType type) {
+        if (type != ServerCommunication.UploadType.CHANGE) {
+            if (!EditorUtilies.shouldConnectToInternet(() -> forceShowWindow(type))) return;
+        }
+        forceShowWindow(type);
+    }
+
+    private static void forceShowWindow(ServerCommunication.UploadType type) {
         SimpleWindow w = new SimpleWindow(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f)) {
             @Override
             public void onBackPressed() {
             }
         };
-        UploadDungeon uploadDungeon = new UploadDungeon(w, ServerCommunication.UploadType.UPLOAD,null, null, null, w::hide, null);
-        w.initComponents(uploadDungeon.createTitle(),uploadDungeon,uploadDungeon.getOutsideSp(), 0f, 0.5f);
+        UploadDungeon uploadDungeon = new UploadDungeon(w, type, null, null, null, w::hide, null);
+        w.initComponents(uploadDungeon.createTitle(), uploadDungeon, uploadDungeon.getOutsideSp());
         Game.scene().addToFront(w);
     }
 }

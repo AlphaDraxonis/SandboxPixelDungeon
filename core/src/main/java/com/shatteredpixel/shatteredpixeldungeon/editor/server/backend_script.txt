@@ -83,6 +83,7 @@ function doPost(e) {
     const fileName = e.parameter.fileName;
 
     let dungeon = e.parameter.dungeon;
+    let dungeonID = "none"
 
     if (dungeon !== "null") {
       dungeonID = uploadFile(dungeon, fileName, ".dun", BUG_REPORT_FOLDER, true);
@@ -92,10 +93,10 @@ function doPost(e) {
       title: e.parameter.title,
       description: e.parameter.description,
       version: e.parameter.version,
-      uploader: e.parameter.uploader,
+      dungeonFile: dungeonID,
       upload_time: new Date().getTime(),
     };
-    uploadFile(JSON.stringify(preview), fileName, "", BUG_REPORT_FOLDER, false);
+    uploadFile(JSON.stringify(preview), fileName, ".txt", BUG_REPORT_FOLDER, false);
 
     sendNotificationEmail(fileName, "Bug report");
 

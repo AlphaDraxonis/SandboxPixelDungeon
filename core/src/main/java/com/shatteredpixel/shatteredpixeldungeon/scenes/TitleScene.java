@@ -30,6 +30,8 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.server.ServerDungeonList;
+import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Fireball;
@@ -124,6 +126,10 @@ public class TitleScene extends PixelScene {
         btnDiscord.updateSize();
         add(btnDiscord);
 
+        ReportBugButton btnBug = new ReportBugButton();
+        btnBug.setPos(5, h - 5 - 16);
+        add(btnBug);
+
         StyledButton btnPlay = new StyledButton(GREY_TR, Messages.get(this, "enter")) {
             @Override
             protected void onClick() {
@@ -161,14 +167,23 @@ public class TitleScene extends PixelScene {
 		add(btnRankings);
 		Dungeon.daily = Dungeon.dailyReplay = false;
 
-		StyledButton btnBadges = new StyledButton(GREY_TR, Messages.get(this, "badges")){
+//		StyledButton btnBadges = new StyledButton(GREY_TR, Messages.get(this, "badges")){
+//			@Override
+//			protected void onClick() {
+//				SandboxPixelDungeon.switchNoFade( BadgesScene.class );
+//			}
+//		};
+//		btnBadges.icon(Icons.get(Icons.BADGES));
+//		add(btnBadges);
+
+		StyledButton btnDiscover = new StyledButton(GREY_TR, Messages.get(this, "discover")){
 			@Override
 			protected void onClick() {
-				SandboxPixelDungeon.switchNoFade( BadgesScene.class );
+				ServerDungeonList.show();
 			}
 		};
-		btnBadges.icon(Icons.get(Icons.BADGES));
-		add(btnBadges);
+		btnDiscover.icon(Icons.get(Icons.DOWNLOAD));
+		add(btnDiscover);
 
 		StyledButton btnNews = new NewsButton(GREY_TR, Messages.get(this, "help"));
 		btnNews.icon(Icons.get(Icons.NEWS));
@@ -199,21 +214,21 @@ public class TitleScene extends PixelScene {
 			btnPlay.setRect(title.x-50, topRegion+GAP, ((title.width()+100)/2)-1, BTN_HEIGHT);
 			align(btnPlay);
 			btnSupport.setRect(btnPlay.right()+2, btnPlay.top(), btnPlay.width(), BTN_HEIGHT);
-			btnRankings.setRect(btnPlay.left(), btnPlay.bottom()+ GAP, (btnPlay.width()*.67f)-1, BTN_HEIGHT);
-			btnBadges.setRect(btnRankings.left(), btnRankings.bottom()+GAP, btnRankings.width(), BTN_HEIGHT);
-			btnNews.setRect(btnRankings.right()+2, btnRankings.top(), btnRankings.width(), BTN_HEIGHT);
-			btnChanges.setRect(btnNews.left(), btnNews.bottom() + GAP, btnRankings.width(), BTN_HEIGHT);
-			btnSettings.setRect(btnNews.right()+2, btnNews.top(), btnRankings.width(), BTN_HEIGHT);
-			btnAbout.setRect(btnSettings.left(), btnSettings.bottom() + GAP, btnRankings.width(), BTN_HEIGHT);
+			btnDiscover.setRect(btnPlay.left(), btnPlay.bottom()+ GAP, (btnPlay.width()*.67f)-1, BTN_HEIGHT);
+			btnRankings.setRect(btnDiscover.left(), btnDiscover.bottom()+GAP, btnDiscover.width(), BTN_HEIGHT);
+			btnNews.setRect(btnDiscover.right()+2, btnDiscover.top(), btnDiscover.width(), BTN_HEIGHT);
+			btnChanges.setRect(btnNews.left(), btnNews.bottom() + GAP, btnDiscover.width(), BTN_HEIGHT);
+			btnSettings.setRect(btnNews.right()+2, btnNews.top(), btnDiscover.width(), BTN_HEIGHT);
+			btnAbout.setRect(btnSettings.left(), btnSettings.bottom() + GAP, btnDiscover.width(), BTN_HEIGHT);
 		} else {
 			btnPlay.setRect(title.x, topRegion+GAP, title.width(), BTN_HEIGHT);
 			align(btnPlay);
 			btnSupport.setRect(btnPlay.left(), btnPlay.bottom()+ GAP, btnPlay.width(), BTN_HEIGHT);
-			btnRankings.setRect(btnPlay.left(), btnSupport.bottom()+ GAP, (btnPlay.width()/2)-1, BTN_HEIGHT);
-			btnBadges.setRect(btnRankings.right()+2, btnRankings.top(), btnRankings.width(), BTN_HEIGHT);
-			btnNews.setRect(btnRankings.left(), btnRankings.bottom()+ GAP, btnRankings.width(), BTN_HEIGHT);
+			btnDiscover.setRect(btnPlay.left(), btnSupport.bottom()+ GAP, (btnPlay.width()/2)-1, BTN_HEIGHT);
+			btnRankings.setRect(btnDiscover.right()+2, btnDiscover.top(), btnDiscover.width(), BTN_HEIGHT);
+			btnNews.setRect(btnDiscover.left(), btnDiscover.bottom()+ GAP, btnDiscover.width(), BTN_HEIGHT);
 			btnChanges.setRect(btnNews.right()+2, btnNews.top(), btnNews.width(), BTN_HEIGHT);
-			btnSettings.setRect(btnNews.left(), btnNews.bottom()+GAP, btnRankings.width(), BTN_HEIGHT);
+			btnSettings.setRect(btnNews.left(), btnNews.bottom()+GAP, btnDiscover.width(), BTN_HEIGHT);
 			btnAbout.setRect(btnSettings.right()+2, btnSettings.top(), btnSettings.width(), BTN_HEIGHT);
 		}
 
@@ -388,6 +403,53 @@ public class TitleScene extends PixelScene {
 			}
         }
     }
+
+	public static class ReportBugButton extends Button {
+		private Image image;
+		private BitmapText text;
+		@Override
+		protected void createChildren(Object... params) {
+			super.createChildren(params);
+
+			image = Icons.BUG.get();
+			add(image);
+
+			text = new BitmapText(Messages.get(this, "name"), PixelScene.pixelFont);
+			text.measure();
+			add(text);
+		}
+
+		@Override
+		protected void layout() {
+
+			height = image.height;
+			width = image.width + 2 + text.width;
+			super.layout();
+
+			image.x = x;
+			image.y = y;
+			text.x = x + image.width - 2;
+			text.y = y + (height - text.height()) * 0.5f + 1;
+		}
+
+		@Override
+		protected void onPointerDown() {
+			image.brightness(1.2f);
+			text.brightness(1.2f);
+			Sample.INSTANCE.play(Assets.Sounds.CLICK);
+		}
+
+		@Override
+		protected void onPointerUp() {
+			image.resetColor();
+			text.resetColor();
+		}
+
+		@Override
+		protected void onClick() {
+			UploadDungeon.showUploadWindow(ServerCommunication.UploadType.REPORT_BUG);
+		}
+	}
 
     public static class DiscordButton extends Button {
 

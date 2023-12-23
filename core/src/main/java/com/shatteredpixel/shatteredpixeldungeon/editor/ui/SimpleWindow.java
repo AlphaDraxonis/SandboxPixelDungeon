@@ -20,6 +20,10 @@ public class SimpleWindow extends Window {
     }
 
     //need to make sure that the window's pointer area is created before!
+    public void initComponents(Component title, Component body, Component outsideSp){
+        initComponents(title, body, outsideSp, 0f, title instanceof RenderedTextBlock ? 0.5f : 0f);
+    }
+
     public void initComponents(Component title, Component body, Component outsideSp, float alignment, float titleAlignmentX){
 
         this.title = title;

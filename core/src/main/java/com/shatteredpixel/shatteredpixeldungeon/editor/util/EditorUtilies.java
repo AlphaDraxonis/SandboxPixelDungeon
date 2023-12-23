@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
@@ -24,7 +25,10 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.ui.Component;
@@ -217,6 +221,24 @@ public final class EditorUtilies {
         } else {
             return Messages.get(EditorUtilies.class, "time_diff_seconds_" + (seconds != 1), seconds);
         }
+    }
+
+    public static boolean shouldConnectToInternet(Runnable onManualConfirm) {
+        if (SPDSettings.WiFi() && !Game.platform.connectedToUnmeteredNetwork()) {
+            Game.scene().addToFront(new WndOptions(
+                    Messages.get(ServerCommunication.class, "paid_wifi_title"),
+                    Messages.get(ServerCommunication.class, "paid_wifi_body"),
+                    Messages.get(ServerCommunication.class, "paid_wifi_yes"),
+                    Messages.get(ServerCommunication.class, "paid_wifi_no")
+            ) {
+                @Override
+                protected void onSelect(int index) {
+                    if (index == 0) onManualConfirm.run();
+                }
+            });
+            return false;
+        }
+        return true;
     }
 
     public static <K, V> V getOrDefault(Map<K, V> map, K key, V defaultValue) {

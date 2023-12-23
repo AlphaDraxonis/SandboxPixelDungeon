@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.server;
 
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -13,7 +12,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -185,28 +183,12 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
 
     public static void show() {
-        if (SPDSettings.WiFi() && !Game.platform.connectedToUnmeteredNetwork()) {
-            Game.scene().addToFront(new WndOptions(
-                    Messages.get(ServerCommunication.class, "paid_wifi_title"),
-                    Messages.get(ServerCommunication.class, "paid_wifi_body"),
-                    Messages.get(ServerCommunication.class, "paid_wifi_yes"),
-                    Messages.get(ServerCommunication.class, "paid_wifi_no")
-            ) {
-                @Override
-                protected void onSelect(int index) {
-                    if (index == 0) {
-                        ServerCommunication.dungeonList(new ServerCommunication.OnPreviewReceive() {
-                            @Override
-                            protected void onSuccessful(DungeonPreview[] previews) {
-                                Game.scene().addToFront(new WndServerDungeonList(previews));
-                            }
-                        });
-                    }
-                }
-            });
-            return;
-        }
-
+        if (!EditorUtilies.shouldConnectToInternet(() -> ServerCommunication.dungeonList(new ServerCommunication.OnPreviewReceive() {
+            @Override
+            protected void onSuccessful(DungeonPreview[] previews) {
+                Game.scene().addToFront(new WndServerDungeonList(previews));
+            }
+        }))) return;
         ServerCommunication.dungeonList(new ServerCommunication.OnPreviewReceive() {
             @Override
             protected void onSuccessful(DungeonPreview[] previews) {
