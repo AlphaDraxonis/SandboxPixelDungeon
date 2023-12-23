@@ -82,4 +82,9 @@ public class SimpleWindow extends Window {
         return result;
     }
 
+    @Override
+    public void resize(int w, int h) {
+        super.resize(w, h);
+        if (body != null) layout();
+    }
 }

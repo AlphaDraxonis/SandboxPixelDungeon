@@ -75,6 +75,10 @@ public class Bundle {
 		this( new JSONObject() );
 	}
 
+	public Bundle(String s) {
+		this( new JSONObject(s) );
+	}
+
 	public String toString() {
 		return data.toString();
 	}

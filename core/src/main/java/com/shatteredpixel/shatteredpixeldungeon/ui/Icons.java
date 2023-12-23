@@ -86,6 +86,7 @@ public enum Icons {
     RIGHT,
     MORE,
     EDIT,
+    TRASH,
     BACK,
     RULER,
     ARROW,
@@ -295,6 +296,9 @@ public enum Icons {
                 break;
             case EDIT:
                 icon.frame(icon.texture.uvRectBySize(224, 96, 11, 11));
+                break;
+            case TRASH:
+                icon.frame(icon.texture.uvRectBySize(192, 112, 11, 11));
                 break;
             case BACK:
                 icon.frame(icon.texture.uvRectBySize(236, 80, 20, 13));

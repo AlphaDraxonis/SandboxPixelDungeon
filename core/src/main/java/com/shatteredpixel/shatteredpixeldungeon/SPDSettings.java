@@ -40,6 +40,8 @@ public class SPDSettings extends GameSettings {
 	public static final String KEY_VERSION         = "version";
 	public static final String KEY_DISCORD_CLICKED = "discord_clicked";
 	public static final String KEY_TUTORIAL_OPENED_REGULAR_LEVEL = "key_tutorial_opened_regular_level";
+	public static final String KEY_LAST_UPLOADED_TO_SERVER_TIMER = "last_uploaded_to_server_timer";
+	public static final String KEY_LAST_UPDATED_TO_SERVER_TIMER = "last_updated_to_server_timer";
 
 	public static void version( int value)  {
 		put( KEY_VERSION, value );
@@ -63,6 +65,22 @@ public class SPDSettings extends GameSettings {
 
 	public static boolean tutorialOpenRegularLevel() {
 		return getBoolean( KEY_TUTORIAL_OPENED_REGULAR_LEVEL, false );
+	}
+
+	public static boolean canUploadedToServer() {
+		return getLong( KEY_LAST_UPLOADED_TO_SERVER_TIMER, 0 ) < System.currentTimeMillis()||true;//tzz wicjtig
+	}
+
+	public static void increaseUploadTimer() {
+		put( KEY_LAST_UPLOADED_TO_SERVER_TIMER, Math.max(getLong( KEY_LAST_UPLOADED_TO_SERVER_TIMER, 0 ), System.currentTimeMillis()) + 2*1000*3600 );//2h
+	}
+
+	public static boolean canUpdatedToServer() {
+		return getLong( KEY_LAST_UPDATED_TO_SERVER_TIMER, 0 ) < System.currentTimeMillis()||true;//tzz wicjtig
+	}
+
+	public static void increaseUpdateTimer() {
+		put( KEY_LAST_UPLOADED_TO_SERVER_TIMER, Math.max(getLong( KEY_LAST_UPDATED_TO_SERVER_TIMER, 0 ), System.currentTimeMillis()) + 600*1000 );//10 min
 	}
 
 	//Display

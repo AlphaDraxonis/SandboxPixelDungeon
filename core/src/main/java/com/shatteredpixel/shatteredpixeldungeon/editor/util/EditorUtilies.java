@@ -199,6 +199,26 @@ public final class EditorUtilies {
         return desc;
     }
 
+    public static String convertTimeDifferenceToString(long timeDifferenceMillis) {
+        long seconds = Math.abs(timeDifferenceMillis) / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        long days = hours / 24;
+
+        if (timeDifferenceMillis < 0) {
+            if (timeDifferenceMillis > -20000) return Messages.get(EditorUtilies.class, "time_diff_seconds_true", 0);
+            return Messages.get(EditorUtilies.class, "time_diff_future", days, hours % 24, minutes % 60);
+        } else if (days > 0) {
+            return Messages.get(EditorUtilies.class, "time_diff_days_" + (days != 1), days);
+        } else if (hours > 0) {
+            return Messages.get(EditorUtilies.class, "time_diff_hours_" + (hours != 1), hours);
+        } else if (minutes > 0) {
+            return Messages.get(EditorUtilies.class, "time_diff_minutes_" + (minutes != 1), minutes);
+        } else {
+            return Messages.get(EditorUtilies.class, "time_diff_seconds_" + (seconds != 1), seconds);
+        }
+    }
+
     public static <K, V> V getOrDefault(Map<K, V> map, K key, V defaultValue) {
         V val = map.get(key);
         return val == null ? defaultValue : val;

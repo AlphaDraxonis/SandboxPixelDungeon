@@ -87,15 +87,22 @@ public class ExportDungeonWrapper implements Bundlable {
 
     public static CustomDungeonSaves.Info doImport(FileHandle file) {
         try {
-            ExportDungeonWrapper export = (ExportDungeonWrapper) FileUtils.bundleFromStream(file.read()).get(CustomDungeonSaves.EXPORT);
+            return ((ExportDungeonWrapper) FileUtils.bundleFromStream(file.read()).get(CustomDungeonSaves.EXPORT)).doImport();
+        } catch (IOException ex) {
+            SandboxPixelDungeon.reportException(ex);
+            return null;
+        }
+    }
 
+    public CustomDungeonSaves.Info doImport() {
+        try {
             FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
 
-            if (FileUtils.getFileHandle(CustomDungeonSaves.DUNGEON_FOLDER + export.dungeon.getName().replace(' ', '_')).exists()) return null;
+            if (FileUtils.getFileHandle(CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_')).exists()) return null;
 
-            CustomDungeonSaves.saveDungeon(export.dungeon);
+            CustomDungeonSaves.saveDungeon(dungeon);
 
-            for (Level l : export.customLevels) {
+            for (Level l : customLevels) {
                 CustomDungeonSaves.saveLevel(l);
             }
 
@@ -104,7 +111,7 @@ public class ExportDungeonWrapper implements Bundlable {
 //                        CustomDungeonSaves.DUNGEON_FOLDER + export.dungeon.getName().replace(' ', '_') + "/");
 //            }
 
-            return export.dungeonInfo;
+            return dungeonInfo;
 
         } catch (Exception ex) {
             SandboxPixelDungeon.reportException(ex);

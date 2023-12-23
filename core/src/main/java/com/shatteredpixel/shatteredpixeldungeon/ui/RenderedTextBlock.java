@@ -199,6 +199,8 @@ public class RenderedTextBlock extends Component {
 		layout();
 	}
 
+	public int maxNumLines = Integer.MAX_VALUE;
+
 	@Override
 	protected synchronized void layout() {
 		super.layout();
@@ -214,11 +216,14 @@ public class RenderedTextBlock extends Component {
 		width = 0;
 		for (int i = 0; i < words.size(); i++){
 			RenderedText word = words.get(i);
+
+			if (!(word.visible = word.active = nLines <= maxNumLines)) continue;
+
 			if (word == SPACE){
 				x += 1.667f;
 			} else if (word == NEWLINE) {
 				//newline
-				y += height+2f;
+				if (nLines < maxNumLines) y += height+2f;
 				x = this.x;
 				nLines++;
 				curLine = new ArrayList<>();
@@ -238,9 +243,10 @@ public class RenderedTextBlock extends Component {
 				}
 
 				if ((x - this.x) + fullWidth - 0.001f > maxWidth && !curLine.isEmpty()){
+					nLines++;
+					if (!(word.visible = word.active = nLines <= maxNumLines)) continue;
 					y += height+2f;
 					x = this.x;
-					nLines++;
 					curLine = new ArrayList<>();
 					lines.add(curLine);
 				}
@@ -252,7 +258,7 @@ public class RenderedTextBlock extends Component {
 				curLine.add(word);
 
 				if ((x - this.x) > width) width = (x - this.x);
-				
+
 				//Note that spacing currently doesn't factor in halfwidth and fullwidth characters
 				//(e.g. Ideographic full stop)
 				x -= 0.667f;

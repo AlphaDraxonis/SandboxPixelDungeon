@@ -119,6 +119,7 @@ public class WndGameInProgress extends Window {
 			@Override
 			protected void onClick() {
 				super.onClick();
+				StartScene.skipDungeonSelection = false;
 				
 				GamesInProgress.curSlot = slot;
 				

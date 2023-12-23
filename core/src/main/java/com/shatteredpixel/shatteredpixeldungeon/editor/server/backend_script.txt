@@ -1,0 +1,309 @@
+const PREVIEW_FOLDER = "1F5GxoX00OEITFywPgh4wOxv1nJEhCsJ8";
+const FULL_DUNGEON_FOLDER = "1p8m3rpwXOkIbcD-nHRFyHft1Sxq3JxeZ";
+
+const PASSWORD_FOLDER = "1d0SinmQznVX5ii8XmxGXrdyy9T8gNxrQ";
+const UPLOAD_FOLDER = "158uV22qE6eBmS2jcEtV50nywDKAKNyGm";
+const UPDATE_FOLDER = "1b2JP9UoMKCHAh4XuuzwuBRTyqZM6B1Q7";
+
+const BUG_REPORT_FOLDER = "1oylaCmD9hQ2-6QsZ3g9SuieM5WZeY66K";
+
+
+function doPost(e) {
+  if (e.parameter.action === "upload") {
+    const fileName = e.parameter.fileName;
+    const dungeon = e.parameter.dungeon;
+    const dungeonID = uploadFile(dungeon, fileName, ".dun", FULL_DUNGEON_FOLDER, true);
+
+    const preview = {
+      title: e.parameter.title,
+      description: e.parameter.description,
+      version: e.parameter.version,
+      uploader: e.parameter.uploader,
+      upload_time: new Date().getTime(),
+    };
+    uploadFile(JSON.stringify(preview), dungeonID, "", PREVIEW_FOLDER, true);
+
+    const password = e.parameter.password;
+    const salt = e.parameter.salt;
+    const passwordFileContent = {
+      pw1: hashPasswordOne(password, salt),
+      pw2: hashPasswordTwo(password, salt),
+    };
+    uploadFile(JSON.stringify(passwordFileContent), dungeonID, "", PASSWORD_FOLDER, false);
+
+    sendNotificationEmail(fileName, "Uploaded");
+
+    return ContentService.createTextOutput(true.toString() + dungeonID)
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+  else if (e.parameter.action === "update") {
+
+    const password = e.parameter.pw;
+    const oldSalt = e.parameter.oldSalt;
+
+    const fileName = e.parameter.fileName;
+
+    let dungeon = e.parameter.dungeon;
+    let dungeonID = e.parameter.dungeonID;
+
+    const dungeonChanged = dungeon !== "null";
+
+    if (!deleteDungeon(e.parameter.dungeonID, hashPasswordOne(password, oldSalt), hashPasswordTwo(password, oldSalt), dungeonChanged))
+      return ContentService.createTextOutput(false.toString())
+        .setMimeType(ContentService.MimeType.TEXT);
+
+    if (dungeonChanged) {
+      dungeonID = uploadFile(dungeon, fileName, ".dun", FULL_DUNGEON_FOLDER, true);
+    }
+
+    const preview = {
+      title: e.parameter.title,
+      description: e.parameter.description,
+      version: e.parameter.version,
+      uploader: e.parameter.uploader,
+      upload_time: new Date().getTime(),
+    };
+    uploadFile(JSON.stringify(preview), dungeonID, "", PREVIEW_FOLDER, true);
+
+    const newSalt = e.parameter.newSalt;
+    const passwordFileContent = {
+      pw1: hashPasswordOne(password, newSalt),
+      pw2: hashPasswordTwo(password, newSalt),
+    };
+    uploadFile(JSON.stringify(passwordFileContent), dungeonID, "", PASSWORD_FOLDER, false);
+
+    sendNotificationEmail(fileName, "Updated");
+
+    return ContentService.createTextOutput(true.toString() + dungeonID)
+      .setMimeType(ContentService.MimeType.TEXT);
+
+  }
+  else if (e.parameter.action === "bug_report") {
+
+    const fileName = e.parameter.fileName;
+
+    let dungeon = e.parameter.dungeon;
+
+    if (dungeon !== "null") {
+      dungeonID = uploadFile(dungeon, fileName, ".dun", BUG_REPORT_FOLDER, true);
+    }
+
+    const preview = {
+      title: e.parameter.title,
+      description: e.parameter.description,
+      version: e.parameter.version,
+      uploader: e.parameter.uploader,
+      upload_time: new Date().getTime(),
+    };
+    uploadFile(JSON.stringify(preview), fileName, "", BUG_REPORT_FOLDER, false);
+
+    sendNotificationEmail(fileName, "Bug report");
+
+    return ContentService.createTextOutput(true.toString())
+      .setMimeType(ContentService.MimeType.TEXT);
+
+  }
+  else {
+    return ContentService.createTextOutput("Invalid action: " + e.parameter.action);
+  }
+}
+
+function doGet(e) {
+  if (e.parameter.action === "getPreviewList") {
+    const result = listFiles(PREVIEW_FOLDER);
+    return ContentService.createTextOutput(result)
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  else if (e.parameter.action === "downloadDungeon") {
+    const result = getFileContent(e.parameter.fileID);
+    return ContentService.createTextOutput(result)
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  else if (e.parameter.action === "isPasswordCorrect") {
+    const password = e.parameter.pw;
+    const salt = e.parameter.salt;
+    const isCorrect = isPasswordCorrect(e.parameter.dungeonID, hashPasswordOne(password, salt), hashPasswordTwo(password, salt));
+    return ContentService.createTextOutput(isCorrect.toString())
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+  else if (e.parameter.action === "deleteDungeon") {
+    const password = e.parameter.pw;
+    const salt = e.parameter.salt;
+    const result = deleteDungeon(e.parameter.dungeonID, hashPasswordOne(password, salt), hashPasswordTwo(password, salt), true);
+    return ContentService.createTextOutput(result.toString())
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+  else {
+    return ContentService.createTextOutput("Invalid action: " + e.parameter.action);
+  }
+}
+
+function uploadFile(fileContent, fileName, fileExtension, folderID, compress) {
+  const folder = DriveApp.getFolderById(folderID);
+
+  if (fileExistsInFolder(folder, fileName + fileExtension)) {
+    let count = 1;
+    let originalFileName = fileName;
+    do {
+      fileName = originalFileName + count;
+      count++;
+    } while (fileExistsInFolder(folder, fileName + fileExtension));
+  }
+
+  let contentBlob;
+  if (compress) {
+    const fileBytes = Utilities.newBlob(fileContent).getBytes();
+    contentBlob = compressGZip(fileBytes);
+    contentBlob.setName(fileName + fileExtension);
+  } else {
+    contentBlob = Utilities.newBlob(fileContent, 'application/octet-stream', fileName + fileExtension);
+  }
+
+  const uploadedFile = folder.createFile(contentBlob);
+
+  return uploadedFile.getId();
+}
+
+function deleteDungeon(dungeonID, pw1, pw2, deleteDungeonFile) {
+
+  if (!isPasswordCorrect(dungeonID, pw1, pw2)) return 'Password is incorrect!';
+
+  if (deleteDungeonFile) DriveApp.getFileById(dungeonID).setTrashed(true);
+
+  const previewFile = DriveApp.getFolderById(PREVIEW_FOLDER).getFilesByName(dungeonID);
+  while (previewFile.hasNext()) {
+    const file = previewFile.next();
+    file.setTrashed(true);
+  }
+
+  const passwordFile = DriveApp.getFolderById(PASSWORD_FOLDER).getFilesByName(dungeonID);
+  while (passwordFile.hasNext()) {
+    const file = passwordFile.next();
+    file.setTrashed(true);
+  }
+
+  return true;
+
+}
+
+function listFiles(folderID) {
+
+  const folder = DriveApp.getFolderById(folderID);
+  const files = folder.getFiles();
+  const fileList = [];
+
+  while (files.hasNext()) {
+    const file = files.next();
+    fileList.push({
+      id: file.getId(),
+      name: file.getName(),
+      dungeonID: file.getName(),
+      content: decompressGZip(file.getBlob()),
+    });
+  }
+
+  return JSON.stringify(fileList);
+}
+
+
+function fileExistsInFolder(folder, filename) {
+  const files = folder.getFilesByName(filename);
+  return files.hasNext();
+}
+
+function getFileContent(fileID) {
+  try {
+    const file = DriveApp.getFileById(fileID);
+    const fileList = [];
+    fileList.push({
+      content: decompressGZip(file.getBlob()),
+    });
+    return JSON.stringify(fileList);
+  } catch (error) {
+    return "File not found! Maybe it was deleted. Try closing and reopening the window with all the downloadable dungeons and try again."
+  }
+}
+
+
+function decompressGZip(compressedBlob) {
+  try {
+    return Utilities.ungzip(compressedBlob).getDataAsString();
+  } catch (error) {
+    console.error('Error during decompression:', error);
+    return "Error during decompression:" + error;
+  }
+}
+
+function compressGZip(decompressedBlob) {
+  try {
+    return Utilities.gzip(Utilities.newBlob(decompressedBlob));
+  } catch (error) {
+    console.error('Error during compression:', error);
+    return "Error during compression:" + error;
+  }
+}
+
+
+function isPasswordCorrect(dungeonID, pw1, pw2) {
+
+  const folder = DriveApp.getFolderById(PASSWORD_FOLDER);
+
+  if (!fileExistsInFolder(folder, dungeonID)) return false;
+
+  const file = folder.getFilesByName(dungeonID);
+
+  const content = file.next().getBlob().getDataAsString();
+  const passwordFileContent = JSON.parse(content);
+
+  return passwordFileContent.pw1 == pw1 && passwordFileContent.pw2 == pw2;
+
+}
+
+
+function hashPasswordOne(password, salt) {
+  return hashPassword(password, salt);
+}
+
+function hashPasswordTwo(password, salt) {
+  return hashPassword(password, salt + 1638);
+}
+
+function hashPassword(password, salt) {
+  try {
+    const combined = password + salt;
+    const hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, combined, Utilities.Charset.UTF_8);
+    const hashedPassword = Utilities.base64Encode(hash);
+
+    return hashedPassword;
+  } catch (error) {
+    console.error('Error hashing password:', error);
+    return null;
+  }
+}
+
+
+
+function sendNotificationEmail(fileName, msg) {
+  if (true) {
+    MailApp.sendEmail({
+      to: "alphadraxonis@gmail.com",
+      subject: "New File: " + msg,
+      body: `The file "${fileName}" has been uploaded.`,
+    });
+  }
+}
+
+
+
+//SUPPLY URL SCRIPT
+const FOLDR     = "1miViNNWVeAaqg3GkCoO4HzcqolsRnKXc";
+const FILE_NAME = "url.txt";
+
+function doGet(e) {
+  const folder = DriveApp.getFolderById(FOLDR);
+  const file = folder.getFilesByName(FILE_NAME);
+  const result = file.next().getBlob().getDataAsString();
+
+  return ContentService.createTextOutput(result.toString())
+    .setMimeType(ContentService.MimeType.TEXT);
+}

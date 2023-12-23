@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -42,7 +43,7 @@ public class CustomDungeonSaves {
     private static final String DUNGEON = "dungeon";
     private static final String INFO = "info";
     private static final String FLOOR = "floor";
-    static final String EXPORT = "export";
+    public static final String EXPORT = "export";
 
     static String curDirectory;
 
@@ -70,12 +71,16 @@ public class CustomDungeonSaves {
 
     public static void exportDungeon(String dungeonName, FileHandle file) throws IOException {
         try {
-            Bundle export = new Bundle();
-            export.put(EXPORT, new ExportDungeonWrapper(CustomDungeonSaves.loadDungeon(dungeonName)));
-            FileUtils.bundleToFile(file, export);
+            FileUtils.bundleToFile(file, getExportDungeonBundle(dungeonName));
         } catch (RenameRequiredException e) {
             e.showExceptionWindow();
         }
+    }
+
+    public static Bundle getExportDungeonBundle(String dungeonName) throws IOException, RenameRequiredException {
+        Bundle export = new Bundle();
+        export.put(EXPORT, new ExportDungeonWrapper(CustomDungeonSaves.loadDungeon(dungeonName)));
+        return export;
     }
 
     public static class RenameRequiredException extends Exception {
@@ -207,28 +212,36 @@ public class CustomDungeonSaves {
         return result;
     }
 
-    public static List<Info> getAllInfos() throws IOException {
+    public static List<Info> getAllInfos() {
 
-        List<String> dungeonDirs = getFilesInDir(DUNGEON_FOLDER);
-        List<Info> result = new ArrayList<>();
-        for (String path : dungeonDirs) {
-            if (path.endsWith(EXPORT_FILE_EXTENSION)) {
-                FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path);
-                if (file.exists() && !file.isDirectory()) {
-                    Info info = ExportDungeonWrapper.doImport(file);
-                    if (info != null) {
-                        result.add(info);
-                        file.delete();
+        try {
+            List<String> dungeonDirs = getFilesInDir(DUNGEON_FOLDER);
+            List<Info> result = new ArrayList<>();
+            for (String path : dungeonDirs) {
+                if (path.endsWith(EXPORT_FILE_EXTENSION)) {
+                    FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path);
+                    if (file.exists() && !file.isDirectory()) {
+                        Info info = ExportDungeonWrapper.doImport(file);
+                        if (info != null) {
+                            result.add(info);
+                            file.delete();
+                        }
+                        continue;
                     }
-                    continue;
                 }
+                FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
+                if (file.exists())
+                    result.add((Info) FileUtils.bundleFromStream(file.read()).get(INFO));
             }
-            FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
-            if (file.exists())
-                result.add((Info) FileUtils.bundleFromStream(file.read()).get(INFO));
+            Collections.sort(result);
+            return result;
+
+        } catch (IOException e) {
+            SandboxPixelDungeon.scene().add(new WndError(
+                    "Could not retrieve the available dungeons:\n"
+                            + e.getClass().getSimpleName() + ": " + e.getMessage()));
+            return null;
         }
-        Collections.sort(result);
-        return result;
     }
 
     public static void copyLevelsForNewGame(String dungeonName, String dirDestination) throws IOException {

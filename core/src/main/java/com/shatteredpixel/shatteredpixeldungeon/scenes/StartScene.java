@@ -41,7 +41,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.BitmapText;
@@ -77,7 +76,13 @@ public class StartScene extends PixelScene {
 		archs.setSize( w, h );
 		add( archs );
 		
-		ExitButton btnExit = new ExitButton();
+		ExitButton btnExit = new ExitButton() {
+			@Override
+			protected void onClick() {
+				super.onClick();
+				skipDungeonSelection = false;
+			}
+		};
 		btnExit.setPos( w - btnExit.width(), 0 );
 		add( btnExit );
 		
@@ -285,7 +290,12 @@ public class StartScene extends PixelScene {
 		@Override
 		protected void onClick() {
 			if (newGame) {
-				showWndSelectDungeon(slot);
+				if (skipDungeonSelection) {
+					skipDungeonSelection = false;
+					GamesInProgress.selectedClass = null;
+					GamesInProgress.curSlot = slot;
+					SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+				} else showWndSelectDungeon(slot);
 			} else {
 				SandboxPixelDungeon.scene().add( new WndGameInProgress(slot));
 			}
@@ -293,6 +303,7 @@ public class StartScene extends PixelScene {
 	}
 
 	private static final Set<String> EMPTY_HASHSET = new HashSet<>(0);
+	public static boolean skipDungeonSelection = false;
 
 	public static void showWndSelectDungeon(int slot) {
 		showWndSelectDungeon(slot, null);
@@ -300,15 +311,8 @@ public class StartScene extends PixelScene {
 
 	public static void showWndSelectDungeon(int slot, HeroClass selectClass) {
 		EditorScene.close();
-		List<CustomDungeonSaves.Info> allInfos;
-		try {
-			allInfos = CustomDungeonSaves.getAllInfos();
-		} catch (IOException e) {
-			SandboxPixelDungeon.scene().add(new WndError(
-					"Could not retrieve the available dungeons:\n"
-							+ e.getClass().getSimpleName() + ": " + e.getMessage()));
-			return;
-		}
+		List<CustomDungeonSaves.Info> allInfos = CustomDungeonSaves.getAllInfos();
+		if (allInfos == null) return;
 		if (allInfos.isEmpty()) {
 			SandboxPixelDungeon.scene().add(new WndOptions(Icons.get(Icons.WARNING),
 					Messages.get(StartScene.class, "wnd_no_dungeon_title"),
@@ -320,7 +324,7 @@ public class StartScene extends PixelScene {
 				protected void onSelect(int index) {
 					if (index == 0) {
 						Game.scene().addToFront(new WndNewDungeon(EMPTY_HASHSET));
-					}else if(index == 1){
+					} else if(index == 1) {
 						Dungeon.customDungeon = new CustomDungeon(WndNewDungeon.DEFAULT_DUNGEON);
 						Dungeon.customDungeon.initDefault();
 

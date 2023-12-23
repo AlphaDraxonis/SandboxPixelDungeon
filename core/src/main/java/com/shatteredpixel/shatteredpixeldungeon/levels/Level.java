@@ -222,13 +222,14 @@ public abstract class Level implements Bundlable {
 
 	public LevelScheme levelScheme;
 
+	private boolean initForPlayCalled;
+
 	public static final int NO_BOSS_MOB = -2;//need to be -2 bc -1 is pos of mobs in inv
 	public int bossmobAt = -2;//store as pos so we don't have problems with undo, only for CustomLevel
 	public Mob bossMob;//after initForPlay
 	public boolean bossFound;
 
 	//For loading
-	public static boolean bossFoundStatic;
 	public static Mob bossMobStatic;
 
 	private static final String VERSION     = "version";
@@ -255,6 +256,7 @@ public abstract class Level implements Bundlable {
 	private static final String ZONES       = "zones";
 	private static final String MUSIC_VARIANT = "music_variant";
 	private static final String MUSIC_REQUESTS = "music_requests";
+	private static final String INIT_FOR_PLAY_CALLED = "init_for_play_called";
 
 
 	public void create() {
@@ -403,6 +405,7 @@ public abstract class Level implements Bundlable {
 	}
 
 	public void initForPlay() {
+		initForPlayCalled = true;
 		for (Zone z : zoneMap.values()) {
 			z.initTransitions(this);
 		}
@@ -530,6 +533,7 @@ public abstract class Level implements Bundlable {
 	public void restoreFromBundle( Bundle bundle ) {
 
 		version = bundle.getInt( VERSION );
+		initForPlayCalled = !bundle.contains(INIT_FOR_PLAY_CALLED) || bundle.getBoolean( INIT_FOR_PLAY_CALLED );
 
 		setSize( bundle.getInt(WIDTH), bundle.getInt(HEIGHT));
 		
@@ -544,8 +548,13 @@ public abstract class Level implements Bundlable {
 		
 		map		= bundle.getIntArray( MAP );
 
-		visited	= bundle.getBooleanArray( VISITED );
-		mapped	= bundle.getBooleanArray( MAPPED );
+		if (initForPlayCalled) {
+			visited	= bundle.getBooleanArray( VISITED );
+			mapped	= bundle.getBooleanArray( MAPPED );
+		} else {
+			visited = new boolean[map.length];
+			mapped = new boolean[map.length];
+		}
 		name = bundle.getString( NAME );
 		viewDistance = bundle.getInt( VIEW_DISTANCE );
 		musicVariant = bundle.getInt( MUSIC_VARIANT );
@@ -653,10 +662,13 @@ public abstract class Level implements Bundlable {
 		bundle.put( VERSION, Game.versionCode );
 		bundle.put( WIDTH, width );
 		bundle.put( HEIGHT, height );
+		bundle.put( INIT_FOR_PLAY_CALLED, initForPlayCalled );
 		bundle.put( MAP, map );
 		bundle.put( NAME, name );
-		bundle.put( VISITED, visited );
-		bundle.put( MAPPED, mapped );
+		if (initForPlayCalled) {
+			bundle.put( VISITED, visited );
+			bundle.put( MAPPED, mapped );
+		}
 		bundle.put( TRANSITIONS, transitions.values() );
 		bundle.put( LOCKED_COUNT, lockedCount );
 		bundle.put( HEAPS, heaps.valueList() );

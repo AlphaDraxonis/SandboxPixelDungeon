@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -20,11 +21,17 @@ public class StringInputComp extends Component {
 
     public String defaultValue;
 
+    protected TextField.TextFieldFilter textFilter;
+
     public StringInputComp(String label, String text, int maxLength, boolean multiline) {
         this(label, text, maxLength, multiline, null);
     }
 
     public StringInputComp(String label, String text, int maxLength, boolean multiline, String defaultValue) {
+        this(label, text, maxLength, multiline, defaultValue, null);
+    }
+
+    public StringInputComp(String label, String text, int maxLength, boolean multiline, String defaultValue, String changeBodyText) {
         this.defaultValue = defaultValue == null ? "???" : defaultValue;
 
         this.label = PixelScene.renderTextBlock(8);
@@ -37,17 +44,19 @@ public class StringInputComp extends Component {
         add(this.text);
 
         change = new IconButton(Icons.CHANGES.get()) {
+
             @Override
             protected void onClick() {
 
                 EditorScene.show(new WndTextInput(
                         StringInputComp.this.label.text(),
-                        null,
+                        changeBodyText,
                         StringInputComp.this.text.text(),
                         maxLength, multiline, Messages.get(HeroSelectScene.class, "custom_seed_set"),
                         Messages.get(WndNewFloor.class, "cancel_label")
                 ) {
                     {
+                        setTextFieldFilter(textFilter);
                         if (Objects.equals(getText(), defaultValue)) {
                             textBox.selectAll();
                         }
