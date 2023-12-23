@@ -179,7 +179,7 @@ public enum Traps {
         public Item findItem(Object src) {
             for (Item bag : items) {
                 for (Item i : ((Bag) bag).items) {
-                    if (((TrapItem) i).trap().getClass() == src) return i;
+                    if (((TrapItem) i).getObject().getClass() == src) return i;
                 }
             }
             return null;

@@ -102,8 +102,6 @@ public class CustomDungeon implements Bundlable {
     //make you able to change enemy view distance or tiles until enemies notice your presence
     //also turns to wake up before enemies notice you
 
-    //TODO make the tool that allows to select a thing from placed things automatically copy a mob's stats when selecting it
-
     //killing bosses doesn't remove the floor lock
 
     //make random item as loot list
@@ -569,9 +567,9 @@ public class CustomDungeon implements Bundlable {
     public void setItemInToolbar(int slot, EditorItem item) {
         if (item == null) toolbarItems[slot] = null;
         else if (item instanceof TileItem) toolbarItems[slot] = ((TileItem) item).terrainType();
-        else if (item instanceof BlobItem) toolbarItems[slot] = ((BlobItem) item).blob();
+        else if (item instanceof BlobItem) toolbarItems[slot] = ((BlobItem) item).getObject();
         else if (item instanceof CustomTileItem) {
-            CustomTilemap cust = ((CustomTileItem) item).customTile();
+            CustomTilemap cust = ((CustomTileItem) item).getObject();
             if (cust instanceof CustomTileLoader.UserCustomTile) toolbarItems[slot] = ((CustomTileLoader.UserCustomTile) cust).identifier;
             else toolbarItems[slot] = item.getObject().getClass();
         } else toolbarItems[slot] = item.getObject().getClass();

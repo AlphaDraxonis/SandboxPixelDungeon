@@ -87,18 +87,16 @@ import com.watabou.utils.Bundle;
 
 import java.util.Locale;
 
-public class RoomItem extends EditorItem {
-
-    private  Room room;
+public class RoomItem extends EditorItem<Room> {
 
     public RoomItem(){}
     public RoomItem(Room room) {
-        this.room = room;
+        this.obj = room;
     }
 
     @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, Messages.titleCase(getName(room.getClass())), getSprite()) {
+        return new DefaultListItem(this, window, Messages.titleCase(getName(getObject().getClass())), getSprite()) {
             @Override
             public void onUpdate() {
                 if (item == null) return;
@@ -121,7 +119,7 @@ public class RoomItem extends EditorItem {
 
     @Override
     public Image getSprite() {
-        return getImage(room().getClass());
+        return getImage(getObject().getClass());
     }
 
     @Override
@@ -131,21 +129,12 @@ public class RoomItem extends EditorItem {
 
     @Override
     public String name() {
-        return getName(room().getClass());
-    }
-
-    @Override
-    public Object getObject() {
-        return room();
-    }
-
-    public Room room() {
-        return room;
+        return getName(getObject().getClass());
     }
 
     @Override
     public Item getCopy() {
-        return new RoomItem(room().getCopy());
+        return new RoomItem(getObject().getCopy());
     }
 
     public static String getName(Class<? extends Room> r) {
@@ -247,12 +236,16 @@ public class RoomItem extends EditorItem {
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
-        bundle.put(ROOM,room);
+        bundle.put(ROOM, obj);
     }
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
-        room = (Room) bundle.get(ROOM);
+        obj = (Room) bundle.get(ROOM);
+    }
+
+    public Room room() {
+        return getObject();
     }
 }

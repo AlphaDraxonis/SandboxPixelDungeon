@@ -60,7 +60,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
     }
 
     public EditTrapComp(TrapItem trapItem) {
-        super(trapItem.trap());
+        super(trapItem.getObject());
         initComps();
         this.trapItem = trapItem;
     }

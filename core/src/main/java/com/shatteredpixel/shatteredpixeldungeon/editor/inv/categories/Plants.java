@@ -102,7 +102,7 @@ public enum Plants {
         public Item findItem(Object src) {
             for (Item bag : items) {
                 for (Item i : ((Bag) bag).items) {
-                    if (((PlantItem) i).plant().getClass() == src) return i;
+                    if (((PlantItem) i).getObject().getClass() == src) return i;
                 }
             }
             return null;

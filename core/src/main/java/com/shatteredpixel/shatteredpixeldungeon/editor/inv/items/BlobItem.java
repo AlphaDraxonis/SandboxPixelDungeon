@@ -26,13 +26,11 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.RectF;
 
-public class BlobItem extends EditorItem {
-
-    private final Class<? extends Blob> blob;
+public class BlobItem extends EditorItem<Class<? extends Blob>> {
 
 
     public BlobItem(Class<? extends Blob> blob) {
-        this.blob = blob;
+        this.obj = blob;
     }
 
     @Override
@@ -47,12 +45,12 @@ public class BlobItem extends EditorItem {
 
     @Override
     public DefaultEditComp<?> createEditComponent() {
-        return new EditBlobComp(blob());//Edit duration and ?reward?
+        return new EditBlobComp(getObject());//Edit duration and ?reward?
     }
 
     @Override
     public Image getSprite() {
-        return createIcon(blob());
+        return createIcon(getObject());
     }
 
     @Override
@@ -62,21 +60,12 @@ public class BlobItem extends EditorItem {
 
         if (invalidPlacement(cell, level)) return;
 
-        Undo.addActionPart(place(blob(), cell));
-    }
-
-    @Override
-    public Object getObject() {
-        return blob();
-    }
-
-    public Class<? extends Blob> blob() {
-        return blob;
+        Undo.addActionPart(place(getObject(), cell));
     }
 
     @Override
     public String name() {
-        return createName(blob());
+        return createName(getObject());
     }
 
     public static String createName(Class<? extends Blob> blob) {

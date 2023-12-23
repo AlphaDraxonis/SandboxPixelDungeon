@@ -24,30 +24,20 @@ import com.watabou.utils.Point;
 
 import java.util.Set;
 
-public class CustomTileItem extends EditorItem {
+public class CustomTileItem extends EditorItem<CustomTilemap> {
 
 
     private final int cell;
-    private final CustomTilemap customTile;
 
 
     public CustomTileItem(CustomTilemap customTile, int cell) {
         this.cell = cell;
-        this.customTile = customTile;
+        this.obj = customTile;
     }
 
     @Override
     public String name() {
-        return getName(customTile(), cell());
-    }
-
-    @Override
-    public Object getObject() {
-        return customTile();
-    }
-
-    public CustomTilemap customTile() {
-        return customTile;
+        return getName(getObject(), cell());
     }
 
     public int cell() {
@@ -62,11 +52,11 @@ public class CustomTileItem extends EditorItem {
             @Override
             protected void createChildren(Object... params) {
                 super.createChildren(params);
-                if (customTile() instanceof CustomTileLoader.SimpleCustomTile) {
+                if (getObject() instanceof CustomTileLoader.SimpleCustomTile) {
                     remove = new IconButton(Icons.CLOSE.get()) {
                         @Override
                         protected void onClick() {
-                            Dungeon.customDungeon.customTiles.remove(customTile());
+                            Dungeon.customDungeon.customTiles.remove(getObject());
                             Tiles.removeCustomTile(CustomTileItem.this);
                             WndEditorInv.updateCurrentTab();
                             EditorScene.revalidateCustomTiles();
@@ -118,12 +108,12 @@ public class CustomTileItem extends EditorItem {
 
     @Override
     public DefaultEditComp<?> createEditComponent() {
-        return new EditCustomTileComp(customTile(), cell());
+        return new EditCustomTileComp(getObject(), cell());
     }
 
     @Override
     public Image getSprite() {
-        return createImage(customTile());
+        return createImage(getObject());
     }
 
     public static Image createImage(CustomTilemap cust) {
@@ -133,9 +123,13 @@ public class CustomTileItem extends EditorItem {
     }
 
     @Override
+    public void setObject(CustomTilemap obj) {
+    }
+
+    @Override
     public void place(int cell) {
-        if (isPositionValid(cell, customTile()))
-            Undo.addActionPart(place(cell, customTile().getCopy()));
+        if (isPositionValid(cell, getObject()))
+            Undo.addActionPart(place(cell, getObject().getCopy()));
     }
 
     public static ActionPart place(int cell, CustomTilemap customTile) {

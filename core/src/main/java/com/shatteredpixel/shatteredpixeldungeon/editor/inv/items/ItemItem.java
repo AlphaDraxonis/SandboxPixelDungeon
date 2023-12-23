@@ -17,23 +17,19 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 
-public class ItemItem extends EditorItem {
-
-
-    private final Item item;
-
+public class ItemItem extends EditorItem<Item> {
 
     public ItemItem(Item item) {
-        this.item = item;
+        this.obj = item;
         icon = item.icon;
     }
 
     @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, item().name(), getSprite()) {
+        return new DefaultListItem(this, window, getObject().name(), getSprite()) {
             @Override
             public void onUpdate() {
-                onUpdateIfUsedForItem(item());
+                onUpdateIfUsedForItem(getObject());
                 super.onUpdate();
             }
         };
@@ -41,17 +37,17 @@ public class ItemItem extends EditorItem {
 
     @Override
     public DefaultEditComp<?> createEditComponent() {
-        return new EditItemComp(item(), null);
+        return new EditItemComp(getObject(), null);
     }
 
     @Override
     public Image getSprite() {
-        return CustomDungeon.getDungeon().getItemImage(item());
+        return CustomDungeon.getDungeon().getItemImage(getObject());
     }
 
     @Override
     public Image getSubIcon() {
-        return IconTitleWithSubIcon.createSubIcon(item());
+        return IconTitleWithSubIcon.createSubIcon(getObject());
     }
 
     @Override
@@ -61,7 +57,7 @@ public class ItemItem extends EditorItem {
 
         if (invalidPlacement(cell, level)) return;
 
-        Item i = item().getCopy();
+        Item i = getObject().getCopy();
 
         i.image = CustomDungeon.getDungeon().getItemSpriteOnSheet(i);
 
@@ -72,27 +68,18 @@ public class ItemItem extends EditorItem {
     }
 
     @Override
-    public Object getObject() {
-        return item();
-    }
-
-    public Item item() {
-        return item;
-    }
-
-    @Override
     public int level() {
-        return item().level();
+        return getObject().level();
     }
 
     @Override
     public int quantity() {
-        return item().quantity();
+        return getObject().quantity();
     }
 
     @Override
     public String name() {
-        return item().name();
+        return getObject().name();
     }
 
     public static boolean invalidPlacement(int cell, CustomLevel level) {
@@ -134,5 +121,9 @@ public class ItemItem extends EditorItem {
             return new HeapActionPart.Place(heap);
         }
         return null;
+    }
+
+    public Item item() {
+        return getObject();
     }
 }

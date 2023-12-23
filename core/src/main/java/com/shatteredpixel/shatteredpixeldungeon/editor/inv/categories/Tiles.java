@@ -126,8 +126,8 @@ public enum Tiles {
             if (src instanceof Class<?>) {//for blobs and customTiles
                 for (Item bag : items) {
                     for (Item i : ((Bag) bag).items) {
-                        if (i instanceof BlobItem && ((BlobItem) i).blob() == src) return i;
-                        if (i instanceof CustomTileItem && ((CustomTileItem) i).customTile().getClass() == src) return i;
+                        if (i instanceof BlobItem && ((BlobItem) i).getObject() == src) return i;
+                        if (i instanceof CustomTileItem && ((CustomTileItem) i).getObject().getClass() == src) return i;
                     }
                 }
                 return null;
@@ -135,7 +135,7 @@ public enum Tiles {
             if (src instanceof String) {
                 for (Item i : customTileBag.items) {
                     if (i instanceof CustomTileItem) {
-                        CustomTilemap customTile = ((CustomTileItem) i).customTile();
+                        CustomTilemap customTile = ((CustomTileItem) i).getObject();
                         if (customTile instanceof CustomTileLoader.UserCustomTile
                                 && src.equals(((CustomTileLoader.UserCustomTile) customTile).identifier)) return i;
                     }
@@ -262,7 +262,7 @@ public enum Tiles {
     }
 
     public static void removeCustomTile(CustomTileItem customTileItem) {
-        ownCustomTiles.remove(((CustomTileLoader.UserCustomTile) customTileItem.customTile()).identifier);
+        ownCustomTiles.remove(((CustomTileLoader.UserCustomTile) customTileItem.getObject()).identifier);
         customTileBag.items.remove(customTileItem);
     }
 

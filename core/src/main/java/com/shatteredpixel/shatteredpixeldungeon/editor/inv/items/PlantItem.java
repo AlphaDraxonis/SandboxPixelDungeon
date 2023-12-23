@@ -19,18 +19,16 @@ import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.RectF;
 
-public class PlantItem extends EditorItem {
+public class PlantItem extends EditorItem<Plant> {
 
     private static final TextureFilm TEXTURE_FILM = new TextureFilm(Assets.Environment.TERRAIN_FEATURES, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
-
-    private Plant plant;
 
 
     public PlantItem() {
     }
 
     public PlantItem(Plant plant) {
-        this.plant = plant;
+        this.obj = plant;
     }
 
     private static int imgCode(Plant plant) {
@@ -40,7 +38,7 @@ public class PlantItem extends EditorItem {
 
     @Override
     public Image getSprite() {
-        return getPlantImage(imgCode(plant()));
+        return getPlantImage(imgCode(getObject()));
     }
 
     public static Image getPlantImage(int imgCode) {
@@ -63,11 +61,11 @@ public class PlantItem extends EditorItem {
 
     @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, createTitle(plant()), getSprite()) {
+        return new DefaultListItem(this, window, createTitle(getObject()), getSprite()) {
             @Override
             public void onUpdate() {
-                if (item == null || ((PlantItem) item).plant() == null) return;
-                Plant t = ((PlantItem) item).plant();
+                if (item == null || ((PlantItem) item).getObject() == null) return;
+                Plant t = ((PlantItem) item).getObject();
                 label.text(PlantItem.createTitle(t));
 
                 if (icon != null) remove(icon);
@@ -89,21 +87,18 @@ public class PlantItem extends EditorItem {
     @Override
     public void place(int cell) {
         if (!invalidPlacement(cell, EditorScene.customLevel()))
-            Undo.addActionPart(place(plant().getCopy(), cell));
+            Undo.addActionPart(place(getObject().getCopy(), cell));
     }
 
     @Override
     public String name() {
-        return plant().name();
+        return getObject().name();
     }
 
     @Override
-    public Object getObject() {
-        return plant();
-    }
-
-    public Plant plant() {
-        return plant;
+    public void setObject(Plant obj) {
+        super.setObject(obj);
+        obj.pos = -1;
     }
 
     public static boolean invalidPlacement(int cell, CustomLevel level) {
@@ -141,12 +136,12 @@ public class PlantItem extends EditorItem {
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
-        bundle.put(PLANT, plant);
+        bundle.put(PLANT, obj);
     }
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
-        plant = (Plant) bundle.get(PLANT);
+        obj = (Plant) bundle.get(PLANT);
     }
 }

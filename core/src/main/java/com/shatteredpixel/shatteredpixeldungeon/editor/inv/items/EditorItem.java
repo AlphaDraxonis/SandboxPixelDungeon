@@ -18,9 +18,11 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 
-public abstract class EditorItem extends Item {
+public abstract class EditorItem<T> extends Item {
 
     public static final String AC_PLACE = "PLACE";
+
+    protected T obj;
 
 
     {
@@ -52,7 +54,13 @@ public abstract class EditorItem extends Item {
 
     public abstract void place(int cell);
 
-    public abstract Object getObject();
+    public T getObject() {
+        return obj;
+    }
+
+    public void setObject(T obj) {
+        this.obj = obj;
+    }
 
 
     //Constant items
@@ -69,7 +77,7 @@ public abstract class EditorItem extends Item {
         }
     };
 
-    public static class NullItemClass extends EditorItem {
+    public static class NullItemClass extends EditorItem<Object> {
         private NullItemClass() {
         }
 

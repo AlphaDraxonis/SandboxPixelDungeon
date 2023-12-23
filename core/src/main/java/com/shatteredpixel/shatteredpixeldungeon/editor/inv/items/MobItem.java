@@ -15,26 +15,24 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
-public class MobItem extends EditorItem {
-
-    private Mob mob;
+public class MobItem extends EditorItem<Mob> {
 
     public MobItem() {
     }
 
     public MobItem(Mob mob) {
-        this.mob = mob;
+        this.obj = mob;
     }
 
     @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, mob.name(), getSprite()) {
+        return new DefaultListItem(this, window, getObject().name(), getSprite()) {
             @Override
             public void onUpdate() {
                 if (item == null) return;
 
                 if (icon != null) remove(icon);
-                icon = mob.sprite();
+                icon = getObject().sprite();
                 addToBack(icon);
                 remove(bg);
                 addToBack(bg);
@@ -46,20 +44,20 @@ public class MobItem extends EditorItem {
 
     @Override
     public DefaultEditComp<?> createEditComponent() {
-        return new EditMobComp(mob());
+        return new EditMobComp(getObject());
     }
 
     @Override
     public Image getSprite() {
-        Mob mob = mob();
+        Mob mob = getObject();
         if (mob.sprite == null) mob.sprite = mob.sprite();
-        return mob().sprite();
+        return getObject().sprite();
     }
 
     @Override
     public void place(int cell) {
         CustomLevel level = EditorScene.customLevel();
-        Mob mob = (Mob) mob().getCopy();
+        Mob mob = (Mob) getObject().getCopy();
 
         Mob mobAtCell = level.findMob(cell);
         if (invalidPlacement(mob, level, cell) || EditMobComp.areEqual(mob, mobAtCell)) return;
@@ -71,21 +69,12 @@ public class MobItem extends EditorItem {
 
     @Override
     public String name() {
-        return mob().name();
-    }
-
-    @Override
-    public Object getObject() {
-        return mob();
-    }
-
-    public Mob mob() {
-        return mob;
+        return getObject().name();
     }
 
     @Override
     public Item getCopy() {
-        return new MobItem((Mob) mob().getCopy());
+        return new MobItem((Mob) getObject().getCopy());
     }
 
     public static boolean invalidPlacement(Mob mob, CustomLevel level, int cell) {
@@ -122,12 +111,16 @@ public class MobItem extends EditorItem {
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
-        bundle.put(MOB, mob);
+        bundle.put(MOB, obj);
     }
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
-        mob = (Mob) bundle.get(MOB);
+        obj = (Mob) bundle.get(MOB);
+    }
+
+    public Mob mob() {
+        return getObject();
     }
 }

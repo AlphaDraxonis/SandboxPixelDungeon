@@ -22,7 +22,7 @@ public class EditPlantComp extends DefaultEditComp<Plant> {
     }
 
     public EditPlantComp(PlantItem plantItem) {
-        super(plantItem.plant());
+        super(plantItem.getObject());
 //        initComps();
         this.plantItem = plantItem;
     }

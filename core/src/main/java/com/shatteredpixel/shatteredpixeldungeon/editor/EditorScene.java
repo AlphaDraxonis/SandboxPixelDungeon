@@ -15,6 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -859,10 +860,25 @@ public class EditorScene extends PixelScene {
         return customLevel.map[cell];
     }
 
-    public static EditorItem getObjAsInBag(Object obj) {
-        if (obj instanceof Integer || obj instanceof String) return (EditorItem) Tiles.bag.findItem(obj);
-        if (obj instanceof CustomTileLoader.UserCustomTile) return (EditorItem) Tiles.bag.findItem(((CustomTileLoader.UserCustomTile) obj).identifier);
-        return getObjAsInBagFromClass(obj.getClass());
+    public static <T> EditorItem<?> getObjAsInBag(T obj) {
+        if (obj instanceof Integer || obj instanceof String) return (EditorItem<T>) Tiles.bag.findItem(obj);
+        if (obj instanceof CustomTileLoader.UserCustomTile) return (EditorItem<T>) Tiles.bag.findItem(((CustomTileLoader.UserCustomTile) obj).identifier);
+
+        Class<?> clazz = obj.getClass();
+        EditorItem<T> inBag;
+        if (Item.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Items.bag.findItem(clazz);
+        else if (Mob.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Mobs.bag.findItem(clazz);
+        else if (Trap.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Traps.bag.findItem(clazz);
+        else if (Plant.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Plants.bag.findItem(clazz);
+        else if (Blob.class.isAssignableFrom(clazz)) {
+            BlobItem realInBag = (BlobItem) Tiles.bag.findItem(clazz);//Blobs
+            realInBag.setObject((Class<? extends Blob>) clazz);
+            return realInBag;
+        }
+        else if (CustomTilemap.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Tiles.bag.findItem(clazz);//CustomTiles
+        else return null;
+        inBag.setObject(obj);
+        return inBag;
     }
 
     public static EditorItem getObjAsInBagFromClass(Class<?> clazz) {
@@ -1031,7 +1047,7 @@ public class EditorScene extends PixelScene {
 
         if (selected instanceof EditorItem) {
             if (selected instanceof CustomTileItem) {
-                CustomTilemap customTile = ((CustomTileItem) selected).customTile();
+                CustomTilemap customTile = ((CustomTileItem) selected).getObject();
                 return customTile.tileW == 1 && customTile.tileH == 1;
             }
             return true;

@@ -20,16 +20,13 @@ import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.RectF;
 
-public class TrapItem extends EditorItem {
+public class TrapItem extends EditorItem<Trap> {
 
     private static final TextureFilm TEXTURE_FILM = new TextureFilm(Assets.Environment.TERRAIN_FEATURES, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
 
-    private Trap trap;
-
-
     public TrapItem(){}
     public TrapItem(Trap trap) {
-        this.trap = trap;
+        this.obj = trap;
     }
 
     private static int imgCode(Trap trap) {
@@ -40,7 +37,7 @@ public class TrapItem extends EditorItem {
 
     @Override
     public Image getSprite() {
-        return getTrapImage(imgCode(trap()));
+        return getTrapImage(imgCode(getObject()));
     }
 
     public static Image getTrapImage(int imgCode) {
@@ -63,11 +60,11 @@ public class TrapItem extends EditorItem {
 
     @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, createTitle(trap()), getSprite()) {
+        return new DefaultListItem(this, window, createTitle(getObject()), getSprite()) {
             @Override
             public void onUpdate() {
-                if (item == null || ((TrapItem) item).trap() == null) return;
-                Trap t = ((TrapItem) item).trap();
+                if (item == null || ((TrapItem) item).getObject() == null) return;
+                Trap t = ((TrapItem) item).getObject();
                 label.text(TrapItem.createTitle(t));
 
                 if (icon != null) remove(icon);
@@ -89,7 +86,7 @@ public class TrapItem extends EditorItem {
     @Override
     public void place(int cell) {
         if (validPlacement(cell, EditorScene.customLevel()))
-            Undo.addActionPart(place(trap().getCopy(), cell));
+            Undo.addActionPart(place(getObject().getCopy(), cell));
     }
 
     public static boolean validPlacement(int cell, CustomLevel level) {
@@ -98,16 +95,13 @@ public class TrapItem extends EditorItem {
 
     @Override
     public String name() {
-        return trap().name();
+        return getObject().name();
     }
 
     @Override
-    public Object getObject() {
-        return trap();
-    }
-
-    public Trap trap() {
-        return trap;
+    public void setObject(Trap obj) {
+        super.setObject(obj);
+        obj.pos = -1;
     }
 
     public static int getTerrain(Trap trap) {
@@ -140,12 +134,12 @@ public class TrapItem extends EditorItem {
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
-        bundle.put(TRAP,trap);
+        bundle.put(TRAP, obj);
     }
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
-        trap = (Trap) bundle.get(TRAP);
+        obj = (Trap) bundle.get(TRAP);
     }
 }
