@@ -47,6 +47,14 @@ public abstract class AllyBuff extends Buff{
 		}
 	}
 
+	@Override
+	public void detach() {
+		super.detach();
+		if (target instanceof Mob) {
+			((Mob) target).setPlayerAlignment(((Mob) target).playerAlignment);
+		}
+	}
+
 	//for when applying an ally buff should also cause that enemy to give exp/loot as if they had died
 	//consider that chars with the ally alignment do not drop items or award exp on death
 	public static void affectAndLoot(Mob enemy, Hero hero, Class<?extends AllyBuff> buffCls){

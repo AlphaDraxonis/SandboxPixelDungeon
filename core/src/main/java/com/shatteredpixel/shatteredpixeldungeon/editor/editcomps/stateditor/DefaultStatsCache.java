@@ -82,6 +82,7 @@ public class DefaultStatsCache {
         return a.statsScale == b.statsScale
                 && a.baseSpeed == b.baseSpeed
                 && a.HT == b.HT
+                && a.viewDistance == b.viewDistance
                 && a.attackSkill == b.attackSkill
                 && a.defenseSkill == b.defenseSkill
                 && a.damageRollMin == b.damageRollMin

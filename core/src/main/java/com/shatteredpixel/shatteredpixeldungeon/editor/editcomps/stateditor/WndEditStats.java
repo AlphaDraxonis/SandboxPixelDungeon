@@ -62,7 +62,7 @@ public class WndEditStats extends MultiWindowTabComp {
 
     private RedButton restoreDefaults;
 
-    private IntegerSpinner hp, attackSkill, defenseSkill, armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, xp, maxLvl;
+    private IntegerSpinner hp, viewDistance, attackSkill, defenseSkill, armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, xp, maxLvl;
     private FloatSpinner speed, statsScale;
     private StyledButtonWithIconAndText loot;
 
@@ -116,11 +116,11 @@ public class WndEditStats extends MultiWindowTabComp {
                 statsScale.addChangeListener(() -> current.statsScale = statsScale.getAsFloat());
                 content.add(statsScale);
 
-                if (!(current instanceof SentryRoom.Sentry)) addSpeedSpinner(def, current);
+                if (!(current instanceof SentryRoom.Sentry)) addSpeedViewDistanceSpinner(def, current);
 
             } else {
 
-                addSpeedSpinner(def, current);
+                addSpeedViewDistanceSpinner(def, current);
 
                 addHPAccuracyEvasionArmorSpinner(def, current);
 
@@ -181,7 +181,7 @@ public class WndEditStats extends MultiWindowTabComp {
         add(restoreDefaults);
 
         mainWindowComps = new Component[]{
-                statsScale, speed, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                statsScale, speed, viewDistance, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 hp, attackSkill, defenseSkill,
                 armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 xp, maxLvl, loot
@@ -240,11 +240,16 @@ public class WndEditStats extends MultiWindowTabComp {
         }
     }
 
-    private void addSpeedSpinner(Mob def, Mob current) {
+    private void addSpeedViewDistanceSpinner(Mob def, Mob current) {
         speed = new FloatSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "speed"),
                 0.1f, Math.max(10, def.baseSpeed * 10), current.baseSpeed, false);
         speed.addChangeListener(() -> current.baseSpeed = speed.getAsFloat());
         content.add(speed);
+
+        viewDistance = new IntegerSpinner(Messages.get(Mob.class, "view_distance"),
+                1, Math.max(10, def.viewDistance * 10), current.viewDistance, false);
+        viewDistance.addChangeListener(() -> current.viewDistance = viewDistance.getAsInt());
+        content.add(viewDistance);
     }
 
     private void addHPAccuracyEvasionArmorSpinner(Mob def, Mob current) {
@@ -287,6 +292,7 @@ public class WndEditStats extends MultiWindowTabComp {
             Mob def = (Mob) defaultStats;
 
             if (speed != null) speed.setValue(SpinnerFloatModel.convertToInt(def.baseSpeed, 1));
+            if (viewDistance != null) viewDistance.setValue(def.viewDistance);
             if (statsScale != null) statsScale.setValue(SpinnerFloatModel.convertToInt(def.statsScale, 1));
             if (hp != null) {
                 hp.setValue(def.HT);

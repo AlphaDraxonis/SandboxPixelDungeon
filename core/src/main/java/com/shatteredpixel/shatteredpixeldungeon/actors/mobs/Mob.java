@@ -1201,6 +1201,7 @@ public abstract class Mob extends Char {
 
             if (DefaultStatsCache.useStatsScale(this)) {
                 if (defaultStats.baseSpeed != baseSpeed || defaultStats.statsScale != statsScale
+						|| defaultStats.viewDistance != viewDistance
                         || this instanceof Brute && (
                         defaultStats.HT != HT || defaultStats.damageReductionMax != damageReductionMax
                                 || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
@@ -1212,6 +1213,8 @@ public abstract class Mob extends Char {
                         desc += "\n" + Messages.get(Mob.class, "stats_scale") + ": " + defaultStats.statsScale + " -> _" + statsScale + "_";
                     if (defaultStats.baseSpeed != baseSpeed)
                         desc += "\n" + Messages.get(StoneOfAugmentation.WndAugment.class, "speed") + ": " + defaultStats.baseSpeed + " -> _" + baseSpeed + "_";
+                    if (defaultStats.viewDistance != viewDistance)
+                        desc += "\n" + Messages.get(Mob.class, "view_distance") + ": " + defaultStats.viewDistance + " -> _" + viewDistance + "_";
                     if (this instanceof Brute) {
                         desc += infoStatsChangedHPAccuracyEvasionArmor(defaultStats);
                     }
@@ -1229,6 +1232,8 @@ public abstract class Mob extends Char {
 
                     if (defaultStats.baseSpeed != baseSpeed)
                         desc += "\n" + Messages.get(StoneOfAugmentation.WndAugment.class, "speed") + ": " + defaultStats.baseSpeed + " -> _" + baseSpeed + "_";
+					if (defaultStats.viewDistance != viewDistance)
+						desc += "\n" + Messages.get(Mob.class, "view_distance") + ": " + defaultStats.viewDistance + " -> _" + viewDistance + "_";
                     desc += infoStatsChangedHPAccuracyEvasionArmor(defaultStats);
                     if (defaultStats.damageRollMin != damageRollMin)
                         desc += "\n" + Messages.get(Mob.class, "dmg_min") + ": " + defaultStats.damageRollMin + " -> _" + damageRollMin + "_";

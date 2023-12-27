@@ -295,6 +295,7 @@ public abstract class Char extends Actor {
 	protected static final String BUFFS	    = "buffs";
 	protected static final String DAMAGE_REDUCTION_MAX= "damage_reduction_max";
 	protected static final String SPEED = "speed";
+	protected static final String VIEW_DISTANCE = "view_distance";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -310,6 +311,7 @@ public abstract class Char extends Actor {
 		if (defaultChar != null) {
 			if (defaultChar.damageReductionMax != damageReductionMax) bundle.put(DAMAGE_REDUCTION_MAX, damageReductionMax);
 			if (defaultChar.baseSpeed != baseSpeed) bundle.put(SPEED, baseSpeed);
+			if (defaultChar.viewDistance != viewDistance) bundle.put(VIEW_DISTANCE, viewDistance);
 		}
 
 	}
@@ -325,6 +327,7 @@ public abstract class Char extends Actor {
 
 		if (bundle.contains(DAMAGE_REDUCTION_MAX)) damageReductionMax = bundle.getInt(DAMAGE_REDUCTION_MAX);
 		if (bundle.contains(SPEED)) baseSpeed = bundle.getFloat(SPEED);
+		if (bundle.contains(VIEW_DISTANCE)) viewDistance = bundle.getInt(VIEW_DISTANCE);
 
 		for (Bundlable b : bundle.getCollection( BUFFS )) {
 			if (b != null) {
