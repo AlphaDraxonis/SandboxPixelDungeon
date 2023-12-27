@@ -2087,7 +2087,7 @@ public abstract class Level implements Bundlable {
 			case Terrain.HIGH_GRASS:
 			case Terrain.FURROWED_GRASS: return "high_grass";
 			case Terrain.MINE_CRYSTAL: return "crystal";
-			case Terrain.MINE_BOULDER: return "boulder_desc";
+			case Terrain.MINE_BOULDER: return "boulder";
 		}
 
 		if (desc) return "";
@@ -2121,15 +2121,18 @@ public abstract class Level implements Bundlable {
 			case REGION_HALLS: level = "hallslevel"; break;
 			default: return null;
 		}
+		if (terrain == Terrain.MINE_CRYSTAL || terrain == Terrain.MINE_BOULDER)
+			level = "mininglevel";
 
-		String key = "levels." + level + "." + getMessageKey(terrain, desc) + "_" + (desc ? "desc" : "name");
-		if (Messages.NO_TEXT_FOUND.equals(Messages.get(key))) {
-			key = "levels.level." + getMessageKey(terrain, desc) + "_" + (desc ? "desc" : "name");
-			if (Messages.NO_TEXT_FOUND.equals(Messages.get(key))) {
+		String msgKey = getMessageKey(terrain, desc);
+		String fullKey = "levels." + level + "." + msgKey + "_" + (desc ? "desc" : "name");
+		if (Messages.NO_TEXT_FOUND.equals(Messages.get(fullKey))) {
+			fullKey = "levels.level." + msgKey + "_" + (desc ? "desc" : "name");
+			if (Messages.NO_TEXT_FOUND.equals(Messages.get(fullKey))) {
 				return desc ? "windows.wndinfocell.nothing" : "levels.level.default_name";
 			}
 		}
-		return key;
+		return fullKey;
 
 	}
 }
