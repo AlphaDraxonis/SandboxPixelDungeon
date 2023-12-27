@@ -130,6 +130,7 @@ public abstract class Mob extends Char {
 	public int damageRollMin = 0, damageRollMax = 0;
 	public int specialDamageRollMin = 0, specialDamageRollMax = 0;
 	public float statsScale = 1f;//only used in subclasses!
+	public int tilesBeforeWakingUp = 100;
 
 
 	public String customName, customDesc, dialog;
@@ -174,6 +175,7 @@ public abstract class Mob extends Char {
 	private static final String DAMAGE_ROLL_MAX = "damage_roll_max";
 	private static final String SPECIAL_DAMAGE_ROLL_MIN = "special_damage_roll_min";
 	private static final String SPECIAL_DAMAGE_ROLL_MAX = "special_damage_roll_max";
+	private static final String TILES_BEFORE_WAKING_UP = "tiles_before_waking_up";
 	private static final String XP = "xp";
 	private static final String STATS_SCALE = "stats_scale";
 	private static final String IS_BOSS_MOB = "is_boss_mob";
@@ -217,6 +219,7 @@ public abstract class Mob extends Char {
             if (defaultMob.damageRollMax != damageRollMax) bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
             if (defaultMob.specialDamageRollMin != specialDamageRollMin) bundle.put(SPECIAL_DAMAGE_ROLL_MIN, specialDamageRollMin);
             if (defaultMob.specialDamageRollMax != specialDamageRollMax) bundle.put(SPECIAL_DAMAGE_ROLL_MAX, specialDamageRollMax);
+            if (defaultMob.tilesBeforeWakingUp != tilesBeforeWakingUp) bundle.put(TILES_BEFORE_WAKING_UP, tilesBeforeWakingUp);
             if (defaultMob.EXP != EXP) bundle.put(XP, EXP);
             if (defaultMob.statsScale != statsScale) bundle.put(STATS_SCALE, statsScale);
         }
@@ -275,6 +278,7 @@ public abstract class Mob extends Char {
 		if (bundle.contains(DAMAGE_ROLL_MAX)) damageRollMax = bundle.getInt(DAMAGE_ROLL_MAX);
 		if (bundle.contains(SPECIAL_DAMAGE_ROLL_MIN)) specialDamageRollMin = bundle.getInt(SPECIAL_DAMAGE_ROLL_MIN);
 		if (bundle.contains(SPECIAL_DAMAGE_ROLL_MAX)) specialDamageRollMax = bundle.getInt(SPECIAL_DAMAGE_ROLL_MAX);
+		if (bundle.contains(TILES_BEFORE_WAKING_UP)) tilesBeforeWakingUp = bundle.getInt(TILES_BEFORE_WAKING_UP);
 		if (bundle.contains(XP)) EXP = bundle.getInt(XP);
 		if (bundle.contains(STATS_SCALE)) statsScale = bundle.getFloat(STATS_SCALE);
 
@@ -1202,6 +1206,7 @@ public abstract class Mob extends Char {
             if (DefaultStatsCache.useStatsScale(this)) {
                 if (defaultStats.baseSpeed != baseSpeed || defaultStats.statsScale != statsScale
 						|| defaultStats.viewDistance != viewDistance
+						|| defaultStats.tilesBeforeWakingUp != tilesBeforeWakingUp
                         || this instanceof Brute && (
                         defaultStats.HT != HT || defaultStats.damageReductionMax != damageReductionMax
                                 || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
@@ -1219,7 +1224,9 @@ public abstract class Mob extends Char {
                         desc += infoStatsChangedHPAccuracyEvasionArmor(defaultStats);
                     }
 
-                    if (defaultStats.EXP != EXP)
+					if (defaultStats.tilesBeforeWakingUp != tilesBeforeWakingUp)
+						desc += "\n" + Messages.get(Mob.class, "tiles_before_waking_up") + ": " + defaultStats.tilesBeforeWakingUp + " -> _" + tilesBeforeWakingUp + "_";
+					if (defaultStats.EXP != EXP)
                         desc += "\n" + Messages.get(Mob.class, "xp") + ": " + defaultStats.EXP + " -> _" + EXP + "_";
                     if (defaultStats.maxLvl != maxLvl)
                         desc += "\n" + Messages.get(Mob.class, "max_lvl") + ": " + defaultStats.maxLvl + " -> _" + maxLvl + "_";
@@ -1242,8 +1249,10 @@ public abstract class Mob extends Char {
                     if (defaultStats.specialDamageRollMin != specialDamageRollMin)
                         desc += "\n" + Messages.get(Mob.class, "special_dmg_min") + ": " + defaultStats.specialDamageRollMin + " -> _" + specialDamageRollMin + "_";
                     if (defaultStats.specialDamageRollMax != specialDamageRollMax)
-                        desc += "\n" + Messages.get(Mob.class, "special_dmg_max") + ": " + defaultStats.specialDamageRollMax + " -> _" + specialDamageRollMax + "_";
+						desc += "\n" + Messages.get(Mob.class, "special_dmg_max") + ": " + defaultStats.specialDamageRollMax + " -> _" + specialDamageRollMax + "_";
 
+					if (defaultStats.tilesBeforeWakingUp != tilesBeforeWakingUp)
+                        desc += "\n" + Messages.get(Mob.class, "tiles_before_waking_up") + ": " + defaultStats.tilesBeforeWakingUp + " -> _" + tilesBeforeWakingUp + "_";
                     if (defaultStats.EXP != EXP)
                         desc += "\n" + Messages.get(Mob.class, "xp") + ": " + defaultStats.EXP + " -> _" + EXP + "_";
 					if (defaultStats.maxLvl != maxLvl)
@@ -1329,6 +1338,7 @@ public abstract class Mob extends Char {
 						enemyStealth = Float.POSITIVE_INFINITY;
 					}
 				}
+				if (distance( enemy) > tilesBeforeWakingUp ) enemyStealth = Float.POSITIVE_INFINITY;
 
 				if (Random.Float( distance( enemy ) + enemyStealth ) < 1) {
 					awaken(enemyInFOV);
@@ -1377,7 +1387,7 @@ public abstract class Mob extends Char {
 
 		@Override
 		public boolean act( boolean enemyInFOV, boolean justAlerted ) {
-			if (enemyInFOV && (justAlerted || Random.Float( distance( enemy ) / 2f + enemy.stealth() ) < 1)) {
+			if (enemyInFOV && (justAlerted || distance( enemy ) <= tilesBeforeWakingUp && Random.Float( distance( enemy ) / 2f + enemy.stealth() ) < 1)) {
 
 				return noticeEnemy();
 

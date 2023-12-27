@@ -62,7 +62,7 @@ public class WndEditStats extends MultiWindowTabComp {
 
     private RedButton restoreDefaults;
 
-    private IntegerSpinner hp, viewDistance, attackSkill, defenseSkill, armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, xp, maxLvl;
+    private IntegerSpinner hp, viewDistance, attackSkill, defenseSkill, armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, tilesBeforeWakingUp, xp, maxLvl;
     private FloatSpinner speed, statsScale;
     private StyledButtonWithIconAndText loot;
 
@@ -148,6 +148,11 @@ public class WndEditStats extends MultiWindowTabComp {
                 }
 
             }
+            tilesBeforeWakingUp = new IntegerSpinner(Messages.get(Mob.class, "tiles_before_waking_up"),
+                    0, Math.max(10, def.tilesBeforeWakingUp * 10), current.tilesBeforeWakingUp, false);
+            tilesBeforeWakingUp.addChangeListener(() -> current.tilesBeforeWakingUp = tilesBeforeWakingUp.getAsInt());
+            content.add(tilesBeforeWakingUp);
+
             xp = new IntegerSpinner(Messages.get(Mob.class, "xp"),
                     0, Math.max(10, def.EXP * 10), current.EXP, false);
             xp.addChangeListener(() -> current.EXP = xp.getAsInt());
@@ -184,7 +189,7 @@ public class WndEditStats extends MultiWindowTabComp {
                 statsScale, speed, viewDistance, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 hp, attackSkill, defenseSkill,
                 armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                xp, maxLvl, loot
+                tilesBeforeWakingUp, xp, maxLvl, loot
         };
     }
 
@@ -308,6 +313,7 @@ public class WndEditStats extends MultiWindowTabComp {
                 specialDmgMin.setValue(def.specialDamageRollMin);
                 specialDmgMin.setValue(def.specialDamageRollMax);
             }
+            if (tilesBeforeWakingUp != null) tilesBeforeWakingUp.setValue(def.tilesBeforeWakingUp);
             if (xp != null) xp.setValue(def.EXP);
             if (maxLvl != null) maxLvl.setValue(def.maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL);
         }
