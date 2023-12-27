@@ -71,4 +71,8 @@ public class Corruption extends AllyBuff {
 		return BuffIndicator.CORRUPT;
 	}
 
+	@Override
+	protected String appendDescForPermanent() {
+		return "";// already included in normal description
+	}
 }

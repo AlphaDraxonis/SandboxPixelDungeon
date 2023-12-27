@@ -132,7 +132,11 @@ public class Buff extends Actor {
     }
 
     public String desc() {
-        return Messages.get(this, "desc") + (permanent ? "\n\n" + Messages.get(this, "permanent") : "");
+        return Messages.get(this, "desc") + appendDescForPermanent();
+    }
+
+    protected String appendDescForPermanent() {
+        return permanent ? "\n\n" + Messages.get(this, "permanent") : "";
     }
 
     //to handle the common case of showing how many turns are remaining in a buff description.

@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 
 public class Terror extends FlavourBuff {
 
@@ -62,7 +63,7 @@ public class Terror extends FlavourBuff {
 	public boolean ignoreNextHit = false;
 
 	public void recover() {
-		if (ignoreNextHit){
+		if (ignoreNextHit || (permanent && Random.Int(7) != 0)){
 			ignoreNextHit = false;
 			return;
 		}

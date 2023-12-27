@@ -1,11 +1,15 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Levitation;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
 import java.util.ArrayList;
@@ -18,7 +22,8 @@ public enum Buffs {
 
 
     CHAMPIONS,
-    NORMAL;
+    POSITIVE,
+    NEGATIVE;
 
     private static final Class<?>[] EMPTY_BUFF_CLASS_ARRAY = new Class[0];
 
@@ -42,7 +47,8 @@ public enum Buffs {
     public static String[] getCatNames() {
         return new String[]{
                 Messages.titleCase(Messages.get(Buffs.class, "champions")),
-                Messages.titleCase(Messages.get(Buffs.class, "normal"))
+                Messages.titleCase(Messages.get(Buffs.class, "positive")),
+                Messages.titleCase(Messages.get(Buffs.class, "negative"))
         };
     }
 
@@ -66,11 +72,18 @@ public enum Buffs {
 
         };
 
-        NORMAL.classes = new Class[]{
+        POSITIVE.classes = new Class[]{
                 Invisibility.class,
                 MindVision.class,
                 Haste.class,
                 Levitation.class
+        };
+
+        NEGATIVE.classes = new Class[]{
+                Vertigo.class,//Confusion
+                Corruption.class,
+                Amok.class,
+                Terror.class
         };
 
     }

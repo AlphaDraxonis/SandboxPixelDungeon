@@ -589,7 +589,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 add(playerAlignment);
             } else playerAlignment = null;
 
-            if (!(mob instanceof Tengu || mob instanceof Pylon || mob instanceof CrystalSpire)) {
+            if (!(mob instanceof Pylon || mob instanceof CrystalSpire)) {
                 addBuffs = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditMobComp.class, "add_buff"), PixelScene.landscape() ? 9 : 8) {
                     @Override
                     protected void onClick() {

@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
 //buff whose only internal logic is to wait and detach after a time.
@@ -37,12 +38,12 @@ public class FlavourBuff extends Buff {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", dispTurns()) + (permanent ? "\n\n" + Messages.get(this, "permanent") : "");
+		return Messages.get(this, "desc", dispTurns()) + appendDescForPermanent();
 	}
 
 	//flavour buffs can all just rely on cooldown()
 	protected String dispTurns() {
-		return dispTurns(Math.max(0f, visualcooldown()));
+		return permanent ? SpinnerIntegerModel.INFINITY : dispTurns(Math.max(0f, visualcooldown()));
 	}
 
 	@Override
