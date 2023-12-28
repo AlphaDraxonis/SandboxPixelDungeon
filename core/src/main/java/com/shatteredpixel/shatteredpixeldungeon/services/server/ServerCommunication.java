@@ -19,15 +19,19 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public final class ServerCommunication {
 
     private static String URL = null;
+    private static String userID;
 
     public static boolean loadURL(boolean force) {
 
@@ -78,7 +82,22 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return URL == null ? "https://script.google.com/macros/s/AKfycbwT0aQYl-MyyYTz2vtzqE8M_R8060PfA8vq5SmN7c6oF5g5UvYeL0SvJt3JZ78NfdftBw/exec" : URL;
+        return URL == null ? "https://script.google.com/macros/s/AKfycbx5PGvixhCu6KvobhNWmhRLsZm_9qhNWjdocpkUwE3LvMF2UZp4rcDPYilCxI1FCOF5Ag/exec" : URL;
+    }
+
+    private static String getUUID() {
+        if (userID == null) {
+            userID = SPDSettings.uuid();
+            if (userID == null) {
+                try {
+                    userID = URLEncoder.encode(UUID.randomUUID().toString(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    userID = String.valueOf(System.currentTimeMillis());
+                }
+                SPDSettings.uuid(userID);
+            }
+        }
+        return userID;
     }
 
     public static abstract class ConnectionCallback {
@@ -148,7 +167,7 @@ public final class ServerCommunication {
         protected abstract void onSuccessful(String dungeonFileID);
     }
 
-    public static abstract class PasswordCheckerCallback extends ConnectionCallback {
+    public static abstract class OwnershipCheckerCallback extends ConnectionCallback {
         public final void successful(Boolean value) {
             Game.runOnRenderThread(() -> {
                 hideWindow();
@@ -159,8 +178,6 @@ public final class ServerCommunication {
         protected abstract void onSuccessful(Boolean value);
     }
 
-
-    private static final String PREVIEW = "preview";
 
     public static void dungeonList(OnPreviewReceive callback) {
 
@@ -231,7 +248,7 @@ public final class ServerCommunication {
                                     Bundle bundle = Bundle.class.getConstructor(String.class).newInstance(b.getString("content"));
                                     ExportDungeonWrapper dungeon = (ExportDungeonWrapper) bundle.get(CustomDungeonSaves.EXPORT);
                                     if (dungeon == null) throw new Exception("Could not download the dungeon!");
-                                    CustomDungeonSaves.Info info = dungeon.doImport(true);
+                                    CustomDungeonSaves.Info info = dungeon.doImport(true);//TODO check if is owner
                                     if (info == null) throw new Exception("Failed to import dungeon!");
                                     callback.accept(info);
                                     return;
@@ -273,6 +290,7 @@ public final class ServerCommunication {
             if (statusCode == 200) {
                 String result = httpResponse.getResultAsString();
                 if (result.startsWith("true")) Game.runOnRenderThread(() -> callback.successful(result.substring(4)));
+                else if (result.startsWith("banned")) Game.runOnRenderThread(() -> callback.failed(new Banned()));
                 else Game.runOnRenderThread(() -> callback.failed(new Exception(result)));
             } else {
                 Game.runOnRenderThread(() -> callback.failed(new SocketException(String.valueOf(statusCode))));
@@ -289,7 +307,13 @@ public final class ServerCommunication {
         }
     }
 
-    public static void uploadDungeon(String dungeonName, String description, String userName, String password, UploadCallback callback) {
+    private static class Banned extends Exception {
+        public Banned() {
+            super(Messages.get(ServerCommunication.class, "banned", hashUserIDOne() + "&\n" + hashUserIDTwo()));
+        }
+    }
+
+    public static void uploadDungeon(String dungeonName, String description, String userName, UploadCallback callback) {
         try {
             Bundle dungeonAsBundle = CustomDungeonSaves.getExportDungeonBundle(dungeonName);
 
@@ -300,7 +324,7 @@ public final class ServerCommunication {
             uploadPreview.uploader = userName;
 
             Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
-            httpRequest.setUrl(getURL() + "?action=upload&fileName=" + URLEncoder.encode(dungeonName, "UTF-8") + "&password=" + password + "&salt=" + dungeonName.hashCode()
+            httpRequest.setUrl(getURL() + "?action=upload&fileName=" + URLEncoder.encode(dungeonName, "UTF-8") + "&userID=" + getUUID() + "&salt=" + dungeonName.hashCode()
                     + uploadPreview.writeArgumentsForURL());
             httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
             httpRequest.setContent("dungeon=" + dungeonAsBundle);
@@ -318,7 +342,7 @@ public final class ServerCommunication {
         }
     }
 
-    public static void updateDungeon(DungeonPreview oldDungeonPreview, String newDungeonName, String newDescription, String password, UploadCallback callback) {
+    public static void updateDungeon(DungeonPreview oldDungeonPreview, String newDungeonName, String newDescription, UploadCallback callback) {
         try {
             Bundle dungeonAsBundle;
             if (newDungeonName == null) {
@@ -334,7 +358,7 @@ public final class ServerCommunication {
 
             Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
             httpRequest.setUrl(getURL() + "?action=update&fileName=" + URLEncoder.encode(newDungeonName, "UTF-8") + "&dungeonID=" + oldDungeonPreview.dungeonFileID
-                    + "&pw=" + URLEncoder.encode(password, "UTF-8") + "&oldSalt=" + oldDungeonPreview.title.hashCode() + "&newSalt=" + newDungeonName.hashCode()
+                    + "&userID=" + getUUID() + "&oldSalt=" + oldDungeonPreview.title.hashCode() + "&newSalt=" + newDungeonName.hashCode()
                     + uploadPreview.writeArgumentsForURL()
             );
             httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -383,22 +407,17 @@ public final class ServerCommunication {
         }
     }
 
-    public static void deleteDungeon(String dungeonID, String password, String dungeonName, UploadCallback callback) {
+    public static void deleteDungeon(String dungeonID, String dungeonName, UploadCallback callback) {
         Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
-        try {
-            httpRequest.setUrl(getURL() + "?action=deleteDungeon&dungeonID=" + dungeonID + "&pw=" + URLEncoder.encode(password, "UTF-8") + "&salt=" + dungeonName.hashCode());
-        } catch (UnsupportedEncodingException e) {
-            Game.scene().addToFront(new WndError(e.getClass().getSimpleName() + ":\n" + e.getMessage()));
-            return;
-        }
+        httpRequest.setUrl(getURL() + "?action=deleteDungeon&dungeonID=" + dungeonID + "&userID=" + getUUID() + "&salt=" + dungeonName.hashCode());
 
         callback.showWindow(httpRequest);
 
         Gdx.net.sendHttpRequest(httpRequest, new UploadDataListener(callback));
     }
 
-    public static void isPasswordCorrect(String dungeonID, String password, String dungeonName, PasswordCheckerCallback callback) {
-//        //send encryoted password:
+    public static void isCreator(String dungeonID, OwnershipCheckerCallback callback) {
+//        //send encrypted password:
 //
 //        //client sends password request to server
 //        //server generates key pair + id, sends public key and id to client
@@ -441,12 +460,7 @@ public final class ServerCommunication {
 
 
         Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
-        try {
-            httpRequest.setUrl(getURL() + "?action=isPasswordCorrect&dungeonID=" + dungeonID + "&pw=" + URLEncoder.encode(password, "UTF-8") + "&salt=" + dungeonName.hashCode());
-        } catch (UnsupportedEncodingException e) {
-            Game.scene().addToFront(new WndError(e.getClass().getSimpleName() + ":\n" + e.getMessage()));
-            return;
-        }
+        httpRequest.setUrl(getURL() + "?action=isCreator&dungeonID=" + dungeonID + "&userID=" + getUUID());
 
         callback.showWindow(httpRequest);
 
@@ -455,7 +469,8 @@ public final class ServerCommunication {
             public void handleHttpResponse(com.badlogic.gdx.Net.HttpResponse httpResponse) {
                 String result = httpResponse.getResultAsString();
                 if (httpResponse.getStatus().getStatusCode() == 200) {
-                    Game.runOnRenderThread(() -> callback.successful(Boolean.parseBoolean(result)));
+                    if (result.startsWith("banned")) Game.runOnRenderThread(() -> callback.failed(new Banned()));
+                    else Game.runOnRenderThread(() -> callback.successful(Boolean.parseBoolean(result)));
                 } else {
                     Game.runOnRenderThread(() -> callback.failed(new SocketException(String.valueOf(httpResponse.getStatus().getStatusCode()))));
                 }
@@ -505,25 +520,47 @@ public final class ServerCommunication {
 //        }
 //    }
 //
-//    private static String convertToHexString(byte[] data) {
-//        StringBuilder hexString = new StringBuilder();
-//        for (byte b : data) {
-//            String hex = Integer.toHexString(0xFF & b);
-//            if (hex.length() == 1) hexString.append('0');
-//            hexString.append(hex);
-//        }
-//        return hexString.toString();
-//    }
-//
-//    private static byte[] convertFromHexString(String hexString) {
-//        int len = hexString.length();
-//        byte[] byteArray = new byte[len / 2];
-//        for (int i = 0; i < len; i += 2) {
-//            byteArray[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
-//                    + Character.digit(hexString.charAt(i + 1), 16));
-//        }
-//        return byteArray;
-//    }
+    private static String convertToHexString(byte[] data) {
+        StringBuilder hexString = new StringBuilder();
+        for (int i = 0; i < data.length; i++) {
+            String hex = Integer.toHexString(0xFF & data[i]);
+            if (hex.length() == 1) hexString.append('0');
+            if (i % 12 == 11) hexString.append(' ');
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+
+    private static byte[] convertFromHexString(String hexString) {
+        int len = hexString.length();
+        byte[] byteArray = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            byteArray[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
+                    + Character.digit(hexString.charAt(i + 1), 16));
+        }
+        return byteArray;
+    }
+
+    private static String hashUserIDOne() {
+        return hashUserID(1);
+    }
+
+    private static String hashUserIDTwo() {
+        return hashUserID(1638);
+    }
+
+    private static String hashUserID(int salt) {
+        try {
+            String combined = userID + salt;
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(combined.getBytes("UTF-8"));
+//            Base64.getEncoder().encodeToString(hash);
+            return convertToHexString(hash);
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public enum UploadType {
         UPLOAD,

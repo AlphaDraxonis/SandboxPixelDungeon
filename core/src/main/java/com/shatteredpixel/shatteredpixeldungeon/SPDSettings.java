@@ -42,6 +42,7 @@ public class SPDSettings extends GameSettings {
 	public static final String KEY_TUTORIAL_OPENED_REGULAR_LEVEL = "key_tutorial_opened_regular_level";
 	public static final String KEY_LAST_UPLOADED_TO_SERVER_TIMER = "last_uploaded_to_server_timer";
 	public static final String KEY_LAST_UPDATED_TO_SERVER_TIMER = "last_updated_to_server_timer";
+	public static final String KEY_UUID = "uuid";
 
 	public static void version( int value)  {
 		put( KEY_VERSION, value );
@@ -81,6 +82,14 @@ public class SPDSettings extends GameSettings {
 
 	public static void increaseUpdateTimer() {
 		put( KEY_LAST_UPLOADED_TO_SERVER_TIMER, Math.max(getLong( KEY_LAST_UPDATED_TO_SERVER_TIMER, 0 ), System.currentTimeMillis()) + 600*1000 );//10 min
+	}
+
+	public static String uuid() {
+		return getString( KEY_UUID, null );
+	}
+
+	public static void uuid(String uuid) {
+		put( KEY_UUID, uuid );
 	}
 
 	//Display

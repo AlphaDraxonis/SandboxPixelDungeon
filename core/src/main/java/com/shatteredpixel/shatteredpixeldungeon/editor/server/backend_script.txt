@@ -1,7 +1,8 @@
 const PREVIEW_FOLDER = "1F5GxoX00OEITFywPgh4wOxv1nJEhCsJ8";
 const FULL_DUNGEON_FOLDER = "1p8m3rpwXOkIbcD-nHRFyHft1Sxq3JxeZ";
 
-const PASSWORD_FOLDER = "1d0SinmQznVX5ii8XmxGXrdyy9T8gNxrQ";
+const USER_ID_FOLDER = "1d0SinmQznVX5ii8XmxGXrdyy9T8gNxrQ";
+const BANNED_USER_FOLDER = "1C5RCpO7W0-15ajNnskZSnOpz3ksOjyrN";
 const UPLOAD_FOLDER = "158uV22qE6eBmS2jcEtV50nywDKAKNyGm";
 const UPDATE_FOLDER = "1b2JP9UoMKCHAh4XuuzwuBRTyqZM6B1Q7";
 
@@ -10,6 +11,16 @@ const BUG_REPORT_FOLDER = "1oylaCmD9hQ2-6QsZ3g9SuieM5WZeY66K";
 
 function doPost(e) {
   if (e.parameter.action === "upload") {
+
+    const user = e.parameter.userID;
+    const userIDFileContent = {
+      id1: hashUserIDOne(user),
+      id2: hashUserIDTwo(user),
+    };
+
+    if (isUserBanned(userIDFileContent.id1, userIDFileContent.id2)) return ContentService.createTextOutput("banned")
+      .setMimeType(ContentService.MimeType.TEXT);
+
     const fileName = e.parameter.fileName;
     const dungeon = e.parameter.dungeon;
     const dungeonID = uploadFile(dungeon, fileName, ".dun", FULL_DUNGEON_FOLDER, true);
@@ -23,13 +34,7 @@ function doPost(e) {
     };
     uploadFile(JSON.stringify(preview), dungeonID, "", PREVIEW_FOLDER, true);
 
-    const password = e.parameter.password;
-    const salt = e.parameter.salt;
-    const passwordFileContent = {
-      pw1: hashPasswordOne(password, salt),
-      pw2: hashPasswordTwo(password, salt),
-    };
-    uploadFile(JSON.stringify(passwordFileContent), dungeonID, "", PASSWORD_FOLDER, false);
+    uploadFile(JSON.stringify(userIDFileContent), dungeonID, "", USER_ID_FOLDER, false);
 
     sendNotificationEmail(fileName, "Uploaded");
 
@@ -38,8 +43,15 @@ function doPost(e) {
   }
   else if (e.parameter.action === "update") {
 
-    const password = e.parameter.pw;
-    const oldSalt = e.parameter.oldSalt;
+    const user = e.parameter.userID;
+    const userIDFileContent = {
+      id1: hashUserIDOne(user),
+      id2: hashUserIDTwo(user),
+    };
+
+    if (isUserBanned(userIDFileContent.id1, userIDFileContent.id2)) return ContentService.createTextOutput("banned")
+      .setMimeType(ContentService.MimeType.TEXT);
+
 
     const fileName = e.parameter.fileName;
 
@@ -48,7 +60,7 @@ function doPost(e) {
 
     const dungeonChanged = dungeon !== "null";
 
-    if (!deleteDungeon(e.parameter.dungeonID, hashPasswordOne(password, oldSalt), hashPasswordTwo(password, oldSalt), dungeonChanged))
+    if (!deleteDungeon(e.parameter.dungeonID, userIDFileContent.id1, userIDFileContent.id2, dungeonChanged))
       return ContentService.createTextOutput(false.toString())
         .setMimeType(ContentService.MimeType.TEXT);
 
@@ -65,12 +77,7 @@ function doPost(e) {
     };
     uploadFile(JSON.stringify(preview), dungeonID, "", PREVIEW_FOLDER, true);
 
-    const newSalt = e.parameter.newSalt;
-    const passwordFileContent = {
-      pw1: hashPasswordOne(password, newSalt),
-      pw2: hashPasswordTwo(password, newSalt),
-    };
-    uploadFile(JSON.stringify(passwordFileContent), dungeonID, "", PASSWORD_FOLDER, false);
+    uploadFile(JSON.stringify(userIDFileContent), dungeonID, "", USER_ID_FOLDER, false);
 
     sendNotificationEmail(fileName, "Updated");
 
@@ -80,11 +87,16 @@ function doPost(e) {
   }
   else if (e.parameter.action === "bug_report") {
 
+    const user = e.parameter.userID;
+
+    if (isUserBanned(hashUserIDOne(user), hashUserIDTwo(user))) return ContentService.createTextOutput("banned")
+      .setMimeType(ContentService.MimeType.TEXT);
+
     const fileName = e.parameter.fileName;
 
     let dungeon = e.parameter.dungeon;
-    let dungeonID = "none"
 
+    let dungeonID = "none"
     if (dungeon !== "null") {
       dungeonID = uploadFile(dungeon, fileName, ".dun", BUG_REPORT_FOLDER, true);
     }
@@ -120,17 +132,24 @@ function doGet(e) {
     return ContentService.createTextOutput(result)
       .setMimeType(ContentService.MimeType.JSON);
   }
-  else if (e.parameter.action === "isPasswordCorrect") {
-    const password = e.parameter.pw;
-    const salt = e.parameter.salt;
-    const isCorrect = isPasswordCorrect(e.parameter.dungeonID, hashPasswordOne(password, salt), hashPasswordTwo(password, salt));
+  else if (e.parameter.action === "isCreator") {
+    const userID = e.parameter.userID;
+
+    const isCorrect = isCreator(e.parameter.dungeonID, hashUserIDOne(userID), hashUserIDTwo(userID));
     return ContentService.createTextOutput(isCorrect.toString())
       .setMimeType(ContentService.MimeType.TEXT);
   }
   else if (e.parameter.action === "deleteDungeon") {
-    const password = e.parameter.pw;
-    const salt = e.parameter.salt;
-    const result = deleteDungeon(e.parameter.dungeonID, hashPasswordOne(password, salt), hashPasswordTwo(password, salt), true);
+
+    const user = e.parameter.userID;
+    const userIDFileContent = {
+      id1: hashUserIDOne(user),
+      id2: hashUserIDTwo(user),
+    };
+    if (isUserBanned(userIDFileContent.id1, userIDFileContent.id2)) return ContentService.createTextOutput("banned")
+      .setMimeType(ContentService.MimeType.TEXT);
+
+    const result = deleteDungeon(e.parameter.dungeonID, userIDFileContent.id1, userIDFileContent.id2, true);
     return ContentService.createTextOutput(result.toString())
       .setMimeType(ContentService.MimeType.TEXT);
   }
@@ -165,9 +184,9 @@ function uploadFile(fileContent, fileName, fileExtension, folderID, compress) {
   return uploadedFile.getId();
 }
 
-function deleteDungeon(dungeonID, pw1, pw2, deleteDungeonFile) {
+function deleteDungeon(dungeonID, id1, id2, deleteDungeonFile) {
 
-  if (!isPasswordCorrect(dungeonID, pw1, pw2)) return 'Password is incorrect!';
+  if (!isCreator(dungeonID, id1, id2)) return 'UserID is incorrect!';
 
   if (deleteDungeonFile) DriveApp.getFileById(dungeonID).setTrashed(true);
 
@@ -177,9 +196,9 @@ function deleteDungeon(dungeonID, pw1, pw2, deleteDungeonFile) {
     file.setTrashed(true);
   }
 
-  const passwordFile = DriveApp.getFolderById(PASSWORD_FOLDER).getFilesByName(dungeonID);
-  while (passwordFile.hasNext()) {
-    const file = passwordFile.next();
+  const userIDFile = DriveApp.getFolderById(USER_ID_FOLDER).getFilesByName(dungeonID);
+  while (userIDFile.hasNext()) {
+    const file = userIDFile.next();
     file.setTrashed(true);
   }
 
@@ -245,39 +264,48 @@ function compressGZip(decompressedBlob) {
 }
 
 
-function isPasswordCorrect(dungeonID, pw1, pw2) {
+function isCreator(dungeonID, id1, id2) {
 
-  const folder = DriveApp.getFolderById(PASSWORD_FOLDER);
+  const folder = DriveApp.getFolderById(USER_ID_FOLDER);
 
+  if (isUserBanned(id1, id2)) return "banned";
   if (!fileExistsInFolder(folder, dungeonID)) return false;
 
   const file = folder.getFilesByName(dungeonID);
 
   const content = file.next().getBlob().getDataAsString();
-  const passwordFileContent = JSON.parse(content);
+  const userIDFileContent = JSON.parse(content);
 
-  return passwordFileContent.pw1 == pw1 && passwordFileContent.pw2 == pw2;
+  return userIDFileContent.id1 == id1 && userIDFileContent.id2 == id2;
 
 }
 
+function isUserBanned(id1, id2) {
 
-function hashPasswordOne(password, salt) {
-  return hashPassword(password, salt);
+  const folder = DriveApp.getFolderById(BANNED_USER_FOLDER);
+  const fileName = id1 + "&" + id2;
+
+  return fileExistsInFolder(folder, fileName);
 }
 
-function hashPasswordTwo(password, salt) {
-  return hashPassword(password, salt + 1638);
+
+function hashUserIDOne(userID) {
+  return hashUserID(userID, 1);
 }
 
-function hashPassword(password, salt) {
+function hashUserIDTwo(userID) {
+  return hashUserID(userID, 1638);
+}
+
+function hashUserID(userID, salt) {
   try {
-    const combined = password + salt;
+    const combined = userID + salt;
     const hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, combined, Utilities.Charset.UTF_8);
-    const hashedPassword = Utilities.base64Encode(hash);
+    const hashedUserID = Utilities.base64Encode(hash);
 
-    return hashedPassword;
+    return hashedUserID;
   } catch (error) {
-    console.error('Error hashing password:', error);
+    console.error('Error hashing userID:', error);
     return null;
   }
 }

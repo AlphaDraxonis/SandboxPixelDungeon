@@ -22,7 +22,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndSupportPrompt;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.FileUtils;
@@ -39,8 +38,6 @@ public class WndPreview extends Component {
 
     protected RedButton download;
     protected IconButton delete, edit;
-
-    private String enteredPassword;
 
     public WndPreview(DungeonPreview preview, ServerDungeonList dungeonList) {
         this.preview = preview;
@@ -116,9 +113,9 @@ public class WndPreview extends Component {
         edit = new IconButton(Icons.EDIT.get()) {
             @Override
             protected void onClick() {
-                showEnterPasswordDialog(() -> {
+                checkOwnership(() -> {
                     serverDungeonList.closeCurrentSubMenu();
-                    UploadDungeon uploadDungeon = new UploadDungeon(null, ServerCommunication.UploadType.CHANGE, enteredPassword, preview.description, preview, () -> updatePreview(), () -> {
+                    UploadDungeon uploadDungeon = new UploadDungeon(null, ServerCommunication.UploadType.CHANGE, preview.description, preview, () -> updatePreview(), () -> {
                         updatePreview();
                         return true;
                     });
@@ -136,7 +133,7 @@ public class WndPreview extends Component {
         delete = new IconButton(Icons.TRASH.get()) {
             @Override
             protected void onClick() {
-                showEnterPasswordDialog(() -> Game.scene().addToFront(new WndOptions(Icons.get(Icons.WARNING),
+                checkOwnership(() -> Game.scene().addToFront(new WndOptions(Icons.get(Icons.WARNING),
                         Messages.get(WndPreview.class, "delete_title"),
                         Messages.get(WndPreview.class, "delete_body"),
                         Messages.get(WndGameInProgress.class, "erase_warn_yes"),
@@ -144,12 +141,12 @@ public class WndPreview extends Component {
                     @Override
                     protected void onSelect(int index) {
                         if (index == 0) {
-                            ServerCommunication.deleteDungeon(preview.dungeonFileID, enteredPassword, preview.title, new ServerCommunication.UploadCallback() {
+                            ServerCommunication.deleteDungeon(preview.dungeonFileID, preview.title, new ServerCommunication.UploadCallback() {
                                 @Override
                                 protected void onSuccessful(String dungeonFileID) {
                                     preview.description =
-                                    preview.uploader =
-                                    preview.title = Messages.get(ServerCommunication.class, "deleted");
+                                            preview.uploader =
+                                                    preview.title = Messages.get(ServerCommunication.class, "deleted");
                                     preview.version = "n/a";
                                     preview.dungeonFileID = "";
                                     preview.uploadTime = 0;
@@ -201,41 +198,15 @@ public class WndPreview extends Component {
         return null;
     }
 
-    private void showEnterPasswordDialog(Runnable onCorrect) {
-        Game.scene().addToFront(new WndTextInput(
-                Messages.get(WndPreview.class, "enter_password_title"),
-                Messages.get(WndPreview.class, "enter_password_body"),
-                null, 50, false,
-                Messages.get(WndPreview.class, "enter_password_continue"),
-                Messages.get(WndPreview.class, "enter_password_cancel")
-        ) {
-            {
-                setTextFieldFilter((textField, ch) -> ch >= 32 && ch <= 123);
-            }
-
+    private void checkOwnership(Runnable onCorrect) {
+        ServerCommunication.isCreator(preview.dungeonFileID, new ServerCommunication.OwnershipCheckerCallback() {
             @Override
-            public void onSelect(boolean positive, String text) {
-                if (positive) {
-                    enteredPassword = text;
-                    ServerCommunication.isPasswordCorrect(preview.dungeonFileID, enteredPassword, preview.title, new ServerCommunication.PasswordCheckerCallback() {
-                        @Override
-                        protected void onSuccessful(Boolean value) {
-                            System.currentTimeMillis();
-                            if (value == null || !value) {
-                                if (value != null) {
-                                    Game.scene().addToFront(new WndError(Messages.get(WndPreview.class, "incorrect_password")) {
-                                        @Override
-                                        public void hide() {
-                                            super.hide();
-                                            showEnterPasswordDialog(onCorrect);
-                                        }
-                                    });
-                                } else showEnterPasswordDialog(onCorrect);
-                            } else {
-                                onCorrect.run();
-                            }
-                        }
-                    });
+            protected void onSuccessful(Boolean value) {
+                if(value != null && value) onCorrect.run();
+                else {
+                    if (value != null) {
+                        Game.scene().addToFront(new WndError(Messages.get(WndPreview.class, "no_ownership")));
+                    }
                 }
             }
         });

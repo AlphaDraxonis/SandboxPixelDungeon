@@ -42,20 +42,17 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
     protected StringInputComp description;
     protected StringInputComp userName;
 
-    protected StringInputComp password;
 
     protected RenderedTextBlock info, legalInfo;
     private final MultiWindowTabComp.BackPressImplemented onBackPressed;
     private final DungeonPreview preview;
 
-    private String enteredPassword;
 
-    public UploadDungeon(SimpleWindow window, ServerCommunication.UploadType type, String enteredPassword, String desc, DungeonPreview preview, Runnable onClose, MultiWindowTabComp.BackPressImplemented onBackPressed) {
+    public UploadDungeon(SimpleWindow window, ServerCommunication.UploadType type, String desc, DungeonPreview preview, Runnable onClose, MultiWindowTabComp.BackPressImplemented onBackPressed) {
 
         this.window = window;
         this.type = type;
         this.onBackPressed = onBackPressed;
-        this.enteredPassword = enteredPassword;
         this.preview = preview;
 
         outsideSp = new Component() {
@@ -127,19 +124,6 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
 
             userName = new StringInputComp(Messages.get(UploadDungeon.class, "username_label"), null, 50, false, null);
             add(userName);
-
-            password = new StringInputComp(Messages.get(UploadDungeon.class, "password_label"), null, 50, false,
-                    Messages.get(UploadDungeon.class, "password_label"), Messages.get(UploadDungeon.class, "password_info")) {
-                {
-                    textFilter = (textField, ch) -> ch >= 32 && ch <= 123;
-                }
-
-                @Override
-                protected void onChange() {
-                    UploadDungeon.this.enteredPassword = password.getText();
-                }
-            };
-            add(password);
         }
 
         if (type == ServerCommunication.UploadType.UPLOAD) {
@@ -156,7 +140,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
             height -= 4;
         }
         if (legalInfo != null) legalInfo.maxWidth((int) width);
-        height = EditorUtilies.layoutCompsLinear(4, this, info, selectDungeon, description, userName, password, legalInfo) + 1;
+        height = EditorUtilies.layoutCompsLinear(4, this, info, selectDungeon, description, userName, legalInfo) + 1;
     }
 
     public Component createTitle() {
@@ -191,12 +175,8 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                 Game.scene().addToFront(new WndMessage(Messages.get(UploadDungeon.class, "no_username")));
                 return;
             }
-            if (password.defaultValue.equals(enteredPassword)) {
-                Game.scene().addToFront(new WndMessage(Messages.get(UploadDungeon.class, "no_password")));
-                return;
-            }
 
-            ServerCommunication.uploadDungeon(dungeon, description.getText(), uploader, enteredPassword, new ServerCommunication.UploadCallback() {
+            ServerCommunication.uploadDungeon(dungeon, description.getText(), uploader, new ServerCommunication.UploadCallback() {
                 @Override
                 protected void onSuccessful(String dungeonFileID) {
                     SPDSettings.increaseUploadTimer();
@@ -212,7 +192,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
             }
 
             String dungeon = (String) selectDungeon.getObject();
-            ServerCommunication.updateDungeon(preview, dungeon, description.getText(), enteredPassword, new ServerCommunication.UploadCallback() {
+            ServerCommunication.updateDungeon(preview, dungeon, description.getText(), new ServerCommunication.UploadCallback() {
                 @Override
                 protected void onSuccessful(String dungeonFileID) {
                     SPDSettings.increaseUpdateTimer();
@@ -261,7 +241,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
             public void onBackPressed() {
             }
         };
-        UploadDungeon uploadDungeon = new UploadDungeon(w, type, null, null, null, w::hide, null);
+        UploadDungeon uploadDungeon = new UploadDungeon(w, type, null, null, w::hide, null);
         uploadDungeon.selectDungeon.selectObject(preselectDungeon);
         w.initComponents(uploadDungeon.createTitle(), uploadDungeon, uploadDungeon.getOutsideSp());
         Game.scene().addToFront(w);
