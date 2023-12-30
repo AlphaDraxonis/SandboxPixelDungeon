@@ -23,6 +23,7 @@ function doPost(e) {
 
     const fileName = e.parameter.fileName;
     const dungeon = e.parameter.dungeon;
+
     const dungeonID = uploadFile(dungeon, fileName, ".dun", FULL_DUNGEON_FOLDER, true);
 
     const preview = {
@@ -128,8 +129,17 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
   else if (e.parameter.action === "downloadDungeon") {
-    const result = getFileContent(e.parameter.fileID);
-    return ContentService.createTextOutput(result)
+
+    const user = e.parameter.userID;
+    const dungeonID = e.parameter.fileID;
+
+    const result = getFileContentAsJSON(dungeonID);
+
+    if (isCreator(dungeonID, hashUserIDOne(user), hashUserIDTwo(user))) {
+      result.export.dungeon.downloaded = false;
+    }
+
+    return ContentService.createTextOutput(convertFileContentObjToSenableString(result))
       .setMimeType(ContentService.MimeType.JSON);
   }
   else if (e.parameter.action === "isCreator") {
@@ -235,13 +245,30 @@ function getFileContent(fileID) {
   try {
     const file = DriveApp.getFileById(fileID);
     const fileList = [];
+
+    const obj = decompressGZip(file.getBlob());
+
     fileList.push({
-      content: decompressGZip(file.getBlob()),
+      content: obj,
     });
     return JSON.stringify(fileList);
   } catch (error) {
     return "File not found! Maybe it was deleted. Try closing and reopening the window with all the downloadable dungeons and try again."
   }
+}
+
+function getFileContentAsJSON(fileID) {
+  const file = DriveApp.getFileById(fileID);
+  const obj = JSON.parse(decompressGZip(file.getBlob()));
+  return obj;
+}
+
+function convertFileContentObjToSenableString(obj) {
+  const fileList = [];
+  fileList.push({
+    content: obj,
+  });
+  return JSON.stringify(fileList);
 }
 
 
@@ -302,7 +329,6 @@ function hashUserID(userID, salt) {
     const combined = userID + salt;
     const hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, combined, Utilities.Charset.UTF_8);
     const hashedUserID = Utilities.base64Encode(hash);
-
     return hashedUserID;
   } catch (error) {
     console.error('Error hashing userID:', error);

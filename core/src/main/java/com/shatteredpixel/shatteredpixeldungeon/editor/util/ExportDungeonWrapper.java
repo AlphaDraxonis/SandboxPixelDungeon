@@ -87,20 +87,19 @@ public class ExportDungeonWrapper implements Bundlable {
 
     public static CustomDungeonSaves.Info doImport(FileHandle file) {
         try {
-            return ((ExportDungeonWrapper) FileUtils.bundleFromStream(file.read()).get(CustomDungeonSaves.EXPORT)).doImport(false);
+            return ((ExportDungeonWrapper) FileUtils.bundleFromStream(file.read()).get(CustomDungeonSaves.EXPORT)).doImport();
         } catch (IOException ex) {
             SandboxPixelDungeon.reportException(ex);
             return null;
         }
     }
 
-    public CustomDungeonSaves.Info doImport(boolean downloadedFromServer) {
+    public CustomDungeonSaves.Info doImport() {
         try {
             FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
 
             if (FileUtils.getFileHandle(CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_')).exists()) return null;
 
-            if (downloadedFromServer) dungeon.downloaded = true;
             CustomDungeonSaves.saveDungeon(dungeon);
 
             for (Level l : customLevels) {

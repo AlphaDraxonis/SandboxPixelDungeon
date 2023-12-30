@@ -82,7 +82,7 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return URL == null ? "https://script.google.com/macros/s/AKfycbx5PGvixhCu6KvobhNWmhRLsZm_9qhNWjdocpkUwE3LvMF2UZp4rcDPYilCxI1FCOF5Ag/exec" : URL;
+        return URL == null ? "https://script.google.com/macros/s/AKfycbyFbZHeCZkcpD59EibpFiGsb8CWn6UpFO0L650e7Fes869-rirouYbRM0GRW8iFbEYX9g/exec" : URL;
     }
 
     private static String getUUID() {
@@ -231,7 +231,7 @@ public final class ServerCommunication {
     public static void downloadDungeon(String fileId, OnDungeonReceive callback) {
 
         Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
-        httpRequest.setUrl(getURL() + "?action=downloadDungeon&fileID=" + fileId);
+        httpRequest.setUrl(getURL() + "?action=downloadDungeon&fileID=" + fileId + "&userID=" + getUUID());
 
         callback.showWindow(httpRequest);
 
@@ -248,7 +248,7 @@ public final class ServerCommunication {
                                     Bundle bundle = Bundle.class.getConstructor(String.class).newInstance(b.getString("content"));
                                     ExportDungeonWrapper dungeon = (ExportDungeonWrapper) bundle.get(CustomDungeonSaves.EXPORT);
                                     if (dungeon == null) throw new Exception("Could not download the dungeon!");
-                                    CustomDungeonSaves.Info info = dungeon.doImport(true);//TODO check if is owner
+                                    CustomDungeonSaves.Info info = dungeon.doImport();
                                     if (info == null) throw new Exception("Failed to import dungeon!");
                                     callback.accept(info);
                                     return;
@@ -324,7 +324,7 @@ public final class ServerCommunication {
             uploadPreview.uploader = userName;
 
             Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
-            httpRequest.setUrl(getURL() + "?action=upload&fileName=" + URLEncoder.encode(dungeonName, "UTF-8") + "&userID=" + getUUID() + "&salt=" + dungeonName.hashCode()
+            httpRequest.setUrl(getURL() + "?action=upload&fileName=" + URLEncoder.encode(dungeonName, "UTF-8") + "&userID=" + getUUID()
                     + uploadPreview.writeArgumentsForURL());
             httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
             httpRequest.setContent("dungeon=" + dungeonAsBundle);

@@ -79,7 +79,9 @@ public class CustomDungeonSaves {
 
     public static Bundle getExportDungeonBundle(String dungeonName) throws IOException, RenameRequiredException {
         Bundle export = new Bundle();
-        export.put(EXPORT, new ExportDungeonWrapper(CustomDungeonSaves.loadDungeon(dungeonName)));
+        CustomDungeon dun = CustomDungeonSaves.loadDungeon(dungeonName);
+        dun.downloaded = true;
+        export.put(EXPORT, new ExportDungeonWrapper(dun));
         return export;
     }
 
