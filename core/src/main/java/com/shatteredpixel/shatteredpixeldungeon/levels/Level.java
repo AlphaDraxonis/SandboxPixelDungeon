@@ -227,7 +227,6 @@ public abstract class Level implements Bundlable {
 	public static final int NO_BOSS_MOB = -2;//need to be -2 bc -1 is pos of mobs in inv
 	public int bossmobAt = -2;//store as pos so we don't have problems with undo, only for CustomLevel
 	public Mob bossMob;//after initForPlay
-	public boolean bossFound;
 
 	//For loading
 	public static Mob bossMobStatic;
@@ -252,7 +251,6 @@ public abstract class Level implements Bundlable {
 	private static final String FEELING		= "feeling";
 	private static final String VIEW_DISTANCE = "view_distance";
 	private static final String BOSS_MOB_AT = "boss_mob_at";
-	private static final String BOSS_FOUND  = "boss_found";
 	private static final String ZONES       = "zones";
 	private static final String MUSIC_VARIANT = "music_variant";
 	private static final String MUSIC_REQUESTS = "music_requests";
@@ -568,7 +566,6 @@ public abstract class Level implements Bundlable {
 
 		if (bundle.contains(BOSS_MOB_AT)) {
 			bossmobAt = bundle.getInt(BOSS_MOB_AT);
-			bossFound = bundle.getBoolean(BOSS_FOUND);
 		}
 
 		transitions = new HashMap<>();
@@ -682,7 +679,6 @@ public abstract class Level implements Bundlable {
 		bundle.put( ZONES, zoneMap.values() );
 		bundle.put( FEELING, feeling );
 		bundle.put( BOSS_MOB_AT, bossmobAt );
-		bundle.put( BOSS_FOUND, bossFound );
 		bundle.put( "mobs_to_spawn", mobsToSpawn.toArray(new Class[0]));
 		bundle.put( "respawner", respawner );
 		bundle.put( VIEW_DISTANCE, viewDistance );

@@ -172,7 +172,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
     }
 
     @Override
-    protected void updateList() {
+    public void updateList() {
         layout();
     }
 

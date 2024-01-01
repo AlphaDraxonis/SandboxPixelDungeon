@@ -1,11 +1,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
-import com.watabou.noosa.Game;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndSetValue;
 
 public class SpinnerFloatModel extends SpinnerIntegerModel {
 
@@ -18,6 +15,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
     public SpinnerFloatModel(float minimum, float maximum, float value, boolean includeInfinity) {
         this(minimum, maximum, value, 1, 0.1f, includeInfinity);
     }
+
     public SpinnerFloatModel(float minimum, float maximum, float value, int precision, float stepSize, boolean includeInfinity) {
         super(convertToInt(minimum, precision), convertToInt(maximum, precision), convertToInt(value, precision),
                 convertToInt(stepSize, precision), includeInfinity, includeInfinity ? INFINITY : null);
@@ -27,12 +25,12 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
     }
 
     public static int convertToInt(float val, int precision) {
-        return (int) (val * (int)Math.pow(10, precision) + 0.01f);
+        return (int) (val * (int) Math.pow(10, precision) + 0.01f);
     }
 
     public static float convertToFloat(Integer val, int precision) {
         if (val == null) return -1;
-        return val / (float)Math.pow(10, precision);
+        return val / (float) Math.pow(10, precision);
     }
 
     public float getAsFloat() {
@@ -49,10 +47,6 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
     }
 
 
-    private static char getNumberDecimalSeparator(){
-        return String.format(Languages.getCurrentLocale(), "%.1f", 1.1f).charAt(1);
-    }
-
 //    @Override
 //    public void setAbsoluteMinimum(float absoluteMinimum) {
 //        super.setAbsoluteMinimum((float) convertToInt(absoluteMinimum, precision));
@@ -65,8 +59,7 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
 
     @Override
     public void displayInputAnyNumberDialog(float min, float max) {
-        final char NUMBER_DECIMAL_SEPARATOR = getNumberDecimalSeparator();
-        WndTextInput w = new WndTextInput(
+        WndSetValue.enterFloat(min, max, convertToFloat((int) getValue(), precision), precision,
                 Messages.get(this, "input_dialog_title"),
                 Messages.get(this, "input_dialog_body",
                         String.format(Languages.getCurrentLocale(), precisionFormat, min),
@@ -74,71 +67,6 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
                         String.format(Languages.getCurrentLocale(), precisionFormat, convertToFloat(getMinimum(), precision)),
                         String.format(Languages.getCurrentLocale(), precisionFormat, convertToFloat(getMaximum(), precision)),
                         String.format(Languages.getCurrentLocale(), precisionFormat, (float) Math.pow(10, -precision))),
-                String.format(Languages.getCurrentLocale(), precisionFormat, getAsFloat()), 10 + precision, false,
-                Messages.get(this, "input_dialog_yes"),
-                Messages.get(this, "input_dialog_no")
-        ) {
-            @Override
-            public void onSelect(boolean positive, String text) {
-                if (positive) {
-                    try {
-                        setValue(convertToInt(Math.max(min, Float.parseFloat(text.replace(NUMBER_DECIMAL_SEPARATOR,'.'))), precision));
-                    } catch (NumberFormatException ex) {
-                        //just ignore value
-                    }
-                }
-            }
-        };
-        w.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {
-            @Override
-            public boolean acceptChar(TextField textField, char c) {
-                if (super.acceptChar(textField, c)) return true;
-                if (!isVorzeichen(c, min, max) && c != NUMBER_DECIMAL_SEPARATOR) return false;
-                String txt = textField.getText();
-                if (c == NUMBER_DECIMAL_SEPARATOR) {
-                    return txt.length() == 0 || !txt.contains(Character.toString(NUMBER_DECIMAL_SEPARATOR));
-                }
-                return txt.length() == 0 || textField.getCursorPosition() == 0 && !isVorzeichen(txt.charAt(0), min, max);
-            }
-        });
-
-        w.getTextBox().convertStringToValidString = s -> {
-            try {
-                float val = Float.parseFloat(s.replace(NUMBER_DECIMAL_SEPARATOR,'.'));
-//                if (val < min) return String.format(Languages.getCurrentLocale(), precisionFormat, min);
-                if (val > max) return String.format(Languages.getCurrentLocale(), precisionFormat, max);
-                return s;
-            } catch (NumberFormatException ex) {
-                char[] cs = s.toCharArray();
-                if (cs.length == 0) return "";
-                if (cs.length == 1 && isVorzeichen(cs[0], min, max)) return s;
-                StringBuilder b = new StringBuilder();
-                boolean decimalPointUsed = false;
-                for (int i = 0; i < cs.length; i++) {
-                    if (Character.isDigit(cs[i])
-                            || i == 0 && isVorzeichen(cs[i], min, max)) b.append(cs[i]);
-                    else if (!decimalPointUsed) {
-                        if (cs[i] == NUMBER_DECIMAL_SEPARATOR) {
-                            b.append(cs[i]);
-                            decimalPointUsed = true;
-                        }
-                    }
-                }
-                while (true) {
-                    try {
-                        float val = Float.parseFloat(s.replace(NUMBER_DECIMAL_SEPARATOR,'.'));
-                        if (val < min) return String.format(Languages.getCurrentLocale(), precisionFormat, min);
-                        if (val > max) return String.format(Languages.getCurrentLocale(), precisionFormat, max);
-                        return s;
-                    } catch (NumberFormatException ex2) {
-                        if (s.length() <= 1) return "";
-                        s = s.substring(0, s.length() - 1);
-                    }
-                }
-            }
-        };
-
-        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-        else Game.scene().addToFront(w);
+                val -> setValue(convertToInt(val, precision)));
     }
 }

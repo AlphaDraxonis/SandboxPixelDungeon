@@ -18,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndScrollOfDebug;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
@@ -44,6 +45,7 @@ public class SideControlPane extends Component {
         } else {
             buttons = new SideControlButton[8];
             buttons[0] = new ExitBtn();
+//            buttons[1] = new SoDebugBtn();
             buttons[1] = new DamageBtn();
             buttons[2] = new SecretsBtn();
             buttons[3] = new MindVisionBtn();
@@ -244,12 +246,25 @@ public class SideControlPane extends Component {
         }
     }
 
+    public static final class SoDebugBtn extends SideControlButton {
+
+        private SoDebugBtn() {
+            super(4);
+            enable(true);
+        }
+
+        @Override
+        protected void onClick() {
+            GameScene.show(new WndScrollOfDebug());
+        }
+    }
+
     public static final class DamageBtn extends SideControlButton {
 
         private static boolean shouldBeEnabled;
 
         private DamageBtn() {
-            super(4);
+            super(5);
             enable(shouldBeEnabled);
         }
 
@@ -266,7 +281,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private SecretsBtn() {
-            super(5);
+            super(6);
             enable(shouldBeEnabled);
         }
 
@@ -283,7 +298,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private MindVisionBtn() {
-            super(6);
+            super(7);
             enable(shouldBeEnabled);
         }
 
@@ -304,7 +319,7 @@ public class SideControlPane extends Component {
     public static final class MappingBtn extends SideControlButton {
 
         private MappingBtn() {
-            super(7);
+            super(8);
             enable(true);
         }
 
@@ -332,7 +347,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private KeyBtn() {
-            super(8);
+            super(9);
             enable(shouldBeEnabled);
         }
 
@@ -349,7 +364,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private SpeedBtn() {
-            super(9);
+            super(10);
             enable(shouldBeEnabled);
         }
 
@@ -368,7 +383,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private InvisBtn() {
-            super(10);
+            super(11);
             enable(shouldBeEnabled);
         }
 

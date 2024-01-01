@@ -1,12 +1,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndSetValue;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
 public class SpinnerIntegerModel extends AbstractSpinnerModel {
@@ -238,70 +235,9 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     }
 
     protected void displayInputAnyNumberDialog(float min, float max) {
-        WndTextInput w = new WndTextInput(
+        WndSetValue.enterInteger(min, max, (int)getValue(),
                 Messages.get(this, "input_dialog_title"),
                 Messages.get(this, "input_dialog_body", String.valueOf((int) min), String.valueOf((int) max),
-                        String.valueOf(getMinimum()), String.valueOf(getMaximum())),
-                getValue().toString(), 12, false,
-                Messages.get(this, "input_dialog_yes"),
-                Messages.get(this, "input_dialog_no")
-        ) {
-            @Override
-            public void onSelect(boolean positive, String text) {
-                if (positive) {
-                    try {
-                        setValue((int) Math.max(min, Integer.parseInt(text)));
-                    } catch (NumberFormatException ex) {
-                        //just ignore value
-                    }
-                }
-            }
-        };
-        w.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {
-            @Override
-            public boolean acceptChar(TextField textField, char c) {
-                if (super.acceptChar(textField, c)) return true;
-                if (!isVorzeichen(c, min, max)) return false;
-                String txt = textField.getText();
-                return txt.length() == 0 || textField.getCursorPosition() == 0 && !isVorzeichen(txt.charAt(0), min, max);
-            }
-        });
-
-        w.getTextBox().convertStringToValidString = s -> {
-            try {
-                int val = Integer.parseInt(s);
-//                if (val < min) return Integer.toString((int) min);
-                if (val > max) return Integer.toString((int) max);
-                return s;
-            } catch (NumberFormatException ex) {
-                char[] cs = s.toCharArray();
-                if (cs.length == 0) return "";
-                StringBuilder b = new StringBuilder();
-                for (int i = 0; i < cs.length; i++) {
-                    if (Character.isDigit(cs[i])
-                            || i == 0 && isVorzeichen(cs[i], min, max)) b.append(cs[i]);
-                }
-                s = b.toString();
-                if (s.length() == 1 && isVorzeichen(s.charAt(0), min, max)) return s;
-                while (true) {
-                    try {
-                        int val = Integer.parseInt(s);
-                        if (val < min) return Integer.toString((int) min);
-                        if (val > max) return Integer.toString((int) max);
-                        return s;
-                    } catch (NumberFormatException ex2) {
-                        if (s.length() <= 1) return "";
-                        s = s.substring(0, s.length() - 1);
-                    }
-                }
-            }
-        };
-
-        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-        else Game.scene().addToFront(w);
-    }
-
-    protected static boolean isVorzeichen(char c, float min, float max) {
-        return c == '-' && min < 0 || c == '+' && max > 0;
+                        String.valueOf(getMinimum()), String.valueOf(getMaximum())), this::setValue);
     }
 }

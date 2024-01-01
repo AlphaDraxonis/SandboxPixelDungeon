@@ -25,6 +25,8 @@ import com.badlogic.gdx.utils.IntMap;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SparseArray<T> extends IntMap<T> {
 	
@@ -49,5 +51,20 @@ public class SparseArray<T> extends IntMap<T> {
 	
 	public synchronized List<T> valueList() {
 		return Arrays.asList(values().toArray().toArray());
+	}
+
+	@Override
+	public String toString() {
+		//Replaces the default toString() methods of the objects in the list with getClass().getSimpleName() calls
+		Matcher matcher = Pattern.compile("\\b(\\d+=)([a-zA-Z]+(\\.[a-zA-Z]+)*)@[a-fA-F0-9]+\\b").matcher(super.toString());
+		StringBuffer result = new StringBuffer();
+		while (matcher.find()) {
+			String key = matcher.group(1);
+			String className = matcher.group(2);
+			String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
+			matcher.appendReplacement(result, key + simpleClassName);
+		}
+		matcher.appendTail(result);
+		return result.toString();
 	}
 }

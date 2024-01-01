@@ -123,7 +123,7 @@ public class WndEditorSettings extends WndTabbed {
             super(params);
         }
 
-        protected void updateList() {
+        public void updateList() {
         }
 
         @Override

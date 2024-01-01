@@ -265,6 +265,10 @@ public final class EditorUtilies {
     }
 
     public static float layoutCompsLinear(int gap, Component parent, Component... comps) {
+        return layoutCompsLinear(gap, WndMenuEditor.BTN_HEIGHT, parent, comps);
+    }
+
+    public static float layoutCompsLinear(int gap, int compHeight, Component parent, Component... comps) {
         if (comps == null) return parent.height();
 
         float posY = parent.top() + parent.height() + gap * 2 - 1;
@@ -273,7 +277,7 @@ public final class EditorUtilies {
         for (Component c : comps) {
             if (c != null && c.visible) {
                 hasAtLeastOneComp = true;
-                c.setRect(parent.left(), posY, parent.width(), WndMenuEditor.BTN_HEIGHT);
+                c.setRect(parent.left(), posY, parent.width(), compHeight);
                 PixelScene.align(c);
                 posY = c.bottom() + gap;
             }
