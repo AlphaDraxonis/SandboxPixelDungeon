@@ -40,8 +40,10 @@ public class SpectralNecromancer extends Necromancer {
 		spriteClass = SpectralNecromancerSprite.class;
 
 		defaultTemplateClass = Wraith.class;
-		summonTemplate = Reflection.newInstance(defaultTemplateClass);
-		summonTemplate.state = summonTemplate.HUNTING;
+		Mob summon = Reflection.newInstance(defaultTemplateClass);
+		summon.state = summon.HUNTING;
+		summonTemplate.clear();
+		summonTemplate.add(summon);
 	}
 
 	private ArrayList<Integer> wraithIDs = new ArrayList<>();

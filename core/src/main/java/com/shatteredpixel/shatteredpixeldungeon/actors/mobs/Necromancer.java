@@ -73,8 +73,10 @@ public class Necromancer extends SpawnerMob {
 
 	{
 		defaultTemplateClass = Skeleton.class;
-		summonTemplate = Reflection.newInstance(defaultTemplateClass);
-		summonTemplate.state = summonTemplate.WANDERING;
+		Mob summon = Reflection.newInstance(defaultTemplateClass);
+		summon.state = summon.WANDERING;
+		summonTemplate.clear();
+		summonTemplate.add(summon);
 	}
 	protected Mob mySummon;
 	private int storedSkeletonID = -1;
@@ -236,7 +238,7 @@ public class Necromancer extends SpawnerMob {
 
 		summoning = firstSummon = false;
 
-		mySummon = convertToSummonedMob((Mob) summonTemplate.getCopy());
+		mySummon = convertToSummonedMob(createSummonedMob());
 		mySummon.pos = summoningPos;
 		GameScene.add(mySummon);
 		Dungeon.level.occupyCell(mySummon);
@@ -309,7 +311,7 @@ public class Necromancer extends SpawnerMob {
 					}
 				}
 				
-				if (summoningPos != -1 && summonTemplate != null){
+				if (summoningPos != -1 && summonTemplate != null && !summonTemplate.isEmpty()){
 					
 					summoning = true;
 					sprite.zap( summoningPos );

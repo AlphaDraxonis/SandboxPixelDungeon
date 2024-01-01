@@ -121,7 +121,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
     private final StyledSpinner sentryRange, sentryDelay;
     private final StyledSpinner abilityCooldown;
-    private final StyledItemSelector summonMob;
+    private final ItemContainer<MobItem> summonMobs;
     private final StyledSpinner tenguPhase, tenguRange, dm300pylonsNeeded, yogSpawnersAlive;
     private final ItemSelectorList<MobItem> yogNormalFists, yogChallengeFists;
     private final StyledCheckBox dm300destroyWalls, pylonAlwaysActive, showBossBar;
@@ -404,12 +404,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (mob instanceof Guard) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Guard) mob).maxChainCooldown, 1, false, null),
-                    Messages.get(EditMobComp.class, "chains_cd"), 8);
+                    Messages.get(EditMobComp.class, "chains_cd"), 8, new ItemSprite(ItemSpriteSheet.ARTIFACT_CHAINS));
             abilityCooldown.addChangeListener(() -> ((Guard) mob).maxChainCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof DM200) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((DM200) mob).maxVentCooldown, 1, false, null),
-                    Messages.get(EditMobComp.class, "vent_cd"), 8);
+                    Messages.get(EditMobComp.class, "vent_cd"), 8);//TODO icons tzz
             abilityCooldown.addChangeListener(() -> ((DM200) mob).maxVentCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof Golem) {
@@ -426,28 +426,47 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         } else abilityCooldown = null;
 
         if (mob instanceof SpawnerMob) {
-            Mob necroMob = ((SpawnerMob) mob).summonTemplate;
-            summonMob = new StyledItemSelector(Messages.get(EditMobComp.class, "summon_mob"), MobItem.class,
-                    necroMob == null ? null : new MobItem(necroMob), ItemSelector.NullTypeSelector.NOTHING) {
-                {
-                    selector.preferredBag = Mobs.bag.getClass();
+            List<MobItem> asMobItems = new ArrayList<>();
+            if (((SpawnerMob) mob).summonTemplate != null) {
+                for (Mob m : ((SpawnerMob) mob).summonTemplate) {
+                    asMobItems.add(new MobItem(m));
+                }
+            }
+            summonMobs = new ItemContainerWithLabel<MobItem>(asMobItems, null, true, Messages.get(EditMobComp.class, "summon_mob")) {
+                @Override
+                public boolean itemSelectable(Item item) {
+                    return item instanceof MobItem;
                 }
 
                 @Override
-                public void change() {
-                    EditorScene.selectItem(selector);
+                protected void doAddItem(MobItem item) {
+                    item = (MobItem) item.getCopy();
+                    super.doAddItem(item);
+                    ((SpawnerMob) mob).summonTemplate.add(item.mob());
                 }
 
                 @Override
-                public void setSelectedItem(Item selectedItem) {
-                    super.setSelectedItem(selectedItem);
-                    ((SpawnerMob) mob).summonTemplate = selectedItem == EditorItem.NULL_ITEM ? null
-                            : selectedItem instanceof MobItem ? ((MobItem) selectedItem).mob() : null;
-                    updateObj();
+                protected boolean removeSlot(ItemContainer<MobItem>.Slot slot) {
+                    if (super.removeSlot(slot)) {
+                        ((SpawnerMob) mob).summonTemplate.remove(((MobItem) slot.item()).mob());
+                        return true;
+                    }
+                    return false;
+                }
+
+                @Override
+                public Class<? extends Bag> preferredBag() {
+                    return Mobs.bag.getClass();
+                }
+
+                @Override
+                protected void onSlotNumChange() {
+                    super.onSlotNumChange();
+                    EditMobComp.this.layout();
                 }
             };
-            add(summonMob);
-        } else summonMob = null;
+            add(summonMobs);
+        } else summonMobs = null;
 
         if (mob instanceof Tengu) {
             tenguPhase = new StyledSpinner(new SpinnerIntegerModel(1, 2, ((Tengu) mob).phase, 1, true, null) {
@@ -667,7 +686,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 showBossBar,
 
                 statueWeapon, statueArmor, thiefItem,
-                summonMob,
                 lotusLevelSpinner, sheepLifespan, sentryRange, sentryDelay,
                 dm300destroyWalls,
 
@@ -678,6 +696,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         };
         linearComps = new Component[]{
                 mimicItems,
+                summonMobs,
                 yogNormalFists, yogChallengeFists,
                 blacksmithQuestRewards
         };
@@ -786,7 +805,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (!isMobListEqual(((YogDzewa) a).fistSummons, ((YogDzewa) b).fistSummons)) return false;
             return isMobListEqual(((YogDzewa) a).challengeSummons, ((YogDzewa) b).challengeSummons);
         } else if (a instanceof Necromancer) {
-            return EditMobComp.areEqual(((Necromancer) a).summonTemplate, ((Necromancer) b).summonTemplate);
+            return EditMobComp.isMobListEqual(((Necromancer) a).summonTemplate, ((Necromancer) b).summonTemplate);
         } else if (a instanceof Tengu) {
             return ((Tengu) a).arenaRadius == ((Tengu) b).arenaRadius && ((Tengu) a).phase == ((Tengu) b).phase;
         } else if (a instanceof DM300) {

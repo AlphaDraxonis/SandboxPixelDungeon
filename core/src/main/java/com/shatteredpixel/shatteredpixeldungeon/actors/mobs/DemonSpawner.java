@@ -70,8 +70,10 @@ public class DemonSpawner extends SpawnerMob {
 
 	{
 		defaultTemplateClass = RipperDemon.class;
-		summonTemplate = Reflection.newInstance(defaultTemplateClass);
-		summonTemplate.state = summonTemplate.HUNTING;
+		Mob summon = Reflection.newInstance(defaultTemplateClass);
+		summon.state = summon.HUNTING;
+		summonTemplate.clear();
+		summonTemplate.add(summon);
 	}
 
 
@@ -132,7 +134,7 @@ public class DemonSpawner extends SpawnerMob {
 			}
 
 			if (!candidates.isEmpty()) {
-				Mob spawn = (Mob) summonTemplate.getCopy();
+				Mob spawn = createSummonedMob();
 
 				spawn.pos = Random.element( candidates );
 
