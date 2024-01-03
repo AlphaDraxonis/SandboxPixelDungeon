@@ -43,10 +43,15 @@ public class Ballistica {
 	public static final int STOP_CHARS = 2;     //ballistica will stop on first char hit
 	public static final int STOP_SOLID = 4;     //ballistica will stop on solid terrain
 	public static final int IGNORE_SOFT_SOLID = 8; //ballistica will ignore soft solid terrain, such as doors and webs
+//	public static final int STOP_BARRIER_PLAYER = 16; //ballistica will stop on barriers which block the player
+//	public static final int STOP_BARRIER_MOBS = 32; //ballistica will stop on barriers which block mobs
+//	public static final int STOP_BARRIER_ALLIES = 64; //ballistica will stop on barriers which block allies
+	public static final int STOP_BARRIER_PROJECTILES = 128; //ballistica will stop on barriers which block projectiles
+//	public static final int STOP_BARRIER_BLOBS = 256; //ballistica will stop on barriers which block blobls
 
-	public static final int PROJECTILE =  	STOP_TARGET	| STOP_CHARS	| STOP_SOLID;
+	public static final int PROJECTILE =  	STOP_TARGET	| STOP_CHARS	| STOP_SOLID      | STOP_BARRIER_PROJECTILES;
 
-	public static final int MAGIC_BOLT =    STOP_CHARS  | STOP_SOLID;
+	public static final int MAGIC_BOLT =    STOP_CHARS  | STOP_SOLID     | STOP_BARRIER_PROJECTILES;
 
 	public static final int WONT_STOP =     0;
 
@@ -58,7 +63,8 @@ public class Ballistica {
 				(params & STOP_TARGET) > 0,
 				(params & STOP_CHARS) > 0,
 				(params & STOP_SOLID) > 0,
-				(params & IGNORE_SOFT_SOLID) > 0);
+				(params & IGNORE_SOFT_SOLID) > 0,
+				(params & STOP_BARRIER_PROJECTILES) > 0);
 
 		if (collisionPos != null) {
 			dist = path.indexOf(collisionPos);
@@ -71,7 +77,7 @@ public class Ballistica {
 		}
 	}
 
-	private void build( int from, int to, boolean stopTarget, boolean stopChars, boolean stopTerrain, boolean ignoreSoftSolid ) {
+	private void build( int from, int to, boolean stopTarget, boolean stopChars, boolean stopTerrain, boolean ignoreSoftSolid, boolean stopBarrierProj ) {
 		int w = Dungeon.level.width();
 
 		int x0 = from % w;
@@ -123,6 +129,9 @@ public class Ballistica {
 					&& !Dungeon.level.avoid[cell]
 					&& Actor.findChar(cell) == null) {
 				collide(path.get(path.size() - 1));
+			}
+			if (collisionPos == null && stopBarrierProj && Dungeon.level.barriers.get(cell) != null && Dungeon.level.barriers.get(cell).blocksProjectiles()){
+				collide(path.isEmpty() ? sourcePos : path.get(path.size() - 1));
 			}
 
 			path.add(cell);

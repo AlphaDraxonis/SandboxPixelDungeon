@@ -1,5 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -107,5 +109,14 @@ public class Barrier implements Bundlable {
 
     public boolean blocksBlobs() {
         return (blocks & BLOCK_BLOBS) != 0;
+    }
+
+    public static boolean stopMobs(int cell, Char.Alignment alignment) {
+        if (Dungeon.level.barriers.get(cell) != null) {
+            if (alignment == Char.Alignment.ENEMY) {
+                if (Dungeon.level.barriers.get(cell).blocksMobs()) return true;
+            } if (Dungeon.level.barriers.get(cell).blocksAllies()) return true;
+        }
+        return false;
     }
 }

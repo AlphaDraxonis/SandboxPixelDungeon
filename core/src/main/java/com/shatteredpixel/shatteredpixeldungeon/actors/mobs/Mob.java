@@ -54,6 +54,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Feint;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
@@ -606,11 +607,7 @@ public abstract class Mob extends Char {
 			return false;
 		}
 
-		if (Dungeon.level.barriers.get(cell) != null) {
-			if (alignment == Alignment.ENEMY) {
-				if (Dungeon.level.barriers.get(cell).blocksMobs()) return false;
-			} if (Dungeon.level.barriers.get(cell).blocksAllies()) return false;
-		}
+		if (Barrier.stopMobs(cell, alignment)) return false;
 
 		return true;
 	}
