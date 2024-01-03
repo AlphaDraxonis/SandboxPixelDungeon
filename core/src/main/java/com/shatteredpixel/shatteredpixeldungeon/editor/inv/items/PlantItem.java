@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlantActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
@@ -17,7 +18,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.RectF;
 
 public class PlantItem extends EditorItem<Plant> {
 
@@ -38,21 +38,11 @@ public class PlantItem extends EditorItem<Plant> {
 
     @Override
     public Image getSprite() {
-        return getPlantImage(imgCode(getObject()));
-    }
-
-    public static Image getPlantImage(int imgCode) {
-        RectF frame = TEXTURE_FILM.get(imgCode);
-        if (frame != null) {
-            Image img = new Image(Assets.Environment.TERRAIN_FEATURES);
-            img.frame(frame);
-            return img;
-        }
-        return new Image();
+        return getPlantImage(getObject());
     }
 
     public static Image getPlantImage(Plant plant) {
-        return getPlantImage(imgCode(plant));
+        return EditorUtilies.getTerrainFeatureTexture(imgCode(plant));
     }
 
     public static String createTitle(Plant plant) {

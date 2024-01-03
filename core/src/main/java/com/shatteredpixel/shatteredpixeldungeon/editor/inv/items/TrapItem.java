@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
@@ -10,19 +9,15 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TrapActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.RectF;
 
 public class TrapItem extends EditorItem<Trap> {
-
-    private static final TextureFilm TEXTURE_FILM = new TextureFilm(Assets.Environment.TERRAIN_FEATURES, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
 
     public TrapItem(){}
     public TrapItem(Trap trap) {
@@ -37,21 +32,11 @@ public class TrapItem extends EditorItem<Trap> {
 
     @Override
     public Image getSprite() {
-        return getTrapImage(imgCode(getObject()));
-    }
-
-    public static Image getTrapImage(int imgCode) {
-        RectF frame = TEXTURE_FILM.get(imgCode);
-        if (frame != null) {
-            Image img = new Image(Assets.Environment.TERRAIN_FEATURES);
-            img.frame(frame);
-            return img;
-        }
-        return new Image();
+        return getTrapImage(getObject());
     }
 
     public static Image getTrapImage(Trap trap) {
-        return getTrapImage(imgCode(trap));
+        return EditorUtilies.getTerrainFeatureTexture(imgCode(trap));
     }
 
     public static String createTitle(Trap trap) {

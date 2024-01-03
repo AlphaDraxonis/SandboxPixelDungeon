@@ -54,7 +54,7 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 	}
 
 	protected int getTileVisual(int pos, int tile, boolean flat){
-		if (traps.get(pos) != null){
+		if (traps.get(pos) != null) {
 			Trap trap = traps.get(pos);
 			if (Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing()){
 				return (trap.active ? trap.color : Trap.BLACK) + (trap.shape * 16) +

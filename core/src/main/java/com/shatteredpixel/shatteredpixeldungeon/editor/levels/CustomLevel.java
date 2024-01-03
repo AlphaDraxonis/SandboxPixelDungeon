@@ -23,6 +23,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -266,6 +267,7 @@ public class CustomLevel extends Level {
             plants = level.plants;
             traps = level.traps;
             signs = level.signs;
+            barriers = level.barriers;
             blobs = level.blobs;
             customTiles = level.customTiles;
             customWalls = level.customWalls;
@@ -322,70 +324,6 @@ public class CustomLevel extends Level {
             }
         }
     }
-
-//    public CustomLevel(CustomLevel customLevel) {
-//        width = customLevel.width;
-//        height = customLevel.height;
-//        setSize(width, height);
-//        terrains = new int[length];
-//
-//        region = customLevel.region;
-//        waterTexture = customLevel.waterTexture;
-//        music = customLevel.music;
-//        enableRespawning = customLevel.enableRespawning;
-//        respawnCooldown = customLevel.respawnCooldown;
-//        swapForMutations = customLevel.swapForMutations;
-//        mobLimit = customLevel.mobLimit;
-//        viewDistance = customLevel.viewDistance;
-//        System.arraycopy(customLevel.map, 0, terrains, 0, customLevel.map.length);
-//        ignoreTerrainForExploringScore = customLevel.ignoreTerrainForExploringScore;
-//        mobRotation = customLevel.mobRotation;
-//        feeling = customLevel.feeling;
-//        System.arraycopy(terrains, 0, map, 0, terrains.length);
-//
-//        transitions = new HashMap<>();
-//        for (LevelTransition trans : customLevel.transitions.values()) {
-//            transitions.put(trans.departCell, trans.getCopy());
-//        }
-//
-//        mobs = new HashSet<>();
-//        for (Mob m : customLevel.mobs) {
-//            Mob clone = (Mob) m.getCopy();
-//            if (clone instanceof Mimic) ((Mimic) clone).setLevel(Dungeon.depth);
-//            mobs.add(clone);
-//        }
-//
-//        heaps = new SparseArray<>();
-//        for (Heap h : customLevel.heaps.valueList()) {
-//            Heap nh = h.getCopy();
-//            heaps.put(h.pos, nh);
-//            for (Item item : nh.items) item.reset();//important for scroll runes being inited
-//        }
-//
-//        blobs = new HashMap<>();
-//        plants = new SparseArray<>();
-//        for (Plant plant : customLevel.plants.valueList()) {
-//            plants.put(plant.pos, plant.getCopy());
-//        }
-//
-//        traps = new SparseArray<>();
-//        for (Trap trap : customLevel.traps.valueList()) {
-//            traps.put(trap.pos, trap.getCopy());
-//        }
-//
-//        signs = new SparseArray<>();
-//        for (Sign sign : customLevel.signs.valueList()) {
-//            signs.put(sign.pos, sign.getCopy());
-//        }
-//
-//        customTiles = new HashSet<>();
-//        customWalls = new HashSet<>();
-//
-//        buildFlagMaps();
-//        cleanWalls();
-//
-//        createItems();
-//    }
 
 
     @Override
@@ -980,6 +918,17 @@ public class CustomLevel extends Level {
         }
         level.signs.clear();
         level.signs.putAll(nSign);
+
+        SparseArray<Barrier> nBarriers = new SparseArray<>();
+        for (Barrier b : level.barriers.valueList()) {
+            int nPos = newPosition.get(b.pos);
+            if (isPositionValid.test(b.pos, nPos)) {
+                nBarriers.put(nPos, b);
+                b.pos = nPos;
+            }
+        }
+        level.barriers.clear();
+        level.barriers.putAll(nBarriers);
 
         SparseArray<Plant> nPlant = new SparseArray<>();
         for (Plant p : level.plants.valueList()) {

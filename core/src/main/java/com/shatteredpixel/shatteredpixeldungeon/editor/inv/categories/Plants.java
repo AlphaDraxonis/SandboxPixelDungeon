@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PlantItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
@@ -93,7 +94,7 @@ public enum Plants {
 
         @Override
         public Image getCategoryImage() {
-            return PlantItem.getPlantImage(116);//Ice cap
+            return EditorUtilies.getTerrainFeatureTexture(116);//Ice cap
         }
     }
 

@@ -175,6 +175,7 @@ public abstract class EditorItem<T> extends Item {
             if (part == null) part = ItemItem.remove(cell, level);
             if (part == null) part = PlantItem.remove(cell, level);
             if (part == null) part = TrapItem.remove(level.traps.get(cell));
+            if (part == null) part = BarrierItem.remove(level.barriers.get(cell));
             if (part == null) part = CustomTileItem.remove(cell);
             if (part == null)
                 part = TileItem.place(cell, level.feeling == Level.Feeling.CHASM ? Terrain.CHASM : Terrain.EMPTY);

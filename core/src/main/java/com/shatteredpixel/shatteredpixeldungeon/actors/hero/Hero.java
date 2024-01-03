@@ -1623,7 +1623,7 @@ public class Hero extends Char {
 			path = null;
 
 			if (Actor.findChar( target ) == null) {
-				if (Dungeon.level.passable[target] || Dungeon.level.avoid[target]) {
+				if (Dungeon.level.passable[target] || Dungeon.level.avoid[target]) {//tzz
 					step = target;
 				}
 				if (walkingToVisibleTrapInFog

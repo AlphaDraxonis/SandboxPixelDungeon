@@ -42,7 +42,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BarrierItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.LevelColoring;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.SideControlPane;
@@ -77,6 +79,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.DiscardedItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.BarrierTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
@@ -111,6 +114,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGame;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoBarrier;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoCell;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoItem;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
@@ -157,6 +161,7 @@ public class GameScene extends PixelScene {
 	private DungeonTerrainTilemap tiles;
 	private GridTileMap visualGrid;
 	private TerrainFeaturesTilemap terrainFeatures;
+	private BarrierTilemap barriers;
 	private RaisedTerrainTilemap raisedTerrain;
 	private DungeonWallsTilemap walls;
 	private WallBlockingTilemap wallBlocking;
@@ -280,6 +285,9 @@ public class GameScene extends PixelScene {
 
 		terrainFeatures = new TerrainFeaturesTilemap(Dungeon.level.plants, Dungeon.level.traps);
 		terrain.add(terrainFeatures);
+
+		barriers = new BarrierTilemap(Dungeon.level.barriers);
+		terrain.add(barriers);
 
 		terrain.add( LevelColoring.getFloor() );
 		
@@ -1175,6 +1183,7 @@ public class GameScene extends PixelScene {
 			scene.tiles.map(Dungeon.level.map, Dungeon.level.width() );
 			scene.visualGrid.map(Dungeon.level.map, Dungeon.level.width() );
 			scene.terrainFeatures.map(Dungeon.level.map, Dungeon.level.width() );
+			scene.barriers.map(Dungeon.level.map, Dungeon.level.width() );
 			scene.raisedTerrain.map(Dungeon.level.map, Dungeon.level.width() );
 			scene.walls.map(Dungeon.level.map, Dungeon.level.width() );
 		}
@@ -1187,6 +1196,7 @@ public class GameScene extends PixelScene {
 			scene.tiles.updateMap();
 			scene.visualGrid.updateMap();
 			scene.terrainFeatures.updateMap();
+			scene.barriers.updateMap();
 			scene.raisedTerrain.updateMap();
 			scene.walls.updateMap();
 			LevelColoring.allUpdateMap();
@@ -1199,6 +1209,7 @@ public class GameScene extends PixelScene {
 			scene.tiles.updateMapCell( cell );
 			scene.visualGrid.updateMapCell( cell );
 			scene.terrainFeatures.updateMapCell( cell );
+			scene.barriers.updateMapCell( cell );
 			scene.raisedTerrain.updateMapCell( cell );
 			scene.walls.updateMapCell( cell );
 			LevelColoring.allUpdateMapCell( cell );
@@ -1531,6 +1542,9 @@ public class GameScene extends PixelScene {
 		Trap trap = Dungeon.level.traps.get( cell );
 		if (trap != null && trap.visible) objects.add(trap);
 
+		Barrier barrier = Dungeon.level.barriers.get( cell );
+		if (barrier != null && barrier.visible) objects.add(barrier);
+
 		return objects;
 	}
 
@@ -1543,6 +1557,8 @@ public class GameScene extends PixelScene {
 			else if (obj instanceof Heap)   names.add(Messages.titleCase( ((Heap)obj).title() ));
 			else if (obj instanceof Plant)  names.add(Messages.titleCase( ((Plant) obj).name() ));
 			else if (obj instanceof Trap)   names.add(Messages.titleCase( ((Trap) obj).name() ));
+			else if (obj instanceof Barrier
+				&& ((Barrier) obj).visible) names.add(BarrierItem.createTitle((Barrier) obj));
 		}
 		return names;
 	}
@@ -1562,6 +1578,8 @@ public class GameScene extends PixelScene {
 			GameScene.show( new WndInfoPlant((Plant) o) );
 		} else if ( o instanceof Trap ){
 			GameScene.show( new WndInfoTrap((Trap) o));
+		} else if ( o instanceof Barrier ){
+			GameScene.show( new WndInfoBarrier((Barrier) o));
 		} else {
 			GameScene.show( new WndMessage( Messages.get(GameScene.class, "dont_know") ) ) ;
 		}
@@ -1612,6 +1630,9 @@ public class GameScene extends PixelScene {
 			} else if (objects.get(0) instanceof Trap) {
 				title = textLines.remove(0);
 				image = TerrainFeaturesTilemap.tile(cell, Dungeon.level.map[cell]);
+			} else if (objects.get(0) instanceof Barrier) {
+				title = textLines.remove(0);
+				image = BarrierItem.getBarrierImage((Barrier) objects.get(0));
 			}
 
 			//determine first text line
@@ -1641,6 +1662,8 @@ public class GameScene extends PixelScene {
 				textLines.add(0, Messages.get(GameScene.class, "trample"));
 			} else if (objects.get(0) instanceof Trap) {
 				textLines.add(0, Messages.get(GameScene.class, "interact"));
+			} else if (objects.get(0) instanceof Barrier) {
+				textLines.add(0, Messages.get(GameScene.class, "go_here"));
 			}
 
 			//final text formatting

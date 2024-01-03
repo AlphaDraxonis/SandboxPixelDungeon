@@ -1,10 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.HeapActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlantActionPart;
@@ -97,7 +99,7 @@ public abstract class DefaultEditComp<T> extends Component {
     }
 
 
-    public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap, Plant plant, int cell) {
+    public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap, Plant plant, Barrier barrier, int cell) {
 
         int numTabs = 0;
         TileItem tileItem = null;
@@ -111,10 +113,11 @@ public abstract class DefaultEditComp<T> extends Component {
         if (mob != null) numTabs++;
         if (trap != null) numTabs++;
         if (plant != null) numTabs++;
+        if (barrier != null) numTabs++;
 
         if (numTabs == 0) return;
         if (numTabs > 1 || (heap != null && !heap.items.isEmpty())) {
-            Window w = new EditCompWindowTabbed(tileItem, heap, mob, trap, plant, numTabs);
+            Window w = new EditCompWindowTabbed(tileItem, heap, mob, trap, plant, barrier, numTabs);
             if (Game.scene() instanceof EditorScene) EditorScene.show(w);
             else Game.scene().addToFront(w);
             return;
@@ -134,9 +137,12 @@ public abstract class DefaultEditComp<T> extends Component {
         } else if (trap != null) {
             content = new EditTrapComp(trap);
             actionPart = new TrapActionPart.Modify(trap);
-        } else {
+        } else if (plant != null) {
             content = new EditPlantComp(plant);
             actionPart = new PlantActionPart.Modify(plant);
+        } else {
+            content = new EditPlantComp(plant);
+            actionPart = new BarrierActionPart.Modify(barrier);
         }
 
         showSingleWindow(content, actionPart);

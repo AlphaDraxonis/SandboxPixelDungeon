@@ -36,9 +36,11 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BarrierItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -123,11 +125,12 @@ public enum Tiles {
     public static final EditorItemBag bag = new EditorItemBag("name", 0) {
         @Override
         public Item findItem(Object src) {
-            if (src instanceof Class<?>) {//for blobs and customTiles
+            if (src instanceof Class<?>) {//for blobs, customTiles and barriers
                 for (Item bag : items) {
                     for (Item i : ((Bag) bag).items) {
                         if (i instanceof BlobItem && ((BlobItem) i).getObject() == src) return i;
                         if (i instanceof CustomTileItem && ((CustomTileItem) i).getObject().getClass() == src) return i;
+                        if (i instanceof BarrierItem && ((BarrierItem) i).getObject().getClass() == src) return i;
                     }
                 }
                 return null;
@@ -155,7 +158,7 @@ public enum Tiles {
             }
             for (Item bag : items) {
                 for (Item i : ((Bag) bag).items) {
-                    if (((TileItem) i).terrainType() == val) return i;
+                    if (i instanceof TileItem && ((TileItem) i).terrainType() == val) return i;
                 }
             }
             return null;
@@ -213,11 +216,14 @@ public enum Tiles {
     private static CustomTileBag customTileBag;
 
     static {
+        Bag wallBag;
         bag.items.add(new TileBag("empty", EMPTY.terrains));
-        bag.items.add(new TileBag("wall", WALL.terrains));
+        bag.items.add(wallBag = new TileBag("wall", WALL.terrains));
         bag.items.add(new TileBag("door", DOOR.terrains));
         bag.items.add(new TileBag("other", SPECIAL.terrains));
         bag.items.add(customTileBag = new CustomTileBag());
+
+        wallBag.items.add(2, new BarrierItem(new Barrier(-1)));
 
         bag.items.add(new BlobBag(
                 PermaGas.PFire.class,

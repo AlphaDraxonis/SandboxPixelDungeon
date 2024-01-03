@@ -1,10 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.HeapActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TileModify;
@@ -42,12 +44,13 @@ public class EditCompWindowTabbed extends WndTabbed {
     private boolean fullyInitialized = false;
 
 
-    public EditCompWindowTabbed(TileItem tileItem, Heap heap, Mob mob, Trap trap, Plant plant, int numTabs) {
+    public EditCompWindowTabbed(TileItem tileItem, Heap heap, Mob mob, Trap trap, Plant plant, Barrier barrier, int numTabs) {
         actionPartModifyList.clear();
         items = getItemsFromHeap(heap, numTabs);
         if (heap != null) actionPartModifyList.add(new HeapActionPart.Modify(heap));
         if (mob != null) actionPartModifyList.add(new MobActionPart.Modify(mob));
         if (trap != null) actionPartModifyList.add(new TrapActionPart.Modify(trap));
+        if (barrier != null) actionPartModifyList.add(new BarrierActionPart.Modify(barrier));
         if (tileItem != null) actionPartModifyList.add(new TileModify(tileItem.cell()));
 
 
@@ -155,6 +158,16 @@ public class EditCompWindowTabbed extends WndTabbed {
                 protected void updateObj() {
                     super.updateObj();
                     if (comps.containsKey(plant)) comps.get(plant).tabBtn.setIcon(getIcon());
+                }
+            });
+        }
+        if (barrier != null) {
+            if (toSelect == null) toSelect = barrier;
+            initComp(new EditBarrierComp(barrier) {
+                @Override
+                protected void updateObj() {
+                    super.updateObj();
+                    if (comps.containsKey(barrier)) comps.get(barrier).tabBtn.setIcon(getIcon());
                 }
             });
         }

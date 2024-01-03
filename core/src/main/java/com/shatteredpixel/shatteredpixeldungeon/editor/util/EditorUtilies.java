@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -26,13 +27,17 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Random;
+import com.watabou.utils.RectF;
 
 import java.util.Map;
 
@@ -380,5 +385,25 @@ public final class EditorUtilies {
             if (cell - 1 - width > 0 && terrain == level.map[cell - 1 - width]) result += TOP_LEFT;
         }
         return result;
+    }
+
+    private static final TextureFilm TERRAIN_FEATURE_FILM = new TextureFilm(Assets.Environment.TERRAIN_FEATURES, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
+    private static final TextureFilm BARRIER_TEXTURE_FILM = new TextureFilm(Assets.Environment.BARRIER, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
+    private static Image getImageFromFilm(int imgCode, TextureFilm film, String asset) {
+        RectF frame = film.get(imgCode);
+        if (frame != null) {
+            Image img = new Image(asset);
+            img.frame(frame);
+            return img;
+        }
+        return new Image();
+    }
+
+    public static Image getTerrainFeatureTexture(int imgCode) {
+        return getImageFromFilm(imgCode, TERRAIN_FEATURE_FILM, Assets.Environment.TERRAIN_FEATURES);
+    }
+
+    public static Image getBarrierTexture(int imgCode) {
+        return getImageFromFilm(imgCode, BARRIER_TEXTURE_FILM, Assets.Environment.BARRIER);
     }
 }

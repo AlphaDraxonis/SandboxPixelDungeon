@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRoomComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
@@ -163,7 +164,7 @@ public class RoomItem extends EditorItem<Room> {
         if (r == GrassyGraveRoom.class) return new ItemSprite(ItemSpriteSheet.TOMB);
         if (r == HallwayRoom.class) return new ItemSprite(Assets.Environment.TILES_CITY, new TileItem(Terrain.EMPTY_SP, -1));
         if (r == ImpShopRoom.class) return new ImpSprite();
-        if (r == MinefieldRoom.class) return TrapItem.getTrapImage(65);//explosive trap
+        if (r == MinefieldRoom.class) return EditorUtilies.getTerrainFeatureTexture(65);//explosive trap
         //Pillars
         //Plants
         if (r == PlatformRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(-1, DungeonTileSheet.CHASM_FLOOR_SP, -1));
@@ -204,8 +205,8 @@ public class RoomItem extends EditorItem<Room> {
         if (r == ShopRoom.class) return new ShopkeeperSprite();
         if (r == StatueRoom.class) return new StatueSprite();
         //storage
-        if (r == ToxicGasRoom.class) return TrapItem.getTrapImage(40);//toxic vent
-        if (r == TrapsRoom.class) return TrapItem.getTrapImage(7);
+        if (r == ToxicGasRoom.class) return EditorUtilies.getTerrainFeatureTexture(40);//toxic vent
+        if (r == TrapsRoom.class) return EditorUtilies.getTerrainFeatureTexture(7);
         if (r == TreasuryRoom.class) return new ItemSprite(ItemSpriteSheet.GOLD);
         if (r == WeakFloorRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(-1, DungeonTileSheet.CHASM_FLOOR_SP, -1));
 
@@ -213,14 +214,14 @@ public class RoomItem extends EditorItem<Room> {
         if (r == SecretArtilleryRoom.class) return new ItemSprite(ItemSpriteSheet.KUNAI);
         if (r == SecretChestChasmRoom.class) return new ItemSprite(ItemSpriteSheet.LOCKED_CHEST);
         if (r == SecretGardenRoom.class) return new ItemSprite(ItemSpriteSheet.SEED_SUNGRASS);
-        if (r == SecretHoardRoom.class) return TrapItem.getTrapImage(83);//Poison dart trap
+        if (r == SecretHoardRoom.class) return EditorUtilies.getTerrainFeatureTexture(83);//Poison dart trap
         if (r == SecretHoneypotRoom.class) return new ItemSprite(ItemSpriteSheet.HONEYPOT);
         if (r == SecretLaboratoryRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(Terrain.ALCHEMY, -1));
         if (r == SecretLarderRoom.class) return new ItemSprite(ItemSpriteSheet.PASTY);
         if (r == SecretLibraryRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(Terrain.BOOKSHELF, -1));
         //secretMaze
         if (r == SecretRunestoneRoom.class) return new ItemSprite(ItemSpriteSheet.STONE_ENCHANT);
-        if (r == SecretSummoningRoom.class) return TrapItem.getTrapImage(20);//Summoning trap
+        if (r == SecretSummoningRoom.class) return EditorUtilies.getTerrainFeatureTexture(20);//Summoning trap
         if (r == SecretWellRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(Terrain.WELL, -1));
 
 

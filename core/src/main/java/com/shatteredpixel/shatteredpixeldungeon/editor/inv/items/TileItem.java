@@ -15,6 +15,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.UNLOCKED_E
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
@@ -28,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.HeapActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
@@ -348,6 +350,15 @@ public class TileItem extends EditorItem {
                 Heap h = level.heaps.get(cell);
                 if (h != null) {
                     ActionPart p = new HeapActionPart.Remove(h);
+                    moreActions.addActionPart(p);
+                    p.redo();
+                }
+            }
+
+            if (BarrierItem.invalidPlacement(cell, level)) {
+                Barrier b = level.barriers.get(cell);
+                if (b != null) {
+                    ActionPart p = new BarrierActionPart.Remove(b);
                     moreActions.addActionPart(p);
                     p.redo();
                 }

@@ -29,8 +29,8 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
 public class Barrier extends ShieldBuff {
-	
-	{
+
+    {
 		type = buffType.POSITIVE;
 	}
 

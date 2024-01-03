@@ -51,13 +51,12 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.DiscardedItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.BarrierTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonWallsTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.GridTileMap;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.RaisedTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.TerrainFeaturesTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
@@ -109,8 +108,7 @@ public class EditorScene extends PixelScene {
     private DungeonTerrainTilemap tiles;
     private GridTileMap visualGrid;
     private TerrainFeaturesTilemap terrainFeatures;
-    private RaisedTerrainTilemap raisedTerrain;
-    private DungeonWallsTilemap walls;
+    private BarrierTilemap barriers;
 
     private ZoneView zoneGroup;
 
@@ -264,6 +262,9 @@ public class EditorScene extends PixelScene {
 
         terrainFeatures = new TerrainFeaturesTilemap(customLevel().plants, customLevel().traps);
         terrain.add(terrainFeatures);
+
+        barriers = new BarrierTilemap(customLevel().barriers);
+        terrain.add(barriers);
 
         terrain.add(LevelColoring.getFloor());
         terrain.add(LevelColoring.getWall());
@@ -452,6 +453,7 @@ public class EditorScene extends PixelScene {
             scene.tiles.updateMapCell(cell);
             scene.visualGrid.updateMapCell(cell);
             scene.terrainFeatures.updateMapCell(cell);
+            scene.barriers.updateMapCell(cell);
             LevelColoring.allUpdateMapCell(cell);
         }
     }
@@ -462,6 +464,7 @@ public class EditorScene extends PixelScene {
             scene.tiles.updateMap();
             scene.visualGrid.updateMap();
             scene.terrainFeatures.updateMap();
+            scene.barriers.updateMap();
             LevelColoring.allUpdateMap();
         }
     }
@@ -736,16 +739,17 @@ public class EditorScene extends PixelScene {
     public static void showEditCellWindow(int cell) {
         if (scene == null) return;
 
-        CustomLevel f = customLevel();
-        int terrainType = f.map[cell];
+        CustomLevel level = customLevel();
+        int terrainType = level.map[cell];
         if (TileItem.isTrapTerrainCell(terrainType)) terrainType = Terrain.EMPTY;
 
-        Trap trap = f.traps.get(cell);
-        Heap heap = f.heaps.get(cell);
-        Mob mob = f.findMob(cell);
-        Plant plant = f.plants.get(cell);
+        Trap trap = level.traps.get(cell);
+        Heap heap = level.heaps.get(cell);
+        Mob mob = level.findMob(cell);
+        Plant plant = level.plants.get(cell);
+        Barrier barrier = level.barriers.get(cell);
 
-        DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, plant, cell);
+        DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, plant, barrier, cell);
     }
 
     public static WndEditorInv selectItem(WndBag.ItemSelectorInterface listener) {
@@ -855,6 +859,8 @@ public class EditorScene extends PixelScene {
             Blob b = Dungeon.level.blobs.getOnly(BlobEditPart.BlobData.BLOB_CLASSES[i]);
             if (b != null && !(b instanceof WellWater) && b.cur != null && b.cur[cell] > 0) return b;
         }
+        Barrier barrier = customLevel.barriers.get(cell);
+        if (barrier != null) return barrier;
         CustomTilemap customTile = CustomTileItem.findCustomTileAt(cell);
         if (customTile != null) return customTile;
         return customLevel.map[cell];
@@ -875,6 +881,7 @@ public class EditorScene extends PixelScene {
             realInBag.setObject((Class<? extends Blob>) clazz);
             return realInBag;
         }
+        else if (Barrier.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Tiles.bag.findItem(clazz);
         else if (CustomTilemap.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Tiles.bag.findItem(clazz);//CustomTiles
         else return null;
         inBag.setObject(obj);
@@ -888,6 +895,7 @@ public class EditorScene extends PixelScene {
         if (Trap.class.isAssignableFrom(clazz)) return (EditorItem) Traps.bag.findItem(clazz);
         if (Plant.class.isAssignableFrom(clazz)) return (EditorItem) Plants.bag.findItem(clazz);
         if (Blob.class.isAssignableFrom(clazz)) return (EditorItem) Tiles.bag.findItem(clazz);//Blobs
+        if (Barrier.class.isAssignableFrom(clazz)) return (EditorItem) Tiles.bag.findItem(clazz);//Barriers
         if (CustomTilemap.class.isAssignableFrom(clazz)) return (EditorItem) Tiles.bag.findItem(clazz);//CustomTiles
         return null;
     }

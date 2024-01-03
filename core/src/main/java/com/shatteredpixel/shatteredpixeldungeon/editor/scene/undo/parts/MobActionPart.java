@@ -11,7 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 public /*sealed*/ abstract class MobActionPart implements ActionPart {
 
     private Mob mob, copyForUndo;
-    protected final boolean bossMobBefore;//can ony restore if mob was removed, newly placed mobs can never be boss
+    protected final boolean bossMobBefore;//can only restore if mob was removed, newly placed mobs can never be boss
     protected final int cell;
 
     private MobActionPart(Mob mob) {
