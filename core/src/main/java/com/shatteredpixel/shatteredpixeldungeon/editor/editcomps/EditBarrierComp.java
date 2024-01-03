@@ -56,7 +56,7 @@ public class EditBarrierComp extends DefaultEditComp<Barrier> {
             add(comps[i] = cb);
         }
 
-        visible = new StyledCheckBox(Messages.get(EditBarrierComp.class, "visible")) {
+        visible = new StyledCheckBox(Messages.get(EditTrapComp.class, "visible")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);

@@ -1623,7 +1623,8 @@ public class Hero extends Char {
 			path = null;
 
 			if (Actor.findChar( target ) == null) {
-				if (Dungeon.level.passable[target] || Dungeon.level.avoid[target]) {//tzz
+				if ((Dungeon.level.barriers.get(target) == null || !Dungeon.level.barriers.get(target).blocksHero())
+				 && (Dungeon.level.passable[target] || Dungeon.level.avoid[target])) {
 					step = target;
 				}
 				if (walkingToVisibleTrapInFog
@@ -1641,7 +1642,9 @@ public class Hero extends Char {
 			else if (path.getLast() != target)
 				newPath = true;
 			else {
-				if (!Dungeon.level.passable[path.get(0)] || Actor.findChar(path.get(0)) != null) {
+				int nextPathStep = path.get(0);
+				if (!Dungeon.level.passable[nextPathStep] || Actor.findChar(nextPathStep) != null
+						|| (Dungeon.level.barriers.get(nextPathStep) != null && Dungeon.level.barriers.get(nextPathStep).blocksHero())) {
 					newPath = true;
 				}
 			}
@@ -1709,8 +1712,16 @@ public class Hero extends Char {
 		}
 
 	}
-	
-	public boolean handle( int cell ) {
+
+	@Override
+	public boolean[] modifyPassableRenamed(boolean[] passable) {
+		for (com.shatteredpixel.shatteredpixeldungeon.editor.Barrier b : Dungeon.level.barriers.values()) {
+			passable[b.pos] &= !b.blocksHero();
+		}
+		return passable;
+	}
+
+	public boolean handle(int cell ) {
 		
 		if (cell == -1) {
 			return false;

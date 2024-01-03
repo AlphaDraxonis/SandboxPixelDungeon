@@ -1060,7 +1060,7 @@ public class Dungeon {
 			BArray.and( passable, Dungeon.level.openSpace, passable );
 		}
 
-		ch.modifyPassable(passable);
+		ch.modifyPassableRenamed(passable);
 
 		if (chars) {
 			for (Char c : Actor.chars()) {

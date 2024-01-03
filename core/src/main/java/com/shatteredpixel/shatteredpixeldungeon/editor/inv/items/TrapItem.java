@@ -85,8 +85,9 @@ public class TrapItem extends EditorItem<Trap> {
 
     @Override
     public void setObject(Trap obj) {
-        super.setObject(obj);
-        obj.pos = -1;
+        Trap copy = obj.getCopy();
+        copy.pos = -1;
+        super.setObject(copy);
     }
 
     public static int getTerrain(Trap trap) {

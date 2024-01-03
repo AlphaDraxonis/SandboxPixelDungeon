@@ -80,6 +80,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -1052,8 +1053,17 @@ public abstract class Char extends Actor {
 		return Dungeon.level.distance( pos, other.pos );
 	}
 
-	public boolean[] modifyPassable( boolean[] passable){
-		//do nothing by default, but some chars can pass over terrain that others can't
+	//renamed so a ShPD update can't silently override this method without considering the result of this super method
+	public boolean[] modifyPassableRenamed(boolean[] passable){
+		if (alignment == Alignment.ENEMY) {
+			for (Barrier b : Dungeon.level.barriers.values()) {
+				passable[b.pos] &= !b.blocksMobs();
+			}
+		} else {
+			for (Barrier b : Dungeon.level.barriers.values()) {
+				passable[b.pos] &= !b.blocksAllies();
+			}
+		}
 		return passable;
 	}
 	

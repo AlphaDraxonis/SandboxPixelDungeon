@@ -87,8 +87,9 @@ public class PlantItem extends EditorItem<Plant> {
 
     @Override
     public void setObject(Plant obj) {
-        super.setObject(obj);
-        obj.pos = -1;
+        Plant copy = obj.getCopy();
+        copy.pos = -1;
+        super.setObject(copy);
     }
 
     public static boolean invalidPlacement(int cell, CustomLevel level) {

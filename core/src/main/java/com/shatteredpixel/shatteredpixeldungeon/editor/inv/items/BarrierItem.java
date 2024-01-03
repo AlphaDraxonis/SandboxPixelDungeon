@@ -67,8 +67,10 @@ public class BarrierItem extends EditorItem<Barrier> {
 
     @Override
     public void place(int cell) {
-        if (!invalidPlacement(cell, EditorScene.customLevel()))
+        if (!invalidPlacement(cell, EditorScene.customLevel())) {
+            Undo.addActionPart(remove(cell, EditorScene.customLevel()));
             Undo.addActionPart(place(getObject().getCopy(), cell));
+        }
     }
 
     @Override
@@ -78,8 +80,9 @@ public class BarrierItem extends EditorItem<Barrier> {
 
     @Override
     public void setObject(Barrier obj) {
-        super.setObject(obj);
-        obj.pos = -1;
+        Barrier copy = obj.getCopy();
+        copy.pos = -1;
+        super.setObject(copy);
     }
 
     public static boolean invalidPlacement(int cell, CustomLevel level) {

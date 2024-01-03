@@ -606,6 +606,12 @@ public abstract class Mob extends Char {
 			return false;
 		}
 
+		if (Dungeon.level.barriers.get(cell) != null) {
+			if (alignment == Alignment.ENEMY) {
+				if (Dungeon.level.barriers.get(cell).blocksMobs()) return false;
+			} if (Dungeon.level.barriers.get(cell).blocksAllies()) return false;
+		}
+
 		return true;
 	}
 
