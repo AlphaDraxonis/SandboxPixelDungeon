@@ -188,7 +188,14 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 				}
 
 			} else {
-				tell(Messages.get(this, "reminder"));//2.2.0 quest
+					String msg = Messages.get(this, "reminder");
+					if (quest.type() >= BlacksmithQuest.CRYSTAL) msg += "\n\n";
+					switch (quest.type()){
+						case BlacksmithQuest.CRYSTAL: msg += Messages.get(Blacksmith.this, "reminder_crystal"); break;
+						case BlacksmithQuest.GNOLL:   msg += Messages.get(Blacksmith.this, "reminder_gnoll"); break;
+						case BlacksmithQuest.FUNGI:   msg += Messages.get(Blacksmith.this, "reminder_fungi"); break;
+					}
+					tell(msg);
 			}
 		} else if (quest.reforges == 0 && quest.type() <= BlacksmithQuest.BLOOD) {
 
