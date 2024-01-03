@@ -575,8 +575,8 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 	public void damage(int dmg, Object src) {
 		phase = Math.max(phase, 1);
 
-		//hero only counts as unarmed if they have no weapon and aren't benefiting from force
-		if (src == Dungeon.hero && (Dungeon.hero.belongings.weapon() != null || Dungeon.hero.buff(RingOfForce.Force.class) != null)){
+		//hero counts as unarmed if they aren't attacking with a weapon and aren't benefiting from force
+		if (src == Dungeon.hero && (!RingOfForce.fightingUnarmed(Dungeon.hero) || Dungeon.hero.buff(RingOfForce.Force.class) != null)){
 			Statistics.qualifiedForBossChallengeBadge = false;
 		//Corrosion, corruption, and regrowth do no direct damage and so have their own custom logic
 		//Transfusion damages DK and so doesn't need custom logic
