@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -158,6 +159,9 @@ public class Blob extends Actor {
 		if (this instanceof PermaGas) return;
 		
 		boolean[] blocking = Dungeon.level.solid;
+		for (Barrier b : Dungeon.level.barriers.values()) {
+			blocking[b.pos] |= b.blocksBlobs();
+		}
 		int cell;
 		for (int i=area.top-1; i <= area.bottom; i++) {
 			for (int j = area.left-1; j <= area.right; j++) {
