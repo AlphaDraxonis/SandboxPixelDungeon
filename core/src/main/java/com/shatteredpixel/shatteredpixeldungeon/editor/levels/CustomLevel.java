@@ -243,15 +243,16 @@ public class CustomLevel extends Level {
             mapped = level.mapped;
             discoverable = level.discoverable;
             heroFOV = level.heroFOV;
-            passable = level.passable;
-            losBlocking = level.losBlocking;
-            setFlamable(level.getFlamable());
-            secret = level.secret;
-            solid = level.solid;
-            avoid = level.avoid;
-            water = level.water;
-            pit = level.pit;
-            openSpace = level.openSpace;
+//            passable = level.passable;
+//            losBlocking = level.losBlocking;
+//            setFlamable(level.getFlamable());
+//            secret = level.secret;
+//            solid = level.solid;
+//            avoid = level.avoid;
+//            water = level.water;
+//            pit = level.pit;
+//            openSpace = level.openSpace;
+            buildFlagMaps();//TODO test
             lockedCount = level.lockedCount;
             zoneMap.clear();
             zoneMap.putAll(level.zoneMap);
@@ -545,7 +546,7 @@ public class CustomLevel extends Level {
         int lengthHalf = level.length() / 2;
         while (tries-- > 0) {
             int pos = Random.Int(level.length());
-            if (level.passable[pos] && !level.solid[pos]
+            if (level.isPassableHero(pos) && !level.solid[pos]
                     && level.map[pos] != ENTRANCE
                     && level.map[pos] != EXIT
                     && Zone.canSpawnItems(level, pos)

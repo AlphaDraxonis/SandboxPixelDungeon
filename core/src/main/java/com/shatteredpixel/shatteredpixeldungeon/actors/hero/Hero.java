@@ -1623,8 +1623,7 @@ public class Hero extends Char {
 			path = null;
 
 			if (Actor.findChar( target ) == null) {
-				if ((Dungeon.level.barriers.get(target) == null || !Dungeon.level.barriers.get(target).blocksHero())
-				 && (Dungeon.level.passable[target] || Dungeon.level.avoid[target])) {
+				if (Dungeon.level.isPassableHero(target) || Dungeon.level.avoid[target]) {
 					step = target;
 				}
 				if (walkingToVisibleTrapInFog
@@ -1643,8 +1642,7 @@ public class Hero extends Char {
 				newPath = true;
 			else {
 				int nextPathStep = path.get(0);
-				if (!Dungeon.level.passable[nextPathStep] || Actor.findChar(nextPathStep) != null
-						|| (Dungeon.level.barriers.get(nextPathStep) != null && Dungeon.level.barriers.get(nextPathStep).blocksHero())) {
+				if (!Dungeon.level.isPassableHero(nextPathStep) || Actor.findChar(nextPathStep) != null) {
 					newPath = true;
 				}
 			}
@@ -1652,7 +1650,7 @@ public class Hero extends Char {
 			if (newPath) {
 
 				int len = Dungeon.level.length();
-				boolean[] p = Dungeon.level.passable;
+				boolean[] p = Dungeon.level.getPassableHeroVar();
 				boolean[] v = Dungeon.level.visited;
 				boolean[] m = Dungeon.level.mapped;
 				boolean[] passable = new boolean[len];
@@ -1711,14 +1709,6 @@ public class Hero extends Char {
 			
 		}
 
-	}
-
-	@Override
-	public boolean[] modifyPassableRenamed(boolean[] passable) {
-		for (com.shatteredpixel.shatteredpixeldungeon.editor.Barrier b : Dungeon.level.barriers.values()) {
-			passable[b.pos] &= !b.blocksHero();
-		}
-		return passable;
 	}
 
 	public boolean handle(int cell ) {
@@ -2077,7 +2067,7 @@ public class Hero extends Char {
 		ArrayList<Integer> passable = new ArrayList<>();
 		for (Integer ofs : PathFinder.NEIGHBOURS8) {
 			int cell = pos + ofs;
-			if ((Dungeon.level.passable[cell] || Dungeon.level.avoid[cell]) && Dungeon.level.heaps.get( cell ) == null) {
+			if ((Dungeon.level.isPassableHero(cell) || Dungeon.level.avoid[cell]) && Dungeon.level.heaps.get( cell ) == null) {
 				passable.add( cell );
 			}
 		}

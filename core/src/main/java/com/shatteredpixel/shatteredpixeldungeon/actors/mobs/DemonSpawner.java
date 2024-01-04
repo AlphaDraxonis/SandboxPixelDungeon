@@ -126,16 +126,16 @@ public class DemonSpawner extends SpawnerMob {
 				spawnCooldown = -20;
 			}
 
+			Mob spawn = createSummonedMob();
+
 			ArrayList<Integer> candidates = new ArrayList<>();
 			for (int n : PathFinder.NEIGHBOURS8) {
-				if (Dungeon.level.passable[pos+n] && Actor.findChar( pos+n ) == null) {
+				if (Dungeon.level.isPassable(pos+n, spawn) && Actor.findChar( pos+n ) == null) {
 					candidates.add( pos+n );
 				}
 			}
 
 			if (!candidates.isEmpty()) {
-				Mob spawn = createSummonedMob();
-
 				spawn.pos = Random.element( candidates );
 
 				GameScene.add( spawn, 1 );

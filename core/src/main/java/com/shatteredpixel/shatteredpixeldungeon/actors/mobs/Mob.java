@@ -54,7 +54,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Feint;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
@@ -512,7 +511,7 @@ public abstract class Mob extends Char {
 				return null;
 			} else {
 				//go after the closest potential enemy, preferring enemies that can be reached/attacked, and the hero if two are equidistant
-				PathFinder.buildDistanceMap(pos, Dungeon.findPassable(this, Dungeon.level.passable, hasMindVision ? Dungeon.level.passable : fieldOfView, true));
+				PathFinder.buildDistanceMap(pos, Dungeon.findPassable(this, Dungeon.level.getPassableVar(this), hasMindVision ? Dungeon.level.getPassableVar(this) : fieldOfView, true));
 				Char closest = null;
 
 				for (Char curr : enemies){
@@ -591,7 +590,7 @@ public abstract class Mob extends Char {
 	}
 
 	private boolean cellIsPathable( int cell ){
-		if (!Dungeon.level.passable[cell]){
+		if (!Dungeon.level.isPassable(cell, this)){
 			if (flying || buff(Amok.class) != null){
 				if (!Dungeon.level.avoid[cell]){
 					return false;
@@ -606,8 +605,6 @@ public abstract class Mob extends Char {
 		if (Actor.findChar(cell) != null){
 			return false;
 		}
-
-		if (Barrier.stopMobs(cell, alignment)) return false;
 
 		return true;
 	}
@@ -701,13 +698,13 @@ public abstract class Mob extends Char {
 			//generate a new path
 			if (newPath) {
 				//If we aren't hunting, always take a full path
-				PathFinder.Path full = Dungeon.findPath(this, target, Dungeon.level.passable, fieldOfView, true);
+				PathFinder.Path full = Dungeon.findPath(this, target, Dungeon.level.getPassableVar(this), fieldOfView, true);
 				if (state != HUNTING){
 					path = full;
 				} else {
 					//otherwise, check if other characters are forcing us to take a very slow route
 					// and don't try to go around them yet in response, basically assume their blockage is temporary
-					PathFinder.Path ignoreChars = Dungeon.findPath(this, target, Dungeon.level.passable, fieldOfView, false);
+					PathFinder.Path ignoreChars = Dungeon.findPath(this, target, Dungeon.level.getPassableVar(this), fieldOfView, false);
 					if (ignoreChars != null && (full == null || full.size() > 2*ignoreChars.size())){
 						//check if first cell of shorter path is valid. If it is, use new shorter path. Otherwise do nothing and wait.
 						path = ignoreChars;
@@ -739,7 +736,7 @@ public abstract class Mob extends Char {
 			return false;
 		}
 		
-		int step = Dungeon.flee( this, target, Dungeon.level.passable, fieldOfView, true );
+		int step = Dungeon.flee( this, target, Dungeon.level.getPassableVar(this), fieldOfView, true );
 		if (step != -1) {
 			move( step );
 			return true;
@@ -1098,7 +1095,7 @@ public abstract class Mob extends Char {
 
 				tries--;
 				int cell = pos + PathFinder.NEIGHBOURS8[Random.Int(8)];
-				if (Dungeon.level.passable[cell]) {
+				if (Dungeon.level.isPassable(cell, this)) {
 					Item toDrop = item.getCopy();
 					toDrop.quantity(1);
 					quantity--;

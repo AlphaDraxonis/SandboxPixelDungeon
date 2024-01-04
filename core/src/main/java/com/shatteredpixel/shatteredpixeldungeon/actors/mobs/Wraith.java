@@ -101,7 +101,7 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 	}
 	
 	public static Wraith spawnAt( int pos, boolean allowExotic ) {
-		if ((!Dungeon.level.solid[pos] || Dungeon.level.passable[pos]) && Actor.findChar( pos ) == null) {
+		if ((!Dungeon.level.solid[pos] || Dungeon.level.isPassableMob(pos)) && Actor.findChar( pos ) == null) {
 
 			Wraith w;
 			if (allowExotic && Random.Int(100) == 0){

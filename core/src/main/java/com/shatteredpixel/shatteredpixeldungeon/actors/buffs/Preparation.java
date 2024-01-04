@@ -285,12 +285,12 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 				
 				AttackLevel lvl = AttackLevel.getLvl(turnsInvis);
 
-				PathFinder.buildDistanceMap(Dungeon.hero.pos,BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null), lvl.blinkDistance());
+				PathFinder.buildDistanceMap(Dungeon.hero.pos,BArray.or(Dungeon.level.getPassableVar(enemy), Dungeon.level.avoid, null), lvl.blinkDistance());
 				int dest = -1;
 				for (int i : PathFinder.NEIGHBOURS8){
 					//cannot blink into a cell that's occupied or impassable, only over them
 					if (Actor.findChar(cell+i) != null)     continue;
-					if (!Dungeon.level.passable[cell+i] && !(target.flying && Dungeon.level.avoid[cell+i])) {
+					if (!Dungeon.level.isPassableHero(cell+i) && !(target.flying && Dungeon.level.avoid[cell+i])) {
 						continue;
 					}
 

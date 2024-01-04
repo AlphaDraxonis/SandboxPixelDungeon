@@ -345,7 +345,7 @@ public class CursedWand {
 					ArrayList<Integer> candidates = new ArrayList<Integer>();
 					for (int n : PathFinder.NEIGHBOURS8) {
 						int cell = targetPos + n;
-						if (Dungeon.level.passable[cell] && Actor.findChar( cell ) == null) {
+						if (Dungeon.level.isPassable(cell, ch) && Actor.findChar( cell ) == null) {
 							candidates.add( cell );
 						}
 					}

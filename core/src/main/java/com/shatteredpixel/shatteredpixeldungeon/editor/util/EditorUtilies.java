@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
@@ -344,17 +345,17 @@ public final class EditorUtilies {
     public static final ParagraphIndicator PARAGRAPH_INDICATOR_INSTANCE = new ParagraphIndicator();
 
 
-    public static int getRandomCellGuranteed(Level level) {
+    public static int getRandomCellGuranteed(Level level, Char ch) {
         int pos;
         int tries = level.length();
         do {
             pos = Random.Int(level.length());//Choose a random cell
             tries--;
-        } while ((!level.passable[pos] || level.avoid[pos]) && tries >= 0);
-        if (!level.passable[pos] || level.avoid[pos]) {
+        } while ((!level.isPassable(pos, ch) || level.avoid[pos]) && tries >= 0);
+        if (!level.isPassable(pos, ch) || level.avoid[pos]) {
             int l = level.length();
             for (pos = 0; pos < l; pos++) {
-                if (level.passable[pos] && !level.avoid[pos])
+                if (level.isPassable(pos, ch) && !level.avoid[pos])
                     break;//choose first valid cell
             }
             return pos == l

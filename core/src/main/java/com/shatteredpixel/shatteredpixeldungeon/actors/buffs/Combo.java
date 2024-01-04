@@ -472,7 +472,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					Ballistica c = new Ballistica(target.pos, enemy.pos, Ballistica.PROJECTILE | Ballistica.STOP_BARRIER_PROJECTILES);
 					if (c.collisionPos == enemy.pos){
 						final int leapPos = c.path.get(c.dist-1);
-						if (!Dungeon.level.passable[leapPos] && !(target.flying && Dungeon.level.avoid[leapPos])){
+						if (!Dungeon.level.isPassable(leapPos, enemy) && !(target.flying && Dungeon.level.avoid[leapPos])){
 							GLog.w(Messages.get(Combo.class, "bad_target"));
 						} else if (Dungeon.hero.rooted) {
 							PixelScene.shake( 1, 1f );

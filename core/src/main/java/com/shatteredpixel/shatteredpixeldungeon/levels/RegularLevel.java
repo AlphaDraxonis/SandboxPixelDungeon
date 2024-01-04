@@ -305,7 +305,7 @@ public abstract class RegularLevel extends Level {
 					mob.pos = pointToCell(roomToSpawn.random());
 					tries--;
 				} while (tries >= 0 && (findMob(mob.pos) != null
-						|| !passable[mob.pos]
+						|| !isPassable(mob.pos, mob)
 						|| solid[mob.pos]
 						|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
 						|| mob.pos == exit()
@@ -325,7 +325,7 @@ public abstract class RegularLevel extends Level {
 							mob.pos = pointToCell(roomToSpawn.random());
 							tries--;
 						} while (tries >= 0 && (findMob(mob.pos) != null
-								|| !passable[mob.pos]
+								|| !isPassable(mob.pos, mob)
 								|| solid[mob.pos]
 								|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
 								|| mob.pos == exit()
@@ -370,7 +370,7 @@ public abstract class RegularLevel extends Level {
 			cell = pointToCell(room.random(1));
 			if (!heroFOV[cell]
 					&& Actor.findChar( cell ) == null
-					&& passable[cell]
+					&& isPassable(cell, ch)
 					&& !solid[cell]
 					&& (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])
 					&& room.canPlaceCharacter(cellToPoint(cell), this)
@@ -406,7 +406,7 @@ public abstract class RegularLevel extends Level {
 			ArrayList<Point> points = room.charPlaceablePoints(this);
 			if (!points.isEmpty()){
 				cell = pointToCell(Random.element(points));
-				if (passable[cell] && (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])) {
+				if (isPassable(cell, ch) && (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])) {
 					return cell;
 				}
 			}
@@ -716,7 +716,7 @@ public abstract class RegularLevel extends Level {
 			}
 			if (room != roomEntrance) {
 				int pos = pointToCell(room.random());
-				if (passable[pos] && !solid[pos]
+				if (isPassableHero(pos) && !solid[pos]
 						&& pos != exit()
 						&& room.canPlaceItem(cellToPoint(pos), this)
 						&& (tries <= lengthHalf || (heaps.get(pos) == null && findMob(pos) == null))) {
@@ -748,7 +748,7 @@ public abstract class RegularLevel extends Level {
 					ArrayList<Integer> candidates = new ArrayList<>();
 					for (Point p : room.getPoints()){
 						int cell = pointToCell(p);
-						if (passable[cell] &&
+						if (isPassableHero(cell) &&
 								findMob(cell) == null){
 							candidates.add(cell);
 						}

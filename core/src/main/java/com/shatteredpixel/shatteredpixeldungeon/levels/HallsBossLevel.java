@@ -192,12 +192,12 @@ public class HallsBossLevel extends Level {
 
 		//basic version of building flag maps for the pathfinder test
 		for (int i = 0; i < length; i++){
-			passable[i]	= ( Terrain.flags[map[i]] & Terrain.PASSABLE) != 0;
+			getPassableVar()[i]	= ( Terrain.flags[map[i]] & Terrain.PASSABLE) != 0;
 		}
 
 		//ensures a path to the exit exists
 		int realEntrance = entrance(), realExit = exit();
-		return (PathFinder.getStep(entrance(), realEntrance == realExit ? exitCell : realExit, passable) != -1);
+		return (PathFinder.getStep(entrance(), realEntrance == realExit ? exitCell : realExit, getPassableVar()) != -1);
 	}
 
 	@Override
@@ -225,7 +225,7 @@ public class HallsBossLevel extends Level {
 		ArrayList<Integer> candidates = new ArrayList<>();
 		for (int i : PathFinder.NEIGHBOURS8){
 			int cell = entrance() + i;
-			if (passable[cell]
+			if (isPassable(cell, ch)
 					&& Actor.findChar(cell) == null
 					&& (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])){
 				candidates.add(cell);

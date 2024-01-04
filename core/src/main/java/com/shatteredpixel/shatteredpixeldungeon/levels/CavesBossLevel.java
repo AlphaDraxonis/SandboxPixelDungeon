@@ -239,7 +239,7 @@ public class CavesBossLevel extends Level {
 		ArrayList<Integer> candidates = new ArrayList<>();
 		for (int i : PathFinder.NEIGHBOURS8){
 			int cell = entrance() + i;
-			if (passable[cell]
+			if (isPassable(cell, ch)
 					&& Actor.findChar(cell) == null
 					&& (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])){
 				candidates.add(cell);
@@ -293,7 +293,7 @@ public class CavesBossLevel extends Level {
 			int n;
 			do {
 				n = entrance + PathFinder.NEIGHBOURS8[Random.Int(8)];
-			} while (!Dungeon.level.passable[n]);
+			} while (!Dungeon.level.isPassableHero(n));
 			Heap dropped = Dungeon.level.drop(heap.pickUp(), n);
 			dropped.seen = heap.seen;
 		}
@@ -303,7 +303,7 @@ public class CavesBossLevel extends Level {
 			int n;
 			do {
 				n = entrance + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
-			} while (!Dungeon.level.passable[n]);
+			} while (!Dungeon.level.isPassable(n, ch));
 			ch.pos = n;
 			ch.sprite.place(n);
 		}

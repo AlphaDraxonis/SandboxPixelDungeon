@@ -207,7 +207,7 @@ public class MagicalFireRoom extends SpecialRoom {
 							}
 						}
 
-						l.passable[cell] = cur[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0;
+						l.setPassableLater(cell,cur[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0);
 					}
 
 					if (cur[cell] > 0
@@ -248,7 +248,7 @@ public class MagicalFireRoom extends SpecialRoom {
 		@Override
 		public void seed(Level level, int cell, int amount) {
 			super.seed(level, cell, amount);
-			level.passable[cell] = cur[cell] == 0 && (Terrain.flags[level.map[cell]] & Terrain.PASSABLE) != 0;
+			level.setPassableLater(cell, cur[cell] == 0 && (Terrain.flags[level.map[cell]] & Terrain.PASSABLE) != 0);
 		}
 
 		@Override
@@ -279,7 +279,7 @@ public class MagicalFireRoom extends SpecialRoom {
 		public void onBuildFlagMaps( Level l ) {
 			if (volume > 0){
 				for (int i=0; i < l.length(); i++) {
-					l.passable[i] = l.passable[i] && cur[i] == 0;
+					l.getPassableVar()[i] &= cur[i] == 0;
 				}
 			}
 		}

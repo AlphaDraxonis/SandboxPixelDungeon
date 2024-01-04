@@ -160,7 +160,7 @@ public class RipperDemon extends Mob {
 					int bouncepos = -1;
 					for (int i : PathFinder.NEIGHBOURS8){
 						if ((bouncepos == -1 || Dungeon.level.trueDistance(pos, leapPos+i) < Dungeon.level.trueDistance(pos, bouncepos))
-								&& Actor.findChar(leapPos+i) == null && Dungeon.level.passable[leapPos+i]){
+								&& Actor.findChar(leapPos+i) == null && Dungeon.level.isPassable(leapPos+i, RipperDemon.this)){
 							bouncepos = leapPos+i;
 						}
 					}

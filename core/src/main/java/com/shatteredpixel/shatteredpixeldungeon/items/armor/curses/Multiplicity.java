@@ -58,7 +58,7 @@ public class Multiplicity extends Armor.Glyph {
 
 			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 				int p = defender.pos + PathFinder.NEIGHBOURS8[i];
-				if (Actor.findChar( p ) == null && (Dungeon.level.passable[p] || Dungeon.level.avoid[p])) {
+				if (Actor.findChar( p ) == null && (Dungeon.level.isPassable(p, defender) || Dungeon.level.avoid[p])) {
 					spawnPoints.add( p );
 				}
 			}

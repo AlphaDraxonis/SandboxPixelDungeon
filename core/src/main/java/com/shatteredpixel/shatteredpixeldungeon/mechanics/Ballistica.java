@@ -125,7 +125,7 @@ public class Ballistica {
 			if (collisionPos == null
 					&& stopTerrain
 					&& cell != sourcePos
-					&& !Dungeon.level.passable[cell]
+					&& !Dungeon.level.isPassable(cell)//tzz shoot
 					&& !Dungeon.level.avoid[cell]
 					&& Actor.findChar(cell) == null) {
 				collide(path.get(path.size() - 1));
@@ -137,7 +137,7 @@ public class Ballistica {
 			path.add(cell);
 
 			if (collisionPos == null && stopTerrain && cell != sourcePos && Dungeon.level.solid[cell]) {
-				if (ignoreSoftSolid && (Dungeon.level.passable[cell] || Dungeon.level.avoid[cell])) {
+				if (ignoreSoftSolid && (Dungeon.level.isPassable(cell) || Dungeon.level.avoid[cell])) {//tzz shoot
 					//do nothing
 				} else {
 					collide(cell);

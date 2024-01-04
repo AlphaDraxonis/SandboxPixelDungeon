@@ -92,9 +92,10 @@ public abstract class WellWater extends Blob {
 			} else {
 				
 				int newPlace;
+				int tries = 100;
 				do {
 					newPlace = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
-				} while (!Dungeon.level.passable[newPlace] && !Dungeon.level.avoid[newPlace]);
+				} while (!Dungeon.level.isPassableHero(newPlace) && !Dungeon.level.avoid[newPlace] && tries-- > 0);
 				Dungeon.level.drop( heap.pickUp(), newPlace ).sprite.drop( pos );
 				
 				return false;

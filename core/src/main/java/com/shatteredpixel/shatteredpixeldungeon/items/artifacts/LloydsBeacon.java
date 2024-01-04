@@ -164,7 +164,7 @@ public class LloydsBeacon extends Artifact {
 					if (m.pos == hero.pos){
 						//displace mob
 						for(int i : PathFinder.NEIGHBOURS8){
-							if (Actor.findChar(m.pos+i) == null && Dungeon.level.passable[m.pos + i]){
+							if (Actor.findChar(m.pos+i) == null && Dungeon.level.isPassable(m.pos + i, m)){
 								m.pos += i;
 								m.sprite.point(m.sprite.worldToCamera(m.pos));
 								break;

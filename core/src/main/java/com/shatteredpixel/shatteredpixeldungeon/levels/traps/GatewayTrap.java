@@ -71,7 +71,7 @@ public class GatewayTrap extends Trap {
 					int cell = Dungeon.level.randomRespawnCell( null );
 
 					if (cell == -1) {
-						cell = ScrollOfTeleportation.teleportInNonRegularLevel(heap.pos, false, Dungeon.level.passable, false);
+						cell = ScrollOfTeleportation.teleportInNonRegularLevel(heap.pos, false, Dungeon.level.getPassableHeroVar(), false);
 					}
 
 					if (cell != -1) {
@@ -88,14 +88,14 @@ public class GatewayTrap extends Trap {
 
 			ArrayList<Integer> telePositions = new ArrayList<>();
 			for (int i : PathFinder.NEIGHBOURS8){
-				if (Dungeon.level.passable[telePos+i]
+				if (Dungeon.level.isPassable(telePos+i)
 						&& Actor.findChar( telePos+i ) == null){
 					telePositions.add(telePos+i);
 				}
 			}
 			Random.shuffle(telePositions);
 
-			if (Dungeon.level.passable[telePos]
+			if (Dungeon.level.isPassable(telePos)
 					&& Actor.findChar( telePos ) == null){
 				telePositions.add(0, telePos);
 			}
@@ -140,7 +140,7 @@ public class GatewayTrap extends Trap {
 				if (heap != null && heap.type == Heap.Type.HEAP){
 					Item item = heap.pickUp();
 					int actualTelepos = telePos;
-					if (!Dungeon.level.passable[actualTelepos]) actualTelepos = telePositions.get(Random.Int(telePositions.size()));
+					if (!Dungeon.level.isPassableHero(actualTelepos)) actualTelepos = telePositions.get(Random.Int(telePositions.size()));
 					Dungeon.level.drop( item, actualTelepos );
 					if (item instanceof Honeypot.ShatteredPot){
 						((Honeypot.ShatteredPot)item).movePot(pos, actualTelepos);

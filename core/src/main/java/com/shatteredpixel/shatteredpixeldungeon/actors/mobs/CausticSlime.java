@@ -57,9 +57,10 @@ public class CausticSlime extends Slime {
 
 		if (!(loot instanceof LootTableComp.CustomLootInfo)) {
 			int ofs;
+			int tries = 100;
 			do {
 				ofs = PathFinder.NEIGHBOURS8[Random.Int(8)];
-			} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.passable[pos + ofs]);
+			} while (Dungeon.level.solid[pos + ofs] && !Dungeon.level.isPassableHero(pos + ofs) && tries-- > 0);
 			Dungeon.level.drop(new GooBlob(), pos + ofs).sprite.drop(pos);
 		}
 	}

@@ -494,7 +494,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 				if (!dash.collisionPos.equals(target)
 						|| Actor.findChar(target) != null
-						|| (Dungeon.level.solid[target] && !Dungeon.level.passable[target])){
+						|| (Dungeon.level.solid[target] && !Dungeon.level.isPassable(target, hero))){
 					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
 					return;
 				}

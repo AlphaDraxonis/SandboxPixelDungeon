@@ -134,8 +134,8 @@ public class Imp extends QuestNPC<ImpQuest> {
 				level.traps.get(pos) != null ||
 				level.findMob(pos) != null ||
 				//The imp doesn't move, so he cannot obstruct a passageway
-				!(level.passable[pos + PathFinder.CIRCLE4[0]] && level.passable[pos + PathFinder.CIRCLE4[2]]) ||
-				!(level.passable[pos + PathFinder.CIRCLE4[1]] && level.passable[pos + PathFinder.CIRCLE4[3]]));
+				!(level.isPassableHero(pos + PathFinder.CIRCLE4[0]) && level.isPassableHero(pos + PathFinder.CIRCLE4[2])) ||
+				!(level.isPassableHero(pos + PathFinder.CIRCLE4[1]) && level.isPassableHero(pos + PathFinder.CIRCLE4[3])));
 		if (pos != -1) level.mobs.add(this);
 	}
 

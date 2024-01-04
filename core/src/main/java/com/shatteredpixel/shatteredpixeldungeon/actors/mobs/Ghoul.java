@@ -114,7 +114,7 @@ public class Ghoul extends Mob {
 			
 			int[] neighbours = {pos + 1, pos - 1, pos + Dungeon.level.width(), pos - Dungeon.level.width()};
 			for (int n : neighbours) {
-				if (Dungeon.level.passable[n]
+				if (Dungeon.level.isPassable(n, this)
 						&& Actor.findChar( n ) == null
 						&& (!Char.hasProp(this, Property.LARGE) || Dungeon.level.openSpace[n])) {
 					candidates.add( n );
@@ -274,7 +274,7 @@ public class Ghoul extends Mob {
 					ArrayList<Integer> candidates = new ArrayList<>();
 					for (int n : PathFinder.NEIGHBOURS8) {
 						int cell = ghoul.pos + n;
-						if (Dungeon.level.passable[cell]
+						if (Dungeon.level.isPassable(cell, ghoul)
 								&& Actor.findChar( cell ) == null
 								&& (!Char.hasProp(ghoul, Property.LARGE) || Dungeon.level.openSpace[cell])) {
 							candidates.add( cell );

@@ -174,9 +174,9 @@ public class Spinner extends Mob {
 		int webPos = b.path.get( collisionIndex+1 );
 
 		//ensure we aren't shooting the web through walls
-		int projectilePos = new Ballistica( pos, webPos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID).collisionPos;
+		int projectilePos = new Ballistica( pos, webPos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES).collisionPos;
 		
-		if (webPos != enemy.pos && projectilePos == webPos && Dungeon.level.passable[webPos]){
+		if (webPos != enemy.pos && projectilePos == webPos && Dungeon.level.isPassable(webPos)){
 			return webPos;
 		} else {
 			return -1;
@@ -198,9 +198,9 @@ public class Spinner extends Mob {
 			int leftPos = enemy.pos + PathFinder.CIRCLE8[left(i)];
 			int rightPos = enemy.pos + PathFinder.CIRCLE8[right(i)];
 			
-			if (Dungeon.level.passable[leftPos]) GameScene.add(Blob.seed(leftPos, 20, Web.class));
-			if (Dungeon.level.passable[webPos])  GameScene.add(Blob.seed(webPos, 20, Web.class));
-			if (Dungeon.level.passable[rightPos])GameScene.add(Blob.seed(rightPos, 20, Web.class));
+			if (Dungeon.level.isPassable(leftPos)) GameScene.add(Blob.seed(leftPos, 20, Web.class));
+			if (Dungeon.level.isPassable(webPos))  GameScene.add(Blob.seed(webPos, 20, Web.class));
+			if (Dungeon.level.isPassable(rightPos))GameScene.add(Blob.seed(rightPos, 20, Web.class));
 			
 			webCoolDown = maxWebCoolDown;
 

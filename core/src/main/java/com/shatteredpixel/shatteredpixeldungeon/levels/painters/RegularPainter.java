@@ -444,12 +444,12 @@ public abstract class RegularPainter extends Painter {
 
 		//temporarily use the passable array for the next step
 		for (int i = 0; i < l.length(); i++){
-			l.passable[i] = (Terrain.flags[l.map[i]] & Terrain.PASSABLE) != 0;
+			l.getPassableVar()[i] = (Terrain.flags[l.map[i]] & Terrain.PASSABLE) != 0;
 		}
 
 		for (int i : validCells){
-			if ((l.passable[i+PathFinder.CIRCLE4[0]] || l.passable[i+PathFinder.CIRCLE4[2]])
-					&& (l.passable[i+PathFinder.CIRCLE4[1]] || l.passable[i+PathFinder.CIRCLE4[3]])){
+			if ((l.getPassableVar()[i+PathFinder.CIRCLE4[0]] || l.getPassableVar()[i+PathFinder.CIRCLE4[2]])
+					&& (l.getPassableVar()[i+PathFinder.CIRCLE4[1]] || l.getPassableVar()[i+PathFinder.CIRCLE4[3]])){
 				validNonHallways.add(i);
 			}
 		}

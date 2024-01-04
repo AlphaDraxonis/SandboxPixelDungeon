@@ -707,7 +707,7 @@ public class PrisonBossLevel extends Level {
 		ArrayList<Integer> candidates = new ArrayList<>();
 		for (int i : PathFinder.NEIGHBOURS8){
 			int cell = ENTRANCE_POS + i;
-			if (passable[cell]
+			if (isPassable(cell, ch)
 					&& Actor.findChar(cell) == null
 					&& (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])){
 				candidates.add(cell);

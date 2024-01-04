@@ -80,7 +80,7 @@ public class DistortionTrap extends Trap{
 
 		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 			int p = pos + PathFinder.NEIGHBOURS8[i];
-			if (Actor.findChar( p ) == null && (Dungeon.level.passable[p] || Dungeon.level.avoid[p])) {
+			if (Actor.findChar( p ) == null && (Dungeon.level.isPassableMob(p) || Dungeon.level.avoid[p])) {
 				candidates.add( p );
 			}
 		}

@@ -204,7 +204,7 @@ public class Necromancer extends SpawnerMob {
 			int pushPos = pos;
 			for (int c : PathFinder.NEIGHBOURS8) {
 				if (Actor.findChar(summoningPos + c) == null
-						&& Dungeon.level.passable[summoningPos + c]
+						&& Dungeon.level.isPassable(summoningPos + c, this)
 						&& (Dungeon.level.openSpace[summoningPos + c] || !hasProp(Actor.findChar(summoningPos), Property.LARGE))
 						&& Dungeon.level.trueDistance(pos, summoningPos + c) > Dungeon.level.trueDistance(pos, pushPos)) {
 					pushPos = summoningPos + c;
@@ -303,7 +303,7 @@ public class Necromancer extends SpawnerMob {
 				for (int c : PathFinder.NEIGHBOURS8){
 					if (Actor.findChar(enemy.pos+c) == null
 							&& PathFinder.distance[enemy.pos+c] != Integer.MAX_VALUE
-							&& Dungeon.level.passable[enemy.pos+c]
+							&& Dungeon.level.isPassable(enemy.pos+c, Necromancer.this)
 							&& (!hasProp(Necromancer.this, Property.LARGE) || Dungeon.level.openSpace[enemy.pos+c])
 							&& fieldOfView[enemy.pos+c]
 							&& Dungeon.level.trueDistance(pos, enemy.pos+c) < Dungeon.level.trueDistance(pos, summoningPos)){
@@ -336,7 +336,7 @@ public class Necromancer extends SpawnerMob {
 						int telePos = -1;
 						for (int c : PathFinder.NEIGHBOURS8){
 							if (Actor.findChar(enemy.pos+c) == null
-									&& Dungeon.level.passable[enemy.pos+c]
+									&& Dungeon.level.isPassable(enemy.pos+c, mySummon)
 									&& fieldOfView[enemy.pos+c]
 									&& (Dungeon.level.openSpace[enemy.pos+c] || !Char.hasProp(mySummon, Property.LARGE))
 									&& Dungeon.level.trueDistance(pos, enemy.pos+c) < Dungeon.level.trueDistance(pos, telePos)){

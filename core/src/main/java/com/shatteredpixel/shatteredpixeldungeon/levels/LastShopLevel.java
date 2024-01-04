@@ -133,7 +133,7 @@ public class LastShopLevel extends RegularLevel {
 		ArrayList<Integer> candidates = new ArrayList<>();
 		for (Point p : roomEntrance.getPoints()){
 			int cell = pointToCell(p);
-			if (passable[cell]
+			if (isPassable(cell, ch)
 					&& Actor.findChar(cell) == null
 					&& (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])){
 				candidates.add(cell);

@@ -80,7 +80,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -182,7 +181,7 @@ public abstract class Char extends Actor {
 				&& !(heap.peek() instanceof Tengu.ShockerAbility.ShockerItem)) {
 			ArrayList<Integer> candidates = new ArrayList<>();
 			for (int n : PathFinder.NEIGHBOURS8){
-				if (Dungeon.level.passable[pos+n]){
+				if (Dungeon.level.isPassableHero(pos+n)){
 					candidates.add(pos+n);
 				}
 			}
@@ -213,7 +212,7 @@ public abstract class Char extends Actor {
 
 		//don't allow char to swap onto hazard unless they're flying
 		//you can swap onto a hazard though, as you're not the one instigating the swap
-		if (!Dungeon.level.passable[pos] && !c.flying){
+		if (!Dungeon.level.isPassable(pos, this) && !c.flying){
 			return true;
 		}
 
@@ -230,7 +229,7 @@ public abstract class Char extends Actor {
 
 		//warp instantly with allies in this case
 		if (c == Dungeon.hero && Dungeon.hero.hasTalent(Talent.ALLY_WARP)){
-			PathFinder.buildDistanceMap(c.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+			PathFinder.buildDistanceMap(c.pos, BArray.or(Dungeon.level.getPassableHeroVar(), Dungeon.level.avoid, null));
 			if (PathFinder.distance[pos] == Integer.MAX_VALUE){
 				return true;
 			}
@@ -1026,7 +1025,7 @@ public abstract class Char extends Actor {
 		if (travelling && Dungeon.level.adjacent( step, pos ) && buff( Vertigo.class ) != null) {
 			sprite.interruptMotion();
 			int newPos = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
-			if (!(Dungeon.level.passable[newPos] || Dungeon.level.avoid[newPos])
+			if (!(Dungeon.level.isPassable(newPos, this) || Dungeon.level.avoid[newPos])
 					|| (properties().contains(Property.LARGE) && !Dungeon.level.openSpace[newPos])
 					|| findChar( newPos ) != null)
 				return;
@@ -1053,17 +1052,8 @@ public abstract class Char extends Actor {
 		return Dungeon.level.distance( pos, other.pos );
 	}
 
-	//renamed so a ShPD update can't silently override this method without considering the result of this super method
-	public boolean[] modifyPassableRenamed(boolean[] passable){
-		if (alignment == Alignment.ENEMY) {
-			for (Barrier b : Dungeon.level.barriers.values()) {
-				passable[b.pos] &= !b.blocksMobs();
-			}
-		} else {
-			for (Barrier b : Dungeon.level.barriers.values()) {
-				passable[b.pos] &= !b.blocksAllies();
-			}
-		}
+	public boolean[] modifyPassable(boolean[] passable){
+		//do nothing by default
 		return passable;
 	}
 	

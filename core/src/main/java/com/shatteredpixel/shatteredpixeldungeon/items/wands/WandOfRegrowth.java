@@ -340,7 +340,7 @@ public class WandOfRegrowth extends Wand {
 
 			ArrayList<Integer> candidates = new ArrayList<>();
 			for (int i : PathFinder.NEIGHBOURS8){
-				if (Dungeon.level.passable[pos+i]
+				if (Dungeon.level.isPassable(pos+i)
 						&& pos+i != Dungeon.level.entrance()
 						&& pos+i != Dungeon.level.exit()){
 					candidates.add(pos+i);
@@ -380,7 +380,7 @@ public class WandOfRegrowth extends Wand {
 
 			ArrayList<Integer> candidates = new ArrayList<>();
 			for (int i : PathFinder.NEIGHBOURS8){
-				if (Dungeon.level.passable[pos+i]
+				if (Dungeon.level.isPassable(pos+i)
 						&& pos+i != Dungeon.level.entrance()
 						&& pos+i != Dungeon.level.exit()){
 					candidates.add(pos+i);

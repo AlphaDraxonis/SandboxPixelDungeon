@@ -277,7 +277,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         @Override
         public void onSelect(Integer cell) {
             if (cell != null) {
-                boolean validDest = Dungeon.level.passable[cell] && !Dungeon.level.secret[cell] && EditorScene.customLevel().findMob(cell) == null;
+                boolean validDest = Dungeon.level.isPassable(cell) && !Dungeon.level.secret[cell] && EditorScene.customLevel().findMob(cell) == null;
                 GatewayTrap trap = (GatewayTrap) obj;
                 if (!validDest) trap.telePos = -1;
                 else trap.telePos = cell;

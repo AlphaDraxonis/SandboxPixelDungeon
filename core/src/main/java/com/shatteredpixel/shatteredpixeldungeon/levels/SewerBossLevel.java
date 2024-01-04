@@ -132,7 +132,7 @@ public class SewerBossLevel extends SewerLevel {
 		ArrayList<Integer> candidates = new ArrayList<>();
 		for (Point p : roomEntrance.getPoints()){
 			int cell = pointToCell(p);
-			if (passable[cell]
+			if (isPassable(cell, ch)
 					&& roomEntrance.inside(p)
 					&& Actor.findChar(cell) == null
 					&& (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])){

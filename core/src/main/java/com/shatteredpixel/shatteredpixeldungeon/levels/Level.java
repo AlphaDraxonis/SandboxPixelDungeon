@@ -178,7 +178,7 @@ public abstract class Level implements Bundlable {
 	
 	public boolean[] heroFOV;
 	
-	public boolean[] passable;
+	private boolean[] passable;
 	public boolean[] losBlocking;
 	private boolean[] flamable;
 	public boolean[] secret;
@@ -188,6 +188,8 @@ public abstract class Level implements Bundlable {
 	public boolean[] pit;
 
 	public boolean[] openSpace;
+
+	private boolean[] passableHero, passableMob, passableAlly;
 
 	/**
 	 * <b>IMPORTANT: keep keys synchronised with levelScheme.zones!!!</b>
@@ -392,7 +394,11 @@ public abstract class Level implements Bundlable {
 		openSpace   = new boolean[length];
 
 		zone 		= new Zone[length];
-		
+
+		passableHero=new boolean[length];
+		passableMob =new boolean[length];
+		passableAlly=new boolean[length];
+
 		PathFinder.setMapSize(w, h);
 	}
 	
@@ -1142,7 +1148,7 @@ public abstract class Level implements Bundlable {
 	}
 
 	public boolean spawnMob(int disLimit){
-		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(passable, avoid, null));
+		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(getPassableMobVar(), avoid, null));
 
 		Mob mob = createMob();
 		mob.state = mob.WANDERING;
@@ -1170,7 +1176,7 @@ public abstract class Level implements Bundlable {
 	public int randomRespawnCell(Char ch, boolean guarantee) {
 		boolean checkPath = Dungeon.hero.pos > 0;
 		if (checkPath)
-			PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(passable, avoid, null));
+			PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(getPassableVar(ch), avoid, null));
 
 		//prefer spawning >>>in zones<<< where no mobs can spawn if at least one zone that can spawn mobs exists
 		if (ch instanceof Hero) {
@@ -1186,7 +1192,7 @@ public abstract class Level implements Bundlable {
 					cell = Random.Int( length() );
 
 				} while ((Dungeon.level == this && heroFOV[cell])
-						|| !passable[cell]
+						|| !isPassable(cell, ch)
 						|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
 						|| Actor.findChar( cell ) != null
 						|| findMob(cell) != null
@@ -1208,7 +1214,7 @@ public abstract class Level implements Bundlable {
 					int l = length();
 					for (cell = 0; cell < l; cell++) {
 						if ((Dungeon.level == this && !heroFOV[cell])
-								&& passable[cell]
+								&& isPassable(cell, ch)
 								&& (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])
 								&& Actor.findChar(cell) == null
 								&& (!(ch instanceof Piranha) || map[cell] == Terrain.WATER)
@@ -1223,7 +1229,7 @@ public abstract class Level implements Bundlable {
 			cell = Random.Int( length() );
 
 		} while ((Dungeon.level == this && heroFOV[cell])
-				|| !passable[cell]
+				|| !isPassable(cell, ch)
 				|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
 				|| Actor.findChar( cell ) != null
 				|| (ch instanceof Piranha && map[cell] != Terrain.WATER)
@@ -1238,7 +1244,7 @@ public abstract class Level implements Bundlable {
 		int cell;
 		do {
 			cell = Random.Int( length() );
-		} while (!passable[cell]
+		} while (!isPassable(cell, ch)
 				|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell]));
 		return cell;
 	}
@@ -1283,6 +1289,8 @@ public abstract class Level implements Bundlable {
 			avoid[i]		= (flags & Terrain.AVOID) != 0;
 			water[i]		= (flags & Terrain.LIQUID) != 0;
 			pit[i]			= (flags & Terrain.PIT) != 0;
+
+			passableHero[i] = passableMob[i] = passableAlly[i] = passable[i];
 		}
 
 		for (Blob b : blobs.values()){
@@ -1301,6 +1309,12 @@ public abstract class Level implements Bundlable {
 			losBlocking[i] = solid[i] = true;
 			passable[i + width()-1] = avoid[i + width()-1] = false;
 			losBlocking[i + width()-1] = solid[i + width()-1] = true;
+		}
+
+		for (Barrier barrier : barriers.values()) {
+			if (barrier.blocksHero()) passableHero[barrier.pos] = false;
+			if (barrier.blocksMobs()) passableMob[barrier.pos] = false;
+			if (barrier.blocksAllies()) passableAlly[barrier.pos] = false;
 		}
 
         //an open space is large enough to fit large mobs. A space is open when it is not solid
@@ -1327,6 +1341,61 @@ public abstract class Level implements Bundlable {
             }
         }
 
+	}
+
+	public boolean isPassable(int cell) {
+		return passable[cell];
+	}
+
+	public boolean isPassable(int cell, Char c) {
+		if (c instanceof Hero) return isPassableHero(cell);
+		if (c.alignment == Char.Alignment.ENEMY) return isPassableMob(cell);
+		return isPassableAlly(cell);
+	}
+
+	public boolean isPassableHero(int cell) {
+		return passableHero[cell];
+	}
+
+	public boolean isPassableMob(int cell) {
+		return passableMob[cell];
+	}
+
+	public boolean isPassableAlly(int cell) {
+		return passableAlly[cell];
+	}
+
+	public void setPassableLater(int cell, boolean flag) {
+		passable[cell] = flag;
+		if (flag) {
+			Barrier barrier = barriers.get(cell);
+			passableHero[cell] = passableMob[cell] = passableAlly[cell] = true;
+			if (barrier != null) {
+				if (barrier.blocksHero()) passableHero[barrier.pos] = false;
+				if (barrier.blocksMobs()) passableMob[barrier.pos] = false;
+				if (barrier.blocksAllies()) passableAlly[barrier.pos] = false;
+			}
+		} else {
+			passableHero[cell] = passableMob[cell] = passableAlly[cell] = false;
+		}
+	}
+
+	public boolean[] getPassableVar() {
+		return passable;
+	}
+
+	public boolean[] getPassableVar(Char ch) {
+		if (ch instanceof Hero) return getPassableHeroVar();
+		if (ch.alignment == Char.Alignment.ENEMY) return getPassableMobVar();
+		return passableAlly;
+	}
+
+	public boolean[] getPassableHeroVar() {
+		return passableHero;
+	}
+
+	public boolean[] getPassableMobVar() {
+		return passableMob;
 	}
 
 	public boolean isFlamable(int cell) {
@@ -1384,7 +1453,7 @@ public abstract class Level implements Bundlable {
 		}
 
 		int flags = Terrain.flags[terrain];
-		level.passable[cell]		= (flags & Terrain.PASSABLE) != 0;
+		level.setPassableLater(cell, (flags & Terrain.PASSABLE) != 0);
 		level.losBlocking[cell]	    = (flags & Terrain.LOS_BLOCKING) != 0;
 		level.flamable[cell]		= (flags & Terrain.FLAMABLE) != 0;
 		level.secret[cell]		    = (flags & Terrain.SECRET) != 0;
@@ -1451,7 +1520,7 @@ public abstract class Level implements Bundlable {
 			int n;
 			do {
 				n = cell + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
-			} while (!passable[n] && !avoid[n]);
+			} while (!isPassableHero(n) && !avoid[n]);
 			return drop( item, n );
 			
 		} else {

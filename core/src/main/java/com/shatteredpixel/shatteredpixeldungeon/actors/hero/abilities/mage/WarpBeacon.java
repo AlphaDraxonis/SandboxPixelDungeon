@@ -201,10 +201,10 @@ public class WarpBeacon extends ArmorAbility {
 				return;
 			}
 
-			PathFinder.buildDistanceMap(target, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+			PathFinder.buildDistanceMap(target, BArray.or(Dungeon.level.getPassableHeroVar(), Dungeon.level.avoid, null));
 			if (Dungeon.level.pit[target] ||
-					(Dungeon.level.solid[target] && !Dungeon.level.passable[target]) ||
-					!(Dungeon.level.passable[target] || Dungeon.level.avoid[target]) ||
+					(Dungeon.level.solid[target] && !Dungeon.level.isPassableHero(target)) ||
+					!(Dungeon.level.isPassableHero(target) || Dungeon.level.avoid[target]) ||
 					PathFinder.distance[hero.pos] == Integer.MAX_VALUE){
 				GLog.w( Messages.get(WarpBeacon.class, "invalid_beacon") );
 				return;

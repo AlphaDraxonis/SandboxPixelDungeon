@@ -118,7 +118,7 @@ public class WandOfWarding extends Wand {
 			}
 		}
 
-		if (!Dungeon.level.passable[target]){
+		if (!Dungeon.level.isPassableAlly(target)){
 			GLog.w( Messages.get(this, "bad_location"));
 			Dungeon.level.pressCell(target);
 			

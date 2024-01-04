@@ -165,7 +165,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		initialThrone = pos;
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) HP = HT = (int) (HP * 1.5f);
 		if (!(Dungeon.level instanceof CityBossLevel)) {
-			Dungeon.level.passable[initialThrone] = false;
+			Dungeon.level.getPassableHeroVar()[initialThrone] = false;
 			phase = 0;
 		}
 	}
@@ -429,7 +429,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 					break;
 				}
 			}
-			if (clear && Dungeon.level.passable[pedestal] && Actor.findChar(pedestal) == null) {
+			if (clear && Dungeon.level.isPassable(pedestal, this) && Actor.findChar(pedestal) == null) {
 				positions.add(pedestal);
 			}
 		}
@@ -669,7 +669,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 		super.die( cause );
 
-		if (!(Dungeon.level instanceof CityBossLevel)) Dungeon.level.passable[initialThrone] = true;
+		if (!(Dungeon.level instanceof CityBossLevel)) Dungeon.level.getPassableHeroVar()[initialThrone] = true;
 
 		Heap h = Dungeon.level.heaps.get(thronePosition());
 		if (h != null) {
@@ -918,7 +918,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 				if (Actor.findChar(pos) != null){
 					ArrayList<Integer> candidates = new ArrayList<>();
 					for (int i : PathFinder.NEIGHBOURS8){
-						if (Dungeon.level.passable[pos+i] && Actor.findChar(pos+i) == null){
+						if (Dungeon.level.isPassable(pos+i, (Char) Actor.findById(kingID)) && Actor.findChar(pos+i) == null){
 							candidates.add(pos+i);
 						}
 					}

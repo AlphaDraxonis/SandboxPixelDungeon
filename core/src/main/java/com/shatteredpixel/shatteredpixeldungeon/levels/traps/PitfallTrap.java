@@ -65,7 +65,7 @@ public class PitfallTrap extends Trap {
 		for (int i : PathFinder.GET_ALL_CELLS_IN_RADIUS(radius)){
 			int cell = pos + i;
 			if (cell < 0 || cell > Dungeon.level.length()) continue;
-			if (!Dungeon.level.solid[cell] || Dungeon.level.passable[cell]){
+			if (!Dungeon.level.solid[cell] || Dungeon.level.isPassable(cell)){
 				CellEmitter.floor(cell).burst(PitfallParticle.FACTORY4, 8);
 			}
 		}
@@ -101,13 +101,13 @@ public class PitfallTrap extends Trap {
 					if (cell < 0 || cell > Dungeon.level.length()) continue;
 
 					if (delay > 0 ) {
-						if (!Dungeon.level.solid[cell] || Dungeon.level.passable[cell]){
+						if (!Dungeon.level.solid[cell] || Dungeon.level.isPassable(cell)){
 							CellEmitter.floor(cell).burst(PitfallParticle.FACTORY4, 8);
 						}
 						continue;
 					}
 
-					if (Dungeon.level.solid[pos+i] && !Dungeon.level.passable[pos+i]){
+					if (Dungeon.level.solid[pos+i] && !Dungeon.level.isPassable(pos+i)){
 						continue;
 					}
 

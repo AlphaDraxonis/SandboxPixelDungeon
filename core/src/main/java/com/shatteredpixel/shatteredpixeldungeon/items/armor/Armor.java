@@ -346,7 +346,7 @@ public class Armor extends EquipableItem {
 		
 		if (hasGlyph(Swiftness.class, owner)) {
 			boolean enemyNear = false;
-			PathFinder.buildDistanceMap(owner.pos, Dungeon.level.passable, 2);
+			PathFinder.buildDistanceMap(owner.pos, Dungeon.level.getPassableVar(), 2);
 			for (Char ch : Actor.chars()){
 				if ( PathFinder.distance[ch.pos] != Integer.MAX_VALUE && owner.alignment != ch.alignment){
 					enemyNear = true;

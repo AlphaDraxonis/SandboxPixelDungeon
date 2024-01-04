@@ -93,7 +93,7 @@ public class PlantItem extends EditorItem<Plant> {
     }
 
     public static boolean invalidPlacement(int cell, CustomLevel level) {
-        return !level.passable[cell] || !level.insideMap(cell);
+        return !level.isPassable(cell) || !level.insideMap(cell);
 //        return level.map[cell] == Terrain.EMPTY || TileItem.isGrassTerrainCell(level.map[cell]);
     }
 

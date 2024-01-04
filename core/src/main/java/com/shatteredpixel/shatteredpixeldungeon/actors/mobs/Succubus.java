@@ -137,7 +137,7 @@ public class Succubus extends Mob {
 			ArrayList<Integer> candidates = new ArrayList<>();
 			for (int n : PathFinder.NEIGHBOURS8) {
 				cell = route.collisionPos + n;
-				if (Dungeon.level.passable[cell]
+				if (Dungeon.level.isPassable(cell, this)
 						&& Actor.findChar( cell ) == null
 						&& (!properties().contains(Property.LARGE) || Dungeon.level.openSpace[cell])) {
 					candidates.add( cell );

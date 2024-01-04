@@ -302,7 +302,7 @@ public class YogDzewa extends Mob {
 				//remove one beam if multiple shots would cause every cell next to the hero to be targeted
 				boolean allAdjTargeted = true;
 				for (int i : PathFinder.NEIGHBOURS9){
-					if (!affectedCells.contains(Dungeon.hero.pos + i) && Dungeon.level.passable[Dungeon.hero.pos + i]){
+					if (!affectedCells.contains(Dungeon.hero.pos + i) && Dungeon.level.isPassableHero(Dungeon.hero.pos + i)){
 						allAdjTargeted = false;
 						break;
 					}
@@ -481,7 +481,7 @@ public class YogDzewa extends Mob {
 				boolean valid = true;
 				for (int j = -1; j <= 1; j++) {
 					Actor ch;
-					if (!Dungeon.level.passable[cell + j]
+					if (!Dungeon.level.isPassable(cell + j, fist)
 							|| !Dungeon.level.openSpace[cell + j]
 							|| !((ch = Actor.findChar(cell)) instanceof Sheep || ch == null)
 							|| Dungeon.level.findMob(cell + j) != null) {
@@ -495,7 +495,7 @@ public class YogDzewa extends Mob {
 				}
 			}
 			if (fist.pos == -1) {
-				fist.pos = EditorUtilies.getRandomCellGuranteed(Dungeon.level);
+				fist.pos = EditorUtilies.getRandomCellGuranteed(Dungeon.level, fist);
 			}
 			fist.pos -= width;
 		}

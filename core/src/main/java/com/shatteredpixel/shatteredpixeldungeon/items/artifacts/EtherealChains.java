@@ -120,7 +120,7 @@ public class EtherealChains extends Artifact {
 			if (target != null && (Dungeon.level.visited[target] || Dungeon.level.mapped[target])){
 
 				//chains cannot be used to go where it is impossible to walk to
-				PathFinder.buildDistanceMap(target, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+				PathFinder.buildDistanceMap(target, BArray.or(Dungeon.level.getPassableVar(curUser), Dungeon.level.avoid, null));
 				if (!(Dungeon.level instanceof MiningLevel) && PathFinder.distance[curUser.pos] == Integer.MAX_VALUE){
 					GLog.w( Messages.get(EtherealChains.class, "cant_reach") );
 					return;
@@ -215,7 +215,7 @@ public class EtherealChains extends Artifact {
 
 		//don't pull if the collision spot is in a wall
 		if (Dungeon.level.solid[chain.collisionPos]
-			|| !(Dungeon.level.passable[chain.collisionPos] || Dungeon.level.avoid[chain.collisionPos])){
+			|| !(Dungeon.level.isPassable(chain.collisionPos, hero) || Dungeon.level.avoid[chain.collisionPos])){
 			GLog.i( Messages.get(this, "inside_wall"));
 			return;
 		}

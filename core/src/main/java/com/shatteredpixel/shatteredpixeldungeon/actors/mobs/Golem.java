@@ -176,7 +176,7 @@ public class Golem extends Mob {
 
 		int bestPos = enemy.pos;
 		for (int i : PathFinder.NEIGHBOURS8){
-			if (Dungeon.level.passable[pos + i]
+			if (Dungeon.level.isPassable(pos + i, enemy)
 				&& Actor.findChar(pos+i) == null
 				&& Dungeon.level.trueDistance(pos+i, enemy.pos) > Dungeon.level.trueDistance(bestPos, enemy.pos)){
 				bestPos = pos+i;

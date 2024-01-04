@@ -98,7 +98,7 @@ public class ShadowClone extends ArmorAbility {
 			ArrayList<Integer> spawnPoints = new ArrayList<>();
 			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 				int p = hero.pos + PathFinder.NEIGHBOURS8[i];
-				if (Actor.findChar(p) == null && Dungeon.level.passable[p]) {
+				if (Actor.findChar(p) == null && Dungeon.level.isPassableAlly(p)) {
 					spawnPoints.add(p);
 				}
 			}
@@ -303,7 +303,7 @@ public class ShadowClone extends ArmorAbility {
 			}
 
 			//some checks from super.interact
-			if (!Dungeon.level.passable[pos] && !c.flying){
+			if (!Dungeon.level.isPassable(pos, this) && !c.flying){
 				return true;
 			}
 
@@ -315,7 +315,7 @@ public class ShadowClone extends ArmorAbility {
 			int curPos = pos;
 
 			//warp instantly with the clone
-			PathFinder.buildDistanceMap(c.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+			PathFinder.buildDistanceMap(c.pos, BArray.or(Dungeon.level.getPassableHeroVar(), Dungeon.level.avoid, null));
 			if (PathFinder.distance[pos] == Integer.MAX_VALUE){
 				return true;
 			}
