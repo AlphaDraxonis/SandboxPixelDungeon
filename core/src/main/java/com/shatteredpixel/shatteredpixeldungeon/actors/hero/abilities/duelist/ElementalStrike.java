@@ -152,7 +152,7 @@ public class ElementalStrike extends ArmorAbility {
 		armor.charge -= chargeUse(hero);
 		Item.updateQuickslot();
 
-		Ballistica aim = new Ballistica(hero.pos, target, Ballistica.WONT_STOP);
+		Ballistica aim = new Ballistica(hero.pos, target, Ballistica.WONT_STOP, null);
 
 		int maxDist = 3 + hero.pointsInTalent(Talent.ELEMENTAL_REACH);
 		int dist = Math.min(aim.dist, maxDist);
@@ -160,7 +160,7 @@ public class ElementalStrike extends ArmorAbility {
 		ConeAOE cone = new ConeAOE(aim,
 				dist,
 				65 + 10*hero.pointsInTalent(Talent.ELEMENTAL_REACH),
-				Ballistica.STOP_SOLID | Ballistica.STOP_TARGET);
+				Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.STOP_BARRIER_PROJECTILES, null);
 
 		KindOfWeapon w = hero.belongings.weapon();
 		Weapon.Enchantment enchantment = null;
@@ -406,10 +406,10 @@ public class ElementalStrike extends ArmorAbility {
 			for (Char ch : affected){
 				if (ch == primaryTarget && oldEnemyPos != primaryTarget.pos) continue;
 
-				Ballistica aim = new Ballistica(hero.pos, ch.pos, Ballistica.WONT_STOP);
+				Ballistica aim = new Ballistica(hero.pos, ch.pos, Ballistica.WONT_STOP, null);
 				int knockback = Math.round(5*powerMulti);
 				WandOfBlastWave.throwChar(ch,
-						new Ballistica(ch.pos, aim.collisionPos, Ballistica.MAGIC_BOLT),
+						new Ballistica(ch.pos, aim.collisionPos, Ballistica.MAGIC_BOLT, ch),
 						knockback,
 						true,
 						true,

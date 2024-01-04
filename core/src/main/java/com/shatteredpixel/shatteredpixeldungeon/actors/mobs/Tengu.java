@@ -269,7 +269,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	
 	@Override
 	protected boolean canAttack( Char enemy ) {
-		Ballistica b = new Ballistica(pos, enemy.pos, Ballistica.PROJECTILE);
+		Ballistica b = new Ballistica(pos, enemy.pos, Ballistica.REAL_PROJECTILE, null);
 		return b.collisionPos == enemy.pos && (Dungeon.level instanceof PrisonBossLevel || b.dist <= arenaRadius);
 	}
 	
@@ -525,11 +525,11 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				jump(target, false);
 				spend(1 / speed());
 				arenaJumps = oldArenaJumps;
-				stepsToDo = new Ballistica(oldPos, pos, Ballistica.STOP_TARGET).dist - 1;
+				stepsToDo = new Ballistica(oldPos, pos, Ballistica.STOP_TARGET, Tengu.this).dist - 1;
 				target = -1;
 				return true;
 			} else {
-				stepsToDo = new Ballistica(oldPos, pos, Ballistica.STOP_TARGET).dist - 1;
+				stepsToDo = new Ballistica(oldPos, pos, Ballistica.STOP_TARGET, Tengu.this).dist - 1;
 				spend(1 / speed());
 				moveSprite( oldPos, pos );
 				return true;
@@ -566,7 +566,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		
 		if (HP > HT/2 && Dungeon.level instanceof PrisonBossLevel) return false;
 		
-		if (abilitiesUsed >= targetAbilityUses() || new Ballistica(pos, enemy.pos, Ballistica.PROJECTILE).collisionPos != enemy.pos) {
+		if (abilitiesUsed >= targetAbilityUses() || new Ballistica(pos, enemy.pos, Ballistica.REAL_PROJECTILE, null).collisionPos != enemy.pos) {
 			return false;
 		} else {
 			
@@ -892,7 +892,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	
 	public static boolean throwFire(final Char thrower, final Char target){
 		
-		Ballistica aim = new Ballistica(thrower.pos, target.pos, Ballistica.WONT_STOP);
+		Ballistica aim = new Ballistica(thrower.pos, target.pos, Ballistica.WONT_STOP, null);
 		
 		for (int i = 0; i < PathFinder.CIRCLE8.length; i++){
 			if (aim.sourcePos+PathFinder.CIRCLE8[i] == aim.path.get(1)){

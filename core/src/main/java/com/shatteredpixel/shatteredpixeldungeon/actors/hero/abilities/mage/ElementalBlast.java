@@ -50,6 +50,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -135,15 +136,15 @@ public class ElementalBlast extends ArmorAbility {
 
 		if (Math.max(x, Dungeon.level.width()-x) >= Math.max(y, Dungeon.level.height()-y)){
 			if (x > Dungeon.level.width()/2){
-				aim = new Ballistica(hero.pos, hero.pos - 1, Ballistica.WONT_STOP);
+				aim = new Ballistica(hero.pos, hero.pos - 1, Ballistica.WONT_STOP, null);
 			} else {
-				aim = new Ballistica(hero.pos, hero.pos + 1, Ballistica.WONT_STOP);
+				aim = new Ballistica(hero.pos, hero.pos + 1, Ballistica.WONT_STOP, null);
 			}
 		} else {
 			if (y > Dungeon.level.height()/2){
-				aim = new Ballistica(hero.pos, hero.pos - Dungeon.level.width(), Ballistica.WONT_STOP);
+				aim = new Ballistica(hero.pos, hero.pos - Dungeon.level.width(), Ballistica.WONT_STOP, null);
 			} else {
-				aim = new Ballistica(hero.pos, hero.pos + Dungeon.level.width(), Ballistica.WONT_STOP);
+				aim = new Ballistica(hero.pos, hero.pos + Dungeon.level.width(), Ballistica.WONT_STOP, null);
 			}
 		}
 
@@ -159,7 +160,7 @@ public class ElementalBlast extends ArmorAbility {
 
 		int aoeSize = 4 + hero.pointsInTalent(Talent.BLAST_RADIUS);
 
-		int projectileProps = Ballistica.STOP_SOLID | Ballistica.STOP_TARGET;
+		int projectileProps = Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.STOP_BARRIER_PROJECTILES;
 
 		//### Special Projectile Properties ###
 		//*** Wand of Disintegration ***
@@ -176,7 +177,7 @@ public class ElementalBlast extends ArmorAbility {
 
 		}
 
-		ConeAOE aoe = new ConeAOE(aim, aoeSize, 360, projectileProps);
+		ConeAOE aoe = new ConeAOE(aim, aoeSize, 360, projectileProps, null);
 
 		for (Ballistica ray : aoe.outerRays){
 			((MagicMissile)hero.sprite.parent.recycle( MagicMissile.class )).reset(
@@ -299,11 +300,11 @@ public class ElementalBlast extends ArmorAbility {
 								//*** Wand of Blast Wave ***
 								} else if (finalWandCls == WandOfBlastWave.class){
 									if (mob.alignment != Char.Alignment.ALLY) {
-										Ballistica aim = new Ballistica(hero.pos, mob.pos, Ballistica.WONT_STOP);
+										Ballistica aim = new Ballistica(hero.pos, mob.pos, Ballistica.WONT_STOP, null);
 										int knockback = aoeSize + 1 - (int)Dungeon.level.trueDistance(hero.pos, mob.pos);
 										knockback *= effectMulti;
 										WandOfBlastWave.throwChar(mob,
-												new Ballistica(mob.pos, aim.collisionPos, Ballistica.MAGIC_BOLT),
+												new Ballistica(mob.pos, aim.collisionPos, Ballistica.MAGIC_BOLT, mob),
 												knockback,
 												true,
 												true,
@@ -421,7 +422,7 @@ public class ElementalBlast extends ArmorAbility {
 		hero.busy();
 
 		armor.charge -= chargeUse(hero);
-		armor.updateQuickslot();
+		Item.updateQuickslot();
 
 		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
 

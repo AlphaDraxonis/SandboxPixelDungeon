@@ -143,7 +143,7 @@ public class DM200 extends DMMob {
 		spend( TICK );
 		ventCooldown = maxVentCooldown;
 
-		Ballistica trajectory = new Ballistica(pos, enemy.pos, Ballistica.STOP_TARGET);
+		Ballistica trajectory = new Ballistica(pos, enemy.pos, Ballistica.STOP_TARGET, null);
 
 		for (int i : trajectory.subPath(0, trajectory.dist)){
 			GameScene.add(Blob.seed(i, 20, ToxicGas.class));

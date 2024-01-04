@@ -300,7 +300,7 @@ public class SentryRoom extends SpecialRoom {
 
 		private boolean isInRange(int pos) {
 			if (room == null) {
-				Ballistica b = new Ballistica(this.pos, pos, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET);
+				Ballistica b = new Ballistica(this.pos, pos, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.STOP_BARRIER_PROJECTILES, null);
 				return b.collisionPos == pos && b.dist <= range;
 			}
 			return room.inside(Dungeon.level.cellToPoint(pos));

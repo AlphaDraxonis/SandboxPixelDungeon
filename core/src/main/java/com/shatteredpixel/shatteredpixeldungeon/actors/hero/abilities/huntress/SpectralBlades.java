@@ -64,7 +64,7 @@ public class SpectralBlades extends ArmorAbility {
 			return;
 		}
 
-		Ballistica b = new Ballistica(hero.pos, target, Ballistica.WONT_STOP);
+		Ballistica b = new Ballistica(hero.pos, target, Ballistica.WONT_STOP, null);
 		final HashSet<Char> targets = new HashSet<>();
 
 		Char enemy = findChar(b, hero, 2*hero.pointsInTalent(Talent.PROJECTING_BLADES), targets);
@@ -77,7 +77,7 @@ public class SpectralBlades extends ArmorAbility {
 		targets.add(enemy);
 
 		if (hero.hasTalent(Talent.FAN_OF_BLADES)){
-			ConeAOE cone = new ConeAOE(b, 30*hero.pointsInTalent(Talent.FAN_OF_BLADES));
+			ConeAOE cone = new ConeAOE(b, 30*hero.pointsInTalent(Talent.FAN_OF_BLADES), null);
 			for (Ballistica ray : cone.rays){
 				Char toAdd = findChar(ray, hero, 2*hero.pointsInTalent(Talent.PROJECTING_BLADES), targets);
 				if (toAdd != null && hero.fieldOfView[toAdd.pos]){

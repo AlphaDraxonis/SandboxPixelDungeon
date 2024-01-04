@@ -230,7 +230,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 					//try to fire gas at an enemy we can't reach
 					if (turnsSinceLastAbility >= MIN_COOLDOWN){
 						//use a coneAOE to try and account for trickshotting angles
-						ConeAOE aim = new ConeAOE(new Ballistica(pos, enemy.pos, Ballistica.WONT_STOP), Float.POSITIVE_INFINITY, 30, Ballistica.STOP_SOLID);
+						ConeAOE aim = new ConeAOE(new Ballistica(pos, enemy.pos, Ballistica.WONT_STOP, null), Float.POSITIVE_INFINITY, 30, Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null);
 						if (aim.cells.contains(enemy.pos)) {
 							lastAbility = GAS;
 							turnsSinceLastAbility = 0;
@@ -385,7 +385,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 
 		int gasVented = 0;
 
-		Ballistica trajectory = new Ballistica(pos, target.pos, Ballistica.STOP_TARGET);
+		Ballistica trajectory = new Ballistica(pos, target.pos, Ballistica.STOP_TARGET, null);
 
 		int gasMulti = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 2 : 1;
 
@@ -419,7 +419,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		//knock back 2 tiles if adjacent
 		if (Dungeon.level.adjacent(pos, target.pos)){
 			int oppositeAdjacent = target.pos + (target.pos - pos);
-			Ballistica trajectory = new Ballistica(target.pos, oppositeAdjacent, Ballistica.MAGIC_BOLT);
+			Ballistica trajectory = new Ballistica(target.pos, oppositeAdjacent, Ballistica.MAGIC_BOLT, target);
 			WandOfBlastWave.throwChar(target, trajectory, 2, false, false, this);
 			if (target == Dungeon.hero){
 				Dungeon.hero.interrupt();
@@ -429,7 +429,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		//knock back 1 tile if there's 1 tile of space
 		} else if (fieldOfView[target.pos] && Dungeon.level.distance(pos, target.pos) == 2) {
 			int oppositeAdjacent = target.pos + (target.pos - pos);
-			Ballistica trajectory = new Ballistica(target.pos, oppositeAdjacent, Ballistica.MAGIC_BOLT);
+			Ballistica trajectory = new Ballistica(target.pos, oppositeAdjacent, Ballistica.MAGIC_BOLT, target);
 			WandOfBlastWave.throwChar(target, trajectory, 1, false, false, this);
 			if (target == Dungeon.hero){
 				Dungeon.hero.interrupt();

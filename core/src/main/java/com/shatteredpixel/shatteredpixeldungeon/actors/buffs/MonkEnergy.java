@@ -490,7 +490,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 					return;
 				}
 
-				Ballistica dash = new Ballistica(hero.pos, target, Ballistica.PROJECTILE);
+				Ballistica dash = new Ballistica(hero.pos, target, Ballistica.PROJECTILE, hero);
 
 				if (!dash.collisionPos.equals(target)
 						|| Actor.findChar(target) != null
@@ -573,9 +573,9 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 						if (oldPos == enemy.pos){
 							//trace a ballistica to our target (which will also extend past them
-							Ballistica trajectory = new Ballistica(hero.pos, enemy.pos, Ballistica.STOP_TARGET);
+							Ballistica trajectory = new Ballistica(hero.pos, enemy.pos, Ballistica.STOP_TARGET, enemy);
 							//trim it to just be the part that goes past them
-							trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
+							trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE, enemy);
 							//knock them back along that ballistica
 							WandOfBlastWave.throwChar(enemy, trajectory, 6, true, false, hero);
 
@@ -594,9 +594,9 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 										&& ch.alignment == Char.Alignment.ENEMY
 										&& Dungeon.level.adjacent(ch.pos, hero.pos)){
 									//trace a ballistica to our target (which will also extend past them
-									Ballistica trajectory = new Ballistica(hero.pos, ch.pos, Ballistica.STOP_TARGET);
+									Ballistica trajectory = new Ballistica(hero.pos, ch.pos, Ballistica.STOP_TARGET, ch);
 									//trim it to just be the part that goes past them
-									trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
+									trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE, ch);
 									//knock them back along that ballistica
 									WandOfBlastWave.throwChar(ch, trajectory, 6, true, false, hero);
 

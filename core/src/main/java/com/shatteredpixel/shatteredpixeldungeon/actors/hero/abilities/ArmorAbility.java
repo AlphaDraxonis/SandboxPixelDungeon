@@ -65,7 +65,7 @@ public abstract class ArmorAbility implements Bundlable {
 	}
 
 	public int targetedPos( Char user, int dst ){
-		return new Ballistica( user.pos, dst, Ballistica.PROJECTILE ).collisionPos;
+		return new Ballistica( user.pos, dst, Ballistica.REAL_PROJECTILE, null ).collisionPos;
 	}
 
 	public float chargeUse( Hero hero ){

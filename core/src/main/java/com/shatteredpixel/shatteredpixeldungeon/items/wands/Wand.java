@@ -85,7 +85,10 @@ public abstract class Wand extends Item {
 	private float usesLeftToID = USES_TO_ID;
 	private float availableUsesToID = USES_TO_ID/2f;
 
-	protected int collisionProperties = Ballistica.MAGIC_BOLT;
+	/**
+	 * <b>IMPORTANT: Always consider {@link Ballistica#STOP_BARRIER_PROJECTILES} here!!!</b>
+	 */
+	protected int collisionProperties = Ballistica.REAL_MAGIC_BOLT;
 	
 	{
 		defaultAction = AC_ZAP;
@@ -119,7 +122,7 @@ public abstract class Wand extends Item {
 
 	@Override
 	public int targetingPos(Hero user, int dst) {
-		return new Ballistica( user.pos, dst, collisionProperties ).collisionPos;
+		return new Ballistica( user.pos, dst, collisionProperties, null ).collisionPos;
 	}
 
 	public abstract void onZap(Ballistica attack);
@@ -541,7 +544,7 @@ public abstract class Wand extends Item {
 	}
 
 	public int collisionProperties(int target){
-		if (cursed)     return Ballistica.MAGIC_BOLT;
+		if (cursed)     return Ballistica.REAL_MAGIC_BOLT;
 		else            return collisionProperties;
 	}
 
@@ -582,7 +585,7 @@ public abstract class Wand extends Item {
 					return;
 				}
 
-				final Ballistica shot = new Ballistica( curUser.pos, target, curWand.collisionProperties(target));
+				final Ballistica shot = new Ballistica( curUser.pos, target, curWand.collisionProperties(target), null);
 				int cell = shot.collisionPos;
 				
 				if (target == curUser.pos || cell == curUser.pos) {
@@ -657,7 +660,7 @@ public abstract class Wand extends Item {
 						}
 						CursedWand.cursedZap(curWand,
 								curUser,
-								new Ballistica(curUser.pos, target, Ballistica.MAGIC_BOLT),
+								new Ballistica(curUser.pos, target, Ballistica.REAL_MAGIC_BOLT, null),
 								new Callback() {
 									@Override
 									public void call() {

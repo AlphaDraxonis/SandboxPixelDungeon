@@ -128,7 +128,7 @@ public abstract class Elemental extends Mob {
 		if (super.canAttack(enemy)){
 			return true;
 		} else {
-			return rangedCooldown < 0 && new Ballistica( pos, enemy.pos, Ballistica.MAGIC_BOLT ).collisionPos == enemy.pos;
+			return rangedCooldown < 0 && new Ballistica( pos, enemy.pos, Ballistica.REAL_MAGIC_BOLT, null ).collisionPos == enemy.pos;
 		}
 	}
 	
@@ -136,7 +136,7 @@ public abstract class Elemental extends Mob {
 		
 		if (Dungeon.level.adjacent( pos, enemy.pos )
 				|| rangedCooldown > 0
-				|| new Ballistica( pos, enemy.pos, Ballistica.MAGIC_BOLT ).collisionPos != enemy.pos) {
+				|| new Ballistica( pos, enemy.pos, Ballistica.REAL_MAGIC_BOLT, null ).collisionPos != enemy.pos) {
 			
 			return super.doAttack( enemy );
 			
@@ -284,7 +284,8 @@ public abstract class Elemental extends Mob {
 			if (super.canAttack(enemy)){
 				return true;
 			} else {
-				return rangedCooldown < 0 && new Ballistica( pos, enemy.pos, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET ).collisionPos == enemy.pos;
+				return rangedCooldown < 0 && new Ballistica( pos, enemy.pos,
+						Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.STOP_BARRIER_PROJECTILES, null ).collisionPos == enemy.pos;
 			}
 		}
 
@@ -294,13 +295,15 @@ public abstract class Elemental extends Mob {
 
 				return super.doAttack( enemy );
 
-			} else if (new Ballistica( pos, enemy.pos, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET ).collisionPos == enemy.pos) {
+			} else if (new Ballistica( pos, enemy.pos,
+					Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.STOP_BARRIER_PROJECTILES, null ).collisionPos == enemy.pos) {
 
 				//set up an attack for next turn
 				ArrayList<Integer> candidates = new ArrayList<>();
 				for (int i : PathFinder.NEIGHBOURS8){
 					int target = enemy.pos + i;
-					if (target != pos && new Ballistica(pos, target, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET).collisionPos == target){
+					if (target != pos && new Ballistica(pos, target,
+							Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.STOP_BARRIER_PROJECTILES, null ).collisionPos == target){
 						candidates.add(target);
 					}
 				}

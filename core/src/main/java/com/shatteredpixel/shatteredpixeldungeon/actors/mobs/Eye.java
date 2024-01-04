@@ -120,7 +120,7 @@ public class Eye extends Mob {
 	protected boolean canAttack( Char enemy ) {
 
 		if (beamCooldown == 0) {
-			Ballistica aim = new Ballistica(pos, enemy.pos, Ballistica.STOP_SOLID);
+			Ballistica aim = new Ballistica(pos, enemy.pos, Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null);
 
 			if (enemy.invisible == 0 && !isCharmedBy(enemy) && fieldOfView[enemy.pos]
 					&& (super.canAttack(enemy) || aim.subPath(1, aim.dist).contains(enemy.pos))){
@@ -143,7 +143,7 @@ public class Eye extends Mob {
 			sprite.idle();
 		}
 		if (beam == null && beamTarget != -1) {
-			beam = new Ballistica(pos, beamTarget, Ballistica.STOP_SOLID);
+			beam = new Ballistica(pos, beamTarget, Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null);
 			sprite.turnTo(pos, beamTarget);
 		}
 		if (beamCooldown > 0)
@@ -154,7 +154,7 @@ public class Eye extends Mob {
 	@Override
 	protected boolean doAttack( Char enemy ) {
 
-		beam = new Ballistica(pos, beamTarget, Ballistica.STOP_SOLID);
+		beam = new Ballistica(pos, beamTarget, Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null);
 		if (beamCooldown > 0 || (!beamCharged && !beam.subPath(1, beam.dist).contains(enemy.pos))) {
 			return super.doAttack(enemy);
 		} else if (!beamCharged){

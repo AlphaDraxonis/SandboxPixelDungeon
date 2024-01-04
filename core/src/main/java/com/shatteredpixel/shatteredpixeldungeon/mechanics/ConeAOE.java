@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.mechanics;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
@@ -39,11 +40,11 @@ public class ConeAOE {
 	public ArrayList<Ballistica> rays = new ArrayList<>();
 	public HashSet<Integer> cells = new HashSet<>();
 
-	public ConeAOE( Ballistica core, float degrees ){
-		this( core, Float.POSITIVE_INFINITY, degrees, core.collisionProperties );
+	public ConeAOE( Ballistica core, float degrees, Char usePassable ){
+		this( core, Float.POSITIVE_INFINITY, degrees, core.collisionProperties, usePassable );
 	}
 
-	public ConeAOE( Ballistica core, float maxDist, float degrees, int ballisticaParams ){
+	public ConeAOE(Ballistica core, float maxDist, float degrees, int ballisticaParams, Char usePassable){
 
 		coreRay = core;
 
@@ -103,7 +104,7 @@ public class ConeAOE {
 		//cast a ray to each found cell, these make up the cone
 		//we don't add the core ray as its collision properties may differ from the cone
 		for( int c : targetCells ){
-			Ballistica ray = new Ballistica(core.sourcePos, c, ballisticaParams);
+			Ballistica ray = new Ballistica(core.sourcePos, c, ballisticaParams, usePassable);
 			cells.addAll(ray.subPath(1, ray.dist));
 			rays.add(ray);
 			if (outerCells.contains(c)){

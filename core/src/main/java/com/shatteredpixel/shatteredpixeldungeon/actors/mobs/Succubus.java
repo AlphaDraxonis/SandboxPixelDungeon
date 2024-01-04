@@ -126,7 +126,7 @@ public class Succubus extends Mob {
 	
 	private boolean blink( int target ) {
 		
-		Ballistica route = new Ballistica( pos, target, Ballistica.PROJECTILE);
+		Ballistica route = new Ballistica( pos, target, Ballistica.PROJECTILE, null);
 		int cell = route.collisionPos;
 
 		//can't occupy the same cell as another char, so move back one.

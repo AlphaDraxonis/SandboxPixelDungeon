@@ -28,13 +28,19 @@ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollGuardSprite;
 import com.watabou.utils.Random;
 
-public class GnollGuard extends Mob {
+public class GnollGuard extends Mob {//TODO tzz configure this mob (loot, stats) and add it to inv
 
 	{
 		spriteClass = GnollGuardSprite.class;
 
 		HP = HT = 35;
 		defenseSkill = 15;
+		attackSkill = 20;
+		damageRollMin = 5;
+		damageRollMax = 15;
+		specialDamageRollMin = 10;
+		specialDamageRollMax = specialDamageRollMin;
+		damageReductionMax = 6;
 
 		EXP = 7;
 		maxLvl = -2;
@@ -45,29 +51,26 @@ public class GnollGuard extends Mob {
 
 	@Override
 	public int damageRoll() {
-		if (enemy != null && !Dungeon.level.adjacent(pos, enemy.pos)){
-			return Random.NormalIntRange( 15, 25 );
-		} else {
-			return Random.NormalIntRange( 5, 15 );
-		}
+		return Random.NormalIntRange( 5, 15 )
+				+ (enemy != null && !Dungeon.level.adjacent(pos, enemy.pos) ? Random.NormalIntRange( specialDamageRollMin, specialDamageRollMax ) : 0);
 	}
 
-	@Override
-	public int attackSkill( Char target ) {
-		return 20;
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 6);
-	}
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 20;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 6);
+//	}
 
 	@Override
 	protected boolean canAttack( Char enemy ) {
 		//cannot 'curve' spear hits like the hero, requires fairly open space to hit at a distance
 		return Dungeon.level.distance(enemy.pos, pos) <= 2
-				&& new Ballistica( pos, enemy.pos, Ballistica.PROJECTILE).collisionPos == enemy.pos
-				&& new Ballistica( enemy.pos, pos, Ballistica.PROJECTILE).collisionPos == pos;
+				&& new Ballistica( pos, enemy.pos, Ballistica.REAL_PROJECTILE, null).collisionPos == enemy.pos
+				&& new Ballistica( enemy.pos, pos, Ballistica.REAL_PROJECTILE, null).collisionPos == pos;
 	}
 
 }

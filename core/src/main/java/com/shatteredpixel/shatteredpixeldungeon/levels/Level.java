@@ -1348,6 +1348,7 @@ public abstract class Level implements Bundlable {
 	}
 
 	public boolean isPassable(int cell, Char c) {
+		if (c == null) return isPassable(cell);
 		if (c instanceof Hero) return isPassableHero(cell);
 		if (c.alignment == Char.Alignment.ENEMY) return isPassableMob(cell);
 		return isPassableAlly(cell);

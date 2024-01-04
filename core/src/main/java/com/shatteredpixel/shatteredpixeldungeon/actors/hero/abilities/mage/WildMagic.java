@@ -132,7 +132,7 @@ public class WildMagic extends ArmorAbility {
 	private void zapWand( ArrayList<Wand> wands, Hero hero, int cell){
 		Wand cur = wands.remove(0);
 
-		Ballistica aim = new Ballistica(hero.pos, cell, cur.collisionProperties(cell));
+		Ballistica aim = new Ballistica(hero.pos, cell, cur.collisionProperties(cell), null);
 
 		hero.sprite.zap(cell);
 
@@ -158,7 +158,7 @@ public class WildMagic extends ArmorAbility {
 			} else {
 				CursedWand.cursedZap(cur,
 						hero,
-						new Ballistica(hero.pos, cell, Ballistica.MAGIC_BOLT),
+						new Ballistica(hero.pos, cell, Ballistica.REAL_MAGIC_BOLT, null),
 						new Callback() {
 							@Override
 							public void call() {

@@ -500,7 +500,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			float bestDist;
 			int bestPos = pos;
 
-			Ballistica trajectory = new Ballistica(enemy.pos, pos, Ballistica.STOP_TARGET);
+			Ballistica trajectory = new Ballistica(enemy.pos, pos, Ballistica.STOP_TARGET, null);
 			int targetCell = trajectory.path.get(trajectory.dist+1);
 			//if the position opposite the direction of the hero is open, go there
 			if (Actor.findChar(targetCell) == null && !Dungeon.level.solid[targetCell]){

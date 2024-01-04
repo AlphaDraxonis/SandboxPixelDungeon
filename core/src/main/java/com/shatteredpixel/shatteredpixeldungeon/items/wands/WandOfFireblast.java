@@ -172,7 +172,7 @@ public class WandOfFireblast extends DamageWand {
 		cone = new ConeAOE( bolt,
 				maxDist,
 				30 + 20*chargesPerCast(),
-				Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID);
+				Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null);
 
 		//cast to cells at the tip, rather than all cells, better performance.
 		Ballistica longestRay = null;

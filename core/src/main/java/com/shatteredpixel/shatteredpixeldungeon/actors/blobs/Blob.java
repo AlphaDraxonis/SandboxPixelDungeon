@@ -249,7 +249,7 @@ public class Blob extends Actor {
 	
 	@SuppressWarnings("unchecked")
 	public static<T extends Blob> T seed( int cell, int amount, Class<T> type, Level level ) {
-		
+
 		T gas = (T)level.blobs.getOnly( type );
 		
 		if (gas == null) {
@@ -260,7 +260,7 @@ public class Blob extends Actor {
 			}
 		}
 		
-		if (gas != null){
+		if (Dungeon.level.barriers.get(cell) == null || !Dungeon.level.barriers.get(cell).blocksBlobs()){
 			level.blobs.put( type, gas );
 			gas.seed( level, cell, amount );
 		}

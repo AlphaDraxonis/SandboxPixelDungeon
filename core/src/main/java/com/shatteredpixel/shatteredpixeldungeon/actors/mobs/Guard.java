@@ -77,11 +77,12 @@ public class Guard extends Mob {
 		if (chainCooldown > 0 || enemy.properties().contains(Property.IMMOVABLE))
 			return false;
 
-		Ballistica chain = new Ballistica(pos, target, Ballistica.PROJECTILE);
+		Ballistica chain = new Ballistica(pos, target, Ballistica.PROJECTILE, null);
 
 		if (chain.collisionPos != enemy.pos
 				|| chain.path.size() < 2
-				|| Dungeon.level.pit[chain.path.get(1)])
+				|| Dungeon.level.pit[chain.path.get(1)]
+				|| !Dungeon.level.isPassable(chain.path.get(1), enemy))
 			return false;
 		else {
 			int newPos = -1;

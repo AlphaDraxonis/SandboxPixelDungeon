@@ -60,7 +60,7 @@ public class Shockwave extends ArmorAbility {
 
 	@Override
 	public int targetedPos(Char user, int dst) {
-		return new Ballistica( user.pos, dst, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET ).collisionPos;
+		return new Ballistica( user.pos, dst, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.STOP_BARRIER_PROJECTILES, null ).collisionPos;
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class Shockwave extends ArmorAbility {
 		armor.charge -= chargeUse(hero);
 		Item.updateQuickslot();
 
-		Ballistica aim = new Ballistica(hero.pos, target, Ballistica.WONT_STOP);
+		Ballistica aim = new Ballistica(hero.pos, target, Ballistica.WONT_STOP, null);
 
 		int maxDist = 5 + hero.pointsInTalent(Talent.EXPANDING_WAVE);
 		int dist = Math.min(aim.dist, maxDist);
@@ -85,7 +85,7 @@ public class Shockwave extends ArmorAbility {
 		ConeAOE cone = new ConeAOE(aim,
 				dist,
 				60 + 15*hero.pointsInTalent(Talent.EXPANDING_WAVE),
-				Ballistica.STOP_SOLID | Ballistica.STOP_TARGET);
+				Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.STOP_BARRIER_PROJECTILES, null);
 
 		//cast to cells at the tip, rather than all cells, better performance.
 		for (Ballistica ray : cone.outerRays){

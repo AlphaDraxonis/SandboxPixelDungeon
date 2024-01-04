@@ -149,7 +149,7 @@ public class RipperDemon extends Mob {
 					return true;
 				}
 
-				Ballistica b = new Ballistica(pos, leapPos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID);
+				Ballistica b = new Ballistica(pos, leapPos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID, null);
 				leapPos = b.collisionPos;
 
 				final Char leapVictim = Actor.findChar(leapPos);
@@ -240,11 +240,11 @@ public class RipperDemon extends Mob {
 						targetPos = enemy.pos + PathFinder.CIRCLE8[(closestIdx+4)%8];
 					}
 
-					Ballistica b = new Ballistica(pos, targetPos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID);
+					Ballistica b = new Ballistica(pos, targetPos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID, null);
 					//try aiming directly at hero if aiming near them doesn't work
 					if (b.collisionPos != targetPos && targetPos != enemy.pos){
 						targetPos = enemy.pos;
-						b = new Ballistica(pos, targetPos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID);
+						b = new Ballistica(pos, targetPos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID, null);
 					}
 					if (b.collisionPos == targetPos){
 						//get ready to leap

@@ -59,7 +59,7 @@ public class WandOfWarding extends Wand {
 
 	@Override
 	public int collisionProperties(int target) {
-		if (cursed || !Dungeon.level.heroFOV[target])   return Ballistica.PROJECTILE;
+		if (cursed || !Dungeon.level.heroFOV[target])   return Ballistica.REAL_PROJECTILE;
 		else                                            return Ballistica.STOP_TARGET;
 	}
 
@@ -310,7 +310,7 @@ public class WandOfWarding extends Wand {
 
 		@Override
 		protected boolean canAttack( Char enemy ) {
-			return new Ballistica( pos, enemy.pos, Ballistica.MAGIC_BOLT).collisionPos == enemy.pos;
+			return new Ballistica( pos, enemy.pos, Ballistica.REAL_MAGIC_BOLT, null).collisionPos == enemy.pos;
 		}
 
 		@Override

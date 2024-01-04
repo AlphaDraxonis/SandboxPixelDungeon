@@ -58,7 +58,7 @@ public class DisintegrationTrap extends Trap {
 				if (!ch.isAlive()) continue;
 				float curDist = Dungeon.level.trueDistance(pos, ch.pos);
 				if (ch.invisible > 0) curDist += 1000;
-				Ballistica bolt = new Ballistica(pos, ch.pos, Ballistica.PROJECTILE);
+				Ballistica bolt = new Ballistica(pos, ch.pos, Ballistica.REAL_PROJECTILE, null);
 				if (bolt.collisionPos == ch.pos && curDist < closestDist){
 					target = ch;
 					closestDist = curDist;

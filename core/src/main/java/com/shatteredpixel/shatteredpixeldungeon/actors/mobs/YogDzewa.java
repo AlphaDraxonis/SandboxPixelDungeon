@@ -234,7 +234,7 @@ public class YogDzewa extends Mob {
 			//delay fire on a rooted hero
 			if (!Dungeon.hero.rooted) {
 				for (int i : targetedCells) {
-					Ballistica b = new Ballistica(pos, i, Ballistica.WONT_STOP);
+					Ballistica b = new Ballistica(pos, i, Ballistica.WONT_STOP, null);
 					//shoot beams
 					sprite.parent.add(new Beam.DeathRay(sprite.center(), DungeonTilemap.raisedTileCenterToWorld(b.collisionPos)));
 					for (int p : b.path) {
@@ -295,7 +295,7 @@ public class YogDzewa extends Mob {
 								> Dungeon.level.trueDistance(pos, targetPos));
 					}
 					targetedCells.add(targetPos);
-					Ballistica b = new Ballistica(pos, targetPos, Ballistica.WONT_STOP);
+					Ballistica b = new Ballistica(pos, targetPos, Ballistica.WONT_STOP, null);
 					affectedCells.addAll(b.path);
 				}
 
@@ -311,7 +311,7 @@ public class YogDzewa extends Mob {
 					targetedCells.remove(targetedCells.size()-1);
 				}
 				for (int i : targetedCells){
-					Ballistica b = new Ballistica(pos, i, Ballistica.WONT_STOP);
+					Ballistica b = new Ballistica(pos, i, Ballistica.WONT_STOP, null);
 					for (int p : b.path){
 						sprite.parent.add(new TargetedCell(p, 0xFF0000));
 						affectedCells.add(p);

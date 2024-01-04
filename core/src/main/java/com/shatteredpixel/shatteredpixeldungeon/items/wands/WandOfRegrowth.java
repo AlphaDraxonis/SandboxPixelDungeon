@@ -254,7 +254,7 @@ public class WandOfRegrowth extends Wand {
 		cone = new ConeAOE( bolt,
 				maxDist,
 				20 + 10*chargesPerCast(),
-				Ballistica.STOP_SOLID | Ballistica.STOP_TARGET);
+				Ballistica.STOP_SOLID | Ballistica.STOP_TARGET, null);
 
 		//cast to cells at the tip, rather than all cells, better performance.
 		Ballistica longestRay = null;

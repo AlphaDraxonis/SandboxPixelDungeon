@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -81,6 +82,11 @@ public class SmokeBomb extends ArmorAbility {
 			//reduced charge use by 16%/30%/41%/50%
 			return (float)(super.chargeUse(hero) * Math.pow(0.84, hero.pointsInTalent(Talent.SHADOW_STEP)));
 		}
+	}
+
+	@Override
+	public int targetedPos( Char user, int dst ){
+		return new Ballistica( user.pos, dst, Ballistica.REAL_PROJECTILE, user ).collisionPos;
 	}
 
 	@Override

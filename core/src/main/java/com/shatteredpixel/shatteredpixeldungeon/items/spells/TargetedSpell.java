@@ -35,8 +35,9 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 
 public abstract class TargetedSpell extends Spell {
-	
-	protected int collisionProperties = Ballistica.PROJECTILE;
+
+	//actually not final, but I want to get a warning if subclasses change this in <init> wrongly
+	protected final int collisionProperties = Ballistica.REAL_PROJECTILE;
 	
 	@Override
 	protected void onCast(Hero hero) {
@@ -70,7 +71,7 @@ public abstract class TargetedSpell extends Spell {
 					return;
 				}
 				
-				final Ballistica shot = new Ballistica( curUser.pos, target, curSpell.collisionProperties);
+				final Ballistica shot = new Ballistica( curUser.pos, target, curSpell.collisionProperties, null);
 				int cell = shot.collisionPos;
 				
 				curUser.sprite.zap(cell);

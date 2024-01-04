@@ -39,7 +39,7 @@ public class StoneOfBlink extends Runestone {
 	
 	@Override
 	public int throwPos(Hero user, int dst) {
-		throwPath = new Ballistica( user.pos, dst, Ballistica.PROJECTILE );
+		throwPath = new Ballistica( user.pos, dst, Ballistica.REAL_PROJECTILE, null );
 		return throwPath.collisionPos;
 	}
 	

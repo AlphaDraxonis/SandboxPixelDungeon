@@ -47,7 +47,7 @@ public class Repulsion extends Armor.Glyph {
 			float powerMulti = Math.max(1f, procChance);
 
 			int oppositeHero = attacker.pos + (attacker.pos - defender.pos);
-			Ballistica trajectory = new Ballistica(attacker.pos, oppositeHero, Ballistica.MAGIC_BOLT);
+			Ballistica trajectory = new Ballistica(attacker.pos, oppositeHero, Ballistica.MAGIC_BOLT, attacker);
 			WandOfBlastWave.throwChar(attacker,
 					trajectory,
 					Math.round(2 * powerMulti),

@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.mechanics;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,16 +48,18 @@ public class Ballistica {
 //	public static final int STOP_BARRIER_MOBS = 32; //ballistica will stop on barriers which block mobs
 //	public static final int STOP_BARRIER_ALLIES = 64; //ballistica will stop on barriers which block allies
 	public static final int STOP_BARRIER_PROJECTILES = 128; //ballistica will stop on barriers which block projectiles
-//	public static final int STOP_BARRIER_BLOBS = 256; //ballistica will stop on barriers which block blobls
+//	public static final int STOP_BARRIER_BLOBS = 256; //ballistica will stop on barriers which block blobs
 
-	public static final int PROJECTILE =  	STOP_TARGET	| STOP_CHARS	| STOP_SOLID      | STOP_BARRIER_PROJECTILES;
+	public static final int PROJECTILE =    	STOP_TARGET	| STOP_CHARS	| STOP_SOLID;
+	public static final int REAL_PROJECTILE =  	PROJECTILE | STOP_BARRIER_PROJECTILES;
 
-	public static final int MAGIC_BOLT =    STOP_CHARS  | STOP_SOLID     | STOP_BARRIER_PROJECTILES;
+	public static final int MAGIC_BOLT =        STOP_CHARS  | STOP_SOLID;
+	public static final int REAL_MAGIC_BOLT =   MAGIC_BOLT | STOP_BARRIER_PROJECTILES;
 
-	public static final int WONT_STOP =     0;
+	public static final int WONT_STOP =         0;
 
 
-	public Ballistica( int from, int to, int params ){
+	public Ballistica( int from, int to, int params, Char usePassable ){
 		sourcePos = from;
 		collisionProperties = params;
 		build(from, to,
@@ -64,7 +67,8 @@ public class Ballistica {
 				(params & STOP_CHARS) > 0,
 				(params & STOP_SOLID) > 0,
 				(params & IGNORE_SOFT_SOLID) > 0,
-				(params & STOP_BARRIER_PROJECTILES) > 0);
+				(params & STOP_BARRIER_PROJECTILES) > 0,
+				usePassable);
 
 		if (collisionPos != null) {
 			dist = path.indexOf(collisionPos);
@@ -77,7 +81,7 @@ public class Ballistica {
 		}
 	}
 
-	private void build( int from, int to, boolean stopTarget, boolean stopChars, boolean stopTerrain, boolean ignoreSoftSolid, boolean stopBarrierProj ) {
+	private void build(int from, int to, boolean stopTarget, boolean stopChars, boolean stopTerrain, boolean ignoreSoftSolid, boolean stopBarrierProj, Char usePassable) {
 		int w = Dungeon.level.width();
 
 		int x0 = from % w;
@@ -125,7 +129,7 @@ public class Ballistica {
 			if (collisionPos == null
 					&& stopTerrain
 					&& cell != sourcePos
-					&& !Dungeon.level.isPassable(cell)//tzz shoot
+					&& !Dungeon.level.isPassable(cell, usePassable)
 					&& !Dungeon.level.avoid[cell]
 					&& Actor.findChar(cell) == null) {
 				collide(path.get(path.size() - 1));
@@ -137,7 +141,7 @@ public class Ballistica {
 			path.add(cell);
 
 			if (collisionPos == null && stopTerrain && cell != sourcePos && Dungeon.level.solid[cell]) {
-				if (ignoreSoftSolid && (Dungeon.level.isPassable(cell) || Dungeon.level.avoid[cell])) {//tzz shoot
+				if (ignoreSoftSolid && (Dungeon.level.isPassable(cell, usePassable) || Dungeon.level.avoid[cell])) {
 					//do nothing
 				} else {
 					collide(cell);

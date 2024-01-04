@@ -53,7 +53,7 @@ public class WandOfPrismaticLight extends DamageWand {
 	{
 		image = ItemSpriteSheet.WAND_PRISMATIC_LIGHT;
 
-		collisionProperties = Ballistica.MAGIC_BOLT;
+		collisionProperties = Ballistica.REAL_MAGIC_BOLT;
 	}
 
 	public int min(int lvl){

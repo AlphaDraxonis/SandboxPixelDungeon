@@ -121,13 +121,14 @@ public class EtherealChains extends Artifact {
 
 				//chains cannot be used to go where it is impossible to walk to
 				PathFinder.buildDistanceMap(target, BArray.or(Dungeon.level.getPassableVar(curUser), Dungeon.level.avoid, null));
-				if (!(Dungeon.level instanceof MiningLevel) && PathFinder.distance[curUser.pos] == Integer.MAX_VALUE){
+
+				final Ballistica chain = new Ballistica(curUser.pos, target, Ballistica.STOP_TARGET, null);
+
+				if (!(Dungeon.level instanceof MiningLevel) && (PathFinder.distance[curUser.pos] == Integer.MAX_VALUE || chain.collisionPos != (int) target)){
 					GLog.w( Messages.get(EtherealChains.class, "cant_reach") );
 					return;
 				}
-				
-				final Ballistica chain = new Ballistica(curUser.pos, target, Ballistica.STOP_TARGET);
-				
+
 				if (Actor.findChar( chain.collisionPos ) != null){
 					chainEnemy( chain, curUser, Actor.findChar( chain.collisionPos ));
 				} else {

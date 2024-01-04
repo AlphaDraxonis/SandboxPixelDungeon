@@ -54,7 +54,7 @@ public class WandOfTransfusion extends Wand {
 	{
 		image = ItemSpriteSheet.WAND_TRANSFUSION;
 
-		collisionProperties = Ballistica.PROJECTILE;
+		collisionProperties = Ballistica.REAL_PROJECTILE;
 	}
 
 	private boolean freeCharge = false;

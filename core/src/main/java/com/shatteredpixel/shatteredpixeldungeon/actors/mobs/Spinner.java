@@ -153,9 +153,9 @@ public class Spinner extends Mob {
 		Ballistica b;
 		//aims web in direction enemy is moving, or between self and enemy if they aren't moving
 		if (lastEnemyPos == enemy.pos){
-			b = new Ballistica( enemy.pos, pos, Ballistica.WONT_STOP );
+			b = new Ballistica( enemy.pos, pos, Ballistica.WONT_STOP, null );
 		} else {
-			b = new Ballistica( lastEnemyPos, enemy.pos, Ballistica.WONT_STOP );
+			b = new Ballistica( lastEnemyPos, enemy.pos, Ballistica.WONT_STOP, null );
 		}
 		
 		int collisionIndex = 0;
@@ -174,7 +174,7 @@ public class Spinner extends Mob {
 		int webPos = b.path.get( collisionIndex+1 );
 
 		//ensure we aren't shooting the web through walls
-		int projectilePos = new Ballistica( pos, webPos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES).collisionPos;
+		int projectilePos = new Ballistica( pos, webPos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null).collisionPos;
 		
 		if (webPos != enemy.pos && projectilePos == webPos && Dungeon.level.isPassable(webPos)){
 			return webPos;

@@ -60,7 +60,7 @@ public class ShockBomb extends Bomb {
 		}
 
 		for (Char ch : affected.toArray(new Char[0])){
-			Ballistica LOS = new Ballistica(cell, ch.pos, Ballistica.PROJECTILE);
+			Ballistica LOS = new Ballistica(cell, ch.pos, Ballistica.PROJECTILE, null);
 			if (LOS.collisionPos != ch.pos){
 				affected.remove(ch);
 			}

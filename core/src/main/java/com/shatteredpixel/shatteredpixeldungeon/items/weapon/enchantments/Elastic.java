@@ -47,9 +47,9 @@ public class Elastic extends Weapon.Enchantment {
 			float powerMulti = Math.max(1f, procChance);
 
 			//trace a ballistica to our target (which will also extend past them
-			Ballistica trajectory = new Ballistica(attacker.pos, defender.pos, Ballistica.STOP_TARGET);
+			Ballistica trajectory = new Ballistica(attacker.pos, defender.pos, Ballistica.STOP_TARGET, defender);
 			//trim it to just be the part that goes past them
-			trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE);
+			trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE, defender);
 			//knock them back along that ballistica
 			WandOfBlastWave.throwChar(defender,
 					trajectory,

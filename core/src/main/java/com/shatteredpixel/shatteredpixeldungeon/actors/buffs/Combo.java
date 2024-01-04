@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -348,9 +347,9 @@ public class Combo extends Buff implements ActionIndicator.Action {
 				case CLOBBER:
 					if (!wasAlly) hit(enemy);
 					//trace a ballistica to our target (which will also extend past them
-					Ballistica trajectory = new Ballistica(target.pos, enemy.pos, Ballistica.STOP_TARGET);
+					Ballistica trajectory = new Ballistica(target.pos, enemy.pos, Ballistica.STOP_TARGET, null);
 					//trim it to just be the part that goes past them
-					trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
+					trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE, enemy);
 					//knock them back along that ballistica, ensuring they don't fall into a pit
 					int dist = 2;
 					if (enemy.isAlive() && count >= 7 && hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 1) {
@@ -358,7 +357,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 						Buff.prolong(enemy, Vertigo.class, 3);
 					} else if (!enemy.flying) {
 						while (dist > trajectory.dist ||
-								(dist > 0 && (Dungeon.level.pit[trajectory.path.get(dist)]|| Barrier.stopMobs(trajectory.path.get(dist), enemy.alignment)))) {
+								(dist > 0 && (Dungeon.level.pit[trajectory.path.get(dist)] || !Dungeon.level.isPassable(trajectory.path.get(dist), enemy)))) {
 							dist--;
 						}
 					}
@@ -469,7 +468,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					|| Dungeon.level.distance(target.pos, enemy.pos) > 1 + target.buff(Combo.class).count/3){
 					GLog.w(Messages.get(Combo.class, "bad_target"));
 				} else {
-					Ballistica c = new Ballistica(target.pos, enemy.pos, Ballistica.PROJECTILE | Ballistica.STOP_BARRIER_PROJECTILES);
+					Ballistica c = new Ballistica(target.pos, enemy.pos, Ballistica.REAL_PROJECTILE, target);
 					if (c.collisionPos == enemy.pos){
 						final int leapPos = c.path.get(c.dist-1);
 						if (!Dungeon.level.isPassable(leapPos, enemy) && !(target.flying && Dungeon.level.avoid[leapPos])){
