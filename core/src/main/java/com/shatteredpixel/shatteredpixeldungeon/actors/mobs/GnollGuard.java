@@ -28,7 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollGuardSprite;
 import com.watabou.utils.Random;
 
-public class GnollGuard extends Mob {//TODO tzz configure this mob (loot, stats) and add it to inv
+public class GnollGuard extends Mob {
 
 	{
 		spriteClass = GnollGuardSprite.class;
@@ -38,8 +38,7 @@ public class GnollGuard extends Mob {//TODO tzz configure this mob (loot, stats)
 		attackSkill = 20;
 		damageRollMin = 5;
 		damageRollMax = 15;
-		specialDamageRollMin = 10;
-		specialDamageRollMax = specialDamageRollMin;
+		specialDamageRollMax = specialDamageRollMin = 10;
 		damageReductionMax = 6;
 
 		EXP = 7;
@@ -51,7 +50,7 @@ public class GnollGuard extends Mob {//TODO tzz configure this mob (loot, stats)
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 5, 15 )
+		return super.damageRoll()
 				+ (enemy != null && !Dungeon.level.adjacent(pos, enemy.pos) ? Random.NormalIntRange( specialDamageRollMin, specialDamageRollMax ) : 0);
 	}
 
