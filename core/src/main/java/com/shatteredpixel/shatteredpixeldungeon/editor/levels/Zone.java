@@ -43,6 +43,7 @@ public class Zone implements Bundlable {
     public boolean canTeleportTo = true;
     public boolean canDestroyWalls = true;//If Pickaxe/DM300 can destroy walls
     public GrassType grassType = GrassType.NONE;
+    public boolean sight = true;//tzz add to ui
 
     public String chasmDestZone;
     public LevelTransition zoneTransition;
@@ -62,6 +63,7 @@ public class Zone implements Bundlable {
     public static final String CAN_TELEPORT_TO = "can_teleport_to";
     public static final String CAN_DESTROY_WALLS = "can_destroy_walls";
     public static final String GRASS_TYPE = "grass_type";
+    public static final String SIGHT = "sight";
     public static final String CHASM_DEST_ZONE = "chasm_dest_zone";
     public static final String ZONE_TRANSITION = "zone_transition";
     public static final String CELLS = "cells";
@@ -76,6 +78,7 @@ public class Zone implements Bundlable {
         canTeleportTo = bundle.getBoolean(CAN_TELEPORT_TO);
         canDestroyWalls = bundle.getBoolean(CAN_DESTROY_WALLS);
         grassType = bundle.getEnum(GRASS_TYPE, GrassType.class);
+        sight = !bundle.contains(SIGHT) || bundle.getBoolean(SIGHT);
         chasmDestZone = bundle.getString(CHASM_DEST_ZONE);
         zoneTransition = (LevelTransition) bundle.get(ZONE_TRANSITION);
 
@@ -97,6 +100,7 @@ public class Zone implements Bundlable {
         bundle.put(CAN_TELEPORT_TO, canTeleportTo);
         bundle.put(CAN_DESTROY_WALLS, canDestroyWalls);
         bundle.put(GRASS_TYPE, grassType);
+        bundle.put(SIGHT, sight);
         bundle.put(CHASM_DEST_ZONE, chasmDestZone);
         bundle.put(ZONE_TRANSITION, zoneTransition);
 

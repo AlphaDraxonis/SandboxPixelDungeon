@@ -116,7 +116,7 @@ public class ScrollOfChallenge extends ExoticScroll {
 
 				boolean[] visibleCells = new boolean[Dungeon.level.length()];
 				Point c = Dungeon.level.cellToPoint(pos);
-				ShadowCaster.castShadow(c.x, c.y, visibleCells, Dungeon.level.losBlocking, 8);
+				ShadowCaster.castShadow(c.x, c.y, visibleCells, Dungeon.level.losBlocking, 8, false);
 				int count=0;
 				for (boolean b : visibleCells){
 					if (b) count++;

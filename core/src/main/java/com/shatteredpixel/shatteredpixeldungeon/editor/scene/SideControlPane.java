@@ -24,6 +24,7 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PointF;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class SideControlPane extends Component {
             buttons[0] = new ExitBtn();
 //            buttons[1] = new SoDebugBtn();
             buttons[1] = new DamageBtn();
-            buttons[2] = new SecretsBtn();
+            buttons[2] = DeviceCompat.isDebug() ? new SoDebugBtn() : new SecretsBtn();
             buttons[3] = new MindVisionBtn();
             buttons[4] = new MappingBtn();
             buttons[5] = new KeyBtn();

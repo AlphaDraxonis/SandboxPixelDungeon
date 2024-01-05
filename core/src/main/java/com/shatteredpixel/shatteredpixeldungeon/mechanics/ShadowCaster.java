@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.mechanics;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.watabou.utils.BArray;
 
 //based on: http://www.roguebasin.com/index.php?title=FOV_using_recursive_shadowcasting
@@ -46,7 +47,7 @@ public final class ShadowCaster {
 		}
 	}
 	
-	public static void castShadow( int x, int y, boolean[] fieldOfView, boolean[] blocking, int distance ) {
+	public static void castShadow( int x, int y, boolean[] fieldOfView, boolean[] blocking, int distance, boolean canSightBeBlockedByZone ) {
 		
 		if (distance >= MAX_DISTANCE){
 			distance = MAX_DISTANCE;
@@ -59,27 +60,26 @@ public final class ShadowCaster {
 		
 		//scans octants, clockwise
 		try {
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, -1, false);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, +1, true);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, +1, true);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, +1, false);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, +1, false);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, -1, true);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, -1, true);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, -1, false);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, -1, false,null, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, +1, true, null, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, +1, true, null, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, +1, false,null, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, +1, false,null, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, -1, true, null, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, -1, true, null, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, -1, false,null, canSightBeBlockedByZone);
 		} catch (Exception e){
 			SandboxPixelDungeon.reportException(e);
 			BArray.setFalse(fieldOfView);
 		}
-
 	}
 	
 	//scans a single 45 degree octant of the FOV.
 	//This can add up to a whole FOV by mirroring in X(mX), Y(mY), and X=Y(mXY)
 	private static void scanOctant(int distance, boolean[] fov, boolean[] blocking, int row,
 	                               int x, int y, double lSlope, double rSlope,
-	                               int mX, int mY, boolean mXY){
-		
+	                               int mX, int mY, boolean mXY, Zone zoneWithSightBlocking, boolean canSightBeBlockedByZone){
+
 		boolean inBlocking = false;
 		int start, end;
 		int col;
@@ -127,10 +127,16 @@ public final class ShadowCaster {
 				if (col == end && inBlocking && (int)Math.ceil((row - 0.5) * rSlope - 0.499) != end){
 					break;
 				}
-				
-				fov[cell] = true;
-				
-				if (blocking[cell]){
+
+				boolean blockedByZone;
+				if (canSightBeBlockedByZone) {
+					if (Dungeon.level.zone[cell] != null && !Dungeon.level.zone[cell].sight) zoneWithSightBlocking = Dungeon.level.zone[cell];
+					blockedByZone = zoneWithSightBlocking != null && (Dungeon.level.zone[cell] == null || Dungeon.level.zone[cell] != zoneWithSightBlocking);
+				} else blockedByZone = false;
+
+				if (!blockedByZone) fov[cell] = true;
+
+				if (blocking[cell] || blockedByZone){
 					if (!inBlocking){
 						inBlocking = true;
 						
@@ -139,7 +145,7 @@ public final class ShadowCaster {
 							scanOctant(distance, fov, blocking, row+1, x, y, lSlope,
 									//change in x over change in y
 									(col - 0.5) / (row + 0.5),
-									mX, mY, mXY);
+									mX, mY, mXY, zoneWithSightBlocking, canSightBeBlockedByZone);
 						}
 					}
 				
