@@ -165,7 +165,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		initialThrone = pos;
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) HP = HT = (int) (HP * 1.5f);
 		if (!(Dungeon.level instanceof CityBossLevel)) {
-			Dungeon.level.getPassableHeroVar()[initialThrone] = false;
+			Dungeon.level.setPassableLater(initialThrone,false);
 			phase = 0;
 		}
 	}
@@ -669,7 +669,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 		super.die( cause );
 
-		if (!(Dungeon.level instanceof CityBossLevel)) Dungeon.level.getPassableHeroVar()[initialThrone] = true;
+		if (!(Dungeon.level instanceof CityBossLevel)) Dungeon.level.setPassableLater(initialThrone, true);
 
 		Heap h = Dungeon.level.heaps.get(thronePosition());
 		if (h != null) {

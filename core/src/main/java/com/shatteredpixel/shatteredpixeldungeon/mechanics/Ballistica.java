@@ -134,8 +134,8 @@ public class Ballistica {
 					&& Actor.findChar(cell) == null) {
 				collide(path.get(path.size() - 1));
 			}
-			if (collisionPos == null && stopBarrierProj && Dungeon.level.barriers.get(cell) != null && Dungeon.level.barriers.get(cell).blocksProjectiles()){
-				collide(path.isEmpty() ? sourcePos : path.get(path.size() - 1));
+			if (!path.isEmpty() && collisionPos == null && stopBarrierProj && Dungeon.level.barriers.get(cell) != null && Dungeon.level.barriers.get(cell).blocksProjectiles()){
+				collide(path.get(path.size() - 1));
 			}
 
 			path.add(cell);

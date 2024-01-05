@@ -86,7 +86,7 @@ public class WandOfBlastWave extends DamageWand {
 				if (ch.alignment != Char.Alignment.ALLY) ch.damage(damageRoll(), this);
 
 				if (ch.pos == bolt.collisionPos + i) {
-					Ballistica trajectory = new Ballistica(ch.pos, ch.pos + i, Ballistica.REAL_MAGIC_BOLT, null);
+					Ballistica trajectory = new Ballistica(ch.pos, ch.pos + i, Ballistica.MAGIC_BOLT, ch);
 					int strength = 1 + Math.round(buffedLvl() / 2f);
 					throwChar(ch, trajectory, strength, false, true, this);
 				}

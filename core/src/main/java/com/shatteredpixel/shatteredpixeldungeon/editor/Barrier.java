@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -11,10 +12,29 @@ public class Barrier implements Bundlable {
     public static final int NUM_BLOCK_TYPES = 5;
 
     public static final int BLOCK_NONE = 0;
+    /**
+     * A player cannot enters this tile in any way, similar to a wall.
+     */
     public static final int BLOCK_PLAYER = 1;
+
+    /**
+     * All mobs with enemy alignment can't enters this tile in any way, similar to a wall.
+     */
     public static final int BLOCK_MOBS = 2;
+
+    /**
+     * All allied mobs (no enemy alignment, only neutral and ally remaining) can't enters this tile in any way, similar to a wall.
+     */
     public static final int BLOCK_ALLIES = 4;
+
+    /**
+     * For projectiles, this tile behaves exactly as a wall, so things like projecting missiles can still go through.
+     */
     public static final int BLOCK_PROJECTILES = 8;
+
+    /**
+     * For blobs, this tile behaves exactly as a wall, so no blobs can exist on this tile unless placed in editor, and no blobs will spread on it.
+     */
     public static final int BLOCK_BLOBS = 16;
     public static final int BLOCK_ALL = BLOCK_PLAYER | BLOCK_MOBS | BLOCK_ALLIES | BLOCK_PROJECTILES | BLOCK_BLOBS;
 
@@ -111,11 +131,12 @@ public class Barrier implements Bundlable {
         return (blocks & BLOCK_BLOBS) != 0;
     }
 
-    public static boolean stopMobs(int cell, Char.Alignment alignment) {
-        if (Dungeon.level.barriers.get(cell) != null) {
-            if (alignment == Char.Alignment.ENEMY) {
-                if (Dungeon.level.barriers.get(cell).blocksMobs()) return true;
-            } if (Dungeon.level.barriers.get(cell).blocksAllies()) return true;
+    public static boolean stopChar(int cell, Char ch) {
+        Barrier b = Dungeon.level.barriers.get(cell);
+        if (b != null) {
+            if (ch instanceof Hero) return b.blocksHero();
+            if (ch.alignment == Char.Alignment.ENEMY) return b.blocksMobs();
+            return b.blocksAllies();
         }
         return false;
     }

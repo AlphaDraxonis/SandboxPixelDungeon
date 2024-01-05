@@ -77,7 +77,7 @@ public class Guard extends Mob {
 		if (chainCooldown > 0 || enemy.properties().contains(Property.IMMOVABLE))
 			return false;
 
-		Ballistica chain = new Ballistica(pos, target, Ballistica.PROJECTILE, null);
+		Ballistica chain = new Ballistica(pos, target, Ballistica.REAL_PROJECTILE, null);
 
 		if (chain.collisionPos != enemy.pos
 				|| chain.path.size() < 2
