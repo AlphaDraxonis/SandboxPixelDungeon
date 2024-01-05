@@ -52,6 +52,7 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 		flying = true;
 
 		properties.add(Property.UNDEAD);
+		properties.add(Property.INORGANIC);
 	}
 	
 	private static final String LEVEL = "level";
