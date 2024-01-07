@@ -1510,6 +1510,7 @@ public class Hero extends Char {
 		if (belongings.armor() != null && belongings.armor().hasGlyph(AntiMagic.class, this)
 				&& AntiMagic.RESISTS.contains(src.getClass())){
 			dmg -= AntiMagic.drRoll(this, belongings.armor().buffedLvl());
+			dmg = Math.max(dmg, 0);
 		}
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){

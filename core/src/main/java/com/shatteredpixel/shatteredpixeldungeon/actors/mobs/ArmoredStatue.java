@@ -126,6 +126,7 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 		if (armor != null && armor.hasGlyph(AntiMagic.class, this)
 				&& AntiMagic.RESISTS.contains(src.getClass())){
 			dmg -= AntiMagic.drRoll(this, armor.buffedLvl());
+			dmg = Math.max(dmg, 0);
 		}
 
 		super.damage( dmg, src );
