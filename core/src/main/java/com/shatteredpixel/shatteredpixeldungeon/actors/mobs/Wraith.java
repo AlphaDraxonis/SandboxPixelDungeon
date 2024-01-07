@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ChallengeParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -101,7 +102,7 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 	}
 	
 	public static Wraith spawnAt( int pos, boolean allowExotic ) {
-		if ((!Dungeon.level.solid[pos] || Dungeon.level.isPassableMob(pos)) && Actor.findChar( pos ) == null) {
+		if ((!Dungeon.level.solid[pos] || Dungeon.level.isPassable(pos)) && Actor.findChar( pos ) == null) {
 
 			Wraith w;
 			if (allowExotic && Random.Int(100) == 0){
@@ -109,6 +110,8 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 			} else {
 				w = new Wraith();
 			}
+			if (Barrier.stopChar(pos, w)) return null;
+
 			w.setLevel( Dungeon.scalingDepth() );
 			w.pos = pos;
 			w.state = w.HUNTING;

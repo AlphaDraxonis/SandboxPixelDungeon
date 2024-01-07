@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -42,7 +43,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.tweeners.AlphaTweener;
-import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
@@ -75,10 +75,10 @@ public class ScrollOfTeleportation extends Scroll {
 		return teleportToLocation(ch, pos, pathNeeded, true);
 	}
 	public static boolean teleportToLocation(Char ch, int pos, boolean pathNeeded, boolean animation){
-		if (pathNeeded) PathFinder.buildDistanceMap(pos, BArray.or(Dungeon.level.getPassableVar(ch), Dungeon.level.avoid, null));
+		if (pathNeeded) PathFinder.buildDistanceMap(pos, Dungeon.level.getPassableAndAvoidVar(ch));
 		if (pathNeeded && PathFinder.distance[ch.pos] == Integer.MAX_VALUE
 				|| (!Dungeon.level.isPassable(pos, ch) && !Dungeon.level.avoid[pos])
-				|| Actor.findChar(pos) != null){
+				|| !Barrier.canEnterCell(pos, ch, false, true)){
 			if (ch == Dungeon.hero){
 				GLog.w( Messages.get(ScrollOfTeleportation.class, "cant_reach") );
 			}
@@ -226,7 +226,7 @@ public class ScrollOfTeleportation extends Scroll {
 		}
 
 		int pos = teleportInNonRegularLevel(ch.pos, preferNotSeen, Char.hasProp(ch, Char.Property.LARGE)
-				? BArray.or(Dungeon.level.getPassableVar(ch), Dungeon.level.openSpace, null) : Dungeon.level.getPassableVar(ch), ch instanceof Hero);
+				? Dungeon.level.getPassableAndAnyVarForBoth(ch, null, Dungeon.level.openSpace) : Dungeon.level.getPassableVar(ch), ch instanceof Hero);
 
 		if (pos == -1) return false;
 

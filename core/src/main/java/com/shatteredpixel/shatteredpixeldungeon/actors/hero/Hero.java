@@ -1623,7 +1623,7 @@ public class Hero extends Char {
 			path = null;
 
 			if (Actor.findChar( target ) == null) {
-				if (Dungeon.level.isPassableHero(target) || Dungeon.level.avoid[target]) {
+				if (com.shatteredpixel.shatteredpixeldungeon.editor.Barrier.canEnterCell(target, this, true, false)) {
 					step = target;
 				}
 				if (walkingToVisibleTrapInFog
@@ -2067,7 +2067,7 @@ public class Hero extends Char {
 		ArrayList<Integer> passable = new ArrayList<>();
 		for (Integer ofs : PathFinder.NEIGHBOURS8) {
 			int cell = pos + ofs;
-			if ((Dungeon.level.isPassableHero(cell) || Dungeon.level.avoid[cell]) && Dungeon.level.heaps.get( cell ) == null) {
+			if (com.shatteredpixel.shatteredpixeldungeon.editor.Barrier.canEnterCell(cell, Dungeon.hero, true, true) && Dungeon.level.heaps.get( cell ) == null) {
 				passable.add( cell );
 			}
 		}

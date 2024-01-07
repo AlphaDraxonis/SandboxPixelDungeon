@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GoldenMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
@@ -345,7 +346,7 @@ public class CursedWand {
 					ArrayList<Integer> candidates = new ArrayList<Integer>();
 					for (int n : PathFinder.NEIGHBOURS8) {
 						int cell = targetPos + n;
-						if (Dungeon.level.isPassable(cell, ch) && Actor.findChar( cell ) == null) {
+						if (Barrier.canEnemyEnterCell(cell, false)) {
 							candidates.add( cell );
 						}
 					}
@@ -357,6 +358,7 @@ public class CursedWand {
 				}
 
 				Mimic mimic = Mimic.spawnAt(spawnCell, GoldenMimic.class, false);
+				if (mimic == null) return cursedEffect(origin, user, targetPos);
 				mimic.stopHiding();
 				mimic.alignment = Char.Alignment.ENEMY;
 				Item reward;

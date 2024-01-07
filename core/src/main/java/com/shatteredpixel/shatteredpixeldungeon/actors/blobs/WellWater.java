@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -95,7 +96,7 @@ public abstract class WellWater extends Blob {
 				int tries = 100;
 				do {
 					newPlace = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
-				} while (!Dungeon.level.isPassableHero(newPlace) && !Dungeon.level.avoid[newPlace] && tries-- > 0);
+				} while (Barrier.canEnterCell(newPlace, Dungeon.hero, true, false) && tries-- > 0);
 				Dungeon.level.drop( heap.pickUp(), newPlace ).sprite.drop( pos );
 				
 				return false;

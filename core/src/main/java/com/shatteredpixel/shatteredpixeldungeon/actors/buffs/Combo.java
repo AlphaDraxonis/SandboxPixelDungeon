@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -471,7 +472,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					Ballistica c = new Ballistica(target.pos, enemy.pos, Ballistica.REAL_PROJECTILE, target);
 					if (c.collisionPos == enemy.pos){
 						final int leapPos = c.path.get(c.dist-1);
-						if (!Dungeon.level.isPassable(leapPos, enemy) && !(target.flying && Dungeon.level.avoid[leapPos])){
+						if (!Barrier.canEnterCell(leapPos, enemy, target.flying, true)){
 							GLog.w(Messages.get(Combo.class, "bad_target"));
 						} else if (Dungeon.hero.rooted) {
 							PixelScene.shake( 1, 1f );

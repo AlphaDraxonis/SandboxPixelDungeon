@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Acidic;
@@ -40,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Senior;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.utils.PathFinder;
@@ -80,7 +80,7 @@ public class DistortionTrap extends Trap{
 
 		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 			int p = pos + PathFinder.NEIGHBOURS8[i];
-			if (Actor.findChar( p ) == null && (Dungeon.level.isPassableMob(p) || Dungeon.level.avoid[p])) {
+			if (Barrier.canEnterCell(p, null, true, true)) {
 				candidates.add( p );
 			}
 		}
@@ -137,7 +137,7 @@ public class DistortionTrap extends Trap{
 					break;
 			}
 
-			if (Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[point]){
+			if (Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[point] || Barrier.stopChar(point, mob)){
 				continue;
 			}
 

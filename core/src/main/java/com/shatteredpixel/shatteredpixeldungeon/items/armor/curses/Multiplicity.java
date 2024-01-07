@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -58,7 +59,7 @@ public class Multiplicity extends Armor.Glyph {
 
 			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 				int p = defender.pos + PathFinder.NEIGHBOURS8[i];
-				if (Actor.findChar( p ) == null && (Dungeon.level.isPassable(p, defender) || Dungeon.level.avoid[p])) {
+				if (Barrier.canEnterCell(p, defender, true, true)) {
 					spawnPoints.add( p );
 				}
 			}

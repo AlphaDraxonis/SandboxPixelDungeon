@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
@@ -189,7 +190,7 @@ public class CeremonialCandle extends Item {
 				ArrayList<Integer> candidates = new ArrayList<>();
 				for (int n : PathFinder.NEIGHBOURS8) {
 					int cell = ritualPos + n;
-					if ((Dungeon.level.isPassableMob(cell) || Dungeon.level.avoid[cell]) && Actor.findChar( cell ) == null) {
+					if (Barrier.canEnterCell(cell, elemental, true, true)) {
 						candidates.add( cell );
 					}
 				}

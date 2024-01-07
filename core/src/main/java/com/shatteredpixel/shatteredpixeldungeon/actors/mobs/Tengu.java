@@ -356,7 +356,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				tries--;
 			} while (  tries > 0 &&
 					(!Dungeon.hero.fieldOfView[newPos] ||
-							!level.isPassable(newPos, this) || level.avoid[newPos] ||
+							!level.isPassable(newPos, this) ||
 							level.distance(newPos, targetPos) > arenaRadius ||
 							insideArena && level.distance(newPos, Dungeon.hero.pos) > arenaRadius ||
 							insideArena && level.distance(newPos, pos) < arenaRadius - 1 ||

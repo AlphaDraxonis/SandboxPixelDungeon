@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,7 +142,7 @@ public class Ballistica {
 			path.add(cell);
 
 			if (collisionPos == null && stopTerrain && cell != sourcePos && Dungeon.level.solid[cell]) {
-				if (ignoreSoftSolid && (Dungeon.level.isPassable(cell, usePassable) || Dungeon.level.avoid[cell])) {
+				if (ignoreSoftSolid && Barrier.canEnterCell(cell, usePassable, true, false)) {
 					//do nothing
 				} else {
 					collide(cell);

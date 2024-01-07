@@ -38,7 +38,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
@@ -131,7 +130,7 @@ public class ScrollOfChallenge extends ExoticScroll {
 				}
 			}
 
-			PathFinder.buildDistanceMap( pos, BArray.or( Dungeon.level.getPassableVar(), Dungeon.level.avoid, null ), dist );
+			PathFinder.buildDistanceMap( pos, Dungeon.level.getPassableAndAvoidVar(null), dist );
 			for (int i = 0; i < PathFinder.distance.length; i++) {
 				if (PathFinder.distance[i] < Integer.MAX_VALUE && !arenaPositions.contains(i)) {
 					arenaPositions.add(i);

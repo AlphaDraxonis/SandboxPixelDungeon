@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -293,6 +294,8 @@ public class Mimic extends Mob implements MobBasedOnDepth {
         } else {
             m = new Mimic();
         }
+
+        if (Barrier.stopChar(pos, m)) return null;
 
         m.items = new ArrayList<>(Arrays.asList(items));
         m.setLevel(Dungeon.depth);

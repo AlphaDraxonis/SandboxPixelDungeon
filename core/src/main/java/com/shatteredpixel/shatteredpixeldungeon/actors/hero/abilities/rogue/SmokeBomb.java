@@ -54,7 +54,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -98,7 +97,7 @@ public class SmokeBomb extends ArmorAbility {
 				return;
 			}
 
-			PathFinder.buildDistanceMap(hero.pos, BArray.or(Dungeon.level.getPassableHeroVar(), Dungeon.level.avoid, null), 6);
+			PathFinder.buildDistanceMap(hero.pos, Dungeon.level.getPassableAndAvoidVar(hero), 6);
 
 			if ( PathFinder.distance[target] == Integer.MAX_VALUE ||
 					!Dungeon.level.heroFOV[target] ||

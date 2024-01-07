@@ -47,7 +47,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.BArray;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -121,7 +120,7 @@ public class EtherealChains extends Artifact {
 			if (target != null && (Dungeon.level.visited[target] || Dungeon.level.mapped[target])){
 
 				//chains cannot be used to go where it is impossible to walk to
-				PathFinder.buildDistanceMap(target, BArray.or(Dungeon.level.getPassableVar(curUser), Dungeon.level.avoid, null));
+				PathFinder.buildDistanceMap(target, Dungeon.level.getPassableAndAvoidVar(curUser));
 
 				final Ballistica chain = new Ballistica(curUser.pos, target, Ballistica.STOP_TARGET, null);
 
@@ -218,7 +217,7 @@ public class EtherealChains extends Artifact {
 
 		//don't pull if the collision spot is in a wall
 		if (Dungeon.level.solid[chain.collisionPos]
-			|| !(Dungeon.level.isPassable(chain.collisionPos, hero) || Dungeon.level.avoid[chain.collisionPos])){
+			|| !Barrier.canEnterCell(chain.collisionPos, hero, true, false)){
 			GLog.i( Messages.get(this, "inside_wall"));
 			return;
 		}

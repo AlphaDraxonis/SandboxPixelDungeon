@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
@@ -47,7 +48,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 
@@ -104,7 +104,7 @@ public class Challenge extends ArmorAbility {
 			return;
 		}
 
-		boolean[] passable = BArray.or(Dungeon.level.getPassableHeroVar(), Dungeon.level.avoid, null);
+		boolean[] passable = Dungeon.level.getPassableAndAvoidVar(hero);
 		for (Char c : Actor.chars()) {
 			if (c != hero) passable[c.pos] = false;
 		}
@@ -115,13 +115,13 @@ public class Challenge extends ArmorAbility {
 		if (hero.hasTalent(Talent.CLOSE_THE_GAP) && !hero.rooted){
 
 			int blinkrange = 1 + hero.pointsInTalent(Talent.CLOSE_THE_GAP);
-			PathFinder.buildDistanceMap(hero.pos, BArray.or(Dungeon.level.getPassableVar(targetCh), Dungeon.level.avoid, null), blinkrange);
+			PathFinder.buildDistanceMap(hero.pos, Dungeon.level.getPassableAndAvoidVar(targetCh), blinkrange);
 
 			for (int i = 0; i < PathFinder.distance.length; i++){
 				if (PathFinder.distance[i] == Integer.MAX_VALUE
 						|| reachable[i] == Integer.MAX_VALUE
-						|| (!Dungeon.level.isPassable(i, targetCh) && !(hero.flying && Dungeon.level.avoid[i]))
-						|| i == targetCh.pos){
+						|| i == targetCh.pos
+						|| !Barrier.canEnterCell(i, targetCh, hero.flying, false)){
 					continue;
 				}
 

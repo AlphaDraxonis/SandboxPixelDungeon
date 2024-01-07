@@ -1148,10 +1148,12 @@ public abstract class Level implements Bundlable {
 	}
 
 	public boolean spawnMob(int disLimit){
-		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(getPassableMobVar(), avoid, null));
 
 		Mob mob = createMob();
 		mob.state = mob.WANDERING;
+
+		PathFinder.buildDistanceMap(Dungeon.hero.pos, getPassableAndAvoidVar(mob));
+
 		int tries = 30;
 		do {
 			mob.pos = randomRespawnCell(mob);
@@ -1176,7 +1178,7 @@ public abstract class Level implements Bundlable {
 	public int randomRespawnCell(Char ch, boolean guarantee) {
 		boolean checkPath = Dungeon.hero.pos > 0;
 		if (checkPath)
-			PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(getPassableVar(ch), avoid, null));
+			PathFinder.buildDistanceMap(Dungeon.hero.pos, getPassableAndAvoidVar(ch));
 
 		//prefer spawning >>>in zones<<< where no mobs can spawn if at least one zone that can spawn mobs exists
 		if (ch instanceof Hero) {
@@ -1397,6 +1399,23 @@ public abstract class Level implements Bundlable {
 
 	public boolean[] getPassableMobVar() {
 		return passableMob;
+	}
+
+	public boolean[] getPassableAndAnyVarForBoth(Char a, Char b, boolean[] input) {
+		boolean[] passableModifyable = BArray.or(passable, input, null);
+		for (Barrier barrier : barriers.values()) {
+			if (Barrier.stopChar(barrier.pos, a) || Barrier.stopChar(barrier.pos, b))
+				passableModifyable[barrier.pos] = false;
+		}
+		return passableModifyable;
+	}
+
+	public boolean[] getPassableAndAvoidVarForBoth(Char a, Char b) {
+		return getPassableAndAnyVarForBoth(a, b, avoid);
+	}
+
+	public boolean[] getPassableAndAvoidVar(Char ch) {
+		return getPassableAndAvoidVarForBoth(ch, null);
 	}
 
 	public boolean isFlamable(int cell) {

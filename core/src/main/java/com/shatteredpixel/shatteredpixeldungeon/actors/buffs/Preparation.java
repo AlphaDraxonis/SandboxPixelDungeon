@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroAction;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -43,7 +44,6 @@ import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 
@@ -285,12 +285,12 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 				
 				AttackLevel lvl = AttackLevel.getLvl(turnsInvis);
 
-				PathFinder.buildDistanceMap(Dungeon.hero.pos,BArray.or(Dungeon.level.getPassableVar(enemy), Dungeon.level.avoid, null), lvl.blinkDistance());
+				PathFinder.buildDistanceMap(Dungeon.hero.pos, Dungeon.level.getPassableAndAvoidVar(Dungeon.hero), lvl.blinkDistance());
 				int dest = -1;
 				for (int i : PathFinder.NEIGHBOURS8){
 					//cannot blink into a cell that's occupied or impassable, only over them
-					if (Actor.findChar(cell+i) != null)     continue;
-					if (!Dungeon.level.isPassableHero(cell+i) && !(target.flying && Dungeon.level.avoid[cell+i])) {
+					if (!Barrier.canEnterCell(cell+i, Dungeon.hero, true, true))     continue;
+					if (!Dungeon.level.isPassable(cell+i) && !(target.flying && Dungeon.level.avoid[cell+i])) {
 						continue;
 					}
 

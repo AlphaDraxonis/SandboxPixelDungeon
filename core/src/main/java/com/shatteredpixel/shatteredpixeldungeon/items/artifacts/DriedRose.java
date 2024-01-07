@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -154,16 +155,17 @@ public class DriedRose extends Artifact {
 			else if (charge != chargeCap)   GLog.i( Messages.get(this, "no_charge") );
 			else if (cursed)                GLog.i( Messages.get(this, "cursed") );
 			else {
+				GhostHero tmp = new GhostHero(this);
 				ArrayList<Integer> spawnPoints = new ArrayList<>();
 				for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 					int p = hero.pos + PathFinder.NEIGHBOURS8[i];
-					if (Actor.findChar(p) == null && (Dungeon.level.isPassableAlly(p) || Dungeon.level.avoid[p])) {
+					if (Barrier.canEnterCell(p, tmp, true, true)) {
 						spawnPoints.add(p);
 					}
 				}
 
 				if (spawnPoints.size() > 0) {
-					ghost = new GhostHero( this );
+					ghost = tmp;
 					ghostID = ghost.id();
 					ghost.pos = Random.element(spawnPoints);
 
@@ -432,7 +434,7 @@ public class DriedRose extends Artifact {
 
 				for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 					int p = target.pos + PathFinder.NEIGHBOURS8[i];
-					if (Actor.findChar(p) == null && (Dungeon.level.isPassableMob(p) || Dungeon.level.avoid[p])) {
+					if (Barrier.canEnemyEnterCell(p, true)) {
 						spawnPoints.add(p);
 					}
 				}

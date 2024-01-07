@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
@@ -92,8 +93,7 @@ public class Swarm extends Mob {
 			int[] neighbours = {pos + 1, pos - 1, pos + Dungeon.level.width(), pos - Dungeon.level.width()};
 			for (int n : neighbours) {
 				if (!Dungeon.level.solid[n]
-						&& Actor.findChar( n ) == null
-						&& (Dungeon.level.isPassable(n, this) || Dungeon.level.avoid[n])
+						&& Barrier.canEnterCell(n, this, true, true)
 						&& (!properties().contains(Property.LARGE) || Dungeon.level.openSpace[n])) {
 					candidates.add( n );
 				}

@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -97,8 +98,7 @@ public class Rapier extends MeleeWeapon {
 		int lungeCell = -1;
 		for (int i : PathFinder.NEIGHBOURS8){
 			if (Dungeon.level.distance(hero.pos+i, target) <= wep.reachFactor(hero)
-					&& Actor.findChar(hero.pos+i) == null
-					&& (Dungeon.level.isPassable(hero.pos+i, hero) || (Dungeon.level.avoid[hero.pos+i] && hero.flying))){
+					&& Barrier.canEnterCell(hero.pos+i, hero, hero.flying, true)){
 				if (lungeCell == -1 || Dungeon.level.trueDistance(hero.pos + i, target) < Dungeon.level.trueDistance(lungeCell, target)){
 					lungeCell = hero.pos + i;
 				}

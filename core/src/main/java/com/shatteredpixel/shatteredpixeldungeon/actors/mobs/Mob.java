@@ -54,6 +54,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Feint;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
@@ -590,19 +591,10 @@ public abstract class Mob extends Char {
 	}
 
 	private boolean cellIsPathable( int cell ){
-		if (!Dungeon.level.isPassable(cell, this)){
-			if (flying || buff(Amok.class) != null){
-				if (!Dungeon.level.avoid[cell]){
-					return false;
-				}
-			} else {
-				return false;
-			}
-		}
-		if (Char.hasProp(this, Char.Property.LARGE) && !Dungeon.level.openSpace[cell]){
+		if (!Barrier.canEnterCell(cell, this, flying || buff(Amok.class) != null, true)){
 			return false;
 		}
-		if (Actor.findChar(cell) != null){
+		if (Char.hasProp(this, Char.Property.LARGE) && !Dungeon.level.openSpace[cell]){
 			return false;
 		}
 

@@ -1,8 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -131,13 +133,35 @@ public class Barrier implements Bundlable {
         return (blocks & BLOCK_BLOBS) != 0;
     }
 
+    public boolean blocksChar(Char ch) {
+        if (ch instanceof Hero) return blocksHero();
+        if (ch.alignment == Char.Alignment.ENEMY) return blocksMobs();
+        return blocksAllies();
+    }
+
+    public static boolean stopHero(int cell, Level level) {
+        return level.barriers.get(cell) != null && level.barriers.get(cell).blocksHero();
+    }
+
+
     public static boolean stopChar(int cell, Char ch) {
+        if (ch == null) return false;
         Barrier b = Dungeon.level.barriers.get(cell);
-        if (b != null) {
-            if (ch instanceof Hero) return b.blocksHero();
-            if (ch.alignment == Char.Alignment.ENEMY) return b.blocksMobs();
-            return b.blocksAllies();
-        }
-        return false;
+        return b != null && b.blocksChar(ch);
+    }
+
+    public static boolean canEnemyEnterCell(int cell, boolean enterAvoid) {
+        return (Dungeon.level.isPassable(cell) || (enterAvoid && Dungeon.level.avoid[cell]))
+                && ( Dungeon.level.barriers.get(cell) == null || !Dungeon.level.barriers.get(cell).blocksMobs())
+                && Actor.findChar(cell) == null;
+    }
+
+//    public static boolean canEnterCell(int cell, Char ch, boolean enterAvoid) {
+//        return (Dungeon.level.isPassable(cell) || (enterAvoid && Dungeon.level.avoid[cell])) && !Barrier.stopChar(cell, ch) && Actor.findChar(cell) == null;
+//    }
+
+    public static boolean canEnterCell(int cell, Char ch, boolean enterAvoid, boolean checkOtherActors) {
+        return (Dungeon.level.isPassable(cell) || (enterAvoid && Dungeon.level.avoid[cell])) && !Barrier.stopChar(cell, ch)
+                && (!checkOtherActors || Actor.findChar(cell) == null);
     }
 }

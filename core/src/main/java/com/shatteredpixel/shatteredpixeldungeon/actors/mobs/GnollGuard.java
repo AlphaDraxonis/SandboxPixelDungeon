@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Spear;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollGuardSprite;
@@ -72,4 +73,16 @@ public class GnollGuard extends Mob {
 				&& new Ballistica( enemy.pos, pos, Ballistica.REAL_PROJECTILE, null).collisionPos == pos;
 	}
 
+	@Override
+	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
+		//Not a real representation since normally it would use Spear#random()
+		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+		Spear spear = new Spear();
+		spear.level(0);
+		spear.cursed = false;
+		spear.enchant(null);
+		customLootInfo.addItem(spear, 1);
+		customLootInfo.setLootChance(9);
+		return customLootInfo;
+	}
 }

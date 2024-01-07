@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesi
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
 
 import java.util.ArrayList;
@@ -56,7 +55,7 @@ public class DisplacingDart extends TippedDart {
 			ArrayList<Integer> visiblePositions = new ArrayList<>();
 			ArrayList<Integer> nonVisiblePositions = new ArrayList<>();
 
-			PathFinder.buildDistanceMap(attacker.pos, BArray.or(Dungeon.level.getPassableVar(defender), Dungeon.level.avoid, null));
+			PathFinder.buildDistanceMap(attacker.pos, Dungeon.level.getPassableAndAvoidVar(defender));
 
 			for (int pos = 0; pos < Dungeon.level.length(); pos++){
 				if (Dungeon.level.isPassable(pos, defender)

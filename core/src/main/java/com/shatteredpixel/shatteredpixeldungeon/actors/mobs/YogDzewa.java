@@ -495,7 +495,7 @@ public class YogDzewa extends Mob {
 				}
 			}
 			if (fist.pos == -1) {
-				fist.pos = EditorUtilies.getRandomCellGuranteed(Dungeon.level, fist);
+				fist.pos = EditorUtilies.getRandomCellGuaranteed(Dungeon.level, fist);
 			}
 			fist.pos -= width;
 		}

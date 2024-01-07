@@ -36,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -108,7 +107,7 @@ public class Dagger extends MeleeWeapon {
 			return;
 		}
 
-		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.or(Dungeon.level.getPassableHeroVar(), Dungeon.level.avoid, null), maxDist);
+		PathFinder.buildDistanceMap(Dungeon.hero.pos, Dungeon.level.getPassableAndAvoidVar(hero), maxDist);
 		if (PathFinder.distance[target] == Integer.MAX_VALUE) {
 			GLog.w(Messages.get(wep, "ability_bad_position"));
 			return;

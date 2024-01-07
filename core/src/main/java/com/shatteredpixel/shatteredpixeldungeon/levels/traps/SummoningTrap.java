@@ -22,10 +22,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobBasedOnDepth;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -69,7 +69,7 @@ public class SummoningTrap extends Trap {
 
 		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 			int p = pos + PathFinder.NEIGHBOURS8[i];
-			if (Actor.findChar( p ) == null && (Dungeon.level.isPassableMob(p) || Dungeon.level.avoid[p])) {
+			if (Barrier.canEnterCell(p, null, true, true)) {
 				candidates.add( p );
 			}
 		}
@@ -98,7 +98,7 @@ public class SummoningTrap extends Trap {
 					if (useCustomConfig && mob instanceof MobBasedOnDepth) ((MobBasedOnDepth) mob).setLevel(Dungeon.depth);
 					index++;
 					tries--;
-					repeat = Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[point] || !Dungeon.level.isPassable(point, mob);
+					repeat = Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[point] || Barrier.stopChar(point, mob);
 					if (repeat) largeMobsAddLater.add(mob);
 				} while (repeat && (tries > 0 || useCustomConfig));
 			}

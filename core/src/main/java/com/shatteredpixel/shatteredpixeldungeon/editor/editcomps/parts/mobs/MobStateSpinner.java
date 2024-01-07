@@ -20,8 +20,8 @@ public class MobStateSpinner extends StyledSpinner {
 
     private enum States {
         SLEEPING,
-        HUNTING,
         WANDERING,
+        HUNTING,
         PASSIVE,
         FLEEING,
         FOLLOWING;
@@ -29,10 +29,10 @@ public class MobStateSpinner extends StyledSpinner {
         public static int getIndex(Mob mob) {
             if (mob.following) return 5;
             if (mob.state == mob.SLEEPING) return 0;
-            if (mob.state == mob.HUNTING) return 1;
+            if (mob.state == mob.HUNTING) return 2;
             if (mob.state == mob.PASSIVE) return 3;
             if (mob.state == mob.FLEEING) return 4;
-            return 2;//Wandering is default
+            return 1;//Wandering is default
         }
 
         public void applyChange(Mob mob) {

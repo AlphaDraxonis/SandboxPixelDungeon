@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
@@ -345,17 +346,17 @@ public final class EditorUtilies {
     public static final ParagraphIndicator PARAGRAPH_INDICATOR_INSTANCE = new ParagraphIndicator();
 
 
-    public static int getRandomCellGuranteed(Level level, Char ch) {
+    public static int getRandomCellGuaranteed(Level level, Char ch) {
         int pos;
         int tries = level.length();
         do {
             pos = Random.Int(level.length());//Choose a random cell
             tries--;
-        } while ((!level.isPassable(pos, ch) || level.avoid[pos]) && tries >= 0);
-        if (!level.isPassable(pos, ch) || level.avoid[pos]) {
+        } while ((!Barrier.canEnterCell(pos, ch, false, false)) && tries >= 0);
+        if (!Barrier.canEnterCell(pos, ch, false, false)) {
             int l = level.length();
             for (pos = 0; pos < l; pos++) {
-                if (level.isPassable(pos, ch) && !level.avoid[pos])
+                if (Barrier.canEnterCell(pos, ch, false, false))
                     break;//choose first valid cell
             }
             return pos == l

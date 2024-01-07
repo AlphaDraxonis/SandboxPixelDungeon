@@ -48,7 +48,6 @@ import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.tweeners.Tweener;
-import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -303,7 +302,10 @@ public class ShadowClone extends ArmorAbility {
 			}
 
 			//some checks from super.interact
-			if (!Dungeon.level.isPassable(pos, this) && !c.flying){
+			if (Dungeon.level.pit[pos] && !c.flying){
+				return true;
+			}
+			if (!Dungeon.level.isPassable(pos, c) || !Dungeon.level.isPassable(c.pos, this)) {
 				return true;
 			}
 
@@ -314,8 +316,7 @@ public class ShadowClone extends ArmorAbility {
 
 			int curPos = pos;
 
-			//warp instantly with the clone
-			PathFinder.buildDistanceMap(c.pos, BArray.or(Dungeon.level.getPassableHeroVar(), Dungeon.level.avoid, null));
+			PathFinder.buildDistanceMap(c.pos, Dungeon.level.getPassableAndAvoidVarForBoth(c, this));
 			if (PathFinder.distance[pos] == Integer.MAX_VALUE){
 				return true;
 			}

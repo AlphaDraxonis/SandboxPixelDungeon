@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
@@ -47,7 +48,6 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -201,10 +201,11 @@ public class WarpBeacon extends ArmorAbility {
 				return;
 			}
 
-			PathFinder.buildDistanceMap(target, BArray.or(Dungeon.level.getPassableHeroVar(), Dungeon.level.avoid, null));
+			PathFinder.buildDistanceMap(target, Dungeon.level.getPassableAndAvoidVar(Dungeon.hero));
 			if (Dungeon.level.pit[target] ||
 					(Dungeon.level.solid[target] && !Dungeon.level.isPassableHero(target)) ||
 					!(Dungeon.level.isPassableHero(target) || Dungeon.level.avoid[target]) ||
+					!Barrier.canEnterCell(target, hero, true, true) ||
 					PathFinder.distance[hero.pos] == Integer.MAX_VALUE){
 				GLog.w( Messages.get(WarpBeacon.class, "invalid_beacon") );
 				return;

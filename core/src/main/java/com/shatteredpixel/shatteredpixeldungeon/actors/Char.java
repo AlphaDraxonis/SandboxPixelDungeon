@@ -80,6 +80,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -116,7 +117,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.BArray;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
@@ -212,7 +212,10 @@ public abstract class Char extends Actor {
 
 		//don't allow char to swap onto hazard unless they're flying
 		//you can swap onto a hazard though, as you're not the one instigating the swap
-		if (!Dungeon.level.isPassable(pos, this) && !c.flying){
+		if (Dungeon.level.pit[pos] && !c.flying){
+			return true;
+		}
+		if (!Dungeon.level.isPassable(pos, c) || !Dungeon.level.isPassable(c.pos, this)) {
 			return true;
 		}
 
@@ -229,7 +232,7 @@ public abstract class Char extends Actor {
 
 		//warp instantly with allies in this case
 		if (c == Dungeon.hero && Dungeon.hero.hasTalent(Talent.ALLY_WARP)){
-			PathFinder.buildDistanceMap(c.pos, BArray.or(Dungeon.level.getPassableHeroVar(), Dungeon.level.avoid, null));
+			PathFinder.buildDistanceMap(c.pos, Dungeon.level.getPassableAndAvoidVarForBoth(c, this));
 			if (PathFinder.distance[pos] == Integer.MAX_VALUE){
 				return true;
 			}
@@ -1025,7 +1028,7 @@ public abstract class Char extends Actor {
 		if (travelling && Dungeon.level.adjacent( step, pos ) && buff( Vertigo.class ) != null) {
 			sprite.interruptMotion();
 			int newPos = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
-			if (!(Dungeon.level.isPassable(newPos, this) || Dungeon.level.avoid[newPos])
+			if (!Barrier.canEnterCell(newPos, this, true, false)
 					|| (properties().contains(Property.LARGE) && !Dungeon.level.openSpace[newPos])
 					|| findChar( newPos ) != null)
 				return;

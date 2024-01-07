@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -477,11 +478,11 @@ public class Dungeon {
 		//Place hero at the entrance if they are out of the map (often used for pox = -1)
 		// or if they are in solid terrain (except in the mining level, where that happens normally)
 		if (pos < 0 || pos >= level.length()
-				|| (!(level instanceof MiningLevel) && !level.isPassableHero(pos) && !level.avoid[pos])){
+				|| (!(level instanceof MiningLevel) && !level.isPassable(pos) && !level.avoid[pos]) || Barrier.stopHero(pos, level)){
 			LevelTransition t = level.getTransition(null);
 			if (t == null) {
 				Random.pushGenerator(Dungeon.seedCurLevel() + 5);
-				pos = EditorUtilies.getRandomCellGuranteed(level, Dungeon.hero == null ? new Hero() : Dungeon.hero);
+				pos = EditorUtilies.getRandomCellGuaranteed(level, Dungeon.hero == null ? new Hero() : Dungeon.hero);
 				GameScene.errorMsg.add(Messages.get(Dungeon.class, "no_transitions_warning", level.name, Dungeon.customDungeon.getName()));
 				Random.popGenerator();
 			} else
@@ -1052,6 +1053,9 @@ public class Dungeon {
 		setupPassable();
 		if (ch.flying || ch.buff( Amok.class ) != null) {
 			BArray.or( pass, Dungeon.level.avoid, passable );
+            for (Barrier b : Dungeon.level.barriers.values()) {
+                if (b.blocksChar(ch)) passable[b.pos] = false;
+            }
 		} else {
 			System.arraycopy( pass, 0, passable, 0, Dungeon.level.length() );
 		}
@@ -1088,6 +1092,9 @@ public class Dungeon {
         setupPassable();
         if (ch.flying || ch.buff(Amok.class) != null) {
             BArray.or(pass, Dungeon.level.avoid, passable);
+            for (Barrier b : Dungeon.level.barriers.values()) {
+                if (b.blocksChar(ch)) passable[b.pos] = false;
+            }
         } else {
             System.arraycopy(pass, 0, passable, 0, Dungeon.level.length());
         }
