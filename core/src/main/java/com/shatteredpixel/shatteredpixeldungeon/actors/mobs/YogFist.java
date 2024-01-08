@@ -536,9 +536,14 @@ public abstract class YogFist extends Mob {
 			if (isAlive() && beforeHP > HT/2 && HP < HT/2){
 				HP = HT/2;
 				Buff.prolong( Dungeon.hero, Blindness.class, Blindness.DURATION*1.5f );
+				int tries = Dungeon.level.length();
 				int i;
 				do {
 					i = Random.Int(Dungeon.level.length());
+					if (tries-- < 0) {
+						i = pos;
+						break;
+					}
 				} while (Dungeon.level.heroFOV[i]
 						|| Dungeon.level.solid[i]
 						|| Actor.findChar(i) != null
@@ -609,22 +614,23 @@ public abstract class YogFist extends Mob {
 				if (l != null){
 					l.detach();
 				}
-				int tries = 100;
+				int tries = Dungeon.level.length();
 				int i;
 				do {
 					i = Random.Int(Dungeon.level.length());
-					tries--;
-				} while ((Dungeon.level.heroFOV[i]
+					if (tries-- < 0) {
+						i = pos;
+						break;
+					}
+				} while (Dungeon.level.heroFOV[i]
 						|| Dungeon.level.solid[i]
 						|| Actor.findChar(i) != null
-						|| PathFinder.getStep(i, Dungeon.level.exit(), Dungeon.level.getPassableVar(this)) == -1) && tries >= 0);
-				if (tries >= 0) {
-					ScrollOfTeleportation.appear(this, i);
-					state = WANDERING;
-					GameScene.flash(0, false);
-					GLog.w(Messages.get(this, "teleport"));
-					return;
-				}
+						|| PathFinder.getStep(i, Dungeon.level.exit(), Dungeon.level.getPassableVar(this)) == -1);
+				ScrollOfTeleportation.appear(this, i);
+				state = WANDERING;
+				GameScene.flash(0, false);
+				GLog.w(Messages.get(this, "teleport"));
+				return;
 			}
 			if (!isAlive()){
 				Light l = Dungeon.hero.buff(Light.class);
