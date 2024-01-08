@@ -219,7 +219,8 @@ public final class EditorUtilies {
         long years = seconds / 31556952;
 
         if (timeDifferenceMillis < 0) {
-            if (timeDifferenceMillis > -15000) return Messages.get(EditorUtilies.class, "time_diff_seconds_true", 0);
+            if (timeDifferenceMillis > - 15_000) return Messages.get(EditorUtilies.class, "time_diff_seconds_true", 0);
+            if (timeDifferenceMillis > - 300_000) return Messages.get(EditorUtilies.class, "now");
             return Messages.get(EditorUtilies.class, "time_diff_future", days, hours % 24, minutes % 60);
         } else if (years > 0) {
             return Messages.get(EditorUtilies.class, "time_diff_years_" + (years != 1), years);

@@ -82,7 +82,7 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return URL == null ? "https://script.google.com/macros/s/AKfycbyFbZHeCZkcpD59EibpFiGsb8CWn6UpFO0L650e7Fes869-rirouYbRM0GRW8iFbEYX9g/exec" : URL;
+        return URL == null ? "https://script.google.com/macros/s/AKfycbz3TsFOgsAQGKGIvaV5aDdZ_b4vHqBG39bKGGyCgKSiVrZE_eMl4LfN2z5QgeflAdzXpg/exec" : URL;
     }
 
     private static String getUUID() {
@@ -313,7 +313,7 @@ public final class ServerCommunication {
         }
     }
 
-    public static void uploadDungeon(String dungeonName, String description, String userName, UploadCallback callback) {
+    public static void uploadDungeon(String dungeonName, String description, String userName, int difficulty, UploadCallback callback) {
         try {
             Bundle dungeonAsBundle = CustomDungeonSaves.getExportDungeonBundle(dungeonName);
 
@@ -322,6 +322,7 @@ public final class ServerCommunication {
             uploadPreview.description = description;
             uploadPreview.version = Game.version;
             uploadPreview.uploader = userName;
+            uploadPreview.difficulty = difficulty;
 
             Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
             httpRequest.setUrl(getURL() + "?action=upload&fileName=" + URLEncoder.encode(dungeonName, "UTF-8") + "&userID=" + getUUID()
@@ -342,7 +343,7 @@ public final class ServerCommunication {
         }
     }
 
-    public static void updateDungeon(DungeonPreview oldDungeonPreview, String newDungeonName, String newDescription, UploadCallback callback) {
+    public static void updateDungeon(DungeonPreview oldDungeonPreview, String newDungeonName, String newDescription, int difficulty, UploadCallback callback) {
         try {
             Bundle dungeonAsBundle;
             if (newDungeonName == null) {
@@ -355,6 +356,7 @@ public final class ServerCommunication {
             uploadPreview.description = newDescription;
             uploadPreview.version = Game.version;
             uploadPreview.uploader = oldDungeonPreview.uploader;
+            uploadPreview.difficulty = difficulty;
 
             Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
             httpRequest.setUrl(getURL() + "?action=update&fileName=" + URLEncoder.encode(newDungeonName, "UTF-8") + "&dungeonID=" + oldDungeonPreview.dungeonFileID

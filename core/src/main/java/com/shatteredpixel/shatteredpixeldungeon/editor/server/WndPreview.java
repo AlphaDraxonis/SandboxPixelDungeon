@@ -34,7 +34,7 @@ public class WndPreview extends Component {
     private final DungeonPreview preview;
     private final ServerDungeonList serverDungeonList;
 
-    protected RenderedTextBlock desc, creator, time, version;
+    protected RenderedTextBlock desc, difficulty, creator, time, version;
 
     protected RedButton download;
     protected IconButton delete, edit;
@@ -48,6 +48,10 @@ public class WndPreview extends Component {
 
         creator = PixelScene.renderTextBlock(Messages.get(WndPreview.class, "creator") + ": _" + preview.uploader, 6);
         add(creator);
+
+        difficulty = PixelScene.renderTextBlock(Messages.get(UploadDungeon.class, "difficulty") + ": "
+                + DungeonPreview.displayDifficulty(preview.difficulty), 6);
+        add(difficulty);
 
         String displayTime;
 //        displayTime = new SimpleDateFormat("dd.MM.yyyy, HH:mm", Languages.getCurrentLocale()).format(new Date(preview.uploadTime));//absolute time
@@ -180,7 +184,7 @@ public class WndPreview extends Component {
     protected void layout() {
         desc.maxWidth((int) width);
         height = 0;
-        float posY = y + EditorUtilies.layoutCompsLinear(4, this, desc, creator, time, version) + 5;
+        float posY = y + EditorUtilies.layoutCompsLinear(4, this, desc, creator, difficulty, time, version) + 5;
         download.setRect(x + width / 5, posY, width * 3 / 5, 16);
         delete.setRect(x + width - 16, posY, 16, 16);
         edit.setRect(delete.left() - 16, posY, 16, 16);
@@ -202,7 +206,7 @@ public class WndPreview extends Component {
         ServerCommunication.isCreator(preview.dungeonFileID, new ServerCommunication.OwnershipCheckerCallback() {
             @Override
             protected void onSuccessful(Boolean value) {
-                if(value != null && value) onCorrect.run();
+                if (value != null && value) onCorrect.run();
                 else {
                     if (value != null) {
                         Game.scene().addToFront(new WndError(Messages.get(WndPreview.class, "no_ownership")));

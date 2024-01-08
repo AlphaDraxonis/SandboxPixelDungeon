@@ -7,6 +7,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseObjectComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StringInputComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -41,6 +43,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
     protected ChooseObjectComp selectDungeon;
     protected StringInputComp description;
     protected StringInputComp userName;
+    protected Spinner difficulty;
 
 
     protected RenderedTextBlock info, legalInfo;
@@ -121,9 +124,24 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         add(description);
 
         if (type == ServerCommunication.UploadType.UPLOAD) {
-
             userName = new StringInputComp(Messages.get(UploadDungeon.class, "username_label"), null, 50, false, null);
             add(userName);
+        }
+
+        if (type != ServerCommunication.UploadType.REPORT_BUG) {
+            difficulty = new Spinner(new SpinnerTextModel(true, preview == null ? DungeonPreview.HARD : preview.difficulty,
+                    new Object[]{DungeonPreview.EASY,
+                            DungeonPreview.MEDIUM,
+                            DungeonPreview.HARD,
+                            DungeonPreview.EXPERT,
+                            DungeonPreview.INSANE}) {
+                @Override
+                protected String getAsString(Object value) {
+                    if (value instanceof Integer) return DungeonPreview.displayDifficulty((int) value);
+                    return super.getAsString(value);
+                }
+            }, Messages.get(UploadDungeon.class, "difficulty"), 9);
+            add(difficulty);
         }
 
         if (type == ServerCommunication.UploadType.UPLOAD) {
@@ -140,7 +158,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
             height -= 4;
         }
         if (legalInfo != null) legalInfo.maxWidth((int) width);
-        height = EditorUtilies.layoutCompsLinear(4, this, info, selectDungeon, description, userName, legalInfo) + 1;
+        height = EditorUtilies.layoutCompsLinear(4, this, info, selectDungeon, description, userName, difficulty, legalInfo) + 1;
     }
 
     public Component createTitle() {
@@ -176,7 +194,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                 return;
             }
 
-            ServerCommunication.uploadDungeon(dungeon, description.getText(), uploader, new ServerCommunication.UploadCallback() {
+            ServerCommunication.uploadDungeon(dungeon, description.getText(), uploader, (int) difficulty.getValue(), new ServerCommunication.UploadCallback() {
                 @Override
                 protected void onSuccessful(String dungeonFileID) {
                     SPDSettings.increaseUploadTimer();
@@ -192,7 +210,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
             }
 
             String dungeon = (String) selectDungeon.getObject();
-            ServerCommunication.updateDungeon(preview, dungeon, description.getText(), new ServerCommunication.UploadCallback() {
+            ServerCommunication.updateDungeon(preview, dungeon, description.getText(), (int) difficulty.getValue(), new ServerCommunication.UploadCallback() {
                 @Override
                 protected void onSuccessful(String dungeonFileID) {
                     SPDSettings.increaseUpdateTimer();
@@ -201,6 +219,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                     preview.uploadTime = System.currentTimeMillis();
                     preview.description = description.getText();
                     preview.version = Game.version;
+                    preview.difficulty = (int) difficulty.getValue();
                     ServerDungeonList.updatePage();
                     onSuccessful.run();
                     Game.scene().addToFront(new WndMessage(Messages.get(UploadDungeon.class, "update_successful")));
