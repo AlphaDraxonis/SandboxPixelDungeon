@@ -45,6 +45,7 @@ public enum Icons {
     SUPPORT_GOLD,
     SUPPORT_EMERALD,
     ZONE,
+    COLORS,
 
     //rankings and hero select icons, spacing for 16x16
     STAIRS,
@@ -188,6 +189,9 @@ public enum Icons {
                 break;
             case ZONE:
                 icon.frame(icon.texture.uvRectBySize(199, 0, 15, 15));
+                break;
+            case COLORS:
+                icon.frame(icon.texture.uvRectBySize(229, 0, 13, 11));
                 break;
 
             case STAIRS:

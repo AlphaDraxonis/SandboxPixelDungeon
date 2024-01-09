@@ -10,7 +10,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
@@ -18,16 +20,24 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelec
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndEditFloorInOverview;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndColorPicker;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -35,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.SlowExtendWindow;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
@@ -243,7 +254,7 @@ public final class WndZones {
         private final ScrollPane sp;
         protected IconTitle title;
         protected Image titleIcon;
-        private Component[] comps;
+        private EditZoneCompBase editZoneComp;
 
         protected RedButton create, cancel;
 
@@ -293,31 +304,54 @@ public final class WndZones {
             spContent = new Component() {
                 @Override
                 protected void layout() {
-                    height = -1;
-                    height = EditorUtilies.layoutCompsLinear(MARGIN, this, comps);
+                    editZoneComp.setRect(0, 0, width, -1);
+                    height = editZoneComp.height() + 1;
                 }
             };
 
-            comps = EditZoneComp.createComponents(zone, () -> {
-                textBox.active = false;
-                EditorScene.show(new WndColorPicker(zone.getColor()) {
-                    @Override
-                    public void setSelectedColor(int color) {
-                        super.setSelectedColor(color);
-                        zone.setColor(color);
-                        titleIcon.hardlight(color);
-                    }
+            editZoneComp = new EditZoneCompBase(zone) {
 
-                    @Override
-                    public void hide() {
-                        super.hide();
-                        textBox.active = true;
-                    }
-                });
-            });
-            for (Component c : comps) {
-                if (c != null) spContent.add(c);
-            }
+                {
+                    title.visible = title.active = false;
+                    desc.visible = desc.active = false;
+                }
+
+                @Override
+                protected void layout() {
+                    //no title or desc
+                    height = -1;
+                    layoutCompsInRectangles(comps);
+                    layoutCompsLinear(transitionEdit, chasmDest);
+                }
+
+                @Override
+                public void updateObj() {
+                    titleIcon.hardlight(obj.getColor());
+                    super.updateObj();
+                    spContent.setPos(0,0);
+                }
+
+                @Override
+                protected void showColorPickerDialog() {
+                    textBox.active = false;
+                    EditorScene.show(new WndColorPicker(zone.getColor()) {
+                        @Override
+                        public void setSelectedColor(int color) {
+                            super.setSelectedColor(color);
+                            zone.setColor(color);
+                            updateObj();
+                        }
+
+                        @Override
+                        public void hide() {
+                            super.hide();
+                            textBox.active = true;
+                        }
+                    });
+                }
+            };
+
+            spContent.add(editZoneComp);
 
             sp = new ScrollPane(spContent);
             add(sp);
@@ -375,28 +409,89 @@ public final class WndZones {
         );
     }
 
-    public static class EditZoneComp extends DefaultEditComp<Zone> {
+    public static class EditZoneCompBase extends DefaultEditComp<Zone> {
 
-        private Component[] comps;
+        protected Component[] comps;
 
-        protected RedButton addTransition;
-        private TransitionEditPart transitionEdit;
+        protected StyledButton addTransition;
+        protected StyledSpinner chasmDest;
+        protected TransitionEditPart transitionEdit;
 
-        protected IconButton rename, delete;
-
-        public EditZoneComp(Zone zone) {
+        public EditZoneCompBase(Zone zone) {
             super(zone);
 
-            comps = createComponents(zone, () -> EditorScene.show(new WndColorPicker(zone.getColor()) {
+            StyledButton pickColor = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditZoneComp.class, "color")) {
                 @Override
-                public void setSelectedColor(int color) {
-                    super.setSelectedColor(color);
-                    zone.setColor(color);
-                    updateObj();
+                protected void onClick() {
+                    showColorPickerDialog();
                 }
-            }));
+            };
+            pickColor.icon(Icons.COLORS.get());
+            pickColor.multiline = true;
 
-            Spinner grassVisuals = new Spinner(new SpinnerTextIconModel(true, zone.grassType.index, (Object[]) Zone.GrassType.values()) {
+            StyledCheckBox flamable = new StyledCheckBox(Messages.get(EditZoneComp.class, "flamable")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    zone.flamable = value;
+                }
+            };
+            flamable.checked(zone.flamable);
+            flamable.icon(BlobItem.createIcon(PermaGas.PFire.class));
+
+            StyledCheckBox spawnMobs = new StyledCheckBox(Messages.get(EditZoneComp.class, "spawn_mobs")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    zone.canSpawnMobs = value;
+                }
+            };
+            spawnMobs.checked(zone.canSpawnMobs);
+            spawnMobs.icon(new GnollSprite());
+
+            StyledCheckBox spawnItems = new StyledCheckBox(Messages.get(EditZoneComp.class, "spawn_items")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    zone.canSpawnItems = value;
+                }
+            };
+            spawnItems.checked(zone.canSpawnItems);
+            spawnItems.icon(new ItemSprite(ItemSpriteSheet.CHEST));
+
+            StyledCheckBox teleportTo = new StyledCheckBox(Messages.get(EditZoneComp.class, "teleport_to")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    zone.canTeleportTo = value;
+                }
+            };
+            teleportTo.checked(zone.canTeleportTo);
+            Image teleIcon = IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.SCROLL_TELEPORT);
+            teleIcon.scale.set(ItemSpriteSheet.SIZE / Math.max(teleIcon.width(), teleIcon.height()));
+            teleportTo.icon(teleIcon);
+
+            StyledCheckBox destroyWalls = new StyledCheckBox(Messages.get(EditZoneComp.class, "destroy_walls")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    zone.canDestroyWalls = value;
+                }
+            };
+            destroyWalls.checked(zone.canDestroyWalls);
+            destroyWalls.icon(new ItemSprite(EditorScene.customLevel().tilesTex(), new TileItem(Terrain.WALL, -1)));
+
+            StyledCheckBox blocksVision = new StyledCheckBox(Messages.get(EditZoneComp.class, "blocks_vision")) {
+                @Override
+                public void checked(boolean value) {
+                    super.checked(value);
+                    zone.blocksVision = value;
+                }
+            };
+            blocksVision.checked(zone.blocksVision);
+            blocksVision.icon(new BuffIcon(BuffIndicator.BLINDNESS, true));
+
+            StyledSpinner grassVisuals = new StyledSpinner(new SpinnerTextIconModel(true, zone.grassType.index, (Object[]) Zone.GrassType.values()) {
                 @Override
                 protected Image getIcon(Object value) {
                     switch ((Zone.GrassType) value) {
@@ -422,9 +517,9 @@ public final class WndZones {
                     }
                     return Messages.NO_TEXT_FOUND;
                 }
-            }, Messages.get(EditZoneComp.class, "grass_label") + ":", 9);
+            }, Messages.get(EditZoneComp.class, "grass_label"), 9,
+                    new ItemSprite(EditorScene.customLevel().tilesTex(), new TileItem(Terrain.HIGH_GRASS, -1)));
             grassVisuals.addChangeListener(() -> zone.setGrassType((Zone.GrassType) grassVisuals.getValue()));
-            comps[6] = grassVisuals;
 
             LevelScheme chasm = Dungeon.customDungeon.getFloor(Dungeon.level.levelScheme.getChasm());
             Object[] data;
@@ -445,30 +540,104 @@ public final class WndZones {
                     }
                 }
             } else data = new Object[]{null};
-            Spinner chasmDest = new Spinner(new SpinnerTextModel(true, index, data) {
+            chasmDest = new StyledSpinner(new SpinnerTextModel(true, index, data) {
                 @Override
                 protected String getAsString(Object value) {
                     if (value == null) return Messages.get(Zone.class, "none_zone");
                     return super.getAsString(value);
                 }
-            }, Messages.get(EditZoneComp.class, "chasm_dest") + ":", 9);
-            chasmDest.addChangeListener(() -> {
-                zone.chasmDestZone = (String) chasmDest.getValue();
-            });
+            }, Messages.get(EditZoneComp.class, "chasm_dest") + ":", 9, new ItemSprite(EditorScene.customLevel().tilesTex(), new TileItem(Terrain.CHASM, -1)));
+            chasmDest.addChangeListener(() -> zone.chasmDestZone = (String) chasmDest.getValue());
             chasmDest.enable(chasm != null);
-            comps[7] = chasmDest;
 
-            addTransition = new RedButton(Messages.get(EditTileComp.class, "add_transition"), 9) {
+            addTransition = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditTileComp.class, "add_transition"), 9) {
                 @Override
                 protected void onClick() {
                     addTransition(new LevelTransition(EditorScene.customLevel(), TransitionEditPart.NONE, TransitionEditPart.DEFAULT, null));
                 }
             };
+            addTransition.multiline = true;
+
+            comps = new Component[]{pickColor, flamable, spawnMobs, spawnItems, teleportTo, destroyWalls, blocksVision, grassVisuals, addTransition};
+
             if (zone.zoneTransition != null) {
                 addTransition(zone.zoneTransition);
-            } else {
-                comps[8] = addTransition;
             }
+
+            for (Component c : comps) {
+                if (c != null) add(c);
+            }
+            add(chasmDest);
+
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+
+            title.setRect(x, y, width, title.height());
+            desc.setRect(x, title.bottom() + WndTitledMessage.GAP * 2, desc.width(), desc.height());
+
+            height = desc.bottom() + 1;
+            layoutCompsInRectangles(comps);
+            layoutCompsLinear(transitionEdit, chasmDest);
+        }
+
+        private void addTransition(LevelTransition transition) {
+            transitionEdit = EditTileComp.addTransition(-12345, transition, EditorScene.customLevel().levelScheme, t -> obj.zoneTransition = null);
+            add(transitionEdit);
+            obj.zoneTransition = transition;
+            addTransition.visible = addTransition.active = false;
+            layout();
+            updateObj();//for resize
+        }
+
+        @Override
+        protected Component createTitle() {
+            return new IconTitle(getIcon(), obj.getName());
+        }
+
+        @Override
+        protected String createDescription() {
+            return null;
+        }
+
+        @Override
+        public Image getIcon() {
+            Image icon = Icons.ZONE.get();
+            icon.hardlight(obj.getColor());
+            return icon;
+        }
+
+        @Override
+        public void updateObj() {
+            if (title instanceof IconTitle) {
+                ((IconTitle) title).icon(getIcon());
+                ((IconTitle) title).label(obj.getName());
+            }
+
+            super.updateObj();
+        }
+
+        protected void showColorPickerDialog() {
+            EditorScene.show(new WndColorPicker(obj.getColor()) {
+                @Override
+                public void setSelectedColor(int color) {
+                    super.setSelectedColor(color);
+                    obj.setColor(color);
+                    updateObj();
+                }
+            });
+        }
+
+    }
+
+    public static class EditZoneComp extends EditZoneCompBase {
+
+        protected IconButton rename, delete;
+
+        public EditZoneComp(Zone zone) {
+            super(zone);
 
             rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
                 @Override
@@ -545,10 +714,6 @@ public final class WndZones {
                 }
             };
             add(delete);
-
-            for (Component c : comps) {
-                if (c != null) add(c);
-            }
         }
 
         @Override
@@ -567,107 +732,10 @@ public final class WndZones {
             rename.setRect(width - renameDeleteWidth, title.top() + (title.height() - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
             delete.setRect(rename.right() + 2, title.top() + (title.height() - delete.icon().height) * 0.5f, delete.icon().width, delete.icon().height);
 
-            layoutCompsLinear(comps);
+            layoutCompsInRectangles(comps);
+            layoutCompsLinear(transitionEdit, chasmDest);
         }
 
-        @Override
-        protected Component createTitle() {
-            return new IconTitle(getIcon(), obj.getName());
-        }
-
-        @Override
-        protected String createDescription() {
-            return null;
-        }
-
-        @Override
-        public Image getIcon() {
-            Image icon = Icons.ZONE.get();
-            icon.hardlight(obj.getColor());
-            return icon;
-        }
-
-        @Override
-        public void updateObj() {
-            if (title instanceof IconTitle) {
-                ((IconTitle) title).icon(getIcon());
-                ((IconTitle) title).label(obj.getName());
-            }
-
-            super.updateObj();
-        }
-
-        private void addTransition(LevelTransition transition) {
-            transitionEdit = EditTileComp.addTransition(-12345, transition, EditorScene.customLevel().levelScheme, t -> obj.zoneTransition = null);
-            add(transitionEdit);
-            obj.zoneTransition = transition;
-            addTransition.visible = addTransition.active = false;
-            comps = new Component[]{comps[0], comps[1], comps[2], comps[3], comps[4], comps[5], comps[6], comps[7], transitionEdit};
-            layout();
-            updateObj();//for resize
-        }
-
-        public static Component[] createComponents(Zone zone, Runnable onColorPickClick) {
-
-            RedButton pickColor = new RedButton(Messages.get(EditZoneComp.class, "color")) {
-                @Override
-                protected void onClick() {
-                    onColorPickClick.run();
-                }
-            };
-            pickColor.icon(Icons.CHANGES.get());
-            pickColor.leftJustify = true;
-
-            CheckBox flamable = new CheckBox(Messages.get(EditZoneComp.class, "flamable")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    zone.flamable = value;
-                }
-            };
-            flamable.checked(zone.flamable);
-//            flamable.icon(BlobItem.createIcon(PermaGas.PFire.class));
-
-            CheckBox spawnMobs = new CheckBox(Messages.get(EditZoneComp.class, "spawn_mobs")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    zone.canSpawnMobs = value;
-                }
-            };
-            spawnMobs.checked(zone.canSpawnMobs);
-//            spawnMobs.icon(new GnollSprite());
-
-            CheckBox spawnItems = new CheckBox(Messages.get(EditZoneComp.class, "spawn_items")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    zone.canSpawnItems = value;
-                }
-            };
-            spawnItems.checked(zone.canSpawnItems);
-//            spawnItems.icon(new ItemSprite(ItemSpriteSheet.CHEST));
-
-            CheckBox teleportTo = new CheckBox(Messages.get(EditZoneComp.class, "teleport_to")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    zone.canTeleportTo = value;
-                }
-            };
-            teleportTo.checked(zone.canTeleportTo);
-
-            CheckBox destroyWalls = new CheckBox(Messages.get(EditZoneComp.class, "destroy_walls")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    zone.canDestroyWalls = value;
-                }
-            };
-            destroyWalls.checked(zone.canDestroyWalls);
-
-            return new Component[]{pickColor, flamable, spawnMobs, spawnItems, teleportTo, destroyWalls, null, null, null};
-        }
     }
 
 }

@@ -233,7 +233,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public int getClicksPerSecondWhileHolding() {
                     return 120;
                 }
-            }, Messages.get(EditMobComp.class, "sheep_lifespan"), 9, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_HEALING));
+            }, Messages.get(EditMobComp.class, "sheep_lifespan"), 8, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_HEALING));
             sheepLifespan.icon().scale.set(9f / sheepLifespan.icon().height());
             sheepLifespan.addChangeListener(() -> ((Sheep) mob).lifespan = (int) sheepLifespan.getValue());
             add(sheepLifespan);

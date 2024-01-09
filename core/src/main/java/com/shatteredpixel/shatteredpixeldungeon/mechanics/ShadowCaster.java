@@ -130,7 +130,7 @@ public final class ShadowCaster {
 
 				boolean blockedByZone;
 				if (canSightBeBlockedByZone) {
-					if (Dungeon.level.zone[cell] != null && !Dungeon.level.zone[cell].sight) zoneWithSightBlocking = Dungeon.level.zone[cell];
+					if (Dungeon.level.zone[cell] != null && Dungeon.level.zone[cell].blocksVision) zoneWithSightBlocking = Dungeon.level.zone[cell];
 					blockedByZone = zoneWithSightBlocking != null && (Dungeon.level.zone[cell] == null || Dungeon.level.zone[cell] != zoneWithSightBlocking);
 				} else blockedByZone = false;
 
