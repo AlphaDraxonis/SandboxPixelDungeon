@@ -31,7 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -46,7 +46,7 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
-public class DemonSpawner extends SpawnerMob {
+public class DemonSpawner extends SpawnerMob implements MobBasedOnDepth {
 
 	{
 		spriteClass = SpawnerSprite.class;
@@ -76,14 +76,6 @@ public class DemonSpawner extends SpawnerMob {
 		summonTemplate.add(summon);
 	}
 
-
-	@Override
-	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
-		customLootInfo.addItem(new PotionOfHealing(), 1);
-		return super.convertToCustomLootInfo();
-	}
-
 //	@Override
 //	public int drRoll() {
 //		return super.drRoll() + Random.NormalIntRange(0, 12);
@@ -100,6 +92,7 @@ public class DemonSpawner extends SpawnerMob {
 	}
 
 	private float spawnCooldown = 0;
+	public float maxSpawnCooldown = -1;
 
 	public boolean spawnRecorded = false;
 
@@ -118,6 +111,8 @@ public class DemonSpawner extends SpawnerMob {
 			spawnCooldown = 20;
 		}
 
+		if (maxSpawnCooldown == 0) setLevel(Dungeon.depth);
+
 		spawnCooldown--;
 		if (spawnCooldown <= 0){
 
@@ -130,7 +125,7 @@ public class DemonSpawner extends SpawnerMob {
 
 			ArrayList<Integer> candidates = new ArrayList<>();
 			for (int n : PathFinder.NEIGHBOURS8) {
-				if (Dungeon.level.isPassable(pos+n, spawn) && Actor.findChar( pos+n ) == null) {
+				if (Barrier.canEnterCell(pos+n, spawn, false, true)) {
 					candidates.add( pos+n );
 				}
 			}
@@ -145,9 +140,7 @@ public class DemonSpawner extends SpawnerMob {
 					Actor.add(new Pushing(spawn, pos, spawn.pos));
 				}
 
-				spawnCooldown += 60;
-				//60/53.33/46.67/40 turns to spawn on floor 21/22/23/24
-				spawnCooldown -= Math.min(20, (Dungeon.level.levelScheme.getNumInRegion()-1)*6.67);
+				spawnCooldown += maxSpawnCooldown;
 			}
 		}
 		alerted = false;
@@ -176,12 +169,14 @@ public class DemonSpawner extends SpawnerMob {
 	}
 
 	public static final String SPAWN_COOLDOWN = "spawn_cooldown";
+	private static final String MAX_SPAWN_COOLDOWN = "max_spawn_cooldown";
 	public static final String SPAWN_RECORDED = "spawn_recorded";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(SPAWN_COOLDOWN, spawnCooldown);
+		bundle.put(MAX_SPAWN_COOLDOWN, maxSpawnCooldown);
 		bundle.put(SPAWN_RECORDED, spawnRecorded);
 	}
 
@@ -189,6 +184,7 @@ public class DemonSpawner extends SpawnerMob {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		spawnCooldown = bundle.getFloat(SPAWN_COOLDOWN);
+		maxSpawnCooldown = bundle.getFloat(MAX_SPAWN_COOLDOWN);
 		spawnRecorded = bundle.getBoolean(SPAWN_RECORDED);
 	}
 
@@ -199,5 +195,13 @@ public class DemonSpawner extends SpawnerMob {
 		immunities.add( Dread.class );
 		immunities.add( Terror.class );
 		immunities.add( Vertigo.class );
+	}
+
+	@Override
+	public void setLevel(int depth) {
+		if (maxSpawnCooldown == 0) {
+			//60/53.33/46.67/40 turns to spawn on floor 21/22/23/24
+			maxSpawnCooldown = 60 - Math.min(20, (depth % 5)*6.67f);
+		}
 	}
 }

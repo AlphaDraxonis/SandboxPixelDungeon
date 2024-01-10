@@ -1134,7 +1134,7 @@ public abstract class Mob extends Char {
 
 	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
 		LootTableComp.CustomLootInfo customLootInfo = new LootTableComp.CustomLootInfo();
-		if (loot instanceof Item || loot == Gold.class) {
+		if (loot instanceof Item || loot == Gold.class || loot instanceof Class<?>) {
 			customLootInfo.addItem(createLoot(), 1);
 			int noLoot = (int) (1f / lootChance - 1);
 			if (noLoot > 0) customLootInfo.setLootChance(noLoot);

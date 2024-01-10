@@ -9,13 +9,13 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM201;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SpawnerMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
@@ -426,6 +426,22 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     Messages.get(EditMobComp.class, "web_cd"), 8);
             abilityCooldown.addChangeListener(() -> m.maxWebCoolDown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
+        } else if (mob instanceof DemonSpawner) {
+            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(0, Integer.MAX_VALUE, (int) ((DemonSpawner) mob).maxSpawnCooldown, 1, false, null) {
+                @Override
+                public String getDisplayString() {
+                    if ((int) getValue() == 0) return Messages.get(EditMobComp.class, "by_depth");
+                    return super.getDisplayString();
+                }
+
+                @Override
+                public float getInputFieldWidth(float height) {
+                    return Spinner.FILL;
+                }
+            }, Messages.get(EditMobComp.class, "spawn_cd"), 8);
+            abilityCooldown.setButtonWidth(9f);
+            abilityCooldown.addChangeListener(() -> ((DemonSpawner) mob).maxSpawnCooldown = (int) abilityCooldown.getValue());
+            add(abilityCooldown);
         } else abilityCooldown = null;
 
         if (mob instanceof SpawnerMob) {
@@ -807,8 +823,11 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (((YogDzewa) a).spawnersAlive != ((YogDzewa) b).spawnersAlive) return false;
             if (!isMobListEqual(((YogDzewa) a).fistSummons, ((YogDzewa) b).fistSummons)) return false;
             return isMobListEqual(((YogDzewa) a).challengeSummons, ((YogDzewa) b).challengeSummons);
-        } else if (a instanceof Necromancer) {
-            return EditMobComp.isMobListEqual(((Necromancer) a).summonTemplate, ((Necromancer) b).summonTemplate);
+        } else if (a instanceof SpawnerMob) {
+            if (a instanceof DemonSpawner) {
+                if (((DemonSpawner) a).maxSpawnCooldown != ((DemonSpawner) a).maxSpawnCooldown) return false;
+            }
+            return EditMobComp.isMobListEqual(((SpawnerMob) a).summonTemplate, ((SpawnerMob) b).summonTemplate);
         } else if (a instanceof Tengu) {
             return ((Tengu) a).arenaRadius == ((Tengu) b).arenaRadius && ((Tengu) a).phase == ((Tengu) b).phase;
         } else if (a instanceof DM300) {
