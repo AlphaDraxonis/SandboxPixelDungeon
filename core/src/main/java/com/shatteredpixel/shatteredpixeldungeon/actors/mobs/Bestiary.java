@@ -21,11 +21,17 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Bestiary {
 	
@@ -38,11 +44,102 @@ public class Bestiary {
 	}
 
 	//For custom levels
-	public static ArrayList<Class<? extends Mob>> getMobRotation(List<Class<? extends Mob>> mobRotation, boolean swapToMutation ){
-		ArrayList<Class<? extends Mob>> mobs =new ArrayList<>(mobRotation);
-		if(swapToMutation)swapMobAlts(mobs);
+	public static ArrayList<?> getMobRotation(ItemsWithChanceDistrComp.RandomItemData mobRotation ){
+		ArrayList<Object> mobs = new ArrayList<>();
+		for (ItemsWithChanceDistrComp.ItemWithCount mob : mobRotation.distrSlots) {
+			for (int i = 0; i < mob.getCount(); i++) {
+				for (Item m : mob.items) {
+					if (m instanceof MobItem) mobs.add(((MobItem) m).getObject().getCopy());
+				}
+			}
+		}
 		Random.shuffle(mobs);
 		return mobs;
+	}
+
+	public static ItemsWithChanceDistrComp.RandomItemData convertMobRotation(List<Class<? extends Mob>> mobClasses) {
+		Map<Class<?>, Integer> mobs = new HashMap<>(6);
+		ItemsWithChanceDistrComp.RandomItemData mobRotation = new ItemsWithChanceDistrComp.RandomItemData();
+		for (Class<?> c : mobClasses) {
+			Integer count = mobs.get(c);
+			if (count == null) count = 0;
+			mobs.put(c, ++count);
+		}
+		for (Class<?> c : mobs.keySet()) {
+			mobRotation.addItem(new MobItem((Mob) Reflection.newInstance(c)), mobs.get(c));
+		}
+		return mobRotation;
+	}
+
+	public static ItemsWithChanceDistrComp.RandomItemData getRotationForDepth(int depth) {
+		ArrayList<Class<? extends Mob>> mobClasses = standardMobRotation( depth );
+		//40 times more normal cycles than rare ones
+		int repeat = (depth+1)%5==0 ? 200 : 50;
+		for (int i = 0; i < repeat; i++) {
+			mobClasses.addAll(standardMobRotation(depth));//we then replace one of the 50 with the alt variant each
+		}
+		if (repeat == 200) {
+			Class<? extends Mob> rareMob = null;
+			if (depth == 4) rareMob = Thief.class;
+			else if (depth == 9) rareMob = Bat.class;
+			else if (depth == 14) rareMob = Ghoul.class;
+			else if (depth == 19) rareMob = Succubus.class;
+			if (rareMob != null) {
+				for (int i = 0; i < 5; i++) {
+					mobClasses.add(rareMob);
+				}
+			}
+		}
+		repeat /= 50;
+		if (mobClasses.contains(Rat.class)) {
+			for (int i = 0; i < repeat; i++) {
+				mobClasses.remove(Rat.class);
+				mobClasses.add(Albino.class);
+			}
+		}
+		if (mobClasses.contains(Slime.class)) {
+			for (int i = 0; i < repeat; i++) {
+				mobClasses.remove(Slime.class);
+				mobClasses.add(CausticSlime.class);
+			}
+		}
+		if (mobClasses.contains(Thief.class) && depth != 4) {//we ignore the case that the rare mob is also an alt
+			for (int i = 0; i < repeat; i++) {
+				mobClasses.remove(Thief.class);
+				mobClasses.add(Bandit.class);
+			}
+		}
+		if (mobClasses.contains(Necromancer.class)) {
+			for (int i = 0; i < repeat; i++) {
+				mobClasses.remove(Necromancer.class);
+				mobClasses.add(SpectralNecromancer.class);
+			}
+		}
+		if (mobClasses.contains(Brute.class)) {
+			for (int i = 0; i < repeat; i++) {
+				mobClasses.remove(Brute.class);
+				mobClasses.add(ArmoredBrute.class);
+			}
+		}
+		if (mobClasses.contains(DM200.class)) {
+			for (int i = 0; i < repeat; i++) {
+				mobClasses.remove(DM200.class);
+				mobClasses.add(DM201.class);
+			}
+		}
+		if (mobClasses.contains(Monk.class)) {
+			for (int i = 0; i < repeat; i++) {
+				mobClasses.remove(Monk.class);
+				mobClasses.add(Senior.class);
+			}
+		}
+		if (mobClasses.contains(Scorpio.class)) {
+			for (int i = 0; i < repeat; i++) {
+				mobClasses.remove(Scorpio.class);
+				mobClasses.add(Acidic.class);
+			}
+		}
+		return convertMobRotation(mobClasses);
 	}
 	
 	//returns a rotation of standard mobs, unshuffled.

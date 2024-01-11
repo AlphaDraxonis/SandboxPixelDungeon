@@ -25,7 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.DM201Sprite;
@@ -119,7 +119,7 @@ public class DM201 extends DM200 {
 
 		super.rollToDropLoot();
 
-		if (!(loot instanceof LootTableComp.CustomLootInfo)) {
+		if (!(loot instanceof ItemsWithChanceDistrComp.RandomItemData)) {
 			int ofs;
 			int tries = 100;
 			do {
@@ -136,9 +136,9 @@ public class DM201 extends DM200 {
 	}
 
 	@Override
-	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
-		for (LootTableComp.ItemWithCount item : customLootInfo.lootList) {
+	public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+		ItemsWithChanceDistrComp.RandomItemData customLootInfo = super.convertLootToRandomItemData();
+		for (ItemsWithChanceDistrComp.ItemWithCount item : customLootInfo.distrSlots) {
 			item.items.add(new MetalShard());
 		}
 		int noLootChance = (int) ((1f - customLootInfo.lootChance()) * customLootInfo.calculateSum());

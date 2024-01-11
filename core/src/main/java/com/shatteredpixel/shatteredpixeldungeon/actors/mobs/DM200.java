@@ -24,7 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -93,8 +93,8 @@ public class DM200 extends DMMob {
 	}
 
 	@Override
-	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+	public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+		ItemsWithChanceDistrComp.RandomItemData customLootInfo = super.convertLootToRandomItemData();
 		Generator.convertRandomArmorToCustomLootInfo(customLootInfo, 4);
 		Generator.convertRandomWeaponToCustomLootInfo(customLootInfo, 4);
 		customLootInfo.setLootChance(customLootInfo.calculateSum() * 7);

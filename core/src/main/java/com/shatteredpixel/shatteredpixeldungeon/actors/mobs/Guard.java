@@ -26,7 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Chains;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Effects;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
@@ -155,8 +155,8 @@ public class Guard extends Mob {
 	}
 
 	@Override
-	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+	public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+		ItemsWithChanceDistrComp.RandomItemData customLootInfo = super.convertLootToRandomItemData();
 		int set;
 		if (Dungeon.level == null || Dungeon.level.levelScheme == null) set = (int) (Math.random() * 5);
 		else set = Dungeon.level.levelScheme.getRegion() - 1;

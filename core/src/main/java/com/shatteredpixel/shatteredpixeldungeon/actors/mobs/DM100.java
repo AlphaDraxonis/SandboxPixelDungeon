@@ -26,7 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -64,8 +64,8 @@ public class DM100 extends DMMob implements Callback {
 
 
 	@Override
-	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+	public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+		ItemsWithChanceDistrComp.RandomItemData customLootInfo = super.convertLootToRandomItemData();
 		Generator.convertGeneratorToCustomLootInfo(customLootInfo, (Generator.Category) loot, 1);
 		customLootInfo.setLootChance(customLootInfo.calculateSum() * 3);
 		return customLootInfo;

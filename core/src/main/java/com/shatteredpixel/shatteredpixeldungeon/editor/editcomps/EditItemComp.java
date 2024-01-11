@@ -10,8 +10,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.Cur
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.WndChooseEnchant;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItemDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
@@ -348,9 +348,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
             randomItem = new RedButton(Messages.get(EditItemComp.class, "edit_random")) {
                 @Override
                 protected void onClick() {
-                    LootTableComp lootTable = new LootTableComp(null, (RandomItem<?>) item);
+                    RandomItemDistrComp randomItemDistrComp = new RandomItemDistrComp((RandomItem<?>) item);
                     SimpleWindow w = new SimpleWindow((int) Math.ceil(width), (int) (PixelScene.uiCamera.height * 0.75));
-                    w.initComponents(lootTable.createTitle(), lootTable, lootTable.getOutsideSp(), 0f, 0.5f);
+                    w.initComponents(randomItemDistrComp.createTitle(), randomItemDistrComp, randomItemDistrComp.getOutsideSp(), 0f, 0.5f);
                     w.offset(EditorUtilies.getParentWindow(EditItemComp.this).getOffset());
                     EditorScene.show(w);
                 }

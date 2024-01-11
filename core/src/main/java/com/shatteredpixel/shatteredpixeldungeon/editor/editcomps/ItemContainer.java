@@ -261,7 +261,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
 
         @Override
         protected void viewSprite(Item item) {
-            if (typeParameterClass == Item.class) {
+            if (typeParameterClass == Item.class && !(item instanceof EditorItem)) {
                 super.viewSprite(item);
                 return;
             }
@@ -269,7 +269,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
                 remove(sprite);
                 sprite.destroy();
             }
-            if (item instanceof EditorItem) sprite = ((EditorItem) item).getSprite();
+            if (item instanceof EditorItem) sprite = ((EditorItem<?>) item).getSprite();
             else sprite = new ItemSprite(item);
             if (sprite != null) addToBack(sprite);
             sendToBack(bg);

@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
@@ -101,7 +102,7 @@ public class CustomLevel extends Level {
     private float respawnCooldown = TIME_TO_RESPAWN;//How often new mobs spawn
     //    private boolean fillRemainingMobsWhenCreated = false;//if createMobs() didnt reach the mob cap, this spawns new mobs using mobRotation
     private boolean swapForMutations = true;//Chance of changing eg a rat to an albino rat
-    private List<Class<? extends Mob>> mobRotation = new ArrayList<>();//More of same mob means higher chance,
+    private ItemsWithChanceDistrComp.RandomItemData mobRotation = new ItemsWithChanceDistrComp.RandomItemData();//More of same mob means higher chance
     private int mobLimit = 10;
 
     //    private SparseArray<Heap> startHeaps = new SparseArray<>();
@@ -252,17 +253,7 @@ public class CustomLevel extends Level {
 //            water = level.water;
 //            pit = level.pit;
 //            openSpace = level.openSpace;
-            buildFlagMaps();//TODO test
             lockedCount = level.lockedCount;
-            zoneMap.clear();
-            zoneMap.putAll(level.zoneMap);
-            levelScheme.zones.addAll(zoneMap.keySet());
-            Zone.setupZoneArray(this);
-            if (levelTemplate != LastLevel.class && levelTemplate != DeadEndLevel.class)
-                mobRotation = level.getMobRotation();
-
-
-            addVisuals();
 
             transitions = level.transitions;
             plants = level.plants;
@@ -273,6 +264,17 @@ public class CustomLevel extends Level {
             customTiles = level.customTiles;
             customWalls = level.customWalls;
             assignBossCustomTiles();
+
+            buildFlagMaps();
+            zoneMap.clear();
+            zoneMap.putAll(level.zoneMap);
+            levelScheme.zones.addAll(zoneMap.keySet());
+            Zone.setupZoneArray(this);
+            if (levelTemplate != LastLevel.class && levelTemplate != DeadEndLevel.class)
+                mobRotation = Bestiary.getRotationForDepth(Dungeon.getSimulatedDepth(temp));
+
+
+            addVisuals();
 
 //           TODO  respawner!!
 
@@ -514,8 +516,8 @@ public class CustomLevel extends Level {
     }
 
     @Override
-    public ArrayList<Class<? extends Mob>> getMobRotation() {
-        return Bestiary.getMobRotation(mobRotation, swapForMutations);
+    public ArrayList<?> getMobRotation() {
+        return Bestiary.getMobRotation(mobRotation);
     }
 
     @Override
@@ -630,7 +632,7 @@ public class CustomLevel extends Level {
     private static final String RESPAWN_COOLDOWN = "respawn_cooldown";
     private static final String SWAP_FOR_MUTATIONS = "swap_for_mutations";
     private static final String MOB_LIMIT = "mob_limit";
-    private static final String MOB_ROTATION = "mob_rotation";
+    private static final String MOB_ROTATION = "mob_rotation_new";
     private static final String IGNORE_TERRAIN_FOR_EXPLORING_SCORE = "ignore_terrain_for_exploring_score";
 
     @Override
@@ -644,7 +646,7 @@ public class CustomLevel extends Level {
         bundle.put(RESPAWN_COOLDOWN, respawnCooldown);
         bundle.put(SWAP_FOR_MUTATIONS, swapForMutations);
         bundle.put(MOB_LIMIT, mobLimit);
-        bundle.put(MOB_ROTATION, mobRotation.toArray(new Class[0]));
+        bundle.put(MOB_ROTATION, mobRotation);
         bundle.put(IGNORE_TERRAIN_FOR_EXPLORING_SCORE, ignoreTerrainForExploringScore);
     }
 
@@ -658,10 +660,10 @@ public class CustomLevel extends Level {
         music = bundle.getInt(MUSIC);
         enableRespawning = bundle.getBoolean(ENABLE_RESPAWNING);
         respawnCooldown = bundle.getInt(RESPAWN_COOLDOWN);
-        swapForMutations = bundle.getBoolean(SWAP_FOR_MUTATIONS);
         mobLimit = bundle.getInt(MOB_LIMIT);
-        mobRotation = Arrays.asList(bundle.getClassArray(MOB_ROTATION));
-        mobRotation = new ArrayList<>(mobRotation);
+        if (bundle.contains("mob_rotation")) {
+            mobRotation = Bestiary.convertMobRotation(Arrays.asList(bundle.getClassArray("mob_rotation")));
+        } else mobRotation = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(MOB_ROTATION);
         ignoreTerrainForExploringScore = bundle.getBoolean(IGNORE_TERRAIN_FOR_EXPLORING_SCORE);
 
         for (Mob m : mobs) {
@@ -695,10 +697,9 @@ public class CustomLevel extends Level {
         this.respawnCooldown = respawnCooldown;
     }
 
-    public List<Class<? extends Mob>> getMobRotationVar() {
+    public ItemsWithChanceDistrComp.RandomItemData getMobRotationVar() {
         return mobRotation;
     }
-
 
     public static TextureFilm getTextureFilm(String theme) {
         TextureFilm tf = textureFilms.get(theme);

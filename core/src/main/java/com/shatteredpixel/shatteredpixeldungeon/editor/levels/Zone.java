@@ -45,6 +45,8 @@ public class Zone implements Bundlable {
     public GrassType grassType = GrassType.NONE;
     public boolean blocksVision = false;
 
+//    own mob rotation tzz
+
     public String chasmDestZone;
     public LevelTransition zoneTransition;
 

@@ -656,9 +656,11 @@ public abstract class Level implements Bundlable {
 		feeling = bundle.getEnum( FEELING, Feeling.class );
 
 		if (bundle.contains( "mobs_to_spawn" )) {
+			ArrayList<Class<? extends Mob>> tmp = new ArrayList<>();
 			for (Class<? extends Mob> mob : bundle.getClassArray("mobs_to_spawn")) {
-				if (mob != null) mobsToSpawn.add(mob);
+				if (mob != null) tmp.add(mob);
 			}
+			mobsToSpawn = tmp;
 		}
 
 		if (bundle.contains( "respawner" )){
@@ -736,7 +738,7 @@ public abstract class Level implements Bundlable {
 	
 	abstract protected boolean build();
 	
-	private ArrayList<Class<?extends Mob>> mobsToSpawn = new ArrayList<>();
+	private ArrayList<? extends Object> mobsToSpawn = new ArrayList<>();//contains either Mob or Class<? extends Mob>
 	
 	public Mob createMob() {
 		if (mobsToSpawn == null || mobsToSpawn.isEmpty()) {
@@ -744,13 +746,14 @@ public abstract class Level implements Bundlable {
 			if (mobsToSpawn.isEmpty()) return null;
 		}
 
-		Mob m = Reflection.newInstance(mobsToSpawn.remove(0));
+		Object spawning = mobsToSpawn.remove(0);
+		Mob m = (Mob) (spawning instanceof Mob ? spawning : Reflection.newInstance(((Class<?>) spawning)));
 		ChampionEnemy.rollForChampion(m);
 		if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
 		return m;
 	}
 
-	public ArrayList<Class<? extends Mob>> getMobRotation() {
+	public ArrayList<?> getMobRotation() {//contains either Mob or Class<? extends Mob>
 		return Bestiary.getMobRotation(Dungeon.getSimulatedDepth());
 	}
 
@@ -1184,7 +1187,7 @@ public abstract class Level implements Bundlable {
 		if (ch instanceof Hero) {
 			Set<String> safeZonesToSpawn = new HashSet<>(2);
 			for (Zone z : zoneMap.values()){
-				safeZonesToSpawn.add(z.getName());
+				if (!z.canSpawnMobs) safeZonesToSpawn.add(z.getName());
 			}
 			if (!safeZonesToSpawn.isEmpty()) {
 				int cell = 0;

@@ -129,7 +129,10 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
                     if (selector != null) {
                         for (Item i : b.items) {
-                            if (i instanceof ItemItem && !selector.itemSelectable(((ItemItem) i).item()))
+                            if (i instanceof ItemItem) {
+                                if (!selector.itemSelectable(((ItemItem) i).item()))
+                                    ret.remove(i);
+                            } else if (!selector.itemSelectable(i))
                                 ret.remove(i);
                         }
                     }

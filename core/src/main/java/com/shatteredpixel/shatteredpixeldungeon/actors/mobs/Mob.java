@@ -57,8 +57,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
@@ -230,7 +230,7 @@ public abstract class Mob extends Char {
         bundle.put(BLEEDING, bleeding);
         bundle.put(PLAYER_ALIGNMENT, playerAlignment);
 
-        if (loot instanceof LootTableComp.CustomLootInfo) bundle.put(LOOT, (Bundlable) loot);
+        if (loot instanceof ItemsWithChanceDistrComp.RandomItemData) bundle.put(LOOT, (Bundlable) loot);
 
 		if (customName != null) bundle.put(CUSTOM_NAME, customName);
 		if (customDesc != null) bundle.put(CUSTOM_DESC, customDesc);
@@ -1033,10 +1033,10 @@ public abstract class Mob extends Char {
 
 	public static final int DROP_LOOT_IF_ABOVE_MAX_LVL = 2;
 	public void rollToDropLoot(){
-		if (Dungeon.hero.lvl > maxLvl + DROP_LOOT_IF_ABOVE_MAX_LVL && !(loot instanceof LootTableComp.CustomLootInfo)) return;
+		if (Dungeon.hero.lvl > maxLvl + DROP_LOOT_IF_ABOVE_MAX_LVL && !(loot instanceof ItemsWithChanceDistrComp.RandomItemData)) return;
 
-		if (loot instanceof LootTableComp.CustomLootInfo) {
-			this.lootChance = ((LootTableComp.CustomLootInfo) loot).lootChance();
+		if (loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
+			this.lootChance = ((ItemsWithChanceDistrComp.RandomItemData) loot).lootChance();
 		}
 
 		MasterThievesArmband.StolenTracker stolen = buff(MasterThievesArmband.StolenTracker.class);
@@ -1109,7 +1109,7 @@ public abstract class Mob extends Char {
 	protected float lootChance = 0;
 
 	public List<Item> createActualLoot() {
-		if (loot instanceof LootTableComp.CustomLootInfo) return ((LootTableComp.CustomLootInfo) loot).generateLoot();
+		if (loot instanceof ItemsWithChanceDistrComp.RandomItemData) return ((ItemsWithChanceDistrComp.RandomItemData) loot).generateLoot();
 		else return Arrays.asList(createLoot());
 	}
 
@@ -1132,8 +1132,8 @@ public abstract class Mob extends Char {
 		return item;
 	}
 
-	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		LootTableComp.CustomLootInfo customLootInfo = new LootTableComp.CustomLootInfo();
+	public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+		ItemsWithChanceDistrComp.RandomItemData customLootInfo = new ItemsWithChanceDistrComp.RandomItemData();
 		if (loot instanceof Item || loot == Gold.class || loot instanceof Class<?>) {
 			customLootInfo.addItem(createLoot(), 1);
 			int noLoot = (int) (1f / lootChance - 1);
@@ -1203,7 +1203,7 @@ public abstract class Mob extends Char {
                         defaultStats.HT != HT || defaultStats.damageReductionMax != damageReductionMax
                                 || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
                                 || defaultStats.EXP != EXP
-                                || loot instanceof LootTableComp.CustomLootInfo
+                                || loot instanceof ItemsWithChanceDistrComp.RandomItemData
                 )) {
                     desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
                     if (defaultStats.statsScale != statsScale)
@@ -1226,7 +1226,7 @@ public abstract class Mob extends Char {
             } else {
 
                 if (!DefaultStatsCache.areStatsEqual(defaultStats, this)
-                        || loot instanceof LootTableComp.CustomLootInfo) {
+                        || loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
                     desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
 
                     if (defaultStats.baseSpeed != baseSpeed)
@@ -1252,7 +1252,7 @@ public abstract class Mob extends Char {
                 }
 
             }
-            if (loot instanceof LootTableComp.CustomLootInfo)
+            if (loot instanceof ItemsWithChanceDistrComp.RandomItemData)
                 desc += "\n" + Messages.get(Mob.class, "loot");
         }
 

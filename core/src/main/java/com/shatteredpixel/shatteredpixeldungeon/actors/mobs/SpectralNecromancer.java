@@ -23,7 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SpectralNecromancerSprite;
@@ -75,7 +75,7 @@ public class SpectralNecromancer extends Necromancer {
 
 		super.rollToDropLoot();
 
-		if (!(loot instanceof LootTableComp.CustomLootInfo)) {
+		if (!(loot instanceof ItemsWithChanceDistrComp.RandomItemData)) {
 			int ofs;
 			int tries = 100;
 			do {
@@ -92,9 +92,9 @@ public class SpectralNecromancer extends Necromancer {
 	}
 
 	@Override
-	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
-		for (LootTableComp.ItemWithCount item : customLootInfo.lootList) {
+	public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+		ItemsWithChanceDistrComp.RandomItemData customLootInfo = super.convertLootToRandomItemData();
+		for (ItemsWithChanceDistrComp.ItemWithCount item : customLootInfo.distrSlots) {
 			Item scroll = new ScrollOfRemoveCurse();
 			scroll.spreadIfLoot = true;
 			item.items.add(scroll);

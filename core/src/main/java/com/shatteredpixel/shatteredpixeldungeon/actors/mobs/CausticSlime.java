@@ -25,7 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GooBlob;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CausticSlimeSprite;
 import com.watabou.utils.PathFinder;
@@ -55,7 +55,7 @@ public class CausticSlime extends Slime {
 
 		super.rollToDropLoot();
 
-		if (!(loot instanceof LootTableComp.CustomLootInfo)) {
+		if (!(loot instanceof ItemsWithChanceDistrComp.RandomItemData)) {
 			int ofs;
 			int tries = 100;
 			do {
@@ -72,9 +72,9 @@ public class CausticSlime extends Slime {
 	}
 
 	@Override
-	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
-		for (LootTableComp.ItemWithCount item : customLootInfo.lootList) {
+	public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+		ItemsWithChanceDistrComp.RandomItemData customLootInfo = super.convertLootToRandomItemData();
+		for (ItemsWithChanceDistrComp.ItemWithCount item : customLootInfo.distrSlots) {
 			item.items.add(new GooBlob());
 		}
 		int noLootChance = (int) ((1f - customLootInfo.lootChance()) * customLootInfo.calculateSum());

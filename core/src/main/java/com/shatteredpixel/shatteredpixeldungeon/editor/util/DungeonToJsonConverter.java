@@ -236,7 +236,8 @@ public class DungeonToJsonConverter {
         if (f == null) {
             Class[] rot = Bestiary.standardMobRotation(Dungeon.getSimulatedDepth(l)).toArray(new Class[0]);
             appendArray(b, "bestiary", rot);
-        } else appendArray(b, "bestiary", f.getMobRotationVar().toArray(new Class[0]));
+        }
+        //else appendArray(b, "bestiary", f.getMobRotationVar().toArray(new Class[0]));
 
         if (f == null) {
             if (Dungeon.getSimulatedDepth(l) == 4) appendParam(b, "rare_mob", "Thief");

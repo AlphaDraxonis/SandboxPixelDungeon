@@ -24,7 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -114,8 +114,8 @@ public class Thief extends Mob {
 	}
 
     @Override
-    public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-        LootTableComp.CustomLootInfo customLootInfo = super.convertToCustomLootInfo();
+    public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+        ItemsWithChanceDistrComp.RandomItemData customLootInfo = super.convertLootToRandomItemData();
         Generator.convertGeneratorToCustomLootInfo(customLootInfo, Generator.Category.ARTIFACT, 3);
         Generator.convertGeneratorToCustomLootInfo(customLootInfo, Generator.Category.RING, 1);
         customLootInfo.setLootChance((int) (customLootInfo.calculateSum() / lootChance - 1));

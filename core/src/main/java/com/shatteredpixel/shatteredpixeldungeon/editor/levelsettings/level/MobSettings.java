@@ -6,7 +6,6 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.leve
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
@@ -19,11 +18,13 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -37,9 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
@@ -48,13 +47,12 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 class MobSettings extends Component implements LevelTab.BackPressImplemented {
 
@@ -245,6 +243,9 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
         if (mobRotation != null) {
             mobRotation.visible = mobRotation.active = comp == mobRotation;
             if (comp != mobRotation) WndChooseMob.resetLastView();
+            if (outsideSpExtraBtn != null) outsideSpExtraBtn.destroy();
+            outsideSpExtraBtn = mobRotation.getOutsideSp();
+            outsideSp.add(outsideSpExtraBtn);
         }
         if (mobOverview != null) mobOverview.visible = mobOverview.active = comp == mobOverview;
         if (outsideSpExtraBtn != null) outsideSpExtraBtn.visible = outsideSpExtraBtn.active = comp == mobRotation;
@@ -457,235 +458,30 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
 
 
     // ≙ ≈ =
-    class ChangeMobRotation extends Component {
+    static class ChangeMobRotation extends ItemsWithChanceDistrComp {
 
-        private final RedButton addMobBtn;
-
-        private final Map<Class<? extends Mob>, MobRotItem> mobRotItems = new HashMap<>();
+        private static final Set<Class<? extends Mob>> NOT_AVAILABLE = new HashSet<>();
 
         {
-            for (Class<?> cl : Mobs.NPC.classes()) {
-                mobRotItems.put((Class<? extends Mob>) cl, null);
+            for (Class<?> m : Mobs.NPC.classes()) {
+                NOT_AVAILABLE.add((Class<? extends Mob>) m);
             }
         }
-
-        private int sum;
-        private boolean isInInit = true;//NOT redundant!
 
         public ChangeMobRotation() {
-
-            addMobBtn = new RedButton(Messages.get(MobSettings.class, "add_mob")) {
-                @Override
-                protected void onClick() {
-                    EditorScene.show(new WndChooseMob("", mobRotItems.keySet()) {
-                        @Override
-                        protected void onSelect(Mob mob) {
-                            Class<? extends Mob> cl = mob.getClass();
-                            EditorScene.customLevel().getMobRotationVar().add(cl);
-                            addRotItem(cl);
-                            sum++;
-
-                            updateList(true);
-                        }
-                    });
-                }
-            };
-
-            outsideSp.add(addMobBtn);
-            if (outsideSpExtraBtn != null) outsideSpExtraBtn.destroy();
-            outsideSpExtraBtn = addMobBtn;
-
-            initComps();
-            isInInit = false;
-        }
-
-        private void initComps() {
-            List<Class<? extends Mob>> curRot = EditorScene.customLevel().getMobRotationVar();
-            Map<Class<? extends Mob>, Integer> mobCounterMap = new HashMap<>();
-            for (Class<? extends Mob> cl : curRot) {
-                Integer prev = mobCounterMap.get(cl);
-                if (prev == null) {
-                    prev = 0;
-                    addRotItem(cl);
-                }
-                mobCounterMap.put(cl, prev + 1);
-            }
-            for (Class<? extends Mob> cl : mobCounterMap.keySet()) {
-                Integer count = mobCounterMap.get(cl);
-                MobRotItem item = mobRotItems.get(cl);
-                item.setCount(count);//uses isInit
-                sum += count;
-            }
-            updateList(false);
+            super(EditorScene.customLevel().getMobRotationVar(), 1);
+            hasNullInLoot = true;//so no "no mob" can be added
         }
 
         @Override
-        protected void layout() {
-            updateList(false);
+        protected void showAddItemWnd() {
+            EditorScene.selectItem(createSelector(MobItem.class, false, Mobs.bag.getClass()));
         }
 
-        public void updateList(boolean updateParent) {
-            float posY = y;
-
-            isInInit = true;
-            Class<?>[][] allMobs = Mobs.getAllMobs(null);
-            for (Class<?>[] allMob : allMobs) {
-                for (Class<?> cl : allMob) {
-                    if (NPC.class.isAssignableFrom(cl)) continue;//Skip NPCs
-                    MobRotItem r = mobRotItems.get(cl);
-                    if (r != null) {
-                        r.setRect(x, posY, width, BUTTON_HEIGHT);
-                        r.setCount((int) r.countSpinner.getValue());
-                        PixelScene.align(r);
-                        posY = r.bottom();
-                    }
-                }
-            }
-            height = posY;
-            isInInit = false;
-            if (updateParent) LevelTab.updateLayout();
+        @Override
+        protected boolean acceptItem(Item item) {
+            return super.acceptItem(item) && item instanceof MobItem && !NOT_AVAILABLE.contains(((MobItem) item).getObject().getClass());
         }
-
-        private void addRotItem(Class<? extends Mob> mobClass) {
-            MobRotItem r = new MobRotItem(Reflection.newInstance(mobClass), 1);
-            mobRotItems.put(mobClass, r);
-            add(r);
-            r.setSize(width, BUTTON_HEIGHT);
-        }
-
-        private String calculatePercentage(float count) {
-            float calc = count * 100 / sum;
-            int asInt = Math.round(calc);
-            char string = (asInt == calc) ? '=' : '≈';
-            return " " + string + asInt + "%";
-        }
-
-
-        private void updateSpinners(MobRotItem exclude) {
-            for (MobRotItem r : mobRotItems.values()) {
-                if (r != null && r != exclude) r.setCount((int) r.countSpinner.getValue());
-            }
-        }
-
-        private class MobRotItem extends ScrollingListPane.ListItem {
-
-            private final Spinner countSpinner;
-            private final IconButton removeBtn;
-            private final Mob mob;
-
-            public MobRotItem(Mob mob, int count) {
-                super(mob.sprite(), Messages.titleCase(mob.name()));
-                this.mob = mob;
-
-                String oldText = label.text();
-                remove(label);
-                label = PixelScene.renderTextBlock(6);
-                add(label);
-                label.text(oldText);
-
-                countSpinner = new Spinner(new SModel(count) {
-                    @Override
-                    public void changeValue(Object oldValue, Object newValue) {
-                        super.changeValue(oldValue, newValue);
-                        int diff = (int) newValue - (int) oldValue;
-                        if (isInInit) return;
-                        sum += diff;
-                        if (diff > 0) {
-                            diff = Math.abs(diff);
-                            for (int i = 0; i < diff; i++) {
-                                EditorScene.customLevel().getMobRotationVar().add(mob.getClass());
-                            }
-                        } else {
-                            diff = Math.abs(diff);
-                            for (int i = 0; i < diff; i++) {
-                                EditorScene.customLevel().getMobRotationVar().remove(mob.getClass());
-                            }
-                        }
-                    }
-                }, "", 6);
-                countSpinner.setButtonWidth(10);
-                countSpinner.addChangeListener(() -> updateSpinners(this));
-                add(countSpinner);
-
-                removeBtn = new IconButton(Icons.get(Icons.CLOSE)) {
-                    @Override
-                    protected void onClick() {
-                        removeMob();
-                    }
-                };
-                add(removeBtn);
-            }
-
-            public void removeMob() {
-                int count = (int) countSpinner.getValue();
-                for (int i = 0; i < count; i++) {
-                    EditorScene.customLevel().getMobRotationVar().remove(mob.getClass());
-                }
-                sum -= count;
-                ChangeMobRotation.this.remove(this);
-                mobRotItems.remove(mobClass());
-                destroy();
-                updateList(true);
-            }
-
-            public void setCount(int count) {
-                countSpinner.setValue(count);
-            }
-
-            @Override
-            public void onClick() {
-                EditorScene.show(new WndTitledMessage(new WndInfoMob.MobTitle(mob, false), mob.info()));
-            }
-
-            @Override
-            protected void layout() {
-                super.layout();
-
-                float h = height() - 3;
-                float ypsilon = y + 2f;
-                float spinnW = countSpinner.width();
-                float gap = -1.1f;
-                countSpinner.setRect(width - spinnW + x - h - gap, ypsilon, spinnW, h);
-                removeBtn.setRect(countSpinner.right() + gap, ypsilon, h, h);
-                PixelScene.align(countSpinner);
-                PixelScene.align(removeBtn);
-
-                hotArea.width = countSpinner.left() - x - 2;
-            }
-
-            @Override
-            protected int getLabelMaxWidth() {
-                return (int) (super.getLabelMaxWidth() - countSpinner.width() + 4.1f - height());
-            }
-
-            public Class<? extends Mob> mobClass() {
-                return mob.getClass();
-            }
-
-        }
-
-        private class SModel extends SpinnerIntegerModel {
-
-            public SModel(int count) {
-                super(1, 100, count, 1, false, null);
-            }
-
-            @Override
-            public int getClicksPerSecondWhileHolding() {
-                return 40;
-            }
-
-            @Override
-            public float getInputFieldWidth(float height) {
-                return height * 2f;
-            }
-
-            @Override
-            public String getDisplayString() {
-                return super.getDisplayString() + " " + calculatePercentage((int) getValue());
-            }
-        }
-
     }
 
     private static class MobOverview extends Component {

@@ -28,7 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
@@ -269,14 +269,14 @@ public class Eye extends Mob {
 
 	@Override
 	public List<Item> createActualLoot() {
-		if (loot == null) return convertToCustomLootInfo().generateLoot();
+		if (loot == null) return convertLootToRandomItemData().generateLoot();
 		else return super.createActualLoot();
 	}
 
 	//generates an average of 1 dew, 0.25 seeds, and 0.25 stones
 	@Override
-	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		LootTableComp.CustomLootInfo customLootInfo = new LootTableComp.CustomLootInfo();
+	public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+		ItemsWithChanceDistrComp.RandomItemData customLootInfo = new ItemsWithChanceDistrComp.RandomItemData();
 
 		int seedWeight = 50;
 		//11 items, 25% chance, weight=52

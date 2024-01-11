@@ -13,7 +13,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
@@ -35,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipe;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -95,37 +95,32 @@ public class CustomDungeon implements Bundlable {
 
     //maybe ability to randomize loot drops between some amounts like 1-9 quantity for example
 
-    //TODO if dungeon list is empty, show button to be the first uploader
 
-    //FIXME after uploading a dungeon with own custom tiles, they disappperard from the map! and the tile tab was hidde
+    //WARNING;;;;!! It Is important that after each Shattered Update, BArray.or is searched everywhere, because the result should NEVER be used for passable
+    //use Level#getPassableAndAvoiD() or a variation instead!!!
 
-    //make you able to change enemy view distance or tiles until enemies notice your presence
-    //also turns to wake up before enemies notice you
+    //TZZ FIXME tzz bei renamre/delete auch zone mob containers beachten! und normale level rotation
 
-    //killing bosses doesn't remove the floor lock
+
+    //TODO if dungeon list is empty, show button to be the first uploader, or generally a quick-upload btn
+
+    //FIXME after uploading a dungeon with own custom tiles, they disappperard from the map! and the tile tab was hidden! NOT VERIFIED
 
     //make random item as loot list
 
-    //halls boss level does not spawn yog if as template
-
     //Crystals etc not display on halls level custom tile
-
     //Make halls boss custom tile as normal ct
 
     //strictly differentiate between custom tiles/walls
     //Make all tiles walls????
 
-    //TODO rename foliage to ShaftsOfLight
-
     //Shrouding fog trap instantly crashes the game
 
     //color walls
 
-    //Barrier:
-    //Walls in your level that can be placed over traps, chasms, or floors.  You can see it in the editor but the barrier is invisible to you when playing the level (red x maybe).
-    //You can see beyond the barrier.
-
     //Custom music
+
+    //What happens on death
 
     //The option to edit the description of all items should be good, like editing plants, maybe making it so that when you touch an ice plant for example,
     // it can drop an item, I don't already have it, But if not, it would be great!
@@ -140,11 +135,7 @@ public class CustomDungeon implements Bundlable {
     //for an example, b areas can spawn an ally dm 300
 
     //Changeable stats on the mob rotation
-    //ontop pf that, a way to make some of them allys too.
-
-    //[] Hero inaccessible (acts like a wall for players that they can see through)
-    //
-    //[] Mob inaccessible (acts like a wall for monsters that they can see through)
+    //on top of that, a way to make some of them allys too.
     //
     //[☑] Sight (when checked off, makes it so the player can't see passed this zone, on by default]
     //
@@ -152,16 +143,12 @@ public class CustomDungeon implements Bundlable {
     //
     //[] Mob buff (same as above, but for monsters).
     //
-    //[] Monster Cycle (allows mobs of a completely seperate mob cycle to spawn in this zone, ignoring the levels current mob cycle).
+    //[] Monster Cycle (allows mobs of a completely separate mob cycle to spawn in this zone, ignoring the levels current mob cycle).
 
     //Custom alchemy for specific pots
     //Maybe even custom sprites for items
-
-    //Enemy buff ideas: Amok, Corrupted, Confusion, Prismatic Image, Terror
     //
     //Enemy Glyph ideas: Enemy just gains the Glyph that can be applied to an armor.
-
-    //Suggestion:  for summoner type enemies, allow us to cycle what they summon (like I want an enemy to summon a skeleton AND a wraith)
 
     //Similar to random items, how about some random traps?
     //
@@ -178,15 +165,6 @@ public class CustomDungeon implements Bundlable {
     //Scroll of Debug with interface, reference table and commands, use reflection to access ALL methods
     //surround method calls with try-catch-block, say warning that some variables might have been modified if method not @pure
     //add simple ways to add new enemies to map, or find one
-
-    //add way to share dungeons in game:
-    //check GithubUpdates for code examples for server
-    //access via new button directly from title scene
-    //wnd with loading screen, sending request to server
-    //ui for selecting dungeons (simple list, no search option in beginning)
-    //preview with image? and download button
-    //option to upload raw files or converted as .dun
-    //upload as bug report
 
     //if possible make a release that can be downloaded in this format (taken ShPD for example) -> as .exe  no
 
@@ -212,7 +190,6 @@ public class CustomDungeon implements Bundlable {
     private final Object[] toolbarItems = new Object[QuickSlot.SIZE];
     public int lastSelectedToolbarSlot;
 
-    private String password;
     public boolean downloaded;
 
     public boolean view2d = false;
@@ -924,15 +901,15 @@ public class CustomDungeon implements Bundlable {
                             if (((RandomItem<?>) ((Thief) m).item).removeInvalidKeys(n)) removedItems = true;
                         }
                     }
-                    if (m.loot instanceof LootTableComp.CustomLootInfo) {
-                        Set<LootTableComp.ItemWithCount> toRemove = new HashSet<>(4);
-                        for (LootTableComp.ItemWithCount itemsWithCount : ((LootTableComp.CustomLootInfo) m.loot).lootList) {
+                    if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
+                        Set<ItemsWithChanceDistrComp.ItemWithCount> toRemove = new HashSet<>(4);
+                        for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {
                             if (removeInvalidKeys(itemsWithCount.items, n)) {
                                 removedItems = true;
                                 if (itemsWithCount.items.isEmpty()) toRemove.add(itemsWithCount);
                             }
                         }
-                        ((LootTableComp.CustomLootInfo) m.loot).lootList.removeAll(toRemove);
+                        ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots.removeAll(toRemove);
                     }
                 }
 
@@ -1177,8 +1154,8 @@ public class CustomDungeon implements Bundlable {
                         if (((Thief) m).item instanceof RandomItem<?>)
                             ((RandomItem<?>) ((Thief) m).item).renameInvalidKeys(oldName, newName);
                     }
-                    if (m.loot instanceof LootTableComp.CustomLootInfo) {
-                        for (LootTableComp.ItemWithCount itemsWithCount : ((LootTableComp.CustomLootInfo) m.loot).lootList) {
+                    if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
+                        for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {
                             renameInvalidKeys(itemsWithCount.items, oldName, newName);
                         }
                     }
@@ -1298,8 +1275,8 @@ public class CustomDungeon implements Bundlable {
                                 if (((RandomItem<?>) ((Thief) m).item).renameInvalidKeys(oldName, newName)) needsSave = true;
                             }
                         }
-                        if (m.loot instanceof LootTableComp.CustomLootInfo) {
-                            for (LootTableComp.ItemWithCount itemsWithCount : ((LootTableComp.CustomLootInfo) m.loot).lootList) {
+                        if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
+                            for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {
                                 if (renameInvalidKeys(itemsWithCount.items, oldName, newName)) {
                                     needsSave = true;
                                 }

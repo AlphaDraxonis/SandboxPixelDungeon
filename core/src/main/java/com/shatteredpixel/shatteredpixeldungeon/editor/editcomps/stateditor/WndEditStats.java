@@ -169,7 +169,7 @@ public class WndEditStats extends MultiWindowTabComp {
                 loot = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndEditStats.class, "loot"), 9) {
                     @Override
                     protected void onClick() {
-                        LootTableComp lootTable = new LootTableComp(current, null);
+                        LootTableComp lootTable = new LootTableComp(current);
                         changeContent(lootTable.createTitle(), lootTable, lootTable.getOutsideSp(), 0f, 0.5f);
                     }
                 };

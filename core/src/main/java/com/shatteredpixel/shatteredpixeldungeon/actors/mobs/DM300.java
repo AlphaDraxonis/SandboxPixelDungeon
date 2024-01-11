@@ -43,9 +43,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.EarthParticle;
@@ -619,30 +619,30 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 
 	@Override
 	public List<Item> createActualLoot() {
-		if (loot == null) return convertToCustomLootInfo().generateLoot();
+		if (loot == null) return convertLootToRandomItemData().generateLoot();
 		else return super.createActualLoot();
 	}
 
 	@Override
-	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		LootTableComp.CustomLootInfo customLootInfo = new LootTableComp.CustomLootInfo();
+	public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+		ItemsWithChanceDistrComp.RandomItemData customLootInfo = new ItemsWithChanceDistrComp.RandomItemData();
 
 		//60% chance of 2 shards, 30% chance of 3, 10% chance for 4. Average of 2.5
 
-		LootTableComp.ItemWithCount itemWithCount = new LootTableComp.ItemWithCount();
+		ItemsWithChanceDistrComp.ItemWithCount itemWithCount = new ItemsWithChanceDistrComp.ItemWithCount();
 		itemWithCount.items.add(new MetalShard().quantity(2));
 		itemWithCount.setCount(6);
-		customLootInfo.lootList.add(itemWithCount);
+		customLootInfo.distrSlots.add(itemWithCount);
 
-		itemWithCount = new LootTableComp.ItemWithCount();
+		itemWithCount = new ItemsWithChanceDistrComp.ItemWithCount();
 		itemWithCount.items.add(new MetalShard().quantity(3));
 		itemWithCount.setCount(3);
-		customLootInfo.lootList.add(itemWithCount);
+		customLootInfo.distrSlots.add(itemWithCount);
 
-		itemWithCount = new LootTableComp.ItemWithCount();
+		itemWithCount = new ItemsWithChanceDistrComp.ItemWithCount();
 		itemWithCount.items.add(new MetalShard().quantity(4));
 		itemWithCount.setCount(1);
-		customLootInfo.lootList.add(itemWithCount);
+		customLootInfo.distrSlots.add(itemWithCount);
 
 		return customLootInfo;
 	}

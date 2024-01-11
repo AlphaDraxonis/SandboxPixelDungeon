@@ -63,6 +63,13 @@ public class SandboxPixelDungeon extends Game {
 		com.watabou.utils.Bundle.addAlias(
 				com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RotGardenRoom.class,
 				"com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.RotGardenRoom" );
+
+		com.watabou.utils.Bundle.addAlias(
+				com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp.ItemWithCount.class,
+				"com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp$ItemWithCount" );
+		com.watabou.utils.Bundle.addAlias(
+				com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp.RandomItemData.class,
+				"com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp$CustomLootInfo" );
 	}
 	
 	@Override

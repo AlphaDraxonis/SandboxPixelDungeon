@@ -114,7 +114,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         };
         add(selectDungeon);
 
-        description = new StringInputComp(Messages.get(UploadDungeon.class, type.id() + "_desc_label"), desc, 500, true, null) {
+        description = new StringInputComp(Messages.get(UploadDungeon.class, type.id() + "_desc_label") +":", desc, 500, true, null) {
             @Override
             protected void onChange() {
                 if (preview != null) ServerDungeonList.updateLayout();
@@ -124,7 +124,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         add(description);
 
         if (type == ServerCommunication.UploadType.UPLOAD) {
-            userName = new StringInputComp(Messages.get(UploadDungeon.class, "username_label"), null, 50, false, null);
+            userName = new StringInputComp(Messages.get(UploadDungeon.class, "username_label") +":", null, 50, false, null);
             add(userName);
         }
 

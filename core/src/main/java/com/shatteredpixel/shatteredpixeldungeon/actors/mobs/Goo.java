@@ -31,7 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
@@ -360,34 +360,34 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public List<Item> createActualLoot() {
-		if (loot == null) return convertToCustomLootInfo().generateLoot();
+		if (loot == null) return convertLootToRandomItemData().generateLoot();
 		else return super.createActualLoot();
 	}
 
 	@Override
-	public LootTableComp.CustomLootInfo convertToCustomLootInfo() {
-		LootTableComp.CustomLootInfo customLootInfo = new LootTableComp.CustomLootInfo();
+	public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
+		ItemsWithChanceDistrComp.RandomItemData customLootInfo = new ItemsWithChanceDistrComp.RandomItemData();
 
 		//60% chance of 2 blobs, 30% chance of 3, 10% chance for 4. Average of 2.5
 		// + 1 SkeletonKey
 
-		LootTableComp.ItemWithCount itemWithCount = new LootTableComp.ItemWithCount();
+		ItemsWithChanceDistrComp.ItemWithCount itemWithCount = new ItemsWithChanceDistrComp.ItemWithCount();
 		itemWithCount.items.add(new SkeletonKey());
 		itemWithCount.items.add(new GooBlob().quantity(2));
 		itemWithCount.setCount(6);
-		customLootInfo.lootList.add(itemWithCount);
+		customLootInfo.distrSlots.add(itemWithCount);
 
-		itemWithCount = new LootTableComp.ItemWithCount();
+		itemWithCount = new ItemsWithChanceDistrComp.ItemWithCount();
 		itemWithCount.items.add(new SkeletonKey());
 		itemWithCount.items.add(new GooBlob().quantity(3));
 		itemWithCount.setCount(3);
-		customLootInfo.lootList.add(itemWithCount);
+		customLootInfo.distrSlots.add(itemWithCount);
 
-		itemWithCount = new LootTableComp.ItemWithCount();
+		itemWithCount = new ItemsWithChanceDistrComp.ItemWithCount();
 		itemWithCount.items.add(new SkeletonKey());
 		itemWithCount.items.add(new GooBlob().quantity(4));
 		itemWithCount.setCount(1);
-		customLootInfo.lootList.add(itemWithCount);
+		customLootInfo.distrSlots.add(itemWithCount);
 
 		return customLootInfo;
 	}

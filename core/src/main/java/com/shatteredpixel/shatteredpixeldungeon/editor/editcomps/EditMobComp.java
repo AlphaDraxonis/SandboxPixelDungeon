@@ -39,7 +39,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.MobS
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.QuestSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.DestCellSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.WndEditStats;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Buffs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
@@ -57,6 +56,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelectorList;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledItemSelector;
@@ -807,9 +807,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         for (Buff buff : a.buffs()) aBuffs.add(buff.getClass());
         for (Buff buff : b.buffs()) bBuffs.add(buff.getClass());
         if (!bBuffs.equals(aBuffs)) return false;//only very simple, does not compare any values, just the types!!
-        if (a.loot instanceof LootTableComp.CustomLootInfo) {
+        if (a.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
             if (!a.loot.equals(b.loot)) return false;
-        } else if (b.loot instanceof LootTableComp.CustomLootInfo) return false;
+        } else if (b.loot instanceof ItemsWithChanceDistrComp.RandomItemData) return false;
 
         if (a instanceof Statue) {
             if (!EditItemComp.areEqual(((Statue) a).weapon, ((Statue) b).weapon)) return false;

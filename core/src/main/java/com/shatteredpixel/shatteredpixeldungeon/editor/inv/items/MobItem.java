@@ -81,7 +81,7 @@ public class MobItem extends EditorItem<Mob> {
         return level.solid[cell] || (level.pit[cell] && !mob.flying) || !level.insideMap(cell)
                 || (Char.hasProp(mob, Char.Property.LARGE) && !level.openSpace[cell])
 //                || (mob instanceof Piranha && !level.water[cell])
-                ;//&& level.map[cell] != Terrain.DOOR;//TODO make placement on doors possible FIXME WICHTIG
+                ;//&& level.map[cell] != Terrain.DOOR;//TODO make placement on doors possible FIXME WICHTIG tzz
     }
 
     public static MobActionPart.Remove remove(Mob mob) {

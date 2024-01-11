@@ -4,9 +4,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
@@ -37,7 +37,7 @@ public interface RandomItem<T extends Item> {
 
     T generateItem();
 
-    LootTableComp.CustomLootInfo getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI();
+    ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI();
 
     Class<? extends Item> getType();
 
@@ -76,26 +76,26 @@ public interface RandomItem<T extends Item> {
     }
 
     boolean removeInvalidKeys(String invalidLevelName);
-    static boolean removeInvalidKeys(LootTableComp.CustomLootInfo internalRandomItem, String invalidLevelName) {
+    static boolean removeInvalidKeys(ItemsWithChanceDistrComp.RandomItemData internalRandomItem, String invalidLevelName) {
         boolean removedSth = false;
-        for (LootTableComp.ItemWithCount items : internalRandomItem.lootList) {
+        for (ItemsWithChanceDistrComp.ItemWithCount items : internalRandomItem.distrSlots) {
             if (CustomDungeon.removeInvalidKeys(items.items, invalidLevelName)) removedSth = true;
         }
         return removedSth;
     }
 
     boolean renameInvalidKeys(String oldName, String newName);
-    static boolean renameInvalidKeys(LootTableComp.CustomLootInfo internalRandomItem, String oldName, String newName) {
+    static boolean renameInvalidKeys(ItemsWithChanceDistrComp.RandomItemData internalRandomItem, String oldName, String newName) {
         boolean needsSave = false;
-        for (LootTableComp.ItemWithCount items : internalRandomItem.lootList) {
+        for (ItemsWithChanceDistrComp.ItemWithCount items : internalRandomItem.distrSlots) {
             if (CustomDungeon.renameInvalidKeys(items.items, oldName, newName)) needsSave = true;
         }
         return needsSave;
     }
 
     void updateInvalidKeys(String oldLvlName, String newLvlName);
-    static void updateInvalidKeys(LootTableComp.CustomLootInfo internalRandomItem, String oldLvlName, String newLvlName) {
-        for (LootTableComp.ItemWithCount items : internalRandomItem.lootList) {
+    static void updateInvalidKeys(ItemsWithChanceDistrComp.RandomItemData internalRandomItem, String oldLvlName, String newLvlName) {
+        for (ItemsWithChanceDistrComp.ItemWithCount items : internalRandomItem.distrSlots) {
             for (Item item : items.items) {
                 Items.maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
             }
@@ -103,8 +103,8 @@ public interface RandomItem<T extends Item> {
     }
 
     void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid);
-    static void repositionKeyCells(LootTableComp.CustomLootInfo internalRandomItem, IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-        for (LootTableComp.ItemWithCount items : internalRandomItem.lootList) {
+    static void repositionKeyCells(ItemsWithChanceDistrComp.RandomItemData internalRandomItem, IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+        for (ItemsWithChanceDistrComp.ItemWithCount items : internalRandomItem.distrSlots) {
             for (Item item : items.items) {
                 if (item instanceof Key) {
                     int cell = ((Key) item).cell;
@@ -124,14 +124,14 @@ public interface RandomItem<T extends Item> {
         }
 
         //can only have one item per slot, and no RandomItem
-        private LootTableComp.CustomLootInfo internalRandomItem = new LootTableComp.CustomLootInfo();
+        private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
         private Item generatedItem;
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            internalRandomItem = (LootTableComp.CustomLootInfo) bundle.get(INTERNAL_RANDOM_ITEM);
+            internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
             generatedItem = (Item) bundle.get(GENERATED_ITEM);
         }
 
@@ -167,7 +167,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public LootTableComp.CustomLootInfo getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
+        public ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
             return internalRandomItem;
         }
 
@@ -215,14 +215,14 @@ public interface RandomItem<T extends Item> {
         }
 
         //can only have one item per slot, and no RandomItem
-        private LootTableComp.CustomLootInfo internalRandomItem = new LootTableComp.CustomLootInfo();
+        private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
         private Weapon generatedItem;
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            internalRandomItem = (LootTableComp.CustomLootInfo) bundle.get(INTERNAL_RANDOM_ITEM);
+            internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
             generatedItem = (Weapon) bundle.get(GENERATED_ITEM);
         }
 
@@ -258,7 +258,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public LootTableComp.CustomLootInfo getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
+        public ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
             return internalRandomItem;
         }
 
@@ -321,14 +321,14 @@ public interface RandomItem<T extends Item> {
         }
 
         //can only have one item per slot, and no RandomItem
-        private LootTableComp.CustomLootInfo internalRandomItem = new LootTableComp.CustomLootInfo();
+        private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
         private MeleeWeapon generatedItem;
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            internalRandomItem = (LootTableComp.CustomLootInfo) bundle.get(INTERNAL_RANDOM_ITEM);
+            internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
             generatedItem = (MeleeWeapon) bundle.get(GENERATED_ITEM);
         }
 
@@ -364,7 +364,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public LootTableComp.CustomLootInfo getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
+        public ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
             return internalRandomItem;
         }
 
@@ -412,7 +412,7 @@ public interface RandomItem<T extends Item> {
         }
 
         //can only have one item per slot, and no RandomItem
-        private LootTableComp.CustomLootInfo internalRandomItem = new LootTableComp.CustomLootInfo();
+        private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
         private Armor generatedItem;
 
@@ -423,7 +423,7 @@ public interface RandomItem<T extends Item> {
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            internalRandomItem = (LootTableComp.CustomLootInfo) bundle.get(INTERNAL_RANDOM_ITEM);
+            internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
             generatedItem = (Armor) bundle.get(GENERATED_ITEM);
         }
 
@@ -459,7 +459,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public LootTableComp.CustomLootInfo getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
+        public ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
             return internalRandomItem;
         }
 
@@ -507,14 +507,14 @@ public interface RandomItem<T extends Item> {
         }
 
         //can only have one item per slot, and no RandomItem
-        private LootTableComp.CustomLootInfo internalRandomItem = new LootTableComp.CustomLootInfo();
+        private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
         private Ring generatedItem;
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            internalRandomItem = (LootTableComp.CustomLootInfo) bundle.get(INTERNAL_RANDOM_ITEM);
+            internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
             generatedItem = (Ring) bundle.get(GENERATED_ITEM);
         }
 
@@ -550,7 +550,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public LootTableComp.CustomLootInfo getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
+        public ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
             return internalRandomItem;
         }
 
@@ -599,14 +599,14 @@ public interface RandomItem<T extends Item> {
         }
 
         //can only have one item per slot, and no RandomItem
-        private LootTableComp.CustomLootInfo internalRandomItem = new LootTableComp.CustomLootInfo();
+        private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
         private Artifact generatedItem;
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            internalRandomItem = (LootTableComp.CustomLootInfo) bundle.get(INTERNAL_RANDOM_ITEM);
+            internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
             generatedItem = (Artifact) bundle.get(GENERATED_ITEM);
         }
 
@@ -642,7 +642,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public LootTableComp.CustomLootInfo getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
+        public ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
             return internalRandomItem;
         }
 
@@ -691,14 +691,14 @@ public interface RandomItem<T extends Item> {
         }
 
         //can only have one item per slot, and no RandomItem
-        private LootTableComp.CustomLootInfo internalRandomItem = new LootTableComp.CustomLootInfo();
+        private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
         private KindofMisc generatedItem;
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            internalRandomItem = (LootTableComp.CustomLootInfo) bundle.get(INTERNAL_RANDOM_ITEM);
+            internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
             generatedItem = (KindofMisc) bundle.get(GENERATED_ITEM);
         }
 
@@ -734,7 +734,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public LootTableComp.CustomLootInfo getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
+        public ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
             return internalRandomItem;
         }
 
@@ -787,14 +787,14 @@ public interface RandomItem<T extends Item> {
         }
 
         //can only have one item per slot, and no RandomItem
-        private LootTableComp.CustomLootInfo internalRandomItem = new LootTableComp.CustomLootInfo();
+        private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
         private Wand generatedItem;
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            internalRandomItem = (LootTableComp.CustomLootInfo) bundle.get(INTERNAL_RANDOM_ITEM);
+            internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
             generatedItem = (Wand) bundle.get(GENERATED_ITEM);
         }
 
@@ -830,7 +830,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public LootTableComp.CustomLootInfo getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
+        public ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
             return internalRandomItem;
         }
 
@@ -886,14 +886,14 @@ public interface RandomItem<T extends Item> {
         }
 
         //can only have one item per slot, and no RandomItem
-        private LootTableComp.CustomLootInfo internalRandomItem = new LootTableComp.CustomLootInfo();
+        private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
         private Bag generatedItem;
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            internalRandomItem = (LootTableComp.CustomLootInfo) bundle.get(INTERNAL_RANDOM_ITEM);
+            internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
             generatedItem = (Bag) bundle.get(GENERATED_ITEM);
         }
 
@@ -929,7 +929,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public LootTableComp.CustomLootInfo getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
+        public ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
             return internalRandomItem;
         }
 

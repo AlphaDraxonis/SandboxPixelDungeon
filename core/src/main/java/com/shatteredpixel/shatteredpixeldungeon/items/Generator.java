@@ -22,7 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.DuelistArmor;
@@ -627,7 +627,7 @@ public class Generator {
 		}
 	}
 
-	public static void convertGeneratorToCustomLootInfo(LootTableComp.CustomLootInfo customLootInfo, Category cat, int multiplier) {
+	public static void convertGeneratorToCustomLootInfo(ItemsWithChanceDistrComp.RandomItemData customLootInfo, Category cat, int multiplier) {
 		if (cat == Category.WEAPON) {
 			return;//TODO
 		} else if (cat == Category.MISSILE) {
@@ -644,7 +644,7 @@ public class Generator {
 		}
 	}
 
-	public static void convertRandomArmorToCustomLootInfo(LootTableComp.CustomLootInfo customLootInfo, int floorSet) {
+	public static void convertRandomArmorToCustomLootInfo(ItemsWithChanceDistrComp.RandomItemData customLootInfo, int floorSet) {
 		floorSet = (int) GameMath.gate(0, floorSet, floorSetTierProbs.length - 1);
 		int i = 0;
 		for (Class<?> cl : Category.ARMOR.classes) {
@@ -655,7 +655,7 @@ public class Generator {
 		}
 	}
 
-	public static void convertRandomWeaponToCustomLootInfo(LootTableComp.CustomLootInfo customLootInfo, int floorSet) {
+	public static void convertRandomWeaponToCustomLootInfo(ItemsWithChanceDistrComp.RandomItemData customLootInfo, int floorSet) {
 		floorSet = (int) GameMath.gate(0, floorSet, floorSetTierProbs.length - 1);
 
 		int i = 0;
@@ -665,7 +665,7 @@ public class Generator {
 		}
 	}
 
-	public static void convertRandomMissileWeaponToCustomLootInfo(LootTableComp.CustomLootInfo customLootInfo) {
+	public static void convertRandomMissileWeaponToCustomLootInfo(ItemsWithChanceDistrComp.RandomItemData customLootInfo) {
 
 		int floorSet = (int) GameMath.gate(0, Dungeon.depth / 5, floorSetTierProbs.length - 1);
 
