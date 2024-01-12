@@ -157,9 +157,6 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         itemList.add(item);
     }
 
-    protected void onUpdateItem() {//nur dafür gedacht, wenn sich bestehende Items ändern
-    }
-
     protected void showSelectWindow() {
         EditorScene.selectItem(this);
     }
@@ -228,6 +225,16 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         if (sp != null) ((ScrollPane) sp).givePointerPriority();
     }
 
+    protected void showWndEditItemComp(Slot slot, Item item) {
+        EditorScene.show(new EditCompWindow(item, editComp == null ? null : editComp.advancedListPaneItem) {
+            @Override
+            protected void onUpdate() {
+                super.onUpdate();
+                slot.item(item);
+            }
+        });
+    }
+
     protected class Slot extends InventorySlot {
 
         public Slot(Item item) {
@@ -236,16 +243,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
 
         @Override
         protected void onClick() {
-            if (parent != null && parent.parent != null)
-                EditItemComp.showSpreadIfLoot = parent.parent.getClass().getSimpleName().contains("Loot");
-            EditorScene.show(new EditCompWindow(item, editComp == null ? null : editComp.advancedListPaneItem) {
-                @Override
-                protected void onUpdate() {
-                    super.onUpdate();
-                    item(item);
-                    onUpdateItem();
-                }
-            });
+            showWndEditItemComp(this, item);
         }
 
         @Override

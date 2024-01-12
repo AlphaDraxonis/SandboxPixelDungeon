@@ -16,11 +16,17 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 
 public class EditCompWindow extends Window {
 
-    private final ScrollPane sp;
-    private final DefaultEditComp<?> content;
+    private ScrollPane sp;
+    protected final DefaultEditComp<?> content;
 
     public EditCompWindow(Object object) {
         this(object, null);
+    }
+
+    public EditCompWindow(Item item, Heap heap, AdvancedListPaneItem advancedListPaneItem) {
+        content = new EditItemComp(item, heap);
+        content.advancedListPaneItem = advancedListPaneItem;
+        init();
     }
 
     public EditCompWindow(Object object, AdvancedListPaneItem advancedListPaneItem) {
@@ -30,9 +36,13 @@ public class EditCompWindow extends Window {
         else if (object instanceof Trap) content = new EditTrapComp((Trap) object);
         else if (object instanceof Heap) content = new EditHeapComp((Heap) object);
         else if (object instanceof Zone) content = new WndZones.EditZoneComp((Zone) object);
-        else
-            throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
+        else throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
+
         content.advancedListPaneItem = advancedListPaneItem;
+        init();
+    }
+
+    private void init() {
 
         float newWidth = Math.min(WndTitledMessage.WIDTH_MAX - 5, (int) (PixelScene.uiCamera.width * 0.82f));
 

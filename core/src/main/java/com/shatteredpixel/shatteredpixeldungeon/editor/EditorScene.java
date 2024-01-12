@@ -645,6 +645,7 @@ public class EditorScene extends PixelScene {
         Item i = heap.peek();
         i.image = CustomDungeon.getDungeon().getItemSpriteOnSheet(i);
         heap.sprite.view(heap);
+        heap.sprite.place(heap.pos);
     }
 
     private void addBlobSprite(final Blob gas) {

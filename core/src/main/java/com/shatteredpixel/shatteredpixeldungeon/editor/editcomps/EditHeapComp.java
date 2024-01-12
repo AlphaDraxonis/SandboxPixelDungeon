@@ -17,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Image;
@@ -33,7 +34,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
 
     protected final HeapTypeSpinner heapType;
 
-    protected final ItemContainer itemContainer;
+    protected final ItemContainer<Item> itemContainer;
 
     public EditHeapComp(Heap heap) {
         super(heap);
@@ -95,7 +96,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
                 float price = copy.value() * 5 * EditorScene.customLevel().levelScheme.getPriceMultiplier();
                 return super.getDisplayString() + " = " + ((int)(getAsFloat() * price) + " " + Messages.get(Gold.class, "name"));
             }
-        }, Messages.get(LevelTab.class, "shop_price"), 8);
+        }, Messages.get(LevelTab.class, "shop_price"), 9);
         ((SpinnerIntegerModel) priceMultiplier.getModel()).setAbsoluteMinAndMax(0f, 10000f);
         priceMultiplier.addChangeListener(() -> heap.priceMultiplier = ((SpinnerFloatModel) priceMultiplier.getModel()).getAsFloat());
         add(priceMultiplier);
@@ -111,17 +112,28 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             }
 
             @Override
-            protected void onUpdateItem() {
-                EditorScene.updateHeapImage(obj);
-                super.onUpdateItem();
-                obj.updateSubicon();
-                updateObj();
+            protected boolean removeSlot(ItemContainer<Item>.Slot slot) {
+                if (itemList.size() > 1) return super.removeSlot(slot);
+                return false;
             }
 
             @Override
-            protected boolean removeSlot(ItemContainer.Slot slot) {
-                if (itemList.size() > 1) return super.removeSlot(slot);
-                return false;
+            protected void showWndEditItemComp(ItemContainer<Item>.Slot slot, Item item) {
+                EditorScene.show(new EditCompWindow(item, heap, advancedListPaneItem) {
+                    {
+                        Window w = EditorUtilies.getParentWindow(EditHeapComp.this);
+                        if (w instanceof EditCompWindowTabbed)
+                            ((EditItemComp) content).reorderHeapComp.editCompWindowTabbed = (EditCompWindowTabbed) w;
+                    }
+                    @Override
+                    protected void onUpdate() {
+                        super.onUpdate();
+                        slot.item(item);
+                        EditorScene.updateHeapImage(obj);
+                        obj.updateSubicon();
+                        updateObj();
+                    }
+                });
             }
         };
         add(itemContainer);
@@ -249,7 +261,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
     private class HeapTypeSpinner extends Spinner {
 
         public HeapTypeSpinner(Heap heap) {
-            super(new HeapTypeSpinnerModel(heap), " " + Messages.get(EditHeapComp.class, "type"), 10);
+            super(new HeapTypeSpinnerModel(heap), Messages.get(EditHeapComp.class, "type"), 9);
 
             addChangeListener(EditHeapComp.this::updateObj);
         }

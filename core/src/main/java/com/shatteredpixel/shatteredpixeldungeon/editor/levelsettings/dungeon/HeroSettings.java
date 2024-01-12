@@ -110,7 +110,7 @@ public class HeroSettings extends Component {
         if (title != null) {
 
             title.icon(createTabIcon(index));
-            title.label(getTabName(index));
+            title.label(Messages.titleCase(getTabName(index)));
 
             DungeonTab.updateLayout();
         }

@@ -101,7 +101,6 @@ public class CustomLevel extends Level {
     private boolean enableRespawning = true;
     private float respawnCooldown = TIME_TO_RESPAWN;//How often new mobs spawn
     //    private boolean fillRemainingMobsWhenCreated = false;//if createMobs() didnt reach the mob cap, this spawns new mobs using mobRotation
-    private boolean swapForMutations = true;//Chance of changing eg a rat to an albino rat
     private ItemsWithChanceDistrComp.RandomItemData mobRotation = new ItemsWithChanceDistrComp.RandomItemData();//More of same mob means higher chance
     private int mobLimit = 10;
 
@@ -630,7 +629,6 @@ public class CustomLevel extends Level {
     private static final String MUSIC = "music";
     private static final String ENABLE_RESPAWNING = "enable_respawning";
     private static final String RESPAWN_COOLDOWN = "respawn_cooldown";
-    private static final String SWAP_FOR_MUTATIONS = "swap_for_mutations";
     private static final String MOB_LIMIT = "mob_limit";
     private static final String MOB_ROTATION = "mob_rotation_new";
     private static final String IGNORE_TERRAIN_FOR_EXPLORING_SCORE = "ignore_terrain_for_exploring_score";
@@ -644,7 +642,6 @@ public class CustomLevel extends Level {
         bundle.put(MUSIC, music);
         bundle.put(ENABLE_RESPAWNING, enableRespawning);
         bundle.put(RESPAWN_COOLDOWN, respawnCooldown);
-        bundle.put(SWAP_FOR_MUTATIONS, swapForMutations);
         bundle.put(MOB_LIMIT, mobLimit);
         bundle.put(MOB_ROTATION, mobRotation);
         bundle.put(IGNORE_TERRAIN_FOR_EXPLORING_SCORE, ignoreTerrainForExploringScore);
@@ -678,15 +675,6 @@ public class CustomLevel extends Level {
 
     public void enableRespawning(boolean enableRespawning) {
         this.enableRespawning = enableRespawning;
-    }
-
-
-    public boolean isSwapForMutations() {
-        return swapForMutations;
-    }
-
-    public void setSwapForMutations(boolean swapForMutations) {
-        this.swapForMutations = swapForMutations;
     }
 
     public void setMobLimit(int mobLimit) {

@@ -18,6 +18,8 @@ public class ReorderHeapComp extends Component {
     private final Item item;
     private final Heap heap;
 
+    public EditCompWindowTabbed editCompWindowTabbed;
+
 
     public boolean layoutRTL = true;
 
@@ -113,7 +115,7 @@ public class ReorderHeapComp extends Component {
 
     //need to make sure that item at index actually exists!
     private void swapItems(int direction) {
-        Window w = EditorUtilies.getParentWindow(this);
+        Window w = editCompWindowTabbed == null ? EditorUtilies.getParentWindow(this) : editCompWindowTabbed;
         if (w instanceof EditCompWindowTabbed) {
             Item other = heap.items.get(heap.items.indexOf(item) + direction);
 
@@ -126,7 +128,7 @@ public class ReorderHeapComp extends Component {
 
             EditorScene.updateHeapImage(heap);
             heap.updateSubicon();
-            ((EditCompWindowTabbed) w).swapItemTabs(index1, item, index2, other, heap);
+            ((EditCompWindowTabbed) w).swapItemTabs(index1, item, index2, other, heap, editCompWindowTabbed == null);
 
             updateEnableState();
         }

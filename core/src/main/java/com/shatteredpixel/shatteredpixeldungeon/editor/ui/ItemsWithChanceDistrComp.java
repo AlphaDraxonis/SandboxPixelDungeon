@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.ItemContainer;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.LootTableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.WndEditStats;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
@@ -231,6 +232,13 @@ public abstract class ItemsWithChanceDistrComp extends Component {
                     @Override
                     protected void onSlotNumChange() {
                         ItemsWithChanceDistrComp.Slot.this.layout();
+                    }
+
+                    @Override
+                    protected void showWndEditItemComp(ItemContainer<Item>.Slot slot, Item item) {
+                        if (ItemsWithChanceDistrComp.this instanceof LootTableComp)
+                            EditItemComp.showSpreadIfLoot = true;
+                        super.showWndEditItemComp(slot, item);
                     }
                 };
                 add(items);

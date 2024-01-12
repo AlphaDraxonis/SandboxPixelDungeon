@@ -119,9 +119,6 @@ public class BitmapText extends Visual {
 		for (int i=0; i < length; i++) {
 			RectF rect = font.get( text.charAt( i ) );
 
-			if (rect == null) {
-				rect=null;
-			}
 			float w = font.width( rect );
 			float h = font.height( rect );
 

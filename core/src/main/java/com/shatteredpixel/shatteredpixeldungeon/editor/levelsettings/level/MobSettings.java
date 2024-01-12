@@ -284,21 +284,12 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
 
         private final Spinner moblimit, respawnTime;
         private final RedButton openMobCycle;
-        private final CheckBox enableMutations, disableSpawning;
+        private final CheckBox disableSpawning;
 
         private ItemSelector boss;
 
         public MobSpawningComp() {
             CustomLevel f = EditorScene.customLevel();
-
-            enableMutations = new CheckBox(Messages.get(MobSettings.class, "mutation")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    f.setSwapForMutations(value);
-                }
-            };
-            add(enableMutations);
 
             moblimit = new Spinner(new SpinnerIntegerModel(0, 100, f.mobLimit(), 1, false, null) {
                 @Override
@@ -335,7 +326,6 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
-                    enableMutations.enable(value);
                     openMobCycle.enable(value);
                     moblimit.enable(value);
                     respawnTime.enable(value);
@@ -384,10 +374,6 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
             moblimit.setRect(x, posY, width, BUTTON_HEIGHT);
             PixelScene.align(moblimit);
             posY = moblimit.bottom() + LevelTab.GAP;
-
-            enableMutations.setRect(x, posY, width, BUTTON_HEIGHT);
-            PixelScene.align(enableMutations);
-            posY = enableMutations.bottom() + LevelTab.GAP;
 
             openMobCycle.setRect(x, posY, width, BUTTON_HEIGHT);
             PixelScene.align(openMobCycle);
