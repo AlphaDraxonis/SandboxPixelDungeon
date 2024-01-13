@@ -296,7 +296,7 @@ public final class EditorUtilies {
         return parent.height();
     }
 
-    public static float layoutStyledCompsInRectangles(int gap, float width, Component parent, Component[] comps) {
+    public static float layoutStyledCompsInRectangles(int gap, float width, Component parent, Component... comps) {
         if (comps == null) return parent.height();
 
         final int compsPerRow = PixelScene.landscape() ? 3 : 2;

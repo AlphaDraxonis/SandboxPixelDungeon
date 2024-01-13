@@ -18,8 +18,6 @@ public class LootTableComp extends ItemsWithChanceDistrComp {
     public LootTableComp(Mob mob) {
         super(createRandomItemData(mob), Integer.MAX_VALUE);
         this.mob = mob;
-
-
     }
 
     private static RandomItemData createRandomItemData(Mob mob) {
@@ -50,5 +48,9 @@ public class LootTableComp extends ItemsWithChanceDistrComp {
         EditorScene.selectItem(createSelector(Item.class, true, Items.bag.getClass()));
     }
 
-
+    @Override
+    protected void updateParent() {
+        WndEditStats wndEditStats = findWndEditStats();
+        if (wndEditStats != null) wndEditStats.layout();
+    }
 }

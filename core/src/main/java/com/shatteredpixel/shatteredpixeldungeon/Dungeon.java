@@ -504,6 +504,7 @@ public class Dungeon {
 		Actor.init();
 
 		level.addRespawner();
+        level.addZoneRespawner();
 		
 		for(Mob m : level.mobs){
 			if (m.pos == hero.pos && !Char.hasProp(m, Char.Property.IMMOVABLE)){

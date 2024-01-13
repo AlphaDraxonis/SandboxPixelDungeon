@@ -172,13 +172,14 @@ public abstract class ItemsWithChanceDistrComp extends Component {
                 posY = item.slot.bottom();
             }
         }
-        height = posY;
+        height = posY - y;
         isInInit = false;
         if (updateParent) {
-            WndEditStats wndEditStats = findWndEditStats();
-            if (wndEditStats != null) wndEditStats.layout();
+            updateParent();
         }
     }
+
+    protected abstract void updateParent();
 
     protected WndEditStats findWndEditStats() {
         Group w = parent;

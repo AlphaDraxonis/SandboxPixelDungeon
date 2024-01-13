@@ -54,8 +54,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class MobSettings extends Component implements LevelTab.BackPressImplemented {
-
+public class MobSettings extends Component implements LevelTab.BackPressImplemented {
 
     private final Component outsideSp;
     private Component outsideSpExtraBtn;
@@ -73,6 +72,8 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
 
     public MobSettings() {
 
+        titleText = PixelScene.renderTextBlock(Messages.get(MobSettings.class, "title"), 11);
+        titleText.hardlight(Window.TITLE_COLOR);
         title = new Component() {
             @Override
             public synchronized void clear() {
@@ -103,6 +104,7 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
                     buttonInTitle.setPos(title.right() - GAP - buttonInTitle.width(), (height - buttonInTitle.height()) * 0.5f);
             }
         };
+        title.add(titleText);
 
         outsideSp = new MultiWindowTabComp.OutsideSpSwitchTabs() {
             @Override
@@ -178,8 +180,6 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
         if (mobCycleOpen) {
             if (identifier == 0) mobCycleOpen = false;
         } else if (identifier == 2) mobCycleOpen = true;
-        title.clear();
-        if (titleText != null) titleText.destroy();
         if (buttonInTitle != null) {
             buttonInTitle.remove();
             buttonInTitle.destroy();
@@ -187,9 +187,7 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
         }
         switch (identifier) {
             case 0:
-                titleText = PixelScene.renderTextBlock(Messages.get(MobSettings.class, "title"), 11);
-                titleText.hardlight(Window.TITLE_COLOR);
-                title.add(titleText);
+                titleText.text(Messages.get(MobSettings.class, "title"));
                 if (mobSpawning == null) {
                     mobSpawning = new MobSpawningComp();
                     add(mobSpawning);
@@ -198,9 +196,7 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
                 WndEditorSettings.getInstance().getLevelTab().setAlignmentOther(0.5f);
                 break;
             case 1:
-                titleText = PixelScene.renderTextBlock(Messages.get(MobSettings.class, "overview"), 11);
-                titleText.hardlight(Window.TITLE_COLOR);
-                title.add(titleText);
+                titleText.text(Messages.get(MobSettings.class, "overview"));
                 if (mobOverview == null) {
                     mobOverview = new MobOverview();
                     add(mobOverview);
@@ -210,11 +206,9 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
                 WndEditorSettings.getInstance().getLevelTab().setAlignmentOther(0f);
                 break;
             case 2:
-                titleText = PixelScene.renderTextBlock(Messages.get(MobSettings.class, "mob_rot"), 11);
-                titleText.hardlight(Window.TITLE_COLOR);
-                title.add(titleText);
+                titleText.text(Messages.get(MobSettings.class, "mob_rot"));
                 if (mobRotation == null) {
-                    mobRotation = new ChangeMobRotation();
+                    mobRotation = new ChangeMobRotation(EditorScene.customLevel().getMobRotationVar());
                     add(mobRotation);
                 }
                 select(mobRotation);
@@ -289,17 +283,17 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
         private ItemSelector boss;
 
         public MobSpawningComp() {
-            CustomLevel f = EditorScene.customLevel();
+            CustomLevel l = EditorScene.customLevel();
 
-            moblimit = new Spinner(new SpinnerIntegerModel(0, 100, f.mobLimit(), 1, false, null) {
+            moblimit = new Spinner(new SpinnerIntegerModel(0, 100, l.mobLimit(), 1, false, null) {
                 @Override
                 public float getInputFieldWidth(float height) {
                     return height * 1.1f;
                 }
             }, " " + Messages.get(MobSettings.class, "limit") + ":", 9);
-            moblimit.addChangeListener(() -> f.setMobLimit((int) moblimit.getValue()));
+            moblimit.addChangeListener(() -> l.mobLimit = (int) moblimit.getValue());
             add(moblimit);
-            respawnTime = new Spinner(new SpinnerIntegerModel(1, 100, (int) f.respawnCooldown(), 1, false, null) {
+            respawnTime = new Spinner(new SpinnerIntegerModel(1, 100, (int) l.respawnCooldown(), 1, false, null) {
                 @Override
                 public float getInputFieldWidth(float height) {
                     return height * 1.1f;
@@ -311,7 +305,7 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
                 }
             }, " " + Messages.get(MobSettings.class, "respawn_time") + ":", 9);
             ((SpinnerIntegerModel) respawnTime.getModel()).setAbsoluteMinimum(1f);
-            respawnTime.addChangeListener(() -> f.setRespawnCooldown((int) respawnTime.getValue()));
+            respawnTime.addChangeListener(() -> l.respawnCooldown((int) respawnTime.getValue()));
             add(respawnTime);
 
             openMobCycle = new RedButton(Messages.get(MobSettings.class, "edit_cycle")) {
@@ -329,10 +323,10 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
                     openMobCycle.enable(value);
                     moblimit.enable(value);
                     respawnTime.enable(value);
-                    f.enableRespawning(value);
+                    l.enableRespawning = value;
                 }
             };
-            disableSpawning.checked(f.isRespawEnabled());
+            disableSpawning.checked(l.enableRespawning);
             add(disableSpawning);
 
             Mob bossMob = EditorScene.customLevel().findMob(EditorScene.customLevel().bossmobAt);
@@ -454,8 +448,8 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
             }
         }
 
-        public ChangeMobRotation() {
-            super(EditorScene.customLevel().getMobRotationVar(), 1);
+        public ChangeMobRotation(ItemsWithChanceDistrComp.RandomItemData mobRotation) {
+            super(mobRotation, 1);
             hasNullInLoot = true;//so no "no mob" can be added
         }
 
@@ -467,6 +461,11 @@ class MobSettings extends Component implements LevelTab.BackPressImplemented {
         @Override
         protected boolean acceptItem(Item item) {
             return super.acceptItem(item) && item instanceof MobItem && !NOT_AVAILABLE.contains(((MobItem) item).getObject().getClass());
+        }
+
+        @Override
+        protected void updateParent() {
+            WndEditorSettings.getInstance().getLevelTab().layout();
         }
     }
 

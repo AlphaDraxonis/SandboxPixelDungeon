@@ -21,8 +21,11 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.Supplier;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -44,12 +47,12 @@ public class Bestiary {
 	}
 
 	//For custom levels
-	public static ArrayList<?> getMobRotation(ItemsWithChanceDistrComp.RandomItemData mobRotation ){
-		ArrayList<Object> mobs = new ArrayList<>();
+	public static ArrayList<? extends Mob> getMobRotation(ItemsWithChanceDistrComp.RandomItemData mobRotation ){
+		ArrayList<Mob> mobs = new ArrayList<>();
 		for (ItemsWithChanceDistrComp.ItemWithCount mob : mobRotation.distrSlots) {
 			for (int i = 0; i < mob.getCount(); i++) {
 				for (Item m : mob.items) {
-					if (m instanceof MobItem) mobs.add(((MobItem) m).getObject().getCopy());
+					mobs.add((Mob)((MobItem) m).getObject().getCopy());
 				}
 			}
 		}
@@ -140,6 +143,19 @@ public class Bestiary {
 			}
 		}
 		return convertMobRotation(mobClasses);
+	}
+
+	public static Mob createMob(ArrayList<?> mobsToSpawn, Supplier<ArrayList<?>> createNewSpawningGroup) {
+		if (mobsToSpawn == null || mobsToSpawn.isEmpty()) {
+			mobsToSpawn = createNewSpawningGroup.get();
+			if (mobsToSpawn.isEmpty()) return null;
+		}
+
+		Object spawning = mobsToSpawn.remove(0);
+		Mob m = (Mob) (spawning instanceof Mob ? spawning : Reflection.newInstance(((Class<?>) spawning)));
+		ChampionEnemy.rollForChampion(m);
+		if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
+		return m;
 	}
 	
 	//returns a rotation of standard mobs, unshuffled.

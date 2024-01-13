@@ -132,7 +132,6 @@ import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Reflection;
 import com.watabou.utils.SparseArray;
 
 import java.util.ArrayList;
@@ -741,16 +740,7 @@ public abstract class Level implements Bundlable {
 	private ArrayList<? extends Object> mobsToSpawn = new ArrayList<>();//contains either Mob or Class<? extends Mob>
 	
 	public Mob createMob() {
-		if (mobsToSpawn == null || mobsToSpawn.isEmpty()) {
-			mobsToSpawn = getMobRotation();
-			if (mobsToSpawn.isEmpty()) return null;
-		}
-
-		Object spawning = mobsToSpawn.remove(0);
-		Mob m = (Mob) (spawning instanceof Mob ? spawning : Reflection.newInstance(((Class<?>) spawning)));
-		ChampionEnemy.rollForChampion(m);
-		if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
-		return m;
+		return Bestiary.createMob(mobsToSpawn, this::getMobRotation);
 	}
 
 	public ArrayList<?> getMobRotation() {//contains either Mob or Class<? extends Mob>
@@ -1090,6 +1080,7 @@ public abstract class Level implements Bundlable {
 	}
 
 	private Respawner respawner;
+	private ZoneRespawner[] zoneRespawner;
 
 	public Actor addRespawner() {
 		if (respawner == null){
@@ -1104,6 +1095,30 @@ public abstract class Level implements Bundlable {
 		return respawner;
 	}
 
+	public Actor[] addZoneRespawner() {
+		if (zoneRespawner == null){
+			Collection<Zone> zones = new HashSet<>(5);
+			for (Zone z : zoneMap.values()) {
+				if (z.ownMobRotationEnabled) zones.add(z);
+			}
+			zoneRespawner = new ZoneRespawner[zones.size()];
+			int i = 0;
+			for (Zone z : zones) {
+				zoneRespawner[i] = new ZoneRespawner(z);
+				Actor.addDelayed(zoneRespawner[i], zoneRespawner[i].respawnCooldown());
+				i++;
+			}
+		} else {
+			for (ZoneRespawner res : zoneRespawner) {
+				Actor.add(res);
+				if (res.cooldown() > res.respawnCooldown()) {
+					res.resetCooldown();
+				}
+			}
+		}
+		return zoneRespawner;
+	}
+
 	public static class Respawner extends Actor {
 		{
 			actPriority = BUFF_PRIO; //as if it were a buff.
@@ -1115,14 +1130,14 @@ public abstract class Level implements Bundlable {
 			if (Dungeon.level.mobCount() < Dungeon.level.mobLimit()) {
 
 				if (Dungeon.level.spawnMob(12)){
-					spend(Dungeon.level.respawnCooldown());
+					spend(respawnCooldown());
 				} else {
 					//try again in 1 turn
 					spend(TICK);
 				}
 
 			} else {
-				spend(Dungeon.level.respawnCooldown());
+				spend(respawnCooldown());
 			}
 
 			return true;
@@ -1130,7 +1145,33 @@ public abstract class Level implements Bundlable {
 
 		protected void resetCooldown(){
 			spend(-cooldown());
-			spend(Dungeon.level.respawnCooldown());
+			spend(respawnCooldown());
+		}
+
+		protected float respawnCooldown() {
+			return Dungeon.level.respawnCooldown();
+		}
+	}
+
+	public static class ZoneRespawner extends Respawner {
+
+		private final Zone zone;
+
+		public ZoneRespawner(Zone zone) {
+			this.zone = zone;
+		}
+
+		@Override
+		protected boolean act() {
+			spend(Dungeon.level.mobCount() < Dungeon.level.mobLimit()
+					? Dungeon.level.spawnMob(12, zone) ? respawnCooldown() : TICK
+					: respawnCooldown());
+			return true;
+		}
+
+		@Override
+		protected float respawnCooldown() {
+			return zone.respawnCooldown;
 		}
 	}
 
@@ -1151,19 +1192,25 @@ public abstract class Level implements Bundlable {
 	}
 
 	public boolean spawnMob(int disLimit){
+		return spawnMob(disLimit, null);
+	}
 
-		Mob mob = createMob();
+	public boolean spawnMob(int disLimit, Zone zone){
+
+		Mob mob = zone == null ? createMob() : zone.createMob();
+		if (mob == null) return false;
 		mob.state = mob.WANDERING;
 
 		PathFinder.buildDistanceMap(Dungeon.hero.pos, getPassableAndAvoidVar(mob));
 
 		int tries = 30;
 		do {
+			if (--tries <= 0) break;
 			mob.pos = randomRespawnCell(mob);
-			tries--;
-		} while ((mob.pos == -1 || PathFinder.distance[mob.pos] < disLimit || !Zone.canSpawnMobs(this, mob.pos)) && tries > 0);
+		} while (mob.pos == -1 || PathFinder.distance[mob.pos] < disLimit
+				|| (!Zone.canSpawnMobs(this, mob.pos) && zone == null || zone != null && this.zone[mob.pos] != zone));
 
-		if (Dungeon.hero.isAlive() && mob.pos != -1 && PathFinder.distance[mob.pos] >= disLimit) {
+		if (Dungeon.hero.isAlive() && tries > 0) {
 			GameScene.add( mob );
 			if (!mob.buffs(ChampionEnemy.class).isEmpty()){
 				GLog.w(Messages.get(ChampionEnemy.class, "warn"));
@@ -1173,7 +1220,7 @@ public abstract class Level implements Bundlable {
 			return false;
 		}
 	}
-	
+
 	public int randomRespawnCell( Char ch ) {
 		return randomRespawnCell(ch, false);
 	}
@@ -1187,7 +1234,7 @@ public abstract class Level implements Bundlable {
 		if (ch instanceof Hero) {
 			Set<String> safeZonesToSpawn = new HashSet<>(2);
 			for (Zone z : zoneMap.values()){
-				if (!z.canSpawnMobs) safeZonesToSpawn.add(z.getName());
+				if (!z.canSpawnMobs && !z.ownMobRotationEnabled) safeZonesToSpawn.add(z.getName());
 			}
 			if (!safeZonesToSpawn.isEmpty()) {
 				int cell = 0;

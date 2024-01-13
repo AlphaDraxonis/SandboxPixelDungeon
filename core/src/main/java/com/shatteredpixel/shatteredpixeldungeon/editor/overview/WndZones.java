@@ -15,12 +15,15 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ZoneMobSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndEditFloorInOverview;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndColorPicker;
@@ -521,6 +524,17 @@ public final class WndZones {
                     new ItemSprite(EditorScene.customLevel().tilesTex(), new TileItem(Terrain.HIGH_GRASS, -1)));
             grassVisuals.addChangeListener(() -> zone.setGrassType((Zone.GrassType) grassVisuals.getValue()));
 
+            StyledButton mobRotation = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditTileComp.class, "mob_rotation"), 9) {
+                @Override
+                protected void onClick() {
+                    SimpleWindow w = new SimpleWindow(WndEditorSettings.calclulateWidth(), WndEditorSettings.calclulateHeight());
+                    ZoneMobSettings ms = new ZoneMobSettings(zone);
+                    w.initComponents(ms.createTitle(), ms, ms.getOutsideSp(), 0f, 0.5f);
+                    EditorScene.show(w);
+                }
+            };
+            mobRotation.multiline = true;
+
             LevelScheme chasm = Dungeon.customDungeon.getFloor(Dungeon.level.levelScheme.getChasm());
             Object[] data;
             int index = 0;
@@ -558,7 +572,7 @@ public final class WndZones {
             };
             addTransition.multiline = true;
 
-            comps = new Component[]{pickColor, flamable, spawnMobs, spawnItems, teleportTo, destroyWalls, blocksVision, grassVisuals, addTransition};
+            comps = new Component[]{pickColor, flamable, spawnMobs, spawnItems, teleportTo, destroyWalls, blocksVision, grassVisuals, mobRotation, addTransition};
 
             if (zone.zoneTransition != null) {
                 addTransition(zone.zoneTransition);

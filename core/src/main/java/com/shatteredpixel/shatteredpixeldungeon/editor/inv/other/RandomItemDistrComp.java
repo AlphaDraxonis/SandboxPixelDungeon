@@ -4,8 +4,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.ui.Component;
 
@@ -31,5 +34,11 @@ public class RandomItemDistrComp extends ItemsWithChanceDistrComp {
             ItemSelector.showSelectWindow(selector, ItemSelector.NullTypeSelector.NOTHING, randomItem.getType(),
                     Items.bag, new HashSet<>(0), false);
         else EditorScene.selectItem(selector);
+    }
+
+    @Override
+    protected void updateParent() {
+        Window w = EditorUtilies.getParentWindow(this);
+        if (w instanceof SimpleWindow) ((SimpleWindow) w).layout();
     }
 }

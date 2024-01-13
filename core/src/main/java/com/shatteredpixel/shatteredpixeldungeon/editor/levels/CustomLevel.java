@@ -98,11 +98,11 @@ public class CustomLevel extends Level {
         setRegion(REGION_SEWERS);
     }
 
-    private boolean enableRespawning = true;
+    public boolean enableRespawning = true;
     private float respawnCooldown = TIME_TO_RESPAWN;//How often new mobs spawn
     //    private boolean fillRemainingMobsWhenCreated = false;//if createMobs() didnt reach the mob cap, this spawns new mobs using mobRotation
     private ItemsWithChanceDistrComp.RandomItemData mobRotation = new ItemsWithChanceDistrComp.RandomItemData();//More of same mob means higher chance
-    private int mobLimit = 10;
+    public int mobLimit = 10;
 
     //    private SparseArray<Heap> startHeaps = new SparseArray<>();
     private int[] terrains = {//Template for new Floors
@@ -524,8 +524,18 @@ public class CustomLevel extends Level {
     }
 
     @Override
+    public float respawnCooldown() {
+        return respawnCooldown;
+    }
+    public void respawnCooldown(float cd) {
+        respawnCooldown = cd;
+    }
+    @Override
     public int mobLimit() {
         return mobLimit;
+    }
+    public ItemsWithChanceDistrComp.RandomItemData getMobRotationVar() {
+        return mobRotation;
     }
 
     @Override
@@ -609,11 +619,6 @@ public class CustomLevel extends Level {
     }
 
 
-    @Override
-    public float respawnCooldown() {
-        return respawnCooldown;
-    }
-
     public List<ItemWithPos> getItems() {
         List<ItemWithPos> ret = new ArrayList<>();
         for (Heap h : heaps.valueList()) {
@@ -668,26 +673,6 @@ public class CustomLevel extends Level {
         }
     }
     //----------------------
-
-    public boolean isRespawEnabled() {
-        return enableRespawning;
-    }
-
-    public void enableRespawning(boolean enableRespawning) {
-        this.enableRespawning = enableRespawning;
-    }
-
-    public void setMobLimit(int mobLimit) {
-        this.mobLimit = mobLimit;
-    }
-
-    public void setRespawnCooldown(float respawnCooldown) {
-        this.respawnCooldown = respawnCooldown;
-    }
-
-    public ItemsWithChanceDistrComp.RandomItemData getMobRotationVar() {
-        return mobRotation;
-    }
 
     public static TextureFilm getTextureFilm(String theme) {
         TextureFilm tf = textureFilms.get(theme);

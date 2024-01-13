@@ -1,8 +1,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -11,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -45,12 +49,17 @@ public class Zone implements Bundlable {
     public GrassType grassType = GrassType.NONE;
     public boolean blocksVision = false;
 
-//    own mob rotation tzz
-
     public String chasmDestZone;
     public LevelTransition zoneTransition;
 
+    public float respawnCooldown = 50;//How often new mobs spawn
+    public boolean ownMobRotationEnabled = false;
+    public ItemsWithChanceDistrComp.RandomItemData mobRotation = null;
+
     private final Set<Integer> cells = new HashSet<>();
+
+
+    private ArrayList<? extends Mob> mobsToSpawn = new ArrayList<>();
 
 
     public String getName() {
@@ -68,6 +77,9 @@ public class Zone implements Bundlable {
     public static final String BLOCKS_VISION = "blocks_vision";
     public static final String CHASM_DEST_ZONE = "chasm_dest_zone";
     public static final String ZONE_TRANSITION = "zone_transition";
+    public static final String RESPAWN_COOLDOWN = "respawn_cooldown";
+    public static final String OWN__MOB_ROTATION_ENABLED = "own__mob_rotation_enabled";
+    public static final String MOB_ROTATION = "mob_rotation";
     public static final String CELLS = "cells";
 
     @Override
@@ -83,6 +95,11 @@ public class Zone implements Bundlable {
         blocksVision = bundle.getBoolean(BLOCKS_VISION);
         chasmDestZone = bundle.getString(CHASM_DEST_ZONE);
         zoneTransition = (LevelTransition) bundle.get(ZONE_TRANSITION);
+        respawnCooldown = bundle.getFloat(RESPAWN_COOLDOWN);
+        ownMobRotationEnabled = bundle.getBoolean(OWN__MOB_ROTATION_ENABLED);
+        if (bundle.contains(MOB_ROTATION)) mobRotation = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(MOB_ROTATION);
+
+        if (respawnCooldown == 0) respawnCooldown = 50;
 
         if ("".equals(chasmDestZone)) chasmDestZone = null;
 
@@ -105,6 +122,11 @@ public class Zone implements Bundlable {
         bundle.put(BLOCKS_VISION, blocksVision);
         bundle.put(CHASM_DEST_ZONE, chasmDestZone);
         bundle.put(ZONE_TRANSITION, zoneTransition);
+        bundle.put(RESPAWN_COOLDOWN, respawnCooldown);
+        bundle.put(OWN__MOB_ROTATION_ENABLED, ownMobRotationEnabled);
+
+        if (mobRotation != null && mobRotation.distrSlots.isEmpty()) mobRotation = null;
+        else bundle.put(MOB_ROTATION, mobRotation);
 
         int[] cellsArray = new int[cells.size()];
         int index = 0;
@@ -223,4 +245,16 @@ public class Zone implements Bundlable {
         Zone z = level.zone[cell];
         return z == null ? GrassType.NONE : z.grassType;
     }
+
+    public Mob createMob() {
+        return mobRotation == null || !ownMobRotationEnabled ? null
+                : Bestiary.createMob(mobsToSpawn, () -> Bestiary.getMobRotation(mobRotation));
+    }
+
+
+    public ItemsWithChanceDistrComp.RandomItemData getMobRotationVar() {
+        if (mobRotation == null) return mobRotation = new ItemsWithChanceDistrComp.RandomItemData();
+        return mobRotation;
+    }
+
 }
