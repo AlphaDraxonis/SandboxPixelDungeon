@@ -104,6 +104,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.HighGrass;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -1285,6 +1286,7 @@ public abstract class Level implements Bundlable {
 				|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
 				|| Actor.findChar( cell ) != null
 				|| (ch instanceof Piranha && map[cell] != Terrain.WATER)
+				|| (ch instanceof SentryRoom.Sentry && map[cell] != Terrain.PEDESTAL)
 				|| findMob(cell) != null
 				|| (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE)
 				|| (!Zone.canSpawnMobs(this, cell) && !(ch == null || ch instanceof Hero || ch instanceof NPC)));
