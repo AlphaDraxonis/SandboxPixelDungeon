@@ -13,6 +13,7 @@ public class DungeonPreview implements Bundlable {
     public String title;
     public String description;
     public String version;
+    public int intVersion;
     public String uploader;
     public int difficulty;
 
@@ -25,6 +26,7 @@ public class DungeonPreview implements Bundlable {
     private static final String TITLE = "title";
     private static final String DESCRIPTION = "description";
     private static final String VERSION = "version";
+    private static final String INT_VERSION = "int_version";
     private static final String UPLOADER = "uploader";
     private static final String DIFFICULTY = "difficulty";
     private static final String UPLOAD_TIME = "upload_time";
@@ -34,6 +36,7 @@ public class DungeonPreview implements Bundlable {
         title = bundle.getString(TITLE);
         description = bundle.getString(DESCRIPTION);
         version = bundle.getString(VERSION);
+        intVersion = bundle.getInt(INT_VERSION);
         uploader = bundle.getString(UPLOADER);
         difficulty = bundle.getInt(DIFFICULTY);
         uploadTime = bundle.getLong(UPLOAD_TIME);
@@ -44,6 +47,7 @@ public class DungeonPreview implements Bundlable {
         bundle.put(TITLE, title);
         bundle.put(DESCRIPTION, description);
         bundle.put(VERSION, version);
+        bundle.put(INT_VERSION, intVersion);
         bundle.put(UPLOADER, uploader);
         bundle.put(DIFFICULTY, difficulty);
         bundle.put(UPLOAD_TIME, uploadTime);
@@ -51,11 +55,12 @@ public class DungeonPreview implements Bundlable {
 
     public String writeArgumentsForURL() {
         try {
-            return "&title="+ URLEncoder.encode(title, "UTF-8")
-                    +"&description="+URLEncoder.encode(description==null ? "" : description, "UTF-8")
-                    +"&version="+URLEncoder.encode(version, "UTF-8")
-                    +"&uploader="+URLEncoder.encode(uploader, "UTF-8")
-                    +"&difficulty="+difficulty;
+            return "&" + TITLE + "=" + URLEncoder.encode(title, "UTF-8")
+                    + "&" + DESCRIPTION + "=" + URLEncoder.encode(description == null ? "" : description, "UTF-8")
+                    + "&" + VERSION + "=" + URLEncoder.encode(version, "UTF-8")
+                    + "&" + INT_VERSION + "=" + intVersion
+                    + "&" + UPLOADER + "=" + URLEncoder.encode(uploader, "UTF-8")
+                    + "&" + DIFFICULTY + "=" + difficulty;
         } catch (UnsupportedEncodingException e) {
             return "";
         }

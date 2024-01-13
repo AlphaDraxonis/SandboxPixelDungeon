@@ -82,7 +82,7 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return URL == null ? "https://script.google.com/macros/s/AKfycbz3TsFOgsAQGKGIvaV5aDdZ_b4vHqBG39bKGGyCgKSiVrZE_eMl4LfN2z5QgeflAdzXpg/exec" : URL;
+        return URL == null ? "https://script.google.com/macros/s/AKfycbwdZ33YW_XXxiV8-rOzrmzxIr5-RJSvhxDjLE4PfpWHRfR-0fQkNUu504kyxjoUebAOqQ/exec" : URL;
     }
 
     private static String getUUID() {
@@ -321,6 +321,7 @@ public final class ServerCommunication {
             uploadPreview.title = dungeonName;
             uploadPreview.description = description;
             uploadPreview.version = Game.version;
+            uploadPreview.intVersion = Game.versionCode;
             uploadPreview.uploader = userName;
             uploadPreview.difficulty = difficulty;
 
@@ -355,6 +356,7 @@ public final class ServerCommunication {
             uploadPreview.title = newDungeonName;
             uploadPreview.description = newDescription;
             uploadPreview.version = Game.version;
+            uploadPreview.intVersion = Game.versionCode;
             uploadPreview.uploader = oldDungeonPreview.uploader;
             uploadPreview.difficulty = difficulty;
 

@@ -8,10 +8,13 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.DungeonPreview;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
+import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -177,6 +180,24 @@ public class ServerDungeonList extends MultiWindowTabComp {
             if (preview != null) {
                 WndPreview prev = new WndPreview(preview, ServerDungeonList.this);
                 changeContent(prev.createTitle(), prev, prev.getOutsideSp());
+
+                if (preview.intVersion > Game.versionCode) {
+                    Game.scene().addToFront(new WndOptions(
+                            Icons.WARNING.get(),
+                            Messages.titleCase( Messages.get(WndPreview.class, "update_req_title") ),
+                            Messages.get(WndPreview.class, "update_req_body"),
+                            Messages.get(WndPreview.class, "update_now"),
+                            Messages.get(WndPreview.class, "update_later")
+                    ) {
+                        @Override
+                        protected void onSelect(int index) {
+                            if (index == 0) {
+                                if (Updates.updateAvailable()) Updates.launchUpdate(Updates.updateData());
+                                else Game.platform.openURI( "https://github.com/AlphaDraxonis/SandboxPixelDungeon/releases" );
+                            }
+                        }
+                    });
+                }
             }
         }
     }
