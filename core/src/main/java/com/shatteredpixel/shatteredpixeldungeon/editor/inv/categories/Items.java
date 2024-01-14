@@ -854,7 +854,7 @@ public enum Items {
                 maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
             }
         }
-        if (m instanceof Thief) {
+        else if (m instanceof Thief) {
             maybeUpdateKeyLevel(((Thief) m).item, oldLvlName, newLvlName);
         }
         if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
