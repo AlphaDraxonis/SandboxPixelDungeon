@@ -19,31 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs;
+package com.shatteredpixel.shatteredpixeldungeon.items.armor;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+//just holds a glyph for a mob
+public class GlyphArmor extends Armor {
 
-public class Brimstone extends Armor.Glyph {
-
-	private static ItemSprite.Glowing ORANGE = new ItemSprite.Glowing( 0xFF4400 );
-
-	@Override
-	public int proc(Armor armor, Char attacker, Char defender, int damage) {
-		//no proc effect, see:
-		// Hero.isImmune
-		// GhostHero.isImmune
-		// Shadowclone.isImmune
-		// ArmoredStatue.isImmune
-		// PrismaticImage.isImmune
-		// Mob.isImmune
-		return damage;
-	}
-
-	@Override
-	public ItemSprite.Glowing glowing() {
-		return ORANGE;
+	public GlyphArmor() {
+		super( -1 );
 	}
 
 }

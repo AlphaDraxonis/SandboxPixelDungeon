@@ -810,6 +810,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (a.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
             if (!a.loot.equals(b.loot)) return false;
         } else if (b.loot instanceof ItemsWithChanceDistrComp.RandomItemData) return false;
+        if (!EditItemComp.areEqual(a.glyphArmor, b.glyphArmor)) return false;
 
         if (a instanceof Statue) {
             if (!EditItemComp.areEqual(((Statue) a).weapon, ((Statue) b).weapon)) return false;

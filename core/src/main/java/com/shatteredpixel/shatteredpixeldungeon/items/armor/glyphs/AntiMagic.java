@@ -121,6 +121,7 @@ public class AntiMagic extends Armor.Glyph {
 		// Shadowclone.damage
 		// ArmoredStatue.damage
 		// PrismaticImage.damage
+		// Mob.damage
 		return damage;
 	}
 	

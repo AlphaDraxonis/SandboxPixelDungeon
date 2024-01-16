@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
@@ -41,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MonkEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Preparation;
@@ -67,6 +69,9 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArmband;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
@@ -133,6 +138,8 @@ public abstract class Mob extends Char {
 	public float statsScale = 1f;//only used in subclasses!
 	public int tilesBeforeWakingUp = 100;
 
+	public Armor glyphArmor;//only to hold glyphs, not for directly reducing damage
+
 
 	public String customName, customDesc, dialog;
 	public boolean isBossMob;//only real value while playing, use level.bossmobAt instead!, not meant for shattered bosses except goo!
@@ -177,6 +184,7 @@ public abstract class Mob extends Char {
 	private static final String SPECIAL_DAMAGE_ROLL_MIN = "special_damage_roll_min";
 	private static final String SPECIAL_DAMAGE_ROLL_MAX = "special_damage_roll_max";
 	private static final String TILES_BEFORE_WAKING_UP = "tiles_before_waking_up";
+	private static final String GLYPH_ARMOR = "glyph_armor";
 	private static final String XP = "xp";
 	private static final String STATS_SCALE = "stats_scale";
 	private static final String IS_BOSS_MOB = "is_boss_mob";
@@ -225,6 +233,7 @@ public abstract class Mob extends Char {
             if (defaultMob.statsScale != statsScale) bundle.put(STATS_SCALE, statsScale);
         }
 
+        bundle.put(GLYPH_ARMOR, glyphArmor);
         bundle.put(IS_BOSS_MOB, isBossMob);
         bundle.put(SHOW_BOSS_BAR, showBossBar);
         bundle.put(BLEEDING, bleeding);
@@ -286,6 +295,8 @@ public abstract class Mob extends Char {
 		if (bundle.contains(CUSTOM_NAME)) customName = bundle.getString(CUSTOM_NAME);
 		if (bundle.contains(CUSTOM_DESC)) customDesc = bundle.getString(CUSTOM_DESC);
 		if (bundle.contains(DIALOG)) dialog = bundle.getString(DIALOG);
+
+		glyphArmor = (Armor) bundle.get(GLYPH_ARMOR);
 
 		if (bundle.contains(SHOW_BOSS_BAR)) showBossBar = bundle.getBoolean(SHOW_BOSS_BAR);
 		bleeding = bundle.getBoolean(BLEEDING);
@@ -780,7 +791,7 @@ public abstract class Mob extends Char {
 		if ( !surprisedBy(enemy)
 				&& paralysed == 0
 				&& !(alignment == Alignment.ALLY && enemy == Dungeon.hero)) {
-			return this.defenseSkill;
+			return glyphArmor == null ? this.defenseSkill : Math.round(glyphArmor.evasionFactor(this, this.defenseSkill));
 		} else {
 			return 0;
 		}
@@ -798,6 +809,10 @@ public abstract class Mob extends Char {
 	
 	@Override
 	public int defenseProc( Char enemy, int damage ) {
+
+		if (glyphArmor != null && buff(MagicImmune.class) == null) {
+			damage = glyphArmor.proc(enemy, this, damage);
+		}
 		
 		if (enemy instanceof Hero
 				&& ((Hero) enemy).belongings.attackingWeapon() instanceof MissileWeapon){
@@ -848,11 +863,28 @@ public abstract class Mob extends Char {
 	}
 
 	@Override
-	public float speed() {
-		return super.speed() * AscensionChallenge.enemySpeedModifier(this);
+	public boolean isImmune(Class effect) {
+		if (effect == Burning.class
+				&& glyphArmor != null
+				&& glyphArmor.hasGlyph(Brimstone.class, this)){
+			return true;
+		}
+		return super.isImmune(effect);
 	}
 
-	public final boolean surprisedBy( Char enemy ){
+	@Override
+	public float speed() {
+		float s = super.speed() * AscensionChallenge.enemySpeedModifier(this);
+		return glyphArmor == null ? s : glyphArmor.speedFactor(this, s);
+	}
+
+	@Override
+	public float stealth() {
+		float sth = super.stealth();
+		return glyphArmor == null ? sth : glyphArmor.stealthFactor(this, sth);
+	}
+
+	public final boolean surprisedBy(Char enemy ){
 		return surprisedBy( enemy, true);
 	}
 
@@ -881,6 +913,12 @@ public abstract class Mob extends Char {
 
 	@Override
 	public void damage( int dmg, Object src ) {
+
+		//TODO improve this when I have proper damage source logic
+		if (glyphArmor != null && glyphArmor.hasGlyph(AntiMagic.class, this)
+				&& AntiMagic.RESISTS.contains(src.getClass())){
+			dmg -= AntiMagic.drRoll(this, glyphArmor.buffedLvl());
+		}
 
 		boolean bleedingCheck;
 		if (isBossMob && !BossHealthBar.isAssigned(this)){
@@ -1204,6 +1242,7 @@ public abstract class Mob extends Char {
                                 || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
                                 || defaultStats.EXP != EXP
                                 || loot instanceof ItemsWithChanceDistrComp.RandomItemData
+								|| glyphArmor != null && glyphArmor.glyph != null
                 )) {
                     desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
                     if (defaultStats.statsScale != statsScale)
@@ -1226,7 +1265,8 @@ public abstract class Mob extends Char {
             } else {
 
                 if (!DefaultStatsCache.areStatsEqual(defaultStats, this)
-                        || loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
+                        || loot instanceof ItemsWithChanceDistrComp.RandomItemData
+					|| glyphArmor != null && glyphArmor.glyph != null) {
                     desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
 
                     if (defaultStats.baseSpeed != baseSpeed)
@@ -1252,6 +1292,11 @@ public abstract class Mob extends Char {
                 }
 
             }
+
+			if (glyphArmor != null && glyphArmor.glyph != null) {
+				desc += "\n" + Messages.get(Mob.class, "glyph") + ": _" + glyphArmor.glyph.name() + "_";
+				if (glyphArmor.level() != 0) desc += " +" + glyphArmor.level();
+			}
             if (loot instanceof ItemsWithChanceDistrComp.RandomItemData)
                 desc += "\n" + Messages.get(Mob.class, "loot");
         }
