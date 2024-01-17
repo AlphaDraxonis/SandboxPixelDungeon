@@ -913,19 +913,21 @@ public enum Talent {
 	private static final String TALENT_TIER = "talents_tier_";
 
 	public static void storeTalentsInBundle( Bundle bundle, Hero hero ){
-		for (int i = 0; i < MAX_TALENT_TIERS; i++){
-			LinkedHashMap<Talent, Integer> tier = hero.talents.get(i);
-			Bundle tierBundle = new Bundle();
+		if (!hero.talents.isEmpty()) {
+			for (int i = 0; i < MAX_TALENT_TIERS; i++) {
+				LinkedHashMap<Talent, Integer> tier = hero.talents.get(i);
+				Bundle tierBundle = new Bundle();
 
-			for (Talent talent : tier.keySet()){
-				if (tier.get(talent) > 0){
-					tierBundle.put(talent.name(), tier.get(talent));
+				for (Talent talent : tier.keySet()) {
+					if (tier.get(talent) > 0) {
+						tierBundle.put(talent.name(), tier.get(talent));
+					}
+					if (tierBundle.contains(talent.name())) {
+						tier.put(talent, Math.min(tierBundle.getInt(talent.name()), talent.maxPoints()));
+					}
 				}
-				if (tierBundle.contains(talent.name())){
-					tier.put(talent, Math.min(tierBundle.getInt(talent.name()), talent.maxPoints()));
-				}
+				bundle.put(TALENT_TIER + (i + 1), tierBundle);
 			}
-			bundle.put(TALENT_TIER+(i+1), tierBundle);
 		}
 
 		Bundle replacementsBundle = new Bundle();

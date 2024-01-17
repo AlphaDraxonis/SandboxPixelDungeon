@@ -976,6 +976,13 @@ public abstract class Char extends Actor {
 		return true;
 
 	}
+
+	protected void moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob(Buff buff, Char ch) {
+		buffs.remove(buff);
+		ch.buffs.add(buff);
+		buff.target = ch;
+		if (!all().contains(buff)) Actor.add( buff );
+	}
 	
 	public synchronized boolean remove( Buff buff ) {
 		

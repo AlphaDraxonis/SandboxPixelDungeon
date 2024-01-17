@@ -97,7 +97,7 @@ public class Invisibility extends FlavourBuff {
 
 	public static void dispel(Char ch){
 
-		if (!Dungeon.customDungeon.permaInvis) {
+		if (ch != Dungeon.hero || !Dungeon.customDungeon.permaInvis) {
 			for (Buff invis : ch.buffs(Invisibility.class)) {
 				invis.detach();
 			}

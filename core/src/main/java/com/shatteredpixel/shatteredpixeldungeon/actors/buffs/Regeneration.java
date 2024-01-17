@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.ChaliceOfBlood;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
 
@@ -40,10 +41,14 @@ public class Regeneration extends Buff {
 	public boolean act() {
 		if (target.isAlive()) {
 
-			if (target.HP < regencap() && !((Hero)target).isStarving() && Dungeon.curLvlScheme().naturalRegeneration) {
+			boolean isStarving;
+			if (target instanceof HeroMob) isStarving = ((HeroMob) target).isStarving();
+			else isStarving = ((Hero)target).isStarving();
+
+			if (target.HP < regencap() && !isStarving && Dungeon.curLvlScheme().naturalRegeneration) {
 				if (regenOn()) {
 					target.HP += 1;
-					if (target.HP == regencap()) {
+					if (target.HP == regencap() && target instanceof Hero) {
 						((Hero) target).resting = false;
 					}
 				}

@@ -313,7 +313,7 @@ public class GameScene extends PixelScene {
 		mobs = new Group();
 		add( mobs );
 
-		hero = new HeroSprite();
+		hero = new HeroSprite(Dungeon.hero);
 		hero.place( Dungeon.hero.pos );
 		hero.updateArmor();
 		mobs.add( hero );

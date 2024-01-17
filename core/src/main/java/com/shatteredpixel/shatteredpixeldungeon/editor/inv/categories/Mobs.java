@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GreatCrab;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
@@ -213,7 +214,8 @@ public enum Mobs {
                 Mimic.class,
                 GoldenMimic.class,
                 CrystalMimic.class,
-                SentryRoom.Sentry.class
+                SentryRoom.Sentry.class,
+                HeroMob.class
         };
 
         SEWER.classes = new Class[]{
@@ -309,6 +311,7 @@ public enum Mobs {
                 if (mob instanceof QuestNPC) {
                     ((QuestNPC<?>) mob).createNewQuest();
                 }
+                if (mob instanceof HeroMob) ((HeroMob) mob).setInternalHero(new HeroMob.InternalHero());
                 if (mob == null) throw new RuntimeException(m.getName());
                 mob.pos = -1;
                 items.add(new MobItem(mob));

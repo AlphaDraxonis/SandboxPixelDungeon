@@ -61,6 +61,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.S
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobBasedOnDepth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
@@ -1403,7 +1404,7 @@ public abstract class Level implements Bundlable {
 
 	public boolean isPassable(int cell, Char c) {
 		if (c == null) return isPassable(cell);
-		if (c instanceof Hero) return isPassableHero(cell);
+		if (c instanceof Hero || c instanceof HeroMob) return isPassableHero(cell);
 		if (c.alignment == Char.Alignment.ENEMY) return isPassableMob(cell);
 		return isPassableAlly(cell);
 	}
@@ -1440,7 +1441,7 @@ public abstract class Level implements Bundlable {
 	}
 
 	public boolean[] getPassableVar(Char ch) {
-		if (ch instanceof Hero) return getPassableHeroVar();
+		if (ch instanceof Hero || ch instanceof HeroMob) return getPassableHeroVar();
 		if (ch.alignment == Char.Alignment.ENEMY) return getPassableMobVar();
 		return passableAlly;
 	}

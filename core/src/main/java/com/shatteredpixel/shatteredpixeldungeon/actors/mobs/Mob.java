@@ -1048,6 +1048,18 @@ public abstract class Mob extends Char {
 			Dungeon.level.unseal();
 			GameScene.bossSlain();
 		}
+
+		//enemy heroes can gain xp for the kill
+		if (alignment == Alignment.ALLY) {
+			for (Mob m : Dungeon.level.mobs) {
+				if (m instanceof HeroMob && m.alignment == Alignment.ENEMY && m.isAlive()) {
+					HeroMob heroMob = (HeroMob) m;
+					if (heroMob.killedMob(cause)) {
+						((HeroMob) m).earnExp(EXP, getClass());
+					}
+				}
+			}
+		}
 	}
 
 	public float lootChance(){

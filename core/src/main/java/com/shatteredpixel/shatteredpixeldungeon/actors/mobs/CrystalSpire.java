@@ -400,7 +400,7 @@ public class CrystalSpire extends Mob {
 						// cripple close sleeping guardians to give more time
 						// haste far awake guardians to punish waking them
 						if (affectingGuardians){
-							boolean[] passable = Dungeon.level.getPassableMobVar().clone();
+							boolean[] passable = Dungeon.level.getPassableVar(CrystalSpire.this).clone();
 							for (int i = 0; i < Dungeon.level.length(); i++){
 								if (Dungeon.level.map[i] == Terrain.MINE_CRYSTAL){
 									passable[i] = true;

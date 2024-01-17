@@ -423,7 +423,7 @@ public final class WndZones {
         public EditZoneCompBase(Zone zone) {
             super(zone);
 
-            StyledButton pickColor = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditZoneComp.class, "color")) {
+            StyledButton pickColor = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditZoneComp.class, "color"), 9) {
                 @Override
                 protected void onClick() {
                     showColorPickerDialog();

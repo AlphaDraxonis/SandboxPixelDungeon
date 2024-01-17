@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
@@ -36,7 +37,7 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.PointF;
 import com.watabou.utils.RectF;
 
-public class HeroSprite extends CharSprite {
+public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	
 	private static final int FRAME_WIDTH	= 12;
 	private static final int FRAME_HEIGHT	= 15;
@@ -48,23 +49,27 @@ public class HeroSprite extends CharSprite {
 	private Animation fly;
 	private Animation read;
 
-	public HeroSprite() {
+	public HeroSprite(Hero hero) {
 		super();
 		
-		texture( Dungeon.hero.heroClass.spritesheet() );
-		updateArmor();
+		texture( hero.heroClass.spritesheet() );
+		updateArmor(hero);
 		
-		link( Dungeon.hero );
+		if (hero == Dungeon.hero) link( hero );
 
-		if (ch.isAlive())
+		if (hero.isAlive())
 			idle();
 		else
 			die();
 	}
 	
 	public void updateArmor() {
+		updateArmor(Dungeon.hero);
+	}
 
-		TextureFilm film = new TextureFilm( tiers(), Dungeon.hero.tier(), FRAME_WIDTH, FRAME_HEIGHT );
+	public void updateArmor(Hero hero) {
+
+		TextureFilm film = new TextureFilm( tiers(), hero.tier(), FRAME_WIDTH, FRAME_HEIGHT );
 		
 		idle = new Animation( 1, true );
 		idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
@@ -90,7 +95,7 @@ public class HeroSprite extends CharSprite {
 		read = new Animation( 20, false );
 		read.frames( film, 19, 20, 20, 20, 20, 20, 20, 20, 20, 19 );
 		
-		if (Dungeon.hero.isAlive())
+		if (hero.isAlive())
 			idle();
 		else
 			die();
@@ -154,7 +159,8 @@ public class HeroSprite extends CharSprite {
 		
 		super.update();
 	}
-	
+
+	@Override
 	public void sprint( float speed ) {
 		run.delay = 1f / speed / RUN_FRAMERATE;
 	}
@@ -178,4 +184,73 @@ public class HeroSprite extends CharSprite {
 		
 		return avatar;
 	}
+
+	public static class HeroMobSprite extends MobSprite implements HeroSpriteLike {
+
+		private Animation fly;
+
+		public HeroMobSprite(Hero hero, HeroMob heroMob) {
+			super();
+
+			texture( hero.heroClass.spritesheet() );
+			updateArmor(hero);
+
+			if (hero.isAlive()) idle();
+			else die();
+		}
+
+		public void updateArmor(Hero hero) {
+			HeroSprite anims = new HeroSprite(hero);
+
+			idle = anims.idle.clone();
+			run = anims.run.clone();
+			die = anims.die.clone();
+			attack = anims.attack.clone();
+			zap = anims.zap.clone();
+			operate = anims.operate.clone();
+			fly = anims.fly.clone();
+
+			anims.destroy();
+		}
+
+		@Override
+		public void move( int from, int to ) {
+			super.move( from, to );
+			if (ch != null && ch.flying) {
+				play( fly );
+			}
+		}
+
+		@Override
+		public void idle() {
+			super.idle();
+			if (ch != null && ch.flying) {
+				play( fly );
+			}
+		}
+
+		@Override
+		public void jump( int from, int to, float height, float duration,  Callback callback ) {
+			super.jump( from, to, height, duration, callback );
+			play( fly );
+		}
+		@Override
+		public void bloodBurstA(PointF from, int damage) {
+			//Does nothing.
+
+			/*
+			 * This is both for visual clarity, and also for content ratings regarding violence
+			 * towards human characters. The heroes are the only human or human-like characters which
+			 * participate in combat, so removing all blood associated with them is a simple way to
+			 * reduce the violence rating of the game.
+			 */
+		}
+
+		@Override
+		public void sprint( float speed ) {
+			run.delay = 1f / speed / RUN_FRAMERATE;
+		}
+	}
+
+
 }

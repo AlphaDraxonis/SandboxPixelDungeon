@@ -151,7 +151,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.AlchemyScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSpriteLike;
 import com.shatteredpixel.shatteredpixeldungeon.ui.AttackIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
@@ -206,7 +206,7 @@ public class Hero extends Char {
 	public HeroAction curAction = null;
 	public HeroAction lastAction = null;
 
-	private Char enemy;
+	protected Char enemy;
 	
 	public boolean resting = false;
 	
@@ -639,10 +639,10 @@ public class Hero extends Char {
 		
 		Momentum momentum = buff(Momentum.class);
 		if (momentum != null){
-			((HeroSprite)sprite).sprint( momentum.freerunning() ? 1.5f : 1f );
+			((HeroSpriteLike)sprite).sprint( momentum.freerunning() ? 1.5f : 1f );
 			speed *= momentum.speedMultiplier();
 		} else {
-			((HeroSprite)sprite).sprint( 1f );
+			((HeroSpriteLike)sprite).sprint( 1f );
 		}
 
 		NaturesPower.naturesPowerTracker natStrength = buff(NaturesPower.naturesPowerTracker.class);
@@ -1498,7 +1498,7 @@ public class Hero extends Char {
 
 		int preHP = HP + shielding();
 		if (src instanceof Hunger) preHP -= shielding();
-		super.damage( Dungeon.customDungeon.damageImmune ? 0 : dmg, src );
+		super.damage( Dungeon.hero == this && Dungeon.customDungeon.damageImmune ? 0 : dmg, src );
 		int postHP = HP + shielding();
 		if (src instanceof Hunger) postHP -= shielding();
 		int effectiveDamage = preHP - postHP;
@@ -1515,7 +1515,7 @@ public class Hero extends Char {
 		// The flash intensity increases primarily based on damage taken and secondarily on missing HP.
 		float flashIntensity = 0.25f * (percentDMG * percentDMG) / percentHP;
 		//if the intensity is very low don't flash at all
-		if (flashIntensity >= 0.05f){
+		if (flashIntensity >= 0.05f && this == Dungeon.hero){
 			flashIntensity = Math.min(1/3f, flashIntensity); //cap intensity at 1/3
 			GameScene.flash( (int)(0xFF*flashIntensity) << 16 );
 			if (isAlive()) {
@@ -1876,9 +1876,11 @@ public class Hero extends Char {
 				Buff.prolong(this, Bless.class, Bless.DURATION);
 				this.exp = 0;
 
-				GLog.newLine();
-				GLog.p( Messages.get(this, "level_cap"));
-				Sample.INSTANCE.play( Assets.Sounds.LEVELUP );
+				if (this == Dungeon.hero) {
+					GLog.newLine();
+					GLog.p(Messages.get(this, "level_cap"));
+				}
+				if (sprite != null && sprite.visible) Sample.INSTANCE.play(Assets.Sounds.LEVELUP);
 			}
 			
 		}
@@ -1886,15 +1888,19 @@ public class Hero extends Char {
 		if (levelUp) {
 			
 			if (sprite != null) {
-				GLog.newLine();
-				GLog.p( Messages.get(this, "new_level") );
-				sprite.showStatus( CharSprite.POSITIVE, Messages.get(Hero.class, "level_up") );
-				Sample.INSTANCE.play( Assets.Sounds.LEVELUP );
-				if (lvl < Talent.tierLevelThresholds[Talent.MAX_TALENT_TIERS+1]){
+				if (sprite.visible) {
+					Sample.INSTANCE.play(Assets.Sounds.LEVELUP);
+					sprite.showStatus( CharSprite.POSITIVE, Messages.get(Hero.class, "level_up") );
+				}
+				if (this == Dungeon.hero) {
 					GLog.newLine();
-					GLog.p( Messages.get(this, "new_talent") );
-					StatusPane.talentBlink = 10f;
-					WndHero.lastIdx = 1;
+					GLog.p(Messages.get(this, "new_level"));
+					if (lvl < Talent.tierLevelThresholds[Talent.MAX_TALENT_TIERS+1]){
+						GLog.newLine();
+						GLog.p( Messages.get(this, "new_talent") );
+						StatusPane.talentBlink = 10f;
+						WndHero.lastIdx = 1;
+					}
 				}
 			}
 			
@@ -1911,7 +1917,11 @@ public class Hero extends Char {
 	public static int maxExp( int lvl ){
 		return 5 + lvl * 5;
 	}
-	
+
+	public static int totalExp( int lvl ){
+		return 5*lvl + ( (lvl*(lvl+1))/2) *5;
+	}
+
 	public boolean isStarving() {
 		return Buff.affect(this, Hunger.class).isStarving();
 	}
@@ -2126,7 +2136,7 @@ public class Hero extends Char {
 	public void move(int step, boolean travelling) {
 		boolean wasHighGrass = Dungeon.level.map[step] == Terrain.HIGH_GRASS;
 
-		super.move( step, travelling);
+		moveNoSound(step, travelling);
 		
 		if (!flying && travelling) {
 			if (Dungeon.level.water[pos]) {
@@ -2146,6 +2156,10 @@ public class Hero extends Char {
 			}
 		}
 	}
+
+	public void moveNoSound(int step, boolean travelling) {
+		super.move( step, travelling);
+	}
 	
 	@Override
 	public void onAttackComplete() {
@@ -2156,13 +2170,15 @@ public class Hero extends Char {
 			return;
 		}
 		
-		AttackIndicator.target(enemy);
-		boolean wasEnemy = enemy.alignment == Alignment.ENEMY
-				|| (enemy instanceof Mimic && enemy.alignment == Alignment.NEUTRAL);
+		if (this == Dungeon.hero) AttackIndicator.target(enemy);
+		boolean wasEnemy;
+		if (alignment != Alignment.NEUTRAL) wasEnemy = alignment != enemy.alignment;
+		else wasEnemy = false;
+		if (!wasEnemy) wasEnemy = enemy instanceof Mimic && enemy.alignment == Alignment.NEUTRAL;
 
 		boolean hit = attack( enemy );
 		
-		Invisibility.dispel();
+		Invisibility.dispel(this);
 		spend( attackDelay() );
 
 		if (hit && subClass == HeroSubClass.GLADIATOR && wasEnemy){
