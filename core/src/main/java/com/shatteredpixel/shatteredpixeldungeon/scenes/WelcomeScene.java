@@ -206,8 +206,6 @@ public class WelcomeScene extends PixelScene {
 
 			}
 
-			message = "Welcome beta testers!\n\n" +
-					"The beta for v2.3.0 is now wrapping up! v2.3.0 is changing a bit and will now only contain one new variant for the caves quest. You can read the changelog for more details, and expect a new blog post very soon.";
 		} else {
 			message = Messages.get(this, "what_msg");
 		}
