@@ -1269,7 +1269,7 @@ public abstract class Mob extends Char {
 
 					if (defaultStats.tilesBeforeWakingUp != tilesBeforeWakingUp)
 						desc += "\n" + Messages.get(Mob.class, "tiles_before_waking_up") + ": " + defaultStats.tilesBeforeWakingUp + " -> _" + tilesBeforeWakingUp + "_";
-					if (defaultStats.EXP != EXP)
+					if (defaultStats.EXP != EXP && !(this instanceof HeroMob))
                         desc += "\n" + Messages.get(Mob.class, "xp") + ": " + defaultStats.EXP + " -> _" + EXP + "_";
                     if (defaultStats.maxLvl != maxLvl)
                         desc += "\n" + Messages.get(Mob.class, "max_lvl") + ": " + defaultStats.maxLvl + " -> _" + maxLvl + "_";

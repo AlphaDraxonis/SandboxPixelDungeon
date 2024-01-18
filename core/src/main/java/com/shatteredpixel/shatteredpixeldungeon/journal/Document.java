@@ -44,6 +44,8 @@ public enum Document {
 	CAVES_EXPLORER(ItemSpriteSheet.CAVES_PAGE, true),
 	CITY_WARLOCK(ItemSpriteSheet.CITY_PAGE, true),
 	HALLS_KING(ItemSpriteSheet.HALLS_PAGE, true);
+
+	public static final boolean ENABLE_HINTS = false;
 	
 	Document( int sprite, boolean lore ){
 		pageIcon = null;
@@ -128,7 +130,8 @@ public enum Document {
 	}
 
 	public boolean isPageRead( String page ){
-		return pagesStates.containsKey(page) && pagesStates.get(page) == READ;
+		return true;
+//		return pagesStates.containsKey(page) && pagesStates.get(page) == READ;
 	}
 
 	public boolean isPageRead( int pageIdx ){

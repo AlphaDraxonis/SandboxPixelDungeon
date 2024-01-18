@@ -82,6 +82,9 @@ public enum HeroSubClass {
 		return icon;
 	}
 
+	/**
+	 * <b>Index if NONE doesn't exist</b>, so please add +1 to match values()
+	 */
 	public int getIndex() {
 		return ordinal() - 1;
 	}

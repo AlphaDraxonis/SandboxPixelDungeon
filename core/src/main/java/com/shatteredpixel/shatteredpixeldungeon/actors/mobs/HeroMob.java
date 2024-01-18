@@ -1,24 +1,32 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MonkEnergy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
+import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.watabou.utils.Bundle;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-public class HeroMob extends Mob {
-
-    //TODO set level and dont forget exp,   exp cannot be manually changed
-    //desc
+public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, ItemSelectables.ArmorSelectable, MobBasedOnDepth {
 
     {
         spriteClass = null;
@@ -31,15 +39,30 @@ public class HeroMob extends Mob {
     private InternalHero internalHero;
 
     public HeroMob() {
+        setInternalHero(new InternalHero());
     }
 
-    protected HeroMob(InternalHero internalHero) {
-        setInternalHero(internalHero);
+    @Override
+    public void setLevel(int depth) {
+        internalHero.baseSpeed = baseSpeed;
+        if (internalHero.belongings.weapon != null)
+            internalHero.belongings.weapon.activate(internalHero);
+        if (internalHero.belongings.armor != null)
+            internalHero.belongings.armor.activate(internalHero);
+        if (internalHero.belongings.ring != null)
+            internalHero.belongings.ring.activate(internalHero);
+        if (internalHero.belongings.artifact != null)
+            internalHero.belongings.artifact.activate(internalHero);
+        if (internalHero.belongings.misc != null)
+            internalHero.belongings.misc.activate(internalHero);
+        Buff.affect( this, Regeneration.class );
+        Buff.affect( this, Hunger.class );
+        updateEXP();
     }
 
     @Override
     public CharSprite sprite() {
-        HeroSprite.HeroMobSprite sprite = new HeroSprite.HeroMobSprite(internalHero, this) {
+        HeroSprite.HeroMobSprite sprite = new HeroSprite.HeroMobSprite(internalHero) {
             @Override
             public void link(Char ch) {
                 super.link(ch);
@@ -53,6 +76,12 @@ public class HeroMob extends Mob {
     @Override
     public String name() {
         return internalHero.name();
+    }
+
+    @Override
+    public String description() {
+        return customDesc == null ? internalHero.heroClass.shortDesc() : super.description();
+//                + (internalHero.subClass != HeroSubClass.NONE ? "\n\n" + internalHero.subClass.desc() : "");
     }
 
     @Override
@@ -79,15 +108,9 @@ public class HeroMob extends Mob {
     }
 
     @Override
-    public int attackSkill(Char target) {
-        updateInternalStats();
-        int ret = (int) (internalHero.attackSkill(target) * statsScale);
-        updateStats();
-        return ret;
-    }
-
-    @Override
     public int defenseSkill(Char enemy) {
+        int defenseSkill = super.defenseSkill(enemy);
+        if (defenseSkill == 0 || defenseSkill == INFINITE_EVASION) return defenseSkill;//normal defense skill is always at least 5 (Hero.STARTING_DEF_SKILL)
         updateInternalStats();
         int ret = (int) (internalHero.defenseSkill(enemy) * statsScale);
         updateStats();
@@ -103,16 +126,7 @@ public class HeroMob extends Mob {
     }
 
     @Override
-    public int damageRoll() {
-        updateInternalStats();
-        int ret = (int) (internalHero.damageRoll() * statsScale);
-        updateStats();
-        return ret;
-    }
-
-    @Override
     public float speed() {
-        //tzz TODO set internal hero base speed
         updateInternalStats();
         float ret = internalHero.speed();
         updateStats();
@@ -137,6 +151,7 @@ public class HeroMob extends Mob {
 
     @Override
     public int defenseProc(Char enemy, int damage) {
+        if (surprisedBy(enemy)) Surprise.hit(this);
         updateInternalStats();
         int ret = internalHero.defenseProc(enemy, damage);
         updateStats();
@@ -145,9 +160,38 @@ public class HeroMob extends Mob {
 
     @Override
     public void damage(int dmg, Object src) {
+
+        //from super.damage()
+        boolean bleedingCheck;
+        if (isBossMob && !BossHealthBar.isAssigned(this)){
+            BossHealthBar.addBoss( this );
+            Dungeon.level.seal();
+            bleedingCheck = (HP*2 <= HT);
+        } else bleedingCheck = false;
+
+        if (state == SLEEPING) {
+            state = WANDERING;
+        }
+        if (state != HUNTING && !(src instanceof Corruption)) {
+            alerted = true;
+        }
+
         updateInternalStats();
         internalHero.damage(dmg, src);
         updateStats();
+
+        if (isBossMob) {
+            if ((HP * 2 <= HT) && !bleedingCheck) {
+                bleeding = true;
+                sprite.showStatus(CharSprite.NEGATIVE, Messages.get(this, "enraged"));
+//                ((GooSprite) sprite).spray(true);
+            }
+            LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+            if (lock != null) {
+                if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) lock.addTime(dmg);
+                else lock.addTime(dmg * 1.5f);
+            }
+        }
     }
 
     public void earnExp( int EXP, Class source ) {
@@ -174,12 +218,6 @@ public class HeroMob extends Mob {
         float ret = internalHero.stealth();
         updateStats();
         return ret;
-    }
-
-    @Override
-    public void die(Object cause) {
-        super.die(cause);
-//        internalHero.superDie(cause);
     }
 
     @Override
@@ -241,11 +279,13 @@ public class HeroMob extends Mob {
     private void updateInternalStats() {
         updateStats(this, internalHero);
         internalHero.setEnemy(enemy);
+        internalHero.resting = state == SLEEPING;
     }
 
     private void updateStats() {
         updateStats(internalHero, this);
         enemy = internalHero.enemy();
+        if (internalHero.resting) state = SLEEPING;
     }
 
     private void updateStats(Char src, Char dest) {
@@ -262,10 +302,38 @@ public class HeroMob extends Mob {
 
     public void setInternalHero(InternalHero hero) {
         internalHero = hero;
-        internalHero.owner = this;
         internalHero.alignment = alignment;
-        internalHero.live();
+        internalHero.setOwner(this);
         updateStats();
+        updateEXP();
+    }
+
+    public InternalHero hero() {
+        return internalHero;
+    }
+
+    @Override
+    public Weapon weapon() {
+        return (Weapon) internalHero.belongings.weapon;
+    }
+
+    @Override
+    public void weapon(Weapon weapon) {
+        internalHero.belongings.weapon = weapon;
+    }
+
+    @Override
+    public Armor armor() {
+        return internalHero.belongings.armor;
+    }
+
+    @Override
+    public void armor(Armor armor) {
+        internalHero.belongings.armor = armor;
+    }
+
+    public void setHeroLvl(int lvl) {
+        internalHero.setLvl(lvl);
         updateEXP();
     }
 
@@ -279,6 +347,7 @@ public class HeroMob extends Mob {
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
+        internalHero = null;
         super.restoreFromBundle(bundle);
         internalHero = (InternalHero) bundle.get(INTERNAL_HERO);
         internalHero.owner = this;
@@ -286,7 +355,24 @@ public class HeroMob extends Mob {
 
     public static class InternalHero extends Hero {
 
-        HeroMob owner;
+        private HeroMob owner;
+
+        public void setOwner(HeroMob owner) {
+            this.owner = owner;
+            for (Buff b : super.buffs()) {
+                moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob(b, owner);
+            }
+        }
+
+        @Override
+        public int attackSkill(Char target) {
+            return (int) (super.attackSkill(target) * owner.statsScale);
+        }
+
+        @Override
+        public int damageRoll() {
+            return (int) (super.damageRoll() * owner.statsScale);
+        }
 
         @Override
         public void die(Object cause) {
@@ -336,7 +422,7 @@ public class HeroMob extends Mob {
         @Override
         public boolean add(Buff buff) {
             if (super.add(buff)) {
-                moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob(buff, owner);
+                if (owner != null) moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob(buff, owner);
                 return true;
             }
             return false;

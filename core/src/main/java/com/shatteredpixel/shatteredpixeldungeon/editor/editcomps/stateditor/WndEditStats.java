@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalWisp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGuard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Skeleton;
@@ -157,10 +158,12 @@ public class WndEditStats extends MultiWindowTabComp {
             tilesBeforeWakingUp.addChangeListener(() -> current.tilesBeforeWakingUp = tilesBeforeWakingUp.getAsInt());
             content.add(tilesBeforeWakingUp);
 
-            xp = new IntegerSpinner(Messages.get(Mob.class, "xp"),
-                    0, Math.max(10, def.EXP * 10), current.EXP, false);
-            xp.addChangeListener(() -> current.EXP = xp.getAsInt());
-            content.add(xp);
+            if (!(current instanceof HeroMob)) {
+                xp = new IntegerSpinner(Messages.get(Mob.class, "xp"),
+                        0, Math.max(10, def.EXP * 10), current.EXP, false);
+                xp.addChangeListener(() -> current.EXP = xp.getAsInt());
+                content.add(xp);
+            }
 
             maxLvl = new IntegerSpinner(Messages.get(Mob.class, "max_lvl"),
                     0, 30, current.maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL, false);

@@ -187,7 +187,9 @@ public class Hero extends Char {
 	public static final int MAX_LEVEL = 30;
 
 	public static final int STARTING_STR = 10;
-	
+	public static final int STARTING_ATK_SKILL = 10;
+	public static final int STARTING_DEF_SKILL = 5;
+
 	private static final float TIME_TO_REST		    = 1f;
 	private static final float TIME_TO_SEARCH	    = 2f;
 	private static final float HUNGER_FOR_SEARCH	= 6f;
@@ -198,8 +200,8 @@ public class Hero extends Char {
 	public ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
 	public LinkedHashMap<Talent, Talent> metamorphedTalents = new LinkedHashMap<>();
 	
-	int attackSkill = 10;
-	int defenseSkill = 5;
+	int attackSkill = STARTING_ATK_SKILL;
+	int defenseSkill = STARTING_DEF_SKILL;
 
 	public boolean ready = false;
 	public boolean damageInterrupt = true;
@@ -1459,7 +1461,7 @@ public class Hero extends Char {
 
 		if (this.buff(Drowsy.class) != null){
 			Buff.detach(this, Drowsy.class);
-			GLog.w( Messages.get(this, "pain_resist") );
+			if (this == Dungeon.hero) GLog.w( Messages.get(this, "pain_resist") );
 		}
 
 		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
@@ -1909,6 +1911,13 @@ public class Hero extends Char {
 			Badges.validateLevelReached();
 		}
 	}
+
+	public void setLvl(int lvl) {
+		this.lvl = lvl;
+		updateHT( true );
+		attackSkill = STARTING_ATK_SKILL + lvl;
+		defenseSkill = STARTING_DEF_SKILL + lvl;
+	}
 	
 	public int maxExp() {
 		return maxExp( lvl );
@@ -1937,7 +1946,7 @@ public class Hero extends Char {
 
 		if (sprite != null && added) {
 			String msg = buff.heroMessage();
-			if (msg != null){
+			if (msg != null && Dungeon.hero == this){
 				GLog.w(msg);
 			}
 

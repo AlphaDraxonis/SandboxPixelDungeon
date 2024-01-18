@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
@@ -26,7 +27,7 @@ public class MobItem extends EditorItem<Mob> {
 
     @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, getObject().name(), getSprite()) {
+        return new DefaultListItem(this, window, Messages.titleCase(getObject().name()), getSprite()) {
             @Override
             public void onUpdate() {
                 if (item == null) return;
@@ -36,6 +37,8 @@ public class MobItem extends EditorItem<Mob> {
                 addToBack(icon);
                 remove(bg);
                 addToBack(bg);
+
+                label.text(Messages.titleCase(getObject().name()));
 
                 super.onUpdate();
             }

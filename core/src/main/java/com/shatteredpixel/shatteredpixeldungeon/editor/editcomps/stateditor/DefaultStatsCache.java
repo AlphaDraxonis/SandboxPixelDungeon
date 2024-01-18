@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bee;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobBasedOnDepth;
@@ -75,7 +76,8 @@ public class DefaultStatsCache {
                 || mob instanceof Statue
                 || mob instanceof Bee
                 || mob instanceof Wraith
-                || mob instanceof SentryRoom.Sentry;
+                || mob instanceof SentryRoom.Sentry
+                || mob instanceof HeroMob;
     }
 
     public static boolean areStatsEqual(Mob a, Mob b){

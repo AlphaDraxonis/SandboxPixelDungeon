@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
@@ -37,7 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-public class Statue extends Mob implements MobBasedOnDepth {
+public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.WeaponSelectable {
 
 	{
 		spriteClass = StatueSprite.class;
@@ -48,7 +49,7 @@ public class Statue extends Mob implements MobBasedOnDepth {
 		properties.add(Property.INORGANIC);
 	}
 
-	public Weapon weapon;
+	protected Weapon weapon;
 
 	public boolean levelGenStatue = true;
 	
@@ -64,7 +65,17 @@ public class Statue extends Mob implements MobBasedOnDepth {
 		defenseSkill = 4 + depth;
 	}
 
-	public void createWeapon( boolean useDecks ){
+	@Override
+	public void weapon(Weapon weapon) {
+		this.weapon = weapon;
+	}
+
+	@Override
+	public Weapon weapon() {
+		return weapon;
+	}
+
+	public void createWeapon(boolean useDecks ){
 		if (useDecks) {
 			weapon = (MeleeWeapon) Generator.random(Generator.Category.WEAPON);
 		} else {
@@ -187,7 +198,7 @@ public class Statue extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public String description() {
-		return customDesc == null ? Messages.get(this, "desc", weapon.name()) : customDesc;
+		return customDesc == null ? Messages.get(this, "desc", weapon().name()) : customDesc;
 	}
 
 	{

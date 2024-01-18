@@ -128,15 +128,19 @@ public class ItemSelector extends Component {
     public void setSelectedItem(Item selectedItem) {
         this.selectedItem = selectedItem;
         if (showWhenNull != -1 && selectedItem == null) {
-            selectedItem = new Item();
-            selectedItem.image = showWhenNull;
-            itemSlot.item(selectedItem);
-            itemSlot.active = false;
+            selectNullItem();
         } else {
             if (selectedItem != null)
                 selectedItem.image = Dungeon.customDungeon.getItemSpriteOnSheet(selectedItem);
             itemSlot.item(selectedItem);
         }
+    }
+
+    private void selectNullItem() {
+        selectedItem = new Item();
+        selectedItem.image = showWhenNull;
+        itemSlot.item(selectedItem);
+        itemSlot.active = false;
     }
 
     public int getShowWhenNull() {
@@ -153,7 +157,8 @@ public class ItemSelector extends Component {
     }
 
     public void updateItem() {
-        itemSlot.item(selectedItem);
+        if (selectedItem == null) selectNullItem();
+        else itemSlot.item(selectedItem);
     }
 
     public void change() {

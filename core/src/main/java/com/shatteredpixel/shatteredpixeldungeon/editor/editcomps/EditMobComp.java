@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
@@ -14,11 +15,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SpawnerMob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
@@ -34,6 +35,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ChangeMobNameDesc;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.FistSelector;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.HeroClassSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.LotusLevelSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.MobStateSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.QuestSpinner;
@@ -49,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
@@ -67,7 +71,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerInteger
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -78,6 +84,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWea
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MimicSprite;
@@ -92,6 +99,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.watabou.noosa.Game;
@@ -114,7 +122,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final StyledButton addBuffs, editStats;
 
     private final ItemContainer<Item> mimicItems;
-    private final StyledItemSelector statueWeapon, statueArmor, thiefItem;
+    private final StyledItemSelector mobWeapon, mobArmor, thiefItem;
+    private final StyledItemSelector mobRing, mobArti, mobMisc;
     private final LotusLevelSpinner lotusLevelSpinner;
     private final StyledSpinner sheepLifespan;
     private final QuestSpinner questSpinner;
@@ -128,6 +137,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private final StyledSpinner tenguPhase, tenguRange, dm300pylonsNeeded, yogSpawnersAlive;
     private final ItemSelectorList<MobItem> yogNormalFists, yogChallengeFists;
     private final StyledCheckBox dm300destroyWalls, pylonAlwaysActive, showBossBar;
+
+    private final StyledSpinner heroMobLvl, heroMobStr;
+    private final HeroClassSpinner heroClassSpinner;
+    private final HeroClassSpinner.SubclassSpinner heroSubclassSpinner;
 
 
     private final Component[] rectComps, linearComps;
@@ -157,32 +170,114 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(mimicItems);
         } else mimicItems = null;
 
-        if (mob instanceof Statue) {
-            statueWeapon = new StyledItemSelector(Messages.get(EditMobComp.class, "weapon"),
-                    Weapon.class, ((Statue) mob).weapon, ItemSelector.NullTypeSelector.NONE) {
+        if (mob instanceof ItemSelectables.WeaponSelectable) {
+            mobWeapon = new StyledItemSelector(Messages.get(EditMobComp.class, "weapon"),
+                    Weapon.class, ((ItemSelectables.WeaponSelectable) mob).weapon(), ((ItemSelectables.WeaponSelectable) mob).useNullWeapon()) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
-                    ((Statue) mob).weapon = (Weapon) selectedItem;
+                    ((ItemSelectables.WeaponSelectable) mob).weapon((Weapon) selectedItem);
                     EditMobComp.this.updateObj();
                 }
             };
-            add(statueWeapon);
-            if (mob instanceof ArmoredStatue) {
-                statueArmor = new StyledItemSelector(Messages.get(EditMobComp.class, "armor"),
-                        Armor.class, ((ArmoredStatue) mob).armor, ItemSelector.NullTypeSelector.NONE) {
-                    @Override
-                    public void setSelectedItem(Item selectedItem) {
-                        super.setSelectedItem(selectedItem);
-                        ((ArmoredStatue) mob).armor = (Armor) selectedItem;
-                        EditMobComp.this.updateObj();
-                    }
-                };
-                add(statueArmor);
-            } else statueArmor = null;
+            mobWeapon.setShowWhenNull(ItemSpriteSheet.WEAPON_HOLDER);
+            add(mobWeapon);
+        } else mobWeapon = null;
+        if (mob instanceof ItemSelectables.ArmorSelectable) {
+            mobArmor = new StyledItemSelector(Messages.get(EditMobComp.class, "armor"),
+                    Armor.class, ((ItemSelectables.ArmorSelectable) mob).armor(), ((ItemSelectables.ArmorSelectable) mob).useNullArmor()) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    ((ItemSelectables.ArmorSelectable) mob).armor((Armor) selectedItem);
+                    EditMobComp.this.updateObj();
+                }
+            };
+            mobArmor.setShowWhenNull(ItemSpriteSheet.ARMOR_HOLDER);
+            add(mobArmor);
+        } else mobArmor = null;
+        if (mob instanceof HeroMob) {
+            Hero hero = ((HeroMob) mob).hero();
+
+            mobRing = new StyledItemSelector(Messages.get(HeroSettings.class, "ring"),
+                    Ring.class, hero.belongings.ring, ItemSelector.NullTypeSelector.NONE) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    hero.belongings.ring = (Ring) selectedItem;
+                    EditMobComp.this.updateObj();
+                }
+            };
+            mobRing.setShowWhenNull(ItemSpriteSheet.RING_HOLDER);
+            add(mobRing);
+
+            mobArti = new StyledItemSelector(Messages.get(HeroSettings.class, "artifact"), Artifact.class, hero.belongings.artifact, ItemSelector.NullTypeSelector.NOTHING) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    hero.belongings.artifact = (Artifact) selectedItem;
+                    if (selectedItem != null && selectedItem.reservedQuickslot == 0) selectedItem.reservedQuickslot = -1;
+                }
+            };
+            mobArti.setShowWhenNull(ItemSpriteSheet.ARTIFACT_HOLDER);
+            add(mobArti);
+            mobMisc = new StyledItemSelector(Messages.get(HeroSettings.class, "misc"), KindofMisc.class, hero.belongings.misc, ItemSelector.NullTypeSelector.NOTHING) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    hero.belongings.misc = (KindofMisc) selectedItem;
+                    if (selectedItem != null && selectedItem.reservedQuickslot == 0) selectedItem.reservedQuickslot = -1;
+                }
+            };
+            mobMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
+            add(mobMisc);
+
+            heroMobLvl = new StyledSpinner(new SpinnerIntegerModel(1, 30, hero.lvl, 1, false, null) {
+                {
+                    setAbsoluteMinimum(1);
+                }
+                @Override
+                public float getInputFieldWidth(float height) {
+                    return Spinner.FILL;
+                }
+
+                @Override
+                public int getClicksPerSecondWhileHolding() {
+                    return 15;
+                }
+            }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
+            heroMobLvl.addChangeListener(() -> ((HeroMob) mob).setHeroLvl((int) heroMobLvl.getValue()));
+            add(heroMobLvl);
+
+            heroMobStr = new StyledSpinner(new SpinnerIntegerModel(1, 100, hero.STR, 1, false, null) {
+                @Override
+                public float getInputFieldWidth(float height) {
+                    return Spinner.FILL;
+                }
+
+                @Override
+                public int getClicksPerSecondWhileHolding() {
+                    return 15;
+                }
+            }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
+            heroMobStr.addChangeListener(() -> hero.STR = (int) heroMobStr.getValue());
+            add(heroMobStr);
+
+            heroClassSpinner = new HeroClassSpinner(hero);
+            heroClassSpinner.addChangeListener(this::updateObj);
+            add(heroClassSpinner);
+            heroSubclassSpinner = new HeroClassSpinner.SubclassSpinner(hero);
+            heroSubclassSpinner.addChangeListener(this::updateObj);
+            add(heroSubclassSpinner);
+
         } else {
-            statueWeapon = null;
-            statueArmor = null;
+            mobRing = null;
+            mobArti = null;
+            mobMisc = null;
+            heroMobLvl = null;
+            heroMobStr = null;
+            heroClassSpinner = null;
+            heroSubclassSpinner = null;
         }
 
         if (mob instanceof Thief) {
@@ -695,7 +790,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 abilityCooldown,
                 dm300pylonsNeeded,
 
-                questSpinner == null && playerAlignment != null && statueArmor == null
+                questSpinner == null && playerAlignment != null && mobArmor == null
                         ? EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE : null,
 
                 addBuffs, editStats,
@@ -704,11 +799,14 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
                 showBossBar,
 
-                statueWeapon, statueArmor, thiefItem,
+                mobWeapon, mobArmor, mobRing, mobArti, mobMisc, thiefItem,
                 lotusLevelSpinner, sheepLifespan, sentryRange, sentryDelay,
                 dm300destroyWalls,
 
                 tenguPhase,
+
+                heroClassSpinner, heroSubclassSpinner,
+                heroMobLvl, heroMobStr,
 
                 questSpinner, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE, questItem1, questItem2, spawnQuestRoom,
 
@@ -747,8 +845,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     public void updateObj() {
         if (title instanceof MobTitleEditor) {
             if (obj instanceof ArmoredStatue) {
-                Armor armor = ((ArmoredStatue) obj).armor;
+                Armor armor = ((ArmoredStatue) obj).armor();
                 ((StatueSprite) ((MobTitleEditor) title).image).setArmor(armor == null ? 0 : armor.tier);
+            } else if (obj instanceof HeroMob) {
+                ((HeroSprite.HeroMobSprite) ((MobTitleEditor) title).image).updateHeroClass(((HeroMob) obj).hero());
             } else if (obj instanceof Mimic) {
                 MimicSprite sprite = (MimicSprite) ((MobTitleEditor) title).image;
                 if (obj.state != obj.PASSIVE) sprite.idle();
@@ -762,12 +862,18 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             ((MobTitleEditor) title).setText(((MobTitleEditor) title).createTitle(obj));
         }
         desc.text(createDescription());
-        if (statueWeapon != null) statueWeapon.updateItem();
-        if (statueArmor != null) {
-            Armor armor = ((ArmoredStatue) obj).armor;
+        if (mobWeapon != null) mobWeapon.updateItem();
+        if (mobArmor != null && obj instanceof ArmoredStatue) {
+            Armor armor = ((ArmoredStatue) obj).armor();
             if (obj.sprite != null)
                 ((StatueSprite) obj.sprite).setArmor(armor == null ? 0 : armor.tier);
-            statueArmor.updateItem();
+            mobArmor.updateItem();
+        }
+        if (mobArmor != null && obj instanceof HeroMob) {
+            if (obj.sprite != null) {
+                ((HeroSprite.HeroMobSprite) obj.sprite).updateHeroClass(((HeroMob) obj).hero());
+            }
+            mobArmor.updateItem();
         }
         if (obj instanceof Mimic) {
             if (obj.state != obj.PASSIVE) obj.sprite.idle();
@@ -812,11 +918,14 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         } else if (b.loot instanceof ItemsWithChanceDistrComp.RandomItemData) return false;
         if (!EditItemComp.areEqual(a.glyphArmor, b.glyphArmor)) return false;
 
-        if (a instanceof Statue) {
-            if (!EditItemComp.areEqual(((Statue) a).weapon, ((Statue) b).weapon)) return false;
-            return !(a instanceof ArmoredStatue)
-                    || EditItemComp.areEqual(((ArmoredStatue) a).armor, ((ArmoredStatue) b).armor);
-        } else if (a instanceof Thief) {
+        if (a instanceof ItemSelectables.WeaponSelectable) {
+            if (!EditItemComp.areEqual(((ItemSelectables.WeaponSelectable) a).weapon(), ((ItemSelectables.WeaponSelectable) b).weapon())) return false;
+        }
+        if (a instanceof ItemSelectables.ArmorSelectable) {
+            if (!EditItemComp.areEqual(((ItemSelectables.ArmorSelectable) a).armor(), ((ItemSelectables.ArmorSelectable) b).armor())) return false;
+        }
+
+        if (a instanceof Thief) {
             return EditItemComp.areEqual(((Thief) a).item, ((Thief) b).item);
         } else if (a instanceof Mimic) {
             return DefaultEditComp.isItemListEqual(((Mimic) a).items, ((Mimic) b).items);
@@ -836,6 +945,16 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     && ((DM300) a).pylonsNeeded == ((DM300) b).pylonsNeeded;
         } else if (a instanceof Pylon) {
             return ((Pylon) a).alwaysActive == ((Pylon) b).alwaysActive;
+        } else if (a instanceof HeroMob) {
+            Hero h1 = ((HeroMob) a).hero();
+            Hero h2 = ((HeroMob) b).hero();
+            if (h1.heroClass != h2.heroClass) return false;
+            if (h1.subClass != h2.subClass) return false;
+            if (!EditItemComp.areEqual(h1.belongings.ring, h2.belongings.ring)) return false;
+            if (!EditItemComp.areEqual(h1.belongings.artifact, h2.belongings.artifact)) return false;
+            if (!EditItemComp.areEqual(h1.belongings.misc, h2.belongings.misc)) return false;
+            if (h1.lvl != h2.lvl) return false;
+            if (h1.STR != h2.STR) return false;
         }
         return true;
     }

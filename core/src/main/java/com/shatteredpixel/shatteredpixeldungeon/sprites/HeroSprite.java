@@ -25,7 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
@@ -189,9 +188,17 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 
 		private Animation fly;
 
-		public HeroMobSprite(Hero hero, HeroMob heroMob) {
+		public HeroMobSprite(Hero hero) {
 			super();
 
+			texture( hero.heroClass.spritesheet() );
+			updateArmor(hero);
+
+			if (hero.isAlive()) idle();
+			else die();
+		}
+
+		public void updateHeroClass(Hero hero) {
 			texture( hero.heroClass.spritesheet() );
 			updateArmor(hero);
 

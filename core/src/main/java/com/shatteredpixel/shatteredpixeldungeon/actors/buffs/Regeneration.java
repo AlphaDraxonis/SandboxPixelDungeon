@@ -41,20 +41,20 @@ public class Regeneration extends Buff {
 	public boolean act() {
 		if (target.isAlive()) {
 
-			boolean isStarving;
-			if (target instanceof HeroMob) isStarving = ((HeroMob) target).isStarving();
-			else isStarving = ((Hero)target).isStarving();
+			Hero hero = target instanceof HeroMob ? ((HeroMob) target).hero() : (Hero) target;
+
+			boolean isStarving = hero.isStarving();
 
 			if (target.HP < regencap() && !isStarving && Dungeon.curLvlScheme().naturalRegeneration) {
 				if (regenOn()) {
 					target.HP += 1;
-					if (target.HP == regencap() && target instanceof Hero) {
-						((Hero) target).resting = false;
+					if (target.HP == regencap() && hero == Dungeon.hero) {
+						hero.resting = false;
 					}
 				}
 			}
 
-			ChaliceOfBlood.chaliceRegen regenBuff = Dungeon.hero.buff( ChaliceOfBlood.chaliceRegen.class);
+			ChaliceOfBlood.chaliceRegen regenBuff = hero.buff( ChaliceOfBlood.chaliceRegen.class);
 
 			float delay = REGENERATION_DELAY;
 			if (regenBuff != null && target.buff(MagicImmune.class) == null) {

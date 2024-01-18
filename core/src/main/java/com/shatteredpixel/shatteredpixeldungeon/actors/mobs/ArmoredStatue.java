@@ -24,6 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -35,13 +37,13 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-public class ArmoredStatue extends Statue {
+public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelectable {
 
 	{
 		spriteClass = StatueSprite.class;
 	}
 
-	public Armor armor;
+	protected Armor armor;
 
 	public ArmoredStatue(){
 		super();
@@ -51,6 +53,27 @@ public class ArmoredStatue extends Statue {
 	public void setLevel(int depth) {
 		super.setLevel(depth);
 		HP = HT = HT * 2;//double HP
+	}
+
+	@Override
+	public void armor(Armor armor) {
+		this.armor = armor;
+	}
+
+	//used in some glyph calculations
+	@Override
+	public Armor armor() {
+		return armor;
+	}
+
+	@Override
+	public ItemSelector.NullTypeSelector useNullArmor() {
+		return ItemSelector.NullTypeSelector.NONE;
+	}
+
+	@Override
+	public ItemSelector.NullTypeSelector useNullWeapon() {
+		return ItemSelector.NullTypeSelector.NONE;
 	}
 
 	@Override
@@ -79,11 +102,6 @@ public class ArmoredStatue extends Statue {
 	@Override
 	public int drRoll() {
 		return super.drRoll() + Random.NormalIntRange( armor.DRMin(), armor.DRMax());
-	}
-
-	//used in some glyph calculations
-	public Armor armor(){
-		return armor;
 	}
 
 	@Override
@@ -147,7 +165,7 @@ public class ArmoredStatue extends Statue {
 
 	@Override
 	public String description() {
-		return customDesc == null ? Messages.get(this, "desc", weapon.name(), armor.name()) : customDesc;
+		return customDesc == null ? Messages.get(this, "desc", weapon().name(), armor().name()) : customDesc;
 	}
 
 }
