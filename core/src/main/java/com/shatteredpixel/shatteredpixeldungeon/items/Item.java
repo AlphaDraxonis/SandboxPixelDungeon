@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Backpack;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
@@ -55,6 +56,8 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Item implements Bundlable {
 
@@ -223,9 +226,19 @@ public class Item implements Bundlable {
             return true;
         }
 
-        for (Item item : items) {
-            if (item instanceof Bag && ((Bag) item).canHold(this)) {
-                if (collect((Bag) item)) {
+        if (!(this instanceof Bag)) {
+            Set<Backpack> backpacks = new HashSet<>(3);
+            for (Item item : items) {
+                if (item instanceof Bag && ((Bag) item).canHold(this)) {
+                    if (item instanceof Backpack) backpacks.add((Backpack) item);
+                    else if (collect((Bag) item)) {
+                        return true;
+                    }
+                }
+            }
+            //add to backpacks last
+            for (Backpack item : backpacks) {
+                if (collect(item)) {
                     return true;
                 }
             }

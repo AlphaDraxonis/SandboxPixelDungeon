@@ -97,9 +97,7 @@ public class CustomDungeon implements Bundlable {
 
 
     //WARNING;;;;!! It Is important that after each Shattered Update, BArray.or is searched everywhere, because the result should NEVER be used for passable
-    //use Level#getPassableAndAvoiD() or a variation instead!!!
-
-    //TZZ FIXME tzz bei renamre/delete auch zone mob containers beachten! und normale level rotation
+    //use Level#getPassableAndAvoid() or a variation instead!!!
 
 
     //TODO if dungeon list is empty, show button to be the first uploader, or generally a quick-upload btn
@@ -130,25 +128,13 @@ public class CustomDungeon implements Bundlable {
     //Chasm Fog (those weird particles above the Chasm)
 
     //add change-log
-
-    //make you able to change what mobs will spawn in some areas
-    //for an example, b areas can spawn an ally dm 300
-
-    //Changeable stats on the mob rotation
-    //on top of that, a way to make some of them allys too.
-    //
-    //[☑] Sight (when checked off, makes it so the player can't see passed this zone, on by default]
     //
     //[] Player buff (adds buffs (or debuffs) to a player when they enter the cell.  Each debuff/buff lasts permanently until they leave the cell, which then will disappear after they leave) (buffs applied prior to entering will also be removed, so be careful)
     //
     //[] Mob buff (same as above, but for monsters).
-    //
-    //[] Monster Cycle (allows mobs of a completely separate mob cycle to spawn in this zone, ignoring the levels current mob cycle).
 
     //Custom alchemy for specific pots
     //Maybe even custom sprites for items
-    //
-    //Enemy Glyph ideas: Enemy just gains the Glyph that can be applied to an armor.
 
     //Similar to random items, how about some random traps?
     //
@@ -857,9 +843,9 @@ public class CustomDungeon implements Bundlable {
 
             if (ls.getType() == CustomLevel.class) {
                 boolean load = ls.getLevel() == null;
-                Level level;
-                if (load) level = ls.loadLevel();
-                else level = ls.getLevel();
+                CustomLevel level;
+                if (load) level = (CustomLevel) ls.loadLevel();
+                else level = (CustomLevel) ls.getLevel();
                 if (level == null) continue;//skip if level couldn't be loaded
                 Set<Integer> toRemoveTransitions = new HashSet<>(4);
                 for (LevelTransition transition : level.transitions.values()) {
@@ -868,19 +854,27 @@ public class CustomDungeon implements Bundlable {
                         if (level == EditorScene.customLevel()) EditorScene.remove(transition);
                     }
                 }
+
+                boolean saveNeeded = !toRemoveTransitions.isEmpty();
+
                 for (Zone zone : level.zoneMap.values()) {
                     if (zone.zoneTransition != null) {
                         if (Objects.equals(zone.zoneTransition.destLevel, n)) {
                             zone.zoneTransition = null;
+                            saveNeeded = true;
+                        }
+                    }
+                    if (zone.mobRotation != null) {
+                        for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot : zone.mobRotation.distrSlots) {
+                            if (removeInvalidKeys(((MobItem) mobRotationSlot.items.get(0)).mob(), n)) saveNeeded = true;
                         }
                     }
                 }
 
                 //Remove invalid keys in heaps
-                boolean removedItems = false;
                 for (Heap h : level.heaps.valueList()) {
                     if (removeInvalidKeys(h.items, n)) {
-                        removedItems = true;
+                        saveNeeded = true;
                         if (h.isEmpty()) {
                             level.heaps.remove(h.pos);
                             h.destroyImages();
@@ -889,40 +883,22 @@ public class CustomDungeon implements Bundlable {
                 }
                 //Remove invalid keys in mob containers
                 for (Mob m : level.mobs) {
-                    if (m instanceof Mimic && ((Mimic) m).items != null) {
-                        if (removeInvalidKeys(((Mimic) m).items, n)) removedItems = true;
-                    }
-                    if (m instanceof Thief) {
-                        if (isInvalidKey(((Thief) m).item, n)) {
-                            ((Thief) m).item = null;
-                            removedItems = true;
-                        }
-                        if (((Thief) m).item instanceof RandomItem<?>) {
-                            if (((RandomItem<?>) ((Thief) m).item).removeInvalidKeys(n)) removedItems = true;
-                        }
-                    }
-                    if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
-                        Set<ItemsWithChanceDistrComp.ItemWithCount> toRemove = new HashSet<>(4);
-                        for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {
-                            if (removeInvalidKeys(itemsWithCount.items, n)) {
-                                removedItems = true;
-                                if (itemsWithCount.items.isEmpty()) toRemove.add(itemsWithCount);
-                            }
-                        }
-                        ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots.removeAll(toRemove);
-                    }
+                    if (removeInvalidKeys(m, n)) saveNeeded = true;
+                }
+
+                for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot : level.getMobRotationVar().distrSlots) {
+                    if (removeInvalidKeys(((MobItem) mobRotationSlot.items.get(0)).mob(), n)) saveNeeded = true;
                 }
 
                 //Remove invalid keys as sacrificial fire reward
                 SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.getOnly(SacrificialFire.class);
                 if (sacrificialFire != null) {
-                    if (sacrificialFire.removeInvalidKeys(n)) removedItems = true;
+                    if (sacrificialFire.removeInvalidKeys(n)) saveNeeded = true;
                 }
 
-                boolean save = removedItems || !toRemoveTransitions.isEmpty();
                 for (int key : toRemoveTransitions) level.transitions.remove(key);
 
-                if (save) CustomDungeonSaves.saveLevel(level);
+                if (saveNeeded) CustomDungeonSaves.saveLevel(level);
                 if (load) ls.unloadLevel();
                 else if (level == EditorScene.customLevel() && levelScheme != level.levelScheme) {
                     Undo.reset();//TODO maybe not best solution to reset all
@@ -959,18 +935,48 @@ public class CustomDungeon implements Bundlable {
         CustomDungeonSaves.saveDungeon(this);
     }
 
+    public static boolean removeInvalidKeys(Mob m, String invalidLevelName) {
+        boolean changedSth = false;
+
+        if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
+            Set<ItemsWithChanceDistrComp.ItemWithCount> toRemove = new HashSet<>(4);
+            for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {
+                if (removeInvalidKeys(itemsWithCount.items, invalidLevelName)) {
+                    changedSth = true;
+                    if (itemsWithCount.items.isEmpty()) toRemove.add(itemsWithCount);
+                }
+            }
+            ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots.removeAll(toRemove);
+        }
+
+        if (m instanceof Mimic && ((Mimic) m).items != null) {
+            if (removeInvalidKeys(((Mimic) m).items, invalidLevelName)) changedSth = true;
+        }
+        else if (m instanceof Thief) {
+            if (isInvalidKey(((Thief) m).item, invalidLevelName)) {
+                ((Thief) m).item = null;
+                changedSth = true;
+            }
+            if (((Thief) m).item instanceof RandomItem<?>) {
+                if (((RandomItem<?>) ((Thief) m).item).removeInvalidKeys(invalidLevelName)) changedSth = true;
+            }
+        }
+
+        return changedSth;
+    }
+
     public static boolean removeInvalidKeys(List<Item> items, String invalidLevelName) {
         if (items == null) return false;
-        boolean removedSth = false;
+        boolean changedSth = false;
         for (Item i : new ArrayList<>(items)) {
             if (isInvalidKey(i, invalidLevelName)) {
                 items.remove(i);
-                removedSth = true;
+                changedSth = true;
             } else if (i instanceof RandomItem<?>) {
                 return ((RandomItem<?>) i).removeInvalidKeys(invalidLevelName);
             }
         }
-        return removedSth;
+        return changedSth;
     }
 
     public static boolean isInvalidKey(Item item, String invalidLevelName) {
@@ -1218,9 +1224,9 @@ public class CustomDungeon implements Bundlable {
 
                 if (ls.getType() == CustomLevel.class) {
                     boolean load = ls.getLevel() == null;
-                    Level level;
-                    if (load) level = ls.loadLevel();
-                    else level = ls.getLevel();
+                    CustomLevel level;
+                    if (load) level = (CustomLevel) ls.loadLevel();
+                    else level = (CustomLevel) ls.getLevel();
 
                     boolean saveWithOgName = level == null;
                     if (saveWithOgName) {
@@ -1229,16 +1235,17 @@ public class CustomDungeon implements Bundlable {
                         level.levelScheme = ls;
                     }
 
-                    boolean needsSave = false;
+                    boolean saveNeeded = false;
+
                     for (LevelTransition transition : level.transitions.values()) {
                         if (transition != null) {
                             if (Objects.equals(transition.destLevel, oldName)) {
                                 transition.destLevel = newName;
-                                needsSave = true;
+                                saveNeeded = true;
                             }
                             if (Objects.equals(transition.departLevel, oldName)) {
                                 transition.departLevel = newName;
-                                needsSave = true;
+                                saveNeeded = true;
                             }
                         }
                     }
@@ -1246,11 +1253,16 @@ public class CustomDungeon implements Bundlable {
                         if (zone.zoneTransition != null) {
                             if (Objects.equals(zone.zoneTransition.destLevel, oldName)) {
                                 zone.zoneTransition.destLevel = newName;
-                                needsSave = true;
+                                saveNeeded = true;
                             }
                             if (Objects.equals(zone.zoneTransition.departLevel, oldName)) {
                                 zone.zoneTransition.departLevel = newName;
-                                needsSave = true;
+                                saveNeeded = true;
+                            }
+                        }
+                        if (zone.mobRotation != null) {
+                            for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot : zone.mobRotation.distrSlots) {
+                                if (renameInvalidKeys(((MobItem) mobRotationSlot.items.get(0)).mob(), oldName, newName)) saveNeeded = true;
                             }
                         }
                     }
@@ -1258,41 +1270,27 @@ public class CustomDungeon implements Bundlable {
                     //Change invalid keys in heaps
                     for (Heap h : level.heaps.valueList()) {
                         if (renameInvalidKeys(h.items, oldName, newName)) {
-                            needsSave = true;
+                            saveNeeded = true;
                         }
                     }
                     //Change invalid keys in mob containers
                     for (Mob m : level.mobs) {
-                        if (m instanceof Mimic && ((Mimic) m).items != null) {
-                            if (renameInvalidKeys(((Mimic) m).items, oldName, newName))
-                                needsSave = true;
-                        } else if (m instanceof Thief) {
-                            if (isInvalidKey(((Thief) m).item, oldName)) {
-                                ((Key) ((Thief) m).item).levelName = newName;
-                                needsSave = true;
-                            }
-                            if (((Thief) m).item instanceof RandomItem<?>) {
-                                if (((RandomItem<?>) ((Thief) m).item).renameInvalidKeys(oldName, newName)) needsSave = true;
-                            }
-                        }
-                        if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
-                            for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {
-                                if (renameInvalidKeys(itemsWithCount.items, oldName, newName)) {
-                                    needsSave = true;
-                                }
-                            }
-                        }
+                        renameInvalidKeys(m, oldName, newName);
+                    }
+
+                    for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot : level.getMobRotationVar().distrSlots) {
+                        if (renameInvalidKeys(((MobItem) mobRotationSlot.items.get(0)).mob(), oldName, newName)) saveNeeded = true;
                     }
 
                     //Remove invalid keys as sacrificial fire reward
                     SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.getOnly(SacrificialFire.class);
                     if (sacrificialFire != null) {
-                        if (sacrificialFire.renameInvalidKeys(oldName, newName)) needsSave = true;
+                        if (sacrificialFire.renameInvalidKeys(oldName, newName)) saveNeeded = true;
                     }
 
-                    if (renameInvalidKeys(ls.itemsToSpawn, oldName, newName)) needsSave = true;
+                    if (renameInvalidKeys(ls.itemsToSpawn, oldName, newName)) saveNeeded = true;
 
-                    if (needsSave) {
+                    if (saveNeeded) {
                         if (ls == levelScheme) {
                             level.name = newName;
                             savedItself = true;
@@ -1302,7 +1300,7 @@ public class CustomDungeon implements Bundlable {
                     }
                     if (load) ls.unloadLevel();
                     else if (level == EditorScene.customLevel() && levelScheme != level.levelScheme) {
-                        if (needsSave) EditorScene.updateHeapImagesAndSubIcons();
+                        if (saveNeeded) EditorScene.updateHeapImagesAndSubIcons();
                     }
                 } else {
                     if (Objects.equals(ls.getEntranceTransitionRegular().destLevel, oldName)) {
@@ -1372,19 +1370,46 @@ public class CustomDungeon implements Bundlable {
 
     }
 
+    public static boolean renameInvalidKeys(Mob m, String invalidLevelName, String newName) {
+
+        boolean changedSth = false;
+
+        if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
+            for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {
+                if (renameInvalidKeys(itemsWithCount.items, invalidLevelName, newName)) {
+                    changedSth = true;
+                }
+            }
+        }
+
+        if (m instanceof Mimic && ((Mimic) m).items != null) {
+            if (renameInvalidKeys(((Mimic) m).items, invalidLevelName, newName))
+                changedSth = true;
+        } else if (m instanceof Thief) {
+            if (isInvalidKey(((Thief) m).item, invalidLevelName)) {
+                ((Key) ((Thief) m).item).levelName = newName;
+                changedSth = true;
+            }
+            if (((Thief) m).item instanceof RandomItem<?>) {
+                if (((RandomItem<?>) ((Thief) m).item).renameInvalidKeys(invalidLevelName, newName)) changedSth = true;
+            }
+        }
+        return changedSth;
+    }
+
     public static boolean renameInvalidKeys(List<Item> items, String invalidLevelName, String newName) {
         if (items == null) return false;
-        boolean removedSth = false;
+        boolean changedSth = false;
         for (Item i : new ArrayList<>(items)) {
             if (isInvalidKey(i, invalidLevelName)) {
                 ((Key) i).levelName = newName;
-                removedSth = true;
+                changedSth = true;
             }
             if (i instanceof RandomItem<?>) {
-                ((RandomItem<?>) i).renameInvalidKeys(invalidLevelName, newName);
+                if (((RandomItem<?>) i).renameInvalidKeys(invalidLevelName, newName)) changedSth = true;
             }
         }
-        return removedSth;
+        return changedSth;
     }
 
 
