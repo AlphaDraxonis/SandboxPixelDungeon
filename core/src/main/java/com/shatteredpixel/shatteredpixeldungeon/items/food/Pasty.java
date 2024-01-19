@@ -45,7 +45,7 @@ public class Pasty extends Food {
 		bones = true;
 	}
 
-	private Holiday holiday = NONE;
+	Holiday holiday = Holiday.NONE;
 
 	@Override
 	public void reset() {
@@ -161,6 +161,37 @@ public class Pasty extends Food {
 		@Override
 		public int value() {
 			return 10 * quantity;
+		}
+	}
+
+	public static class PastyLunar extends Pasty {
+		{
+			holiday = Holiday.LUNAR_NEW_YEAR;
+			reset();
+		}
+	}
+	public static class PastyAprilFools extends Pasty {
+		{
+			holiday = Holiday.APRIL_FOOLS;
+			reset();
+		}
+	}
+	public static class PastyEaster extends Pasty {
+		{
+			holiday = Holiday.EASTER;
+			reset();
+		}
+	}
+	public static class PastyHalloween extends Pasty {
+		{
+			holiday = Holiday.HALLOWEEN;
+			reset();
+		}
+	}
+	public static class PastyWinterHolidays extends Pasty {
+		{
+			holiday = Holiday.WINTER_HOLIDAYS;
+			reset();
 		}
 	}
 }

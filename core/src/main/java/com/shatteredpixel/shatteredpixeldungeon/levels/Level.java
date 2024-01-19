@@ -1885,7 +1885,7 @@ public abstract class Level implements Bundlable {
 			}
 
 			//grass is see-through by some specific entities, but not during the fungi quest
-			if (!(Dungeon.level instanceof  MiningLevel) || Blacksmith.Quest.Type() != Blacksmith.Quest.FUNGI){
+			if (!(Dungeon.level instanceof  MiningLevel) || ((MiningLevel) Dungeon.level).questType() != BlacksmithQuest.FUNGI){
 				if ((c instanceof Hero && ((Hero) c).subClass == HeroSubClass.WARDEN)
 						|| c instanceof YogFist.SoiledFist || c instanceof GnollGeomancer) {
 					if (blocking == null) {
@@ -1990,7 +1990,8 @@ public abstract class Level implements Bundlable {
 			if (c.buff( MindVision.class ) != null) {
 				for (Mob mob : mobs) {
 					for (int i : PathFinder.NEIGHBOURS9) {
-						heroMindFov[mob.pos + i] = true;
+						int cell = mob.pos + i;
+						if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;
 					}
 				}
 			} else if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES)) {
@@ -2000,7 +2001,8 @@ public abstract class Level implements Bundlable {
 					int p = mob.pos;
 					if (!fieldOfView[p] && distance(c.pos, p) <= range) {
 						for (int i : PathFinder.NEIGHBOURS9) {
-							heroMindFov[mob.pos + i] = true;
+							int cell = mob.pos + i;
+							if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;
 						}
 					}
 				}

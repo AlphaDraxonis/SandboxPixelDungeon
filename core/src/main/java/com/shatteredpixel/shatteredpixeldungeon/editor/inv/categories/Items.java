@@ -139,6 +139,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.GooBlob;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.RatSkull;
+import com.shatteredpixel.shatteredpixeldungeon.items.remains.BowFragment;
+import com.shatteredpixel.shatteredpixeldungeon.items.remains.BrokenHilt;
+import com.shatteredpixel.shatteredpixeldungeon.items.remains.BrokenStaff;
+import com.shatteredpixel.shatteredpixeldungeon.items.remains.CloakScrap;
+import com.shatteredpixel.shatteredpixeldungeon.items.remains.SealShard;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
@@ -290,12 +295,13 @@ public enum Items {
     KEY(12, IRON_KEY),
     BAG(13),
     BOMB(14, BOMB_HOLDER),
-    QUEST(15),
-    ALCHEMICAL(16, CATA_HOLDER),
-    SPELL(17, SPELL_HOLDER),
-    OTHER(18);
+    REMAINS(15),
+    QUEST(16),
+    ALCHEMICAL(17, CATA_HOLDER),
+    SPELL(18, SPELL_HOLDER),
+    OTHER(19);
 
-    private static final int NUM_CATS = 17;//dont include other
+    private static final int NUM_CATS = 18;//dont include other
 
     private final int index, sprite;
 
@@ -342,12 +348,14 @@ public enum Items {
             case 14:
                 return BOMB;
             case 15:
-                return QUEST;
+                return REMAINS;
             case 16:
-                return ALCHEMICAL;
+                return QUEST;
             case 17:
-                return SPELL;
+                return ALCHEMICAL;
             case 18:
+                return SPELL;
+            case 19:
                 return OTHER;
         }
         return null;
@@ -403,6 +411,7 @@ public enum Items {
             case BAG:
             case BOMB:
             case SPELL:
+            case REMAINS:
             case QUEST:
             case ALCHEMICAL:
                 for (Class<?> cl : classes()) {
@@ -674,8 +683,12 @@ public enum Items {
                 MeatPie.class,
                 Berry.class,
                 Blandfruit.class,
-                Pasty.PastyHWeen.class,
-                Pasty.PastyXMas.class
+                Pasty.FishLeftover.class,
+                Pasty.PastyLunar.class,
+                Pasty.PastyAprilFools.class,
+                Pasty.PastyEaster.class,
+                Pasty.PastyHalloween.class,
+                Pasty.PastyWinterHolidays.class,
         };
 
         KEY.classes = new Class[]{
@@ -708,6 +721,14 @@ public enum Items {
                 ShrapnelBomb.class,
                 FakeTenguBomb.class,
                 FakeTenguShocker.class
+        };
+
+        REMAINS.classes = new Class[]{
+                SealShard.class,
+                BrokenStaff.class,
+                CloakScrap.class,
+                BowFragment.class,
+                BrokenHilt.class
         };
 
         QUEST.classes = new Class[]{
@@ -764,6 +785,7 @@ public enum Items {
         Collections.addAll(otherClasses, KEY.classes);
         Collections.addAll(otherClasses, BAG.classes);
         Collections.addAll(otherClasses, BOMB.classes);
+        Collections.addAll(otherClasses, REMAINS.classes);
         Collections.addAll(otherClasses, QUEST.classes);
         Collections.addAll(otherClasses, ALCHEMICAL.classes);
         Collections.addAll(otherClasses, SPELL.classes);
@@ -817,7 +839,7 @@ public enum Items {
         bag.items.add(new ItemBag("potion", POTION_HOLDER, POTION.classes()));
         bag.items.add(new ItemBag("scroll", SCROLL_HOLDER, SCROLL.classes()));
         bag.items.add(new ItemBag("alch", SPELL_HOLDER, ALCHEMICAL.classes(), SPELL.classes()));
-        bag.items.add(bagWithKeys = new ItemBag("other", SOMETHING, KEY.classes(), OTHER.classes(), BAG.classes(), QUEST.classes()));
+        bag.items.add(bagWithKeys = new ItemBag("other", SOMETHING, KEY.classes(), OTHER.classes(), BAG.classes(), REMAINS.classes(), QUEST.classes()));
     }
 
     public static void updateKeys(String oldLvlName, String newLvlName) {

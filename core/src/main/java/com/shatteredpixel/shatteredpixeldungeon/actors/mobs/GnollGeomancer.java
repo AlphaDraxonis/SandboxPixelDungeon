@@ -30,7 +30,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -42,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -61,11 +63,16 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
-public class GnollGeomancer extends Mob {
+public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 
 	{
-		HP = HT = 150;
 		spriteClass = GnollGeomancerSprite.class;
+
+		HP = HT = 150;
+		attackSkill = 20;
+		damageRollMin = 3;
+		damageRollMax = 6;
+		damageReductionMax = 6;
 
 		EXP = 20;
 
@@ -95,9 +102,14 @@ public class GnollGeomancer extends Mob {
 	private int[] sapperSpawns = null;
 
 	@Override
+	public void setLevel(int depth) {
+		if (buff(RockArmor.class) == null) Buff.affect(this, GnollGeomancer.RockArmor.class).setShield(HT/3);
+	}
+
+	@Override
 	protected boolean act() {
 		if (sapperSpawns == null){
-			sapperSpawns = new int[3];
+			sapperSpawns = new int[]{-1, -1, -1};
 			int i = 0;
 			for (Mob m : Dungeon.level.mobs){
 				if (m instanceof GnollSapper){
@@ -135,20 +147,20 @@ public class GnollGeomancer extends Mob {
 				|| hasSapper();
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 3, 6 );
-	}
-
-	@Override
-	public int attackSkill( Char target ) {
-		return 20;
-	}
-
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 6);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 3, 6 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 20;
+//	}
+//
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 6);
+//	}
 
 	@Override
 	public boolean reset() {
@@ -219,7 +231,7 @@ public class GnollGeomancer extends Mob {
 
 						state = HUNTING;
 						enemy = Dungeon.hero;
-						BossHealthBar.assignBoss(GnollGeomancer.this);
+						BossHealthBar.addBoss(GnollGeomancer.this);
 
 						for (Mob m : Dungeon.level.mobs){
 							if (m instanceof GnollGuard){
@@ -275,7 +287,7 @@ public class GnollGeomancer extends Mob {
 				HP = (curbracket-1)*hpBracket + 1;
 			}
 
-			BossHealthBar.bleed(newBracket <= 0);
+			bleeding = newBracket <= 0;
 
 			carveRockAndDash();
 			Buff.affect(this, RockArmor.class).setShield(25);
@@ -356,7 +368,7 @@ public class GnollGeomancer extends Mob {
 		}
 
 		//if spawn pos is more than 12 tiles away, get as close as possible
-		Ballistica path = new Ballistica(pos, dashPos, Ballistica.STOP_TARGET);
+		Ballistica path = new Ballistica(pos, dashPos, Ballistica.STOP_TARGET, null);
 
 		if (path.dist > 12){
 			dashPos = path.path.get(12);
@@ -380,7 +392,7 @@ public class GnollGeomancer extends Mob {
 			}
 		}
 
-		path = new Ballistica(pos, dashPos, Ballistica.STOP_TARGET);
+		path = new Ballistica(pos, dashPos, Ballistica.STOP_TARGET, null);
 
 		ArrayList<Integer> cells = new ArrayList<>(path.subPath(0, path.dist));
 		cells.addAll(spreadDiamondAOE(cells));
@@ -390,10 +402,14 @@ public class GnollGeomancer extends Mob {
 		ArrayList<Integer> exteriorCells = spreadDiamondAOE(cells);
 
 		for (int i : cells){
-			if (Dungeon.level.map[i] == Terrain.WALL_DECO){
+			if (Dungeon.level.map[i] == Terrain.WALL_DECO && LevelScheme.getRegion(Dungeon.level) == LevelScheme.REGION_CAVES){
 				Dungeon.level.drop(new DarkGold(), i).sprite.drop();
 				Dungeon.level.map[i] = Terrain.EMPTY_DECO;
-			} else if (Dungeon.level.solid[i]){
+			} else if (Dungeon.level.solid[i] && Dungeon.level.insideMap(i)
+				&& Dungeon.level instanceof MiningLevel//only on mining level
+					|| (Dungeon.level.levelScheme.allowPickaxeMining//or if enabled
+					|| Dungeon.level.map[i] == Terrain.MINE_CRYSTAL || Dungeon.level.map[i] == Terrain.MINE_BOULDER)//or crystals/bolder
+					&& Zone.canDestroyWall(Dungeon.level, i)){
 				if (Random.Int(3) == 0){
 					Dungeon.level.map[i] = Terrain.MINE_BOULDER;
 				} else {
@@ -504,7 +520,7 @@ public class GnollGeomancer extends Mob {
 	@Override
 	public void die(Object cause) {
 		super.die(cause);
-		Blacksmith.Quest.beatBoss();
+		if (Dungeon.level instanceof MiningLevel) ((MiningLevel) Dungeon.level).quest.beatBoss();
 		Sample.INSTANCE.playDelayed(Assets.Sounds.ROCKS, 0.1f);
 		PixelScene.shake( 3, 0.7f );
 
@@ -588,7 +604,7 @@ public class GnollGeomancer extends Mob {
 
 							throwingRocksFromPos[i] = aim.sourcePos;
 
-							Ballistica warnPath = new Ballistica(aim.sourcePos, aim.collisionPos, Ballistica.STOP_SOLID);
+							Ballistica warnPath = new Ballistica(aim.sourcePos, aim.collisionPos, Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null);
 							for (int j : warnPath.subPath(0, warnPath.dist)){
 								sprite.parent.add(new TargetedCell(j, 0xFF0000));
 							}
@@ -624,7 +640,7 @@ public class GnollGeomancer extends Mob {
 
 		for (int i = 0; i < Dungeon.level.length(); i++){
 			if (source.fieldOfView[i] && Dungeon.level.map[i] == Terrain.MINE_BOULDER){
-				if (new Ballistica(i, target.pos, Ballistica.PROJECTILE).collisionPos == target.pos){
+				if (new Ballistica(i, target.pos, Ballistica.REAL_PROJECTILE, null).collisionPos == target.pos){
 					candidateRocks.add(i);
 				}
 			}
@@ -654,7 +670,7 @@ public class GnollGeomancer extends Mob {
 			}
 			int throwingToPos = target.pos;
 
-			return new Ballistica(throwingFromPos, throwingToPos, Ballistica.PROJECTILE);
+			return new Ballistica(throwingFromPos, throwingToPos, Ballistica.REAL_PROJECTILE, null);
 
 		}
 	}
@@ -674,7 +690,7 @@ public class GnollGeomancer extends Mob {
 			}
 		});
 
-		Ballistica rockPath = new Ballistica(from, to, Ballistica.MAGIC_BOLT);
+		Ballistica rockPath = new Ballistica(from, to, Ballistica.REAL_MAGIC_BOLT, null);
 
 		Sample.INSTANCE.play(Assets.Sounds.MISS);
 		((MissileSprite)source.sprite.parent.recycle( MissileSprite.class )).
@@ -703,7 +719,7 @@ public class GnollGeomancer extends Mob {
 							}
 
 							if (!knockedChars.contains(ch) && rockPath.path.size() > rockPath.dist+1) {
-								Ballistica trajectory = new Ballistica(ch.pos, rockPath.path.get(rockPath.dist + 1), Ballistica.MAGIC_BOLT);
+								Ballistica trajectory = new Ballistica(ch.pos, rockPath.path.get(rockPath.dist + 1), Ballistica.MAGIC_BOLT, ch);
 								WandOfBlastWave.throwChar(ch, trajectory, 1, false, false, source);
 								knockedChars.add(ch);
 							}
@@ -864,7 +880,7 @@ public class GnollGeomancer extends Mob {
 		}
 
 		if (hits >= 3){
-			BossHealthBar.assignBoss(this);
+			BossHealthBar.addBoss(this);
 		}
 	}
 }

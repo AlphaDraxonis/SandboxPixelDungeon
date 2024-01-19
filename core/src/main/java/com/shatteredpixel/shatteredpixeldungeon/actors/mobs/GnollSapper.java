@@ -43,6 +43,10 @@ public class GnollSapper extends Mob {
 
 		HP = HT = 45;
 		defenseSkill = 15;
+		attackSkill = 18;
+		damageRollMin = 1;
+		damageRollMax = 6;
+		damageReductionMax = 6;
 
 		EXP = 10;
 		maxLvl = -2;
@@ -94,15 +98,15 @@ public class GnollSapper extends Mob {
 		losePartner();
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange( 1, 6 );
-	}
-
-	@Override
-	public int attackSkill( Char target ) {
-		return 18;
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange( 1, 6 );
+//	}
+//
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 18;
+//	}
 
 	@Override
 	public void damage(int dmg, Object src) {
@@ -110,10 +114,10 @@ public class GnollSapper extends Mob {
 		abilityCooldown -= dmg/10f;
 	}
 
-	@Override
-	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(0, 6);
-	}
+//	@Override
+//	public int drRoll() {
+//		return super.drRoll() + Random.NormalIntRange(0, 6);
+//	}
 
 	@Override
 	public boolean reset() {
@@ -190,7 +194,7 @@ public class GnollSapper extends Mob {
 						throwingRockFromPos = aim.sourcePos;
 						throwingRockToPos = aim.collisionPos;
 
-						Ballistica warnPath = new Ballistica(aim.sourcePos, aim.collisionPos, Ballistica.STOP_SOLID);
+						Ballistica warnPath = new Ballistica(aim.sourcePos, aim.collisionPos, Ballistica.STOP_SOLID | Ballistica.STOP_BARRIER_PROJECTILES, null);
 						for (int i : warnPath.subPath(0, warnPath.dist)){
 							sprite.parent.add(new TargetedCell(i, 0xFF0000));
 						}

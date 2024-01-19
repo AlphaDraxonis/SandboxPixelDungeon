@@ -88,8 +88,8 @@ public class BossHealthBar extends Component {
             bosses.add(boss);
             if (instance != null) {
                 addBarCompToUI(boss);
+                instance.visible = instance.active = !bosses.isEmpty();
             }
-            instance.visible = instance.active = !bosses.isEmpty();
         }
     }
 

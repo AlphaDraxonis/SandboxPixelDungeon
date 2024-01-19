@@ -169,11 +169,13 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             bleedingCheck = (HP*2 <= HT);
         } else bleedingCheck = false;
 
-        if (state == SLEEPING) {
-            state = WANDERING;
-        }
-        if (state != HUNTING && !(src instanceof Corruption)) {
-            alerted = true;
+        if (!isInvulnerable(src.getClass())) {
+            if (state == SLEEPING) {
+                state = WANDERING;
+            }
+            if (state != HUNTING && !(src instanceof Corruption)) {
+                alerted = true;
+            }
         }
 
         updateInternalStats();

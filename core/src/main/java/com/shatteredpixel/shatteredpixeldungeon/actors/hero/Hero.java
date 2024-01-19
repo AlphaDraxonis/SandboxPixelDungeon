@@ -1767,7 +1767,7 @@ public class Hero extends Char {
 					spendConstant( TIME_TO_REST );
 					//trigger no talents
 					if (ch.sprite != null) {
-						ch.sprite.showStatus( true, CharSprite.NEUTRAL, ch.defenseVerb() );
+						ch.sprite.showStatus( CharSprite.NEUTRAL, ch.defenseVerb() );
 					}
 				}
 			}

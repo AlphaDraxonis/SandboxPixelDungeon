@@ -75,7 +75,7 @@ public class FungalSentry extends Mob {
 	//TODO attack is a little permissive atm?
 	protected boolean canAttack( Char enemy ) {
 		return super.canAttack(enemy)
-				|| new Ballistica( pos, enemy.pos, Ballistica.MAGIC_BOLT).collisionPos == enemy.pos;
+				|| new Ballistica( pos, enemy.pos, Ballistica.REAL_MAGIC_BOLT, null).collisionPos == enemy.pos;
 	}
 
 	//TODO if we want to allow them to be literally killed, probably should give them a heal if hero is out of FOV, or similar

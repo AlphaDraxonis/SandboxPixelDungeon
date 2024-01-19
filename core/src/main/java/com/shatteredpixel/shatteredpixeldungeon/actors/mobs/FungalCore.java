@@ -21,7 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.FungalCoreSprite;
 
 public class FungalCore extends Mob {
@@ -51,6 +52,6 @@ public class FungalCore extends Mob {
 	@Override
 	public void die(Object cause) {
 		super.die(cause);
-		Blacksmith.Quest.beatBoss();
+		if (Dungeon.level instanceof MiningLevel) ((MiningLevel) Dungeon.level).quest.beatBoss();
 	}
 }

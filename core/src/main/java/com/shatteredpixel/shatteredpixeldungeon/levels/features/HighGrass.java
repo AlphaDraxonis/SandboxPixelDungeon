@@ -30,7 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
+import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
@@ -115,7 +115,7 @@ public class HighGrass {
 
 			//grass gives 1/3 the normal amount of loot in fungi level
 			if (Dungeon.level instanceof MiningLevel
-					&& Blacksmith.Quest.Type() == Blacksmith.Quest.FUNGI
+					&& ((MiningLevel) Dungeon.level).questType() == BlacksmithQuest.FUNGI
 					&& Random.Int(3) != 0){
 				naturalismLevel = -1;
 			}

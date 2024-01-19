@@ -1565,7 +1565,7 @@ public abstract class Mob extends Char {
 		protected void looseEnemy(){
 			sprite.showLost();
 			state = WANDERING;
-			target = following ? Dungeon.hero.pos : ((Mob.Wandering)WANDERING).randomDestination( Mob.this );
+			target = following ? Dungeon.hero.pos : ((Mob.Wandering)WANDERING).randomDestination();
 		}
 	}
 

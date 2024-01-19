@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
@@ -28,7 +29,7 @@ import java.util.Map;
 
 public class BlacksmithQuest extends Quest {
 
-    public static final int GOLD = 0, BLOOD = 1, CRYSTAL = 2, FUNGI = 3, GNOLL = 4;
+    public static final int GOLD = 0, BLOOD = 1, CRYSTAL = 2, GNOLL = 3, FUNGI = 4;
 
     private int id;
     private boolean started;
@@ -119,7 +120,7 @@ public class BlacksmithQuest extends Quest {
         if (type == BASED_ON_DEPTH) {
             type = levelScheme.generateBlacksmithQuest();
             levelScheme.roomsToSpawn.add(new BlacksmithRoom());
-        } else if (type == RANDOM) type = CRYSTAL + Random.Int(1);//Do not generate the old quests
+        } else if (type == RANDOM) type = CRYSTAL + Random.Int(getNumQuests()-2);//Do not generate the old quests
     }
 
     @Override
@@ -159,6 +160,12 @@ public class BlacksmithQuest extends Quest {
         super.start();
         Notes.add(Notes.Landmark.TROLL);
         if (type() == GOLD) oldGoldQuestsActive++;
+    }
+
+    public boolean rewardsAvailable(){
+        return favor > 0
+                || (smithRewards != null && smiths > 0)
+                || (pickaxe != null && Statistics.questScores[2] >= 2500);
     }
 
     public void actualStart() {
@@ -308,7 +315,7 @@ public class BlacksmithQuest extends Quest {
 
     @Override
     public int getNumQuests() {
-        return 3;
+        return 4;
     }
 
     @Override
@@ -325,10 +332,10 @@ public class BlacksmithQuest extends Quest {
                         return 0;
                     }
                 };
-            case FUNGI:
-                return new ItemSprite();
             case GNOLL:
                 return new GnollGuardSprite();
+            case FUNGI:
+                return new ItemSprite();
         }
         return null;
     }

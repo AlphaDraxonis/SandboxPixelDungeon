@@ -87,15 +87,7 @@ public class MiningLevel extends CavesLevel {
 
 	@Override
 	public String tilesTex() {
-		switch (Blacksmith.Quest.Type()){
-			default:
-				return Assets.Environment.TILES_CAVES;
-			case Blacksmith.Quest.CRYSTAL:
-				return Assets.Environment.TILES_CAVES_CRYSTAL;
-			case Blacksmith.Quest.GNOLL:
-				return Assets.Environment.TILES_CAVES_GNOLL;
-		}
-
+		return Assets.Environment.TILES_CAVES;
 	}
 
 	@Override

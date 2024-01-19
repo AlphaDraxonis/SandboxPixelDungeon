@@ -392,7 +392,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     }
 
     public int generateBlacksmithQuest() {
-        return BlacksmithQuest.CRYSTAL + Random.Int(1);
+        return BlacksmithQuest.CRYSTAL + Random.Int(2);
     }
 
     public int generateImpQuestNotRandom() {

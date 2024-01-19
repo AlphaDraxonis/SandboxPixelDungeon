@@ -5,10 +5,12 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 
@@ -26,15 +28,17 @@ public abstract class DMMob extends Mob {
                 return;
             }
 
+            int shielding = HT/10 + (HT - HP)/10;
             if (Dungeon.level.heroFOV[step]) {
                 if (buff(Barrier.class) == null && this instanceof DM300) {
                     GLog.w(Messages.get(this, "shield"));
                 }
                 Sample.INSTANCE.play(Assets.Sounds.LIGHTNING);
                 sprite.emitter().start(SparkParticle.STATIC, 0.05f, 20);
+                sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shielding), FloatingText.SHIELDING);
             }
 
-            Buff.affect(this, Barrier.class).setShield( HT/10 + (HT - HP)/10);
+            Buff.affect(this, Barrier.class).setShield(shielding);
         }
     }
 
