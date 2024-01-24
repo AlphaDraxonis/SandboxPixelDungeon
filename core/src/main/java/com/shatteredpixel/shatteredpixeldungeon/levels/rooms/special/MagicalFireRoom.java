@@ -187,23 +187,29 @@ public class MagicalFireRoom extends SpecialRoom {
 							cur[cell] = 0;
 							fireToClear.add(cell);
 						}
+
 						for (int blob = 0; blob < repeat; blob++) {
 							Fire fire = blob < fires.length ? (Fire) fires[blob] : null;
 							Freezing freeze = blob < freezes.length ? (Freezing) freezes[blob] : null;
 							Blizzard bliz = blob < blizs.length ? (Blizzard) blizs[blob] : null;
+
 							//overrides fire
 							if (fire != null && fire.volume > 0 && fire.cur[cell] > 0){
 								fire.clear(cell);
 							}
-							if (freeze != null && freeze.volume > 0 && freeze.cur[cell] > 0){
-								freeze.clear(cell);
-								cur[cell] = 0;
-								fireToClear.add(cell);
-							}
-							if (bliz != null && bliz.volume > 0 && bliz.cur[cell] > 0){
-								bliz.clear(cell);
-								cur[cell] = 0;
-								fireToClear.add(cell);
+
+							//clears itself if there is frost/blizzard on or next to it
+							for (int k : PathFinder.NEIGHBOURS9) {
+								if (freeze != null && freeze.volume > 0 && freeze.cur[cell+k] > 0) {
+									freeze.clear(cell);
+									cur[cell] = 0;
+									fireToClear.add(cell);
+								}
+								if (bliz != null && bliz.volume > 0 && bliz.cur[cell+k] > 0) {
+									bliz.clear(cell);
+									cur[cell] = 0;
+									fireToClear.add(cell);
+								}
 							}
 						}
 
