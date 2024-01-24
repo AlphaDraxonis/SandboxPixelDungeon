@@ -687,8 +687,8 @@ public enum Items {
                 Pasty.PastyLunar.class,
                 Pasty.PastyAprilFools.class,
                 Pasty.PastyEaster.class,
-                Pasty.PastyHalloween.class,
-                Pasty.PastyWinterHolidays.class,
+                Pasty.PastyHWeen.class,
+                Pasty.PastyXMas.class,
         };
 
         KEY.classes = new Class[]{

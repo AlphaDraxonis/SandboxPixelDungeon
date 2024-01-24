@@ -1,12 +1,50 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Daze;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Fury;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Levitation;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSleep;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Preparation;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Speed;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Stamina;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WellFed;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -17,6 +55,7 @@ import com.watabou.utils.Bundle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,6 +100,9 @@ public class Zone implements Bundlable {
 
     private ArrayList<? extends Mob> mobsToSpawn = new ArrayList<>();
 
+    private ArrayList<Class<? extends Buff>> heroBuffs = new ArrayList<>();
+    private ArrayList<Class<? extends Buff>> mobBuffs = new ArrayList<>();
+
 
     public String getName() {
         return name;
@@ -78,8 +120,10 @@ public class Zone implements Bundlable {
     public static final String CHASM_DEST_ZONE = "chasm_dest_zone";
     public static final String ZONE_TRANSITION = "zone_transition";
     public static final String RESPAWN_COOLDOWN = "respawn_cooldown";
-    public static final String OWN__MOB_ROTATION_ENABLED = "own__mob_rotation_enabled";
+    public static final String OWN_MOB_ROTATION_ENABLED = "own_mob_rotation_enabled";
     public static final String MOB_ROTATION = "mob_rotation";
+    public static final String HERO_BUFFS = "hero_buffs";
+    public static final String MOB_BUFFS = "mob_buffs";
     public static final String CELLS = "cells";
 
     @Override
@@ -96,8 +140,13 @@ public class Zone implements Bundlable {
         chasmDestZone = bundle.getString(CHASM_DEST_ZONE);
         zoneTransition = (LevelTransition) bundle.get(ZONE_TRANSITION);
         respawnCooldown = bundle.getFloat(RESPAWN_COOLDOWN);
-        ownMobRotationEnabled = bundle.getBoolean(OWN__MOB_ROTATION_ENABLED);
+        ownMobRotationEnabled = bundle.getBoolean(OWN_MOB_ROTATION_ENABLED);
         if (bundle.contains(MOB_ROTATION)) mobRotation = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(MOB_ROTATION);
+
+        if (bundle.contains(HERO_BUFFS))
+            for (Class c : bundle.getClassArray(HERO_BUFFS)) heroBuffs.add(c);
+        if (bundle.contains(MOB_BUFFS))
+            for (Class c : bundle.getClassArray(MOB_BUFFS)) mobBuffs.add(c);
 
         if (respawnCooldown == 0) respawnCooldown = 50;
 
@@ -123,7 +172,9 @@ public class Zone implements Bundlable {
         bundle.put(CHASM_DEST_ZONE, chasmDestZone);
         bundle.put(ZONE_TRANSITION, zoneTransition);
         bundle.put(RESPAWN_COOLDOWN, respawnCooldown);
-        bundle.put(OWN__MOB_ROTATION_ENABLED, ownMobRotationEnabled);
+        bundle.put(OWN_MOB_ROTATION_ENABLED, ownMobRotationEnabled);
+        bundle.put(HERO_BUFFS, heroBuffs.toArray(EditorUtilies.EMPTY_CLASS_ARRAY));
+        bundle.put(MOB_BUFFS, mobBuffs.toArray(EditorUtilies.EMPTY_CLASS_ARRAY));
 
         if (mobRotation != null && mobRotation.distrSlots.isEmpty()) mobRotation = null;
         else bundle.put(MOB_ROTATION, mobRotation);
@@ -136,6 +187,40 @@ public class Zone implements Bundlable {
         }
         bundle.put(CELLS, cellsArray);
 
+        //TODO implement these, maybe also to normal permabuff and vice versa tzz
+        heroBuffs.add(Blindness.class);
+        heroBuffs.add(Charm.class);
+        heroBuffs.add(Chill.class);
+        heroBuffs.add(Corruption.class);
+        heroBuffs.add(Cripple.class);
+        heroBuffs.add(Daze.class);
+        heroBuffs.add(Degrade.class);
+        heroBuffs.add(Doom.class);
+        heroBuffs.add(Dread.class);
+        heroBuffs.add(Drowsy.class);
+        heroBuffs.add(EnhancedRings.class);
+        heroBuffs.add(Foresight.class);
+        heroBuffs.add(Frost.class);
+        heroBuffs.add(Fury.class);
+        heroBuffs.add(Haste.class);
+        heroBuffs.add(Hex.class);
+        heroBuffs.add(Invisibility.class);
+        heroBuffs.add(Levitation.class);
+        heroBuffs.add(Light.class);
+        heroBuffs.add(MagicalSight.class);
+        heroBuffs.add(MagicalSleep.class);
+        heroBuffs.add(MagicImmune.class);
+        heroBuffs.add(MindVision.class);
+        heroBuffs.add(Ooze.class);
+        heroBuffs.add(Paralysis.class);
+        heroBuffs.add(Preparation.class);
+        heroBuffs.add(Recharging.class);
+        heroBuffs.add(Terror.class);
+        heroBuffs.add(Speed.class);
+        heroBuffs.add(Stamina.class);
+        heroBuffs.add(Vertigo.class);
+        heroBuffs.add(WellFed.class);
+        heroBuffs.add(Weakness.class);
     }
 
     public int getColor() {
@@ -214,6 +299,38 @@ public class Zone implements Bundlable {
         for (int cell : cells) {
             EditorScene.updateMap(cell);
         }
+    }
+
+    public void affectBuffs(Char ch) {
+
+        List<Class<? extends Buff>> buffs = ch instanceof Hero ? heroBuffs : mobBuffs;
+
+        for (Class<? extends Buff> buffClass : buffs) {
+            Buff b;
+            if (FlavourBuff.class.isAssignableFrom(buffClass)) {
+                b = Buff.affect(ch, (Class<? extends FlavourBuff>) buffClass, 0);
+            } else {
+                b = Buff.affect(ch, buffClass);
+            }
+            if (!b.permanent) {
+                b.makePermanent(b.zoneBuff = true);
+            }
+        }
+    }
+
+    public void removeBuffs(Char ch) {
+        for (Buff b : ch.buffs()) {
+            if (b != null && b.zoneBuff) {
+                b.makePermanent(b.zoneBuff = false);
+            }
+        }
+    }
+
+    public boolean appliesBuff(Class<? extends Buff> buff, Char target) {
+        if (target.isImmune(buff)) return false;
+        if (target instanceof Hero) return heroBuffs.contains(buff);
+        if (target instanceof Mob) return mobBuffs.contains(buff);
+        return false;
     }
 
     public static boolean isFlamable(Level level, int cell) {

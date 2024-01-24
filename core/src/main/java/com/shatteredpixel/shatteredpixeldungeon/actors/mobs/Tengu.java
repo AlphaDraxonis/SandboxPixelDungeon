@@ -146,10 +146,10 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	//Tengu is immune to debuffs and damage when removed from the level
 	@Override
 	public boolean add(Buff buff) {
-		if (Actor.chars().contains(this) || buff instanceof Doom || loading){
+		if (Actor.chars().contains(this) || buff instanceof Doom || loading || CustomDungeon.isEditing()){
 			return super.add(buff);
 		}
-		return CustomDungeon.isEditing();
+		return false;
 	}
 
 	@Override

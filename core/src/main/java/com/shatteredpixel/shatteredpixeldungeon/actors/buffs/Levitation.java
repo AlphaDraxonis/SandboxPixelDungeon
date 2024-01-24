@@ -62,7 +62,7 @@ public class Levitation extends FlavourBuff {
 	}
 
 	//used to determine if levitation is about to end
-	public boolean detachesWithinDelay(float delay){
+	public boolean detachesWithinDelay(float delay, int cell){
 		if (target.buff(Swiftthistle.TimeBubble.class) != null){
 			return false;
 		}
@@ -70,6 +70,11 @@ public class Levitation extends FlavourBuff {
 		if (target.buff(TimekeepersHourglass.timeFreeze.class) != null){
 			return false;
 		}
+
+		if (Dungeon.level.zone[cell] != null && Dungeon.level.zone[cell].appliesBuff(Levitation.class, target)) {
+			return false;
+		}
+
 
 		return cooldown() < delay;
 	}
@@ -96,7 +101,7 @@ public class Levitation extends FlavourBuff {
 	}
 
 	public static float DURATION(){
-		return EffectDuration.get(Levitation.class, DURATION);
+		return EffectDuration.get(Levitation.class, defaultDuration());
 	}
 
 	public static float defaultDuration() {

@@ -1698,7 +1698,8 @@ public class Hero extends Char {
 			float delay = 1 / speed();
 
 			if (Dungeon.level.pit[step] && !Dungeon.level.solid[step]
-					&& (!flying || buff(Levitation.class) != null && buff(Levitation.class).detachesWithinDelay(delay))){
+					&& (Dungeon.level.zone[step] == null || !Dungeon.level.zone[step].appliesBuff(Levitation.class, this))
+					&& (!flying || buff(Levitation.class) != null && buff(Levitation.class).detachesWithinDelay(delay, step))){
 				if (!Chasm.jumpConfirmed){
 					Chasm.heroJump(this);
 					interrupt();
@@ -2023,7 +2024,7 @@ public class Hero extends Char {
 				this.HP = HT / 4;
 
 				PotionOfHealing.cure(this);
-				Buff.prolong(this, AnkhInvulnerability.class, AnkhInvulnerability.DURATION);
+				Buff.prolong(this, AnkhInvulnerability.class, AnkhInvulnerability.DURATION());
 
 				SpellSprite.show(this, SpellSprite.ANKH);
 				GameScene.flash(0x80FFFF40);
@@ -2309,11 +2310,6 @@ public class Hero extends Char {
 			return true;
 		}
 		return super.isImmune(effect);
-	}
-
-	@Override
-	public boolean isInvulnerable(Class effect) {
-		return super.isInvulnerable(effect) || buff(AnkhInvulnerability.class) != null;
 	}
 
 	public boolean search( boolean intentional ) {

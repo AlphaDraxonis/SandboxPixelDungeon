@@ -594,8 +594,15 @@ public abstract class Level implements Bundlable {
 
 		lockedCount = bundle.getInt( LOCKED_COUNT );
 		if (bundle.getBoolean("locked")) lockedCount++;
+
+		Collection<Bundlable> collection = bundle.getCollection( ZONES );
+		for (Bundlable b : collection) {
+			Zone zone = (Zone) b;
+			zoneMap.put( zone.getName(), zone );
+		}
+		Zone.setupZoneArray(this);
 		
-		Collection<Bundlable> collection = bundle.getCollection( HEAPS );
+		collection = bundle.getCollection( HEAPS );
 		for (Bundlable h : collection) {
 			Heap heap = (Heap)h;
 			if (!heap.isEmpty())
@@ -645,6 +652,7 @@ public abstract class Level implements Bundlable {
 			Mob mob = (Mob)m;
 			if (mob != null) {
 				mobs.add( mob );
+				mob.restoreCurrentZone(this);
 			}
 		}
 		bossMob = bossMobStatic;
@@ -653,12 +661,6 @@ public abstract class Level implements Bundlable {
 		for (Bundlable b : collection) {
 			Blob blob = (Blob)b;
 			blobs.put( blob.getClass(), blob );
-		}
-
-		collection = bundle.getCollection( ZONES );
-		for (Bundlable b : collection) {
-			Zone zone = (Zone) b;
-			zoneMap.put( zone.getName(), zone );
 		}
 
 		feeling = bundle.getEnum( FEELING, Feeling.class );
@@ -676,7 +678,6 @@ public abstract class Level implements Bundlable {
 		}
 
 		buildFlagMaps();
-		Zone.setupZoneArray(this);
 		cleanWalls();
 
 	}
@@ -1738,6 +1739,15 @@ public abstract class Level implements Bundlable {
 		if (!ch.isImmune(Web.class) && Blob.volumeAt(ch.pos, Web.class) > 0){
 			blobs.doOnEach(Web.class, b -> b.clear(ch.pos));
 			Web.affectChar( ch );
+		}
+
+		if (ch.currentZoneBuffs != null && ch.currentZoneBuffs != zone[ch.pos]) {
+			ch.currentZoneBuffs.removeBuffs(ch);
+			ch.currentZoneBuffs = null;
+		}
+		if (zone[ch.pos] != null) {
+			ch.currentZoneBuffs = zone[ch.pos];
+			ch.currentZoneBuffs.affectBuffs(ch);
 		}
 
 		if (!ch.flying){

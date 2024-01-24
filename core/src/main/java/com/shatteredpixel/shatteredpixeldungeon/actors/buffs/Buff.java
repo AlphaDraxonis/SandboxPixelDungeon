@@ -63,6 +63,7 @@ public class Buff extends Actor {
     }
 
     public boolean permanent = false;
+    public boolean zoneBuff = false;
 
     public boolean attachTo(Char target) {
 
@@ -88,10 +89,19 @@ public class Buff extends Actor {
     @Override
     public boolean act() {
         if (permanent){
-            timeToNow();
             spend(TICK);
         } else diactivate();
         return true;
+    }
+
+    private float timeWhenPaused, cooldownWhenPaused;
+    public void makePermanent(boolean flag) {
+        if (permanent = flag) {
+            timeWhenPaused = Actor.now();
+            cooldownWhenPaused = cooldown();
+        } else if (timeWhenPaused > 0) {
+            spend(Math.min(Actor.now() - timeWhenPaused, cooldownWhenPaused));
+        }
     }
 
     public int icon() {
@@ -136,6 +146,7 @@ public class Buff extends Actor {
     }
 
     protected String appendDescForPermanent() {
+        if (zoneBuff) return "\n\n" + Messages.get(this, "zone_buff");//tzz
         return permanent ? "\n\n" + Messages.get(this, "permanent") : "";
     }
 
@@ -212,16 +223,25 @@ public class Buff extends Actor {
     }
 
     public static final String PERMANENT = "permanent";
+    public static final String ZONE_BUFF = "zone_buff";
+    public static final String TIME_WHEN_PAUSED = "time_when_paused";
+    public static final String COOLDOWN_WHEN_PAUSED = "cooldown_when_paused";
 
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         bundle.put(PERMANENT, permanent);
+        bundle.put(ZONE_BUFF, zoneBuff);
+        bundle.put(TIME_WHEN_PAUSED, timeWhenPaused);
+        bundle.put(COOLDOWN_WHEN_PAUSED, cooldownWhenPaused);
     }
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         permanent = bundle.getBoolean(PERMANENT);
+        zoneBuff = bundle.getBoolean(ZONE_BUFF);
+        timeWhenPaused = bundle.getFloat(TIME_WHEN_PAUSED);
+        cooldownWhenPaused = bundle.getFloat(COOLDOWN_WHEN_PAUSED);
     }
 }

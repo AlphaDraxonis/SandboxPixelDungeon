@@ -30,7 +30,6 @@ public class FlavourBuff extends Buff {
 	@Override
 	public boolean act() {
 		if (permanent){
-			timeToNow();
 			spend(TICK);
 		} else detach();
 		return true;

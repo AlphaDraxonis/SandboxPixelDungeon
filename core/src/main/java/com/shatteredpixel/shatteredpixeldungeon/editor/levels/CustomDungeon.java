@@ -109,12 +109,16 @@ public class CustomDungeon implements Bundlable {
     //Crystals etc not display on halls level custom tile
     //Make halls boss custom tile as normal ct
 
+    //make custom tiles colourable
+
     //strictly differentiate between custom tiles/walls
     //Make all tiles walls????
 
     //Shrouding fog trap instantly crashes the game
 
     //color walls
+
+    //make tengu no longer flyin
 
     //Custom music
 

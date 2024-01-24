@@ -182,13 +182,13 @@ public class Pasty extends Food {
 			reset();
 		}
 	}
-	public static class PastyHalloween extends Pasty {
+	public static class PastyHWeen extends Pasty {
 		{
 			holiday = Holiday.HALLOWEEN;
 			reset();
 		}
 	}
-	public static class PastyWinterHolidays extends Pasty {
+	public static class PastyXMas extends Pasty {
 		{
 			holiday = Holiday.WINTER_HOLIDAYS;
 			reset();

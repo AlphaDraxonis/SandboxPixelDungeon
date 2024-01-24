@@ -271,14 +271,15 @@ public enum HeroClass {
         if (data.artifact == null || data.misc == null) {
             CloakOfShadows cloak = new CloakOfShadows();
             cloak.identifyOnStart = true;
-            cloak.reservedQuickslot = nextQuickslot++;
+            cloak.reservedQuickslot = ++nextQuickslot;
             if (data.artifact == null) data.artifact = cloak;
             else data.misc = cloak;
         }
 
         ThrowingKnife knives = new ThrowingKnife();
         knives.quantity(3);
-        knives.reservedQuickslot = nextQuickslot;
+        knives.reservedQuickslot = ++nextQuickslot;
+        data.items.add(knives);
     }
 
     public static void initHuntress(HeroSettings.HeroStartItemsData data) {
@@ -298,13 +299,13 @@ public enum HeroClass {
         if (data.weapon == null) {
             Rapier i = new Rapier();
             i.identifyOnStart = true;
-            i.reservedQuickslot = nextQuickslot++;
+            i.reservedQuickslot = ++nextQuickslot;
             data.weapon = i;
         }
 
         ThrowingSpike spikes = new ThrowingSpike();
         spikes.quantity(2);
-        spikes.reservedQuickslot = nextQuickslot++;
+        spikes.reservedQuickslot = ++nextQuickslot;
         data.items.add(spikes);
     }
 
