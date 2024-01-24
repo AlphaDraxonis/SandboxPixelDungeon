@@ -881,6 +881,7 @@ public class Hero extends Char {
 		}
 		curAction = null;
 		GameScene.resetKeyHold();
+		resting = false;
 	}
 	
 	public void resume() {
@@ -1475,7 +1476,6 @@ public class Hero extends Char {
 		// unless the player recently hit 'continue moving', in which case this is ignored
 		if (!(src instanceof Hunger || src instanceof Viscosity.DeferedDamage) && damageInterrupt) {
 			interrupt();
-			resting = false;
 		}
 
 		if (this.buff(Drowsy.class) != null){
@@ -1548,7 +1548,6 @@ public class Hero extends Char {
 				}
 				//hero gets interrupted on taking serious damage, regardless of any other factor
 				interrupt();
-				resting = false;
 				damageInterrupt = true;
 			}
 		}
@@ -1593,11 +1592,10 @@ public class Hero extends Char {
 		}
 		
 		if (newMob) {
-			interrupt();
 			if (resting){
 				Dungeon.observe();
-				resting = false;
 			}
+			interrupt();
 		}
 
 		visibleEnemies = visible;
@@ -2018,7 +2016,6 @@ public class Hero extends Char {
 
 		if (ankh != null) {
 			interrupt();
-			resting = false;
 
 			if (ankh.isBlessed()) {
 				this.HP = HT / 4;
