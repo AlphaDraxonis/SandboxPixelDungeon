@@ -4,6 +4,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
@@ -689,7 +691,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 for (Buff b : mob.buffs()) {
                     asBuffItems.add(new BuffItem(b));
                 }
-                buffs = new BuffListContainer(asBuffItems, EditMobComp.this, true, label("buffs")) {
+                buffs = new BuffListContainer(asBuffItems, EditMobComp.this, label("buffs")) {
                     @Override
                     protected Set<Class<? extends Buff>> getBuffsToIgnore() {
                         Set<Class<? extends Buff>> buffsToIgnore = super.getBuffsToIgnore();
@@ -698,6 +700,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                                 buffsToIgnore.add((Class<? extends Buff>) c);
                             }
                         }
+                        buffsToIgnore.add(MagicalSight.class);
+                        buffsToIgnore.add(Foresight.class);
                         return buffsToIgnore;
                     }
 

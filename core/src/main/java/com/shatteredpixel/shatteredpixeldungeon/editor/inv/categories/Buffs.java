@@ -1,15 +1,33 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Daze;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Levitation;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Stamina;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
 import java.util.ArrayList;
@@ -22,8 +40,10 @@ public enum Buffs {
 
 
     CHAMPIONS,
-    POSITIVE,
-    NEGATIVE;
+    MOVEMENT,
+    FIGHT,
+    SIGHT,
+    OTHER;
 
     private static final Class<?>[] EMPTY_BUFF_CLASS_ARRAY = new Class[0];
 
@@ -47,8 +67,10 @@ public enum Buffs {
     public static String[] getCatNames() {
         return new String[]{
                 Messages.titleCase(Messages.get(Buffs.class, "champions")),
-                Messages.titleCase(Messages.get(Buffs.class, "positive")),
-                Messages.titleCase(Messages.get(Buffs.class, "negative"))
+                Messages.titleCase(Messages.get(Buffs.class, "movement")),
+                Messages.titleCase(Messages.get(Buffs.class, "fight")),
+                Messages.titleCase(Messages.get(Buffs.class, "sight")),
+                Messages.titleCase(Messages.get(Buffs.class, "other"))
         };
     }
 
@@ -61,31 +83,48 @@ public enum Buffs {
 
     static {
 
-        CHAMPIONS.classes = new Class[]{
+        CHAMPIONS.classes = ChampionEnemy.CLASSES;
 
-                ChampionEnemy.Blazing.class,
-                ChampionEnemy.Projecting.class,
-                ChampionEnemy.AntiMagic.class,
-                ChampionEnemy.Giant.class,
-                ChampionEnemy.Blessed.class,
-                ChampionEnemy.Growing.class
-
-        };
-
-        POSITIVE.classes = new Class[]{
-                Invisibility.class,
-                MindVision.class,
+        MOVEMENT.classes = new Class[]{
                 Haste.class,
-                Levitation.class
-        };
-
-        NEGATIVE.classes = new Class[]{
+                Stamina.class,
+                Cripple.class,
+                Frost.class,
+                Paralysis.class,
                 Vertigo.class,//Confusion
-                Corruption.class,
                 Amok.class,
-                Terror.class
+                Terror.class,
+                Dread.class,
         };
 
+        FIGHT.classes = new Class[]{
+//                Fury.class,
+                Weakness.class,
+                Degrade.class,
+                Hex.class,
+                Daze.class,
+                Doom.class,
+                Corruption.class,
+//                Ooze.class,
+        };
+
+        SIGHT.classes = new Class[]{
+                Invisibility.class,
+                Blindness.class,
+                Light.class,
+                MindVision.class,
+                MagicalSight.class,
+                Foresight.class,
+        };
+
+        OTHER.classes = new Class[]{
+                Levitation.class,
+                MagicImmune.class,
+                Drowsy.class,
+                MagicalSleep.class,
+                Recharging.class,
+//                EnhancedRings.class,
+        };
     }
 
 

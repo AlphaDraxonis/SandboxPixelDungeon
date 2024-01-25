@@ -2,41 +2,8 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Daze;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Fury;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Levitation;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSleep;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Preparation;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Speed;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Stamina;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WellFed;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -100,8 +67,8 @@ public class Zone implements Bundlable {
 
     private ArrayList<? extends Mob> mobsToSpawn = new ArrayList<>();
 
-    private ArrayList<Class<? extends Buff>> heroBuffs = new ArrayList<>();
-    private ArrayList<Class<? extends Buff>> mobBuffs = new ArrayList<>();
+    public ArrayList<Class<? extends Buff>> heroBuffs = new ArrayList<>();
+    public ArrayList<Class<? extends Buff>> mobBuffs = new ArrayList<>();
 
 
     public String getName() {
@@ -186,41 +153,6 @@ public class Zone implements Bundlable {
             index++;
         }
         bundle.put(CELLS, cellsArray);
-
-        //TODO implement these, maybe also to normal permabuff and vice versa tzz
-        heroBuffs.add(Blindness.class);
-        heroBuffs.add(Charm.class);
-        heroBuffs.add(Chill.class);
-        heroBuffs.add(Corruption.class);
-        heroBuffs.add(Cripple.class);
-        heroBuffs.add(Daze.class);
-        heroBuffs.add(Degrade.class);
-        heroBuffs.add(Doom.class);
-        heroBuffs.add(Dread.class);
-        heroBuffs.add(Drowsy.class);
-        heroBuffs.add(EnhancedRings.class);
-        heroBuffs.add(Foresight.class);
-        heroBuffs.add(Frost.class);
-        heroBuffs.add(Fury.class);
-        heroBuffs.add(Haste.class);
-        heroBuffs.add(Hex.class);
-        heroBuffs.add(Invisibility.class);
-        heroBuffs.add(Levitation.class);
-        heroBuffs.add(Light.class);
-        heroBuffs.add(MagicalSight.class);
-        heroBuffs.add(MagicalSleep.class);
-        heroBuffs.add(MagicImmune.class);
-        heroBuffs.add(MindVision.class);
-        heroBuffs.add(Ooze.class);
-        heroBuffs.add(Paralysis.class);
-        heroBuffs.add(Preparation.class);
-        heroBuffs.add(Recharging.class);
-        heroBuffs.add(Terror.class);
-        heroBuffs.add(Speed.class);
-        heroBuffs.add(Stamina.class);
-        heroBuffs.add(Vertigo.class);
-        heroBuffs.add(WellFed.class);
-        heroBuffs.add(Weakness.class);
     }
 
     public int getColor() {

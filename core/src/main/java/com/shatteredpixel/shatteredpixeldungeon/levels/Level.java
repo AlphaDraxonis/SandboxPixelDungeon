@@ -433,6 +433,7 @@ public abstract class Level implements Bundlable {
 				if (m.state == m.HUNTING) m.state = m.WANDERING;
 				m.immunities.add(Amok.class);
 			} else if (m.following && m.playerAlignment == Mob.FRIENDLY_ALIGNMENT) m.intelligentAlly = true;
+			applyZoneBuffs(m);
 		}
 		for (Heap h : heaps.valueList()) {
 			h.seen = false;
@@ -1741,13 +1742,8 @@ public abstract class Level implements Bundlable {
 			Web.affectChar( ch );
 		}
 
-		if (ch.currentZoneBuffs != null && ch.currentZoneBuffs != zone[ch.pos]) {
-			ch.currentZoneBuffs.removeBuffs(ch);
-			ch.currentZoneBuffs = null;
-		}
-		if (zone[ch.pos] != null) {
-			ch.currentZoneBuffs = zone[ch.pos];
-			ch.currentZoneBuffs.affectBuffs(ch);
+		if (!CustomDungeon.isEditing()) {
+			applyZoneBuffs(ch);
 		}
 
 		if (!ch.flying){
@@ -1788,6 +1784,17 @@ public abstract class Level implements Bundlable {
 
 		if (ch.isAlive() && ch instanceof Piranha && !water[ch.pos] && !CustomDungeon.isEditing()){
 			((Piranha) ch).dieOnLand();
+		}
+	}
+
+	public void applyZoneBuffs(Char ch) {
+		if (ch.currentZoneBuffs != null && ch.currentZoneBuffs != zone[ch.pos]) {
+			ch.currentZoneBuffs.removeBuffs(ch);
+			ch.currentZoneBuffs = null;
+		}
+		if (zone[ch.pos] != null) {
+			ch.currentZoneBuffs = zone[ch.pos];
+			ch.currentZoneBuffs.affectBuffs(ch);
 		}
 	}
 	

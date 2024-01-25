@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
+import com.watabou.utils.Bundle;
 
 public class Light extends FlavourBuff {
 	
@@ -34,11 +35,14 @@ public class Light extends FlavourBuff {
 
 	public static final float DURATION	= 250f;
 	public static final int DISTANCE	= 6;
+
+	private int preViewDistance;
 	
 	@Override
 	public boolean attachTo( Char target ) {
 		if (super.attachTo( target )) {
 			if (Dungeon.level != null) {
+				preViewDistance = target.viewDistance;
 				target.viewDistance = Math.max( Dungeon.level.viewDistance, DISTANCE );
 				Dungeon.observe();
 			}
@@ -50,7 +54,7 @@ public class Light extends FlavourBuff {
 	
 	@Override
 	public void detach() {
-		target.viewDistance = Dungeon.level.viewDistance;
+		target.viewDistance = preViewDistance > 0 ? preViewDistance : Dungeon.level.viewDistance;
 		Dungeon.observe();
 		super.detach();
 	}
@@ -73,5 +77,19 @@ public class Light extends FlavourBuff {
 	public void fx(boolean on) {
 		if (on) target.sprite.add(CharSprite.State.ILLUMINATED);
 		else target.sprite.remove(CharSprite.State.ILLUMINATED);
+	}
+
+	private static final String PRE_VIEW_DISTANCE = "pre_view_distance";
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		preViewDistance = bundle.getInt(PRE_VIEW_DISTANCE);
+	}
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put(PRE_VIEW_DISTANCE, preViewDistance);
 	}
 }

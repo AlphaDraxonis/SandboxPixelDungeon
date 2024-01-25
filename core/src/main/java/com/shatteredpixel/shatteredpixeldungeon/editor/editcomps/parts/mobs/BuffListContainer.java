@@ -20,17 +20,8 @@ import java.util.Set;
 
 public abstract class BuffListContainer extends ItemContainerWithLabel<BuffItem> {
 
-
-    public BuffListContainer(List<BuffItem> itemList, String label) {
-        super(itemList, label);
-    }
-
     public BuffListContainer(List<BuffItem> itemList, DefaultEditComp<?> editComp, String label) {
-        super(itemList, editComp, label);
-    }
-
-    public BuffListContainer(List<BuffItem> itemList, DefaultEditComp<?> editComp, boolean reverseUiOrder, String label) {
-        super(itemList, editComp, reverseUiOrder, label);
+        super(itemList, editComp, true, label);
     }
 
     @Override
@@ -44,10 +35,12 @@ public abstract class BuffListContainer extends ItemContainerWithLabel<BuffItem>
                 ChooseOneInCategoriesBody.BtnRow[] ret = new ChooseOneInCategoriesBody.BtnRow[category.length];
                 for (int i = 0; i < ret.length; i++) {
                     Buff b = Reflection.newInstance((Class<? extends Buff>) category[i]);
+                    b.permanent = true;//for desc
                     ret[i] = new ChooseOneInCategoriesBody.BtnRow(b.name(), b.desc(), new BuffIcon(b, true)) {
                         @Override
                         protected void onClick() {
                             finish();
+                            b.permanent = false;
                             addNewItem(new BuffItem(b));
                         }
                     };

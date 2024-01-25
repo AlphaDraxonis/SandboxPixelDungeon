@@ -90,7 +90,7 @@ public class Buff extends Actor {
     @Override
     public boolean act() {
         if (permanent){
-            spend(TICK);
+            spend(0.005f);
         } else diactivate();
         return true;
     }

@@ -29,7 +29,7 @@ public class FlavourBuff extends Buff {
 	@Override
 	public boolean act() {
 		if (permanent){
-			spend(TICK);
+			spend(0.005f);
 		} else detach();
 		return true;
 	}

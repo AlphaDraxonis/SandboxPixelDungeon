@@ -5,12 +5,21 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.Wnd
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffListContainer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BuffItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -62,11 +71,13 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Point;
+import com.watabou.utils.Reflection;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public final class WndZones {
 
@@ -324,7 +335,7 @@ public final class WndZones {
                     //no title or desc
                     height = -1;
                     layoutCompsInRectangles(comps);
-                    layoutCompsLinear(transitionEdit, chasmDest);
+                    layoutCompsLinear(transitionEdit, chasmDest, heroBuffs, mobBuffs);
                 }
 
                 @Override
@@ -419,6 +430,7 @@ public final class WndZones {
         protected StyledButton addTransition;
         protected StyledSpinner chasmDest;
         protected TransitionEditPart transitionEdit;
+        protected BuffListContainer heroBuffs, mobBuffs;
 
         public EditZoneCompBase(Zone zone) {
             super(zone);
@@ -578,6 +590,73 @@ public final class WndZones {
                 addTransition(zone.zoneTransition);
             }
 
+            List<BuffItem> asBuffItems = new ArrayList<>();
+            for (Class<? extends Buff> b : zone.heroBuffs) {
+                Buff buff = Reflection.newInstance(b);
+                buff.zoneBuff = buff.permanent = true;
+                asBuffItems.add(new BuffItem(buff));
+            }
+            heroBuffs = new BuffListContainer(asBuffItems, EditZoneCompBase.this, Messages.get(EditZoneComp.class, "hero_buffs")) {
+                @Override
+                protected Set<Class<? extends Buff>> getBuffsToIgnore() {
+                    Set<Class<? extends Buff>> buffsToIgnore = super.getBuffsToIgnore();
+                    for (Class<? extends Buff> c : ChampionEnemy.CLASSES) {
+                        buffsToIgnore.add(c);
+                    }
+                    buffsToIgnore.add(Amok.class);
+                    buffsToIgnore.add(Terror.class);
+                    buffsToIgnore.add(Dread.class);
+                    return buffsToIgnore;
+                }
+                @Override
+                protected Buff doAddBuff(Class<? extends Buff> buff) {
+                    zone.heroBuffs.add(buff);
+                    updateObj();
+                    Buff b = Reflection.newInstance(buff);
+                    b.zoneBuff = b.permanent = true;
+                    return b;
+                }
+
+                @Override
+                protected void doRemoveBuff(Buff buff) {
+                    zone.heroBuffs.remove(buff.getClass());
+                    updateObj();
+                }
+            };
+            add(heroBuffs);
+
+            asBuffItems = new ArrayList<>();
+            for (Class<? extends Buff> b : zone.mobBuffs) {
+                Buff buff = Reflection.newInstance(b);
+                buff.zoneBuff = buff.permanent = true;
+                asBuffItems.add(new BuffItem(buff));
+            }
+            mobBuffs = new BuffListContainer(asBuffItems, EditZoneCompBase.this, Messages.get(EditZoneComp.class, "mob_buffs")) {
+                @Override
+                protected Set<Class<? extends Buff>> getBuffsToIgnore() {
+                    Set<Class<? extends Buff>> buffsToIgnore = super.getBuffsToIgnore();
+                    buffsToIgnore.add(MagicalSight.class);
+                    buffsToIgnore.add(Foresight.class);
+                    return buffsToIgnore;
+                }
+
+                @Override
+                protected Buff doAddBuff(Class<? extends Buff> buff) {
+                    zone.mobBuffs.add(buff);
+                    updateObj();
+                    Buff b = Reflection.newInstance(buff);
+                    b.zoneBuff = b.permanent = true;
+                    return b;
+                }
+
+                @Override
+                protected void doRemoveBuff(Buff buff) {
+                    zone.mobBuffs.remove(buff.getClass());
+                    updateObj();
+                }
+            };
+            add(mobBuffs);
+
             for (Component c : comps) {
                 if (c != null) add(c);
             }
@@ -594,7 +673,7 @@ public final class WndZones {
 
             height = desc.bottom() + 1;
             layoutCompsInRectangles(comps);
-            layoutCompsLinear(transitionEdit, chasmDest);
+            layoutCompsLinear(transitionEdit, chasmDest, heroBuffs, mobBuffs);
         }
 
         private void addTransition(LevelTransition transition) {
@@ -747,7 +826,7 @@ public final class WndZones {
             delete.setRect(rename.right() + 2, title.top() + (title.height() - delete.icon().height) * 0.5f, delete.icon().width, delete.icon().height);
 
             layoutCompsInRectangles(comps);
-            layoutCompsLinear(transitionEdit, chasmDest);
+            layoutCompsLinear(transitionEdit, chasmDest, heroBuffs, mobBuffs);
         }
 
     }

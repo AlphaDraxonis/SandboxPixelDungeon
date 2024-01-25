@@ -86,6 +86,8 @@ public abstract class ChampionEnemy extends Buff {
 		immunities.add(AllyBuff.class);
 	}
 
+	public static final Class[] CLASSES = {Blazing.class, Projecting.class, AntiMagic.class, Giant.class, Blessed.class, Growing.class};
+
 	public static void rollForChampion(Mob m){
 		if (Dungeon.mobsToChampion <= 0) Dungeon.mobsToChampion = 8;
 
@@ -93,15 +95,7 @@ public abstract class ChampionEnemy extends Buff {
 
 		//we roll for a champion enemy even if we aren't spawning one to ensure that
 		//mobsToChampion does not affect levelgen RNG (number of calls to Random.Int() is constant)
-		Class<?extends ChampionEnemy> buffCls;
-		switch (Random.Int(6)){
-			case 0: default:    buffCls = Blazing.class;      break;
-			case 1:             buffCls = Projecting.class;   break;
-			case 2:             buffCls = AntiMagic.class;    break;
-			case 3:             buffCls = Giant.class;        break;
-			case 4:             buffCls = Blessed.class;      break;
-			case 5:             buffCls = Growing.class;      break;
-		}
+		Class<? extends ChampionEnemy> buffCls = CLASSES[Random.Int(6)];
 
 		if (Dungeon.mobsToChampion <= 0 && Dungeon.isChallenged(Challenges.CHAMPION_ENEMIES)) {
 			Buff.affect(m, buffCls);

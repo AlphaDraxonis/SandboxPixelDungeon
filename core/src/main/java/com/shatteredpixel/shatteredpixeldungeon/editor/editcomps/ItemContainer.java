@@ -77,15 +77,15 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         add(addBtn);
 
         for (Item i : itemList) {
-            addItemToUI(i, true);
+            addItemToUI(i, !reverseUiOrder);
         }
     }
 
     public final void addNewItem(T item) {
         int sizePrev = itemList.size();
         doAddItem((T) item);
-        if (itemList.size() > sizePrev)
-            addItemToUI(item, false);//if it wasnt stacked
+        if (itemList.size() > sizePrev)//if it wasn't stacked
+            addItemToUI(item, false);
         else {
             updateItemListOrder();
         }
@@ -249,6 +249,11 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         @Override
         protected boolean onLongClick() {
             return removeSlot(this);
+        }
+
+        @Override
+        protected void onRightClick() {
+            removeSlot(this);
         }
 
         @Override
