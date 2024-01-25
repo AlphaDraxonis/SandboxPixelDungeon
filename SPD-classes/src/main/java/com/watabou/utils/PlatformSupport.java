@@ -40,6 +40,8 @@ public abstract class PlatformSupport {
 
 	public abstract boolean connectedToUnmeteredNetwork();
 
+	public abstract boolean supportsVibration();
+
 	public void vibrate( int millis ){
 		if (ControllerHandler.isControllerConnected()) {
 			ControllerHandler.vibrate(millis);
