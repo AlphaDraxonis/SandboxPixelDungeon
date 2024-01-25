@@ -4,39 +4,30 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditBuffComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 
 public class BuffIndicatorEditor extends BuffIndicator {
 
-    private final EditMobComp editMobComp;
+    private DefaultEditComp<?> editComp;
 
-    public BuffIndicatorEditor(Char ch, boolean large, EditMobComp editMobComp) {
+    public BuffIndicatorEditor(Char ch, boolean large, DefaultEditComp<?> editComp) {
         super(ch, large);
-        this.editMobComp = editMobComp;
+        this.editComp = editComp;
     }
 
     protected BuffButton createBuffButton(Buff buff, boolean large) {
-        return new BuffButtonEditor(buff, large, this);
+        return new BuffButtonEditor(buff, large);
     }
 
-    public void updateBuffs() {
-        if (editMobComp != null) editMobComp.updateObj();
-        layout();
-    }
+    private class BuffButtonEditor extends BuffButton {
 
-    private static class BuffButtonEditor extends BuffButton {
-
-        private final BuffIndicatorEditor buffIndicator;
-
-        public BuffButtonEditor(Buff buff, boolean large, BuffIndicatorEditor buffIndicator) {
+        public BuffButtonEditor(Buff buff, boolean large) {
             super(buff, large);
-            this.buffIndicator = buffIndicator;
         }
 
         protected void onClick() {
             if (buff.icon() != NONE)
-                DefaultEditComp.showSingleWindow(new EditBuffComp(buff, buffIndicator), null);
+                DefaultEditComp.showSingleWindow(new EditBuffComp(buff, editComp), null);
         }
 
     }

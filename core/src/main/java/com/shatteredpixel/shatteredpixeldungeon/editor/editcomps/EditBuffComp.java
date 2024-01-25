@@ -1,11 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel.INFINITY;
-
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -15,49 +11,48 @@ import com.watabou.noosa.ui.Component;
 
 public class EditBuffComp extends DefaultEditComp<Buff> {
 
-    private final BuffIndicatorEditor buffIndicator;
-
     private final Component[] comps;
 
-    private final RedButton removeBuff;
-    private final Spinner changeDuration;
+    private RedButton removeBuff;
+    private Spinner changeDuration;
 
-    public EditBuffComp(Buff buff, BuffIndicatorEditor buffIndicator) {
+    public EditBuffComp(Buff buff, DefaultEditComp<?> editComp) {
         super(buff);
 
-        this.buffIndicator = buffIndicator;
-
-        removeBuff = new RedButton(Messages.get(EditBuffComp.class, "remove")) {
-            @Override
-            protected void onClick() {
-//                  EditorScene.show(new WndOptions((Image)null,"really remove?","msg","Yes","No"));
-                buff.detach();
-                buffIndicator.updateBuffs();
-                EditorUtilies.getParentWindow(this).hide();
-            }
-        };
-
-        add(removeBuff);
-
-
-        SpinnerIntegerModel spinnerModel = new SpinnerIntegerModel(1, 500, (int) buff.visualcooldown(), 1, true, INFINITY) {
-            @Override
-            public float getInputFieldWidth(float height) {
-                return height * 1.4f;
-            }
-        };
-
-        if (false) {//only apply permanent buffs for now
-            changeDuration = new Spinner(spinnerModel, " " + Messages.get(EditBuffComp.class, "duration"), 10) {
+        if (buff.target != null) {
+            removeBuff = new RedButton(Messages.get(EditBuffComp.class, "remove")) {
                 @Override
-                protected void afterClick() {
-                    onSpinnerValueChange(true);
+                protected void onClick() {
+                    buff.detach();
+                    if (editComp != null) {
+                        if (editComp instanceof EditMobComp) ((EditMobComp) editComp).buffs.removeBuffFromUI(buff.getClass());
+                        editComp.updateObj();
+                    }
+                    EditorUtilies.getParentWindow(this).hide();
                 }
             };
-            add(changeDuration);
+            add(removeBuff);
+        }
 
-            changeDuration.addChangeListener(() -> onSpinnerValueChange(false));
-        } else changeDuration = null;
+
+//        SpinnerIntegerModel spinnerModel = new SpinnerIntegerModel(1, 500, (int) buff.visualcooldown(), 1, true, INFINITY) {
+//            @Override
+//            public float getInputFieldWidth(float height) {
+//                return height * 1.4f;
+//            }
+//        };
+
+//        if (false) {//only apply permanent buffs for now
+//            changeDuration = new Spinner(spinnerModel, " " + Messages.get(EditBuffComp.class, "duration"), 10) {
+//                @Override
+//                protected void afterClick() {
+//                    onSpinnerValueChange(true);
+//                }
+//            };
+//            add(changeDuration);
+//
+//            changeDuration.addChangeListener(() -> onSpinnerValueChange(false));
+//        } else changeDuration = null;
 
 
         comps = new Component[]{changeDuration, removeBuff};

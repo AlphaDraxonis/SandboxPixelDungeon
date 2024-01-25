@@ -1,11 +1,15 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.watabou.noosa.Image;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StyledCheckBox extends StyledButton {
 
@@ -80,6 +84,9 @@ public class StyledCheckBox extends StyledButton {
             checked = value;
             checkboxIcon.copy(Icons.get(checked ? Icons.CHECKED : Icons.UNCHECKED));
         }
+        for (Consumer<Boolean> listener : checkedListeners) {
+            listener.accept(value);
+        }
     }
 
     @Override
@@ -97,5 +104,15 @@ public class StyledCheckBox extends StyledButton {
             add(checkboxIcon);
             layout();
         }
+    }
+
+
+    private final List<Consumer<Boolean>> checkedListeners = new ArrayList<>();
+    public void addChangeListener(Consumer<Boolean> listener) {
+        checkedListeners.add(listener);
+    }
+
+    public void removeChangeListener(Consumer<Boolean> listener) {
+        checkedListeners.remove(listener);
     }
 }

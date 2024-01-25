@@ -14,11 +14,11 @@ import com.watabou.noosa.ui.Component;
 public class QuestSpinner extends StyledSpinner {
 
 
-    public QuestSpinner(Quest quest, FloatFunction<Float> inputFiledWith) {
+    public QuestSpinner(Quest quest, FloatFunction<Float> inputFieldWith) {
         super(new QuestSpinnerModel(quest) {
             @Override
             public float getInputFieldWidth(float height) {
-                return inputFiledWith.get(height);
+                return inputFieldWith.get(height);
             }
         }, Messages.get(QuestSpinner.class, "label"));
         setButtonWidth(9f);

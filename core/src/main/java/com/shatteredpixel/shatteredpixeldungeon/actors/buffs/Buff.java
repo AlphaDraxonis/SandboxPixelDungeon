@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
@@ -152,7 +153,7 @@ public class Buff extends Actor {
 
     //to handle the common case of showing how many turns are remaining in a buff description.
     protected String dispTurns(float input) {
-        return Messages.decimalFormat("#.##", input);
+        return permanent ? SpinnerIntegerModel.INFINITY : Messages.decimalFormat("#.##", input);
     }
 
     //buffs act after the hero, so it is often useful to use cooldown+1 when display buff time remaining

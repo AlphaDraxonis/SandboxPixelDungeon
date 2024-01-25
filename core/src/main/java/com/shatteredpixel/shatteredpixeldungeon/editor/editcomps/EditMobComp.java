@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffListContainer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ChangeMobNameDesc;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.FistSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.HeroClassSpinner;
@@ -43,10 +44,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.Ques
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.DestCellSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.WndEditStats;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Buffs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BuffItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
@@ -55,7 +56,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
@@ -64,7 +64,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrCo
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledItemSelector;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -92,7 +91,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SpawnerSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -102,10 +100,8 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -117,30 +113,31 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
 
     //TODO demon spawner should set their cooldown here!
-    private final MobStateSpinner mobStateSpinner;
-    private final StyledSpinner playerAlignment;
-    private final StyledButton addBuffs, editStats;
+    private MobStateSpinner mobStateSpinner;
+    private StyledSpinner playerAlignment;
+    private StyledButton editStats;
+    BuffListContainer buffs;
 
-    private final ItemContainer<Item> mimicItems;
-    private final StyledItemSelector mobWeapon, mobArmor, thiefItem;
-    private final StyledItemSelector mobRing, mobArti, mobMisc;
-    private final LotusLevelSpinner lotusLevelSpinner;
-    private final StyledSpinner sheepLifespan;
-    private final QuestSpinner questSpinner;
-    private final StyledItemSelector questItem1, questItem2;
-    private final StyledCheckBox spawnQuestRoom;
-    private final ItemSelectorList<Item> blacksmithQuestRewards;
+    private ItemContainer<Item> mimicItems;
+    private StyledItemSelector mobWeapon, mobArmor, thiefItem;
+    private StyledItemSelector mobRing, mobArti, mobMisc;
+    private LotusLevelSpinner lotusLevelSpinner;
+    private StyledSpinner sheepLifespan;
+    private QuestSpinner questSpinner;
+    private StyledItemSelector questItem1, questItem2;
+    private StyledCheckBox spawnQuestRoom;
+    private ItemSelectorList<Item> blacksmithQuestRewards;
 
-    private final StyledSpinner sentryRange, sentryDelay;
-    private final StyledSpinner abilityCooldown;
-    private final ItemContainer<MobItem> summonMobs;
-    private final StyledSpinner tenguPhase, tenguRange, dm300pylonsNeeded, yogSpawnersAlive;
-    private final ItemSelectorList<MobItem> yogNormalFists, yogChallengeFists;
-    private final StyledCheckBox dm300destroyWalls, pylonAlwaysActive, showBossBar;
+    private StyledSpinner sentryRange, sentryDelay;
+    private StyledSpinner abilityCooldown;
+    private ItemContainer<MobItem> summonMobs;
+    private StyledSpinner tenguPhase, tenguRange, dm300pylonsNeeded, yogSpawnersAlive;
+    private ItemSelectorList<MobItem> yogNormalFists, yogChallengeFists;
+    private StyledCheckBox dm300destroyWalls, pylonAlwaysActive, showBossBar;
 
-    private final StyledSpinner heroMobLvl, heroMobStr;
-    private final HeroClassSpinner heroClassSpinner;
-    private final HeroClassSpinner.SubclassSpinner heroSubclassSpinner;
+    private StyledSpinner heroMobLvl, heroMobStr;
+    private HeroClassSpinner heroClassSpinner;
+    private HeroClassSpinner.SubclassSpinner heroSubclassSpinner;
 
 
     private final Component[] rectComps, linearComps;
@@ -168,10 +165,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 }
             };
             add(mimicItems);
-        } else mimicItems = null;
+        }
 
         if (mob instanceof ItemSelectables.WeaponSelectable) {
-            mobWeapon = new StyledItemSelector(Messages.get(EditMobComp.class, "weapon"),
+            mobWeapon = new StyledItemSelector(label("weapon"),
                     Weapon.class, ((ItemSelectables.WeaponSelectable) mob).weapon(), ((ItemSelectables.WeaponSelectable) mob).useNullWeapon()) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
@@ -182,9 +179,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             };
             mobWeapon.setShowWhenNull(ItemSpriteSheet.WEAPON_HOLDER);
             add(mobWeapon);
-        } else mobWeapon = null;
+        }
         if (mob instanceof ItemSelectables.ArmorSelectable) {
-            mobArmor = new StyledItemSelector(Messages.get(EditMobComp.class, "armor"),
+            mobArmor = new StyledItemSelector(label("armor"),
                     Armor.class, ((ItemSelectables.ArmorSelectable) mob).armor(), ((ItemSelectables.ArmorSelectable) mob).useNullArmor()) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
@@ -195,7 +192,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             };
             mobArmor.setShowWhenNull(ItemSpriteSheet.ARMOR_HOLDER);
             add(mobArmor);
-        } else mobArmor = null;
+        }
         if (mob instanceof HeroMob) {
             Hero hero = ((HeroMob) mob).hero();
 
@@ -236,6 +233,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 {
                     setAbsoluteMinimum(1);
                 }
+
                 @Override
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
@@ -269,19 +267,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             heroSubclassSpinner = new HeroClassSpinner.SubclassSpinner(hero);
             heroSubclassSpinner.addChangeListener(this::updateObj);
             add(heroSubclassSpinner);
-
-        } else {
-            mobRing = null;
-            mobArti = null;
-            mobMisc = null;
-            heroMobLvl = null;
-            heroMobStr = null;
-            heroClassSpinner = null;
-            heroSubclassSpinner = null;
         }
 
         if (mob instanceof Thief) {
-            thiefItem = new StyledItemSelector(Messages.get(EditMobComp.class, "item"),
+            thiefItem = new StyledItemSelector(label("item"),
                     Item.class, ((Thief) mob).item, ItemSelector.NullTypeSelector.NONE) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
@@ -296,13 +285,13 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 }
             };
             add(thiefItem);
-        } else thiefItem = null;
+        }
 
-        if (!(mob instanceof Pylon)) {//mob (Pylon) should not be instanceof QuestNPC!!!
+        if (!(mob instanceof Pylon) || mob instanceof QuestNPC<?>) {//mob (Pylon) should not be instanceof QuestNPC!!!
             mobStateSpinner = new MobStateSpinner(mob);
             add(mobStateSpinner);
             if (mob instanceof Mimic) mobStateSpinner.addChangeListener(this::updateObj);
-        } else mobStateSpinner = null;//mob instanceof QuestNPC MUST be false in this line
+        }
 
         if (mob instanceof WandOfRegrowth.Lotus) {
             WandOfRegrowth.Lotus lotus = (WandOfRegrowth.Lotus) mob;
@@ -318,8 +307,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 }
             };
             add(lotusLevelSpinner);
-        } else {
-            lotusLevelSpinner = null;
         }
 
         if (mob instanceof Sheep) {
@@ -328,18 +315,18 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public int getClicksPerSecondWhileHolding() {
                     return 120;
                 }
-            }, Messages.get(EditMobComp.class, "sheep_lifespan"), 8, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_HEALING));
+            }, label("sheep_lifespan"), 8, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_HEALING));
             sheepLifespan.icon().scale.set(9f / sheepLifespan.icon().height());
             sheepLifespan.addChangeListener(() -> ((Sheep) mob).lifespan = (int) sheepLifespan.getValue());
             add(sheepLifespan);
-        } else sheepLifespan = null;
+        }
 
         if (mob instanceof QuestNPC<?>) {
             questSpinner = new QuestSpinner(((QuestNPC<?>) mob).quest, h -> mobStateSpinner.getCurrentInputFieldWith());
             add(questSpinner);
             if (mob instanceof Wandmaker) {
                 if (mob.pos < 0) {
-                    spawnQuestRoom = new StyledCheckBox(Messages.get(EditMobComp.class, "spawn_quest_room")) {
+                    spawnQuestRoom = new StyledCheckBox(label("spawn_quest_room")) {
                         @Override
                         public void checked(boolean value) {
                             super.checked(value);
@@ -355,23 +342,23 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                         } else spawnQuestRoom.enable(true);
                     });
                 } else spawnQuestRoom = null;
-                questItem1 = new StyledItemSelector(Messages.get(EditMobComp.class, "wand_1"),
+                questItem1 = new StyledItemSelector(label("wand_1"),
                         Wand.class, ((Wandmaker) mob).quest.wand1, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
                         ((Wandmaker) mob).quest.wand1 = (Wand) selectedItem;
-                        EditMobComp.this.updateObj();
+                        updateObj();
                     }
                 };
                 add(questItem1);
-                questItem2 = new StyledItemSelector(Messages.get(EditMobComp.class, "wand_2"),
+                questItem2 = new StyledItemSelector(label("wand_2"),
                         Wand.class, ((Wandmaker) mob).quest.wand2, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
                         ((Wandmaker) mob).quest.wand2 = (Wand) selectedItem;
-                        EditMobComp.this.updateObj();
+                        updateObj();
                     }
                 };
                 add(questItem2);
@@ -380,54 +367,48 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 blacksmithQuestRewards = null;
 
             } else if (mob instanceof Ghost) {
-                questItem1 = new StyledItemSelector(Messages.get(EditMobComp.class, "weapon"),
+                questItem1 = new StyledItemSelector(label("weapon"),
                         Weapon.class, ((Ghost) mob).quest.weapon, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
                         ((Ghost) mob).quest.weapon = (Weapon) selectedItem;
-                        EditMobComp.this.updateObj();
+                        updateObj();
                     }
                 };
                 add(questItem1);
-                questItem2 = new StyledItemSelector(Messages.get(EditMobComp.class, "armor"),
+                questItem2 = new StyledItemSelector(label("armor"),
                         Armor.class, ((Ghost) mob).quest.armor, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
                         ((Ghost) mob).quest.armor = (Armor) selectedItem;
-                        EditMobComp.this.updateObj();
+                        updateObj();
                     }
                 };
                 add(questItem2);
                 questItem1.setShowWhenNull(ItemSpriteSheet.SOMETHING);
                 questItem2.setShowWhenNull(ItemSpriteSheet.SOMETHING);
-                spawnQuestRoom = null;
-                blacksmithQuestRewards = null;
+
             } else if (mob instanceof Imp) {
-                questItem1 = new StyledItemSelector(Messages.get(EditMobComp.class, "ring"), Ring.class,
+                questItem1 = new StyledItemSelector(label("ring"), Ring.class,
                         ((Imp) mob).quest.reward, ItemSelector.NullTypeSelector.RANDOM) {
                     @Override
                     public void setSelectedItem(Item selectedItem) {
                         super.setSelectedItem(selectedItem);
                         ((Imp) mob).quest.reward = (Ring) selectedItem;
-                        EditMobComp.this.updateObj();
+                        updateObj();
                     }
                 };
                 add(questItem1);
                 questItem1.setShowWhenNull(ItemSpriteSheet.SOMETHING);
-                questItem2 = null;
-                spawnQuestRoom = null;
-                blacksmithQuestRewards = null;
+
             } else {
-                spawnQuestRoom = null;
-                questItem1 = null;
-                questItem2 = null;
                 if (mob instanceof Blacksmith) {
                     BlacksmithQuest quest = ((Blacksmith) mob).quest;
                     if (quest.smithRewards == null) quest.smithRewards = new ArrayList<>(3);
                     while (quest.smithRewards.size() < 3) quest.smithRewards.add(new Item());
-                    blacksmithQuestRewards = new ItemSelectorList<Item>(quest.smithRewards, Messages.get(EditMobComp.class, "blacksmith_items")) {
+                    blacksmithQuestRewards = new ItemSelectorList<Item>(quest.smithRewards, label("blacksmith_items")) {
                         @Override
                         public void change(int index) {
                             ItemSelector.showSelectWindow(new WndBag.ItemSelector() {
@@ -476,56 +457,47 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                         }
                     };
                     add(blacksmithQuestRewards);
-                } else blacksmithQuestRewards = null;
+                }
             }
-        } else {
-            questSpinner = null;
-            spawnQuestRoom = null;
-            questItem1 = null;
-            questItem2 = null;
-            blacksmithQuestRewards = null;
         }
 
         if (mob instanceof SentryRoom.Sentry) {
             sentryRange = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((SentryRoom.Sentry) mob).range, 1, false, null),
-                    Messages.get(EditMobComp.class, "range"));
+                    label("range"));
             sentryRange.addChangeListener(() -> ((SentryRoom.Sentry) mob).range = (int) sentryRange.getValue());
             add(sentryRange);
             sentryDelay = new StyledSpinner(new SpinnerFloatModel(0f, 100f, ((SentryRoom.Sentry) mob).getInitialChargeDelay() - 1, false),
-                    Messages.get(EditMobComp.class, "delay"));
+                    label("delay"));
             sentryDelay.addChangeListener(() -> ((SentryRoom.Sentry) mob).setInitialChargeDelay(((SpinnerFloatModel) sentryDelay.getModel()).getAsFloat() + 1));
             add(sentryDelay);
-        } else {
-            sentryRange = null;
-            sentryDelay = null;
         }
 
         if (mob instanceof Guard) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Guard) mob).maxChainCooldown, 1, false, null),
-                    Messages.get(EditMobComp.class, "chains_cd"), 8, new ItemSprite(ItemSpriteSheet.ARTIFACT_CHAINS));
+                    label("chains_cd"), 8, new ItemSprite(ItemSpriteSheet.ARTIFACT_CHAINS));
             abilityCooldown.addChangeListener(() -> ((Guard) mob).maxChainCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof DM200) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((DM200) mob).maxVentCooldown, 1, false, null),
-                    Messages.get(EditMobComp.class, "vent_cd"), 8, BlobItem.createIcon(mob instanceof DM201 ? PermaGas.PCorrosiveGas.class : PermaGas.PToxicGas.class));
+                    label("vent_cd"), 8, BlobItem.createIcon(mob instanceof DM201 ? PermaGas.PCorrosiveGas.class : PermaGas.PToxicGas.class));
             abilityCooldown.addChangeListener(() -> ((DM200) mob).maxVentCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof Golem) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Golem) mob).maxTeleCooldown, 1, false, null),
-                    Messages.get(EditMobComp.class, "tele_cd"), 8);
+                    label("tele_cd"), 8);
             abilityCooldown.addChangeListener(() -> ((Golem) mob).maxTeleCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) {
             com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner m = (com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) mob;
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, m.maxWebCoolDown, 1, false, null),
-                    Messages.get(EditMobComp.class, "web_cd"), 8);
+                    label("web_cd"), 8);
             abilityCooldown.addChangeListener(() -> m.maxWebCoolDown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         } else if (mob instanceof DemonSpawner) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(0, Integer.MAX_VALUE, (int) ((DemonSpawner) mob).maxSpawnCooldown, 1, false, null) {
                 @Override
                 public String getDisplayString() {
-                    if ((int) getValue() == 0) return Messages.get(EditMobComp.class, "by_depth");
+                    if ((int) getValue() == 0) return label("by_depth");
                     return super.getDisplayString();
                 }
 
@@ -533,11 +505,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
-            }, Messages.get(EditMobComp.class, "spawn_cd"), 8);
+            }, label("spawn_cd"), 8);
             abilityCooldown.setButtonWidth(9f);
             abilityCooldown.addChangeListener(() -> ((DemonSpawner) mob).maxSpawnCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
-        } else abilityCooldown = null;
+        }
+        ;
 
         if (mob instanceof SpawnerMob) {
             List<MobItem> asMobItems = new ArrayList<>();
@@ -546,7 +519,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     asMobItems.add(new MobItem(m));
                 }
             }
-            summonMobs = new ItemContainerWithLabel<MobItem>(asMobItems, null, true, Messages.get(EditMobComp.class, "summon_mob")) {
+            summonMobs = new ItemContainerWithLabel<MobItem>(asMobItems, null, true, label("summon_mob")) {
                 @Override
                 public boolean itemSelectable(Item item) {
                     return item instanceof MobItem;
@@ -580,7 +553,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 }
             };
             add(summonMobs);
-        } else summonMobs = null;
+        }
 
         if (mob instanceof Tengu) {
             tenguPhase = new StyledSpinner(new SpinnerIntegerModel(1, 2, ((Tengu) mob).phase, 1, true, null) {
@@ -588,20 +561,17 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public void displayInputAnyNumberDialog() {
                     //disabled
                 }
-            }, Messages.get(EditMobComp.class, "phase"));
+            }, label("phase"));
             tenguPhase.addChangeListener(() -> ((Tengu) mob).phase = (int) tenguPhase.getValue());
             add(tenguPhase);
             tenguRange = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((Tengu) mob).arenaRadius, 1, false, null),
-                    Messages.get(EditMobComp.class, "range"));
+                    label("range"));
             tenguRange.addChangeListener(() -> ((Tengu) mob).arenaRadius = (int) tenguRange.getValue());
             add(tenguRange);
-        } else {
-            tenguPhase = null;
-            tenguRange = null;
         }
 
         if (mob instanceof DM300) {
-            dm300destroyWalls = new StyledCheckBox(Messages.get(EditMobComp.class, "dm300_destroy_walls")) {
+            dm300destroyWalls = new StyledCheckBox(label("dm300_destroy_walls")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -613,13 +583,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(dm300destroyWalls);
 
             dm300pylonsNeeded = new StyledSpinner(new SpinnerIntegerModel(0, 4, ((DM300) mob).pylonsNeeded, 1, false, null),
-                    Messages.get(EditMobComp.class, "dm300_pylons_needed"));
+                    label("dm300_pylons_needed"));
             dm300pylonsNeeded.addChangeListener(() -> ((DM300) mob).pylonsNeeded = (int) dm300pylonsNeeded.getValue());
             add(dm300pylonsNeeded);
 
-        } else {
-            dm300destroyWalls = null;
-            dm300pylonsNeeded = null;
         }
 
         if (mob instanceof YogDzewa) {
@@ -634,7 +601,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
-            }, Messages.get(EditMobComp.class, "spawners_alive"), 6 + (PixelScene.landscape() ? 2 : 0), new SpawnerSprite());
+            }, label("spawners_alive"), 6 + (PixelScene.landscape() ? 2 : 0), new SpawnerSprite());
             yogSpawnersAlive.addChangeListener(() -> {
                 Integer val = (Integer) yogSpawnersAlive.getValue();
                 if (val == null) val = -1;
@@ -643,18 +610,14 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             yogSpawnersAlive.setButtonWidth(9f);
             add(yogSpawnersAlive);
 
-            yogNormalFists = new FistSelector(((YogDzewa) mob).fistSummons, " " + Messages.get(EditMobComp.class, "normal_fists") + ":", 7 + (PixelScene.landscape() ? 2 : 0));
+            yogNormalFists = new FistSelector(((YogDzewa) mob).fistSummons, " " + label("normal_fists") + ":", 7 + (PixelScene.landscape() ? 2 : 0));
             add(yogNormalFists);
-            yogChallengeFists = new FistSelector(((YogDzewa) mob).challengeSummons, " " + Messages.get(EditMobComp.class, "challenge_fists") + ":", 7 + (PixelScene.landscape() ? 2 : 0));
+            yogChallengeFists = new FistSelector(((YogDzewa) mob).challengeSummons, " " + label("challenge_fists") + ":", 7 + (PixelScene.landscape() ? 2 : 0));
             add(yogChallengeFists);
-        } else {
-            yogSpawnersAlive = null;
-            yogNormalFists = null;
-            yogChallengeFists = null;
         }
 
         if (mob instanceof Pylon) {
-            pylonAlwaysActive = new StyledCheckBox(Messages.get(EditMobComp.class, "pylon_always_active")) {
+            pylonAlwaysActive = new StyledCheckBox(label("pylon_always_active")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -664,13 +627,11 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             };
             pylonAlwaysActive.checked(((Pylon) mob).alwaysActive);
             add(pylonAlwaysActive);
-        } else {
-            pylonAlwaysActive = null;
         }
 
         if (mob instanceof Goo || mob instanceof Tengu || mob instanceof DM300
                 || mob instanceof DwarfKing || mob instanceof YogDzewa || mob instanceof CrystalSpire) {
-            showBossBar = new StyledCheckBox(Messages.get(EditMobComp.class, "show_boss_bar")) {
+            showBossBar = new StyledCheckBox(label("show_boss_bar")) {
                 @Override
                 public void checked(boolean value) {
                     super.checked(value);
@@ -680,7 +641,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             };
             showBossBar.checked(mob.showBossBar);
             add(showBossBar);
-        } else showBossBar = null;
+        }
 
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
                 mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper || mob instanceof SentryRoom.Sentry)) {
@@ -705,15 +666,15 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     public String getDisplayString() {
                         switch ((int) getValue()) {
                             case Mob.NORMAL_ALIGNMENT:
-                                return Messages.get(EditMobComp.class, "player_alignment_normal");
+                                return label("player_alignment_normal");
                             case Mob.NEUTRAL_ALIGNMENT:
-                                return Messages.get(EditMobComp.class, "player_alignment_neutral");
+                                return label("player_alignment_neutral");
                             case Mob.FRIENDLY_ALIGNMENT:
-                                return Messages.get(EditMobComp.class, "player_alignment_friendly");
+                                return label("player_alignment_friendly");
                         }
                         return super.getDisplayString();
                     }
-                }, Messages.get(EditMobComp.class, "player_alignment"));
+                }, label("player_alignment"));
                 playerAlignment.setButtonWidth(9f);
                 playerAlignment.addChangeListener(() -> {
                     mob.setPlayerAlignment((int) playerAlignment.getValue());
@@ -723,66 +684,56 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             } else playerAlignment = null;
 
             if (!(mob instanceof Pylon || mob instanceof CrystalSpire)) {
-                addBuffs = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditMobComp.class, "add_buff"), PixelScene.landscape() ? 9 : 8) {
+
+                List<BuffItem> asBuffItems = new ArrayList<>();
+                for (Buff b : mob.buffs()) {
+                    asBuffItems.add(new BuffItem(b));
+                }
+                buffs = new BuffListContainer(asBuffItems, EditMobComp.this, true, label("buffs")) {
                     @Override
-                    protected void onClick() {
-                        Set<Class<? extends Buff>> buffsToIgnore = new HashSet<>();
-                        for (Buff b : mob.buffs()) buffsToIgnore.add(b.getClass());
+                    protected Set<Class<? extends Buff>> getBuffsToIgnore() {
+                        Set<Class<? extends Buff>> buffsToIgnore = super.getBuffsToIgnore();
                         for (Class<?> c : mob.immunities) {
                             if (Buff.class.isAssignableFrom(c)) {
                                 buffsToIgnore.add((Class<? extends Buff>) c);
                             }
                         }
+                        return buffsToIgnore;
+                    }
 
-                        Window w = new WndChooseOneInCategories(
-                                Messages.get(EditMobComp.class, "add_buff_title"), "",
-                                Buffs.getAllBuffs(buffsToIgnore), Buffs.getCatNames()) {
-                            @Override
-                            protected ChooseOneInCategoriesBody.BtnRow[] createCategoryRows(Object[] category) {
-                                ChooseOneInCategoriesBody.BtnRow[] ret = new ChooseOneInCategoriesBody.BtnRow[category.length];
-                                for (int i = 0; i < ret.length; i++) {
-                                    Buff b = Reflection.newInstance((Class<? extends Buff>) category[i]);
-                                    ret[i] = new ChooseOneInCategoriesBody.BtnRow(b.name(), b.desc(), new BuffIcon(b, true)) {
-                                        @Override
-                                        protected void onClick() {
-                                            finish();
-                                            Buff.affect(mob, b.getClass()).permanent = true;
-                                            updateObj();
-                                        }
-                                    };
-                                    ret[i].setLeftJustify(true);
-                                }
-                                return ret;
-                            }
-                        };
-                        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                        else Game.scene().addToFront(w);
+                    @Override
+                    protected Buff doAddBuff(Class<? extends Buff> buff) {
+                        Buff b = Buff.affect(mob, buff);
+                        b.permanent = true;
+                        updateObj();
+                        return b;
+                    }
+
+                    @Override
+                    protected void doRemoveBuff(Buff buff) {
+                        buff.detach();
+                        updateObj();
                     }
                 };
-                add(addBuffs);
-            } else addBuffs = null;
-        } else {
-            playerAlignment = null;
-            addBuffs = null;
+                add(buffs);
+            }
         }
 
         Mob defaultStats = DefaultStatsCache.getDefaultObject(mob.getClass());
         if (defaultStats != null) {
-            editStats = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditMobComp.class, "edit_stats"), PixelScene.landscape() ? 9 : 8) {
+            editStats = new StyledButton(Chrome.Type.GREY_BUTTON_TR, label("edit_stats"), PixelScene.landscape() ? 9 : 8) {
                 @Override
                 protected void onClick() {
-                    Window w = WndEditStats.createWindow((int) Math.ceil(EditMobComp.this.width),
-                            EditorUtilies.getParentWindow(EditMobComp.this).getOffset().y, defaultStats, mob, () -> updateObj());
-                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                    else Game.scene().addToFront(w);
+                    EditorScene.show(WndEditStats.createWindow((int) Math.ceil(EditMobComp.this.width),
+                            EditorUtilies.getParentWindow(EditMobComp.this).getOffset().y, defaultStats, mob, () -> updateObj()));
                 }
             };
             add(editStats);
-        } else editStats = null;
+        }
 
         rectComps = new Component[]{
 
-                mobStateSpinner, playerAlignment,
+                mobStateSpinner, playerAlignment, editStats,
 
                 yogSpawnersAlive,
                 pylonAlwaysActive,
@@ -792,8 +743,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
                 questSpinner == null && playerAlignment != null && mobArmor == null
                         ? EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE : null,
-
-                addBuffs, editStats,
 
                 mob instanceof SentryRoom.Sentry ? EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE : null,
 
@@ -815,7 +764,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 mimicItems,
                 summonMobs,
                 yogNormalFists, yogChallengeFists,
-                blacksmithQuestRewards
+                blacksmithQuestRewards,
+                buffs
         };
     }
 
@@ -824,6 +774,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         super.layout();
         layoutCompsInRectangles(rectComps);
         layoutCompsLinear(linearComps);
+    }
+
+    private static String label(String key) {
+        return Messages.get(EditMobComp.class, key);
     }
 
     @Override
@@ -860,6 +814,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 else ((PylonSprite) pylon.sprite).deactivate();
             }
             ((MobTitleEditor) title).setText(((MobTitleEditor) title).createTitle(obj));
+            ((MobTitleEditor) title).layout();
         }
         desc.text(createDescription());
         if (mobWeapon != null) mobWeapon.updateItem();
@@ -919,7 +874,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (!EditItemComp.areEqual(a.glyphArmor, b.glyphArmor)) return false;
 
         if (a instanceof ItemSelectables.WeaponSelectable) {
-            if (!EditItemComp.areEqual(((ItemSelectables.WeaponSelectable) a).weapon(), ((ItemSelectables.WeaponSelectable) b).weapon())) return false;
+            if (!EditItemComp.areEqual(((ItemSelectables.WeaponSelectable) a).weapon(), ((ItemSelectables.WeaponSelectable) b).weapon()))
+                return false;
         }
         if (a instanceof ItemSelectables.ArmorSelectable) {
             if (!EditItemComp.areEqual(((ItemSelectables.ArmorSelectable) a).armor(), ((ItemSelectables.ArmorSelectable) b).armor())) return false;
