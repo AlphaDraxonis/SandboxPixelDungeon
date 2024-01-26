@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.AlarmTrap;
@@ -82,7 +83,8 @@ public enum Traps {
                 RockfallTrap.class,
                 GnollRockfallTrap.class,
                 OozeTrap.class,
-                UnstableTrap.class
+                UnstableTrap.class,
+                RandomItem.RandomTrap.class
         };
         WATER.classes = new Class[]{
                 ChillingTrap.class,

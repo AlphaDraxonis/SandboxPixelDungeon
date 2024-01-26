@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Reflection;
@@ -39,6 +40,7 @@ public class UnstableTrap extends Trap {
 	private static final Set<Class<? extends Trap>> IGNORE_TRAPS = new HashSet<>();
 	{
 		IGNORE_TRAPS.add(UnstableTrap.class);
+		IGNORE_TRAPS.add(RandomItem.RandomTrap.class);
 	}
 
 	@Override

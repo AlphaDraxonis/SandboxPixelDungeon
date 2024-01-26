@@ -260,6 +260,11 @@ public class ItemSelector extends Component {
         public boolean itemSelectable(Item item) {
             Object obj = item;
             if (obj instanceof ItemItem) obj = ((ItemItem) obj).getObject();
+            else if (obj instanceof EditorItem) {
+                Object o = ((EditorItem<?>) obj).getObject();
+                return itemClasses.isAssignableFrom(obj.getClass())
+                        && (allowRandomItem || !(o instanceof RandomItem));
+            }
             return itemClasses.isAssignableFrom(obj.getClass())
                     && (allowRandomItem || !(obj instanceof RandomItem));
         }

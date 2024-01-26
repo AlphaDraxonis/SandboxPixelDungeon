@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
@@ -20,6 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -943,4 +945,83 @@ public interface RandomItem<T> {
         }
     }
 
+
+
+    class RandomTrap extends Trap implements RandomItem<Trap> {
+
+        {
+            color = 15;
+            shape = WAVES;
+        }
+
+        //can only have one item per slot, and no RandomTrap
+        private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
+        }
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
+            return internalRandomItem.equals(((RandomTrap) obj).internalRandomItem);
+        }
+
+        @Override
+        public Trap[] generateItems() {
+            if (Random.Float() >= internalRandomItem.lootChance()) return null;
+            List<Item> result = internalRandomItem.generateLoot();
+            if (result == null || result.isEmpty()) return null;
+            Trap item = ((TrapItem) result.get(0)).getObject();
+            return new Trap[]{item};
+        }
+
+        @Override
+        public ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
+            return internalRandomItem;
+        }
+
+        @Override
+        public Class<Trap> getType() {
+            return Trap.class;
+        }
+
+        @Override
+        public void activate() {
+        }
+
+        @Override
+        public String name() {
+            return Messages.get(RandomTrap.class, "name");
+        }
+
+        @Override
+        public String desc() {
+            return Messages.get(RandomTrap.class, "desc");
+        }
+
+        @Override
+        public boolean removeInvalidKeys(String invalidLevelName) {
+            return false;
+        }
+        @Override
+        public boolean renameInvalidKeys(String oldName, String newName) {
+            return false;
+        }
+        @Override
+        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
+        }
+        @Override
+        public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+        }
+    }
 }

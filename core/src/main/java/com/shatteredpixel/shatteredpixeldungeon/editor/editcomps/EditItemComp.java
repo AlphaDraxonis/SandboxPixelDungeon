@@ -10,6 +10,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.Cur
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.WndChooseEnchant;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItemDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -358,7 +360,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
     }
 
-    private static String label(String key) {
+    static String label(String key) {
         return Messages.get(EditItemComp.class, key);
     }
 
@@ -482,6 +484,10 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (a instanceof Ankh) return ((Ankh) a).blessed == ((Ankh) b).blessed;
         if (a instanceof Bomb) return ((Bomb) a).igniteOnDrop == ((Bomb) b).igniteOnDrop;
         if (a instanceof RandomItem) return a.equals(b);
+
+        if (a instanceof MobItem) return EditMobComp.areEqual(((MobItem) a).getObject(), ((MobItem) b).getObject());
+        if (a instanceof TrapItem) return EditTrapComp.areEqual(((TrapItem) a).getObject(), ((TrapItem) b).getObject());
+
         return true;
     }
 }
