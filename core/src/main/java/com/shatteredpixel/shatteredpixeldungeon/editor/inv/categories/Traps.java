@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.SummoningTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.TeleportationTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ToxicTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.UnstableTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WarpingTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WarpwayTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WeakeningTrap;
@@ -42,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WornDartTrap;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
@@ -79,7 +81,8 @@ public enum Traps {
                 FlashingTrap.class,
                 RockfallTrap.class,
                 GnollRockfallTrap.class,
-                OozeTrap.class
+                OozeTrap.class,
+                UnstableTrap.class
         };
         WATER.classes = new Class[]{
                 ChillingTrap.class,
@@ -141,7 +144,7 @@ public enum Traps {
         }
         int length = trapList.size();
         if (length == 0) return null;
-        return trapList.get((int) (Math.random() * length));
+        return trapList.get(Random.Int(length));
     }
 
     public Image getImage() {
