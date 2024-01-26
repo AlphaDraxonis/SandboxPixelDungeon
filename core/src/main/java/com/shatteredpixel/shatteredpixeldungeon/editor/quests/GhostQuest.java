@@ -3,7 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -82,7 +82,7 @@ public class GhostQuest extends Quest {
                 armor.upgrade(itemLevel);
                 if (doEnchant) glyph = Armor.Glyph.random();
             } else {
-                armor = (Armor) AugumentationSpinner.assignRandomAugmentation(armor);
+                armor = RandomItem.initRandomStatsForItemSubclasses(armor);
             }
             if (weapon == null) {
                 //50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
@@ -96,7 +96,7 @@ public class GhostQuest extends Quest {
                 weapon.upgrade(itemLevel);
                 if (doEnchant) enchant = Weapon.Enchantment.random();
             } else {
-                weapon = (Weapon) AugumentationSpinner.assignRandomAugmentation(weapon);
+                weapon = RandomItem.initRandomStatsForItemSubclasses(weapon);
             }
         }
 

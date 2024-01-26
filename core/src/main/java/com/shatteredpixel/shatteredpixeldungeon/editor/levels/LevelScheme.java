@@ -11,7 +11,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
@@ -561,7 +560,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
                 RandomItem.replaceRandomItemsInList(((Mimic) m).items);
             }
         } else if (m instanceof Thief) {
-            ((Thief) m).item = AugumentationSpinner.assignRandomAugmentation(((Thief) m).item);
+            ((Thief) m).item = RandomItem.initRandomStatsForItemSubclasses(((Thief) m).item);
         }
     }
 

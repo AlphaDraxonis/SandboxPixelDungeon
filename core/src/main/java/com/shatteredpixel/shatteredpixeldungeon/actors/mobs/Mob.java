@@ -57,8 +57,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Fe
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -1099,9 +1099,8 @@ public abstract class Mob extends Char {
 		if (stolen == null || !stolen.itemWasStolen()) {
 			if (Random.Float() < lootChance()) {
 				List<Item> loot = createActualLoot();
+				RandomItem.replaceRandomItemsInList(loot);
 				for (Item l : loot) {
-					if (l == null) continue;
-					l = AugumentationSpinner.assignRandomAugmentation(l);
 					if (l == null) continue;
 					increaseLimitedDropCount(l);
 					doDropLoot(l);

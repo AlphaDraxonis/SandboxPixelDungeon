@@ -19,7 +19,7 @@ public class RandomItemDistrComp extends ItemsWithChanceDistrComp {
     private final RandomItem<?> randomItem;
 
     public RandomItemDistrComp(RandomItem<?> randomItem) {
-        super(randomItem.getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI(), 1);
+        super(randomItem.getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI(), randomItem.getMaxLoottableSize());
         this.randomItem = randomItem;
     }
 
@@ -29,7 +29,7 @@ public class RandomItemDistrComp extends ItemsWithChanceDistrComp {
 
     @Override
     protected void showAddItemWnd() {
-        WndBag.ItemSelector selector = createSelector(randomItem.getType(), false, Items.bag.getClass());
+        WndBag.ItemSelector selector = createSelector((Class<? extends Item>) randomItem.getType(), false, Items.bag.getClass());
         if (randomItem.getType() != Item.class)
             ItemSelector.showSelectWindow(selector, ItemSelector.NullTypeSelector.NOTHING, randomItem.getType(),
                     Items.bag, new HashSet<>(0), false);

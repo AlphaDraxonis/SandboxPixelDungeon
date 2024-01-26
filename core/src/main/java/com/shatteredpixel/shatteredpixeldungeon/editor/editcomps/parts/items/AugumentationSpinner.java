@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.FeelingSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
@@ -109,21 +108,19 @@ public class AugumentationSpinner extends StyledSpinner {
         }
     }
 
-    public static Item assignRandomAugmentation(Item i) {
-        if (i instanceof RandomItem) {
-            i = ((RandomItem<?>) i).generateItem();
-        }
-        if (i instanceof Weapon) {
+    //NEED TO RETURN ARRAY OF SIZE 1 IF SUBCLASS OF ITEM IS ARGUMENT!!!
+    public static <T extends Item> T assignRandomAugmentation2(T item) {
+        if (item instanceof Weapon) {
             Weapon w;
-            if ((w = (Weapon) i).augment == Weapon.Augment.RANDOM) {
+            if ((w = (Weapon) item).augment == Weapon.Augment.RANDOM) {
                 w.augment = (Random.Int(2) == 0) ? Weapon.Augment.DAMAGE : Weapon.Augment.SPEED;
             }
-        } else if (i instanceof Armor) {
+        } else if (item instanceof Armor) {
             Armor a;
-            if ((a = (Armor) i).augment == Armor.Augment.RANDOM) {
+            if ((a = (Armor) item).augment == Armor.Augment.RANDOM) {
                 a.augment = (Random.Int(2) == 0) ? Armor.Augment.DEFENSE : Armor.Augment.EVASION;
             }
         }
-        return i;
+        return item;
     }
 }

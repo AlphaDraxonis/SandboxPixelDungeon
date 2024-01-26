@@ -2,7 +2,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.other;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -10,7 +9,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrCo
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
-import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -30,16 +28,19 @@ import com.watabou.utils.Random;
 
 import java.util.List;
 
-public interface RandomItem<T extends Item> {
+public interface RandomItem<T> {
 
     String INTERNAL_RANDOM_ITEM = "internal_random_item";
-    String GENERATED_ITEM = "generated_item";
 
-    T generateItem();
+    T[] generateItems();
 
     ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI();
 
-    Class<? extends Item> getType();
+    Class<T> getType();
+
+    default int getMaxLoottableSize() {
+        return 1;
+    }
 
     //pls tell me if there is a better solution than copy paste:
     //I need random classes to extend classes like weapon or armor so I can still use these types everywhere else
@@ -47,10 +48,21 @@ public interface RandomItem<T extends Item> {
 
     static <T extends Item> void replaceRandomItemsInList(List<T> items) {
         for (Item i : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {//i is also of type T
-            T item = (T) AugumentationSpinner.assignRandomAugmentation(i);//always returns <? extends T>
-            if (item != i) {
-                if (item == null) items.remove(i);
-                else items.set(items.indexOf(i), item);
+
+            if (i instanceof RandomItem<?>) {
+                T[] newItems = ((RandomItem<T>) i).generateItems();//all the elements are also of type T
+                if (newItems == null) items.remove(i);
+                else {
+                    int indexAdd = items.indexOf(i);
+                    items.remove(i);
+                    for (int j = newItems.length - 1; j >= 0; j--) {
+                        T add = AugumentationSpinner.assignRandomAugmentation2(newItems[j]);
+                        add.spreadIfLoot = i.spreadIfLoot;
+                        items.add(indexAdd, add);
+                    }
+                }
+            } else {
+                AugumentationSpinner.assignRandomAugmentation2(i);
             }
         }
     }
@@ -117,6 +129,16 @@ public interface RandomItem<T extends Item> {
         }
     }
 
+    public static <T extends Item> T initRandomStatsForItemSubclasses(T item) {
+        if (item instanceof RandomItem) {
+            T[] result = ((RandomItem<T>) item).generateItems();
+            if (result == null) return null;
+            result[0].spreadIfLoot = item.spreadIfLoot;
+            item = result[0];
+        }
+        return AugumentationSpinner.assignRandomAugmentation2(item);
+    }
+
     class RandomItemAny extends Item implements RandomItem<Item> {
 
         {
@@ -126,28 +148,23 @@ public interface RandomItem<T extends Item> {
         //can only have one item per slot, and no RandomItem
         private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
-        private Item generatedItem;
-
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
             internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
-            generatedItem = (Item) bundle.get(GENERATED_ITEM);
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-            bundle.put(GENERATED_ITEM, generatedItem);
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomItemAny) obj).internalRandomItem)
-                    && EditItemComp.areEqual(generatedItem, ((RandomItemAny) obj).generatedItem);
+            return internalRandomItem.equals(((RandomItemAny) obj).internalRandomItem);
         }
 
         @Override
@@ -156,14 +173,14 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Item generateItem() {
-            if (generatedItem != null) return generatedItem;
-            if (Random.Float() >= internalRandomItem.lootChance()) return generatedItem = null;
+        public Item[] generateItems() {
+            if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
-            generatedItem = result.get(0);
-            if (reservedQuickslot > 0) generatedItem.reservedQuickslot = reservedQuickslot;
-            return generatedItem;
+            Item[] array = result.toArray(EditorUtilies.EMPTY_ITEM_ARRAY);
+            if (reservedQuickslot > 0 && array[0].defaultAction() != null && !(array[0] instanceof Key))
+                array[0].reservedQuickslot = reservedQuickslot;
+            return array;
         }
 
         @Override
@@ -172,7 +189,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Class<? extends Item> getType() {
+        public Class<Item> getType() {
             return Item.class;
         }
 
@@ -205,6 +222,11 @@ public interface RandomItem<T extends Item> {
         public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
             RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
         }
+
+        @Override
+        public int getMaxLoottableSize() {
+            return 1_000_000;
+        }
     }
 
 
@@ -217,28 +239,23 @@ public interface RandomItem<T extends Item> {
         //can only have one item per slot, and no RandomItem
         private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
-        private Weapon generatedItem;
-
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
             internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
-            generatedItem = (Weapon) bundle.get(GENERATED_ITEM);
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-            bundle.put(GENERATED_ITEM, generatedItem);
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomWeapon) obj).internalRandomItem)
-                    && EditItemComp.areEqual(generatedItem, ((RandomWeapon) obj).generatedItem);
+            return internalRandomItem.equals(((RandomWeapon) obj).internalRandomItem);
         }
 
         @Override
@@ -247,14 +264,13 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Weapon generateItem() {
-            if (generatedItem != null) return generatedItem;
-            if (Random.Float() >= internalRandomItem.lootChance()) return generatedItem = null;
+        public Weapon[] generateItems() {
+            if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
-            generatedItem = (Weapon) result.get(0);
-            if (reservedQuickslot > 0) generatedItem.reservedQuickslot = reservedQuickslot;
-            return generatedItem;
+            Weapon item = (Weapon) result.get(0);
+            if (reservedQuickslot > 0) item.reservedQuickslot = reservedQuickslot;
+            return new Weapon[]{item};
         }
 
         @Override
@@ -263,7 +279,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Class<? extends Item> getType() {
+        public Class<Weapon> getType() {
             return Weapon.class;
         }
 
@@ -323,28 +339,23 @@ public interface RandomItem<T extends Item> {
         //can only have one item per slot, and no RandomItem
         private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
-        private MeleeWeapon generatedItem;
-
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
             internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
-            generatedItem = (MeleeWeapon) bundle.get(GENERATED_ITEM);
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-            bundle.put(GENERATED_ITEM, generatedItem);
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomMeleeWeapon) obj).internalRandomItem)
-                    && EditItemComp.areEqual(generatedItem, ((RandomMeleeWeapon) obj).generatedItem);
+            return internalRandomItem.equals(((RandomMeleeWeapon) obj).internalRandomItem);
         }
 
         @Override
@@ -353,14 +364,13 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public MeleeWeapon generateItem() {
-            if (generatedItem != null) return generatedItem;
-            if (Random.Float() >= internalRandomItem.lootChance()) return generatedItem = null;
+        public MeleeWeapon[] generateItems() {
+            if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
-            generatedItem = (MeleeWeapon) result.get(0);
-            if (reservedQuickslot > 0) generatedItem.reservedQuickslot = reservedQuickslot;
-            return generatedItem;
+            MeleeWeapon item = (MeleeWeapon) result.get(0);
+            if (reservedQuickslot > 0) item.reservedQuickslot = reservedQuickslot;
+            return new MeleeWeapon[]{item};
         }
 
         @Override
@@ -369,7 +379,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Class<? extends Item> getType() {
+        public Class<MeleeWeapon> getType() {
             return MeleeWeapon.class;
         }
 
@@ -414,8 +424,6 @@ public interface RandomItem<T extends Item> {
         //can only have one item per slot, and no RandomItem
         private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
-        private Armor generatedItem;
-
         public RandomArmor() {
             super(1);
         }
@@ -424,22 +432,19 @@ public interface RandomItem<T extends Item> {
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
             internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
-            generatedItem = (Armor) bundle.get(GENERATED_ITEM);
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-            bundle.put(GENERATED_ITEM, generatedItem);
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomArmor) obj).internalRandomItem)
-                    && EditItemComp.areEqual(generatedItem, ((RandomArmor) obj).generatedItem);
+            return internalRandomItem.equals(((RandomArmor) obj).internalRandomItem);
         }
 
         @Override
@@ -448,14 +453,13 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Armor generateItem() {
-            if (generatedItem != null) return generatedItem;
-            if (Random.Float() >= internalRandomItem.lootChance()) return generatedItem = null;
+        public Armor[] generateItems() {
+            if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
-            generatedItem = (Armor) result.get(0);
-            if (reservedQuickslot > 0) generatedItem.reservedQuickslot = reservedQuickslot;
-            return generatedItem;
+            Armor item = (Armor) result.get(0);
+            if (reservedQuickslot > 0) item.reservedQuickslot = reservedQuickslot;
+            return new Armor[]{item};
         }
 
         @Override
@@ -464,7 +468,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Class<? extends Item> getType() {
+        public Class<Armor> getType() {
             return Armor.class;
         }
 
@@ -509,28 +513,23 @@ public interface RandomItem<T extends Item> {
         //can only have one item per slot, and no RandomItem
         private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
-        private Ring generatedItem;
-
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
             internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
-            generatedItem = (Ring) bundle.get(GENERATED_ITEM);
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-            bundle.put(GENERATED_ITEM, generatedItem);
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomRing) obj).internalRandomItem)
-                    && EditItemComp.areEqual(generatedItem, ((RandomRing) obj).generatedItem);
+            return internalRandomItem.equals(((RandomRing) obj).internalRandomItem);
         }
 
         @Override
@@ -539,14 +538,13 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Ring generateItem() {
-            if (generatedItem != null) return generatedItem;
-            if (Random.Float() >= internalRandomItem.lootChance()) return generatedItem = null;
+        public Ring[] generateItems() {
+            if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
-            generatedItem = (Ring) result.get(0);
-            if (reservedQuickslot > 0) generatedItem.reservedQuickslot = reservedQuickslot;
-            return generatedItem;
+            Ring item = (Ring) result.get(0);
+            if (reservedQuickslot > 0) item.reservedQuickslot = reservedQuickslot;
+            return new Ring[]{item};
         }
 
         @Override
@@ -555,7 +553,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Class<? extends Item> getType() {
+        public Class<Ring> getType() {
             return Ring.class;
         }
 
@@ -601,28 +599,23 @@ public interface RandomItem<T extends Item> {
         //can only have one item per slot, and no RandomItem
         private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
-        private Artifact generatedItem;
-
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
             internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
-            generatedItem = (Artifact) bundle.get(GENERATED_ITEM);
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-            bundle.put(GENERATED_ITEM, generatedItem);
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomArtifact) obj).internalRandomItem)
-                    && EditItemComp.areEqual(generatedItem, ((RandomArtifact) obj).generatedItem);
+            return internalRandomItem.equals(((RandomArtifact) obj).internalRandomItem);
         }
 
         @Override
@@ -631,14 +624,13 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Artifact generateItem() {
-            if (generatedItem != null) return generatedItem;
-            if (Random.Float() >= internalRandomItem.lootChance()) return generatedItem = null;
+        public Artifact[] generateItems() {
+            if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
-            generatedItem = (Artifact) result.get(0);
-            if (reservedQuickslot > 0) generatedItem.reservedQuickslot = reservedQuickslot;
-            return generatedItem;
+            Artifact item = (Artifact) result.get(0);
+            if (reservedQuickslot > 0) item.reservedQuickslot = reservedQuickslot;
+            return new Artifact[]{item};
         }
 
         @Override
@@ -647,7 +639,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Class<? extends Item> getType() {
+        public Class<Artifact> getType() {
             return Artifact.class;
         }
 
@@ -693,28 +685,23 @@ public interface RandomItem<T extends Item> {
         //can only have one item per slot, and no RandomItem
         private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
-        private KindofMisc generatedItem;
-
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
             internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
-            generatedItem = (KindofMisc) bundle.get(GENERATED_ITEM);
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-            bundle.put(GENERATED_ITEM, generatedItem);
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomEqMiscItem) obj).internalRandomItem)
-                    && EditItemComp.areEqual(generatedItem, ((RandomEqMiscItem) obj).generatedItem);
+            return internalRandomItem.equals(((RandomEqMiscItem) obj).internalRandomItem);
         }
 
         @Override
@@ -723,14 +710,13 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public KindofMisc generateItem() {
-            if (generatedItem != null) return generatedItem;
-            if (Random.Float() >= internalRandomItem.lootChance()) return generatedItem = null;
+        public KindofMisc[] generateItems() {
+            if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
-            generatedItem = (KindofMisc) result.get(0);
-            if (reservedQuickslot > 0) generatedItem.reservedQuickslot = reservedQuickslot;
-            return generatedItem;
+            KindofMisc item = (KindofMisc) result.get(0);
+            if (reservedQuickslot > 0) item.reservedQuickslot = reservedQuickslot;
+            return new KindofMisc[]{item};
         }
 
         @Override
@@ -739,8 +725,8 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Class<? extends Item> getType() {
-            return EquipableItem.class;
+        public Class<KindofMisc> getType() {
+            return KindofMisc.class;
         }
 
         @Override
@@ -789,28 +775,23 @@ public interface RandomItem<T extends Item> {
         //can only have one item per slot, and no RandomItem
         private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
-        private Wand generatedItem;
-
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
             internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
-            generatedItem = (Wand) bundle.get(GENERATED_ITEM);
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-            bundle.put(GENERATED_ITEM, generatedItem);
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomWand) obj).internalRandomItem)
-                    && EditItemComp.areEqual(generatedItem, ((RandomWand) obj).generatedItem);
+            return internalRandomItem.equals(((RandomWand) obj).internalRandomItem);
         }
 
         @Override
@@ -819,14 +800,13 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Wand generateItem() {
-            if (generatedItem != null) return generatedItem;
-            if (Random.Float() >= internalRandomItem.lootChance()) return generatedItem = null;
+        public Wand[] generateItems() {
+            if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
-            generatedItem = (Wand) result.get(0);
-            if (reservedQuickslot > 0) generatedItem.reservedQuickslot = reservedQuickslot;
-            return generatedItem;
+            Wand item = (Wand) result.get(0);
+            if (reservedQuickslot > 0) item.reservedQuickslot = reservedQuickslot;
+            return new Wand[]{item};
         }
 
         @Override
@@ -835,7 +815,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Class<? extends Item> getType() {
+        public Class<Wand> getType() {
             return Wand.class;
         }
 
@@ -888,28 +868,23 @@ public interface RandomItem<T extends Item> {
         //can only have one item per slot, and no RandomItem
         private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
 
-        private Bag generatedItem;
-
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
             internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
-            generatedItem = (Bag) bundle.get(GENERATED_ITEM);
         }
 
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
             bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
-            bundle.put(GENERATED_ITEM, generatedItem);
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null) return false;
             if (getClass() != obj.getClass()) return false;
-            return internalRandomItem.equals(((RandomBag) obj).internalRandomItem)
-                    && EditItemComp.areEqual(generatedItem, ((RandomBag) obj).generatedItem);
+            return internalRandomItem.equals(((RandomBag) obj).internalRandomItem);
         }
 
         @Override
@@ -918,14 +893,13 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Bag generateItem() {
-            if (generatedItem != null) return generatedItem;
-            if (Random.Float() >= internalRandomItem.lootChance()) return generatedItem = null;
+        public Bag[] generateItems() {
+            if (Random.Float() >= internalRandomItem.lootChance()) return null;
             List<Item> result = internalRandomItem.generateLoot();
             if (result == null || result.isEmpty()) return null;
-            generatedItem = (Bag) result.get(0);
-            if (reservedQuickslot > 0) generatedItem.reservedQuickslot = reservedQuickslot;
-            return generatedItem;
+            Bag item = (Bag) result.get(0);
+            if (reservedQuickslot > 0) item.reservedQuickslot = reservedQuickslot;
+            return new Bag[]{item};
         }
 
         @Override
@@ -934,7 +908,7 @@ public interface RandomItem<T extends Item> {
         }
 
         @Override
-        public Class<? extends Item> getType() {
+        public Class<Bag> getType() {
             return Bag.class;
         }
 
