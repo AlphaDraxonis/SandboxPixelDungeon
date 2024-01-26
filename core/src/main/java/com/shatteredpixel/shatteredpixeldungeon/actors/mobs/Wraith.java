@@ -48,8 +48,8 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 		EXP = 0;
 
 		maxLvl = -2;
-		
-		flying = true;
+
+		setFlying(true);
 
 		properties.add(Property.UNDEAD);
 		properties.add(Property.INORGANIC);

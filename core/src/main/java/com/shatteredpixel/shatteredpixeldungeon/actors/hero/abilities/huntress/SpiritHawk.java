@@ -149,7 +149,7 @@ public class SpiritHawk extends ArmorAbility {
 			HP = HT = 10;
 			defenseSkill = 60;
 
-			flying = true;
+			setFlying(true);
 			viewDistance = (int)GameMath.gate(6, 6+Dungeon.hero.pointsInTalent(Talent.EAGLE_EYE), 8);
 			baseSpeed = 2f + Dungeon.hero.pointsInTalent(Talent.SWIFT_SPIRIT)/2f;
 			attacksAutomatically = false;

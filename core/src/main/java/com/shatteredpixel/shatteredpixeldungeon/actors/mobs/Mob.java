@@ -597,7 +597,7 @@ public abstract class Mob extends Char {
 	}
 
 	private boolean cellIsPathable( int cell ){
-		if (!Barrier.canEnterCell(cell, this, flying || buff(Amok.class) != null, true)){
+		if (!Barrier.canEnterCell(cell, this, isFlying() || buff(Amok.class) != null, true)){
 			return false;
 		}
 		if (Char.hasProp(this, Char.Property.LARGE) && !Dungeon.level.openSpace[cell]){

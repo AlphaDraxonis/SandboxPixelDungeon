@@ -109,7 +109,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	@Override
 	public void move( int from, int to ) {
 		super.move( from, to );
-		if (ch != null && ch.flying) {
+		if (ch != null && ch.isFlying()) {
 			play( fly );
 		}
 		Camera.main.panFollow(this, 20f);
@@ -118,7 +118,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	@Override
 	public void idle() {
 		super.idle();
-		if (ch != null && ch.flying) {
+		if (ch != null && ch.isFlying()) {
 			play( fly );
 		}
 	}
@@ -223,7 +223,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 		@Override
 		public void move( int from, int to ) {
 			super.move( from, to );
-			if (ch != null && ch.flying) {
+			if (ch != null && ch.isFlying()) {
 				play( fly );
 			}
 		}
@@ -231,7 +231,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 		@Override
 		public void idle() {
 			super.idle();
-			if (ch != null && ch.flying) {
+			if (ch != null && ch.isFlying()) {
 				play( fly );
 			}
 		}

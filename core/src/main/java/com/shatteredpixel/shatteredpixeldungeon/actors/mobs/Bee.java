@@ -43,8 +43,8 @@ public class Bee extends Mob implements MobBasedOnDepth {
 		viewDistance = 4;
 
 		EXP = 0;
-		
-		flying = true;
+
+		setFlying(true);
 		state = WANDERING;
 		
 		//only applicable when the bee is charmed with elixir of honeyed healing

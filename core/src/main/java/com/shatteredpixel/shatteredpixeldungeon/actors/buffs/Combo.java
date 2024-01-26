@@ -357,7 +357,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					if (enemy.isAlive() && count >= 7 && hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 1) {
 						dist++;
 						Buff.prolong(enemy, Vertigo.class, 3);
-					} else if (!enemy.flying) {
+					} else if (!enemy.isFlying()) {
 						while (dist > trajectory.dist ||
 								(dist > 0 && (Dungeon.level.pit[trajectory.path.get(dist)] || !Dungeon.level.isPassable(trajectory.path.get(dist), enemy)))) {
 							dist--;
@@ -477,7 +477,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					Ballistica c = new Ballistica(target.pos, enemy.pos, Ballistica.REAL_PROJECTILE, target);
 					if (c.collisionPos == enemy.pos){
 						final int leapPos = c.path.get(c.dist-1);
-						if (!Barrier.canEnterCell(leapPos, enemy, target.flying, true)){
+						if (!Barrier.canEnterCell(leapPos, enemy, target.isFlying(), true)){
 							GLog.w(Messages.get(Combo.class, "bad_target"));
 						} else if (Dungeon.hero.rooted) {
 							PixelScene.shake( 1, 1f );

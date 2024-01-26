@@ -1055,7 +1055,7 @@ public class Dungeon {
 
 	public static boolean[] findPassable(Char ch, boolean[] pass, boolean[] vis, boolean chars, boolean considerLarge){
 		setupPassable();
-		if (ch.flying || ch.buff( Amok.class ) != null) {
+		if (ch.isFlying() || ch.buff( Amok.class ) != null) {
 			BArray.or( pass, Dungeon.level.avoid, passable );
             for (Barrier b : Dungeon.level.barriers.values()) {
                 if (b.blocksChar(ch)) passable[b.pos] = false;
@@ -1094,7 +1094,7 @@ public class Dungeon {
 		}
 
         setupPassable();
-        if (ch.flying || ch.buff(Amok.class) != null) {
+        if (ch.isFlying() || ch.buff(Amok.class) != null) {
             BArray.or(pass, Dungeon.level.avoid, passable);
             for (Barrier b : Dungeon.level.barriers.values()) {
                 if (b.blocksChar(ch)) passable[b.pos] = false;

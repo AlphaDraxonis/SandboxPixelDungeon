@@ -73,8 +73,8 @@ public abstract class Elemental extends Mob {
 
 		EXP = 10;
 		maxLvl = 20;
-		
-		flying = true;
+
+		setFlying(true);
 	}
 
 	protected boolean summonedALly;

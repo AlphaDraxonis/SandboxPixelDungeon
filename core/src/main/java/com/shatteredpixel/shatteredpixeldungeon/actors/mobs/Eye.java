@@ -85,8 +85,8 @@ public class Eye extends Mob {
 		
 		EXP = 13;
 		maxLvl = 26;
-		
-		flying = true;
+
+		setFlying(true);
 
 		HUNTING = new Hunting();
 

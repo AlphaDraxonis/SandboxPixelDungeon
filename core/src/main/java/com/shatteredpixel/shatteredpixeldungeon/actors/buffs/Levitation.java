@@ -43,7 +43,7 @@ public class Levitation extends FlavourBuff {
 	@Override
 	public boolean attachTo( Char target ) {
 		if (super.attachTo( target )) {
-			target.flying = true;
+			target.setFlying(true);
 			detach( target, Roots.class );
 			return true;
 		} else {
@@ -53,7 +53,7 @@ public class Levitation extends FlavourBuff {
 	
 	@Override
 	public void detach() {
-		target.flying = false;
+		target.setFlying(false);
 		super.detach();
 		//only press tiles if we're current in the game screen
 		if (SandboxPixelDungeon.scene() instanceof GameScene) {

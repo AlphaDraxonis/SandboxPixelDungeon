@@ -121,7 +121,7 @@ public class Challenge extends ArmorAbility {
 				if (PathFinder.distance[i] == Integer.MAX_VALUE
 						|| reachable[i] == Integer.MAX_VALUE
 						|| i == targetCh.pos
-						|| !Barrier.canEnterCell(i, targetCh, hero.flying, false)){
+						|| !Barrier.canEnterCell(i, targetCh, hero.isFlying(), false)){
 					continue;
 				}
 

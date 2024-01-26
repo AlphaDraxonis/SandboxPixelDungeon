@@ -101,8 +101,6 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		HUNTING = new Hunting();
 		WANDERING = new Wandering();
 		state = HUNTING;
-
-		flying = true; //doesn't literally fly, but he is fleet-of-foot enough to avoid hazards
 		
 		properties.add(Property.BOSS);
 		
@@ -119,7 +117,13 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 //	public int damageRoll() {
 //		return Random.NormalIntRange( 6, 12 );
 //	}
-	
+
+
+	@Override
+	public boolean avoidsHazards() {
+		return true;
+	}
+
 	@Override
 	public int attackSkill( Char target ) {
 		if (Dungeon.level.adjacent(pos, target.pos)){

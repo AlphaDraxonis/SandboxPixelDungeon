@@ -295,7 +295,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         dest.HT = src.HT;
         dest.paralysed = src.paralysed;
         dest.rooted = src.rooted;
-        dest.flying = src.flying;
+        dest.setFlying(src.isFlying());
         dest.invisible = src.invisible;
         dest.viewDistance = src.viewDistance;
         dest.baseSpeed = src.baseSpeed;

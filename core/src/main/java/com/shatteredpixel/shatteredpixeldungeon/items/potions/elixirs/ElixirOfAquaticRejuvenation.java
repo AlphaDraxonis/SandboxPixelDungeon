@@ -74,7 +74,7 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 		@Override
 		public boolean act() {
 			
-			if (!target.flying && Dungeon.level.water[target.pos] && target.HP < target.HT){
+			if (!target.avoidsHazards() && Dungeon.level.water[target.pos] && target.HP < target.HT){
 				float healAmt = GameMath.gate( 1, target.HT/50f, left );
 				healAmt = Math.min(healAmt, target.HT - target.HP);
 				if (Random.Float() < (healAmt % 1)){

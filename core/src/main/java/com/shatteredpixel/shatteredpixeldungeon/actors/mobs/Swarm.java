@@ -53,8 +53,8 @@ public class Swarm extends Mob {
 
 		EXP = 3;
 		maxLvl = 9;
-		
-		flying = true;
+
+		setFlying(true);
 
 		loot = new PotionOfHealing();
 		lootChance = 0.1667f; //by default, see lootChance()

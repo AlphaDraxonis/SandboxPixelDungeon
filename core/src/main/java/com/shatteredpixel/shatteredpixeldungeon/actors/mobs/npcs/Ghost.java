@@ -54,8 +54,8 @@ public class Ghost extends QuestNPC<GhostQuest> {
 
 	{
 		spriteClass = GhostSprite.class;
-		
-		flying = true;
+
+		setFlying(true);
 
 		WANDERING = new Wandering();
 		state = WANDERING;

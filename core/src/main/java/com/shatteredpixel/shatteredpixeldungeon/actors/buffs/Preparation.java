@@ -290,7 +290,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 				for (int i : PathFinder.NEIGHBOURS8){
 					//cannot blink into a cell that's occupied or impassable, only over them
 					if (!Barrier.canEnterCell(cell+i, Dungeon.hero, true, true))     continue;
-					if (!Dungeon.level.isPassable(cell+i) && !(target.flying && Dungeon.level.avoid[cell+i])) {
+					if (!Dungeon.level.isPassable(cell+i) && !(target.isFlying() && Dungeon.level.avoid[cell+i])) {
 						continue;
 					}
 

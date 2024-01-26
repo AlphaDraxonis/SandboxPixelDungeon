@@ -212,6 +212,18 @@ public abstract class Char extends Actor {
 		return Messages.get(this, "name");
 	}
 
+	public boolean isFlying() {
+		return flying;
+	}
+
+	public void setFlying(boolean flying) {
+		this.flying = flying;
+	}
+
+	public boolean avoidsHazards() {//if affected by traps and other effects
+		return flying;
+	}
+
 	public boolean canInteract(Char c){
 		if (Dungeon.level.adjacent( pos, c.pos )){
 			return true;
@@ -230,7 +242,7 @@ public abstract class Char extends Actor {
 
 		//don't allow char to swap onto hazard unless they're flying
 		//you can swap onto a hazard though, as you're not the one instigating the swap
-		if (Dungeon.level.pit[pos] && !c.flying){
+		if (Dungeon.level.pit[pos] && !c.isFlying()){
 			return true;
 		}
 		if (!Dungeon.level.isPassable(pos, c) || !Dungeon.level.isPassable(c.pos, this)) {

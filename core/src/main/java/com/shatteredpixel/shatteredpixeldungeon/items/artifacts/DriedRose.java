@@ -530,7 +530,7 @@ public class DriedRose extends Artifact {
 		{
 			spriteClass = GhostSprite.class;
 
-			flying = true;
+			setFlying(true);
 			
 			state = HUNTING;
 			
