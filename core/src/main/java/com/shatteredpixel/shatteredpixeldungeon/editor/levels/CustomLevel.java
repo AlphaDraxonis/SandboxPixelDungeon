@@ -13,6 +13,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
@@ -41,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.DeadEndLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.HallsLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
@@ -158,6 +160,7 @@ public class CustomLevel extends Level {
         if (seed == null) seed = DungeonSeed.randomSeed();
 
         if (levelTemplate != null) {
+            Statistics.reset();
 
             LevelScheme temp = new LevelScheme(null, numInRegion);
             temp.setSeed(seed);
@@ -253,6 +256,8 @@ public class CustomLevel extends Level {
 //            pit = level.pit;
 //            openSpace = level.openSpace;
             lockedCount = level.lockedCount;
+            respawnCooldown = level.respawnCooldown();
+            if (level instanceof MiningLevel) levelScheme.allowPickaxeMining = true;
 
             transitions = level.transitions;
             plants = level.plants;

@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -38,7 +39,7 @@ public class BlacksmithQuest extends Quest {
 
     //reward tracking. Stores remaining favor, the pickaxe, and how many of each reward has been chosen
     public int favor;
-    public Item pickaxe = new Pickaxe().identify();
+    public Item pickaxe = new Pickaxe().identify(!CustomDungeon.isEditing());
     public int reforges; //also used by the pre-v2.2.0 version of the quest
     public int hardens;
     public int upgrades;

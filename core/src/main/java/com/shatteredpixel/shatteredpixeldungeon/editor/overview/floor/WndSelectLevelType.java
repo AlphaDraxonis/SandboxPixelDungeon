@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.HallsBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.HallsLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
@@ -26,7 +27,8 @@ public abstract class WndSelectLevelType extends WndChooseOneInCategories {
                 new String[]{
                         Messages.get(WndSelectLevelType.class,"type_custom"),
                         Messages.get(WndSelectLevelType.class,"type_regular"),
-                        Messages.get(WndSelectLevelType.class,"type_boss")});
+                        Messages.get(WndSelectLevelType.class,"type_boss"),
+                        Messages.get(WndSelectLevelType.class,"type_quests")});
     }
 
     @Override
@@ -65,15 +67,17 @@ public abstract class WndSelectLevelType extends WndChooseOneInCategories {
     private static Object[][] createCategories(boolean includeNull) {
         if (includeNull) {
             return new Object[][]{
-                    {null, LastLevel.class, DeadEndLevel.class},
+                    {null, LastLevel.class, DeadEndLevel.class, MiningLevel.class},
                     {SewerLevel.class, PrisonLevel.class, CavesLevel.class, CityLevel.class, HallsLevel.class},
-                    {SewerBossLevel.class, PrisonBossLevel.class, CavesBossLevel.class, CityBossLevel.class, HallsBossLevel.class}
+                    {SewerBossLevel.class, PrisonBossLevel.class, CavesBossLevel.class, CityBossLevel.class, HallsBossLevel.class},
+                    {MiningLevel.CrystalMiningLevel.class, MiningLevel.GnollMiningLevel.class, MiningLevel.FungiMiningLevel.class}
             };
         }
         return new Object[][]{
                 {CustomLevel.class, LastLevel.class, DeadEndLevel.class},
                 {SewerLevel.class, PrisonLevel.class, CavesLevel.class, CityLevel.class, HallsLevel.class},
-                {SewerBossLevel.class, PrisonBossLevel.class, CavesBossLevel.class, CityBossLevel.class, HallsBossLevel.class}
+                {SewerBossLevel.class, PrisonBossLevel.class, CavesBossLevel.class, CityBossLevel.class, HallsBossLevel.class},
+                {MiningLevel.CrystalMiningLevel.class, MiningLevel.GnollMiningLevel.class, MiningLevel.FungiMiningLevel.class}
         };
     }
 

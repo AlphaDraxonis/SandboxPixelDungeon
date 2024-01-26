@@ -215,7 +215,7 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
         @Override
         protected void doChange() {
             textBox.active = false;
-            Window window = new WndSelectLevelType(flag) {
+            EditorScene.show(new WndSelectLevelType(flag) {
                 @Override
                 protected void onSelect(Class<? extends Level> clazz) {
                     selectObject(clazz);
@@ -226,9 +226,7 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
                     textBox.active = true;
                     super.hide();
                 }
-            };
-            if (Game.scene() instanceof EditorScene) EditorScene.show(window);
-            else Game.scene().addToFront(window);
+            });
         }
 
         @Override
