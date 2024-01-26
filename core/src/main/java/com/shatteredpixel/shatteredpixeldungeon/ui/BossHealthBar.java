@@ -316,7 +316,7 @@ public class BossHealthBar extends Component {
     }
 
     public static boolean isAssigned(Mob boss) {
-        return bosses.contains(boss);
+        return boss.showBossBar && bosses.contains(boss);
     }
 
     private static BossHealthBarComp findBoss(Mob boss) {

@@ -23,6 +23,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FetidRat;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalCore;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalSentry;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Gnoll;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
@@ -264,6 +267,9 @@ public enum Mobs {
                 GnollGuard.class,
                 GnollSapper.class,
                 GnollGeomancer.class,
+                FungalSpinner.class,
+                FungalSentry.class,
+                FungalCore.class,
                 CrystalGuardian.class,
                 CrystalWisp.class,
                 CrystalSpire.class

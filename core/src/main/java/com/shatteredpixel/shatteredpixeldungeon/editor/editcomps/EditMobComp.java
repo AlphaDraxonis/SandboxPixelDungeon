@@ -14,6 +14,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM201;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalCore;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
@@ -631,8 +633,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(pylonAlwaysActive);
         }
 
-        if (mob instanceof Goo || mob instanceof Tengu || mob instanceof DM300
-                || mob instanceof DwarfKing || mob instanceof YogDzewa || mob instanceof CrystalSpire) {
+        if (mob instanceof Goo || mob instanceof Tengu || mob instanceof DM300|| mob instanceof DwarfKing || mob instanceof YogDzewa
+                || mob instanceof CrystalSpire || mob instanceof GnollGeomancer || mob instanceof FungalCore) {
             showBossBar = new StyledCheckBox(label("show_boss_bar")) {
                 @Override
                 public void checked(boolean value) {

@@ -27,7 +27,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.FungalSentrySprite;
-import com.watabou.utils.Random;
 
 public class FungalSentry extends Mob {
 
@@ -36,6 +35,9 @@ public class FungalSentry extends Mob {
 
 		HP = HT = 200;
 		defenseSkill = 12;
+		attackSkill = 50;
+		damageRollMin = 5;
+		damageRollMax = 10;
 
 		EXP = 10;
 		maxLvl = -2;
@@ -66,10 +68,10 @@ public class FungalSentry extends Mob {
 		return false;
 	}
 
-	@Override
-	public int damageRoll() {
-		return Random.NormalIntRange(5, 10);
-	}
+//	@Override
+//	public int damageRoll() {
+//		return Random.NormalIntRange(5, 10);
+//	}
 
 	@Override
 	//TODO attack is a little permissive atm?
@@ -86,10 +88,10 @@ public class FungalSentry extends Mob {
 		return super.attackProc(enemy, damage);
 	}
 
-	@Override
-	public int attackSkill( Char target ) {
-		return 50;
-	}
+//	@Override
+//	public int attackSkill( Char target ) {
+//		return 50;
+//	}
 
 	{
 		immunities.add( ToxicGas.class );
