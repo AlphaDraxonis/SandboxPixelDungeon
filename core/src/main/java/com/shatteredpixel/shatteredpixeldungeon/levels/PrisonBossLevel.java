@@ -178,13 +178,7 @@ public class PrisonBossLevel extends Level {
 	                                       new Point(8, 23), new Point(12, 23)};
 	
 	private void setMapStart(){
-		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
-		if (Level.SURFACE.equals(dest)) {
-			transitions.put(ENTRANCE_POS, new LevelTransition(this, ENTRANCE_POS, LevelTransition.Type.SURFACE));
-		} else {
-			if (Dungeon.customDungeon.getFloor(dest) != null)
-				transitions.put(ENTRANCE_POS, new LevelTransition(this, ENTRANCE_POS, LevelTransition.Type.REGULAR_ENTRANCE));
-		}
+		addRegularEntrance(ENTRANCE_POS);
 		
 		Painter.fill(this, 0, 0, 32, 32, Terrain.WALL);
 		
@@ -315,17 +309,7 @@ public class PrisonBossLevel extends Level {
 		}
 
 		int exitCell = pointToCell(levelExit);
-		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultBelow();
-		LevelTransition exit = null;
-		if (Level.SURFACE.equals(dest)) {
-			exit = new LevelTransition(this, exitCell, LevelTransition.Type.SURFACE);
-			transitions.put(exitCell, exit);
-		} else {
-			if (Dungeon.customDungeon.getFloor(dest) != null) {
-				exit = new LevelTransition(this, exitCell, LevelTransition.Type.REGULAR_EXIT);
-				transitions.put(exitCell, exit);
-			}
-		}
+		LevelTransition exit = addRegularExit(exitCell);
 		if (exit != null) {
 			exit.right+=2;
 			exit.bottom+=3;

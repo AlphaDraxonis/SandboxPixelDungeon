@@ -21,10 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.watabou.utils.Point;
@@ -52,13 +50,7 @@ public class ExitRoom extends StandardRoom {
 
         int exit = level.pointToCell(random(2));
         Painter.set(level, exit, Terrain.EXIT);
-        String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultBelow();
-        if ( Level.SURFACE.equals(dest)) {
-            level.transitions.put(exit, new LevelTransition(level, exit, LevelTransition.Type.SURFACE));
-        } else {
-            if (Dungeon.customDungeon.getFloor(dest) != null)
-                level.transitions.put(exit, new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
-        }
+        level.addRegularExit(exit);
     }
 
     @Override

@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -66,18 +65,7 @@ public class SewerBossExitRoom extends ExitRoom {
 		int exitCell = level.pointToCell(c);
 		Painter.set( level, exitCell, Terrain.LOCKED_EXIT );
 
-
-		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultBelow();
-		LevelTransition exit = null;
-		if (Level.SURFACE.equals(dest)) {
-			exit = new LevelTransition(level, exitCell, LevelTransition.Type.SURFACE);
-			level.transitions.put(exitCell, exit);
-		} else {
-			if (Dungeon.customDungeon.getFloor(dest) != null) {
-				exit = new LevelTransition(level, exitCell, LevelTransition.Type.REGULAR_EXIT);
-				level.transitions.put(exitCell, exit);
-			}
-		}
+		LevelTransition exit = level.addRegularExit(exitCell);
 		if (exit != null) {
 			exit.top--;
 			exit.left--;

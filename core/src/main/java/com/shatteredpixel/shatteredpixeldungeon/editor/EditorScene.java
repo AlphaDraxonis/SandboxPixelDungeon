@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -148,6 +149,7 @@ public class EditorScene extends PixelScene {
         Dungeon.quickslot.reset();
         QuickSlotButton.reset();
         BlacksmithQuest.reset();
+        Statistics.reset();
         Dungeon.hero = null;
         FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
     }

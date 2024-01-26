@@ -21,10 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EntranceRoom;
@@ -53,15 +51,9 @@ public class SewerBossEntranceRoom extends EntranceRoom {
 		do {
 			entrance = level.pointToCell(random(3));
 		} while (level.findMob(entrance) != null);
-		Painter.set( level, entrance, Terrain.ENTRANCE );
 
-		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
-		if (Level.SURFACE.equals(dest)) {
-			level.transitions.put(entrance, new LevelTransition(level, entrance, LevelTransition.Type.SURFACE));
-		} else {
-			if (Dungeon.customDungeon.getFloor(dest) != null)
-				level.transitions.put(entrance, new LevelTransition(level, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
-		}
+		Painter.set( level, entrance, Terrain.ENTRANCE );
+		level.addRegularEntrance(entrance);
 
 		for (Room.Door door : connected.values()) {
 			door.set( Room.Door.Type.REGULAR );

@@ -80,9 +80,14 @@ public class MineEntrance extends EntranceRoom {
 		vis.pos(e.x - 1, e.y - 1);
 		level.customTiles.add(vis);
 
-		level.transitions.put(entrance, new LevelTransition(level,
-				entrance,
-				LevelTransition.Type.BRANCH_ENTRANCE, ((MiningLevel) level).destCell, 0));
+		int destCell =  level instanceof MiningLevel ? ((MiningLevel) level).destCell : -1;
+		if (destCell >= 0) {
+			level.transitions.put(entrance, new LevelTransition(level,
+					entrance,
+					LevelTransition.Type.BRANCH_ENTRANCE, destCell, 0));
+		} else {
+			level.addRegularEntrance(entrance);
+		}
 
 		int questType = level instanceof MiningLevel ? ((MiningLevel) level).quest.type() : BlacksmithQuest.NONE;
 		if (questType == BlacksmithQuest.CRYSTAL){

@@ -1001,6 +1001,32 @@ public abstract class Level implements Bundlable {
 		}
 	}
 
+	public final LevelTransition addRegularEntrance(int cell) {
+		LevelTransition result = null;
+		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
+		if (Level.SURFACE.equals(dest)){
+			transitions.put(cell, result = new LevelTransition(this, cell, LevelTransition.Type.SURFACE));
+		} else {
+			LevelScheme destFloor = Dungeon.customDungeon.getFloor(dest);
+			if (destFloor != null && !destFloor.exitCells.isEmpty())
+				transitions.put(cell, result = new LevelTransition(this, cell, LevelTransition.Type.REGULAR_ENTRANCE));
+		}
+		return result;
+	}
+
+	public final LevelTransition addRegularExit(int cell) {
+		LevelTransition result = null;
+		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultBelow();
+		if (Level.SURFACE.equals(dest)) {
+			transitions.put(cell, result = new LevelTransition(this, cell, LevelTransition.Type.SURFACE));
+		} else {
+			LevelScheme destFloor = Dungeon.customDungeon.getFloor(dest);
+			if (destFloor != null && !destFloor.entranceCells.isEmpty())
+				transitions.put(cell, result = new LevelTransition(this, cell, LevelTransition.Type.REGULAR_EXIT));
+		}
+		return result;
+	}
+
 	public void seal(){
 		lockedCount++;
 		if (lockedCount == 1) {

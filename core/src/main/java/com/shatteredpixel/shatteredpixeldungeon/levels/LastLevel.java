@@ -117,15 +117,7 @@ public class LastLevel extends Level {
 		map[entrance] = Terrain.ENTRANCE;
 		map[entrance+width] = Terrain.ENTRANCE;
 
-		String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
-		LevelTransition entry = null;
-		if (Level.SURFACE.equals(dest)) {
-			entry = new LevelTransition(this, entrance, LevelTransition.Type.SURFACE);
-		} else {
-			if (Dungeon.customDungeon.getFloor(dest) != null)
-				entry = new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE);
-
-		}
+		LevelTransition entry = addRegularEntrance(entrance);
 		if (entry != null) {
 			entry.left--;
 			entry.right++;

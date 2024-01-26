@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGuard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -61,7 +62,6 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.Tilemap;
-import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
@@ -73,15 +73,42 @@ public class MiningLevel extends CavesLevel {
 
 	int questId;
 	public BlacksmithQuest quest;
-	public int destCell;//where the exit in MiningEntrance should lead to
+	public int destCell = -1;//where the exit in MiningEntrance should lead to
 
 	public static Blacksmith generateWithThisQuest;
 
+	public static class CrystalMiningLevel extends MiningLevel {
+		@Override
+		public void create() {
+			quest = new BlacksmithQuest();
+			quest.setType(BlacksmithQuest.CRYSTAL);
+			super.create();
+		}
+	}
+	public static class GnollMiningLevel extends MiningLevel {
+		@Override
+		public void create() {
+			quest = new BlacksmithQuest();
+			quest.setType(BlacksmithQuest.GNOLL);
+			super.create();
+		}
+	}
+	public static class FungiMiningLevel extends MiningLevel {
+		@Override
+		public void create() {
+			quest = new BlacksmithQuest();
+			quest.setType(BlacksmithQuest.FUNGI);
+			super.create();
+		}
+	}
+
 	@Override
 	public void create() {
-		quest = generateWithThisQuest.quest;
-		questId = quest.id();
-		generateWithThisQuest = null;
+		if (generateWithThisQuest != null) {
+			quest = generateWithThisQuest.quest;
+			questId = quest.id();
+			generateWithThisQuest = null;
+		}
 		super.create();
 	}
 
@@ -92,7 +119,7 @@ public class MiningLevel extends CavesLevel {
 
 	@Override
 	public void playLevelMusic() {
-		Music.INSTANCE.play(Assets.Music.CAVES_TENSE, true);
+		playLevelMusic(LevelScheme.REGION_CAVES, 1);
 	}
 
 	@Override
