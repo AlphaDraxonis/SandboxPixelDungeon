@@ -116,6 +116,8 @@ public class CavesBossLevel extends Level {
 
 	private ArenaVisuals customArenaVisuals;
 
+	private int entranceCell, exitCell;
+
 	@Override
 	protected boolean build() {
 
@@ -158,7 +160,7 @@ public class CavesBossLevel extends Level {
 		Painter.fill(this, 16, 5, 1, 6, Terrain.EMPTY_SP);
 		Painter.fill(this, 15, 0, 3, 3, Terrain.EXIT);
 
-		int exitCell = 16 + 2*width();
+		exitCell = 16 + 2*width();
 		LevelTransition exit = addRegularExit(exitCell);
 		if (exit != null) {
 			exit.set(14, 0, 18, 2);
@@ -188,14 +190,37 @@ public class CavesBossLevel extends Level {
 	}
 
 	@Override
+	public int entrance() {
+		int entr = super.entrance();
+		return entr == 0 ? entranceCell : entr;
+	}
+
+	@Override
+	public int exit() {
+		int exit = super.exit();
+		return exit == 0 ? exitCell : exit;
+	}
+
+	private static final String ENTRANCE_CELL = "entrance_cell";
+	private static final String EXIT_CELL = "exit_cell";
+
+	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
-
+		entranceCell = bundle.getInt(ENTRANCE_CELL);
+		exitCell = bundle.getInt(EXIT_CELL);
 		for (CustomTilemap c : customTiles){
 			if (c instanceof ArenaVisuals){
 				customArenaVisuals = (ArenaVisuals) c;
 			}
 		}
+	}
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put(ENTRANCE_CELL, entranceCell);
+		bundle.put(EXIT_CELL, exitCell);
 	}
 
 	@Override
@@ -525,13 +550,13 @@ public class CavesBossLevel extends Level {
 	};
 
 	private void buildEntrance(){
-		int entrance = 16 + 25*width();
+		int entranceCell = 16 + 25*width();
 
 		//entrance area
-		int NW = entrance - 7 - 7*width();
-		int NE = entrance + 7 - 7*width();
-		int SE = entrance + 7 + 7*width();
-		int SW = entrance - 7 + 7*width();
+		int NW = entranceCell - 7 - 7*width();
+		int NE = entranceCell + 7 - 7*width();
+		int SE = entranceCell + 7 + 7*width();
+		int SW = entranceCell - 7 + 7*width();
 
 		short[] entranceTiles = Random.oneOf(entranceVariants);
 		for (int i = 0; i < entranceTiles.length; i++){
@@ -546,8 +571,8 @@ public class CavesBossLevel extends Level {
 			NW++; NE--; SW++; SE--;
 		}
 
-		Painter.set(this, entrance, Terrain.ENTRANCE);
-		addRegularEntrance(entrance);
+		Painter.set(this, entranceCell, Terrain.ENTRANCE);
+		addRegularEntrance(entranceCell);
 	}
 
 	private static short[] corner1 = {
@@ -685,6 +710,8 @@ public class CavesBossLevel extends Level {
 
 		{
 			texture = Assets.Environment.CAVES_BOSS;
+
+			wallVisual = true;
 		}
 
 		private static short[] entryWay = new short[]{

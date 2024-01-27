@@ -274,7 +274,7 @@ public class CustomLevel extends Level {
             zoneMap.putAll(level.zoneMap);
             levelScheme.zones.addAll(zoneMap.keySet());
             Zone.setupZoneArray(this);
-            if (levelTemplate != LastLevel.class && levelTemplate != DeadEndLevel.class)
+            if (LevelScheme.getBoss(levelTemplate) == REGION_NONE && levelTemplate != LastLevel.class && levelTemplate != DeadEndLevel.class)
                 mobRotation = Bestiary.getRotationForDepth(Dungeon.getSimulatedDepth(temp));
 
 

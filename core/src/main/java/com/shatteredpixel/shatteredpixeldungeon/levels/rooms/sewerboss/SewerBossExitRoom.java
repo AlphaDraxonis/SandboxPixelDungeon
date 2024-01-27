@@ -120,6 +120,8 @@ public class SewerBossExitRoom extends ExitRoom {
 			
 			tileW = 3;
 			tileH = 2;
+
+			wallVisual = true;
 		}
 		
 		private static final int[] layout = new int[]{

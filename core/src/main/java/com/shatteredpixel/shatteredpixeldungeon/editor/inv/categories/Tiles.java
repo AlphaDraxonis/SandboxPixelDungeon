@@ -20,6 +20,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_DOO
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_EXIT;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.MINE_BOULDER;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.MINE_CRYSTAL;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.OPEN_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.PEDESTAL;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_TRAP;
@@ -59,6 +60,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.HallsBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
@@ -89,7 +91,7 @@ public enum Tiles {
 
     EMPTY(Terrain.EMPTY, EMPTY_DECO, WATER, GRASS, HIGH_GRASS, FURROWED_GRASS, EMPTY_SP, PEDESTAL, EMBERS),
     WALL(Terrain.WALL, WALL_DECO, BOOKSHELF, BARRICADE, STATUE, STATUE_SP, CHASM),
-    DOOR(Terrain.DOOR, SECRET_DOOR, LOCKED_DOOR, CRYSTAL_DOOR, LOCKED_EXIT, UNLOCKED_EXIT),
+    DOOR(Terrain.DOOR, OPEN_DOOR, SECRET_DOOR, LOCKED_DOOR, CRYSTAL_DOOR, LOCKED_EXIT, UNLOCKED_EXIT),
     SPECIAL(ENTRANCE, EXIT, EMPTY_WELL, WELL, ALCHEMY, SIGN, MINE_CRYSTAL, MINE_BOULDER);
 
     public final int[] terrains;
@@ -260,6 +262,9 @@ public enum Tiles {
         customTileBag.items.add(new CustomTileItem(new CityBossLevel.KingsThrone(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExit(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExitOverhang(), -1));
+
+        customTileBag.items.add(new CustomTileItem(new HallsBossLevel.CenterPieceVisuals(), -1));
+        customTileBag.items.add(new CustomTileItem(new HallsBossLevel.BigPillarVisual(), -1));
     }
 
     public static void addCustomTile(CustomTileLoader.UserCustomTile customTile) {

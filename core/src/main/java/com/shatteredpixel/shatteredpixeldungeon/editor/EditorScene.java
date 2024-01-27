@@ -521,8 +521,8 @@ public class EditorScene extends PixelScene {
             if (visual instanceof CustomTileLoader.SimpleCustomTile) {
                 ((CustomTileLoader.SimpleCustomTile) visual).updateValues();
                 if (((CustomTileLoader.SimpleCustomTile) visual).identifier == null) toRemove.add(visual);
-                else add(visual, false);
-            } else add(visual, false);
+                else add(visual);
+            } else add(visual);
         }
         Dungeon.level.customTiles.removeAll(toRemove);
         toRemove.clear();
@@ -530,8 +530,8 @@ public class EditorScene extends PixelScene {
             if (visual instanceof CustomTileLoader.SimpleCustomTile) {
                 ((CustomTileLoader.SimpleCustomTile) visual).updateValues();
                 if (((CustomTileLoader.SimpleCustomTile) visual).identifier == null) toRemove.add(visual);
-                else add(visual, false);
-            } else add(visual, true);
+                else add(visual);
+            } else add(visual);
         }
         Dungeon.level.customWalls.removeAll(toRemove);
     }
@@ -548,20 +548,20 @@ public class EditorScene extends PixelScene {
         }
     }
 
-    public static void add(CustomTilemap t, boolean wall) {
+    public static void add(CustomTilemap t) {
         if (scene == null) return;
         if (t instanceof CustomTileLoader.SimpleCustomTile)
             ((CustomTileLoader.SimpleCustomTile) t).placed = true;
-        if (wall) {
+        if (t.wallVisual) {
             scene.addCustomWall(t);
         } else {
             scene.addCustomTile(t);
         }
     }
 
-    public static void remove(CustomTilemap t, boolean wall) {
+    public static void remove(CustomTilemap t) {
         if (scene == null) return;
-        if (wall) scene.customWalls.remove(t.killVisual());
+        if (t.wallVisual) scene.customWalls.remove(t.killVisual());
         else scene.customTiles.remove(t.killVisual());
     }
 
@@ -887,7 +887,7 @@ public class EditorScene extends PixelScene {
         else if (Barrier.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Tiles.bag.findItem(clazz);
         else if (CustomTilemap.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Tiles.bag.findItem(clazz);//CustomTiles
         else return null;
-        inBag.setObject(obj);
+        if (inBag !=null) inBag.setObject(obj);
         return inBag;
     }
 
@@ -1068,7 +1068,9 @@ public class EditorScene extends PixelScene {
 
     public static void putInQuickslot(Integer cell) {
         if (cell != null && cell >= 0 && cell < customLevel.length()) {
-            QuickSlotButton.set(getObjAsInBag(getObjAtCell(cell)));
+            Item firstObj = getObjAsInBag(getObjAtCell(cell));
+            if (firstObj == null) firstObj = getObjAsInBag(customLevel.map[cell]);
+            QuickSlotButton.set(firstObj);
         }
     }
 

@@ -7,7 +7,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 
 public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPart {
@@ -21,22 +20,25 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
         this.terrain = terrain;
     }
 
-    public static void place(CustomTilemap customTile, int cell, int terrain) {
+    public static void place(CustomTilemap customTile, int cell) {
         customTile.setRect(cell % Dungeon.level.width(), cell / Dungeon.level.width(),
                 customTile.tileW, customTile.tileH);
         if (customTile instanceof CustomTileLoader.SimpleCustomTile) {
             ((CustomTileLoader.SimpleCustomTile) customTile).updateValues();
         }
-        Dungeon.level.customTiles.add(customTile);
-        EditorScene.add(customTile, terrain == Terrain.WALL);
+        if (customTile.wallVisual) {
+            Dungeon.level.customWalls.add(customTile);
+        } else {
+            Dungeon.level.customTiles.add(customTile);
+        }
+        EditorScene.add(customTile);
         EditorScene.updateMap(cell);
     }
 
-    public static void remove(CustomTilemap customTile, int terrain) {
-        boolean wall = Dungeon.level.customWalls.contains(customTile);
-        if (wall) Dungeon.level.customWalls.remove(customTile);
-        else Dungeon.level.customTiles.remove(customTile);
-        EditorScene.remove(customTile, wall);
+    public static void remove(CustomTilemap customTile) {
+        if (!Dungeon.level.customWalls.remove(customTile))
+            Dungeon.level.customTiles.remove(customTile);
+        EditorScene.remove(customTile);
     }
 
     public static class Place extends CustomTileActionPart {
@@ -60,7 +62,7 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
                 }
                 otherTerrainChanges.redo();
             }
-            place(customTile, cell(), terrain);
+            place(customTile, cell());
         }
 
         @Override
@@ -73,7 +75,7 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
         public void redo() {
             super.redo();
             if (otherTerrainChanges != null) otherTerrainChanges.redo();
-            if (customTile != null) place(customTile, cell(), terrain);
+            if (customTile != null) place(customTile, cell());
         }
 
         @Override
@@ -90,14 +92,14 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
             super(cell, terrain, customTile);
             offset = cell - customTile.tileX - customTile.tileY * Dungeon.level.width()
                     - customTile.offsetCenterX - customTile.offsetCenterY * Dungeon.level.width();
-            remove(customTile, terrain);
+            remove(customTile);
         }
 
         @Override
         public void undo() {
             super.undo();
 
-            place(customTile, cell() - offset, terrain);
+            place(customTile, cell() - offset);
             EditorScene.updateMap(cell());
         }
 
@@ -105,7 +107,7 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
         public void redo() {
             super.redo();
             if (customTile != null) {
-                remove(customTile, terrain);
+                remove(customTile);
 //                EditorScene.updateMap(cell());
             }
         }

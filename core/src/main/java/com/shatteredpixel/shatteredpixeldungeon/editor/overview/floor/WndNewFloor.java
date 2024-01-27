@@ -110,6 +110,7 @@ public class WndNewFloor extends WndTabbed {
             ExecutorService executor = Executors.newSingleThreadExecutor();
 
             // Create a Future object to track the generation task
+            // SET BREAKPOINT IN LINE 115 IF GENERATING IS NOT WORKING PROPERLY ggv
             Future<Boolean> generator = executor.submit(() -> {
                 newLevelScheme.initNewLevelScheme(name,
                         (Class<? extends Level>) newFloorComp.chooseTemplate.getObject());
@@ -121,7 +122,7 @@ public class WndNewFloor extends WndTabbed {
             try {
                 generated = generator.get(10, TimeUnit.SECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                generated = null;
+                generated = null;//Set breakpoint here if an exception occurred that is no timeout exception; and read ex stack trace
                 ex.printStackTrace();
             }
             if (generated == null) {

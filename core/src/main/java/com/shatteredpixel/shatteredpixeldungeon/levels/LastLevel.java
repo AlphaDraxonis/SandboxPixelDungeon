@@ -362,6 +362,8 @@ public class LastLevel extends Level {
 
 			tileW = 16;
 			tileH = 9;
+
+			wallVisual = true;
 		}
 
 		private static final int[] map = new int[]{

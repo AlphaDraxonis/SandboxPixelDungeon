@@ -397,6 +397,8 @@ public class MiningLevel extends CavesLevel {
 
 		{
 			texture = Assets.Environment.CAVES_QUEST;
+
+			wallVisual = true;
 		}
 
 		@Override

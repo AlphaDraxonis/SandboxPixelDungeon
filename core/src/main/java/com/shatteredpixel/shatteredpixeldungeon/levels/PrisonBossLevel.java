@@ -897,6 +897,8 @@ public class PrisonBossLevel extends Level {
 			
 			tileW = 14;
 			tileH = 22;
+
+			wallVisual = true;
 		}
 		
 		final int TEX_WIDTH = 256;

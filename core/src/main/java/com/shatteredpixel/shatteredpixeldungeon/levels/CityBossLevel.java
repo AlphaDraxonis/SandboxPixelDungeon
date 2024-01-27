@@ -87,6 +87,8 @@ public class CityBossLevel extends Level {
 
 	private ImpShopRoom impShop;
 
+	private int entranceCell, exitCell;
+
 	@Override
 	public void playLevelMusic() {
 		if (locked()){
@@ -104,6 +106,18 @@ public class CityBossLevel extends Level {
 	}
 
 	@Override
+	public int entrance() {
+		int entr = super.entrance();
+		return entr == 0 ? entranceCell : entr;
+	}
+
+	@Override
+	public int exit() {
+		int exit = super.exit();
+		return exit == 0 ? exitCell : exit;
+	}
+
+	@Override
 	public String tilesTex() {
 		return Assets.Environment.TILES_CITY;
 	}
@@ -114,16 +128,22 @@ public class CityBossLevel extends Level {
 	}
 
 	private static final String IMP_SHOP = "imp_shop";
+	private static final String ENTRANCE_CELL = "entrance_cell";
+	private static final String EXIT_CELL = "exit_cell";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
+		bundle.put(ENTRANCE_CELL, entranceCell);
+		bundle.put(EXIT_CELL, exitCell);
 		bundle.put( IMP_SHOP, impShop );
 	}
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
+		entranceCell = bundle.getInt(ENTRANCE_CELL);
+		exitCell = bundle.getInt(EXIT_CELL);
 		impShop = (ImpShopRoom) bundle.get( IMP_SHOP );
 		if (map[topDoor] != Terrain.LOCKED_DOOR && ImpQuest.completedOnce() && !impShop.shopSpawned()){
 			spawnShop();
@@ -152,9 +172,9 @@ public class CityBossLevel extends Level {
 
 		Painter.set(this, c.x, entry.top, Terrain.DOOR);
 
-		int entrance = c.x + (c.y+2)*width();
-		Painter.set(this, entrance, Terrain.ENTRANCE);
-		addRegularEntrance(entrance);
+		entranceCell = c.x + (c.y+2)*width();
+		Painter.set(this, entranceCell, Terrain.ENTRANCE);
+		addRegularEntrance(entranceCell);
 
 		//DK's throne room
 		Painter.fillDiamond(this, arena, 1, Terrain.EMPTY);
@@ -180,7 +200,7 @@ public class CityBossLevel extends Level {
 		Painter.fill(this, end.left+4, end.top+5, 7, 18, Terrain.EMPTY);
 		Painter.fill(this, end.left+4, end.top+5, 7, 4, Terrain.EXIT);
 
-		int exitCell = end.left+7 + (end.top+8)*width();
+		exitCell = end.left+7 + (end.top+8)*width();
 		LevelTransition exit = addRegularExit(exitCell);
 		if (exit != null) {
 			exit.set(end.left + 4, end.top + 4, end.left + 4 + 6, end.top + 4 + 4);
@@ -631,6 +651,8 @@ public class CityBossLevel extends Level {
 			texture = Assets.Environment.CITY_BOSS;
 			tileW = 15;
 			tileH = 48;
+
+			wallVisual = true;
 		}
 
 		@Override

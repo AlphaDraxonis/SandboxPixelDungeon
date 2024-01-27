@@ -138,9 +138,8 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
 
     public static ActionPart remove(int cell) {
         Point p = Dungeon.level.cellToPoint(cell);
-        CustomTilemap cust = findCustomTileAt(p, Dungeon.level.customTiles);
-        boolean wall = cust == null;
-        if (wall) cust = findCustomTileAt(p, Dungeon.level.customWalls);
+        CustomTilemap cust = findCustomTileAt(p, Dungeon.level.customWalls);
+        if (cust == null) cust = findCustomTileAt(p, Dungeon.level.customTiles);
         if (cust != null) return new CustomTileActionPart.Remove(cell, Dungeon.level.map[cell], cust);
         return null;
     }
@@ -184,15 +183,16 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
 
     public static void removeCustomTilesAt(int cell, Level level) {
         Point p = level.cellToPoint(cell);
-        CustomTilemap cust = findCustomTileAt(p, level.customTiles);
+        CustomTilemap cust = findCustomTileAt(p, level.customWalls);
+        if (cust != null) {
+            cust.wallVisual = true;
+            level.customWalls.remove(cust);
+            EditorScene.remove(cust);
+        }
+        cust = findCustomTileAt(p, level.customTiles);
         if (cust != null) {
             level.customTiles.remove(cust);
-            EditorScene.remove(cust, false);
-        }
-        cust = findCustomTileAt(p, level.customWalls);
-        if (cust != null) {
-            level.customWalls.remove(cust);
-            EditorScene.remove(cust, true);
+            EditorScene.remove(cust);
         }
     }
 

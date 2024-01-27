@@ -51,6 +51,7 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class HallsBossLevel extends Level {
 
@@ -68,6 +69,8 @@ public class HallsBossLevel extends Level {
 	private static final int ROOM_RIGHT		= WIDTH / 2 + 4;
 	private static final int ROOM_TOP		= 8;
 	private static final int ROOM_BOTTOM	= ROOM_TOP + 8;
+
+	private int entranceCell, exitCell;
 
 	@Override
 	public void playLevelMusic() {
@@ -119,8 +122,8 @@ public class HallsBossLevel extends Level {
 			Painter.fill(this, 4 + i * 5, top, 5, bottom - top + 1, Terrain.EMPTY);
 
 			if (i == 2) {
-				int entrance = (6 + i * 5) + (bottom - 1) * width();
-				addRegularEntrance(entrance);
+				entranceCell = (6 + i * 5) + (bottom - 1) * width();
+				addRegularEntrance(entranceCell);
 			}
 
 		}
@@ -132,7 +135,7 @@ public class HallsBossLevel extends Level {
 			}
 		}
 
-		map[entrance()] = Terrain.ENTRANCE;
+		map[entrance() == 0 ? entranceCell : entrance()] = Terrain.ENTRANCE;
 
 		Painter.fill(this, ROOM_LEFT-1, ROOM_TOP-1, 11, 11, Terrain.EMPTY );
 
@@ -157,7 +160,7 @@ public class HallsBossLevel extends Level {
 
 		Painter.fill(this, ROOM_LEFT+3, ROOM_TOP+2, 3, 4, Terrain.EMPTY );
 
-		int exitCell = width/2 + ((ROOM_TOP+1) * width);
+		exitCell = width/2 + ((ROOM_TOP+1) * width);
 		LevelTransition exit = addRegularExit(exitCell);
 		if (exit != null) {
 			exit.top--;
@@ -169,8 +172,16 @@ public class HallsBossLevel extends Level {
 		vis.pos(ROOM_LEFT, ROOM_TOP+1);
 		customTiles.add(vis);
 
-		vis = new CenterPieceWalls();
-		vis.pos(ROOM_LEFT, ROOM_TOP);
+		vis = new BigPillarVisual();
+		vis.pos(ROOM_LEFT, ROOM_BOTTOM-2);
+		customWalls.add(vis);
+
+		vis = new BigPillarVisual();
+		vis.pos(ROOM_RIGHT-1, ROOM_BOTTOM-2);
+		customWalls.add(vis);
+
+		vis = new LevelExitVisual();
+		vis.pos(WIDTH/2-vis.tileW/2, ROOM_TOP);
 		customWalls.add(vis);
 
 		//basic version of building flag maps for the pathfinder test
@@ -180,7 +191,19 @@ public class HallsBossLevel extends Level {
 
 		//ensures a path to the exit exists
 		int realEntrance = entrance(), realExit = exit();
-		return (PathFinder.getStep(entrance(), realEntrance == realExit ? exitCell : realExit, getPassableVar()) != -1);
+		return (PathFinder.getStep(entrance(), realEntrance == realExit || realExit == 0 ? exitCell : realExit, getPassableVar()) != -1);
+	}
+
+	@Override
+	public int entrance() {
+		int entr = super.entrance();
+		return entr == 0 ? entranceCell : entr;
+	}
+
+	@Override
+	public int exit() {
+		int exit = super.exit();
+		return exit == 0 ? exitCell : exit;
 	}
 
 	@Override
@@ -286,6 +309,8 @@ public class HallsBossLevel extends Level {
 			for (CustomTilemap t : customTiles) {
 				if (t instanceof CenterPieceVisuals) {
 					((CenterPieceVisuals) t).updateState();
+				} else if (t instanceof LevelExitVisual) {
+					((LevelExitVisual) t).updateState();
 				}
 			}
 			for (CustomTilemap t : customWalls) {
@@ -310,14 +335,26 @@ public class HallsBossLevel extends Level {
 		}
 	}
 
+	private static final String ENTRANCE_CELL = "entrance_cell";
+	private static final String EXIT_CELL = "exit_cell";
+
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
+		entranceCell = bundle.getInt(ENTRANCE_CELL);
+		exitCell = bundle.getInt(EXIT_CELL);
 		for (Mob m : mobs){
 			if (m instanceof YogDzewa){
 				((YogDzewa) m).updateVisibility(this);
 			}
 		}
+	}
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put(ENTRANCE_CELL, entranceCell);
+		bundle.put(EXIT_CELL, exitCell);
 	}
 
 	@Override
@@ -398,13 +435,85 @@ public class HallsBossLevel extends Level {
 		}
 	}
 
+	public static class BigPillarVisual extends CustomTilemap {
+
+		{
+			texture = Assets.Environment.HALLS_SP;
+
+			tileW = 2;
+			tileH = 2;
+
+			wallVisual = true;
+		}
+
+		private static final int[] map = new int[]{
+				32, 33,
+				40, 41,
+		};
+
+		@Override
+		public Tilemap create() {
+			Tilemap v = super.create();
+			if (vis != null){
+				vis.map(map.clone(), tileW);
+			}
+			return v;
+		}
+
+	}
+
+	public static class LevelExitVisual extends CustomTilemap {
+
+		{
+			texture = Assets.Environment.HALLS_SP;
+
+			terrain = Terrain.WALL_DECO;
+
+			tileW = 3;
+			tileH = 2;
+
+			offsetCenterX = offsetCenterY = 1;
+
+			wallVisual = true;
+		}
+
+		private static final int[] map = new int[]{
+				 1,  0,  2,
+				-1, 23, -1,
+		};
+
+		@Override
+		public Tilemap create() {
+			Tilemap v = super.create();
+			updateState();
+			return v;
+		}
+
+		private void updateState() {
+			if (vis != null) {
+				int[] data;
+				if (Dungeon.level.map[Dungeon.level.exit()] == Terrain.EXIT) {
+					data = map.clone();
+				} else {
+					data = new int[map.length];
+					Arrays.fill(data, -1);
+				}
+				vis.map(data, tileW);
+			}
+		}
+
+	}
+
+	//Last used in v1.0.0 (Shattered 2.2.1)
 	public static class CenterPieceWalls extends CustomTilemap {
 
 		{
 			texture = Assets.Environment.HALLS_SP;
 
 			tileW = 9;
-			tileH = 9;
+			tileH = 8;
+
+			wallVisual = true;
 		}
 
 		private static final int[] map = new int[]{
@@ -438,5 +547,10 @@ public class HallsBossLevel extends Level {
 			}
 		}
 
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			tileH = 8;
+		}
 	}
 }

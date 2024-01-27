@@ -16,7 +16,6 @@ public class PlaceCellActionPart implements ActionPart {
     private Trap oldTrap;
     private Plant oldPlant;
     private CustomTilemap oldCustomTile;
-    private boolean wall;
 
     public PlaceCellActionPart(int oldTerrain, int newTerrain, int cell, Trap oldTrap, Plant oldPlant, CustomTilemap oldCustomTile) {
         init(oldTerrain, newTerrain, cell, oldTrap, oldPlant, oldCustomTile);
@@ -32,7 +31,6 @@ public class PlaceCellActionPart implements ActionPart {
         this.oldTrap = oldTrap;
         this.oldPlant = oldPlant;
         this.oldCustomTile = oldCustomTile;
-        wall = Dungeon.level.customWalls.contains(oldCustomTile);
 
         redo();
     }
@@ -44,9 +42,9 @@ public class PlaceCellActionPart implements ActionPart {
         Dungeon.level.plants.put(cell, oldPlant);
         CustomTileItem.removeCustomTilesAt(cell, Dungeon.level);
         if (oldCustomTile != null) {
-            if (wall) Dungeon.level.customWalls.add(oldCustomTile);
+            if (oldCustomTile.wallVisual) Dungeon.level.customWalls.add(oldCustomTile);
             else Dungeon.level.customTiles.add(oldCustomTile);
-            EditorScene.add(oldCustomTile, wall);
+            EditorScene.add(oldCustomTile);
         }
     }
 
