@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomTerrain;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -15,7 +16,7 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
     protected final int terrain;
 
     protected CustomTileActionPart(int cell, int terrain, CustomTilemap customTile) {
-        super(cell, terrain, true);
+        super(cell, terrain, true, customTile.wallVisual);
         this.customTile = customTile;
         this.terrain = terrain;
     }
@@ -46,23 +47,32 @@ public /*sealed*/ class CustomTileActionPart extends TileItem.PlaceTileActionPar
         private ActionPartList otherTerrainChanges;//for customTiles larger than 1x1
 
         public Place(int cell, int terrain, CustomTilemap customTile) {
-            super(cell, terrain, customTile);
+            super(cell, getFirstTerrain(terrain, customTile), customTile);
             if (customTile.tileW > 1 || customTile.tileH > 1) {
                 otherTerrainChanges = new ActionPartList();
                 int startPos = cell - customTile.offsetCenterX - customTile.offsetCenterY * Dungeon.level.width();
                 customTile.create();//Need to render image first so we know the blank spots
+                int[] terrains = customTile instanceof CustomTerrain ? ((CustomTerrain) customTile).getTerrain() : null;
                 for (int i = 0; i < customTile.tileH; i++) {
                     for (int j = 0; j < customTile.tileW; j++) {
                         if (customTile.image(j, i) != null) {
                             int pos = startPos + j + i * Dungeon.level.width();
-                            if (pos != cell) otherTerrainChanges.addActionPart(TileItem.place(pos, newTerrain(),
-                                    CustomTileItem.findCustomTileAt(pos) != null));
+                            if (pos != cell) otherTerrainChanges.addActionPart(TileItem.place(pos, terrains == null ? newTerrain() : terrains[j + i * customTile.tileW],
+                                    CustomTileItem.findCustomTileAt(pos, customTile.wallVisual) != null, customTile.wallVisual));
                         }
                     }
                 }
                 otherTerrainChanges.redo();
             }
             place(customTile, cell());
+        }
+
+        private static int getFirstTerrain(int terrain, CustomTilemap customTile) {
+            if (customTile instanceof CustomTerrain) {
+                int[] terrains = ((CustomTerrain) customTile).getTerrain();
+                return terrains[customTile.offsetCenterX + customTile.offsetCenterY * customTile.tileW];
+            }
+            return terrain;
         }
 
         @Override

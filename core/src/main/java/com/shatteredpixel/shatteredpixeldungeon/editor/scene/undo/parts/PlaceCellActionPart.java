@@ -16,21 +16,23 @@ public class PlaceCellActionPart implements ActionPart {
     private Trap oldTrap;
     private Plant oldPlant;
     private CustomTilemap oldCustomTile;
+    private Boolean newCustomTileIsWall;
 
-    public PlaceCellActionPart(int oldTerrain, int newTerrain, int cell, Trap oldTrap, Plant oldPlant, CustomTilemap oldCustomTile) {
-        init(oldTerrain, newTerrain, cell, oldTrap, oldPlant, oldCustomTile);
+    public PlaceCellActionPart(int oldTerrain, int newTerrain, int cell, Trap oldTrap, Plant oldPlant, CustomTilemap oldCustomTile, Boolean newCustomTileIsWall) {
+        init(oldTerrain, newTerrain, cell, oldTrap, oldPlant, oldCustomTile, newCustomTileIsWall);
     }
 
     public PlaceCellActionPart() {
     }
 
-    protected void init(int oldTerrain, int newTerrain, int cell, Trap oldTrap, Plant oldPlant, CustomTilemap oldCustomTile) {
+    protected void init(int oldTerrain, int newTerrain, int cell, Trap oldTrap, Plant oldPlant, CustomTilemap oldCustomTile, Boolean newCustomTileIsWall) {
         this.oldTerrain = oldTerrain;
         this.newTerrain = newTerrain;
         this.cell = cell;
         this.oldTrap = oldTrap;
         this.oldPlant = oldPlant;
         this.oldCustomTile = oldCustomTile;
+        this.newCustomTileIsWall = newCustomTileIsWall;
 
         redo();
     }
@@ -40,7 +42,7 @@ public class PlaceCellActionPart implements ActionPart {
         Level.set(cell, oldTerrain);
         if (oldTrap != null) Dungeon.level.setTrap(oldTrap, cell);
         Dungeon.level.plants.put(cell, oldPlant);
-        CustomTileItem.removeCustomTilesAt(cell, Dungeon.level);
+        CustomTileItem.removeCustomTilesAt(cell, Dungeon.level, newCustomTileIsWall);
         if (oldCustomTile != null) {
             if (oldCustomTile.wallVisual) Dungeon.level.customWalls.add(oldCustomTile);
             else Dungeon.level.customTiles.add(oldCustomTile);
@@ -51,12 +53,14 @@ public class PlaceCellActionPart implements ActionPart {
     @Override
     public void redo() {
         Level.set(cell, newTerrain); //old traps are already removed here
-        CustomTileItem.removeCustomTilesAt(cell, Dungeon.level);
+        CustomTileItem.removeCustomTilesAt(cell, Dungeon.level, newCustomTileIsWall);
     }
 
     @Override
     public boolean hasContent() {
-        return oldTerrain != newTerrain || !EditCustomTileComp.areEqual(oldCustomTile(), CustomTileItem.findCustomTileAt(cell()));
+        return oldTerrain != newTerrain
+                || (oldCustomTile() == null && CustomTileItem.findAnyCustomTileAt(cell()) != null)
+                || oldCustomTile() != null && !EditCustomTileComp.areEqual(oldCustomTile(), CustomTileItem.findCustomTileAt(cell(), oldCustomTile().wallVisual));
     }
 
     protected CustomTilemap oldCustomTile() {

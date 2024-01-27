@@ -557,7 +557,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 
 			for (int i = 0; i < level.length(); i++) {
 				if (level.map[i] == Terrain.WATER || level.map[i] == Terrain.CUSTOM_DECO
-						|| CustomTileItem.findCustomTileAt(i) instanceof CavesBossLevel.TrapTile) {
+						|| CustomTileItem.findCustomTileAt(i, false) instanceof CavesBossLevel.TrapTile) {
 					GameScene.add(Blob.seed(i, 1, CavesBossLevel.PylonEnergy.class));
 				}
 			}

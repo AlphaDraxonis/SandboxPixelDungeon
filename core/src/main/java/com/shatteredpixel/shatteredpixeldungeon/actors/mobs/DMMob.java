@@ -22,7 +22,7 @@ public abstract class DMMob extends Mob {
 
         if (state == HUNTING &&
                 (Dungeon.level.map[step] == Terrain.INACTIVE_TRAP && Dungeon.level instanceof CavesBossLevel
-                || CustomTileItem.findCustomTileAt(step) instanceof CavesBossLevel.TrapTile)){
+                || CustomTileItem.findCustomTileAt(step, false) instanceof CavesBossLevel.TrapTile)){
             //don't gain energy from cells that are energized
             if (CavesBossLevel.PylonEnergy.volumeAt(pos, CavesBossLevel.PylonEnergy.class) > 0){
                 return;

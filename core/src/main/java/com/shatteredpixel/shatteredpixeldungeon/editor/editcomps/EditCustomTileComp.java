@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomTerrain;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
@@ -20,8 +21,8 @@ public class EditCustomTileComp extends EditTileComp {
 
     private final CustomTilemap customTile;
 
-    private final Spinner terrain;
-    private final RedButton editSimpleCustomTile;
+    private Spinner terrain;
+    private RedButton editSimpleCustomTile;
 
     private final Component[] comps;
 
@@ -47,13 +48,14 @@ public class EditCustomTileComp extends EditTileComp {
             };
             add(editSimpleCustomTile);
         } else {
-            editSimpleCustomTile = null;
-            terrain = createTerrainSpinner(customTile.terrain, " " + Messages.get(EditCustomTileComp.class, "terrain") + ":", value -> {
-                getObj().setTerrainType((Integer) value);
-                return getObj().getSprite();
-            });
-            terrain.addChangeListener(() -> getObj().setTerrainType(customTile.terrain = (int) terrain.getValue()));
-            add(terrain);
+            if (!(customTile instanceof CustomTerrain)) {
+                terrain = createTerrainSpinner(customTile.terrain, " " + Messages.get(EditCustomTileComp.class, "terrain") + ":", value -> {
+                    getObj().setTerrainType((Integer) value);
+                    return getObj().getSprite();
+                });
+                terrain.addChangeListener(() -> getObj().setTerrainType(customTile.terrain = (int) terrain.getValue()));
+                add(terrain);
+            }
         }
 
         updateObj();

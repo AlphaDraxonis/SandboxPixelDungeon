@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.WellWaterSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomTerrain;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndItemDistribution;
@@ -263,7 +264,10 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             if (customDesc != null) desc += customDesc;
             else desc += level.tileDesc(obj.terrainType(), obj.cell());
 
-            desc += "\n" + Messages.get(EditCustomTileComp.class, "terrain") + ": " + TileItem.getName(obj.terrainType(), -1);
+            String terrainName = customTileWr.customTilemap instanceof CustomTerrain
+                    ? Messages.get(EditCustomTileComp.class, "custom_terrain")
+                    : TileItem.getName(obj.terrainType(), -1);
+            desc += "\n" + Messages.get(EditCustomTileComp.class, "terrain") + ": " + terrainName;
             if (TileItem.isExitTerrainCell(obj.terrainType()) || obj.terrainType() == Terrain.ENTRANCE)
                 desc += Dungeon.level.appendNoTransWarning(obj.cell());
 

@@ -49,7 +49,6 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CrystalSpireSprite;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -121,8 +120,7 @@ public class CrystalSpire extends Mob {
 					continue; //don't spawn crystals on itself
 				}
 
-				CustomTilemap customTile = CustomTileItem.findCustomTileAt(i);
-				if (customTile != null && !customTile.wallVisual){
+				if (CustomTileItem.findCustomTileAt(i, false) != null){
 					continue; //TODO maybe make special sprite that can be shown on top of custom tiles
 				}
 

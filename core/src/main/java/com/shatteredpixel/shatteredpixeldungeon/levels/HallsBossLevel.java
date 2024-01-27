@@ -21,6 +21,10 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels;
 
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY_SP;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL_DECO;
+
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Bones;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -29,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomTerrain;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
@@ -154,9 +159,9 @@ public class HallsBossLevel extends Level {
 
 		Painter.fill(this, ROOM_LEFT, ROOM_TOP, 9, 9, Terrain.EMPTY_SP );
 
-		Painter.fill(this, ROOM_LEFT, ROOM_TOP, 9, 2, Terrain.WALL_DECO );
-		Painter.fill(this, ROOM_LEFT, ROOM_BOTTOM-1, 2, 2, Terrain.WALL_DECO );
-		Painter.fill(this, ROOM_RIGHT-1, ROOM_BOTTOM-1, 2, 2, Terrain.WALL_DECO );
+		Painter.fill(this, ROOM_LEFT, ROOM_TOP, 9, 2, WALL_DECO );
+		Painter.fill(this, ROOM_LEFT, ROOM_BOTTOM-1, 2, 2, WALL_DECO );
+		Painter.fill(this, ROOM_RIGHT-1, ROOM_BOTTOM-1, 2, 2, WALL_DECO );
 
 		Painter.fill(this, ROOM_LEFT+3, ROOM_TOP+2, 3, 4, Terrain.EMPTY );
 
@@ -396,13 +401,16 @@ public class HallsBossLevel extends Level {
 		return visuals;
 	}
 
-	public static class CenterPieceVisuals extends CustomTilemap {
+	public static class CenterPieceVisuals extends CustomTilemap implements CustomTerrain {
 
 		{
 			texture = Assets.Environment.HALLS_SP;
 
 			tileW = 9;
 			tileH = 8;
+
+			offsetCenterX = 4;
+			offsetCenterY = 3;
 		}
 
 		private static final int[] map = new int[]{
@@ -433,9 +441,23 @@ public class HallsBossLevel extends Level {
 				vis.map(data, tileW);
 			}
 		}
+
+		@Override
+		public int[] getTerrain() {
+			return new int[]{
+					WALL_DECO, WALL_DECO, WALL_DECO, EMPTY, EMPTY, EMPTY, WALL_DECO, WALL_DECO, WALL_DECO,
+					EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY, EMPTY, EMPTY, EMPTY_SP, EMPTY_SP, EMPTY_SP,
+					EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY, EMPTY, EMPTY, EMPTY_SP, EMPTY_SP, EMPTY_SP,
+					EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY, EMPTY, EMPTY, EMPTY_SP, EMPTY_SP, EMPTY_SP,
+					EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY, EMPTY, EMPTY, EMPTY_SP, EMPTY_SP, EMPTY_SP,
+					EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP,
+					WALL_DECO, WALL_DECO, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, WALL_DECO, WALL_DECO,
+					WALL_DECO, WALL_DECO, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY_SP, WALL_DECO, WALL_DECO
+			};
+		}
 	}
 
-	public static class BigPillarVisual extends CustomTilemap {
+	public static class BigPillarVisual extends CustomTilemap implements CustomTerrain {
 
 		{
 			texture = Assets.Environment.HALLS_SP;
@@ -460,6 +482,14 @@ public class HallsBossLevel extends Level {
 			return v;
 		}
 
+		@Override
+		public int[] getTerrain() {
+			return new int[]{
+					EMPTY_SP, EMPTY_SP,
+					WALL_DECO, WALL_DECO,
+			};
+		}
+
 	}
 
 	public static class LevelExitVisual extends CustomTilemap {
@@ -467,7 +497,7 @@ public class HallsBossLevel extends Level {
 		{
 			texture = Assets.Environment.HALLS_SP;
 
-			terrain = Terrain.WALL_DECO;
+			terrain = WALL_DECO;
 
 			tileW = 3;
 			tileH = 2;
@@ -500,6 +530,23 @@ public class HallsBossLevel extends Level {
 				}
 				vis.map(data, tileW);
 			}
+		}
+
+	}
+
+	public static class CandleTile extends CustomTilemap {
+
+		{
+			texture = Assets.Environment.HALLS_SP;
+
+			terrain = Terrain.EMPTY_DECO;
+		}
+
+		@Override
+		public Tilemap create() {
+			Tilemap v = super.create();
+			vis.map(new int[] {27}, tileW);
+			return v;
 		}
 
 	}

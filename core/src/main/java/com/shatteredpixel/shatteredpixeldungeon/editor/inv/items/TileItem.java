@@ -124,11 +124,11 @@ public class TileItem extends EditorItem {
     }
 
     public static ActionPart place(int cell, int terrainType) {
-        return place(cell, terrainType, false);
+        return place(cell, terrainType, false, null);
     }
 
-    public static ActionPart place(int cell, int terrainType, boolean forceChange) {
-        return new PlaceTileActionPart(cell, terrainType, forceChange);
+    public static ActionPart place(int cell, int terrainType, boolean forceChange, Boolean newCustomTileIsWall) {
+        return new PlaceTileActionPart(cell, terrainType, forceChange, newCustomTileIsWall);
     }
 
 
@@ -176,7 +176,7 @@ public class TileItem extends EditorItem {
     public static class PlaceTileActionPart extends PlaceCellActionPart {
         private /*final*/ ActionPartList moreActions;//should ONLY be changed if null
 
-        protected PlaceTileActionPart(int cell, int terrainType, boolean forceChange) {
+        protected PlaceTileActionPart(int cell, int terrainType, boolean forceChange, Boolean newCustomTileIsWall) {
 
             super();
 
@@ -185,14 +185,14 @@ public class TileItem extends EditorItem {
 
             if (oldTerrain == terrainType) {
                 CustomTilemap customTilemap;
-                if ((customTilemap = CustomTileItem.findCustomTileAt(cell)) != null || forceChange)
+                if ((customTilemap = CustomTileItem.findCustomTileAt(cell, newCustomTileIsWall)) != null || forceChange)
                     init(oldTerrain, terrainType, cell,
-                            level.traps.get(cell), level.plants.get(cell), customTilemap);
+                            level.traps.get(cell), level.plants.get(cell), customTilemap, newCustomTileIsWall);
                 moreActions = null;
                 return; //no need to continue bc nothing changes at all
             }
             init(oldTerrain, terrainType, cell,
-                    level.traps.get(cell), level.plants.get(cell), CustomTileItem.findCustomTileAt(cell));
+                    level.traps.get(cell), level.plants.get(cell), CustomTileItem.findCustomTileAt(cell, newCustomTileIsWall), newCustomTileIsWall);
 
             moreActions = new ActionPartList();
 

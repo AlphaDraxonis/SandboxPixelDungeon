@@ -864,7 +864,9 @@ public class EditorScene extends PixelScene {
         }
         Barrier barrier = customLevel.barriers.get(cell);
         if (barrier != null) return barrier;
-        CustomTilemap customTile = CustomTileItem.findCustomTileAt(cell);
+        CustomTilemap customTile = CustomTileItem.findCustomTileAt(cell, false);
+        if (customTile != null) return customTile;
+        customTile = CustomTileItem.findCustomTileAt(cell, true);
         if (customTile != null) return customTile;
         return customLevel.map[cell];
     }
@@ -1086,7 +1088,7 @@ public class EditorScene extends PixelScene {
                 EditorItem item = (EditorItem) selected;
                 int lvlWidth = level.width();
 
-                CustomTilemap customTile = CustomTileItem.findCustomTileAt(cell);
+                CustomTilemap customTile = CustomTileItem.findAnyCustomTileAt(cell);
 
                 if (customTile != null) {
                     while (!queue.isEmpty()) {
@@ -1125,7 +1127,7 @@ public class EditorScene extends PixelScene {
             int xCoord = cell % lvlWidth;
             if (neighbor >= 0 && neighbor < map.length && !changedCells.contains(neighbor)
                     && (Math.abs(neighbor % lvlWidth - xCoord) <= 1) && map[neighbor] == terrainClick
-                    && CustomTileItem.findCustomTileAt(neighbor) == null)
+                    && CustomTileItem.findAnyCustomTileAt(neighbor) == null)
                 queue.add(neighbor);
         }
     }
@@ -1140,7 +1142,7 @@ public class EditorScene extends PixelScene {
                     && map[neighbor] == terrainClick
                     && (Math.abs(neighbor % lvlWidth - xCoord) <= 1)
                     && customLevel().traps.get(neighbor).getClass() == onTrapClicked
-                    && CustomTileItem.findCustomTileAt(neighbor) == null)
+                    && CustomTileItem.findAnyCustomTileAt(neighbor) == null)
                 queue.add(neighbor);
         }
     }
@@ -1155,7 +1157,7 @@ public class EditorScene extends PixelScene {
             if (neighbor >= 0 && neighbor < map.length && !changedCells.contains(neighbor)
                     && map[neighbor] == terrainClick
                     && (Math.abs(neighbor % lvlWidth - xCoord) <= 1)
-                    && (found = CustomTileItem.findCustomTileAt(neighbor)) != null
+                    && (found = CustomTileItem.findAnyCustomTileAt(neighbor)) != null
                     && found.getClass() == customTile.getClass()
             && (!(found instanceof CustomTileLoader.UserCustomTile)
                     || ((CustomTileLoader.UserCustomTile) found).identifier.equals(((CustomTileLoader.UserCustomTile) customTile).identifier)))

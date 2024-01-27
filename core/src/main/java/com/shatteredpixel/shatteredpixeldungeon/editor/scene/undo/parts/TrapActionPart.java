@@ -16,7 +16,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
 
     private TrapActionPart(Trap trap, int terrainType, boolean forceChange) {
 
-        super(trap.pos, terrainType, forceChange);
+        super(trap.pos, terrainType, forceChange, null);
 
         this.trap = trap;
     }
@@ -136,7 +136,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
         @Override
         public void finish() {
             after = after.getCopy();
-            placeCellActionPart = new PlaceCellActionPart(oldTerrain, TrapItem.getTerrain(after), after.pos, null, null, null);
+            placeCellActionPart = new PlaceCellActionPart(oldTerrain, TrapItem.getTerrain(after), after.pos, null, null, null, null);
         }
     }
 }

@@ -254,6 +254,7 @@ public enum Tiles {
         customTileBag.items.clear();
         customTileBag.items.add(new CustomTileItem(new MassGraveRoom.Bones(), -1));
         customTileBag.items.add(new CustomTileItem(new RitualSiteRoom.RitualMarker(), -1));
+        customTileBag.items.add(new CustomTileItem(new HallsBossLevel.CandleTile(), -1));
         customTileBag.items.add(new CustomTileItem(new BlacksmithRoom.QuestEntrance(), -1));
 //        customTileBag.items.add(new CustomTileItem(new DemonSpawnerRoom.CustomFloor(), -1));
 //        customTileBag.items.add(new CustomTileItem(new LastLevel.CustomFloor(), -1));

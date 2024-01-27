@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 
@@ -45,10 +44,6 @@ public class RaisedTerrainTilemap extends DungeonTilemap {
 		Zone.GrassType grassType = Zone.getGrassType(Dungeon.level, pos);
 		if (grassType != Zone.GrassType.NONE)
 			tile = grassType.terrain;
-		else {
-			CustomTilemap customTile = CustomTileItem.findCustomTileAt(pos);
-			if (customTile != null) tile = customTile.terrain;
-		}
 
 		if (tile == Terrain.HIGH_GRASS){
 			return DungeonTileSheet.getVisualWithAlts(

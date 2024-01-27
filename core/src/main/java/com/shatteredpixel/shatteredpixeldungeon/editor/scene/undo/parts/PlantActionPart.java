@@ -15,7 +15,7 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
 
     private PlantActionPart(Plant plant, int terrainType, boolean forceChange) {
 
-        super(plant.pos, terrainType, forceChange);
+        super(plant.pos, terrainType, forceChange, null);
 
         this.plant = plant;
     }

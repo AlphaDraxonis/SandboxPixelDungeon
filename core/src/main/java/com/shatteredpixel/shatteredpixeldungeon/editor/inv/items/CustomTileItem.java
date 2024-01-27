@@ -158,7 +158,13 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
         return TileItem.getName(customTile.terrain, cell);
     }
 
-    public static CustomTilemap findCustomTileAt(int cell) {
+    public static CustomTilemap findCustomTileAt(int cell, Boolean wall) {
+        if (wall == null) return findAnyCustomTileAt(cell);
+        Point p = Dungeon.level.cellToPoint(cell);
+        return wall ? findCustomTileAt(p, Dungeon.level.customWalls) : findCustomTileAt(p, Dungeon.level.customTiles);
+    }
+
+    public static CustomTilemap findAnyCustomTileAt(int cell) {
         Point p = Dungeon.level.cellToPoint(cell);
         CustomTilemap cust = findCustomTileAt(p, Dungeon.level.customTiles);
         return cust == null ? findCustomTileAt(p, Dungeon.level.customWalls) : cust;
@@ -181,19 +187,24 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
         return null;
     }
 
-    public static void removeCustomTilesAt(int cell, Level level) {
+    public static void removeCustomTilesAt(int cell, Level level, Boolean wall) {
         Point p = level.cellToPoint(cell);
-        CustomTilemap cust = findCustomTileAt(p, level.customWalls);
-        if (cust != null) {
-            cust.wallVisual = true;
-            level.customWalls.remove(cust);
-            EditorScene.remove(cust);
+        if (wall == null || wall) {
+            CustomTilemap cust = findCustomTileAt(p, level.customWalls);
+            if (cust != null) {
+                cust.wallVisual = true;
+                level.customWalls.remove(cust);
+                EditorScene.remove(cust);
+            }
         }
-        cust = findCustomTileAt(p, level.customTiles);
-        if (cust != null) {
-            level.customTiles.remove(cust);
-            EditorScene.remove(cust);
+        if (wall == null || !wall) {
+            CustomTilemap cust = findCustomTileAt(p, level.customTiles);
+            if (cust != null) {
+                level.customTiles.remove(cust);
+                EditorScene.remove(cust);
+            }
         }
+
     }
 
 }
