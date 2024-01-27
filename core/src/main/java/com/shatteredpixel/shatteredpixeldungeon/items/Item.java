@@ -80,6 +80,7 @@ public class Item implements Bundlable {
 	
 	public boolean stackable = false;
 	protected int quantity = 1;
+	public int randQuantMin = -1, randQuantMax = -1;//only used if val>=0;  max always >= min; otherwise swap them
 	public boolean dropsDownHeap = false;
 	
 	private int level = 0;
@@ -583,6 +584,8 @@ public class Item implements Bundlable {
 	}
 	
 	private static final String QUANTITY		= "quantity";
+	private static final String RAND_QUANT_MIN  = "rand_quant_min";
+	private static final String RAND_QUANT_MAX  = "rand_quant_max";
 	private static final String LEVEL			= "level";
 	private static final String LEVEL_KNOWN		= "levelKnown";
 	private static final String CURSED			= "cursed";
@@ -596,6 +599,8 @@ public class Item implements Bundlable {
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		bundle.put( QUANTITY, quantity );
+		bundle.put( RAND_QUANT_MIN, randQuantMin );
+		bundle.put( RAND_QUANT_MAX, randQuantMax );
 		bundle.put( LEVEL, level );
 		bundle.put( LEVEL_KNOWN, levelKnown );
 		bundle.put( CURSED, cursed );
@@ -615,6 +620,13 @@ public class Item implements Bundlable {
 		levelKnown	= bundle.getBoolean( LEVEL_KNOWN );
 		cursedKnown	= bundle.getBoolean( CURSED_KNOWN );
 		identifyOnStart = bundle.getBoolean(IDENTIFY_ON_START);
+
+		if (bundle.contains(RAND_QUANT_MIN)) {//remove when support for Shattered v2.2.0 drops kkm
+			randQuantMin = bundle.getInt( RAND_QUANT_MIN );
+			randQuantMax = bundle.getInt( RAND_QUANT_MAX );
+		} else {
+			randQuantMin = randQuantMax = -1;
+		}
 
 		int level = bundle.getInt( LEVEL );
 		if (level > 0) {

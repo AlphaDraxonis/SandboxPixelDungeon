@@ -396,7 +396,8 @@ public class DungeonToJsonConverter {
             b.append(',');
         }
         if (i.quantity() > 1) appendParam(b, "quantity", i.quantity());
-        //TODO quantity_min and _max
+        if (i.randQuantMin >= 0) appendParam(b, "quantity_min", i.randQuantMin);
+        if (i.randQuantMax >= 0) appendParam(b, "quantity_max", i.randQuantMax);
         if (i.level() > 0) appendParam(b, "level", i.level());
         if (i instanceof Weapon) {
             if (((Weapon) i).enchantment != null) {

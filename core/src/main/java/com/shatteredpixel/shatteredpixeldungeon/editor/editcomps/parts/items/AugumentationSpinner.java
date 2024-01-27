@@ -109,7 +109,7 @@ public class AugumentationSpinner extends StyledSpinner {
     }
 
     //NEED TO RETURN ARRAY OF SIZE 1 IF SUBCLASS OF ITEM IS ARGUMENT!!!
-    public static <T extends Item> T assignRandomAugmentation2(T item) {
+    public static <T extends Item> T assignRandomAugmentation(T item) {
         if (item instanceof Weapon) {
             Weapon w;
             if ((w = (Weapon) item).augment == Weapon.Augment.RANDOM) {
@@ -120,6 +120,11 @@ public class AugumentationSpinner extends StyledSpinner {
             if ((a = (Armor) item).augment == Armor.Augment.RANDOM) {
                 a.augment = (Random.Int(2) == 0) ? Armor.Augment.DEFENSE : Armor.Augment.EVASION;
             }
+        }
+        if (item.stackable && item.randQuantMin > -1) {
+            int qu = Random.Int(item.randQuantMin, item.randQuantMax);
+            if (qu <= 0) return null;
+            item.quantity(qu);
         }
         return item;
     }

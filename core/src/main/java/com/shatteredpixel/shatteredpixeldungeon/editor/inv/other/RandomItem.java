@@ -58,13 +58,16 @@ public interface RandomItem<T> {
                     int indexAdd = items.indexOf(i);
                     items.remove(i);
                     for (int j = newItems.length - 1; j >= 0; j--) {
-                        T add = AugumentationSpinner.assignRandomAugmentation2(newItems[j]);
-                        add.spreadIfLoot = i.spreadIfLoot;
-                        items.add(indexAdd, add);
+                        T add = AugumentationSpinner.assignRandomAugmentation(newItems[j]);
+                        if (add != null) {
+                            add.spreadIfLoot = i.spreadIfLoot;
+                            items.add(indexAdd, add);
+                        }
                     }
                 }
             } else {
-                AugumentationSpinner.assignRandomAugmentation2(i);
+                Item changed = AugumentationSpinner.assignRandomAugmentation(i);
+                if (changed == null) items.remove(i);
             }
         }
     }
@@ -138,7 +141,7 @@ public interface RandomItem<T> {
             result[0].spreadIfLoot = item.spreadIfLoot;
             item = result[0];
         }
-        return AugumentationSpinner.assignRandomAugmentation2(item);
+        return AugumentationSpinner.assignRandomAugmentation(item);
     }
 
     class RandomItemAny extends Item implements RandomItem<Item> {
