@@ -662,7 +662,7 @@ public class WndSettings extends WndTabbed {
 					super.onClick();
 					SPDSettings.vibration(checked());
 					if (checked()){
-						Game.vibrate(250);
+						SandboxPixelDungeon.vibrate(250);
 					}
 				}
 			};
@@ -1053,7 +1053,7 @@ public class WndSettings extends WndTabbed {
 				chkMusicBG.checked(SPDSettings.playMusicInBackground());
 				add(chkMusicBG);
 			}
-			if(!DeviceCompat.canVibrate()){
+			if(!Game.platform.supportsVibration()){
 				sep4 = new ColorBlock(1, 1, 0xFF000000);
 				add(sep4);
 				vibration = new CheckBox(Messages.get(this,"vibration")){

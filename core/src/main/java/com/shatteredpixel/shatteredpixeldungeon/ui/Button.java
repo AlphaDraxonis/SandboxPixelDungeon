@@ -193,7 +193,7 @@ public class Button extends Component {
 					onPointerUp();
 
 					if (SPDSettings.vibration()) {
-						Game.vibrate(50);
+						SandboxPixelDungeon.vibrate(50);
 					}
 				}
 			}

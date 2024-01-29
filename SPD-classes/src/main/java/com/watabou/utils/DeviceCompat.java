@@ -21,7 +21,6 @@
 
 package com.watabou.utils;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
@@ -76,8 +75,4 @@ public class DeviceCompat {
 		result.bottom = Gdx.graphics.getSafeInsetBottom();
 		return result;
 	}
-
-    public static boolean canVibrate() {
-		return Gdx.input.isPeripheralAvailable(Input.Peripheral.Vibrator) && Gdx.app.getType() != Application.ApplicationType.Desktop;
-    }
 }

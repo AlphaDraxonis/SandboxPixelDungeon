@@ -272,7 +272,7 @@ public class SPDSettings extends GameSettings {
 	}
 
 	public static boolean vibration(){
-		return getBoolean(KEY_VIBRATION, true);
+		return getBoolean(KEY_VIBRATION, true) || !Game.platform.supportsVibration();
 	}
 
 	//Game State

@@ -34,6 +34,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.backends.android.AndroidGraphics;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -41,6 +42,7 @@ import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.watabou.input.ControllerHandler;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Consumer;
 import com.watabou.utils.PlatformSupport;
@@ -172,7 +174,7 @@ public class AndroidPlatformSupport extends PlatformSupport {
 
 	@Override
 	public boolean supportsVibration() {
-		return true; //always true on Android
+		return Gdx.input.isPeripheralAvailable(Input.Peripheral.Vibrator) || ControllerHandler.isControllerConnected(); //not always true on Android
 	}
 
 	/* FONT SUPPORT */

@@ -171,8 +171,7 @@ public class SandboxPixelDungeon extends Game {
 	}
 
 	public static void vibrate(int milliseconds) {
-		if (DeviceCompat.canVibrate() || !SPDSettings.vibrationSound()) {
-			Game.vibrate(milliseconds);
-		} else if (SPDSettings.vibrationSound()) Sample.INSTANCE.play(Assets.Sounds.VIBRATION);
+		if (SPDSettings.vibrationSound()) Sample.INSTANCE.play(Assets.Sounds.VIBRATION);
+		else Game.vibrate(milliseconds);
 	}
 }

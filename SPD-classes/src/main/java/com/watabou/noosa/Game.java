@@ -318,7 +318,7 @@ public class Game implements ApplicationListener {
 		});
 	}
 	
-	public static void vibrate( int milliseconds ) {
+	protected static void vibrate( int milliseconds ) {
 		if (platform.supportsVibration()) {
 			platform.vibrate(milliseconds);
 		}
