@@ -54,7 +54,7 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 	}
 
 	protected int getTileVisual(int pos, int tile, boolean flat){
-		if (traps.get(pos) != null) {
+		if (traps.get(pos) != null){
 			Trap trap = traps.get(pos);
 			if (Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing()){
 				return (trap.active ? trap.color : Trap.BLACK) + (trap.shape * 16) +
@@ -76,14 +76,14 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 				&& CustomTileItem.findAnyCustomTileAt(pos) == null) return -1;
 
 		int stage = Dungeon.curLvlScheme().getRegion() - 1;
-		if (tile == Terrain.HIGH_GRASS || grassType == Zone.GrassType.HIGH_GRASS) {
-			return 9 + 16 * stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
-		} else if (tile == Terrain.FURROWED_GRASS || grassType == Zone.GrassType.FURROWED_GRASS) {
-			return 11 + 16 * stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+		if (tile == Terrain.HIGH_GRASS || grassType == Zone.GrassType.HIGH_GRASS){
+			return 9 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+		} else if (tile == Terrain.FURROWED_GRASS || grassType == Zone.GrassType.FURROWED_GRASS){
+			return 11 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
 		} else if (tile == Terrain.GRASS || grassType == Zone.GrassType.GRASS) {
-			return 13 + 16 * stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+			return 13 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
 		} else if (tile == Terrain.EMBERS) {
-			return 9 * (16 * 5) + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
+			return 9 + (16*5) + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
 		}
 
 		return -1;
