@@ -30,11 +30,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.HeapActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlaceCellActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -324,15 +324,15 @@ public class TileItem extends EditorItem {
                 Sign newSign = new Sign();
                 Sign oldSign = level.signs.get(cell);
                 newSign.pos = cell;
-                ActionPart signActionPart = new SignEditPart.ActionPart(cell, oldSign, newSign);
+                ActionPart signActionPart = new SignActionPart.ActionPart(cell, oldSign, newSign);
                 moreActions.addActionPart(signActionPart);
                 signActionPart.redo();
             }
 
             if (terrainType != Terrain.WELL) {
-                ActionPartModify blobEditPart = new BlobEditPart.Modify(cell);
-                if (level.solid[cell]) BlobEditPart.clearAllAtCell(cell);
-                else BlobEditPart.clearWellWaterAtCell(cell);
+                ActionPartModify blobEditPart = new BlobActionPart.Modify(cell);
+                if (level.solid[cell]) BlobActionPart.clearAllAtCell(cell);
+                else BlobActionPart.clearWellWaterAtCell(cell);
                 blobEditPart.finish();
                 moreActions.addActionPart(blobEditPart);
             }

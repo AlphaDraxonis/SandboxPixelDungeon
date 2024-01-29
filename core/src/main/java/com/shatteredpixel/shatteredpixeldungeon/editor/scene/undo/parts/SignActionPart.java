@@ -5,7 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 
 import java.util.Objects;
 
-public class SignEditPart {
+public class SignActionPart {
 
     public static boolean areEqual(Sign a, Sign b) {
         if (a == null && b == null) return true;
@@ -39,7 +39,7 @@ public class SignEditPart {
 
         @Override
         public boolean hasContent() {
-            return !SignEditPart.areEqual(newSign, oldSign);
+            return !SignActionPart.areEqual(newSign, oldSign);
         }
     }
 }

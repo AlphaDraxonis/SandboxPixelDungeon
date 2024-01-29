@@ -19,7 +19,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ParticleItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
@@ -98,27 +100,20 @@ public class CustomDungeon implements Bundlable {
 
     //WARNING;;;;!! It Is important that after each Shattered Update, BArray.or is searched everywhere, because the result should NEVER be used for passable
     //use Level#getPassableAndAvoid() or a variation instead!!!
+    //And search for access of flying in Char.java, use isFlying() or avoidsHazards()  instead (the Hazard = die Gefahr, i.e. traps, blobs)
 
 
     //TODO if dungeon list is empty, show button to be the first uploader, or generally a quick-upload btn
 
     //FIXME after uploading a dungeon with own custom tiles, they disappperard from the map! and the tile tab was hidden! NOT VERIFIED
 
-    //make random item as loot list
-
-    //Crystals etc not display on halls level custom tile
-    //Make halls boss custom tile as normal ct
+    //ripper spawner room ct
 
     //make custom tiles colourable
-
-    //strictly differentiate between custom tiles/walls
-    //Make all tiles walls????
 
     //Shrouding fog trap instantly crashes the game
 
     //color walls
-
-    //make tengu no longer flyin
 
     //Custom music
 
@@ -132,25 +127,11 @@ public class CustomDungeon implements Bundlable {
     //Chasm Fog (those weird particles above the Chasm)
 
     //add change-log
-    //
-    //[] Player buff (adds buffs (or debuffs) to a player when they enter the cell.  Each debuff/buff lasts permanently until they leave the cell, which then will disappear after they leave) (buffs applied prior to entering will also be removed, so be careful)
-    //
-    //[] Mob buff (same as above, but for monsters).
 
     //Custom alchemy for specific pots
     //Maybe even custom sprites for items
 
-    //Similar to random items, how about some random traps?
-    //
-    //a random trap cell will have a cell be any trap among ones chosen by the map creator.
-    //
-    //Random traps take [Visibility], [Active], [Searchable] [Revealed when activated], and [Disarmed when activated] buttons.
-    // For teleporting traps like gateway/warpway, it will always default to random.
-    //On another note... Unstable Trap [gray color]: when this trap is stepped on, it will activate a random trap effect (like the Unstable enchantment).
-    // Description: "This trap radiates chaotic energy, acting as a different trap when stepped on"
-
-
-    //Scale mobs if their normal stats editor is disabled: not just everything
+    //wrong window layout of custom alchemy
 
     //Scroll of Debug with interface, reference table and commands, use reflection to access ALL methods
     //surround method calls with try-catch-block, say warning that some variables might have been modified if method not @pure
@@ -190,6 +171,9 @@ public class CustomDungeon implements Bundlable {
 
     public List<CustomRecipe> recipes;
     public Set<Integer> blockedRecipes;
+    public int nextParticleID = 1;
+
+    public Map<Integer, CustomParticle.ParticleProperty> particles;
 
     public CustomDungeon(String name) {
         this.name = name;
@@ -198,6 +182,7 @@ public class CustomDungeon implements Bundlable {
         customTiles = new HashSet<>(5);
         recipes = new ArrayList<>(5);
         blockedRecipes = new HashSet<>(5);
+        particles = new HashMap<>();
         heroesEnabled = new boolean[HeroClass.values().length];
         heroSubClassesEnabled = new boolean[heroesEnabled.length * 2];
         Arrays.fill(heroesEnabled, true);
@@ -535,6 +520,7 @@ public class CustomDungeon implements Bundlable {
         if (item == null) toolbarItems[slot] = null;
         else if (item instanceof TileItem) toolbarItems[slot] = ((TileItem) item).terrainType();
         else if (item instanceof BlobItem) toolbarItems[slot] = ((BlobItem) item).getObject();
+        else if (item instanceof ParticleItem) toolbarItems[slot] = ((ParticleItem) item).getObject();
         else if (item instanceof CustomTileItem) {
             CustomTilemap cust = ((CustomTileItem) item).getObject();
             if (cust instanceof CustomTileLoader.UserCustomTile) toolbarItems[slot] = ((CustomTileLoader.UserCustomTile) cust).identifier;
@@ -547,12 +533,13 @@ public class CustomDungeon implements Bundlable {
         EditorItemBag.callStaticInitializers();
         for (int i = 0; i < toolbarItems.length; i++) {
             if (toolbarItems[i] != null) {
-                if (toolbarItems[i] instanceof Integer || toolbarItems[i] instanceof String)
-                    QuickSlotButton.set(i, EditorScene.getObjAsInBag(toolbarItems[i]));
-                else if (toolbarItems[i] == EditorItem.REMOVER_ITEM.getClass())
+                Object obj = toolbarItems[i];
+                if (obj instanceof Integer || obj instanceof String || obj instanceof CustomParticle.ParticleProperty)
+                    QuickSlotButton.set(i, EditorScene.getObjAsInBag(obj));
+                else if (obj == EditorItem.REMOVER_ITEM.getClass())
                     QuickSlotButton.set(i, EditorItem.REMOVER_ITEM);
                 else
-                    QuickSlotButton.set(i, EditorScene.getObjAsInBagFromClass((Class<?>) toolbarItems[i]));
+                    QuickSlotButton.set(i, EditorScene.getObjAsInBagFromClass((Class<?>) obj));
             }
         }
         lastSelectedToolbarSlot = slotBefore;
@@ -566,11 +553,11 @@ public class CustomDungeon implements Bundlable {
     private static final String ITEM_DISTRIBUTION = "item_distribution";
     private static final String LEVEL_SCHEME = "level_scheme";
     private static final String REMOVE_NEXT_SCROLL = "remove_next_scroll";
-    private static final String PASSWORD = "password";
     private static final String DOWNLOADED = "downloaded";
     private static final String CUSTOM_TILES = "custom_tiles";
     private static final String RECIPES = "recipes";
     private static final String BLOCKED_RECIPES = "blocked_recipes";
+    private static final String PARTICLES = "particles";
 
     private static final String RUNE_LABELS = "rune_labels";
     private static final String RUNE_CLASSES = "rune_classes";
@@ -581,6 +568,7 @@ public class CustomDungeon implements Bundlable {
     private static final String TOOLBAR_ITEM = "toolbar_item_";
     private static final String TOOLBAR_ITEM_INT = "toolbar_item_int_";
     private static final String TOOLBAR_ITEM_STRING = "toolbar_item_string_";
+    private static final String TOOLBAR_ITEM_BUNDLABLE = "toolbar_item_bundlable";
     private static final String LAST_SELECTED_TOOLBAR_SLOT = "last_selected_toolbar_slot";
     private static final String HEROES_ENABLED = "heroes_enabled";
     private static final String HERO_SUBCLASSES_ENABLED = "hero_subclasses_enabled";
@@ -600,7 +588,6 @@ public class CustomDungeon implements Bundlable {
         bundle.put(RAT_KING_LEVELS, ratKingLevels.toArray(EMPTY_STRING_ARRAY));
         bundle.put(ITEM_DISTRIBUTION, itemDistributions);
         bundle.put(REMOVE_NEXT_SCROLL, removeNextScroll);
-//        bundle.put(PASSWORD, password);
         bundle.put(DOWNLOADED, downloaded);
         bundle.put(HEROES_ENABLED, heroesEnabled);
         bundle.put(HERO_SUBCLASSES_ENABLED, heroSubClassesEnabled);
@@ -620,6 +607,8 @@ public class CustomDungeon implements Bundlable {
             index++;
         }
         bundle.put(BLOCKED_RECIPES, intArray);
+
+        bundle.put(PARTICLES, particles.values());
 
         if (scrollRuneLabels != null) {
             String[] labels = new String[scrollRuneLabels.size()];
@@ -672,11 +661,14 @@ public class CustomDungeon implements Bundlable {
         bundle.put(LAST_SELECTED_TOOLBAR_SLOT, lastSelectedToolbarSlot);
         for (int j = 0; j < toolbarItems.length; j++) {
             if (toolbarItems[j] != null) {
-                if (toolbarItems[j] instanceof Integer)
-                    bundle.put(TOOLBAR_ITEM_INT + j, (int) toolbarItems[j]);
-                else if (toolbarItems[j] instanceof String)
-                    bundle.put(TOOLBAR_ITEM_STRING + j, (String) toolbarItems[j]);
-                else bundle.put(TOOLBAR_ITEM + j, (Class<?>) toolbarItems[j]);
+                Object obj = toolbarItems[j];
+                if (obj instanceof Integer)
+                    bundle.put(TOOLBAR_ITEM_INT + j, (int) obj);
+                else if (obj instanceof String)
+                    bundle.put(TOOLBAR_ITEM_STRING + j, (String) obj);
+                else if (obj instanceof CustomParticle.ParticleProperty)
+                    bundle.put(TOOLBAR_ITEM_BUNDLABLE + j, (CustomParticle.ParticleProperty) obj);
+                else bundle.put(TOOLBAR_ITEM + j, (Class<?>) obj);
             }
         }
     }
@@ -694,8 +686,6 @@ public class CustomDungeon implements Bundlable {
         }
         removeNextScroll = bundle.getBoolean(REMOVE_NEXT_SCROLL);
         effectDuration.load((EffectDuration) bundle.get(EFFECT_DURATION));
-//        password = bundle.getString(PASSWORD);
-//        if (password.isEmpty()) password = null;
         downloaded = bundle.getBoolean(DOWNLOADED);
         forceChallenges = bundle.getInt(FORCE_CHALLENGES);
         view2d = bundle.getBoolean(VIEW_2D);
@@ -741,6 +731,14 @@ public class CustomDungeon implements Bundlable {
                 blockedRecipes.add(i);
         }
 
+        particles = new HashMap<>();
+        Collection<Bundlable> collection = bundle.getCollection(PARTICLES);
+        for (Bundlable bundlable : collection) {
+            CustomParticle.ParticleProperty p = (CustomParticle.ParticleProperty) bundlable;
+            particles.put(p.particleID(), p);
+        }
+        updateNextParticleID();
+
         if (bundle.contains(RUNE_LABELS)) {
             scrollRuneLabels = new LinkedHashMap<>();
             String[] labels = bundle.getStringArray(RUNE_LABELS);
@@ -784,7 +782,14 @@ public class CustomDungeon implements Bundlable {
                 toolbarItems[i] = bundle.getInt(TOOLBAR_ITEM_INT + i);
             else if (bundle.contains(TOOLBAR_ITEM_STRING + i))
                 toolbarItems[i] = bundle.getString(TOOLBAR_ITEM_STRING + i);
+            else if (bundle.contains(TOOLBAR_ITEM_BUNDLABLE + i))
+                toolbarItems[i] = bundle.get(TOOLBAR_ITEM_BUNDLABLE + i);
         }
+    }
+
+    public void updateNextParticleID() {
+        while (particles.containsKey(nextParticleID))
+            nextParticleID++;
     }
 
     public CustomDungeonSaves.Info createInfo() {
@@ -1090,6 +1095,7 @@ public class CustomDungeon implements Bundlable {
         if (Dungeon.customDungeon != null && Dungeon.customDungeon.name.equals(name))
             Dungeon.customDungeon = null;
         CustomDungeonSaves.deleteDungeonFile(name);
+        CustomTileLoader.dungeonNameOfLastLoadedTiles = null;
     }
 
     public static CustomDungeonSaves.Info copyDungeon(String oldName, String newName) {
@@ -1192,7 +1198,10 @@ public class CustomDungeon implements Bundlable {
     public static void renameDungeon(String oldName, String newName) {
         try {
             CustomDungeon dungeon = CustomDungeonSaves.renameDungeon(oldName, newName);
-            if (dungeon != null) dungeon.name = newName;
+            if (dungeon != null) {
+                if (oldName.equals(CustomTileLoader.dungeonNameOfLastLoadedTiles)) CustomTileLoader.dungeonNameOfLastLoadedTiles = newName;
+                dungeon.name = newName;
+            }
             else throw new IOException("Renaming was not successful!");
             CustomDungeonSaves.saveDungeon(dungeon);
         } catch (IOException e) {

@@ -20,6 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
@@ -32,7 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.UndoPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZoneView;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ZoneActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ToastWithButtons;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -310,6 +311,11 @@ public class EditorScene extends PixelScene {
         for (Blob blob : Dungeon.level.blobs.values()) {
             blob.emitter = null;
             addBlobSprite(blob);
+        }
+
+        for (CustomParticle particle : Dungeon.level.particles.values()) {
+            particle.emitter = null;
+            addParticleSprite(particle);
         }
 
         emoicons = new Group();
@@ -656,6 +662,12 @@ public class EditorScene extends PixelScene {
         }
     }
 
+    private void addParticleSprite(final CustomParticle particle) {
+        if (particle.emitter == null) {
+            gases.add(new BlobEmitter(particle));
+        }
+    }
+
     private void addMobSprite(Mob mob) {
         CharSprite sprite = mob.sprite();
         sprite.visible = true;
@@ -666,6 +678,12 @@ public class EditorScene extends PixelScene {
     public static void add(Blob gas) {
         if (scene != null) {
             scene.addBlobSprite(gas);
+        }
+    }
+
+    public static void add(CustomParticle particle) {
+        if (scene != null) {
+            scene.addParticleSprite(particle);
         }
     }
 
@@ -711,6 +729,19 @@ public class EditorScene extends PixelScene {
             return emitter;
         } else {
             return null;
+        }
+    }
+
+    public static void updateParticle(int id) {
+        CustomParticle particle = customLevel().particles.get(id);
+        if (particle != null) {
+            if (particle.emitter != null) {
+                particle.emitter.destroy();
+                particle.emitter.remove();
+                particle.emitter.killAndErase();
+                particle.emitter = null;
+            }
+            EditorScene.add(particle);
         }
     }
 
@@ -858,9 +889,12 @@ public class EditorScene extends PixelScene {
         if (plant != null) return plant;
         Trap trap = customLevel.traps.get(cell);
         if (trap != null) return trap;
-        for (int i = 0; i < BlobEditPart.BlobData.BLOB_CLASSES.length; i++) {
-            Blob b = Dungeon.level.blobs.getOnly(BlobEditPart.BlobData.BLOB_CLASSES[i]);
+        for (int i = 0; i < BlobActionPart.BlobData.BLOB_CLASSES.length; i++) {
+            Blob b = Dungeon.level.blobs.getOnly(BlobActionPart.BlobData.BLOB_CLASSES[i]);
             if (b != null && !(b instanceof WellWater) && b.cur != null && b.cur[cell] > 0) return b;
+        }
+        for (CustomParticle particle : Dungeon.level.particles.values()) {
+            if (particle != null && particle.cur != null && particle.cur[cell] > 0) return particle;
         }
         Barrier barrier = customLevel.barriers.get(cell);
         if (barrier != null) return barrier;
@@ -872,7 +906,8 @@ public class EditorScene extends PixelScene {
     }
 
     public static <T> EditorItem<?> getObjAsInBag(T obj) {
-        if (obj instanceof Integer || obj instanceof String) return (EditorItem<T>) Tiles.bag.findItem(obj);
+        if (obj instanceof Integer || obj instanceof String || obj instanceof CustomParticle || obj instanceof CustomParticle.ParticleProperty)
+            return (EditorItem<T>) Tiles.bag.findItem(obj);
         if (obj instanceof CustomTileLoader.UserCustomTile) return (EditorItem<T>) Tiles.bag.findItem(((CustomTileLoader.UserCustomTile) obj).identifier);
 
         Class<?> clazz = obj.getClass();

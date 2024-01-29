@@ -7,7 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfAwareness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfHealth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -26,7 +26,7 @@ public class WellWaterSpinner extends Spinner {
     }
 
     private void apply() {
-        BlobEditPart.clearWellWaterAtCell(cell);
+        BlobActionPart.clearWellWaterAtCell(cell);
         switch ((WellWaters) getValue()) {
             case HEALTH:
                 EditorScene.add(Blob.seed(cell, 1, WaterOfHealth.class));

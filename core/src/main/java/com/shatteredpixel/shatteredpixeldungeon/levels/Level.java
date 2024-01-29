@@ -75,6 +75,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -211,6 +212,7 @@ public abstract class Level implements Bundlable {
 	public HashSet<Mob> mobs;
 	public SparseArray<Heap> heaps;
 	public BlobStoreMap blobs;
+	public SparseArray<CustomParticle> particles;//keep in mind: key is identifier, not position on level
 	public SparseArray<Plant> plants;
 	public SparseArray<Trap> traps;
 	public SparseArray<Sign> signs;
@@ -255,6 +257,7 @@ public abstract class Level implements Bundlable {
 	private static final String CUSTOM_WALLS= "customWalls";
 	private static final String MOBS		= "mobs";
 	private static final String BLOBS		= "blobs";
+	private static final String PARTICLES	= "particles";
 	private static final String FEELING		= "feeling";
 	private static final String VIEW_DISTANCE = "view_distance";
 	private static final String BOSS_MOB_AT = "boss_mob_at";
@@ -352,6 +355,7 @@ public abstract class Level implements Bundlable {
 			mobs = new HashSet<>();
 			heaps = new SparseArray<>();
 			blobs = new BlobStoreMap();
+			particles = new SparseArray<>();
 			plants = new SparseArray<>();
 			traps = new SparseArray<>();
 			signs = new SparseArray<>();
@@ -557,6 +561,7 @@ public abstract class Level implements Bundlable {
 		mobs = new HashSet<>();
 		heaps = new SparseArray<>();
 		blobs = new BlobStoreMap();
+		particles = new SparseArray<>();
 		plants = new SparseArray<>();
 		traps = new SparseArray<>();
 		signs = new SparseArray<>();
@@ -664,6 +669,12 @@ public abstract class Level implements Bundlable {
 			blobs.put( blob.getClass(), blob );
 		}
 
+		collection = bundle.getCollection( PARTICLES );
+		for (Bundlable b : collection) {
+			CustomParticle p = (CustomParticle) b;
+			particles.put(p.particleID, p);
+		}
+
 		feeling = bundle.getEnum( FEELING, Feeling.class );
 
 		if (bundle.contains( "mobs_to_spawn" )) {
@@ -706,6 +717,7 @@ public abstract class Level implements Bundlable {
 		bundle.put( CUSTOM_WALLS, customWalls );
 		bundle.put( MOBS, mobs );
 		bundle.put( BLOBS, blobs.values() );
+		bundle.put( PARTICLES, particles.valueList() );
 		bundle.put( ZONES, zoneMap.values() );
 		bundle.put( FEELING, feeling );
 		bundle.put( BOSS_MOB_AT, bossmobAt );
@@ -1779,6 +1791,15 @@ public abstract class Level implements Bundlable {
 				Chasm.mobFall((Mob) ch);
 			}
 			return;
+		}
+
+		if (ch == Dungeon.hero) {
+			for (CustomParticle particle : Dungeon.level.particles.values()) {
+				if (particle != null && particle.cur != null && particle.cur[ch.pos] > 0 && particle.removeOnEnter()) {
+					particle.volume -= particle.cur[ch.pos];
+					particle.cur[ch.pos] = 0;
+				}
+			}
 		}
 
 		if (!ch.avoidsHazards()) {

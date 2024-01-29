@@ -12,8 +12,8 @@ public final class TileModify implements ActionPartModify {
     private final LevelTransition transitionBefore;
     private LevelTransition transitionAfter;
 
-    private final BlobEditPart.BlobData blobsBefore;//This is basically only BlobEditPart-Modify...
-    private BlobEditPart.BlobData blobsAfter;
+    private final BlobActionPart.BlobData blobsBefore;//This is basically only BlobEditPart-Modify...
+    private BlobActionPart.BlobData blobsAfter;
 
     private final int cell;
 
@@ -25,7 +25,7 @@ public final class TileModify implements ActionPartModify {
         if (transition != null) {
             transitionBefore = (LevelTransition) transition.getCopy();
         } else transitionBefore = null;
-        blobsBefore = new BlobEditPart.BlobData(cell);
+        blobsBefore = new BlobActionPart.BlobData(cell);
         this.cell = cell;
     }
 
@@ -67,7 +67,7 @@ public final class TileModify implements ActionPartModify {
 
     @Override
     public boolean hasContent() {
-        return !TransitionEditPart.areEqual(transitionBefore, transitionAfter) || !BlobEditPart.BlobData.areEqual(blobsBefore, blobsAfter);
+        return !TransitionEditPart.areEqual(transitionBefore, transitionAfter) || !BlobActionPart.BlobData.areEqual(blobsBefore, blobsAfter);
     }
 
     @Override
@@ -75,7 +75,7 @@ public final class TileModify implements ActionPartModify {
         if (cell < Dungeon.level.length()) {
             LevelTransition newTrans = EditorScene.customLevel().transitions.get(cell);
             if (newTrans != null) transitionAfter = newTrans.getCopy();
-            blobsAfter = new BlobEditPart.BlobData(cell);
+            blobsAfter = new BlobActionPart.BlobData(cell);
         }
     }
 }

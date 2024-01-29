@@ -53,7 +53,7 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
             protected void createChildren(Object... params) {
                 super.createChildren(params);
                 if (getObject() instanceof CustomTileLoader.SimpleCustomTile) {
-                    remove = new IconButton(Icons.CLOSE.get()) {
+                    remove = new IconButton(Icons.TRASH.get()) {
                         @Override
                         protected void onClick() {
                             Dungeon.customDungeon.customTiles.remove(getObject());

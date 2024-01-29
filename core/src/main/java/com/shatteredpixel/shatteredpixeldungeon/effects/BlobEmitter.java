@@ -41,7 +41,7 @@ public class BlobEmitter extends Emitter {
 		blob.use( this );
 	}
 
-	public RectF bound = new RectF(0, 0, 1, 1);
+	public static final RectF bound = new RectF(0, 0, 1, 1);
 	
 	@Override
 	protected void emit( int index ) {

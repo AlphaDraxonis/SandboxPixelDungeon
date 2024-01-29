@@ -32,7 +32,7 @@ public class DefaultListItem extends AdvancedListPaneItem {
         label.setHighlighting(false);
 
         if (item instanceof EditorItem) {
-            editButton = new IconButton(Icons.get(Icons.RENAME_ON)) {
+            editButton = new IconButton(Icons.get(Icons.EDIT)) {
                 @Override
                 protected void onClick() {
                     openEditWindow();

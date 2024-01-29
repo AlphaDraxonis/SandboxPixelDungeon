@@ -15,7 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModi
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 
-public class BlobEditPart {
+public class BlobActionPart {
 
 
     public static final class Modify implements ActionPartModify {

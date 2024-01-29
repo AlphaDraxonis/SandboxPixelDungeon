@@ -13,7 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -171,18 +171,18 @@ public class BlobItem extends EditorItem<Class<? extends Blob>> {
     }
 
     public static ActionPart remove(int cell) {
-        BlobEditPart.Modify part = new BlobEditPart.Modify(cell);
-        BlobEditPart.clearNormalAtCell(cell);
+        BlobActionPart.Modify part = new BlobActionPart.Modify(cell);
+        BlobActionPart.clearNormalAtCell(cell);
         part.finish();
         if (part.hasContent()) return part;
         return null;
     }
 
     public static ActionPart place(Class<? extends Blob> blob, int cell) {
-        BlobEditPart.Modify part = new BlobEditPart.Modify(cell);
+        BlobActionPart.Modify part = new BlobActionPart.Modify(cell);
         Integer amount = Blob.volumeInInv.get(blob);
         if (amount == null) amount = 1;
-        BlobEditPart.place(cell, blob, amount);
+        BlobActionPart.place(cell, blob, amount);
         part.finish();
         if (part.hasContent()) return part;
         return null;

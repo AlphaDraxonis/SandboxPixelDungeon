@@ -16,8 +16,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndItemDistribut
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobEditPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -89,7 +89,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                                         newSign.pos = item.cell();
                                     }
                                     newSign.text = text;
-                                    ActionPart actionPart = new SignEditPart.ActionPart(cell, oldSign, newSign);
+                                    ActionPart actionPart = new SignActionPart.ActionPart(cell, oldSign, newSign);
                                     if (actionPart.hasContent()) {
                                         Undo.startAction();//this is maybe not so good, better if using TileModify?
                                         Undo.addActionPart(actionPart);
@@ -111,8 +111,8 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
             //TODO fix this if more blobs have attributes
             SacrificialFire blobAtCell = null;
-            for (int i = 0; i < BlobEditPart.BlobData.BLOB_CLASSES.length; i++) {
-                Blob b = Dungeon.level.blobs.getOnly(BlobEditPart.BlobData.BLOB_CLASSES[i]);
+            for (int i = 0; i < BlobActionPart.BlobData.BLOB_CLASSES.length; i++) {
+                Blob b = Dungeon.level.blobs.getOnly(BlobActionPart.BlobData.BLOB_CLASSES[i]);
                 if (b != null && !(b instanceof WellWater) && b.cur != null && b.cur[cell] > 0) {
                     if (b instanceof SacrificialFire) {
                         blobAtCell = (SacrificialFire) b;

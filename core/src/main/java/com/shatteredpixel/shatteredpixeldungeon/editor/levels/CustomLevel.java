@@ -925,47 +925,8 @@ public class CustomLevel extends Level {
 
         Zone.changeMapSize(level, newPosition, isPositionValid);
 
-        for (Blob b : level.blobs.values()) {
-            if (b != null) {
-                int[] nCur = new int[newLength];
-                b.volume = 0;
-                if (b.cur != null) {
-                    for (int i = 0; i < b.cur.length; i++) {
-                        int newIndex = newPosition.get(i);
-                        if (isPositionValid.test(i, newIndex)) {
-                            b.volume += b.cur[i];
-                            nCur[newIndex] = b.cur[i];
-                        }
-                    }
-                }
-                b.cur = nCur;
-                b.changeSizeOfOffToNewMapSizeAndClearIt(newLength);
-                b.setupArea();
-
-                if (b instanceof SacrificialFire) {
-                    Map<Integer, Item> prizes = ((SacrificialFire) b).getPrizes();
-                    Map<Integer, Item> newPrizePositions = new HashMap<>(3);
-                    for (Item i : prizes.values()){
-                        if (i instanceof Key) {
-                            int cell = ((Key) i).cell;
-                            if (cell != -1) {
-                                int nCell = newPosition.get(cell);
-                                ((Key) i).cell = isPositionValid.test(cell, nCell) ? nCell : -1;
-                            }
-                        } else if (i instanceof RandomItem<?>) {
-                            ((RandomItem<?>) i).repositionKeyCells(newPosition, isPositionValid);
-                        }
-                    }
-                    for (Integer oldPos : prizes.keySet()) {
-                        int nPos = newPosition.get(oldPos);
-                        if (isPositionValid.test(oldPos, nPos)) {
-                            newPrizePositions.put(nPos, prizes.get(oldPos));
-                        }
-                    }
-                    ((SacrificialFire) b).setPrizes(newPrizePositions);
-                }
-            }
-        }
+        recalculateBlobList(level.blobs.values(), newPosition, isPositionValid, newLength);
+        recalculateBlobList(level.particles.values(), newPosition, isPositionValid, newLength);
 
         List<Integer> cells = new ArrayList<>(level.levelScheme.entranceCells);
         level.levelScheme.entranceCells.clear();
@@ -1095,6 +1056,50 @@ public class CustomLevel extends Level {
             } else {
                 transition.destCell = -1;
                 transition.destLevel = null;
+            }
+        }
+    }
+
+    private static <T extends Blob> void recalculateBlobList(Iterable<T> blobs, IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid, int newLength) {
+        for (T b : blobs) {
+            if (b != null) {
+                int[] nCur = new int[newLength];
+                b.volume = 0;
+                if (b.cur != null) {
+                    for (int i = 0; i < b.cur.length; i++) {
+                        int newIndex = newPosition.get(i);
+                        if (isPositionValid.test(i, newIndex)) {
+                            b.volume += b.cur[i];
+                            nCur[newIndex] = b.cur[i];
+                        }
+                    }
+                }
+                b.cur = nCur;
+                b.changeSizeOfOffToNewMapSizeAndClearIt(newLength);
+                b.setupArea();
+
+                if (b instanceof SacrificialFire) {
+                    Map<Integer, Item> prizes = ((SacrificialFire) b).getPrizes();
+                    Map<Integer, Item> newPrizePositions = new HashMap<>(3);
+                    for (Item i : prizes.values()){
+                        if (i instanceof Key) {
+                            int cell = ((Key) i).cell;
+                            if (cell != -1) {
+                                int nCell = newPosition.get(cell);
+                                ((Key) i).cell = isPositionValid.test(cell, nCell) ? nCell : -1;
+                            }
+                        } else if (i instanceof RandomItem<?>) {
+                            ((RandomItem<?>) i).repositionKeyCells(newPosition, isPositionValid);
+                        }
+                    }
+                    for (Integer oldPos : prizes.keySet()) {
+                        int nPos = newPosition.get(oldPos);
+                        if (isPositionValid.test(oldPos, nPos)) {
+                            newPrizePositions.put(nPos, prizes.get(oldPos));
+                        }
+                    }
+                    ((SacrificialFire) b).setPrizes(newPrizePositions);
+                }
             }
         }
     }

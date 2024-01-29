@@ -29,17 +29,19 @@ public final class CustomTileLoader {
     static final String CUSTOM_TILES = "custom_tiles/";
     private static final String DESC_FILE_EXTENSION = ".dat";
 
-    private static String dungeonNameOfLastLoadedTiles;
+    public static String dungeonNameOfLastLoadedTiles;
 
     private CustomTileLoader() {
     }
 
     public static void loadTiles(boolean forceLoad) {
 
+        EditorItemBag.callStaticInitializers();
+        Tiles.updateParticlesInInv();
+
         if (!forceLoad && Dungeon.customDungeon.getName().equals(dungeonNameOfLastLoadedTiles)) return;
         dungeonNameOfLastLoadedTiles = Dungeon.customDungeon.getName();
 
-        EditorItemBag.callStaticInitializers();
         Tiles.clearCustomTiles();
 
         for (SimpleCustomTile customTile : Dungeon.customDungeon.customTiles) {

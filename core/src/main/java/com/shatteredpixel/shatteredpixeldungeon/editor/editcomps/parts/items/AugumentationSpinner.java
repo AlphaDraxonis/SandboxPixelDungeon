@@ -121,7 +121,7 @@ public class AugumentationSpinner extends StyledSpinner {
                 a.augment = (Random.Int(2) == 0) ? Armor.Augment.DEFENSE : Armor.Augment.EVASION;
             }
         }
-        if (item.stackable && item.randQuantMin > -1) {
+        if (item != null && item.stackable && item.randQuantMin > -1) {
             int qu = Random.Int(item.randQuantMin, item.randQuantMax);
             if (qu <= 0) return null;
             item.quantity(qu);

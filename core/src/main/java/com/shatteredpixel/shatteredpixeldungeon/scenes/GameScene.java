@@ -46,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BarrierItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.LevelColoring;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.SideControlPane;
@@ -356,6 +357,11 @@ public class GameScene extends PixelScene {
 		for (Blob blob : Dungeon.level.blobs.values()) {
 			blob.emitter = null;
 			addBlobSprite( blob );
+		}
+
+		for (CustomParticle particle : Dungeon.level.particles.values()) {
+			particle.emitter = null;
+			addParticleSprite(particle);
 		}
 
 
@@ -924,6 +930,12 @@ public class GameScene extends PixelScene {
 			gases.add( new BlobEmitter( gas ) );
 		}
 	}
+
+	private void addParticleSprite(final CustomParticle particle) {
+		if (particle.emitter == null) {
+			gases.add(new BlobEmitter(particle));
+		}
+	}
 	
 	private synchronized void addMobSprite( Mob mob ) {
 		CharSprite sprite = mob.sprite();
@@ -1012,6 +1024,12 @@ public class GameScene extends PixelScene {
 		Actor.add( gas );
 		if (scene != null) {
 			scene.addBlobSprite( gas );
+		}
+	}
+
+	public static void add( CustomParticle particle ) {
+		if (scene != null) {
+			scene.addParticleSprite(particle);
 		}
 	}
 	

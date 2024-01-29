@@ -330,6 +330,7 @@ public class EToolbar extends Component {
             quickslotsToShow++;
             usedWidth += 18;
         }
+        //quickslotsToShow = Math.min(4 + (PixelScene.uiCamera.width - 152) / 18, QuickSlot.SIZE);
 
         int startingSlot;
         startingSlot = 0;
@@ -342,6 +343,8 @@ public class EToolbar extends Component {
                 btnQuick[i].setPos(btnQuick[i].left(), PixelScene.uiCamera.height);
             }
         }
+
+        QuickSlotButton.lastVisible = quickslotsToShow;
 
         Dungeon.customDungeon.restoreToolbar();
         autoselect();

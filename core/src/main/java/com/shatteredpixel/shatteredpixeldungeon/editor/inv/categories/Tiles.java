@@ -44,7 +44,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BarrierItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ParticleItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -81,6 +83,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.noosa.Image;
 
 import java.util.HashMap;
@@ -146,6 +149,14 @@ public enum Tiles {
                     }
                 }
                 return null;
+            }
+            if (src instanceof CustomParticle || src instanceof CustomParticle.ParticleProperty) {
+                int id = src instanceof CustomParticle ? ((CustomParticle) src).particleID : ((CustomParticle.ParticleProperty) src).particleID();
+                for (Item bag : items) {
+                    for (Item i : ((Bag) bag).items) {
+                        if (i instanceof ParticleItem && ((ParticleItem) i).getObject().particleID() == id) return i;
+                    }
+                }
             }
             int val = (int) src;
             if (val == Terrain.CUSTOM_DECO) {
@@ -215,7 +226,19 @@ public enum Tiles {
         }
     }
 
+    public static class ParticleBag extends EditorItemBag {
+        public ParticleBag() {
+            super("name", -1);
+        }
+
+        @Override
+        public Image getCategoryImage() {
+            return Icons.TALENT.get();
+        }
+    }
+
     private static CustomTileBag customTileBag;
+    private static ParticleBag particleBag;
 
     static {
         Bag wallBag;
@@ -224,6 +247,7 @@ public enum Tiles {
         bag.items.add(new TileBag("door", DOOR.terrains));
         bag.items.add(new TileBag("other", SPECIAL.terrains));
         bag.items.add(customTileBag = new CustomTileBag());
+        bag.items.add(particleBag = new ParticleBag());
 
         wallBag.items.add(2, new BarrierItem(new Barrier(-1)));
 
@@ -268,6 +292,13 @@ public enum Tiles {
         customTileBag.items.add(new CustomTileItem(new HallsBossLevel.BigPillarVisual(), -1));
     }
 
+    public static void updateParticlesInInv() {
+        particleBag.clear();
+        for (CustomParticle.ParticleProperty particle : Dungeon.customDungeon.particles.values()) {
+            particleBag.items.add(new ParticleItem(particle, -1));
+        }
+    }
+
     public static void addCustomTile(CustomTileLoader.UserCustomTile customTile) {
         ownCustomTiles.put(customTile.identifier, customTile);
         customTileBag.items.add(new CustomTileItem(customTile, -1));
@@ -294,19 +325,7 @@ public enum Tiles {
             hotArea.destroy();
             hotArea.killAndErase();
             hotArea.remove();
-            button = new RedButton(Messages.get(WndCreateCustomTile.class, "title")) {
-
-                @Override
-                protected void onClick() {
-                    EditorScene.show(new WndCreateCustomTile(null, Messages.get(WndCreateCustomTile.class, "title")));
-                }
-
-                @Override
-                protected void onPointerDown() {
-                    super.onPointerDown();
-                }
-            };
-            add(button);
+            add(button = createButton());
         }
 
         @Override
@@ -316,6 +335,45 @@ public enum Tiles {
             button.setRect(x + (width - Math.max(width * 0.8f, button.reqWidth())) * 0.5f, y + Math.max(0, (height - button.reqHeight() - 2) * 0.5f),
                     Math.max(width * 0.8f, button.reqWidth()), Math.min(height, button.reqHeight() + 2));
             PixelScene.align(button);
+        }
+
+        protected RedButton createButton() {
+            return new RedButton(Messages.get(WndCreateCustomTile.class, "title")) {
+                @Override
+                protected void onClick() {
+                    EditorScene.show(new WndCreateCustomTile(null, Messages.get(WndCreateCustomTile.class, "title")));
+                }
+            };
+        }
+    }
+
+    public static class AddParticleButton extends AddSimpleCustomTileButton {
+        protected RedButton createButton() {
+            return new RedButton("ADD PARTICLE tzz") {
+                @Override
+                protected void onClick() {
+                    //text input wnd shows: choose name
+                    EditorScene.show(new WndTextInput("title", "body", null, 50, false, "positive", "negative"){
+                        @Override
+                        public void onSelect(boolean positive, String text) {
+                            if (positive) {
+                                if (text != null && !text.trim().isEmpty()) {
+                                    for (CustomParticle.ParticleProperty particle : Dungeon.customDungeon.particles.values()) {
+                                        if (text.equals(particle.name))return;//tzz show name warning
+                                    }
+                                    CustomParticle.ParticleProperty particle = CustomParticle.createNewParticle(new CustomParticle.ParticleProperty());
+                                    particle.name = text;
+                                    particleBag.items.add(new ParticleItem(particle, -1));
+                                    WndEditorInv.updateCurrentTab();
+                                    hide();
+                                }
+                            } else {
+                                hide();
+                            }
+                        }
+                    });
+                }
+            };
         }
     }
 

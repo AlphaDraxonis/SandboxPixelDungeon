@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -266,6 +267,24 @@ public class Blob extends Actor {
 		}
 		
 		return gas;
+	}
+
+	public static CustomParticle addParticle(int cell, int particleID) {
+		return addParticle(cell, particleID, Dungeon.level);
+	}
+
+	public static CustomParticle addParticle(int cell, int particleID, Level level) {
+
+		CustomParticle particle = level.particles.get( particleID );
+
+		if (particle == null) {
+			particle = new CustomParticle(particleID);
+		}
+
+		level.particles.put( particleID, particle );
+		particle.seed( level, cell, 1 );
+
+		return particle;
 	}
 
 	public static int volumeAt( int cell, Class<? extends Blob> type ){
