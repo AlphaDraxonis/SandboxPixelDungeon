@@ -82,11 +82,8 @@ public enum Plants {
     }
 
     public static class PlantBag extends EditorItemBag {
-        private final Plants plants;
-
         public PlantBag(Plants plants) {
             super("plants", 0);
-            this.plants = plants;
             for (Class<?> p : plants.classes) {
                 items.add(new PlantItem((Plant) Reflection.newInstance(p)));
             }

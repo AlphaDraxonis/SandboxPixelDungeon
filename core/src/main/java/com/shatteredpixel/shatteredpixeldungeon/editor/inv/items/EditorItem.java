@@ -20,23 +20,7 @@ import com.watabou.noosa.Image;
 
 public abstract class EditorItem<T> extends Item {
 
-    public static final String AC_PLACE = "PLACE";
-
     protected T obj;
-
-
-    {
-        defaultAction = AC_PLACE;
-    }
-
-    public void randomizeTexture() {
-    }
-
-    public abstract Image getSprite();
-
-    public Image getSubIcon() {
-        return null;
-    }
 
     @Override
     public boolean isUpgradable() {
@@ -48,9 +32,17 @@ public abstract class EditorItem<T> extends Item {
         return true;
     }
 
-    public abstract ScrollingListPane.ListItem createListItem(EditorInventoryWindow window);
+    public Image getSubIcon() {
+        return null;
+    }
+
+    public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
+        return new DefaultListItem(this, window, Messages.titleCase(title()), getSprite());
+    }
 
     public abstract DefaultEditComp<?> createEditComponent();
+
+    public abstract Image getSprite();
 
     public abstract void place(int cell);
 
@@ -82,32 +74,36 @@ public abstract class EditorItem<T> extends Item {
         }
 
         @Override
+        public String name() {
+            return Messages.get(EditorItem.class, "nothing_name");
+        }
+
+        @Override
+        public String desc() {
+            return Messages.get(EditorItem.class, "nothing_desc");
+        }
+
+        @Override
         public Image getSprite() {
             return new ItemSprite(ItemSpriteSheet.SOMETHING);
         }
 
         @Override
-        public String title() {
-            return Messages.titleCase(name());
-        }
-
-        @Override
-        public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-            return new DefaultListItem(this, window, title(), getSprite());
-        }
-
-        @Override
         public DefaultEditComp<?> createEditComponent() {
             return new DefaultEditComp<Item>(this) {
-
                 @Override
                 protected IconTitleWithSubIcon createTitle() {
-                    return new IconTitleWithSubIcon(getIcon(), null, Messages.titleCase(obj.title()));
+                    return new IconTitleWithSubIcon(getIcon(), getSubIcon(), createTitleText());
                 }
 
                 @Override
                 protected String createDescription() {
                     return obj.desc();
+                }
+
+                @Override
+                protected String createTitleText() {
+                    return Messages.titleCase(obj.name());
                 }
 
                 @Override
@@ -119,7 +115,7 @@ public abstract class EditorItem<T> extends Item {
 
         @Override
         public void place(int cell) {
-            //Cant place this
+            //Can't place this
         }
 
         @Override
@@ -127,22 +123,23 @@ public abstract class EditorItem<T> extends Item {
             return this;
         }
 
+    }
+
+    public final static EditorItem<Object> REMOVER_ITEM = new EditorItem<Object>() {//WARNING! DO NOT CHANGE THE POSITION (NUMBER) OF THIS INNER CLASS!!
+
         @Override
         public String name() {
-            return Messages.get(EditorItem.class, "nothing_name");
+            return Messages.get(EditorItem.class, "remover_name");
         }
 
         @Override
         public String desc() {
-            return Messages.get(EditorItem.class, "nothing_desc");
+            return Messages.get(EditorItem.class, "remover_desc");
         }
-    }
-
-    public final static EditorItem REMOVER_ITEM = new EditorItem() {//WARNING! DO NOT CHANGE THE POSITION (NUMBER) OF THIS INNER CLASS!!
 
         @Override
-        public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-            return new DefaultListItem(this, window, title(), getSprite());
+        public Image getSprite() {
+            return Icons.get(Icons.CLOSE);
         }
 
         @Override
@@ -151,12 +148,17 @@ public abstract class EditorItem<T> extends Item {
 
                 @Override
                 protected IconTitleWithSubIcon createTitle() {
-                    return new IconTitleWithSubIcon(getIcon(), null, Messages.titleCase(obj.title()));
+                    return new IconTitleWithSubIcon(getIcon(), getSubIcon(), createTitleText());
                 }
 
                 @Override
                 protected String createDescription() {
                     return obj.desc();
+                }
+
+                @Override
+                protected String createTitleText() {
+                    return Messages.titleCase(obj.name());
                 }
 
                 @Override
@@ -173,10 +175,10 @@ public abstract class EditorItem<T> extends Item {
             //would be better if the if-statements were nested...
             if (part == null) part = BlobItem.remove(cell);
             if (part == null) part = ParticleItem.remove(cell);
-            if (part == null) part = ItemItem.remove(cell, level);
-            if (part == null) part = PlantItem.remove(cell, level);
+            if (part == null) part = ItemItem.remove(cell);
+            if (part == null) part = PlantItem.remove(cell);
             if (part == null) part = TrapItem.remove(level.traps.get(cell));
-            if (part == null) part = BarrierItem.remove(level.barriers.get(cell));
+            if (part == null) part = BarrierItem.remove(cell);
             if (part == null) part = CustomTileItem.remove(cell);
             if (part == null)
                 part = TileItem.place(cell, level.feeling == Level.Feeling.CHASM ? Terrain.CHASM : Terrain.EMPTY);
@@ -186,21 +188,6 @@ public abstract class EditorItem<T> extends Item {
         @Override
         public Object getObject() {
             return this;
-        }
-
-        @Override
-        public Image getSprite() {
-            return Icons.get(Icons.CLOSE);
-        }
-
-        @Override
-        public String name() {
-            return Messages.get(EditorItem.class, "remover_name");
-        }
-
-        @Override
-        public String desc() {
-            return Messages.get(EditorItem.class, "remover_desc");
         }
     };
 

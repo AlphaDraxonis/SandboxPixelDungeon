@@ -30,9 +30,9 @@ public class EditCustomTileComp extends EditTileComp {
         super(new TileItem(customTile.terrain, cell));
         this.customTile = customTile;
 
-        if(customTile instanceof CustomTileLoader.SimpleCustomTile && cell == -1) {
+        if (customTile instanceof CustomTileLoader.SimpleCustomTile && cell == -1) {
             terrain = null;
-            editSimpleCustomTile = new RedButton(Messages.get(EditCustomTileComp.class, "edit_simple_tile")){
+            editSimpleCustomTile = new RedButton(Messages.get(this, "edit_simple_tile")){
                 @Override
                 protected void onClick() {
                     EditorScene.show(new Tiles.WndCreateCustomTile((CustomTileLoader.SimpleCustomTile) customTile,
@@ -49,7 +49,7 @@ public class EditCustomTileComp extends EditTileComp {
             add(editSimpleCustomTile);
         } else {
             if (!(customTile instanceof CustomTerrain)) {
-                terrain = createTerrainSpinner(customTile.terrain, " " + Messages.get(EditCustomTileComp.class, "terrain") + ":", value -> {
+                terrain = createTerrainSpinner(customTile.terrain, " " + Messages.get(this, "terrain") + ":", value -> {
                     getObj().setTerrainType((Integer) value);
                     return getObj().getSprite();
                 });

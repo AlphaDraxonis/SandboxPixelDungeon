@@ -8,7 +8,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.CategoryScroller;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -86,7 +85,7 @@ public class ItemTab extends WndEditorSettings.TabComp {
 
         public CatalogItem(CustomLevel.ItemWithPos itemWithPos) {
             super(CustomDungeon.getDungeon().getItemImage(itemWithPos.item()),
-                    IconTitleWithSubIcon.createSubIcon(itemWithPos.item()),
+                    EditorUtilies.createSubIcon(itemWithPos.item()),
                     createTitle(itemWithPos));
             item = itemWithPos;
             onUpdate();

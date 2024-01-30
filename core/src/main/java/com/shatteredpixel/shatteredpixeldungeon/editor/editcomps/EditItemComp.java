@@ -10,11 +10,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.Cur
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.WndChooseEnchant;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItemDistrComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
@@ -52,10 +52,11 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
+import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
@@ -94,13 +95,28 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledButton keyCell;
     protected StyledButton randomItem;
 
-    private final Component[] rectComps, linearComps;
+    private Component[] rectComps;
+    private Component[] linearComps;
 
     private Window windowInstance;
 
+    private final ItemItem itemItem;//used for linking the item with the sprite in the toolbar
+
+    public EditItemComp(ItemItem itemItem) {
+        super(itemItem.getObject());
+        this.itemItem = itemItem;
+        this.heap = null;
+        initComps(getObj());
+    }
+
     public EditItemComp(Item item, Heap heap) {
         super(item);
+        this.itemItem = null;
         this.heap = heap;
+        initComps(getObj());
+    }
+
+    private void initComps(Item item) {
 
         if (heap != null) {
             reorderHeapComp = new ReorderHeapComp(item, heap);
@@ -172,14 +188,14 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 add(cursedKnown);
             }
 
-            if (item instanceof Wand) {
+            if (item instanceof Wand) {//Check ItemItem#status() if you change sth
                 chargeSpinner = new ChargeSpinner((Wand) item) {
                     @Override
                     protected void onChange() {
                         updateObj();
                     }
                 };
-            } else if (item instanceof Artifact && ((Artifact) item).chargeCap() > 0) {
+            } else if (item instanceof Artifact && ((Artifact) item).chargeCap() > 0) {//Check ItemItem#status() if you change sth
                 chargeSpinner = new ChargeSpinner((Artifact) item) {
                     @Override
                     protected void onChange() {
@@ -370,43 +386,49 @@ public class EditItemComp extends DefaultEditComp<Item> {
     }
 
     @Override
+    protected String createTitleText() {
+        return Messages.titleCase(obj.title());
+    }
+
+    @Override
     protected String createDescription() {
         return obj.info();
     }
 
     @Override
     public Image getIcon() {
-        return new ItemSprite(obj);
+        return Dungeon.customDungeon.getItemImage(obj);
     }
 
     @Override
     protected void updateObj() {
-        if (title instanceof IconTitle) {
-            ((IconTitle) title).label(Messages.titleCase(obj.title()));
-            ((IconTitle) title).icon(CustomDungeon.getDungeon().getItemImage(obj));
-        }
-        desc.text(createDescription());
         if (heap != null) {
             heap.updateSubicon();
             EditorScene.updateHeapImage(heap);
         }
+
+        if (itemItem != null) {
+            ItemSlot slot = QuickSlotButton.containsItem(itemItem);
+            if (slot != null) slot.item(itemItem);
+        }
+
         super.updateObj();
     }
 
     private void updateStates() {
-        if (quantity != null) quantity.setValue(obj.quantity());
-        if (quickslotPos != null) quickslotPos.setValue(obj.reservedQuickslot);
-        if (curseBtn != null) curseBtn.checked(obj.cursed);
-        if (levelSpinner != null) levelSpinner.setValue(obj.level());
-        if (chargeSpinner != null) chargeSpinner.updateValue(obj);
-        if (augumentationSpinner != null) augumentationSpinner.updateValue(obj);
-        if (autoIdentify != null) autoIdentify.checked(obj.identifyOnStart);
-        if (cursedKnown != null) cursedKnown.checked(obj.getCursedKnownVar());
-        if (spreadIfLoot != null) spreadIfLoot.checked(obj.spreadIfLoot);
-        if (blessed != null) blessed.checked(((Ankh) obj).blessed);
-        if (igniteBombOnDrop != null) igniteBombOnDrop.checked(((Bomb) obj).igniteOnDrop);
-        if (shockerDuration != null) shockerDuration.setValue(((FakeTenguShocker) obj).duration);
-        if (keylevel != null) keylevel.selectObject(((Key) obj).levelName);
+        if (quantity != null)               quantity.setValue(obj.quantity());
+        if (quickslotPos != null)           quickslotPos.setValue(obj.reservedQuickslot);
+        if (curseBtn != null)               curseBtn.checked(obj.cursed);
+        if (levelSpinner != null)           levelSpinner.setValue(obj.level());
+        if (chargeSpinner != null)          chargeSpinner.updateValue(obj);
+        if (augumentationSpinner != null)   augumentationSpinner.updateValue(obj);
+        if (autoIdentify != null)           autoIdentify.checked(obj.identifyOnStart);
+        if (cursedKnown != null)            cursedKnown.checked(obj.getCursedKnownVar());
+        if (spreadIfLoot != null)           spreadIfLoot.checked(obj.spreadIfLoot);
+        if (blessed != null)                blessed.checked(((Ankh) obj).blessed);
+        if (igniteBombOnDrop != null)       igniteBombOnDrop.checked(((Bomb) obj).igniteOnDrop);
+        if (shockerDuration != null)        shockerDuration.setValue(((FakeTenguShocker) obj).duration);
+        if (keylevel != null)               keylevel.selectObject(((Key) obj).levelName);
         if (keyCell != null) {
             int cell = ((Key) obj).cell;
             if (cell == -1) keyCell.text(label("key_cell_any"));
@@ -457,37 +479,65 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (a == null && b == null) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
+
         if (!ignoreQuantity && a.quantity() != b.quantity()) return false;
         if (a.cursed != b.cursed) return false;
         if (a.level() != b.level()) return false;
         if (a.getCursedKnownVar() != b.getCursedKnownVar()) return false;
         if (a.levelKnown != b.levelKnown) return false;
         if (a.spreadIfLoot != b.spreadIfLoot) return false;
+
         if (a instanceof Weapon) {
             Weapon aa = (Weapon) a, bb = (Weapon) b;
             if (aa.augment != bb.augment) return false;
-            return aa.enchantment == bb.enchantment
-                    || (aa.enchantment != null && bb.enchantment != null && aa.enchantment.getClass() == bb.enchantment.getClass());
-//            if (aa.enchantment == null && bb.enchantment == null) return true;
-//            if (aa.enchantment == null || bb.enchantment == null) return false;
-//            return aa.enchantment.getClass() == bb.enchantment.getClass();
+
+            if (aa.enchantment != null && bb.enchantment != null) {
+                if (aa.enchantment.getClass() != bb.enchantment.getClass()) return false;
+            } else {
+                if (aa.enchantment != bb.enchantment) return false;
+            }
         }
         if (a instanceof Armor) {
             Armor aa = (Armor) a, bb = (Armor) b;
             if (aa.augment != bb.augment) return false;
-            if (aa.glyph == null) return bb.glyph == null;
-            if (bb.glyph == null) return false;
-            return aa.glyph.getClass() == bb.glyph.getClass();
+
+            if (aa.glyph != null && bb.glyph != null) {
+                if (aa.glyph.getClass() != bb.glyph.getClass()) return false;
+            } else {
+                if (aa.glyph != bb.glyph) return false;
+            }
         }
-        if (a instanceof Key)
-            return ((Key) a).levelName.equals(((Key) b).levelName) && ((Key) a).cell == ((Key) b).cell;
-        if (a instanceof Ankh) return ((Ankh) a).blessed == ((Ankh) b).blessed;
-        if (a instanceof Bomb) return ((Bomb) a).igniteOnDrop == ((Bomb) b).igniteOnDrop;
-        if (a instanceof RandomItem) return a.equals(b);
+        if (a instanceof Key) {
+            if (!((Key) a).levelName.equals(((Key) b).levelName)) return false;
+            if (((Key) a).cell != ((Key) b).cell) return false;
+        }
+        if (a instanceof Ankh) {
+            if (((Ankh) a).blessed == ((Ankh) a).blessed) return false;
+        }
+        if (a instanceof Bomb) {
+            if (((Bomb) a).igniteOnDrop != ((Bomb) b).igniteOnDrop) return false;
+        }
+        if (a instanceof RandomItem) {
+            if (!a.equals(b)) return false;
+        }
 
         if (a instanceof MobItem) return EditMobComp.areEqual(((MobItem) a).getObject(), ((MobItem) b).getObject());
         if (a instanceof TrapItem) return EditTrapComp.areEqual(((TrapItem) a).getObject(), ((TrapItem) b).getObject());
 
         return true;
     }
+
+
+    public static boolean isItemListEqual(List<Item> a, List<Item> b) {
+        if (a == null) return b == null || b.size() == 0;
+        if (b == null) return a.size() == 0;
+        if (a.size() != b.size()) return false;
+        int index = 0;
+        for (Item i : a) {
+            if (!EditItemComp.areEqual(i, b.get(index))) return false;
+            index++;
+        }
+        return true;
+    }
+
 }

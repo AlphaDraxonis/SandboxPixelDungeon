@@ -1,7 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ParticleItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
@@ -10,7 +9,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
-import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
@@ -90,11 +88,6 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
         layoutCompsInRectangles(type, interval, quantity, removeOnEnter);
     }
 
-    @Override
-    protected Component createTitle() {
-        return new IconTitle(getIcon(), createTitleText());
-    }
-
     protected String createTitleText() {
         return obj.name;
     }
@@ -106,16 +99,11 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
 
     @Override
     public Image getIcon() {
-        return ParticleItem.createIcon(obj);
+        return obj.getSprite();
     }
 
     @Override
     protected void updateObj() {
-        if (title instanceof IconTitle) {
-            ((IconTitle) title).label(createTitleText());
-            ((IconTitle) title).icon(getIcon());
-        }
-        desc.text(createDescription());
 
         if (emitter != null) {
             emitter.start(Speck.factory(obj.type), obj.interval, obj.quantity);

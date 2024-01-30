@@ -3,7 +3,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
@@ -351,9 +350,9 @@ public class EditCompWindowTabbed extends WndTabbed {
 
         @Override
         protected String hoverText() {
-            if (obj instanceof Item) return ((Item) obj).title();
+            if (obj instanceof Item) return Messages.titleCase(((Item) obj).title());
             if (obj instanceof Mob) return Messages.titleCase(((Mob) obj).name());
-            if (obj instanceof Trap) return TrapItem.createTitle((Trap) obj);
+            if (obj instanceof Trap) return Messages.titleCase(((Trap) obj).title());
             if (obj instanceof Heap) return EditHeapComp.getTitle((Heap) obj);
             return null;
         }

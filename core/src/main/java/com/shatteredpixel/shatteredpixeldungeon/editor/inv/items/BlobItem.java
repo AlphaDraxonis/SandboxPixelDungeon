@@ -1,16 +1,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditBlobComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
@@ -22,7 +19,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.RectF;
 
@@ -34,38 +30,18 @@ public class BlobItem extends EditorItem<Class<? extends Blob>> {
     }
 
     @Override
-    public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, name(), getSprite()) {
-            @Override
-            public void onUpdate() {
-                super.onUpdate();
-            }
-        };
-    }
-
-    @Override
     public DefaultEditComp<?> createEditComponent() {
         return new EditBlobComp(getObject());//Edit duration and ?reward?
     }
 
     @Override
-    public Image getSprite() {
-        return createIcon(getObject());
-    }
-
-    @Override
-    public void place(int cell) {
-
-        CustomLevel level = EditorScene.customLevel();
-
-        if (invalidPlacement(cell, level)) return;
-
-        Undo.addActionPart(place(getObject(), cell));
-    }
-
-    @Override
     public String name() {
         return createName(getObject());
+    }
+
+    @Override
+    public Image getSprite() {
+        return createIcon(getObject());
     }
 
     public static String createName(Class<? extends Blob> blob) {
@@ -118,7 +94,7 @@ public class BlobItem extends EditorItem<Class<? extends Blob>> {
 //            if (blob == PermaGas.PToxicGas.class) color = 0x50FF60;
 //            else if (blob == PermaGas.PCorrosiveGas.class) color = 0xDC8C32;
             if (blob == PermaGas.PConfusionGas.class) color = 0xA882A0;
-//            else if (blob == PermaGas.PParalyticGas.class) color = 0xDCE150;
+//            else if (blob == PermaGas.PParalyticGas.class) color = 0xFFFF66;
             else if (blob == PermaGas.PStenchGas.class) color = 0x003300;
 //            else if (blob == PermaGas.PSmokeScreen.class) color = 0x000000;
             else return new ItemSprite();
@@ -165,9 +141,15 @@ public class BlobItem extends EditorItem<Class<? extends Blob>> {
         return new ItemSprite();
     }
 
-    public static boolean invalidPlacement(int cell, CustomLevel level) {
-//        return level.passable[cell];
-        return level.solid[cell] || !level.insideMap(cell);
+    @Override
+    public void place(int cell) {
+        if (!invalidPlacement(cell)) {
+            Undo.addActionPart(place(getObject(), cell));
+        }
+    }
+
+    public static boolean invalidPlacement(int cell) {
+        return Dungeon.level.solid[cell] || !Dungeon.level.insideMap(cell);
     }
 
     public static ActionPart remove(int cell) {

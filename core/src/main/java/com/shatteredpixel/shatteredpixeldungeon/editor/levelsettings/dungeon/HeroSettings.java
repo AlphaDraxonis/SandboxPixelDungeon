@@ -9,7 +9,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp.OutsideSpSwitchTabs;
@@ -294,7 +293,7 @@ public class HeroSettings extends Component {
                 public int getClicksPerSecondWhileHolding() {
                     return 15;
                 }
-            }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
+            }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
             plusLvl.addChangeListener(() -> data.plusLvl = (int) plusLvl.getValue() - 1);
             itemSelectorParent.add(plusLvl);
 
@@ -308,7 +307,7 @@ public class HeroSettings extends Component {
                 public int getClicksPerSecondWhileHolding() {
                     return 15;
                 }
-            }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
+            }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
             plusStr.addChangeListener(() -> data.plusStr = (int) plusStr.getValue() - Hero.STARTING_STR);
             itemSelectorParent.add(plusStr);
 

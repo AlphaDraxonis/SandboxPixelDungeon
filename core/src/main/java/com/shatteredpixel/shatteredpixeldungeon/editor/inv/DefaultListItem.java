@@ -5,14 +5,13 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 
@@ -25,7 +24,7 @@ public class DefaultListItem extends AdvancedListPaneItem {
 
     public DefaultListItem(Item item, EditorInventoryWindow window, String title, Image image) {
         super(image,
-                (item instanceof EditorItem) ? ((EditorItem) item).getSubIcon() : IconTitleWithSubIcon.createSubIcon(item),
+                (item instanceof EditorItem) ? ((EditorItem<?>) item).getSubIcon() : EditorUtilies.createSubIcon(item),
                 Messages.titleCase(title));
         this.item = item;
         this.window = window;
@@ -57,8 +56,24 @@ public class DefaultListItem extends AdvancedListPaneItem {
 
     @Override
     public void onUpdate() {
+        if (item == null) return;
+
+        label.text(Messages.titleCase(item.name()));
+
+        if (item instanceof EditorItem) {
+            updateImage(((EditorItem<?>) item).getSprite());
+        }
+
         QuickSlotButton.refresh();
         super.onUpdate();
+    }
+
+    public void updateImage(Image newImg) {
+        if (icon != null) remove(icon);
+        icon = newImg;
+        addToBack(icon);
+        remove(bg);
+        addToBack(bg);
     }
 
     @Override
@@ -122,8 +137,7 @@ public class DefaultListItem extends AdvancedListPaneItem {
 //            content.setOnUpdate(r);
 //            r.run();
 
-            if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-            else Game.scene().addToFront(w);
+            EditorScene.show(w);
             return true;
         }
         return false;

@@ -22,12 +22,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BarrierItem;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
 public class WndInfoBarrier extends WndTitledMessage {
 
 	public WndInfoBarrier(Barrier barrier) {
-		super(BarrierItem.getBarrierImage(barrier), BarrierItem.createTitle(barrier), barrier.desc());
+		super(barrier.getSprite(), Messages.titleCase(barrier.name()), barrier.desc());
 	}
 
 }

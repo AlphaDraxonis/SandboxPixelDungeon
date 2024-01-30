@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.mage.WildMagic;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -286,7 +287,7 @@ public abstract class Wand extends Item {
 	@Override
 	public String status() {
 		if (levelKnown()) {
-			return (curChargeKnown ? curCharges : "?") + "/" + maxCharges;
+			return (curChargeKnown || CustomDungeon.isEditing() ? curCharges : "?") + "/" + maxCharges;
 		} else {
 			return null;
 		}

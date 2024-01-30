@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -575,7 +574,7 @@ public class Heap implements Bundlable {
 		Item i = items.peek();
 
 		if (i != null) {
-			Image copy = IconTitleWithSubIcon.createSubIcon(i);
+			Image copy = EditorUtilies.createSubIcon(i);
 			if (copy != null && isNotContainerType()) {
 				subicon.copy(copy);
 				subicon.visible = true;

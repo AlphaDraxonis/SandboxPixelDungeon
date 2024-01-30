@@ -1,19 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTrapComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TrapActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
@@ -24,63 +17,19 @@ public class TrapItem extends EditorItem<Trap> {
         this.obj = trap;
     }
 
-    private static int imgCode(Trap trap) {
-        if (trap != null)
-            return (trap.active ? trap.color : Trap.BLACK) + (trap.shape * 16) + (trap.visible ? 0 : 128);
-        else return -1;
-    }
-
-    @Override
-    public Image getSprite() {
-        return getTrapImage(getObject());
-    }
-
-    public static Image getTrapImage(Trap trap) {
-        return EditorUtilies.getTerrainFeatureTexture(imgCode(trap));
-    }
-
-    public static String createTitle(Trap trap) {
-        return Messages.titleCase((trap.visible ? trap.name() : Messages.get(TrapItem.class, "title_hidden", trap.name())));
-    }
-
-    @Override
-    public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, createTitle(getObject()), getSprite()) {
-            @Override
-            public void onUpdate() {
-                if (item == null || ((TrapItem) item).getObject() == null) return;
-                Trap t = ((TrapItem) item).getObject();
-                label.text(TrapItem.createTitle(t));
-
-                if (icon != null) remove(icon);
-                icon = TrapItem.getTrapImage(t);
-                addToBack(icon);
-                remove(bg);
-                addToBack(bg);
-
-                super.onUpdate();
-            }
-        };
-    }
-
     @Override
     public DefaultEditComp<?> createEditComponent() {
         return new EditTrapComp(this);
     }
 
     @Override
-    public void place(int cell) {
-        if (validPlacement(cell, EditorScene.customLevel()))
-            Undo.addActionPart(place(getObject().getCopy(), cell));
-    }
-
-    public static boolean validPlacement(int cell, CustomLevel level) {
-        return level.insideMap(cell);
+    public String name() {
+        return getObject().name();
     }
 
     @Override
-    public String name() {
-        return getObject().name();
+    public Image getSprite() {
+        return getObject().getSprite();
     }
 
     @Override
@@ -90,10 +39,24 @@ public class TrapItem extends EditorItem<Trap> {
         super.setObject(copy);
     }
 
+    @Override
+    public void place(int cell) {
+        Trap place = getObject().getCopy();
+        Trap remove = Dungeon.level.traps.get(cell);
+
+        if (!invalidPlacement(cell) && !EditTrapComp.areEqual(remove, place)) {
+            Undo.addActionPart(remove(remove));
+            Undo.addActionPart(place(place, cell));
+        }
+    }
+
+    public static boolean invalidPlacement(int cell) {
+        return !Dungeon.level.insideMap(cell);
+    }
+
     public static int getTerrain(Trap trap) {
         return trap.visible ? (trap.active ? Terrain.TRAP : Terrain.INACTIVE_TRAP) : Terrain.SECRET_TRAP;
     }
-
 
     public static TrapActionPart.Remove remove(Trap trap) {
         if (trap != null) {
@@ -102,14 +65,8 @@ public class TrapItem extends EditorItem<Trap> {
         return null;
     }
 
-    public static TrapActionPart.Place place(Trap trap) {
-        if (trap != null && !EditTrapComp.areEqual(Dungeon.level.traps.get(trap.pos), trap))
-            return new TrapActionPart.Place(trap);
-        return null;
-    }
-
     public static TrapActionPart.Place place(Trap trap, int cell) {
-        if (trap != null && !EditTrapComp.areEqual(Dungeon.level.traps.get(cell), trap)) {
+        if (trap != null) {
             trap.pos = cell;
             return new TrapActionPart.Place(trap);
         }
@@ -117,6 +74,7 @@ public class TrapItem extends EditorItem<Trap> {
     }
 
     private static final String TRAP = "trap";
+
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);

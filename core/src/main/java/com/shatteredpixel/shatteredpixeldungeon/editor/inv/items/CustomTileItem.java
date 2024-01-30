@@ -4,10 +4,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.DefaultListItemWithRemoveBtn;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.CustomTileActionPart;
@@ -16,8 +16,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Point;
@@ -26,9 +24,7 @@ import java.util.Set;
 
 public class CustomTileItem extends EditorItem<CustomTilemap> {
 
-
     private final int cell;
-
 
     public CustomTileItem(CustomTilemap customTile, int cell) {
         this.cell = cell;
@@ -36,84 +32,24 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
     }
 
     @Override
-    public String name() {
-        return getName(getObject(), cell());
-    }
-
-    public int cell() {
-        return cell;
-    }
-
-    @Override
-    public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, name(), getSprite()) {
-            private IconButton remove;
-
-            @Override
-            protected void createChildren(Object... params) {
-                super.createChildren(params);
-                if (getObject() instanceof CustomTileLoader.SimpleCustomTile) {
-                    remove = new IconButton(Icons.TRASH.get()) {
-                        @Override
-                        protected void onClick() {
-                            Dungeon.customDungeon.customTiles.remove(getObject());
-                            Tiles.removeCustomTile(CustomTileItem.this);
-                            WndEditorInv.updateCurrentTab();
-                            EditorScene.revalidateCustomTiles();
-                        }
-                    };
-                    add(remove);
-                }
-            }
-
-            @Override
-            protected void layout() {
-                super.layout();
-                if (remove != null) {
-                    float posX;
-                    if (editButton != null) {
-                        editButton.setPos(editButton.left() - ICON_WIDTH - 2, editButton.top());
-                        hotArea.width = editButton.left() - 1;
-                        posX = editButton.right() + 2;
-                    } else {
-                        posX = x + width - ICON_WIDTH;
-                        hotArea.width = width - ICON_WIDTH - 1;
-                    }
-                    remove.setRect(posX + (ICON_WIDTH - remove.icon().width()) * 0.5f, y + (height - remove.icon().height()) * 0.5f,
-                            remove.icon().width(), remove.icon().height());
-                }
-            }
-
-            @Override
-            protected int getLabelMaxWidth() {
-                return super.getLabelMaxWidth() - ICON_WIDTH;
-            }
-
-            @Override
-            public void onUpdate() {
-
-                label.text(name());
-
-                if (icon != null) remove(icon);
-                icon = getSprite();
-                addToBack(icon);
-                remove(bg);
-                addToBack(bg);
-
-                super.onUpdate();
-            }
-        };
-    }
-
-
-    @Override
     public DefaultEditComp<?> createEditComponent() {
         return new EditCustomTileComp(getObject(), cell());
     }
 
     @Override
+    public String name() {
+        return getName(getObject(), cell());
+    }
+
+    @Override
     public Image getSprite() {
         return createImage(getObject());
+    }
+
+    public static String getName(CustomTilemap customTile, int cell) {
+        String defaultName = customTile.name(0, 0);
+        if (defaultName != null) return Messages.titleCase(defaultName) + EditorUtilies.appendCellToString(cell);
+        return TileItem.getName(customTile.terrain, cell);
     }
 
     public static Image createImage(CustomTilemap cust) {
@@ -122,17 +58,47 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
         return img;
     }
 
+    public int cell() {
+        return cell;
+    }
+
+    @Override
+    public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
+        if (getObject() instanceof CustomTileLoader.SimpleCustomTile) {
+            return new DefaultListItemWithRemoveBtn(this, window, name(), getSprite()) {
+                @Override
+                protected void onRemove() {
+                    //TODO tzz do this as undoable action!!!
+                    Dungeon.customDungeon.customTiles.remove(getObject());
+                    Tiles.removeCustomTile(CustomTileItem.this);
+                    WndEditorInv.updateCurrentTab();
+                    EditorScene.revalidateCustomTiles();
+                }
+            };
+        }
+        return super.createListItem(window);
+    }
+
     @Override
     public void setObject(CustomTilemap obj) {
     }
 
     @Override
     public void place(int cell) {
-        if (isPositionValid(cell, getObject()))
-            Undo.addActionPart(place(cell, getObject().getCopy()));
+        CustomTilemap place = getObject().getCopy();
+        if (!invalidPlacement(place, cell)) {
+            Undo.addActionPart(place(place, cell));
+        }
     }
 
-    public static ActionPart place(int cell, CustomTilemap customTile) {
+    public static boolean invalidPlacement(CustomTilemap obj, int cell) {
+        int x = cell % Dungeon.level.width();
+        int y = cell / Dungeon.level.width();
+        return x < obj.offsetCenterX || x + obj.tileW - obj.offsetCenterX > Dungeon.level.width()
+                || y < obj.offsetCenterY || y + obj.tileH - obj.offsetCenterY > Dungeon.level.height();
+    }
+
+    public static ActionPart place(CustomTilemap customTile, int cell) {
         return new CustomTileActionPart.Place(cell, customTile.terrain, customTile);
     }
 
@@ -142,20 +108,6 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
         if (cust == null) cust = findCustomTileAt(p, Dungeon.level.customTiles);
         if (cust != null) return new CustomTileActionPart.Remove(cell, Dungeon.level.map[cell], cust);
         return null;
-    }
-
-    public static boolean isPositionValid(int cell, CustomTilemap customTile) {
-        int x = cell % Dungeon.level.width();
-        int y = cell / Dungeon.level.width();
-        return x >= customTile.offsetCenterX && x + customTile.tileW - customTile.offsetCenterX <= Dungeon.level.width()
-                && y >= customTile.offsetCenterY && y + customTile.tileH - customTile.offsetCenterY <= Dungeon.level.height();
-
-    }
-
-    public static String getName(CustomTilemap customTile, int cell) {
-        String defaultName = customTile.name(0, 0);
-        if (defaultName != null) return Messages.titleCase(defaultName) + EditorUtilies.appendCellToString(cell);
-        return TileItem.getName(customTile.terrain, cell);
     }
 
     public static CustomTilemap findCustomTileAt(int cell, Boolean wall) {
@@ -176,7 +128,6 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
             Point custPoint = new Point(p);
             custPoint.x -= cust.tileX;
             custPoint.y -= cust.tileY;
-//            if (custPoint.x == 0 && custPoint.y == 0 && cust.image(0, 0) != null) return cust;//only top left
             if (custPoint.x >= 0 && custPoint.y >= 0
                     && custPoint.x < cust.tileW && custPoint.y < cust.tileH) {
                 if (cust.image(custPoint.x, custPoint.y) != null) {

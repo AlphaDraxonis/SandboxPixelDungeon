@@ -295,7 +295,7 @@ public enum Tiles {
     public static void updateParticlesInInv() {
         particleBag.clear();
         for (CustomParticle.ParticleProperty particle : Dungeon.customDungeon.particles.values()) {
-            particleBag.items.add(new ParticleItem(particle, -1));
+            particleBag.items.add(new ParticleItem(particle));
         }
     }
 
@@ -363,7 +363,7 @@ public enum Tiles {
                                     }
                                     CustomParticle.ParticleProperty particle = CustomParticle.createNewParticle(new CustomParticle.ParticleProperty());
                                     particle.name = text;
-                                    particleBag.items.add(new ParticleItem(particle, -1));
+                                    particleBag.items.add(new ParticleItem(particle));
                                     WndEditorInv.updateCurrentTab();
                                     hide();
                                 }

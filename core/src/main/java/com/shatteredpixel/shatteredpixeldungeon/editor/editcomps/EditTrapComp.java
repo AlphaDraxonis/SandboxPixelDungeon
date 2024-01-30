@@ -11,7 +11,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItemDistrComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
@@ -38,7 +37,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -62,14 +60,14 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
     public EditTrapComp(Trap item) {
         super(item);
-        initComps();
         trapItem = null;
+        initComps();
     }
 
     public EditTrapComp(TrapItem trapItem) {
         super(trapItem.getObject());
-        initComps();
         this.trapItem = trapItem;
+        initComps();
     }
 
     private void initComps() {
@@ -95,66 +93,53 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
         } else {
 
-            visible = new StyledCheckBox(Messages.get(EditTrapComp.class, "visible")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    obj.visible = value;
-                    updateObj();
-                }
-            };
+            visible = new StyledCheckBox(Messages.get(EditTrapComp.class, "visible"));
             visible.icon(new BuffIcon(BuffIndicator.FORESIGHT, true));
+            visible.checked(obj.visible);
+            visible.addChangeListener(v -> {
+                obj.visible = v;
+                updateObj();
+            });
             add(visible);
-            active = new StyledCheckBox(Messages.get(EditTrapComp.class, "active")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    obj.active = value;
-                    EditTrapComp.this.visible.enable(value);
-                    updateObj();
-                }
-            };
-            active.icon(IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.RING_ACCURACY));
+
+            active = new StyledCheckBox(Messages.get(EditTrapComp.class, "active"));
+            active.icon(EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.RING_ACCURACY));
             active.icon().scale.set(ItemSpriteSheet.SIZE / active.icon().width());
+            active.checked(obj.active);
+            active.addChangeListener(v -> {
+                obj.active = v;
+                EditTrapComp.this.visible.enable(v);
+                updateObj();
+            });
             add(active);
 
-            visible.checked(obj.visible);
-            active.checked(obj.active);
-
-            searchable = new StyledCheckBox(Messages.get(EditTrapComp.class, "searchable")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    obj.canBeSearched = value;
-                    updateObj();
-                }
-            };
+            searchable = new StyledCheckBox(Messages.get(EditTrapComp.class, "searchable"));
             searchable.icon(Icons.MAGNIFY.get());
             searchable.icon().scale.set(ItemSpriteSheet.SIZE / searchable.icon().width());
+            searchable.checked(obj.canBeSearched);
+            searchable.addChangeListener(v -> {
+                obj.canBeSearched = v;
+                updateObj();
+            });
             add(searchable);
-            revealedWhenTriggered = new StyledCheckBox(Messages.get(EditTrapComp.class, "revealed_when_triggered")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    obj.revealedWhenTriggered = value;
-                    updateObj();
-                }
-            };
+
+            revealedWhenTriggered = new StyledCheckBox(Messages.get(EditTrapComp.class, "revealed_when_triggered"));
+            revealedWhenTriggered.checked(obj.revealedWhenTriggered);
+            revealedWhenTriggered.addChangeListener(v -> {
+                obj.revealedWhenTriggered = v;
+                updateObj();
+            });
             add(revealedWhenTriggered);
-            disarmedByActivation = new StyledCheckBox(Messages.get(EditTrapComp.class, "disarmed_by_activation")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    obj.disarmedByActivation = value;
-                    updateObj();
-                }
-            };
+
+            disarmedByActivation = new StyledCheckBox(Messages.get(EditTrapComp.class, "disarmed_by_activation"));
             disarmedByActivation.icon(new ItemSprite(ItemSpriteSheet.STONE_DISARM));
+            disarmedByActivation.checked(obj.disarmedByActivation);
+            disarmedByActivation.addChangeListener(v -> {
+                obj.disarmedByActivation = v;
+                updateObj();
+            });
             add(disarmedByActivation);
 
-            searchable.checked(obj.canBeSearched);
-            revealedWhenTriggered.checked(obj.revealedWhenTriggered);
-            disarmedByActivation.checked(obj.disarmedByActivation);
 
             if (obj instanceof GatewayTrap && obj.pos != -1) {
                 int telePos = ((GatewayTrap) obj).telePos;
@@ -173,14 +158,14 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                 if (telePos == -1) gatewayTelePos.text(Messages.get(EditTrapComp.class, "gateway_trap_random"));
                 else gatewayTelePos.text(Messages.get(EditTrapComp.class, "gateway_trap_pos", EditorUtilies.cellToString(telePos)));
                 add(gatewayTelePos);
-            } else gatewayTelePos = null;
+
+            }
 
             if (obj instanceof PitfallTrap) {
                 pitfallRadius = new StyledSpinner(new SpinnerIntegerModel(0, 100, ((PitfallTrap) obj).radius, 1, false, null) {
                     {
                         setAbsoluteMaximum(100f);
                     }
-
                     @Override
                     public int getClicksPerSecondWhileHolding() {
                         return 30;
@@ -197,9 +182,6 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                 }, Messages.get(EditMobComp.class, "delay") + ":", 9);
                 pitfallDelay.addChangeListener(() -> ((PitfallTrap) obj).delay = (int) pitfallDelay.getValue());
                 add(pitfallDelay);
-            } else {
-                pitfallDelay = null;
-                pitfallRadius = null;
             }
 
             if (obj instanceof SummoningTrap) {
@@ -247,8 +229,8 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
     }
 
     @Override
-    protected Component createTitle() {
-        return new IconTitle(getIcon(), TrapItem.createTitle(obj));
+    protected String createTitleText() {
+        return Messages.titleCase(obj.title());
     }
 
     @Override
@@ -258,7 +240,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
     @Override
     public Image getIcon() {
-        return TrapItem.getTrapImage(obj);
+        return obj.getSprite();
     }
 
     @Override
@@ -267,11 +249,6 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             visible.checked(true);
             return;
         }
-        if (title instanceof IconTitle) {
-            ((IconTitle) title).label(TrapItem.createTitle(obj));
-            ((IconTitle) title).icon(TrapItem.getTrapImage(obj));
-        }
-        desc.text(createDescription());
 
         if (trapItem != null) {
             ItemSlot slot = QuickSlotButton.containsItem(trapItem);
@@ -285,20 +262,26 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
 
     public static boolean areEqual(Trap a, Trap b) {
+        if (a == null && b == null) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
+
         if (a.visible != b.visible) return false;
         if (a.active != b.active) return false;
+
         if (a.canBeSearched != b.canBeSearched) return false;
         if (a.revealedWhenTriggered != b.revealedWhenTriggered) return false;
         if (a.disarmedByActivation != b.disarmedByActivation) return false;
-        if (a instanceof GatewayTrap && ((GatewayTrap) a).telePos != ((GatewayTrap) b).telePos)
-            return false;
+
+        if (a instanceof GatewayTrap) {
+            if (((GatewayTrap) a).telePos != ((GatewayTrap) b).telePos) return false;
+        }
         if (a instanceof PitfallTrap) {
-            return ((PitfallTrap) a).radius == ((PitfallTrap) b).radius && ((PitfallTrap) a).delay == ((PitfallTrap) b).delay;
+            if (((PitfallTrap) a).radius != ((PitfallTrap) b).radius) return false;
+            if (((PitfallTrap) a).delay != ((PitfallTrap) b).delay) return false;
         }
         if (a instanceof SummoningTrap) {
-            return EditMobComp.isMobListEqual(((SummoningTrap) a).spawnMobs, ((SummoningTrap) b).spawnMobs);
+            if (!EditMobComp.isMobListEqual(((SummoningTrap) a).spawnMobs, ((SummoningTrap) b).spawnMobs)) return false;
         }
         return true;
     }
@@ -310,12 +293,16 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             if (cell != null) {
                 boolean validDest = Dungeon.level.isPassable(cell) && !Dungeon.level.secret[cell] && EditorScene.customLevel().findMob(cell) == null;
                 GatewayTrap trap = (GatewayTrap) obj;
+
                 if (!validDest) trap.telePos = -1;
                 else trap.telePos = cell;
-                if (trap.telePos == -1)
+
+                if (trap.telePos == -1) {
                     gatewayTelePos.text(Messages.get(EditTrapComp.class, "gateway_trap_random"));
-                else
+                } else {
                     gatewayTelePos.text(Messages.get(EditTrapComp.class, "gateway_trap_pos", EditorUtilies.cellToString(trap.telePos)));
+                }
+
                 windowInstance.active = true;
                 if (windowInstance instanceof WndTabbed)
                     ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);

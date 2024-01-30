@@ -60,7 +60,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelectorList;
@@ -247,7 +246,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public int getClicksPerSecondWhileHolding() {
                     return 15;
                 }
-            }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
+            }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
             heroMobLvl.addChangeListener(() -> ((HeroMob) mob).setHeroLvl((int) heroMobLvl.getValue()));
             add(heroMobLvl);
 
@@ -261,7 +260,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public int getClicksPerSecondWhileHolding() {
                     return 15;
                 }
-            }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
+            }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
             heroMobStr.addChangeListener(() -> hero.STR = (int) heroMobStr.getValue());
             add(heroMobStr);
 
@@ -319,7 +318,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 public int getClicksPerSecondWhileHolding() {
                     return 120;
                 }
-            }, label("sheep_lifespan"), 8, IconTitleWithSubIcon.createSubIcon(ItemSpriteSheet.Icons.POTION_HEALING));
+            }, label("sheep_lifespan"), 8, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_HEALING));
             sheepLifespan.icon().scale.set(9f / sheepLifespan.icon().height());
             sheepLifespan.addChangeListener(() -> ((Sheep) mob).lifespan = (int) sheepLifespan.getValue());
             add(sheepLifespan);
@@ -423,7 +422,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
                                 @Override
                                 public boolean itemSelectable(Item item) {
-                                    Item i = item instanceof ItemItem ? ((ItemItem) item).item() : item;
+                                    Item i = item instanceof ItemItem ? ((ItemItem) item).getObject() : item;
                                     return i instanceof Weapon && !(i instanceof MissileWeapon || i instanceof SpiritBow)
                                             || i instanceof Armor;
                                 }
@@ -432,7 +431,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                                 public void onSelect(Item item) {
                                     if (item == EditorItem.RANDOM_ITEM) item = new Item();
                                     else if (item instanceof ItemItem) {
-                                        item = ((ItemItem) item).item().getCopy();
+                                        item = ((ItemItem) item).getObject().getCopy();
                                     } else return;
                                     list.set(index, item);
                                     updateItem(index);
@@ -481,22 +480,26 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     label("chains_cd"), 8, new ItemSprite(ItemSpriteSheet.ARTIFACT_CHAINS));
             abilityCooldown.addChangeListener(() -> ((Guard) mob).maxChainCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
+
         } else if (mob instanceof DM200) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((DM200) mob).maxVentCooldown, 1, false, null),
                     label("vent_cd"), 8, BlobItem.createIcon(mob instanceof DM201 ? PermaGas.PCorrosiveGas.class : PermaGas.PToxicGas.class));
             abilityCooldown.addChangeListener(() -> ((DM200) mob).maxVentCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
+
         } else if (mob instanceof Golem) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Golem) mob).maxTeleCooldown, 1, false, null),
                     label("tele_cd"), 8);
             abilityCooldown.addChangeListener(() -> ((Golem) mob).maxTeleCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
+
         } else if (mob instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) {
             com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner m = (com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) mob;
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, m.maxWebCoolDown, 1, false, null),
                     label("web_cd"), 8);
             abilityCooldown.addChangeListener(() -> m.maxWebCoolDown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
+
         } else if (mob instanceof DemonSpawner) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(0, Integer.MAX_VALUE, (int) ((DemonSpawner) mob).maxSpawnCooldown, 1, false, null) {
                 @Override
@@ -575,15 +578,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof DM300) {
-            dm300destroyWalls = new StyledCheckBox(label("dm300_destroy_walls")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    ((DM300) mob).destroyWalls = value;
-                }
-            };
+            dm300destroyWalls = new StyledCheckBox(label("dm300_destroy_walls"));
             dm300destroyWalls.icon(new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(-1, DungeonTileSheet.FLAT_WALL, -1)));
             dm300destroyWalls.checked(((DM300) mob).destroyWalls);
+            dm300destroyWalls.addChangeListener(v -> ((DM300) mob).destroyWalls = v);
             add(dm300destroyWalls);
 
             dm300pylonsNeeded = new StyledSpinner(new SpinnerIntegerModel(0, 4, ((DM300) mob).pylonsNeeded, 1, false, null),
@@ -621,15 +619,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof Pylon) {
-            pylonAlwaysActive = new StyledCheckBox(label("pylon_always_active")) {
-                @Override
-                public void checked(boolean value) {
-                    super.checked(value);
-                    ((Pylon) mob).alwaysActive = value;
-                    updateObj();
-                }
-            };
+            pylonAlwaysActive = new StyledCheckBox(label("pylon_always_active"));
             pylonAlwaysActive.checked(((Pylon) mob).alwaysActive);
+            pylonAlwaysActive.addChangeListener(v -> {
+                ((Pylon) mob).alwaysActive = v;
+                updateObj();
+            });
             add(pylonAlwaysActive);
         }
 
@@ -792,6 +787,11 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     }
 
     @Override
+    protected String createTitleText() {
+        return null;
+    }
+
+    @Override
     protected String createDescription() {
         return obj.info();
     }
@@ -804,42 +804,59 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     @Override
     public void updateObj() {
         if (title instanceof MobTitleEditor) {
+
             if (obj instanceof ArmoredStatue) {
                 Armor armor = ((ArmoredStatue) obj).armor();
                 ((StatueSprite) ((MobTitleEditor) title).image).setArmor(armor == null ? 0 : armor.tier);
-            } else if (obj instanceof HeroMob) {
+            }
+
+            if (obj instanceof HeroMob) {
                 ((HeroSprite.HeroMobSprite) ((MobTitleEditor) title).image).updateHeroClass(((HeroMob) obj).hero());
-            } else if (obj instanceof Mimic) {
+            }
+
+            if (obj instanceof Mimic) {
                 MimicSprite sprite = (MimicSprite) ((MobTitleEditor) title).image;
                 if (obj.state != obj.PASSIVE) sprite.idle();
                 else sprite.hideMimic();
-            } else if (obj instanceof Pylon) {
+            }
+
+            if (obj instanceof Pylon) {
                 Pylon pylon = (Pylon) obj;
                 if (pylon.alwaysActive || pylon.alignment != Char.Alignment.NEUTRAL && obj.playerAlignment == Mob.NORMAL_ALIGNMENT)
                     ((PylonSprite) pylon.sprite).activate();
                 else ((PylonSprite) pylon.sprite).deactivate();
             }
+
             ((MobTitleEditor) title).setText(((MobTitleEditor) title).createTitle(obj));
             ((MobTitleEditor) title).layout();
         }
-        desc.text(createDescription());
-        if (mobWeapon != null) mobWeapon.updateItem();
-        if (mobArmor != null && obj instanceof ArmoredStatue) {
-            Armor armor = ((ArmoredStatue) obj).armor();
-            if (obj.sprite != null)
-                ((StatueSprite) obj.sprite).setArmor(armor == null ? 0 : armor.tier);
-            mobArmor.updateItem();
+
+        if (mobWeapon != null) {
+            mobWeapon.updateItem();
         }
-        if (mobArmor != null && obj instanceof HeroMob) {
-            if (obj.sprite != null) {
-                ((HeroSprite.HeroMobSprite) obj.sprite).updateHeroClass(((HeroMob) obj).hero());
+
+        if (mobArmor != null) {
+
+            if (obj instanceof ArmoredStatue) {
+                Armor armor = ((ArmoredStatue) obj).armor();
+                if (obj.sprite != null)
+                    ((StatueSprite) obj.sprite).setArmor(armor == null ? 0 : armor.tier);
             }
+
+            if (obj instanceof HeroMob) {
+                if (obj.sprite != null) {
+                    ((HeroSprite.HeroMobSprite) obj.sprite).updateHeroClass(((HeroMob) obj).hero());
+                }
+            }
+
             mobArmor.updateItem();
         }
+
         if (obj instanceof Mimic) {
             if (obj.state != obj.PASSIVE) obj.sprite.idle();
             else ((MimicSprite) obj.sprite).hideMimic();
         }
+
         if (pylonAlwaysActive != null) {
             boolean active = false;
             Pylon pylon = (Pylon) obj;
@@ -860,23 +877,29 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     }
 
     public static boolean areEqual(Mob a, Mob b) {
+        if (a == null && b == null) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.state.getClass() != b.state.getClass()) return false;
+
         if (!DefaultStatsCache.areStatsEqual(a, b)) return false;
         if (a.alignment != b.alignment) return false;
         if (a.playerAlignment != b.playerAlignment) return false;
+
         if (!Objects.equals(a.customName, b.customName)) return false;
         if (!Objects.equals(a.customDesc, b.customDesc)) return false;
         if (!Objects.equals(a.dialog, b.dialog)) return false;
+
         Set<Class<? extends Buff>> aBuffs = new HashSet<>(4);
         Set<Class<? extends Buff>> bBuffs = new HashSet<>(4);
         for (Buff buff : a.buffs()) aBuffs.add(buff.getClass());
         for (Buff buff : b.buffs()) bBuffs.add(buff.getClass());
         if (!bBuffs.equals(aBuffs)) return false;//only very simple, does not compare any values, just the types!!
+
         if (a.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
             if (!a.loot.equals(b.loot)) return false;
         } else if (b.loot instanceof ItemsWithChanceDistrComp.RandomItemData) return false;
+
         if (!EditItemComp.areEqual(a.glyphArmor, b.glyphArmor)) return false;
 
         if (a instanceof ItemSelectables.WeaponSelectable) {
@@ -888,26 +911,34 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (a instanceof Thief) {
-            return EditItemComp.areEqual(((Thief) a).item, ((Thief) b).item);
-        } else if (a instanceof Mimic) {
-            return DefaultEditComp.isItemListEqual(((Mimic) a).items, ((Mimic) b).items);
-        } else if (a instanceof YogDzewa) {
+            if (!EditItemComp.areEqual(((Thief) a).item, ((Thief) b).item)) return false;
+        }
+        if (a instanceof Mimic) {
+            if (!EditItemComp.isItemListEqual(((Mimic) a).items, ((Mimic) b).items)) return false;
+        }
+        if (a instanceof YogDzewa) {
             if (((YogDzewa) a).spawnersAlive != ((YogDzewa) b).spawnersAlive) return false;
             if (!isMobListEqual(((YogDzewa) a).fistSummons, ((YogDzewa) b).fistSummons)) return false;
-            return isMobListEqual(((YogDzewa) a).challengeSummons, ((YogDzewa) b).challengeSummons);
-        } else if (a instanceof SpawnerMob) {
-            if (a instanceof DemonSpawner) {
-                if (((DemonSpawner) a).maxSpawnCooldown != ((DemonSpawner) a).maxSpawnCooldown) return false;
-            }
-            return EditMobComp.isMobListEqual(((SpawnerMob) a).summonTemplate, ((SpawnerMob) b).summonTemplate);
-        } else if (a instanceof Tengu) {
-            return ((Tengu) a).arenaRadius == ((Tengu) b).arenaRadius && ((Tengu) a).phase == ((Tengu) b).phase;
-        } else if (a instanceof DM300) {
-            return ((DM300) a).destroyWalls == ((DM300) b).destroyWalls
-                    && ((DM300) a).pylonsNeeded == ((DM300) b).pylonsNeeded;
-        } else if (a instanceof Pylon) {
-            return ((Pylon) a).alwaysActive == ((Pylon) b).alwaysActive;
-        } else if (a instanceof HeroMob) {
+            if (!isMobListEqual(((YogDzewa) a).challengeSummons, ((YogDzewa) b).challengeSummons)) return false;
+        }
+        if (a instanceof DemonSpawner) {
+            if (((DemonSpawner) a).maxSpawnCooldown != ((DemonSpawner) a).maxSpawnCooldown) return false;
+        }
+        if (a instanceof SpawnerMob) {
+            if (!EditMobComp.isMobListEqual(((SpawnerMob) a).summonTemplate, ((SpawnerMob) b).summonTemplate)) return false;
+        }
+        if (a instanceof Tengu) {
+            if (((Tengu) a).arenaRadius != ((Tengu) b).arenaRadius) return false;
+            if (((Tengu) a).phase != ((Tengu) b).phase) return false;
+        }
+        if (a instanceof DM300) {
+            if (((DM300) a).destroyWalls != ((DM300) b).destroyWalls) return false;
+            if (((DM300) a).pylonsNeeded != ((DM300) b).pylonsNeeded) return false;
+        }
+        if (a instanceof Pylon) {
+            if (((Pylon) a).alwaysActive != ((Pylon) b).alwaysActive) return false;
+        }
+        if (a instanceof HeroMob) {
             Hero h1 = ((HeroMob) a).hero();
             Hero h2 = ((HeroMob) b).hero();
             if (h1.heroClass != h2.heroClass) return false;

@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
@@ -15,25 +16,29 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TrapActi
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
-
-import java.util.List;
 
 public abstract class DefaultEditComp<T> extends Component {
 
 
     protected final Component title;
     protected final RenderedTextBlock desc;
+
+    protected final IconButton rename, delete;
 
     protected final T obj;
 
@@ -48,6 +53,34 @@ public abstract class DefaultEditComp<T> extends Component {
         add(title);
         desc = PixelScene.renderTextBlock(createDescription(), 6);
         add(desc);
+
+        rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
+            @Override
+            protected void onClick() {
+                onRenameClicked();
+            }
+
+            @Override
+            protected String hoverText() {
+                return Messages.get(WndSelectDungeon.class, "rename_yes");
+            }
+        };
+        rename.visible = false;
+        add(rename);
+
+        delete = new IconButton(Icons.get(Icons.TRASH)) {
+            @Override
+            protected void onClick() {
+                onDeleteClicked();
+            }
+
+            @Override
+            protected String hoverText() {
+                return Messages.get(WndGameInProgress.class, "erase");
+            }
+        };
+        delete.visible = false;
+        add(delete);
     }
 
     @Override
@@ -56,10 +89,31 @@ public abstract class DefaultEditComp<T> extends Component {
 
         desc.maxWidth((int) width);
 
-        title.setRect(x, y, width, title.height());
-        desc.setRect(x, title.bottom() + WndTitledMessage.GAP * 2, desc.width(), desc.height());
+        float renameDeleteWidth = (rename.visible ? rename.icon().width + 2 : 0)
+                + (delete.visible ? delete.icon().width + 2 : 0);
+        float posY = y;
 
-        height = desc.bottom() + 1;
+        if (title.visible) {
+            title.setRect(x, posY, width - renameDeleteWidth, title.height());
+            posY = title.bottom();
+        }
+        if (desc.visible) {
+            if (title.visible) posY += WndTitledMessage.GAP * 2;
+            desc.setRect(x, posY, desc.width(), desc.height());
+            posY = desc.bottom();
+        }
+
+        float posX = width - renameDeleteWidth;
+        if (rename.visible) {
+            rename.setRect(posX, title.top() + (title.height() - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
+            posX += rename.width() + 2;
+        }
+        if (delete.visible) {
+            delete.setRect(posX, title.top() + (title.height() - delete.icon().height) * 0.5f, delete.icon().width, delete.icon().height);
+        }
+
+        height = posY + 1 - y;
+        if (height == 1) height = 0;
     }
 
     protected final void layoutCompsLinear(Component... comps) {
@@ -70,10 +124,22 @@ public abstract class DefaultEditComp<T> extends Component {
         height = EditorUtilies.layoutStyledCompsInRectangles(WndTitledMessage.GAP, width, this, comps);
     }
 
+    protected void onRenameClicked() {
+
+    }
+
+    protected void onDeleteClicked() {
+
+    }
+
     protected void onShow(boolean fullyInitialized) {
     }
 
-    protected abstract Component createTitle();
+    protected Component createTitle() {
+        return new IconTitle(getIcon(), createTitleText());
+    }
+
+    protected abstract String createTitleText();
 
     protected abstract String createDescription();
 
@@ -85,6 +151,12 @@ public abstract class DefaultEditComp<T> extends Component {
 
 
     protected void updateObj() {
+        if (title instanceof IconTitle) {
+            ((IconTitle) title).label(createTitleText());
+            ((IconTitle) title).icon(getIcon());
+        }
+        desc.text(createDescription());
+
         layout();
         if (advancedListPaneItem != null) advancedListPaneItem.onUpdate();
         if (onUpdate != null) onUpdate.run();
@@ -117,9 +189,7 @@ public abstract class DefaultEditComp<T> extends Component {
 
         if (numTabs == 0) return;
         if (numTabs > 1 || (heap != null && !heap.items.isEmpty())) {
-            Window w = new EditCompWindowTabbed(tileItem, heap, mob, trap, plant, barrier, numTabs);
-            if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-            else Game.scene().addToFront(w);
+            EditorScene.show(new EditCompWindowTabbed(tileItem, heap, mob, trap, plant, barrier, numTabs));
             return;
         }
 
@@ -183,14 +253,6 @@ public abstract class DefaultEditComp<T> extends Component {
             w.resize((int) Math.ceil(newWidth), (int) Math.ceil(ch));
             sp.setSize((int) Math.ceil(newWidth), (int) Math.ceil(ch));
             sp.scrollToCurrentView();
-
-
-//            float ch = content.height();
-//            int maxHeight = (int) (PixelScene.uiCamera.height * 0.9);
-//            int hei = (int) Math.ceil(ch > maxHeight ? maxHeight : ch);
-//            w.resize((int) Math.ceil(newWidth), hei);
-//            sp.setSize((int) Math.ceil(newWidth), hei);
-//            sp.scrollToCurrentView();
         };
         content.setOnUpdate(r);
         r.run();
@@ -200,19 +262,5 @@ public abstract class DefaultEditComp<T> extends Component {
         if (Game.scene() instanceof EditorScene) EditorScene.show(w);
         else Game.scene().addToFront(w);
     }
-
-
-    public static boolean isItemListEqual(List<Item> a, List<Item> b) {
-        if (a == null) return b == null || b.size() == 0;
-        if (b == null) return a.size() == 0;
-        if (a.size() != b.size()) return false;
-        int index = 0;
-        for (Item i : a) {
-            if (!EditItemComp.areEqual(i, b.get(index))) return false;
-            index++;
-        }
-        return true;
-    }
-
 
 }

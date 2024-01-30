@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
@@ -46,6 +47,8 @@ public class StyledButton extends Button {
 		super();
 
 		if (size == -1) size = textSize();
+
+		if (label != null && label.length() > 20 && this instanceof StyledCheckBox) size--;
 		
 		bg = Chrome.get( type );
 		addToBack( bg );

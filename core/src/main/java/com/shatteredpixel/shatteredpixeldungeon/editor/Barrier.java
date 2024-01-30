@@ -4,8 +4,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
@@ -81,17 +83,21 @@ public class Barrier implements Bundlable {
         return copy;
     }
 
+    public Image getSprite() {
+        return EditorUtilies.getBarrierTexture(visible ? 1 : 0);
+    }
+
     public String name() {
-        return Messages.get(Barrier.class, "name");
+        return Messages.get(this, "name");
     }
 
     public String desc() {
-        String desc = Messages.get(Barrier.class, "desc");
-        if (blocks == 0) desc += "\n" + Messages.get(Barrier.class, "block_none");
+        String desc = Messages.get(this, "desc");
+        if (blocks == 0) desc += "\n" + Messages.get(this, "block_none");
         else {
             for (int i = 0; i < NUM_BLOCK_TYPES; i++) {
                 int bit = (int) Math.pow(2, i);
-                if ((blocks & bit) != 0) desc += "\n" + Messages.get(Barrier.class, "block_" + getBlockKey(bit));
+                if ((blocks & bit) != 0) desc += "\n" + Messages.get(this, "block_" + getBlockKey(bit));
             }
         }
         return desc;

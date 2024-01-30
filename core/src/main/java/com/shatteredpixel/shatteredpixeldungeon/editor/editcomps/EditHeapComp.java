@@ -18,36 +18,35 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
 public class EditHeapComp extends DefaultEditComp<Heap> {
 
-    protected final CheckBox autoExplored;
-    protected final IconButton autoExploredInfo;
+    protected CheckBox autoExplored;
+    protected IconButton autoExploredInfo;
 
-    protected final CheckBox haunted;
-    protected final IconButton hauntedInfo;
-    protected final Spinner priceMultiplier;
+    protected CheckBox haunted;
+    protected IconButton hauntedInfo;
+    protected Spinner priceMultiplier;
 
-    protected final HeapTypeSpinner heapType;
+    protected HeapTypeSpinner heapType;
 
-    protected final ItemContainer<Item> itemContainer;
+    protected ItemContainer<Item> itemContainer;
 
     public EditHeapComp(Heap heap) {
         super(heap);
 
-        autoExplored = new CheckBox(Messages.get(EditHeapComp.class, "auto_explored")) {
+        autoExplored = new CheckBox(Messages.get(this, "auto_explored")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
                 heap.autoExplored = value;
             }
         };
-        add(autoExplored);
         autoExplored.checked(heap.autoExplored);
+        add(autoExplored);
 
         autoExploredInfo = new IconButton(Icons.get(Icons.INFO)) {
             @Override
@@ -59,15 +58,15 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         add(autoExploredInfo);
 
 
-        haunted = new CheckBox(Messages.get(EditHeapComp.class, "haunted")) {
+        haunted = new CheckBox(Messages.get(this, "haunted")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
                 heap.haunted = value;
             }
         };
-        add(haunted);
         haunted.checked(heap.haunted);
+        add(haunted);
 
         hauntedInfo = new IconButton(Icons.get(Icons.INFO)) {
             @Override
@@ -141,12 +140,6 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         updateHauntedEnabledState();
     }
 
-
-    @Override
-    protected Component createTitle() {
-        return new IconTitle(getIcon(), getTitle());
-    }
-
     @Override
     protected String createDescription() {
         if (obj.type == Heap.Type.HEAP) return Messages.get(EditHeapComp.class, "desc_heap_open");
@@ -157,7 +150,8 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         return obj.info();
     }
 
-    private String getTitle() {
+    @Override
+    protected String createTitleText() {
         return getTitle(obj);
     }
 
@@ -180,11 +174,6 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
     @Override
     protected void updateObj() {
         obj.sprite.view(obj).place(obj.pos);
-        if (title instanceof IconTitle) {
-            ((IconTitle) title).label(getTitle());
-            ((IconTitle) title).icon(getIcon());
-        }
-        desc.text(createDescription());
 
         updateHauntedEnabledState();
         obj.updateSubicon();
@@ -207,7 +196,9 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         if (obj.type == Heap.Type.HEAP || obj.type == Heap.Type.FOR_SALE) {
             haunted.checked(false);
             haunted.enable(false);
-        } else haunted.enable(true);
+        } else {
+            haunted.enable(true);
+        }
         priceMultiplier.enable(obj.type == Heap.Type.FOR_SALE);
     }
 
@@ -229,22 +220,10 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             posY = haunted.bottom() + WndTitledMessage.GAP;
         }
 
-        if (priceMultiplier != null) {
-            priceMultiplier.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
-            posY = priceMultiplier.bottom() + WndTitledMessage.GAP;
-        }
-
-        if (heapType != null) {
-            heapType.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
-            posY = heapType.bottom() + WndTitledMessage.GAP;
-        }
-
-        if (itemContainer != null) {
-            itemContainer.setRect(x, posY, width, -1);
-            posY = itemContainer.bottom() + WndTitledMessage.GAP;
-        }
-
         height = (int)(posY - y - WndTitledMessage.GAP);
+
+        layoutCompsLinear(priceMultiplier, heapType, itemContainer);
+
     }
 
     public static boolean areEqual(Heap a, Heap b) {
@@ -254,7 +233,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         if (a.haunted != b.haunted) return false;
         if (a.type != b.type) return false;
         if (a.priceMultiplier != b.priceMultiplier) return false;
-        return DefaultEditComp.isItemListEqual(a.items, b.items);
+        return EditItemComp.isItemListEqual(a.items, b.items);
     }
 
 

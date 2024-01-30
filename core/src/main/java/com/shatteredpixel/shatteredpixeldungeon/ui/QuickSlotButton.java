@@ -91,7 +91,6 @@ public class QuickSlotButton extends Button {
             slot = new QuickItemSlot() {
                 @Override
                 protected void onClick() {
-                    super.onClick();
                     EToolbar.select(slotNum);
                 }
             };
@@ -171,8 +170,6 @@ public class QuickSlotButton extends Button {
 		protected void onPointerUp() {
 			sprite.resetColor();
 		}
-
-		private Image spriteInstance;
 
 		@Override
 		protected void viewSprite(Item item) {

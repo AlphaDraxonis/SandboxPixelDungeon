@@ -35,7 +35,7 @@ public class WndInfoBuff extends WndTitledMessage {
     }
 
     public  static  IconTitle createIconTitle(Buff buff){
-        return new IconTitle( new BuffIcon(buff, true),Messages.titleCase(buff.name()));
+        return new IconTitle( new BuffIcon(buff, true), Messages.titleCase(buff.name()));
     }
 
 }

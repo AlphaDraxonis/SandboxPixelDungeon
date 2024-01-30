@@ -1,14 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;
@@ -61,47 +54,6 @@ public abstract class AdvancedListPaneItem extends ScrollingListPane.ListItem {
 
     public void onUpdate() {
         layout();
-    }
-
-    public void onUpdateIfUsedForItem(Item item){
-        if (item == null) return;
-
-        //IMPORTANT: any change made here should also be made in ItemSlot#updateText()
-
-        bg.visible = item.cursed;
-        label.text(Messages.titleCase(item.title()));
-
-        if (icon != null) remove(icon);
-        icon = CustomDungeon.getDungeon().getItemImage(item);
-        addToBack(icon);
-        remove(bg);
-        addToBack(bg);
-
-        //IMPORTANT: any change made here should also be made in ItemSlot#updateText()
-
-        //Code from ItemSlot
-        int trueLvl = item.trueLevel();
-        int buffedLvl = item.buffedLvl();
-        if (trueLvl != 0 || buffedLvl != 0) {
-            lvlLabel.text(Messages.format(ItemSlot.TXT_LEVEL, buffedLvl));
-            lvlLabel.measure();
-            if (trueLvl == buffedLvl || buffedLvl <= 0) {
-                if (buffedLvl > 0) {
-                    if ((item instanceof Weapon && ((Weapon) item).curseInfusionBonus)
-                            || (item instanceof Armor && ((Armor) item).curseInfusionBonus)
-                            || (item instanceof Wand && ((Wand) item).curseInfusionBonus)) {
-                        lvlLabel.hardlight(ItemSlot.CURSE_INFUSED);
-                    } else {
-                        lvlLabel.hardlight(ItemSlot.UPGRADED);
-                    }
-                } else {
-                    lvlLabel.hardlight(ItemSlot.DEGRADED);
-                }
-            } else {
-                lvlLabel.hardlight(buffedLvl > trueLvl ? ItemSlot.ENHANCED : ItemSlot.WARNING);
-            }
-        } else lvlLabel.text(null);
-
     }
 
 }

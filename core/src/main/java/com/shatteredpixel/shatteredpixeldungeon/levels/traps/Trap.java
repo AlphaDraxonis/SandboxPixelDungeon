@@ -24,8 +24,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -119,6 +122,14 @@ public abstract class Trap implements Bundlable {
 
 	public String desc() {
 		return Messages.get(this, "desc");
+	}
+
+	public String title() {
+		return visible ? name() : Messages.get(TrapItem.class, "title_hidden", name());
+	}
+
+	public Image getSprite() {
+		return EditorUtilies.getTerrainFeatureTexture((active ? color : Trap.BLACK) + (shape * 16) + (visible ? 0 : 128));
 	}
 
 	private static final String POS	= "pos";

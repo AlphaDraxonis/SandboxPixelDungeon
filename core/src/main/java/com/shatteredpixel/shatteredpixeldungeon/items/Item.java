@@ -380,6 +380,10 @@ public class Item implements Bundlable {
 
 	//returns the true level of the item, ignoring all modifiers aside from upgrades
 	public final int trueLevel(){
+		return trueLevel_OVERRIDE_ONLY_FOR_ITEMITEM_CLASS();
+	}
+
+	public int trueLevel_OVERRIDE_ONLY_FOR_ITEMITEM_CLASS(){
 		return level;
 	}
 
@@ -439,15 +443,15 @@ public class Item implements Bundlable {
 	}
 	
 	public int visiblyUpgraded() {
-		return levelKnown ? level() : 0;
+		return levelKnown() ? level() : 0;
 	}
 
 	public int buffedVisiblyUpgraded() {
-		return levelKnown ? buffedLvl() : 0;
+		return levelKnown() ? buffedLvl() : 0;
 	}
 	
 	public boolean visiblyCursed() {
-		return cursed && cursedKnown;
+		return cursed && cursedKnown();
 	}
 	
 	public boolean isUpgradable() {
@@ -455,7 +459,7 @@ public class Item implements Bundlable {
 	}
 	
 	public boolean isIdentified() {
-		return levelKnown && cursedKnown;
+		return levelKnown() && cursedKnown();
 	}
 
 	public final boolean cursedKnown() {

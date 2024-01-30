@@ -3,8 +3,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRoomComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -82,7 +80,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.SpawnerSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.WraithSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
@@ -96,26 +93,13 @@ public class RoomItem extends EditorItem<Room> {
     }
 
     @Override
-    public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, Messages.titleCase(getName(getObject().getClass())), getSprite()) {
-            @Override
-            public void onUpdate() {
-                if (item == null) return;
-
-                if (icon != null) remove(icon);
-                icon = getSprite();
-                addToBack(icon);
-                remove(bg);
-                addToBack(bg);
-
-                super.onUpdate();
-            }
-        };
+    public DefaultEditComp<?> createEditComponent() {
+        return new EditRoomComp(this);
     }
 
     @Override
-    public DefaultEditComp<?> createEditComponent() {
-        return new EditRoomComp(this);
+    public String name() {
+        return getName(getObject().getClass());
     }
 
     @Override
@@ -126,11 +110,6 @@ public class RoomItem extends EditorItem<Room> {
     @Override
     public void place(int cell) {
         //can't be placed
-    }
-
-    @Override
-    public String name() {
-        return getName(getObject().getClass());
     }
 
     @Override
@@ -204,7 +183,7 @@ public class RoomItem extends EditorItem<Room> {
         if (r == SentryRoom.class) return new SentryRoom.SentrySprite();
         if (r == ShopRoom.class) return new ShopkeeperSprite();
         if (r == StatueRoom.class) return new StatueSprite();
-        //storage
+        //Storage
         if (r == ToxicGasRoom.class) return EditorUtilies.getTerrainFeatureTexture(40);//toxic vent
         if (r == TrapsRoom.class) return EditorUtilies.getTerrainFeatureTexture(7);
         if (r == TreasuryRoom.class) return new ItemSprite(ItemSpriteSheet.GOLD);
@@ -219,7 +198,7 @@ public class RoomItem extends EditorItem<Room> {
         if (r == SecretLaboratoryRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(Terrain.ALCHEMY, -1));
         if (r == SecretLarderRoom.class) return new ItemSprite(ItemSpriteSheet.PASTY);
         if (r == SecretLibraryRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(Terrain.BOOKSHELF, -1));
-        //secretMaze
+        //SecretMaze
         if (r == SecretRunestoneRoom.class) return new ItemSprite(ItemSpriteSheet.STONE_ENCHANT);
         if (r == SecretSummoningRoom.class) return EditorUtilies.getTerrainFeatureTexture(20);//Summoning trap
         if (r == SecretWellRoom.class) return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(Terrain.WELL, -1));

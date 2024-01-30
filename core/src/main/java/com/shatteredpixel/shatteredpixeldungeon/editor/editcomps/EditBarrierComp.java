@@ -9,7 +9,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
-import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -80,8 +79,8 @@ public class EditBarrierComp extends DefaultEditComp<Barrier> {
     }
 
     @Override
-    protected Component createTitle() {
-        return new IconTitle(getIcon(), BarrierItem.createTitle(obj));
+    protected String createTitleText() {
+        return Messages.titleCase(obj.name());
     }
 
     @Override
@@ -91,7 +90,7 @@ public class EditBarrierComp extends DefaultEditComp<Barrier> {
 
     @Override
     public Image getIcon() {
-        return BarrierItem.getBarrierImage(obj);
+        return obj.getSprite();
     }
 
     @Override
@@ -102,12 +101,6 @@ public class EditBarrierComp extends DefaultEditComp<Barrier> {
             ((StyledCheckBox) comps[i]).checked((obj.blocks & bit) != 0);
         }
         visible.checked(obj.visible);
-
-        if (title instanceof IconTitle) {
-            ((IconTitle) title).label(BarrierItem.createTitle(obj));
-            ((IconTitle) title).icon(BarrierItem.getBarrierImage(obj));
-        }
-        desc.text(createDescription());
 
         if (barrierItem != null) {
             ItemSlot slot = QuickSlotButton.containsItem(barrierItem);

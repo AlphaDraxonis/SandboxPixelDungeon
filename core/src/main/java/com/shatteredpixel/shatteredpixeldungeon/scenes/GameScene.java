@@ -45,7 +45,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BarrierItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.LevelColoring;
@@ -1577,7 +1576,7 @@ public class GameScene extends PixelScene {
 			else if (obj instanceof Plant)  names.add(Messages.titleCase( ((Plant) obj).name() ));
 			else if (obj instanceof Trap)   names.add(Messages.titleCase( ((Trap) obj).name() ));
 			else if (obj instanceof Barrier
-				&& ((Barrier) obj).visible) names.add(BarrierItem.createTitle((Barrier) obj));
+				&& ((Barrier) obj).visible) names.add(Messages.titleCase( ((Barrier) obj).name() ));
 		}
 		return names;
 	}
@@ -1651,7 +1650,7 @@ public class GameScene extends PixelScene {
 				image = TerrainFeaturesTilemap.tile(cell, Dungeon.level.map[cell]);
 			} else if (objects.get(0) instanceof Barrier) {
 				title = textLines.remove(0);
-				image = BarrierItem.getBarrierImage((Barrier) objects.get(0));
+				image = ((Barrier) objects.get(0)).getSprite();
 			}
 
 			//determine first text line

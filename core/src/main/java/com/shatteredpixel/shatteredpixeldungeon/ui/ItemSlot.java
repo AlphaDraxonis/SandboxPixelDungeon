@@ -248,7 +248,7 @@ public class ItemSlot extends Button {
             itemIcon = null;
         }
 
-        //IMPORTANT: any change made here should also be made in AdvancedListPaneItem#onUpdateIfUsedForItem()
+        //IMPORTANT: any change made here should also be made in ItemItem...#onUpdate()
 
         if (item == null) {
             status.visible = extra.visible = level.visible = false;

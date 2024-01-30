@@ -120,6 +120,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                     }
                 }
             }
+
             if (blobAtCell != null && blobAtCell instanceof SacrificialFire) {
                 final Blob finalBlobAtCell = blobAtCell;
                 volumeSpinner = new EditBlobComp.VolumeSpinner(finalBlobAtCell.cur[cell]);
@@ -241,7 +242,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     }
 
     protected String createTitleText() {
-        return TileItem.getName(obj.terrainType(), obj.cell());
+        return Messages.titleCase(TileItem.getName(obj.terrainType(), obj.cell()));
     }
 
     @Override
@@ -294,17 +295,6 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     public Image getIcon() {
         return createImage(obj.terrainType(), EditorScene.customLevel(), obj.image(), obj.cell());
     }
-
-    @Override
-    protected void updateObj() {
-        if (title instanceof IconTitle) {
-            ((IconTitle) title).label(createTitleText());
-            ((IconTitle) title).icon(getIcon());
-        }
-        desc.text(createDescription());
-        super.updateObj();
-    }
-
 
     private static Image createImage(int terrainFeature, Level level, int image, int cell) {
 

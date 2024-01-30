@@ -10,14 +10,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerInteger
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.ui.Component;
 
 public class EditBlobComp extends DefaultEditComp<Class<? extends Blob>> {
 
-    private final VolumeSpinner volumeSpinner;
-    private final ItemSelector sacrificialFirePrize;
+    protected VolumeSpinner volumeSpinner;
+    protected ItemSelector sacrificialFirePrize;
 
     public EditBlobComp(Class<? extends Blob> item) {
         super(item);
@@ -26,7 +24,7 @@ public class EditBlobComp extends DefaultEditComp<Class<? extends Blob>> {
             volumeSpinner = new VolumeSpinner(Blob.volumeInInv.get(item));
             volumeSpinner.addChangeListener(() -> Blob.volumeInInv.put(item, (int) volumeSpinner.getValue()));
             add(volumeSpinner);
-        } else volumeSpinner = null;
+        }
 
         if (item == SacrificialFire.class) {
             sacrificialFirePrize = new SacrificialFirePrize(SacrificialFire.prizeInInventory) {
@@ -37,7 +35,7 @@ public class EditBlobComp extends DefaultEditComp<Class<? extends Blob>> {
                 }
             };
             add(sacrificialFirePrize);
-        } else sacrificialFirePrize = null;
+        }
     }
 
     @Override
@@ -47,12 +45,8 @@ public class EditBlobComp extends DefaultEditComp<Class<? extends Blob>> {
     }
 
     @Override
-    protected Component createTitle() {
-        return new IconTitle(getIcon(), createTitleText());
-    }
-
     protected String createTitleText() {
-        return BlobItem.createName(obj);
+        return Messages.titleCase( BlobItem.createName(obj) );
     }
 
     @Override
@@ -63,16 +57,6 @@ public class EditBlobComp extends DefaultEditComp<Class<? extends Blob>> {
     @Override
     public Image getIcon() {
         return BlobItem.createIcon(obj);
-    }
-
-    @Override
-    protected void updateObj() {
-        if (title instanceof IconTitle) {
-            ((IconTitle) title).label(createTitleText());
-            ((IconTitle) title).icon(getIcon());
-        }
-        desc.text(createDescription());
-        super.updateObj();
     }
 
     public static class VolumeSpinner extends Spinner {

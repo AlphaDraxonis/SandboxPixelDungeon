@@ -147,7 +147,7 @@ public class Buff extends Actor {
     }
 
     protected String appendDescForPermanent() {
-        if (zoneBuff) return "\n\n" + Messages.get(this, "zone_buff");//tzz
+        if (zoneBuff) return "\n\n" + Messages.get(this, "zone_buff");
         return permanent ? "\n\n" + Messages.get(this, "permanent") : "";
     }
 

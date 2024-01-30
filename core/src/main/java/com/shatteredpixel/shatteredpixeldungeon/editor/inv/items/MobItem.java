@@ -1,18 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
@@ -26,28 +22,13 @@ public class MobItem extends EditorItem<Mob> {
     }
 
     @Override
-    public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        return new DefaultListItem(this, window, Messages.titleCase(getObject().name()), getSprite()) {
-            @Override
-            public void onUpdate() {
-                if (item == null) return;
-
-                if (icon != null) remove(icon);
-                icon = getObject().sprite();
-                addToBack(icon);
-                remove(bg);
-                addToBack(bg);
-
-                label.text(Messages.titleCase(getObject().name()));
-
-                super.onUpdate();
-            }
-        };
+    public DefaultEditComp<?> createEditComponent() {
+        return new EditMobComp(getObject());
     }
 
     @Override
-    public DefaultEditComp<?> createEditComponent() {
-        return new EditMobComp(getObject());
+    public String name() {
+        return getObject().name();
     }
 
     @Override
@@ -58,50 +39,37 @@ public class MobItem extends EditorItem<Mob> {
     }
 
     @Override
-    public void place(int cell) {
-        CustomLevel level = EditorScene.customLevel();
-        Mob mob = (Mob) getObject().getCopy();
-
-        Mob mobAtCell = level.findMob(cell);
-        if (invalidPlacement(mob, level, cell) || EditMobComp.areEqual(mob, mobAtCell)) return;
-
-        Undo.addActionPart(remove(mobAtCell));
-
-        Undo.addActionPart(place(mob, cell));
-    }
-
-    @Override
-    public String name() {
-        return getObject().name();
-    }
-
-    @Override
     public Item getCopy() {
         return new MobItem((Mob) getObject().getCopy());
     }
 
-    public static boolean invalidPlacement(Mob mob, CustomLevel level, int cell) {
-        return level.solid[cell] || (level.pit[cell] && !mob.isFlying()) || !level.insideMap(cell)
-                || (Char.hasProp(mob, Char.Property.LARGE) && !level.openSpace[cell])
-//                || (mob instanceof Piranha && !level.water[cell])
+    @Override
+    public void place(int cell) {
+        Mob place = (Mob) getObject().getCopy();
+        Mob remove = Dungeon.level.findMob(cell);
+
+        if (!invalidPlacement(place, cell) && !EditMobComp.areEqual(place, remove)) {
+            Undo.addActionPart(remove(remove));
+            Undo.addActionPart(place(place, cell));
+        }
+    }
+
+    public static boolean invalidPlacement(Mob mob, int cell) {
+        return Dungeon.level.solid[cell] || (Dungeon.level.pit[cell] && !mob.isFlying()) || !Dungeon.level.insideMap(cell)
+                || (Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[cell])
+//                || (mob instanceof Piranha && !Dungeon.level.water[cell])
                 ;//&& level.map[cell] != Terrain.DOOR;//TODO make placement on doors possible FIXME WICHTIG tzz
     }
 
-    public static MobActionPart.Remove remove(Mob mob) {
+    public static ActionPart remove(Mob mob) {
         if (mob != null) {
             return new MobActionPart.Remove(mob);
         }
         return null;
     }
 
-    public static MobActionPart.Place place(Mob mob) {
-        if (mob != null && !EditMobComp.areEqual(mob, EditorScene.customLevel().findMob(mob.pos)))
-            return new MobActionPart.Place(mob);
-        return null;
-    }
-
-    private static MobActionPart.Place place(Mob mob, int cell) {
-        if (mob != null) {//Achtung! no check for equality!
+    private static ActionPart place(Mob mob, int cell) {
+        if (mob != null) {
             mob.pos = cell;
             return new MobActionPart.Place(mob);
         }

@@ -177,7 +177,7 @@ public enum Traps {
                 return new ItemSprite(ItemSpriteSheet.SOMETHING);
         }
         t.visible = true;
-        return TrapItem.getTrapImage(t);
+        return t.getSprite();
     }
 
 

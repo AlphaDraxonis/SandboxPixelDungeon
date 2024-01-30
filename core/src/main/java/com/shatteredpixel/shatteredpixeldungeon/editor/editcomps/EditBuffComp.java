@@ -20,7 +20,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
         super(buff);
 
         if (buff.target != null) {
-            removeBuff = new RedButton(Messages.get(EditBuffComp.class, "remove")) {
+            removeBuff = new RedButton(Messages.get(this, "remove")) {
                 @Override
                 protected void onClick() {
                     buff.detach();
@@ -78,6 +78,11 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
     }
 
     @Override
+    protected String createTitleText() {
+        return Messages.titleCase(obj.name());
+    }
+
+    @Override
     protected String createDescription() {
         return obj.desc();
     }
@@ -86,18 +91,4 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
     public Image getIcon() {
         return null;
     }
-
-    @Override
-    public void updateObj() {
-//        if (title instanceof IconTitle) {
-//        }
-        desc.text(createDescription());
-        super.updateObj();
-    }
-
-//    public static boolean areEqual(Buff a, Buff b) {
-//        if (a == null || b == null) return false;
-//        if (a.getClass() != b.getClass()) return false;
-//        return true;
-//    }
 }

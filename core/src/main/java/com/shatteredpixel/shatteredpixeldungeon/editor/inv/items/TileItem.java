@@ -12,6 +12,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SIGN;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SIGN_SP;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.TRAP;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.UNLOCKED_EXIT;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WELL;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -20,8 +21,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -33,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierA
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.HeapActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ParticleActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlaceCellActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
@@ -40,19 +40,16 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.PathFinder;
 
 import java.util.Collections;
 
 public class TileItem extends EditorItem {
-
 
     private int terrainType;
     private final int cell;
@@ -76,14 +73,24 @@ public class TileItem extends EditorItem {
     }
 
     @Override
+    public DefaultEditComp<?> createEditComponent() {
+        return new EditTileComp(this);
+    }
+
     public void randomizeTexture() {
         image = DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), -1);
     }
 
-
     @Override
     public String name() {
         return getName(terrainType(), cell());
+    }
+
+    @Override
+    public Image getSprite() {
+        if (image() == Terrain.WATER)
+            return new ItemSprite(EditorScene.customLevel().waterTex(), this);
+        return image() < 0 ? new Image() : new ItemSprite(this);
     }
 
     @Override
@@ -97,25 +104,6 @@ public class TileItem extends EditorItem {
 
     public int cell() {
         return cell;
-    }
-
-    @Override
-    public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
-        Level level = EditorScene.customLevel();
-        return new DefaultListItem(this, window, level.tileName(terrainType()), getSprite());
-    }
-
-
-    @Override
-    public DefaultEditComp<?> createEditComponent() {
-        return new EditTileComp(this);
-    }
-
-    @Override
-    public Image getSprite() {
-        if (image() == Terrain.WATER)
-            return new ItemSprite(EditorScene.customLevel().waterTex(), this);
-        return image() < 0 ? new Image() : new ItemSprite(this);
     }
 
     @Override
@@ -169,7 +157,7 @@ public class TileItem extends EditorItem {
                 return customTile.name(x, y) + EditorUtilies.appendCellToString(cell);
             }
         }
-        return Messages.titleCase(EditorScene.customLevel().tileName(terrainType)) + EditorUtilies.appendCellToString(cell);
+        return Dungeon.level.tileName(terrainType) + EditorUtilies.appendCellToString(cell);
     }
 
 
@@ -329,24 +317,31 @@ public class TileItem extends EditorItem {
                 signActionPart.redo();
             }
 
-            if (terrainType != Terrain.WELL) {
+            if (BlobItem.invalidPlacement(cell) || terrainType == WELL) {
                 ActionPartModify blobEditPart = new BlobActionPart.Modify(cell);
-                if (level.solid[cell]) BlobActionPart.clearAllAtCell(cell);
+                if (BlobItem.invalidPlacement(cell)) BlobActionPart.clearAllAtCell(cell);
                 else BlobActionPart.clearWellWaterAtCell(cell);
                 blobEditPart.finish();
                 moreActions.addActionPart(blobEditPart);
             }
 
+            if (ParticleItem.invalidPlacement(cell)) {
+                ActionPartModify particleEditPart = new ParticleActionPart.Modify(cell);
+                ParticleActionPart.clearCell(cell);
+                particleEditPart.finish();
+                moreActions.addActionPart(particleEditPart);
+            }
+
             for (int i : PathFinder.NEIGHBOURS9) {
                 Mob m = level.findMob(i + cell);
-                if (m != null && MobItem.invalidPlacement(m, level, m.pos)) {
+                if (m != null && MobItem.invalidPlacement(m, m.pos)) {
                     ActionPart p = new MobActionPart.Remove(m);
                     moreActions.addActionPart(p);
                     p.redo();
                 }
             }
 
-            if (ItemItem.invalidPlacement(cell, level)) {
+            if (ItemItem.invalidPlacement(cell)) {
                 Heap h = level.heaps.get(cell);
                 if (h != null) {
                     ActionPart p = new HeapActionPart.Remove(h);
@@ -355,7 +350,7 @@ public class TileItem extends EditorItem {
                 }
             }
 
-            if (BarrierItem.invalidPlacement(cell, level)) {
+            if (BarrierItem.invalidPlacement(cell)) {
                 Barrier b = level.barriers.get(cell);
                 if (b != null) {
                     ActionPart p = new BarrierActionPart.Remove(b);
@@ -364,7 +359,7 @@ public class TileItem extends EditorItem {
                 }
             }
 
-            if (PlantItem.invalidPlacement(cell, level) || terrainType != Terrain.GRASS) {
+            if (PlantItem.invalidPlacement(cell) || terrainType != Terrain.GRASS) {
                 Plant p = level.plants.get(cell);
                 if (p != null) {
                     ActionPart part = new ActionPart() {

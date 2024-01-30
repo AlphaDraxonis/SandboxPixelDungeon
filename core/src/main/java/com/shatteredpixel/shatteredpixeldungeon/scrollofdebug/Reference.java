@@ -2,8 +2,6 @@ package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PlantItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
@@ -41,8 +39,8 @@ public class Reference {
 
         if (value instanceof Item) return Dungeon.customDungeon.getItemImage((Item) iconValue);
         if (value instanceof Mob) return ((Mob) iconValue).sprite();
-        if (value instanceof Trap) return TrapItem.getTrapImage((Trap) iconValue);
-        if (value instanceof Plant) return PlantItem.getPlantImage((Plant) iconValue);
+        if (value instanceof Trap) return ((Trap) iconValue).getSprite();
+        if (value instanceof Plant) return ((Plant) iconValue).getSprite();
 
         return new ItemSprite();
     }

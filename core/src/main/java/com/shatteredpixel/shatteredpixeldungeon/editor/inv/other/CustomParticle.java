@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.other;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
@@ -7,8 +8,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ParticleActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.RectF;
 
 public class CustomParticle extends Blob {
 
@@ -105,6 +109,16 @@ public class CustomParticle extends Blob {
             bundle.put("PARTICLE", this);
             return (ParticleProperty) bundle.get("PARTICLE");
         }
+
+        public Image getSprite() {
+            RectF r = Speck.getFilm().get(type);
+            if (r == null) return new ItemSprite();
+            Image icon = new Image(Assets.Effects.SPECKS);
+            icon.frame(r);
+            icon.scale.set(1.5f);//16/7=2.28
+            return icon;
+        }
+
     }
 
     public static ParticleProperty createNewParticle(ParticleProperty template) {

@@ -6,10 +6,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.ItemTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
@@ -193,7 +193,7 @@ public class SetPotionScrollRingType extends Component {
         public SpModel(Item forItem, int initImg, Map<String, Integer> keyAndItemSprite) {
             super(true, initImg, keyAndItemSprite.keySet().toArray());
             this.keyAndItemSprite = keyAndItemSprite;
-            subIcon = IconTitleWithSubIcon.createSubIcon(forItem);
+            subIcon = EditorUtilies.createSubIcon(forItem);
         }
 
         @Override

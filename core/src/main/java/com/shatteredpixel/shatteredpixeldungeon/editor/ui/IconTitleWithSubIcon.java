@@ -1,7 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -10,7 +10,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.watabou.noosa.Image;
-import com.watabou.utils.RectF;
 
 public class IconTitleWithSubIcon extends IconTitle {
 
@@ -25,7 +24,7 @@ public class IconTitleWithSubIcon extends IconTitle {
     public IconTitleWithSubIcon(Item item) {
         Image icon = CustomDungeon.getDungeon().getItemImage(item);
         icon(icon);
-        subIcon = createSubIcon(item);
+        subIcon = EditorUtilies.createSubIcon(item);
         if (subIcon != null) add(subIcon);
         label(Messages.titleCase(item.title()));
     }
@@ -64,17 +63,6 @@ public class IconTitleWithSubIcon extends IconTitle {
     public void icon(Image icon) {
         super.icon(icon);
         if (subIcon != null) bringToFront(subIcon);
-    }
-
-    public static Image createSubIcon(Item item) {
-        return createSubIcon(item.icon);
-    }
-    public static Image createSubIcon(int icon) {
-        RectF r = ItemSpriteSheet.Icons.film.get(icon);
-        if (r == null) return null;
-        Image itemIcon = new Image(Assets.Sprites.ITEM_ICONS);
-        itemIcon.frame(r);
-        return itemIcon;
     }
 
 }

@@ -3,7 +3,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
-import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndZones;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -35,7 +34,7 @@ public class EditCompWindow extends Window {
         else if (object instanceof Mob) content = new EditMobComp((Mob) object);
         else if (object instanceof Trap) content = new EditTrapComp((Trap) object);
         else if (object instanceof Heap) content = new EditHeapComp((Heap) object);
-        else if (object instanceof Zone) content = new WndZones.EditZoneComp((Zone) object);
+        else if (object instanceof Zone) content = new EditZoneComp((Zone) object);
         else throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
 
         content.advancedListPaneItem = advancedListPaneItem;

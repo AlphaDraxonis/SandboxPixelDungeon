@@ -10,9 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PlantItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.CategoryScroller;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -151,7 +149,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                 protected ScrollingListPane.ListItem createListItem(Object object) {
                     if (object instanceof EditorItem) {
                         EditorItem e = (EditorItem) object;
-                        if (!Dungeon.quickslot.contains(e)) e.randomizeTexture();
+                        if (!Dungeon.quickslot.contains(e) && e instanceof TileItem) ((TileItem) e).randomizeTexture();
                         return e.createListItem(WndEditorInv.this);
                     } else if (object instanceof ScrollingListPane.ListItem) {
                         return (ScrollingListPane.ListItem) object;
@@ -295,11 +293,11 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                     lastTrapForImage = Reflection.newInstance(Traps.getRandomTrap(null));
                     lastTrapForImage.visible = true;
                 }
-                return TrapItem.getTrapImage(lastTrapForImage);
+                return lastTrapForImage.getSprite();
             case 5:
                 if (lastPlantForImage == null)
                     lastPlantForImage = Reflection.newInstance(Plants.getRandomPlant(null));
-                return PlantItem.getPlantImage(lastPlantForImage);
+                return lastPlantForImage.getSprite();
         }
         Image img = new ItemSprite(ItemSpriteSheet.SOMETHING);
         img.visible = false;

@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
@@ -389,6 +390,18 @@ public final class EditorUtilies {
             if (cell - 1 - width > 0 && terrain == level.map[cell - 1 - width]) result += TOP_LEFT;
         }
         return result;
+    }
+
+    public static Image createSubIcon(Item item) {
+        return createSubIcon(item.icon);
+    }
+
+    public static Image createSubIcon(int icon) {
+        RectF r = ItemSpriteSheet.Icons.film.get(icon);
+        if (r == null) return null;
+        Image itemIcon = new Image(Assets.Sprites.ITEM_ICONS);
+        itemIcon.frame(r);
+        return itemIcon;
     }
 
     private static final TextureFilm TERRAIN_FEATURE_FILM = new TextureFilm(Assets.Environment.TERRAIN_FEATURES, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
