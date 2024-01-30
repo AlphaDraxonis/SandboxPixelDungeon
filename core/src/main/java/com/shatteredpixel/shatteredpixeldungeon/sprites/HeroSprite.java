@@ -127,6 +127,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	public void jump( int from, int to, float height, float duration,  Callback callback ) {
 		super.jump( from, to, height, duration, callback );
 		play( fly );
+		Camera.main.panFollow(this, 20f);
 	}
 
 	public synchronized void read() {
