@@ -40,6 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditParticleComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BarrierItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
@@ -83,7 +84,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.noosa.Image;
 
 import java.util.HashMap;
@@ -152,11 +152,10 @@ public enum Tiles {
             }
             if (src instanceof CustomParticle || src instanceof CustomParticle.ParticleProperty) {
                 int id = src instanceof CustomParticle ? ((CustomParticle) src).particleID : ((CustomParticle.ParticleProperty) src).particleID();
-                for (Item bag : items) {
-                    for (Item i : ((Bag) bag).items) {
-                        if (i instanceof ParticleItem && ((ParticleItem) i).getObject().particleID() == id) return i;
-                    }
+                for (Item i : particleBag.items) {
+                    if (i instanceof ParticleItem && ((ParticleItem) i).getObject().particleID() == id) return i;
                 }
+                return null;
             }
             int val = (int) src;
             if (val == Terrain.CUSTOM_DECO) {
@@ -238,7 +237,7 @@ public enum Tiles {
     }
 
     private static CustomTileBag customTileBag;
-    private static ParticleBag particleBag;
+    public static ParticleBag particleBag;
 
     static {
         Bag wallBag;
@@ -349,29 +348,10 @@ public enum Tiles {
 
     public static class AddParticleButton extends AddSimpleCustomTileButton {
         protected RedButton createButton() {
-            return new RedButton("ADD PARTICLE tzz") {
+            return new RedButton(Messages.get(EditParticleComp.WndNewParticle.class, "title")) {
                 @Override
                 protected void onClick() {
-                    //text input wnd shows: choose name
-                    EditorScene.show(new WndTextInput("title", "body", null, 50, false, "positive", "negative"){
-                        @Override
-                        public void onSelect(boolean positive, String text) {
-                            if (positive) {
-                                if (text != null && !text.trim().isEmpty()) {
-                                    for (CustomParticle.ParticleProperty particle : Dungeon.customDungeon.particles.values()) {
-                                        if (text.equals(particle.name))return;//tzz show name warning
-                                    }
-                                    CustomParticle.ParticleProperty particle = CustomParticle.createNewParticle(new CustomParticle.ParticleProperty());
-                                    particle.name = text;
-                                    particleBag.items.add(new ParticleItem(particle));
-                                    WndEditorInv.updateCurrentTab();
-                                    hide();
-                                }
-                            } else {
-                                hide();
-                            }
-                        }
-                    });
+                    EditorScene.show(new EditParticleComp.WndNewParticle());
                 }
             };
         }

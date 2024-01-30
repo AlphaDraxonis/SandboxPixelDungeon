@@ -8,8 +8,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.WellWaterSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ParticleItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomTerrain;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.DefaultListItemWithRemoveBtn;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndItemDistribution;
@@ -28,12 +32,16 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoCell;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditTileComp extends DefaultEditComp<TileItem> {
 
@@ -44,6 +52,8 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     private WellWaterSpinner wellWaterSpinner;
     private EditBlobComp.VolumeSpinner volumeSpinner;
     private EditBlobComp.SacrificialFirePrize sacrificialFirePrize;
+
+    private List<ScrollingListPane.ListItem> customParticles;
 
     public EditTileComp(TileItem item) {
         super(item);
@@ -130,7 +140,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                     finalBlobAtCell.volume += finalBlobAtCell.cur[cell] - old;
                 });
                 add(volumeSpinner);
-            } else volumeSpinner = null;
+            }
 
             if (blobAtCell instanceof SacrificialFire) {
                 SacrificialFire sacrificialFire = (SacrificialFire) blobAtCell;
@@ -142,7 +152,31 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                     }
                 };
                 add(sacrificialFirePrize);
-            } else sacrificialFirePrize = null;
+            }
+
+
+            customParticles = new ArrayList<>(4);
+            for (CustomParticle particle : Dungeon.level.particles.values()) {
+                if (particle != null && particle.cur != null && particle.cur[cell] > 0) {
+                    EditorItem<?> particleItem = EditorScene.getObjAsInBag(particle);
+                    if (particleItem != null) {
+                        ScrollingListPane.ListItem listItem = new DefaultListItemWithRemoveBtn(
+                                particleItem, null, particleItem.name(), particleItem.getSprite()) {
+                            @Override
+                            protected void onRemove() {
+                                ParticleItem.remove(cell);
+                                remove();
+                                customParticles.remove(this);
+                                destroy();
+                                killAndErase();
+                                updateObj();
+                            }
+                        };
+                        add(listItem);
+                        customParticles.add(listItem);
+                    }
+                }
+            }
 
         }
 
@@ -193,6 +227,9 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 transitionEdit, addTransition, editSignText, wellWaterSpinner, volumeSpinner, sacrificialFirePrize
         };
         layoutCompsLinear(comps);
+        if (!customParticles.isEmpty()) {
+            layoutCompsLinear(customParticles.toArray(EditorUtilies.EMPTY_COMP_ARRAY));
+        }
     }
 
     protected static final class CustomTilemapAndPosWrapper {

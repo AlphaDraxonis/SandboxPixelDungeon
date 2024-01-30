@@ -125,11 +125,9 @@ public abstract class DefaultEditComp<T> extends Component {
     }
 
     protected void onRenameClicked() {
-
     }
 
     protected void onDeleteClicked() {
-
     }
 
     protected void onShow(boolean fullyInitialized) {

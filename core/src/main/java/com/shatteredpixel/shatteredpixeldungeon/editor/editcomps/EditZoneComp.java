@@ -22,7 +22,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ZoneMobSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndZones;
-import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndEditFloorInOverview;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
@@ -46,7 +45,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndSupportPrompt;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -330,7 +328,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
                 if (positive && !text.isEmpty()) {
                     for (String floorN : Dungeon.level.levelScheme.zones) {
                         if (floorN.equals(text)) {
-                            showDuplicateNameWarning();
+                            EditorUtilies.showDuplicateNameWarning();
                             return;
                         }
                     }
@@ -352,7 +350,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
     protected void onDeleteClicked() {
         EditorScene.show(new WndOptions(Icons.get(Icons.WARNING),
                 Messages.get(EditZoneComp.class, "erase_title"),
-                Messages.get(EditZoneComp.class, "erase_body"),//tzz
+                Messages.get(EditZoneComp.class, "erase_body"),
                 Messages.get(WndEditFloorInOverview.class, "erase_yes"),
                 Messages.get(WndGameInProgress.class, "erase_warn_no")) {
             @Override
@@ -371,16 +369,6 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
                 }
             }
         });
-    }
-
-    public static void showDuplicateNameWarning() {
-        EditorScene.show(
-                new WndOptions(Icons.get(Icons.WARNING),
-                        Messages.get(WndNewDungeon.class, "dup_name_title"),
-                        Messages.get(WndZones.WndNewZone.class, "dup_name_body"),
-                        Messages.get(WndSupportPrompt.class, "close")
-                )
-        );
     }
 
 }

@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -32,11 +33,11 @@ public class EditCustomTileComp extends EditTileComp {
 
         if (customTile instanceof CustomTileLoader.SimpleCustomTile && cell == -1) {
             terrain = null;
-            editSimpleCustomTile = new RedButton(Messages.get(this, "edit_simple_tile")){
+            editSimpleCustomTile = new RedButton(Messages.get(DefaultListItem.class, "edit")){
                 @Override
                 protected void onClick() {
                     EditorScene.show(new Tiles.WndCreateCustomTile((CustomTileLoader.SimpleCustomTile) customTile,
-                            Messages.get(EditCustomTileComp.class, "edit_simple_tile")){
+                            Messages.get(DefaultListItem.class, "edit")){
                         @Override
                         public void hide() {
                             super.hide();

@@ -57,6 +57,7 @@ public class BlobEmitter extends Emitter {
 		float size = DungeonTilemap.SIZE;
 
 		boolean isEditing = CustomDungeon.isEditing();
+		int emits = 0;
 		int cell;
 		for (int i = blob.area.left; i < blob.area.right; i++) {
 			for (int j = blob.area.top; j < blob.area.bottom; j++) {
@@ -67,8 +68,12 @@ public class BlobEmitter extends Emitter {
 					float x = (i + Random.Float(bound.left, bound.right)) * size;
 					float y = (j + Random.Float(bound.top, bound.bottom)) * size;
 					factory.emit(this, index, x, y);
+					emits++;
 				}
 			}
 		}
+		if (emits > 40 && interval < 0.1f) interval = 0.2f;
+		if (emits > 50 && interval < 0.2f) interval = 0.3f;
+		if (emits > 60 && interval < 0.3f) interval = 0.4f;
 	}
 }

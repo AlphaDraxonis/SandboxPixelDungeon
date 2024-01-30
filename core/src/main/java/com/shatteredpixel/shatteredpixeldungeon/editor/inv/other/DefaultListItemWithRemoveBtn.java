@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.other;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Image;
@@ -13,15 +14,16 @@ public abstract class DefaultListItemWithRemoveBtn extends DefaultListItem {
 
     public DefaultListItemWithRemoveBtn(Item item, EditorInventoryWindow window, String title, Image image) {
         super(item, window, title, image);
-    }
 
-    @Override
-    protected void createChildren(Object... params) {
-        super.createChildren(params);
-        remove = new IconButton(Icons.TRASH.get()) {
+        remove = new IconButton(window == null ? Icons.CLOSE.get() : Icons.TRASH.get()) {
             @Override
             protected void onClick() {
                 onRemove();
+            }
+
+            @Override
+            protected String hoverText() {
+                return Messages.get(DefaultListItemWithRemoveBtn.class, window == null ? "delete" : "remove");
             }
         };
         add(remove);
@@ -33,7 +35,7 @@ public abstract class DefaultListItemWithRemoveBtn extends DefaultListItem {
         if (remove != null) {
             float posX;
             if (editButton != null) {
-                editButton.setPos(editButton.left() - ICON_WIDTH - 2, editButton.top());
+                editButton.setPos(editButton.left() - ICON_WIDTH, editButton.top());
                 hotArea.width = editButton.left() - 1;
                 posX = editButton.right() + 2;
             } else {

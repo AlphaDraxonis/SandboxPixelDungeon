@@ -15,6 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSelectLevelType;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -31,8 +32,10 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndSupportPrompt;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
@@ -50,6 +53,7 @@ public final class EditorUtilies {
     public static final Item[] EMPTY_ITEM_ARRAY = new Item[0];
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
     public static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
+    public static final Component[] EMPTY_COMP_ARRAY = new Component[0];
 
 
     private EditorUtilies() {
@@ -138,6 +142,16 @@ public final class EditorUtilies {
         return s.replace("ä", "Ã¤").replace("ö", "Ã¶").replace("ü", "Ã¼")
                 .replace("Ä", "Ã\u0084").replace("Ö", "Ã\u0096").replace("Ü", "Ã\u009C")
                 .replace("ß", "Ã\u009F");
+    }
+
+    public static void showDuplicateNameWarning() {
+        EditorScene.show(
+                new WndOptions(Icons.get(Icons.WARNING),
+                        Messages.get(WndNewDungeon.class, "dup_name_title"),
+                        Messages.get(EditorUtilies.class, "dup_name_body"),
+                        Messages.get(WndSupportPrompt.class, "close")
+                )
+        );
     }
 
 //    public static int getWindowWidth(){

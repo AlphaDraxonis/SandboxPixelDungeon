@@ -48,7 +48,7 @@ public class StyledButton extends Button {
 
 		if (size == -1) size = textSize();
 
-		if (label != null && label.length() > 20 && this instanceof StyledCheckBox) size--;
+		if (label != null && label.length() > 20 && this instanceof StyledCheckBox) size = Math.max(size - 1, Math.min(size, 8));
 		
 		bg = Chrome.get( type );
 		addToBack( bg );

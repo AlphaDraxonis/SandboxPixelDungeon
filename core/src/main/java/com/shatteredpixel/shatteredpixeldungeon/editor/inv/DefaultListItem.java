@@ -18,7 +18,7 @@ import com.watabou.noosa.audio.Sample;
 public class DefaultListItem extends AdvancedListPaneItem {
 
     protected final Item item;
-    private EditorInventoryWindow window;
+    protected EditorInventoryWindow window;
 
     protected IconButton editButton;
 
@@ -35,6 +35,11 @@ public class DefaultListItem extends AdvancedListPaneItem {
                 @Override
                 protected void onClick() {
                     openEditWindow();
+                }
+
+                @Override
+                protected String hoverText() {
+                    return Messages.get(DefaultListItem.class, "edit");
                 }
             };
             add(editButton);
@@ -84,12 +89,16 @@ public class DefaultListItem extends AdvancedListPaneItem {
     @Override
     protected void onClick() {
         Sample.INSTANCE.play(Assets.Sounds.CLICK);
-        if (window.selector() != null) {
-            window.hide();
-            window.selector().onSelect(item);
+        if (window == null) {
+            openEditWindow();
         } else {
-            window.hide();
-            QuickSlotButton.set(item);
+            if (window.selector() != null) {
+                window.hide();
+                window.selector().onSelect(item);
+            } else {
+                window.hide();
+                QuickSlotButton.set(item);
+            }
         }
     }
 
@@ -106,9 +115,12 @@ public class DefaultListItem extends AdvancedListPaneItem {
             return true;
         }
 
-        window.hide();
-        QuickSlotButton.set(item);
-        return true;
+        if (window != null) {
+            window.hide();
+            QuickSlotButton.set(item);
+            return true;
+        }
+        return false;
     }
 
     protected boolean openEditWindow() {

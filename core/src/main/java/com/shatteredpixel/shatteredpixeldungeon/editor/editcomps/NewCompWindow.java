@@ -36,7 +36,7 @@ public abstract class NewCompWindow<T> extends Window {
 
         resize(PixelScene.landscape() ? 210 : Math.min(155, (int) (PixelScene.uiCamera.width * 0.88)), 100);
 
-        title = new IconTitle(getIcon(), Messages.get(this, "title"));
+        title = new IconTitle(getIcon(), Messages.titleCase( Messages.get(this, "title") ));
         add(title);
 
         int textSize = (int) PixelScene.uiCamera.zoom * 9;
@@ -80,6 +80,7 @@ public abstract class NewCompWindow<T> extends Window {
         editObjComp = createEditComp();
 
         //no title or description
+        editObjComp.rename.visible = editObjComp.delete.visible = false;
         editObjComp.title.visible = editObjComp.title.active = false;
         editObjComp.desc.visible = editObjComp.desc.active = false;
 

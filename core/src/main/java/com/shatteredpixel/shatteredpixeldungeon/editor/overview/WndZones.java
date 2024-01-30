@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndColorPicker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
@@ -219,7 +220,7 @@ public final class WndZones {
             if (name != null) {
 
                 if (Dungeon.level.zoneMap.containsKey(name)) {
-                    EditZoneComp.showDuplicateNameWarning();
+                    EditorUtilies.showDuplicateNameWarning();
                     return;
                 }
                 obj.name = name;
@@ -242,18 +243,6 @@ public final class WndZones {
         @Override
         protected DefaultEditComp<Zone> createEditComp() {
             return new EditZoneComp(obj) {
-
-                {
-                    rename.visible = delete.visible = false;
-                }
-
-//                @Override
-//                protected void layout() {
-//                    //no title or desc
-//                    height = -1;
-//                    layoutCompsInRectangles(comps);
-//                    layoutCompsLinear(transitionEdit, chasmDest, heroBuffs, mobBuffs);
-//                }
 
                 @Override
                 public void updateObj() {
