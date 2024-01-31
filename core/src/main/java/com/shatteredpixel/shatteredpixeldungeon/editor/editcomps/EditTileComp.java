@@ -312,9 +312,12 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         } else desc = level.tileDesc(obj.terrainType(), obj.cell());
 
         //TODO make own statistic page
-        if (obj.terrainType() == Terrain.LOCKED_DOOR) desc = EditorUtilies.addIronKeyDescription(desc, level);
-        else if (obj.terrainType() == Terrain.CRYSTAL_DOOR) desc = EditorUtilies.addCrystalKeyDescription(desc, level);
+        if (obj.terrainType() == Terrain.LOCKED_DOOR || obj.terrainType() == Terrain.SECRET_LOCKED_DOOR)
+            desc = EditorUtilies.addIronKeyDescription(desc, level);
+        else if (obj.terrainType() == Terrain.CRYSTAL_DOOR || obj.terrainType() == Terrain.SECRET_CRYSTAL_DOOR)
+            desc = EditorUtilies.addCrystalKeyDescription(desc, level);
         else if (obj.terrainType() == Terrain.LOCKED_EXIT) desc = EditorUtilies.addSkeletonKeyDescription(desc, level);
+        else if (obj.terrainType() == Terrain.COIN_DOOR) desc = EditorUtilies.addGoldDoorDescription(desc, level);
 
         if (obj.cell() >= 0) {
             for (Blob blob : Dungeon.level.blobs.values()) {

@@ -7,6 +7,9 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.GRASS;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.HIGH_GRASS;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.INACTIVE_TRAP;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_EXIT;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_CRYSTAL_DOOR;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_DOOR;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_LOCKED_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_TRAP;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SIGN;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SIGN_SP;
@@ -134,6 +137,10 @@ public class TileItem extends EditorItem {
 
     public static boolean isSignTerrainCell(int terrain) {
         return terrain == SIGN || terrain == SIGN_SP;
+    }
+
+    public static boolean isSecretDoor(int terrain) {
+        return terrain == SECRET_DOOR || terrain == SECRET_LOCKED_DOOR || terrain == SECRET_CRYSTAL_DOOR;
     }
 
     public static String getName(int terrainType, int cell) {

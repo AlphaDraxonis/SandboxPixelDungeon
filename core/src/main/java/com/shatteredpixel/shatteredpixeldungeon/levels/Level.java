@@ -2189,6 +2189,10 @@ public abstract class Level implements Bundlable {
 				return Messages.get(Level.class, "wall_name");
 			case Terrain.SECRET_DOOR:
 				return Messages.get(Level.class, CustomDungeon.showHiddenDoors() ? "hidden_wall_name" : "wall_name");
+			case Terrain.SECRET_LOCKED_DOOR:
+				return Messages.get(Level.class, CustomDungeon.showHiddenDoors() ? "hidden_locked_wall_name" : "wall_name");
+			case Terrain.SECRET_CRYSTAL_DOOR:
+				return Messages.get(Level.class, CustomDungeon.showHiddenDoors() ? "hidden_crystal_wall_name" : "wall_name");
 			case Terrain.DOOR:
 				return Messages.get(Level.class, "closed_door_name");
 			case Terrain.OPEN_DOOR:
@@ -2201,6 +2205,8 @@ public abstract class Level implements Bundlable {
 				return Messages.get(Level.class, "embers_name");
 			case Terrain.FURROWED_GRASS:
 				return Messages.get(Level.class, "furrowed_grass_name");
+			case Terrain.COIN_DOOR:
+				return Messages.get(Level.class, "coin_door_name");
 			case Terrain.LOCKED_DOOR:
 				return Messages.get(Level.class, "locked_door_name");
 			case Terrain.CRYSTAL_DOOR:
@@ -2257,6 +2263,8 @@ public abstract class Level implements Bundlable {
 			case Terrain.HIGH_GRASS:
 			case Terrain.FURROWED_GRASS:
 				return Messages.get(Level.class, "high_grass_desc");
+			case Terrain.COIN_DOOR:
+				return Messages.get(Level.class, "coin_door_desc");
 			case Terrain.LOCKED_DOOR:
 				return Messages.get(Level.class, "locked_door_desc");
 			case Terrain.CRYSTAL_DOOR:
@@ -2298,6 +2306,7 @@ public abstract class Level implements Bundlable {
 			case Terrain.EXIT:
 			case Terrain.UNLOCKED_EXIT: return "exit";
 			case Terrain.EMBERS: return "embers";
+			case Terrain.COIN_DOOR: return "coin_door";
 			case Terrain.CRYSTAL_DOOR: return "crystal_door";
 			case Terrain.LOCKED_DOOR: return "locked_door";
 			case Terrain.LOCKED_EXIT: return "locked_exit";
@@ -2326,7 +2335,9 @@ public abstract class Level implements Bundlable {
 			case Terrain.GRASS: return "grass";
 			case Terrain.WALL:
 			case Terrain.WALL_DECO:
-			case Terrain.SECRET_DOOR: return "wall";
+			case Terrain.SECRET_DOOR:
+			case Terrain.SECRET_LOCKED_DOOR:
+			case Terrain.SECRET_CRYSTAL_DOOR: return "wall";
 			case Terrain.DOOR: return "closed_door";
 			case Terrain.OPEN_DOOR: return "open_door";
 			case Terrain.PEDESTAL: return "pedestal";

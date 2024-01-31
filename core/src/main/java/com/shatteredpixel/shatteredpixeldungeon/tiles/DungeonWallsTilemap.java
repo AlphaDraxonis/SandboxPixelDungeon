@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 
 import java.util.HashSet;
@@ -48,9 +49,11 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 					return DungeonTileSheet.DOOR_SIDEWAYS;
 				} else if (map[pos + mapWidth] == Terrain.LOCKED_DOOR){
 					return DungeonTileSheet.DOOR_SIDEWAYS_LOCKED;
+				} else if (map[pos + mapWidth] == Terrain.COIN_DOOR){
+					return DungeonTileSheet.DOOR_SIDEWAYS_GOLD;
 				} else if (map[pos + mapWidth] == Terrain.CRYSTAL_DOOR){
 					return DungeonTileSheet.DOOR_SIDEWAYS_CRYSTAL;
-				} else if (map[pos + mapWidth] == Terrain.SECRET_DOOR){
+				} else if (TileItem.isSecretDoor(map[pos + mapWidth])){
 					return DungeonTileSheet.DOOR_SIDEWAYS_SECRET;
 				} else if (map[pos + mapWidth] == Terrain.OPEN_DOOR){
 					return DungeonTileSheet.NULL_TILE;
@@ -84,13 +87,14 @@ public class DungeonWallsTilemap extends DungeonTilemap {
 					pos % mapWidth != 0 ?       map[pos - 1 + mapWidth] : -1
 			);
 
-		} else if (Dungeon.level.insideMap(pos) && (map[pos+mapWidth] == Terrain.DOOR || map[pos+mapWidth] == Terrain.LOCKED_DOOR) ) {
+		} else if (Dungeon.level.insideMap(pos)
+				&& (map[pos+mapWidth] == Terrain.DOOR || map[pos+mapWidth] == Terrain.LOCKED_DOOR || map[pos+mapWidth] == Terrain.COIN_DOOR) ) {
 			return DungeonTileSheet.DOOR_OVERHANG;
 		} else if (Dungeon.level.insideMap(pos) && map[pos+mapWidth] == Terrain.OPEN_DOOR ) {
 			return DungeonTileSheet.DOOR_OVERHANG_OPEN;
 		} else if (Dungeon.level.insideMap(pos) && map[pos+mapWidth] == Terrain.CRYSTAL_DOOR ) {
 			return DungeonTileSheet.DOOR_OVERHANG_CRYSTAL;
-		} else if (Dungeon.level.insideMap(pos) && map[pos+mapWidth] == Terrain.SECRET_DOOR && Dungeon.customDungeon.seeSecrets ) {
+		} else if (Dungeon.level.insideMap(pos) && TileItem.isSecretDoor(map[pos+mapWidth]) && Dungeon.customDungeon.seeSecrets ) {
 			return DungeonTileSheet.DOOR_OVERHANG_SECRET;
 		} else if (pos + mapWidth < size && map[pos+mapWidth] == Terrain.STATUE){
 			return DungeonTileSheet.STATUE_OVERHANG;

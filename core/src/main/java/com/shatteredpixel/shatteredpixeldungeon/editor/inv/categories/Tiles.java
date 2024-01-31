@@ -5,6 +5,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ALCHEMY;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.BARRICADE;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.BOOKSHELF;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.CHASM;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.COIN_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.CRYSTAL_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMBERS;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY_DECO;
@@ -22,7 +23,9 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.MINE_BOULD
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.MINE_CRYSTAL;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.OPEN_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.PEDESTAL;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_CRYSTAL_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_DOOR;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_LOCKED_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_TRAP;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SIGN;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.STATUE;
@@ -95,7 +98,7 @@ public enum Tiles {
 
     EMPTY(Terrain.EMPTY, EMPTY_DECO, WATER, GRASS, HIGH_GRASS, FURROWED_GRASS, EMPTY_SP, PEDESTAL, EMBERS),
     WALL(Terrain.WALL, WALL_DECO, BOOKSHELF, BARRICADE, STATUE, STATUE_SP, CHASM),
-    DOOR(Terrain.DOOR, OPEN_DOOR, SECRET_DOOR, LOCKED_DOOR, CRYSTAL_DOOR, LOCKED_EXIT, UNLOCKED_EXIT),
+    DOOR(Terrain.DOOR, OPEN_DOOR, LOCKED_DOOR, CRYSTAL_DOOR, SECRET_DOOR, SECRET_LOCKED_DOOR, SECRET_CRYSTAL_DOOR, COIN_DOOR, LOCKED_EXIT, UNLOCKED_EXIT),
     SPECIAL(ENTRANCE, EXIT, EMPTY_WELL, WELL, ALCHEMY, SIGN, MINE_CRYSTAL, MINE_BOULDER);
 
     public final int[] terrains;
@@ -111,6 +114,10 @@ public enum Tiles {
                 return DungeonTileSheet.CHASM_WALL;
             case SECRET_DOOR:
                 return DungeonTileSheet.FLAT_DOOR_SECRET;
+            case SECRET_LOCKED_DOOR:
+                return DungeonTileSheet.FLAT_LOCKED_DOOR_SECRET;
+            case SECRET_CRYSTAL_DOOR:
+                return DungeonTileSheet.FLAT_CRYSTAL_DOOR_SECRET;
             case WATER:
                 return WATER;
             case SECRET_TRAP:

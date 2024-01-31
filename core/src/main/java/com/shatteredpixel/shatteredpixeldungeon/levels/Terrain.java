@@ -67,7 +67,11 @@ public class Terrain {
 	public static final int MINE_BOULDER    = 36;
 
 	public static final int WATER		    = 29;
-	
+
+	public static final int SECRET_LOCKED_DOOR    = 50;
+	public static final int SECRET_CRYSTAL_DOOR   = 51;
+	public static final int COIN_DOOR = 52;
+
 	public static final int PASSABLE		= 0x01;
 	public static final int LOS_BLOCKING	= 0x02;
 	public static final int FLAMABLE		= 0x04;
@@ -92,6 +96,7 @@ public class Terrain {
 		flags[EMBERS]		= PASSABLE;
 		flags[LOCKED_DOOR]	= LOS_BLOCKING | SOLID;
 		flags[CRYSTAL_DOOR]	= SOLID;
+		flags[COIN_DOOR]	= flags[LOCKED_DOOR];
 		flags[PEDESTAL]		= PASSABLE;
 		flags[WALL_DECO]	= flags[WALL];
 		flags[BARRICADE]	= FLAMABLE | SOLID | LOS_BLOCKING;
@@ -100,6 +105,8 @@ public class Terrain {
 		flags[FURROWED_GRASS]= flags[HIGH_GRASS];
 
 		flags[SECRET_DOOR]  = flags[WALL]  | SECRET;
+		flags[SECRET_LOCKED_DOOR]  = flags[SECRET_DOOR];
+		flags[SECRET_CRYSTAL_DOOR] = flags[SECRET_DOOR];
 		flags[SECRET_TRAP]  = flags[EMPTY] | SECRET;
 		flags[TRAP]         = AVOID;
 		flags[INACTIVE_TRAP]= flags[EMPTY];
@@ -127,6 +134,10 @@ public class Terrain {
 		switch (terr) {
 		case SECRET_DOOR:
 			return DOOR;
+		case SECRET_LOCKED_DOOR:
+			return LOCKED_DOOR;
+		case SECRET_CRYSTAL_DOOR:
+			return CRYSTAL_DOOR;
 		case SECRET_TRAP:
 			return TRAP;
 		default:

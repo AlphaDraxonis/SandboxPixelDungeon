@@ -613,7 +613,7 @@ public class CustomLevel extends Level {
         if (!ignoreTerrainForExploringScore) {
             //There are no barricades, locked doors, or hidden doors
             for (int i = 0; i < length; i++) {
-                if (map[i] == Terrain.BARRICADE || map[i] == Terrain.LOCKED_DOOR || map[i] == Terrain.SECRET_DOOR) {
+                if (map[i] == Terrain.BARRICADE || map[i] == Terrain.LOCKED_DOOR || map[i] == Terrain.COIN_DOOR || TileItem.isSecretDoor(map[i])) {
                     return false;
                 }
             }

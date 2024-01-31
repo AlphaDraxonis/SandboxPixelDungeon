@@ -100,6 +100,8 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 			}
 		} else {
 			if (tile == Terrain.SECRET_DOOR && CustomDungeon.showHiddenDoors()) return DungeonTileSheet.FLAT_DOOR_SECRET;
+			if (tile == Terrain.SECRET_LOCKED_DOOR && CustomDungeon.showHiddenDoors()) return DungeonTileSheet.FLAT_LOCKED_DOOR_SECRET;
+			if (tile == Terrain.SECRET_CRYSTAL_DOOR && CustomDungeon.showHiddenDoors()) return DungeonTileSheet.FLAT_CRYSTAL_DOOR_SECRET;
 			return DungeonTileSheet.getVisualWithAlts(
 					DungeonTileSheet.directFlatVisuals.get(tile),
 					pos);

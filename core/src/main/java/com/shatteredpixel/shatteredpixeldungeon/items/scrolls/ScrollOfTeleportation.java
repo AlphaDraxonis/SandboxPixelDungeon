@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -158,7 +159,7 @@ public class ScrollOfTeleportation extends Scroll {
 				boolean locked = false;
 				for (Point p : r.getPoints()){
 					terr = level.map[level.pointToCell(p)];
-					if (terr == Terrain.LOCKED_DOOR || terr == Terrain.CRYSTAL_DOOR || terr == Terrain.BARRICADE){
+					if (terr == Terrain.LOCKED_DOOR || terr == Terrain.CRYSTAL_DOOR || terr == Terrain.BARRICADE || terr == Terrain.COIN_DOOR){
 						locked = true;
 						break;
 					}
@@ -202,7 +203,7 @@ public class ScrollOfTeleportation extends Scroll {
 			appear( hero, pos );
 			Dungeon.level.occupyCell(hero);
 			Buff.detach(hero, Roots.class);
-			if (secretDoor && level.map[doorPos] == Terrain.SECRET_DOOR){
+			if (secretDoor && TileItem.isSecretDoor(level.map[doorPos])){
 				Sample.INSTANCE.play( Assets.Sounds.SECRET );
 				int oldValue = Dungeon.level.map[doorPos];
 				GameScene.discoverTile( doorPos, oldValue );

@@ -17,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSelectLevelType;
+import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
@@ -188,8 +189,19 @@ public final class EditorUtilies {
         return numFound;
     }
 
+    public static int getNumItem(Class<? extends Item> item, Level level) {
+        int numFound = 0;
+        for (Heap h : level.heaps.values()) {
+            for (Item i : h.items) {
+                if (i.getClass() == item) numFound += i.quantity();
+            }
+        }
+        return numFound;
+    }
+
     public static String addIronKeyDescription(String desc, Level level) {
-        int numLockedDoors = EditorUtilies.getNumTiles(Terrain.LOCKED_DOOR, level);
+        int numLockedDoors = EditorUtilies.getNumTiles(Terrain.LOCKED_DOOR, level)
+                + EditorUtilies.getNumTiles(Terrain.SECRET_LOCKED_DOOR, level);
         int numIronKeys = EditorUtilies.getNumKeys(IronKey.class, level);
         if (desc.length() > 0) desc += "\n";
         desc += "\n" + Messages.get(EditTileComp.class, "num_locked_doors") + ": " + numLockedDoors;
@@ -207,7 +219,8 @@ public final class EditorUtilies {
     }
 
     public static String addCrystalKeyDescription(String desc, Level level) {
-        int numLockedDoors = EditorUtilies.getNumTiles(Terrain.CRYSTAL_DOOR, level);
+        int numLockedDoors = EditorUtilies.getNumTiles(Terrain.CRYSTAL_DOOR, level)
+                + EditorUtilies.getNumTiles(Terrain.SECRET_CRYSTAL_DOOR, level);
         int numCrystalContainers = EditorUtilies.getNumContainer(Heap.Type.CRYSTAL_CHEST, level);
         int numCrystalKeys = EditorUtilies.getNumKeys(CrystalKey.class, level);
         if (desc.length() > 0) desc += "\n";
@@ -223,6 +236,15 @@ public final class EditorUtilies {
         if (desc.length() > 0) desc += "\n";
         desc += "\n" + Messages.get(EditTileComp.class, "num_locked_exits") + ": " + numLockedDoors;
         desc += "\n" + Messages.get(EditTileComp.class, "num_skeleton_keys") + ": " + numSkeleKeys;
+        return desc;
+    }
+
+    public static String addGoldDoorDescription(String desc, Level level) {
+        int numLockedDoors = EditorUtilies.getNumTiles(Terrain.COIN_DOOR, level);
+        int numGold = EditorUtilies.getNumItem(Gold.class, level);
+        if (desc.length() > 0) desc += "\n";
+        desc += "\n" + Messages.get(EditTileComp.class, "num_coin_doors") + ": " + numLockedDoors;
+        desc += "\n" + Messages.get(EditTileComp.class, "num_gold") + ": " + numGold;
         return desc;
     }
 

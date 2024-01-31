@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CheckedCell;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfEnergy;
@@ -178,6 +179,8 @@ public class TalismanOfForesight extends Artifact {
 							earnedExp += 10;
 						} else if (oldValue == Terrain.SECRET_DOOR){
 							earnedExp += 100;
+						} else if (oldValue == Terrain.SECRET_LOCKED_DOOR || oldValue == Terrain.SECRET_CRYSTAL_DOOR){
+							earnedExp += 150;
 						}
 					}
 
@@ -317,7 +320,7 @@ public class TalismanOfForesight extends Artifact {
 
 					if (Dungeon.level.heroFOV[p]
 							&& Dungeon.level.secret[p]
-							&& Dungeon.level.map[p] != Terrain.SECRET_DOOR) {
+							&& !TileItem.isSecretDoor(Dungeon.level.map[p])) {
 						if (Dungeon.level.traps.get(p) != null && Dungeon.level.traps.get(p).canBeSearched) {
 							smthFound = true;
 						}

@@ -1181,6 +1181,11 @@ public class Hero extends Char {
 
 				hasKey = true;
 				
+			} else if (door == Terrain.COIN_DOOR
+					&& Dungeon.gold > 0) {//tzz
+
+				hasKey = true;
+
 			}
 			
 			if (hasKey) {
@@ -1190,7 +1195,7 @@ public class Hero extends Char {
 				Sample.INSTANCE.play( Assets.Sounds.UNLOCK );
 				
 			} else {
-				GLog.w( Messages.get(this, "locked_door") );
+				GLog.w( Messages.get(this, door == Terrain.COIN_DOOR ? "coin_door" : "locked_door") );
 				ready();
 			}
 
@@ -1803,7 +1808,10 @@ public class Hero extends Char {
 				curAction = new HeroAction.OpenChest( cell );
 			}
 			
-		} else if (Dungeon.level.map[cell] == Terrain.LOCKED_DOOR || Dungeon.level.map[cell] == Terrain.CRYSTAL_DOOR || Dungeon.level.map[cell] == Terrain.LOCKED_EXIT) {
+		} else if (Dungeon.level.map[cell] == Terrain.LOCKED_DOOR
+				|| Dungeon.level.map[cell] == Terrain.CRYSTAL_DOOR
+				|| Dungeon.level.map[cell] == Terrain.LOCKED_EXIT
+				|| Dungeon.level.map[cell] == Terrain.COIN_DOOR) {
 			
 			curAction = new HeroAction.Unlock( cell );
 			
@@ -2247,7 +2255,7 @@ public class Hero extends Char {
 			int door = Dungeon.level.map[doorCell];
 			
 			if (Dungeon.level.distance(pos, doorCell) <= 1) {
-				boolean hasKey = true;
+				boolean hasKey = false;
 				if (door == Terrain.LOCKED_DOOR) {
 					hasKey = Notes.remove(new IronKey(Dungeon.levelName, doorCell));
 					if (hasKey) Level.set(doorCell, Terrain.DOOR);
@@ -2258,9 +2266,12 @@ public class Hero extends Char {
 						Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 						CellEmitter.get( doorCell ).start( Speck.factory( Speck.DISCOVER ), 0.025f, 20 );
 					}
-				} else {
+				} else if (door == Terrain.LOCKED_EXIT){
 					hasKey = Notes.remove(new SkeletonKey(Dungeon.levelName, doorCell));
 					if (hasKey) Level.set(doorCell, Terrain.UNLOCKED_EXIT);
+				} else if (door == Terrain.COIN_DOOR){
+					hasKey = Dungeon.gold > 0;//tzz
+					if (hasKey) Level.set(doorCell, Terrain.DOOR);
 				}
 				
 				if (hasKey) {
@@ -2420,6 +2431,8 @@ public class Hero extends Char {
 									talisman.charge(2);
 								} else if (oldValue == Terrain.SECRET_DOOR){
 									talisman.charge(10);
+								} else if (oldValue == Terrain.SECRET_LOCKED_DOOR || oldValue == Terrain.SECRET_CRYSTAL_DOOR){
+									talisman.charge(15);
 								}
 							}
 						}
