@@ -56,6 +56,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Ripple;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -932,7 +933,8 @@ public class GameScene extends PixelScene {
 
 	private void addParticleSprite(final CustomParticle particle) {
 		if (particle.emitter == null) {
-			gases.add(new BlobEmitter(particle));
+			CustomParticle.ParticleProperty p = Dungeon.customDungeon.particles.get(particle.particleID);
+			gases.add(Speck.isHighFrequency(p.type, p.interval) ? new BlobEmitter(particle) : new CustomParticle.ParticleEmitter(particle));
 		}
 	}
 	

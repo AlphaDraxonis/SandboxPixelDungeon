@@ -9,11 +9,14 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ParticleActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.RectF;
+import com.watabou.utils.PointF;
+import com.watabou.utils.Random;
 
 public class CustomParticle extends Blob {
 
@@ -65,7 +68,7 @@ public class CustomParticle extends Blob {
         public float interval = 0.5f;
         public int quantity = 0;
 
-        public boolean removeOnEnter = true;
+        public boolean removeOnEnter = false;
 
         private int id = 0;
 
@@ -112,10 +115,8 @@ public class CustomParticle extends Blob {
         }
 
         public Image getSprite() {
-            RectF r = Speck.getFilm().get(type);
-            if (r == null) return new ItemSprite();
-            Image icon = new Image(Assets.Effects.SPECKS);
-            icon.frame(r);
+            Speck icon = new Speck();
+            icon.image(type);
             icon.scale.set(1.5f);//16/7=2.28
             return icon;
         }
@@ -182,125 +183,94 @@ public class CustomParticle extends Blob {
     }
 
 
-//    public void updateEmitterAtCell(int cell) {
-//        ParticleEmitter emitter = (ParticleEmitter) this.emitter;
-//        emitter.updateCell(cell, true);
-//    }
-//
-//    public static class ParticleEmitter extends BlobEmitter {
-//
-//        private EmitterAtMultipleCells[] uniqueEmitters = new EmitterAtMultipleCells[50];
-//
-////        private int[] cellsWithEmitter;
-//
-//        private CustomParticle particle;
-//
-//        public ParticleEmitter(CustomParticle particle) {
-//            super(particle);
-//            this.particle = particle;
-//            particle.use(this);
-//        }
-//
-//        @Override
-//        public void start(Factory factory, float interval, int quantity) {
-//            this.factory = factory;
-//            this.interval = interval;
-//            this.quantity = quantity;
-//            super.start(factory, interval, quantity);
-//        }
-//
-//        protected void updateCell(int cell, boolean isEditing) {
-//            if (cell < Dungeon.level.heroFOV.length
-//                    && (Dungeon.level.heroFOV[cell] || particle.alwaysVisible || isEditing)
-//                    && particle.cur[cell] > 0) {
-//                int useEmitter = Random.Int(uniqueEmitters.length);
-//                EmitterAtMultipleCells emitter;
-//                if (uniqueEmitters[useEmitter] == null) {
-//                    emitter = uniqueEmitters[useEmitter] = new EmitterAtMultipleCells();
-//                    emitter.particle = particle;
-//                    emitter.start(factory, interval, quantity);
-//                    add(emitter);
-//                } else emitter = uniqueEmitters[useEmitter];
-//                if (emitter.nextFreeIndex == emitter.cells.length) {
-//                    emitter.increaseSize();
-//                }
-//                emitter.cells[emitter.nextFreeIndex] = cell;
-//                emitter.updateNextFreeIndex();
-//            }
-//        }
-//
-//        @Override
-//        protected void emit(int index) {
-//            if (particle == null) {
-//                return;
-//            }
-//
-//            if (particle.volume <= 0) {
-//                return;
-//            }
-//
-//            if (particle.area.isEmpty())
-//                particle.setupArea();
-//
-////            if (cellsWithEmitter == null || cellsWithEmitter.length != Dungeon.level.length()) {
-////                cellsWithEmitter = new int[Dungeon.level.length()];
-////                for (EmitterAtMultipleCells emitter : uniqueEmitters) {
-////                    if (emitter != null) Arrays.fill(emitter.cells, -1);
-////                }
-////            }
-//
-//            boolean isEditing = CustomDungeon.isEditing();
-//
-//            for (int i = particle.area.left; i < particle.area.right; i++) {
-//                for (int j = particle.area.top; j < particle.area.bottom; j++) {
-//                    updateCell(i + j*Dungeon.level.width(), isEditing);
-//                }
-//            }
-//        }
-//
-//        private static class EmitterAtMultipleCells extends Emitter {
-//            int[] cells = new int[50];
-//            int nextFreeIndex = 0;
-//            {
-//                Arrays.fill(cells, -1);
-//            }
-//            CustomParticle particle;
-//
-//            @Override
-//            protected void emit(int index) {
-//                boolean isEditing = CustomDungeon.isEditing();
-//                int w = Dungeon.level.width();
-//                for (int i = 0; i < cells.length; i++) {
-//                    int cell = cells[i];
-//                    if (cell > -1) {
-//                        if (cell >= particle.cur.length || particle.cur[cell] == 0) {
-//                            cells[i] = -1;
-//                            nextFreeIndex = i;
-//                        }
-//                        else {
-//                            if (Dungeon.level.heroFOV[cell] || isEditing) {
-//                                float x = (cell%w + Random.Float(BlobEmitter.bound.left, BlobEmitter.bound.right)) * DungeonTilemap.SIZE;
-//                                float y = (cell/w + Random.Float(BlobEmitter.bound.top, BlobEmitter.bound.bottom)) * DungeonTilemap.SIZE;
-//                                factory.emit(this, index, x, y);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//            private void updateNextFreeIndex() {
-//                if (nextFreeIndex != cells.length) {
-//                    while (cells[nextFreeIndex] > -1 && ++nextFreeIndex < cells.length);
-//                }
-//            }
-//
-//            private void increaseSize() {
-//                int[] newCells = new int[cells.length + 50];
-//                System.arraycopy(cells, 0, newCells, 0, cells.length);
-//                cells = newCells;
-//            }
-//        }
-//
-//    }
+    public void updateEmitterAtCell(int cell) {
+        ParticleEmitter emitter = (ParticleEmitter) this.emitter;
+        emitter.updateCell(cell);
+    }
+
+    public static class ParticleEmitter extends BlobEmitter {
+
+        private CellEmitter[] emitters;
+
+        private CustomParticle particle;
+
+        public ParticleEmitter(CustomParticle particle) {
+            super(particle);
+            this.particle = particle;
+            particle.use(this);
+        }
+
+        @Override
+        public void start(Factory factory, float interval, int quantity) {
+            this.factory = factory;
+            this.interval = interval;
+            this.quantity = quantity;
+            super.start(factory, interval, quantity);
+        }
+
+        protected void updateCell(int cell) {
+            if (cell < Dungeon.level.heroFOV.length
+                    && (Dungeon.level.heroFOV[cell] || particle.alwaysVisible || Dungeon.hero == null)
+                    && particle.cur[cell] > 0) {
+
+                CellEmitter emitter;
+                if (emitters[cell] == null) {
+                    emitter = emitters[cell] = new CellEmitter();
+                    emitter.setPos(cell);
+                    emitter.particle = particle;
+                    emitter.start(factory, interval, quantity);
+                    add(emitter);
+                }
+            }
+        }
+
+        @Override
+        protected void emit(int index) {
+            if (particle == null) {
+                return;
+            }
+
+            if (particle.volume <= 0) {
+                return;
+            }
+
+            if (particle.area.isEmpty())
+                particle.setupArea();
+
+            if (emitters == null || emitters.length != Dungeon.level.length()) {
+                emitters = new CellEmitter[Dungeon.level.length()];
+            }
+
+            for (int i = particle.area.left; i < particle.area.right; i++) {
+                for (int j = particle.area.top; j < particle.area.bottom; j++) {
+                    updateCell(i + j*Dungeon.level.width());
+                }
+            }
+        }
+
+        private static class CellEmitter extends Emitter {
+
+            private int pos;
+            private CustomParticle particle;
+
+            public void setPos(int cell) {
+                pos = cell;
+                PointF p = DungeonTilemap.tileToWorld( pos );
+                pos(p.x, p.y, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
+            }
+
+            @Override
+            protected void emit(int index) {
+                if (pos < particle.cur.length && particle.cur[pos] > 0) {
+                    if (Dungeon.level.heroFOV[pos] || Dungeon.hero == null) {
+                        float x = Random.Float(BlobEmitter.bound.left, BlobEmitter.bound.right) * DungeonTilemap.SIZE;
+                        float y = Random.Float(BlobEmitter.bound.top, BlobEmitter.bound.bottom) * DungeonTilemap.SIZE;
+                        factory.emit(this, index, x + this.x, y + this.y);
+                    }
+                }
+            }
+        }
+
+    }
 
 }

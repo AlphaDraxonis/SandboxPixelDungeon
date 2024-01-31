@@ -53,7 +53,6 @@ public class ParticleItem extends EditorItem<CustomParticle.ParticleProperty> {
     public void place(int cell) {
         if (!invalidPlacement(cell)) {
             Undo.addActionPart(place(getObject().particleID(), cell));
-//            Dungeon.level.particles.get(getObject().particleID()).updateEmitterAtCell(cell);
         }
     }
 

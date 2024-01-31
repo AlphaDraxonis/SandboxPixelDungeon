@@ -387,6 +387,15 @@ public class Speck extends Image {
 		
 		left = lifespan;
 	}
+
+	public static boolean isHighFrequency(int type, float interval) {
+		Speck speck = new Speck();
+		speck.reset(0,0,0, type);
+		float lifespan = speck.lifespan;
+		speck.destroy();
+		speck.killAndErase();
+		return lifespan > interval * 4;
+	}
 	
 	@Override
 	public void update() {

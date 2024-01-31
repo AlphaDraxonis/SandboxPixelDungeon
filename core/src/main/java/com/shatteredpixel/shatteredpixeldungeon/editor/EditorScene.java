@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -664,7 +665,8 @@ public class EditorScene extends PixelScene {
 
     private void addParticleSprite(final CustomParticle particle) {
         if (particle.emitter == null) {
-            gases.add(new BlobEmitter(particle));
+            CustomParticle.ParticleProperty p = Dungeon.customDungeon.particles.get(particle.particleID);
+            gases.add(Speck.isHighFrequency(p.type, p.interval) ? new BlobEmitter(particle) : new CustomParticle.ParticleEmitter(particle));
         }
     }
 
