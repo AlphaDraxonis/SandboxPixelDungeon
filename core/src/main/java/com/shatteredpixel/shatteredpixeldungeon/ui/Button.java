@@ -54,6 +54,9 @@ public class Button extends Component {
 	@Override
 	protected void createChildren(Object... params) {
 		hotArea = new PointerArea( 0, 0, 0, 0 ) {
+			{
+				handleHoverEvents = true;
+			}
 			@Override
 			protected void onPointerDown( PointerEvent event ) {
 				pressedButton = Button.this;

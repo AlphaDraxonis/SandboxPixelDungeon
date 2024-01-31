@@ -23,7 +23,7 @@ public abstract class DefaultListItemWithRemoveBtn extends DefaultListItem {
 
             @Override
             protected String hoverText() {
-                return Messages.get(DefaultListItemWithRemoveBtn.class, window == null ? "delete" : "remove");
+                return Messages.get(DefaultListItemWithRemoveBtn.class, window == null ? "remove" : "delete");
             }
         };
         add(remove);
