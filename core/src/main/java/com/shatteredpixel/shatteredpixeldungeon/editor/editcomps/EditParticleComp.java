@@ -62,12 +62,17 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
         type.setButtonWidth(9f);
         type.addChangeListener(()-> {
             obj.type = (int) type.getValue();
+            obj.setPredefinedInterval(obj.type);
+            interval.setValue(SpinnerFloatModel.convertToInt(obj.interval, 2));
             updateObj();
         });
         add(type);
 
-        interval = new StyledSpinner(new SpinnerFloatModel(0.01f, 10f, particle.interval, 2, 0.1f, false),
-                Messages.get(this, "interval"), 9);
+        interval = new StyledSpinner(new SpinnerFloatModel(0.01f, 10f, particle.interval, 2, 0.1f, false) {
+            {
+                setAbsoluteMaximum(100f);
+            }
+        }, Messages.get(this, "interval"), 9);
         interval.addChangeListener(() -> {
             particle.interval = SpinnerFloatModel.convertToFloat((Integer) interval.getValue(), 2);
             updateObj();
@@ -120,7 +125,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
     protected void updateObj() {
 
         if (emitter != null) {
-            emitter.start(Speck.factory(obj.type), obj.interval, obj.quantity);
+            emitter.start(obj.createFactory(), obj.interval, obj.quantity);
             EditorScene.updateParticle(obj.particleID());
         }
 
@@ -190,6 +195,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
                 Speck.RATTLE,
                 Speck.BONE,
 
+                CustomParticle.WIND_PARTICLE,
                 Speck.WOOL,
                 Speck.ROCK,
                 Speck.BUBBLE,

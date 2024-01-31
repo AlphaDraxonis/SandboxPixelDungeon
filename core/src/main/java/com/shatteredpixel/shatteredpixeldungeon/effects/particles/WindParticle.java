@@ -37,6 +37,7 @@ public class WindParticle extends PixelParticle {
 			((WindParticle)emitter.recycle( WindParticle.class )).reset( x, y );
 		}
 	};
+	public static final float INTERVAL = 2.5f;
 	
 	private static float angle = Random.Float( PointF.PI2 );
 	private static PointF speed = new PointF().polar( angle, 5 );
@@ -85,7 +86,7 @@ public class WindParticle extends PixelParticle {
 			PointF p = DungeonTilemap.tileToWorld( pos );
 			pos(p.x, p.y, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
 			
-			pour(FACTORY, 2.5f);
+			pour(FACTORY, INTERVAL);
 		}
 		
 		@Override

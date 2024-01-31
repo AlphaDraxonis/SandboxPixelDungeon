@@ -322,21 +322,21 @@ public final class EditorUtilies {
         //TODO take logic from heroselectscene to center remaining
 
         for (Component c : comps) {
-            if (c != null) c.setSize(widthOnePart, -1);
+            if (c != null && c.visible) c.setSize(widthOnePart, -1);
         }
         float maxCompHeight = 0;
         for (Component c : comps) {
-            if (c != null && c.height() > maxCompHeight) maxCompHeight = c.height();
+            if (c != null && c.visible && c.height() > maxCompHeight) maxCompHeight = c.height();
         }
         for (Component c : comps) {
-            if (c != null) c.setSize(widthOnePart, maxCompHeight);
+            if (c != null && c.visible) c.setSize(widthOnePart, maxCompHeight);
         }
 
         float posY = parent.top() + parent.height() + gap * 2 - 1;
         float posX = parent.left();
         int indexInRow = 0;
         for (Component c : comps) {
-            if (c != null) {
+            if (c != null && c.visible) {
 
                 if (c instanceof ParagraphIndicator) {
                     if (indexInRow == 0) continue;

@@ -58,6 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StringInputComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
@@ -232,7 +233,11 @@ public enum Tiles {
 
         @Override
         public Image getCategoryImage() {
-            return Icons.TALENT.get();
+            Speck icon = new Speck();
+            icon.image(Speck.LIGHT);
+            icon.origin.set(0, 0);
+            icon.scale.set(1.8f);
+            return icon;
         }
     }
 
@@ -246,7 +251,6 @@ public enum Tiles {
         bag.items.add(new TileBag("door", DOOR.terrains));
         bag.items.add(new TileBag("other", SPECIAL.terrains));
         bag.items.add(customTileBag = new CustomTileBag());
-        bag.items.add(particleBag = new ParticleBag());
 
         wallBag.items.add(2, new BarrierItem(new Barrier(-1)));
 
@@ -261,9 +265,11 @@ public enum Tiles {
                 PermaGas.PParalyticGas.class,
                 PermaGas.PStenchGas.class,
                 PermaGas.PSmokeScreen.class,
+                PermaGas.PStormCloud.class,
                 PermaGas.PElectricity.class,
-                Foliage.class,
-                PermaGas.PStormCloud.class));
+                Foliage.class));
+
+        bag.items.add(particleBag = new ParticleBag());
     }
 
     private static final Map<String, CustomTileLoader.UserCustomTile> ownCustomTiles = new HashMap<>();

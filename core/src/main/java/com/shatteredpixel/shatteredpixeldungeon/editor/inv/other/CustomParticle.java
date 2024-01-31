@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.other;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
@@ -9,7 +8,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ParticleActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.particles.Emitter;
@@ -19,6 +20,10 @@ import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
 public class CustomParticle extends Blob {
+
+    public static final int WIND_PARTICLE = 1001;
+    public static final int FLOW_PARTICLE = 1002;
+
 
     public int particleID;
     private ParticleProperty properties;
@@ -38,7 +43,7 @@ public class CustomParticle extends Blob {
     @Override
     public void use(BlobEmitter emitter) {
         super.use(emitter);
-        if (properties != null) emitter.start(Speck.factory(properties.type), properties.interval, properties.quantity);
+        if (properties != null) emitter.start(properties.createFactory(), properties.interval, properties.quantity);
     }
 
     public boolean removeOnEnter() {
@@ -115,12 +120,28 @@ public class CustomParticle extends Blob {
         }
 
         public Image getSprite() {
+            if (type > 1000) return new ItemSprite();
             Speck icon = new Speck();
             icon.image(type);
             icon.scale.set(1.5f);//16/7=2.28
             return icon;
         }
 
+        public void setPredefinedInterval(int type) {
+            if (type == WIND_PARTICLE) {
+//                interval = WindParticle.INTERVAL;
+            }
+        }
+
+        public Emitter.Factory createFactory() {
+            if (type > 1000) {
+                switch (type) {
+                    case WIND_PARTICLE: return WindParticle.FACTORY;
+                    case FLOW_PARTICLE: return FlowParticle.FACTORY;
+                }
+                return Speck.factory(0);
+            } else return Speck.factory(type);
+        }
     }
 
     public static ParticleProperty createNewParticle(ParticleProperty template) {
