@@ -205,6 +205,7 @@ public class TalentsPane extends ScrollPane {
 			int usedStars = Dungeon.hero.talentPointsSpent(tier);
 			for (int i = 0; i < totStars; i++){
 				Image im = new Speck().image(Speck.STAR);
+				im.resetColor();
 				stars.add(im);
 				add(im);
 				if (i >= openStars && i < (openStars + usedStars)){

@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.effects;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
@@ -104,7 +103,7 @@ public class Speck extends Image {
 		left = lifespan = Float.POSITIVE_INFINITY;
 		this.type = -1;
 
-		resetColor();
+//		resetColor();
 		scale.set( 1 );
 		speed.set( 0 );
 		acc.set( 0 );
@@ -387,22 +386,6 @@ public class Speck extends Image {
 		}
 		
 		left = lifespan;
-	}
-
-	public static boolean isHighFrequency(int type, float interval) {
-		float lifespan;
-		if (type > 1000) {
-			if (type == CustomParticle.WIND_PARTICLE) lifespan = 1f;
-			if (type == CustomParticle.FLOW_PARTICLE) lifespan = 0.6f;
-			else lifespan = 1f;
-		} else {
-			Speck speck = new Speck();
-			speck.reset(0, 0, 0, type);
-			lifespan = speck.lifespan;
-			speck.destroy();
-			speck.killAndErase();
-		}
-		return lifespan > interval * 4;
 	}
 	
 	@Override

@@ -1793,12 +1793,12 @@ public abstract class Level implements Bundlable {
 			return;
 		}
 
-		if (ch == Dungeon.hero) {
-			for (CustomParticle particle : Dungeon.level.particles.values()) {
-				if (particle != null && particle.cur != null && particle.cur[ch.pos] > 0 && particle.removeOnEnter()) {
-					particle.volume -= particle.cur[ch.pos];
-					particle.cur[ch.pos] = 0;
-				}
+		int setValue = ch == Dungeon.hero ? CustomParticle.HERO_JUST_ENTERED : CustomParticle.CHAR_JUST_ENTERED;
+		for (CustomParticle particle : Dungeon.level.particles.values()) {
+			if (particle != null && particle.cur != null
+					&& particle.cur[ch.pos] > CustomParticle.CELL_INACTIVE && particle.cur[ch.pos] != CustomParticle.HERO_JUST_ENTERED) {
+				particle.volume += setValue - particle.cur[ch.pos];
+				particle.cur[ch.pos] = setValue;
 			}
 		}
 

@@ -169,6 +169,10 @@ public abstract class DungeonTilemap extends Tilemap {
 		return new PointF( pos % Dungeon.level.width(), pos / Dungeon.level.width()  ).scale( SIZE );
 	}
 
+	public static int pointToTile(float x, float y) {
+		return (int) (y / SIZE) * Dungeon.level.width() + (int) (x / SIZE);
+	}
+
 	public static PointF tileCenterToWorld( int pos ) {
 		return new PointF(
 			(pos % Dungeon.level.width() + 0.5f) * SIZE,

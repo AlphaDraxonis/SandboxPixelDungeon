@@ -56,7 +56,6 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Ripple;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -933,8 +932,7 @@ public class GameScene extends PixelScene {
 
 	private void addParticleSprite(final CustomParticle particle) {
 		if (particle.emitter == null) {
-			CustomParticle.ParticleProperty p = Dungeon.customDungeon.particles.get(particle.particleID);
-			gases.add(Speck.isHighFrequency(p.type, p.interval) ? new BlobEmitter(particle) : new CustomParticle.ParticleEmitter(particle));
+			gases.add(new CustomParticle.ParticleEmitter(particle));
 		}
 	}
 	
@@ -1099,7 +1097,7 @@ public class GameScene extends PixelScene {
 			ripple.reset(pos);
 			return ripple;
 		} else {
-			return null;
+			return EditorScene.ripple( pos );
 		}
 	}
 	
@@ -1109,14 +1107,12 @@ public class GameScene extends PixelScene {
 	
 	public static synchronized Emitter emitter() {
 
-		if (CustomDungeon.isEditing()) return EditorScene.emitter();
-
 		if (scene != null) {
 			Emitter emitter = (Emitter)scene.emitters.recycle( Emitter.class );
 			emitter.revive();
 			return emitter;
 		} else {
-			return null;
+			return EditorScene.emitter();
 		}
 	}
 

@@ -1,8 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.other;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ParticleActionPart;
@@ -10,6 +12,8 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Image;
@@ -23,6 +27,7 @@ public class CustomParticle extends Blob {
 
     public static final int WIND_PARTICLE = 1001;
     public static final int FLOW_PARTICLE = 1002;
+    public static final int WATER_SPLASH_PARTICLE = 1003;
 
 
     public int particleID;
@@ -50,6 +55,10 @@ public class CustomParticle extends Blob {
         return properties == null || properties.removeOnEnter;
     }
 
+    private boolean alwaysEmitting() {
+        return properties == null || properties.alwaysEmitting;
+    }
+
     private static final String PARTICLE_ID = "particle_id";
 
     @Override
@@ -74,6 +83,7 @@ public class CustomParticle extends Blob {
         public int quantity = 0;
 
         public boolean removeOnEnter = false;
+        public boolean alwaysEmitting = true;
 
         private int id = 0;
 
@@ -82,6 +92,7 @@ public class CustomParticle extends Blob {
         private static final String INTERVAL = "interval";
         private static final String QUANTITY = "quantity";
         private static final String REMOVE_ON_ENTER = "remove_on_enter";
+        private static final String ALWAYS_EMITTING = "always_emitting";
         private static final String ID = "id";
 
 
@@ -95,6 +106,7 @@ public class CustomParticle extends Blob {
             interval = bundle.getFloat(INTERVAL);
             quantity = bundle.getInt(QUANTITY);
             removeOnEnter = bundle.getBoolean(REMOVE_ON_ENTER);
+            alwaysEmitting = bundle.getBoolean(ALWAYS_EMITTING);
         }
 
         @Override
@@ -107,6 +119,7 @@ public class CustomParticle extends Blob {
             bundle.put(INTERVAL, interval);
             bundle.put(QUANTITY, quantity);
             bundle.put(REMOVE_ON_ENTER, removeOnEnter);
+            bundle.put(ALWAYS_EMITTING, alwaysEmitting);
         }
 
         public int particleID() {
@@ -120,9 +133,13 @@ public class CustomParticle extends Blob {
         }
 
         public Image getSprite() {
-            if (type > 1000) return new ItemSprite();
+            if (type > 1000) {
+                if (type == WATER_SPLASH_PARTICLE) return new ItemSprite(Assets.Environment.WATER_SEWERS, new TileItem(Terrain.WATER, -1));
+                return new ItemSprite();
+            }
             Speck icon = new Speck();
             icon.image(type);
+            if (type == Speck.DISCOVER) icon.resetColor();
             icon.scale.set(1.5f);//16/7=2.28
             return icon;
         }
@@ -138,6 +155,7 @@ public class CustomParticle extends Blob {
                 switch (type) {
                     case WIND_PARTICLE: return WindParticle.FACTORY;
                     case FLOW_PARTICLE: return FlowParticle.FACTORY;
+                    case WATER_SPLASH_PARTICLE: return SPLASH_FACTORY;
                 }
                 return Speck.factory(0);
             } else return Speck.factory(type);
@@ -204,10 +222,11 @@ public class CustomParticle extends Blob {
     }
 
 
-    public void updateEmitterAtCell(int cell) {
-        ParticleEmitter emitter = (ParticleEmitter) this.emitter;
-        emitter.updateCell(cell);
-    }
+    //this order is important!
+    public static final int CELL_INACTIVE = 0;
+    public static final int CELL_ACTIVE = 1;
+    public static final int HERO_JUST_ENTERED = 2;
+    public static final int CHAR_JUST_ENTERED = 3;
 
     public static class ParticleEmitter extends BlobEmitter {
 
@@ -232,15 +251,38 @@ public class CustomParticle extends Blob {
         protected void updateCell(int cell) {
             if (cell < Dungeon.level.heroFOV.length
                     && (Dungeon.level.heroFOV[cell] || particle.alwaysVisible || Dungeon.hero == null)
-                    && particle.cur[cell] > 0) {
+                    && particle.cur[cell] > (particle.alwaysEmitting() || Dungeon.hero == null ? 0 : 1)) {
+
+                boolean heroJustEnteredCell = particle.cur[cell] == HERO_JUST_ENTERED;
+                boolean charJustEnteredCell = particle.cur[cell] >= HERO_JUST_ENTERED;
+                int valueOnEmitterKill = particle.removeOnEnter() ? particle.cur[cell] - HERO_JUST_ENTERED : CELL_ACTIVE;
+
+                if (heroJustEnteredCell) {
+                    particle.volume += CELL_ACTIVE - particle.cur[cell];
+                    particle.cur[cell] = CELL_ACTIVE;
+                }
 
                 CellEmitter emitter;
                 if (emitters[cell] == null) {
                     emitter = emitters[cell] = new CellEmitter();
                     emitter.setPos(cell);
                     emitter.particle = particle;
-                    emitter.start(factory, interval, quantity);
                     add(emitter);
+                } else if (!emitters[cell].alive) {
+                    emitter = emitters[cell];
+                    emitter.revive();
+                } else {
+                    if (particle.removeOnEnter() && heroJustEnteredCell) {
+                        emitter = emitters[cell];
+                    }
+                    else return;
+                }
+                if (particle.removeOnEnter() && heroJustEnteredCell) {
+                    emitter.valueOnKill = valueOnEmitterKill;
+                    emitter.start(factory, interval, quantity == 0 ? Math.max(1, (int) (1.2f / interval)) : quantity);
+                } else {
+                    emitter.valueOnKill = CELL_ACTIVE;
+                    emitter.start(factory, interval, charJustEnteredCell && quantity == 0 ? Math.max(1, (int) (1.2f / interval)) : quantity);
                 }
             }
         }
@@ -282,16 +324,32 @@ public class CustomParticle extends Blob {
 
             @Override
             protected void emit(int index) {
-                if (pos < particle.cur.length && particle.cur[pos] > 0) {
+                if (pos < particle.cur.length && particle.cur[pos] > CELL_INACTIVE) {
                     if (Dungeon.level.heroFOV[pos] || Dungeon.hero == null) {
                         float x = Random.Float(BlobEmitter.bound.left, BlobEmitter.bound.right) * DungeonTilemap.SIZE;
                         float y = Random.Float(BlobEmitter.bound.top, BlobEmitter.bound.bottom) * DungeonTilemap.SIZE;
                         factory.emit(this, index, x + this.x, y + this.y);
                     }
-                }
+                } else on = false;
+            }
+
+            int valueOnKill;
+            @Override
+            public synchronized void kill() {
+                super.kill();
+                particle.volume += valueOnKill - particle.cur[pos];
+                particle.cur[pos] = valueOnKill;
             }
         }
 
     }
+
+    private static final Emitter.Factory SPLASH_FACTORY = new Emitter.Factory() {
+        @Override
+        public void emit(Emitter emitter, int index, float x, float y) {
+            int cell = DungeonTilemap.pointToTile(x, y);
+            GameScene.ripple(cell);
+        }
+    };
 
 }

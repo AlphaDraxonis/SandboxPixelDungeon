@@ -32,6 +32,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
     protected StyledSpinner interval;
     protected StyledSpinner quantity;
     protected StyledCheckBox removeOnEnter;
+    protected StyledCheckBox showOnlyOnEnter;
 
     public EditParticleComp(CustomParticle.ParticleProperty particle) {
         super(particle);
@@ -68,9 +69,9 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
         });
         add(type);
 
-        interval = new StyledSpinner(new SpinnerFloatModel(0.01f, 10f, particle.interval, 2, 0.1f, false) {
+        interval = new StyledSpinner(new SpinnerFloatModel(0.01f, 20f, particle.interval, 2, 0.1f, false) {
             {
-                setAbsoluteMaximum(100f);
+                setAbsoluteMaximum(250f);
             }
         }, Messages.get(this, "interval"), 9);
         interval.addChangeListener(() -> {
@@ -93,6 +94,11 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
         removeOnEnter.addChangeListener(v -> particle.removeOnEnter = v);
         add(removeOnEnter);
 
+        showOnlyOnEnter = new StyledCheckBox(Messages.get(this, "show_only_on_enter"));
+        showOnlyOnEnter.checked(!particle.alwaysEmitting);
+        showOnlyOnEnter.addChangeListener(v -> particle.alwaysEmitting = !v);
+        add(showOnlyOnEnter);
+
         rename.visible = true;
 
         updateObj();
@@ -104,7 +110,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
         emitter.x = x + width * 0.5f;
         emitter.y = height() + y + DungeonTilemap.SIZE/2;
         height += DungeonTilemap.SIZE*2;
-        layoutCompsInRectangles(type, interval, quantity, removeOnEnter);
+        layoutCompsInRectangles(type, interval, quantity, removeOnEnter, showOnlyOnEnter);
     }
 
     protected String createTitleText() {
@@ -199,6 +205,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
                 Speck.WOOL,
                 Speck.ROCK,
                 Speck.BUBBLE,
+                CustomParticle.WATER_SPLASH_PARTICLE,
                 Speck.COIN,
 
                 Speck.TOXIC,

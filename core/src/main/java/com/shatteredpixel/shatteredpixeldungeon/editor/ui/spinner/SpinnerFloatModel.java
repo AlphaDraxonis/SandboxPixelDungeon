@@ -46,19 +46,20 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
         return getValue() == null ? super.getDisplayString() : String.format(Languages.getCurrentLocale(), precisionFormat, getAsFloat());
     }
 
+    @Override
+    public void setAbsoluteMinimum(float absoluteMinimum) {
+        super.setAbsoluteMinimum(convertToInt(absoluteMinimum, precision));
+    }
 
-//    @Override
-//    public void setAbsoluteMinimum(float absoluteMinimum) {
-//        super.setAbsoluteMinimum((float) convertToInt(absoluteMinimum, precision));
-//    }
-//
-//    @Override
-//    public void setAbsoluteMaximum(float absoluteMaxmimum) {
-//        super.setAbsoluteMaximum((float) convertToInt(absoluteMaxmimum, precision));
-//    }
+    @Override
+    public void setAbsoluteMaximum(float absoluteMaxmimum) {
+        super.setAbsoluteMaximum(convertToInt(absoluteMaxmimum, precision));
+    }
 
     @Override
     public void displayInputAnyNumberDialog(float min, float max) {
+        min = convertToFloat((int) min, precision);
+        max = convertToFloat((int) max, precision);
         WndSetValue.enterFloat(min, max, convertToFloat((int) getValue(), precision), precision,
                 Messages.get(this, "input_dialog_title"),
                 Messages.get(this, "input_dialog_body",
