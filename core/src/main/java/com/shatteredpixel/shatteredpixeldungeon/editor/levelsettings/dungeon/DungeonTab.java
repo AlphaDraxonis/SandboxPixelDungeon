@@ -3,7 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipeList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
@@ -108,7 +108,7 @@ public class DungeonTab extends MultiWindowTabComp {
                 changeContent(crl.createTitle(), crl, crl.getOutsideSp(), 0f, 0.5f);
             }
         };
-        customRecipes.icon(new ItemSprite(EditorScene.customLevel().tilesTex(), new TileItem(Terrain.ALCHEMY, -1)));
+        customRecipes.icon(new TileSprite(Terrain.ALCHEMY));
         content.add(customRecipes);
 
         view2d = new StyledCheckBox(Messages.get(DungeonTab.class, "enable_2d")){

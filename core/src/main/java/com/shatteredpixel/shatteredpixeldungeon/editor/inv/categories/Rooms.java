@@ -1,8 +1,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.RoomItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
@@ -117,15 +117,15 @@ public enum Rooms {
     public Image getImage() {
         switch (Rooms.this) {
             case SEWER:
-                return new ItemSprite(Assets.Environment.TILES_SEWERS, new TileItem(Terrain.EMPTY_SP, -1));
+                return new TileSprite(Assets.Environment.TILES_SEWERS, Terrain.EMPTY_SP);
             case PRISON:
-                return new ItemSprite(Assets.Environment.TILES_PRISON, new TileItem(Terrain.EMPTY_SP, -1));
+                return new TileSprite(Assets.Environment.TILES_PRISON, Terrain.EMPTY_SP);
             case CAVES:
-                return new ItemSprite(Assets.Environment.TILES_CAVES, new TileItem(Terrain.EMPTY_SP, -1));
+                return new TileSprite(Assets.Environment.TILES_CAVES, Terrain.EMPTY_SP);
             case CITY:
-                return new ItemSprite(Assets.Environment.TILES_CITY, new TileItem(Terrain.EMPTY_SP, -1));
+                return new TileSprite(Assets.Environment.TILES_CITY, Terrain.EMPTY_SP);
             case HALLS:
-                return new ItemSprite(Assets.Environment.TILES_HALLS, new TileItem(Terrain.EMPTY_SP, -1));
+                return new TileSprite(Assets.Environment.TILES_HALLS, Terrain.EMPTY_SP);
             case STANDART:
                 return new ItemSprite();
             case SPECIAL:

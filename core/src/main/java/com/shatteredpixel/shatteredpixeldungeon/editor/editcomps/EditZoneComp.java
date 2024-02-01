@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffListContainer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
@@ -102,7 +103,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         StyledCheckBox destroyWalls = new StyledCheckBox(Messages.get(EditZoneComp.class, "destroy_walls"));
         destroyWalls.checked(zone.canDestroyWalls);
         destroyWalls.addChangeListener(v -> zone.canDestroyWalls = v);
-        destroyWalls.icon(new ItemSprite(EditorScene.customLevel().tilesTex(), new TileItem(Terrain.WALL, -1)));
+        destroyWalls.icon(new TileSprite(Terrain.WALL));
 
         StyledCheckBox blocksVision = new StyledCheckBox(Messages.get(EditZoneComp.class, "blocks_vision"));
         blocksVision.checked(zone.blocksVision);
@@ -135,8 +136,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
                 }
                 return Messages.NO_TEXT_FOUND;
             }
-        }, Messages.get(EditZoneComp.class, "grass_label"), 9,
-                new ItemSprite(EditorScene.customLevel().tilesTex(), new TileItem(Terrain.HIGH_GRASS, -1)));
+        }, Messages.get(EditZoneComp.class, "grass_label"), 9, new TileSprite(Terrain.HIGH_GRASS));
         grassVisuals.addChangeListener(() -> zone.setGrassType((Zone.GrassType) grassVisuals.getValue()));
 
         StyledButton mobRotation = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditTileComp.class, "mob_rotation"), 9) {
@@ -175,7 +175,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
                 if (value == null) return Messages.get(Zone.class, "none_zone");
                 return super.getAsString(value);
             }
-        }, Messages.get(EditZoneComp.class, "chasm_dest") + ":", 9, new ItemSprite(EditorScene.customLevel().tilesTex(), new TileItem(Terrain.CHASM, -1)));
+        }, Messages.get(EditZoneComp.class, "chasm_dest") + ":", 9, new TileSprite(Terrain.CHASM));
         chasmDest.addChangeListener(() -> zone.chasmDestZone = (String) chasmDest.getValue());
         chasmDest.enable(chasm != null);
 

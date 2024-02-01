@@ -23,9 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
@@ -43,7 +40,6 @@ import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.NoosaScript;
-import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.PointF;
@@ -79,24 +75,8 @@ public class ItemSprite extends MovieClip {
     protected float shadowHeight = 0.25f;
     protected float shadowOffset = 0.5f;
 
-    protected boolean isTile = false, usesWater = false;
-    private String textureString;
-
     public ItemSprite() {
         this(ItemSpriteSheet.SOMETHING, null);
-    }
-
-    //Dont use (If you have a tileItem as an Item, you also have to cast it to use this constructor!!)
-    public ItemSprite(TileItem tileItem) {
-        this(EditorScene.customLevel().tilesTex(), tileItem);
-        textureString = null;
-    }
-    public ItemSprite(String tilesTexture, TileItem tileItem) {
-        super(tilesTexture);
-        isTile = true;
-        textureString = tilesTexture;
-        if (tileItem != null && tileItem.image() >= 0) view(tileItem);
-        else visible = false;
     }
 
     public ItemSprite(Heap heap) {
@@ -207,17 +187,6 @@ public class ItemSprite extends MovieClip {
     }
 
     public ItemSprite view(Item item) {
-        isTile = item instanceof TileItem;
-        if (isTile) {
-            boolean newVal = ((TileItem) item).terrainType() == Terrain.WATER;
-            if (newVal != usesWater) {
-                if (textureString == null) {
-                    if (newVal) texture(EditorScene.customLevel().waterTex());
-                    else texture(EditorScene.customLevel().tilesTex());
-                }
-                usesWater = newVal;
-            }
-        }
         view(item.image(), item.glowing());
         Emitter emitter = item.emitter();
         if (emitter != null && parent != null) {
@@ -229,7 +198,6 @@ public class ItemSprite extends MovieClip {
     }
 
     public ItemSprite view(Heap heap) {
-
         if (heap.size() <= 0 || heap.items == null) {
             return view(0, null);
         }
@@ -268,22 +236,12 @@ public class ItemSprite extends MovieClip {
     }
 
     public void frame(int image) {
+        frame( ItemSpriteSheet.film.get( image ));
 
-        if(usesWater){
-            frame(0, 0, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
-            return;
-        }
-
-        TextureFilm tf = isTile ?
-                CustomLevel.getTextureFilm(textureString == null ? EditorScene.customLevel().tilesTex() : textureString)
-                : ItemSpriteSheet.film;
-
-        frame(tf.get(image));
-
-        float height = tf.height(image);
+        float height = ItemSpriteSheet.film.height( image );
         //adds extra raise to very short items, so they are visible
-        if (height < 8f) {
-            perspectiveRaise = (5 + 8 - height) / 16f;
+        if (height < 8f){
+            perspectiveRaise =  (5 + 8 - height) / 16f;
         }
     }
 

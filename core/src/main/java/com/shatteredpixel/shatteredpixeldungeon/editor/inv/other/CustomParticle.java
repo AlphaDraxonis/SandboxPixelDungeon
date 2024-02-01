@@ -3,8 +3,8 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.other;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ParticleActionPart;
@@ -134,7 +134,7 @@ public class CustomParticle extends Blob {
 
         public Image getSprite() {
             if (type > 1000) {
-                if (type == WATER_SPLASH_PARTICLE) return new ItemSprite(Assets.Environment.WATER_SEWERS, new TileItem(Terrain.WATER, -1));
+                if (type == WATER_SPLASH_PARTICLE) return new TileSprite(Assets.Environment.WATER_SEWERS, Terrain.WATER);
                 return new ItemSprite();
             }
             Speck icon = new Speck();
