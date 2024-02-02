@@ -47,7 +47,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
 
     protected StyledCheckBox visible, active;
-    protected StyledCheckBox searchable, revealedWhenTriggered, disarmedByActivation;
+    protected StyledCheckBox searchable, searchableByMagic, revealedWhenTriggered, disarmedByActivation;
     protected StyledButton gatewayTelePos;
     protected Spinner pitfallRadius, pitfallDelay;
     protected ItemContainer<MobItem> summonMobs;
@@ -93,7 +93,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
         } else {
 
-            visible = new StyledCheckBox(Messages.get(EditTrapComp.class, "visible"));
+            visible = new StyledCheckBox(Messages.get(this, "visible"));
             visible.icon(new BuffIcon(BuffIndicator.FORESIGHT, true));
             visible.checked(obj.visible);
             visible.addChangeListener(v -> {
@@ -102,7 +102,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             });
             add(visible);
 
-            active = new StyledCheckBox(Messages.get(EditTrapComp.class, "active"));
+            active = new StyledCheckBox(Messages.get(this, "active"));
             active.icon(EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.RING_ACCURACY));
             active.icon().scale.set(ItemSpriteSheet.SIZE / active.icon().width());
             active.checked(obj.active);
@@ -113,7 +113,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             });
             add(active);
 
-            searchable = new StyledCheckBox(Messages.get(EditTrapComp.class, "searchable"));
+            searchable = new StyledCheckBox(Messages.get(this, "searchable"));
             searchable.icon(Icons.MAGNIFY.get());
             searchable.icon().scale.set(ItemSpriteSheet.SIZE / searchable.icon().width());
             searchable.checked(obj.canBeSearched);
@@ -123,7 +123,17 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             });
             add(searchable);
 
-            revealedWhenTriggered = new StyledCheckBox(Messages.get(EditTrapComp.class, "revealed_when_triggered"));
+            searchableByMagic = new StyledCheckBox(Messages.get(this, "searchable_by_magic"));
+            searchableByMagic.icon(EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_MAGICMAP));
+            searchableByMagic.icon().scale.set(ItemSpriteSheet.SIZE / searchableByMagic.icon().width());
+            searchableByMagic.checked(obj.canBeSearchedByMagic);
+            searchableByMagic.addChangeListener(v -> {
+                obj.canBeSearchedByMagic = v;
+                updateObj();
+            });
+            add(searchableByMagic);
+
+            revealedWhenTriggered = new StyledCheckBox(Messages.get(this, "revealed_when_triggered"));
             revealedWhenTriggered.checked(obj.revealedWhenTriggered);
             revealedWhenTriggered.addChangeListener(v -> {
                 obj.revealedWhenTriggered = v;
@@ -131,7 +141,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             });
             add(revealedWhenTriggered);
 
-            disarmedByActivation = new StyledCheckBox(Messages.get(EditTrapComp.class, "disarmed_by_activation"));
+            disarmedByActivation = new StyledCheckBox(Messages.get(this, "disarmed_by_activation"));
             disarmedByActivation.icon(new ItemSprite(ItemSpriteSheet.STONE_DISARM));
             disarmedByActivation.checked(obj.disarmedByActivation);
             disarmedByActivation.addChangeListener(v -> {
@@ -155,8 +165,8 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                     }
                 };
                 gatewayTelePos.multiline = true;
-                if (telePos == -1) gatewayTelePos.text(Messages.get(EditTrapComp.class, "gateway_trap_random"));
-                else gatewayTelePos.text(Messages.get(EditTrapComp.class, "gateway_trap_pos", EditorUtilies.cellToString(telePos)));
+                if (telePos == -1) gatewayTelePos.text(Messages.get(this, "gateway_trap_random"));
+                else gatewayTelePos.text(Messages.get(this, "gateway_trap_pos", EditorUtilies.cellToString(telePos)));
                 add(gatewayTelePos);
 
             }
@@ -215,9 +225,20 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             }
         }
 
-        comps = new Component[]{visible, active, gatewayTelePos, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                pitfallDelay, pitfallRadius, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                searchable, revealedWhenTriggered, disarmedByActivation};
+        if (PixelScene.landscape()) {
+            comps = new Component[]{
+                    visible, active, disarmedByActivation,
+                    pitfallDelay, pitfallRadius, revealedWhenTriggered,
+                    searchable, searchableByMagic};
+        } else {
+            comps = new Component[]{
+                    visible, active,
+                    pitfallDelay, pitfallRadius,
+                    searchable, searchableByMagic,
+                    revealedWhenTriggered, disarmedByActivation};
+        }
+
+
     }
 
     @Override

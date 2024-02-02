@@ -242,7 +242,7 @@ public class ElementalBlast extends ArmorAbility {
 									}
 
 									int terr = Dungeon.level.map[c];
-									if ((Terrain.flags[terr] & Terrain.SECRET) != 0) {
+									if ((Terrain.flags[terr] & Terrain.SECRET) != 0 && Dungeon.level.secret[c]) {
 
 										Dungeon.level.discover(c);
 

@@ -337,8 +337,10 @@ public class CustomParticle extends Blob {
             @Override
             public synchronized void kill() {
                 super.kill();
-                particle.volume += valueOnKill - particle.cur[pos];
-                particle.cur[pos] = valueOnKill;
+                if (particle.cur[pos] > CELL_INACTIVE) {
+                    particle.volume += valueOnKill - particle.cur[pos];
+                    particle.cur[pos] = valueOnKill;
+                }
             }
         }
 

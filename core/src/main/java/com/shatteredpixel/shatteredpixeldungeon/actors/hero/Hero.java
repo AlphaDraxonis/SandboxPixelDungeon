@@ -2382,7 +2382,7 @@ public class Hero extends Char {
 						Dungeon.level.mapped[curr] = true;
 					}
 					
-					if (Dungeon.level.secret[curr]){
+					if (Dungeon.level.secret[curr] || Dungeon.level.map[curr] == Terrain.SECRET_TRAP){
 						
 						Trap trap = Dungeon.level.traps.get( curr );
 						float chance;

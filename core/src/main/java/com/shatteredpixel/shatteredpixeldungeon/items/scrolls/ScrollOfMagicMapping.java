@@ -57,7 +57,7 @@ public class ScrollOfMagicMapping extends Scroll {
 			if (discoverable[i]) {
 				
 				mapped[i] = true;
-				if ((Terrain.flags[terr] & Terrain.SECRET) != 0) {
+				if ((Terrain.flags[terr] & Terrain.SECRET) != 0 && Dungeon.level.secret[i]) {
 					
 					Dungeon.level.discover( i );
 					

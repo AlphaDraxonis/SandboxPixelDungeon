@@ -1431,6 +1431,12 @@ public abstract class Level implements Bundlable {
 			if (barrier.blocksAllies()) passableAlly[barrier.pos] = false;
 		}
 
+		for (Trap trap : traps.values()) {
+			if (!trap.canBeSearchedByMagic && map[trap.pos] == Terrain.SECRET_TRAP) {
+				secret[trap.pos] = false;
+			}
+		}
+
         //an open space is large enough to fit large mobs. A space is open when it is not solid
         // and there is an open corner with both adjacent cells opens
         int l = length();
@@ -1606,6 +1612,11 @@ public abstract class Level implements Bundlable {
 		level.avoid[cell]			= (flags & Terrain.AVOID) != 0;
 		level.pit[cell]			    = (flags & Terrain.PIT) != 0;
 		level.water[cell]			= terrain == Terrain.WATER;
+
+		Trap trap = level.traps.get(cell);
+		if (trap != null && !trap.canBeSearchedByMagic && level.map[trap.pos] == Terrain.SECRET_TRAP) {
+			level.secret[trap.pos] = false;
+		}
 
         for (int i : PathFinder.NEIGHBOURS9) {
             i = cell + i;

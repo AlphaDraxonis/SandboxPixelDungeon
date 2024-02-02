@@ -64,6 +64,7 @@ public abstract class Trap implements Bundlable {
 	public boolean active = true;
 	public boolean disarmedByActivation = true;
 	public boolean revealedWhenTriggered = true;
+	public boolean canBeSearchedByMagic = true;//e.g. using SoMapping or WandOfPrismaticLight
 
 	public boolean canBeHidden = true;
 	public boolean canBeSearched = true;
@@ -137,6 +138,7 @@ public abstract class Trap implements Bundlable {
 	private static final String ACTIVE = "active";
 	private static final String DISARMED_BY_ACTIVATION = "disarmed_by_activation";
 	private static final String CAN_BE_SEARCHED = "can_be_searched";
+	private static final String CAN_BE_SEARCHED_BY_MAGIC = "can_be_searched_by_magic";
 	private static final String REVEALED_WHEN_TRIGGERED = "revealed_when_triggered";
 
 	@Override
@@ -148,6 +150,7 @@ public abstract class Trap implements Bundlable {
 		}
 		if (bundle.contains(DISARMED_BY_ACTIVATION)) disarmedByActivation = bundle.getBoolean(DISARMED_BY_ACTIVATION);
 		if (bundle.contains(CAN_BE_SEARCHED)) canBeSearched = bundle.getBoolean(CAN_BE_SEARCHED);
+		if (bundle.contains(CAN_BE_SEARCHED_BY_MAGIC)) canBeSearchedByMagic = bundle.getBoolean(CAN_BE_SEARCHED_BY_MAGIC);
 		if (bundle.contains(REVEALED_WHEN_TRIGGERED)) revealedWhenTriggered = bundle.getBoolean(REVEALED_WHEN_TRIGGERED);
 	}
 
@@ -161,6 +164,8 @@ public abstract class Trap implements Bundlable {
 			bundle.put(DISARMED_BY_ACTIVATION, disarmedByActivation);
 		if (canBeSearched != defaultObj.canBeSearched)
 			bundle.put(CAN_BE_SEARCHED, canBeSearched);
+		if (canBeSearchedByMagic != defaultObj.canBeSearchedByMagic)
+			bundle.put(CAN_BE_SEARCHED_BY_MAGIC, canBeSearchedByMagic);
 		if (revealedWhenTriggered != defaultObj.revealedWhenTriggered)
 			bundle.put(REVEALED_WHEN_TRIGGERED, revealedWhenTriggered);
 	}
