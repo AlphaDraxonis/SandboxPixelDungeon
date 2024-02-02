@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -976,11 +977,13 @@ public class Dungeon {
 
             if (hero.buff(MindVision.class) != null) {
                 for (Mob m : level.mobs.toArray(new Mob[0])) {
-                    BArray.or(level.visited, level.heroFOV, m.pos - 1 - level.width(), 3, level.visited);
-                    BArray.or(level.visited, level.heroFOV, m.pos - 1, 3, level.visited);
-                    BArray.or(level.visited, level.heroFOV, m.pos - 1 + level.width(), 3, level.visited);
-                    //updates adjacent cells too
-                    GameScene.updateFog(m.pos, 2);
+                    if (Mimic.isLikeMob(m)) {
+                        BArray.or(level.visited, level.heroFOV, m.pos - 1 - level.width(), 3, level.visited);
+                        BArray.or(level.visited, level.heroFOV, m.pos - 1, 3, level.visited);
+                        BArray.or(level.visited, level.heroFOV, m.pos - 1 + level.width(), 3, level.visited);
+                        //updates adjacent cells too
+                        GameScene.updateFog(m.pos, 2);
+                    }
                 }
             }
 

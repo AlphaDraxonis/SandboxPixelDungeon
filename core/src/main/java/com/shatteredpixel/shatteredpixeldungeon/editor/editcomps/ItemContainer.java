@@ -225,7 +225,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         if (sp != null) ((ScrollPane) sp).givePointerPriority();
     }
 
-    protected void showWndEditItemComp(Slot slot, Item item) {
+    protected void showWndEditItemComp(Slot slot, Item item) {//tzz
         EditorScene.show(new EditCompWindow(item, editComp == null ? null : editComp.advancedListPaneItem) {
             @Override
             protected void onUpdate() {

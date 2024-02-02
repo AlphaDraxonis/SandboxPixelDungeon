@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditBuffComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.watabou.noosa.Image;
@@ -15,9 +16,10 @@ public class BuffItem extends EditorItem<Buff> {
         this.obj = buff;
     }
 
+    public static EditMobComp editMobComp;
     @Override
     public DefaultEditComp<?> createEditComponent() {
-        return new EditBuffComp(getObject(), null);
+        return new EditBuffComp(getObject(), editMobComp);
     }
 
     @Override

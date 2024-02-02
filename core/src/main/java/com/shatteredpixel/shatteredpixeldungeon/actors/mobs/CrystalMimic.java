@@ -80,11 +80,13 @@ public class CrystalMimic extends Mimic {
 						break;
 					}
 				}
+				if (desc == null && !items.isEmpty())
+					desc = Messages.get(this, "crystal_chest_desc", Messages.get(Heap.class, "sth"));
 			}
 			if (desc == null) {
-				desc = Messages.get(Heap.class, "locked_chest_desc");
+				desc = Messages.get(Heap.class, "crystal_chest_desc_none");
 			}
-			return desc + "\n\n" + Messages.get(this, "hidden_hint");
+			return superHidden ? desc : desc + "\n\n" + Messages.get(this, "hidden_hint");
 		} else {
 			return super.description();
 		}
@@ -96,6 +98,7 @@ public class CrystalMimic extends Mimic {
 		if (alignment == Alignment.NEUTRAL) {
 			alignment = Alignment.ENEMY;
 			int dmg = super.damageRoll();
+			if (superHidden) dmg *= 3;
 			alignment = Alignment.NEUTRAL;
 			return dmg;
 		} else {

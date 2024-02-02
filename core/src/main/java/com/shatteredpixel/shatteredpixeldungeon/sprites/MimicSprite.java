@@ -27,7 +27,8 @@ import com.watabou.noosa.TextureFilm;
 
 public class MimicSprite extends MobSprite {
 
-	private Animation hiding;
+    private Animation hiding, superHiding;
+	public boolean superHidden;
 
 	{
 		//adjust shadow slightly to account for 1 empty bottom pixel (used for border while hiding)
@@ -64,6 +65,9 @@ public class MimicSprite extends MobSprite {
 		die = new Animation( 5, false );
 		die.frames( frames, 9+c, 10+c, 11+c );
 
+		superHiding = new Animation( 0, true );
+		superHiding.frames( frames, 12+c);
+
 		play( idle );
 	}
 	
@@ -76,7 +80,7 @@ public class MimicSprite extends MobSprite {
 	}
 
 	public void hideMimic(){
-		play(hiding);
+		play(superHidden ? superHiding : hiding);
 		hideSleep();
 	}
 

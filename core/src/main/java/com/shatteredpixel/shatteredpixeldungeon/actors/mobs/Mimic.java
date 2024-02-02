@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -66,15 +67,18 @@ public class Mimic extends Mob implements MobBasedOnDepth {
     }
 
     public ArrayList<Item> items;
+    public boolean superHidden = false;//if not distinguishable from chests; still takes occupies one cell
 
     private static final String LEVEL = "level";
     private static final String ITEMS = "items";
+    private static final String SUPER_HIDDEN = "super_hidden";
 
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         if (items != null) bundle.put(ITEMS, items);
         bundle.put(LEVEL, level);
+        bundle.put(SUPER_HIDDEN, superHidden);
     }
 
     @SuppressWarnings("unchecked")
@@ -89,6 +93,15 @@ public class Mimic extends Mob implements MobBasedOnDepth {
         if (state != PASSIVE && alignment == Alignment.NEUTRAL) {
             alignment = Alignment.ENEMY;
         }
+        superHidden = bundle.getBoolean(SUPER_HIDDEN);
+    }
+
+    public boolean isLikeChest() {
+        return superHidden && state == PASSIVE;
+    }
+
+    public static boolean isLikeMob(Char ch) {
+        return !(ch instanceof Mimic) || !((Mimic) ch).isLikeChest();
     }
 
     @Override
@@ -116,10 +129,17 @@ public class Mimic extends Mob implements MobBasedOnDepth {
     @Override
     public String description() {
         if (alignment == Alignment.NEUTRAL && customDesc == null) {
-            return Messages.get(Heap.class, "chest_desc") + "\n\n" + Messages.get(this, "hidden_hint");
+            return Messages.get(Heap.class, "chest_desc")
+                    + (superHidden ? "" : "\n\n" + Messages.get(this, "hidden_hint"));
         } else {
             return super.description();
         }
+    }
+
+    @Override
+    public String info() {
+        if (!CustomDungeon.isEditing() && isLikeChest()) return description();
+        return super.info();
     }
 
     @Override
@@ -137,6 +157,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
     @Override
     public CharSprite sprite() {
         MimicSprite sprite = (MimicSprite) super.sprite();
+        sprite.superHidden = superHidden;
         if (alignment == Alignment.NEUTRAL && state == PASSIVE) sprite.hideMimic();
         return sprite;
     }
@@ -199,6 +220,9 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 	}public void stopHiding() {
         state = HUNTING;
         if (sprite != null) sprite.idle();
+        for (Buff b : buffs(ChampionEnemy.class)) {
+            b.fx(true);
+        }
         if (Actor.chars().contains(this) && Dungeon.level.heroFOV[pos]) {
             enemy = Dungeon.hero;
             target = Dungeon.hero.pos;
@@ -211,7 +235,9 @@ public class Mimic extends Mob implements MobBasedOnDepth {
     @Override
     public int damageRoll() {
         if (alignment == Alignment.NEUTRAL) {
-            return (int) (Random.NormalIntRange(2 + 2 * level, 2 + 2 * level) * statsScale);
+            int dmg = Random.NormalIntRange(2 + 2 * level, 2 + 2 * level);
+            if (superHidden) dmg *= 3;
+            return (int) (dmg * statsScale);
         } else {
             return (int) (Random.NormalIntRange(1 + level, 2 + 2 * level) * statsScale);
         }

@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -131,6 +132,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private StyledCheckBox spawnQuestRoom;
     private ItemSelectorList<Item> blacksmithQuestRewards;
 
+    private StyledCheckBox mimicSuperHidden;
     private StyledSpinner sentryRange, sentryDelay;
     private StyledSpinner abilityCooldown;
     private ItemContainer<MobItem> summonMobs;
@@ -168,6 +170,14 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 }
             };
             add(mimicItems);
+
+            mimicSuperHidden = new StyledCheckBox(label("mimic_super_hidden"));
+            mimicSuperHidden.checked(((Mimic) mob).superHidden);
+            mimicSuperHidden.addChangeListener(v -> {
+                ((Mimic) mob).superHidden = v;
+                updateObj();
+            });
+            add(mimicSuperHidden);
         }
 
         if (mob instanceof ItemSelectables.WeaponSelectable) {
@@ -684,6 +694,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
             if (!(mob instanceof Pylon || mob instanceof CrystalSpire)) {
 
+                BuffItem.editMobComp = this;
+
                 List<BuffItem> asBuffItems = new ArrayList<>();
                 for (Buff b : mob.buffs()) {
                     asBuffItems.add(new BuffItem(b));
@@ -705,7 +717,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     @Override
                     protected Buff doAddBuff(Class<? extends Buff> buff) {
                         Buff b = Buff.affect(mob, buff);
-                        b.permanent = true;
+                        b.permanent = !(b instanceof ChampionEnemy);
                         updateObj();
                         return b;
                     }
@@ -714,6 +726,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     protected void doRemoveBuff(Buff buff) {
                         buff.detach();
                         updateObj();
+                    }
+
+                    @Override
+                    public synchronized void destroy() {
+                        super.destroy();
+                        BuffItem.editMobComp = null;
                     }
                 };
                 add(buffs);
@@ -751,7 +769,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
                 mobWeapon, mobArmor, mobRing, mobArti, mobMisc, thiefItem,
                 lotusLevelSpinner, sheepLifespan, sentryRange, sentryDelay,
-                dm300destroyWalls,
+                mimicSuperHidden, dm300destroyWalls,
 
                 tenguPhase,
 
@@ -816,6 +834,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
             if (obj instanceof Mimic) {
                 MimicSprite sprite = (MimicSprite) ((MobTitleEditor) title).image;
+                sprite.superHidden = ((Mimic) obj).superHidden;
                 if (obj.state != obj.PASSIVE) sprite.idle();
                 else sprite.hideMimic();
             }
@@ -853,6 +872,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (obj instanceof Mimic) {
+            ((MimicSprite) obj.sprite).superHidden = ((Mimic) obj).superHidden;
             if (obj.state != obj.PASSIVE) obj.sprite.idle();
             else ((MimicSprite) obj.sprite).hideMimic();
         }
@@ -914,6 +934,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (!EditItemComp.areEqual(((Thief) a).item, ((Thief) b).item)) return false;
         }
         if (a instanceof Mimic) {
+            if (((Mimic) a).superHidden != ((Mimic) b).superHidden) return false;
             if (!EditItemComp.isItemListEqual(((Mimic) a).items, ((Mimic) b).items)) return false;
         }
         if (a instanceof YogDzewa) {

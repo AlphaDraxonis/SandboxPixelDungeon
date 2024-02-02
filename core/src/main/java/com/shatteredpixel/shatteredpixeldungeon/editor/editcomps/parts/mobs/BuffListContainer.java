@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
@@ -35,7 +36,7 @@ public abstract class BuffListContainer extends ItemContainerWithLabel<BuffItem>
                 ChooseOneInCategoriesBody.BtnRow[] ret = new ChooseOneInCategoriesBody.BtnRow[category.length];
                 for (int i = 0; i < ret.length; i++) {
                     Buff b = Reflection.newInstance((Class<? extends Buff>) category[i]);
-                    b.permanent = true;//for desc
+                    b.permanent = !(b instanceof ChampionEnemy);//for desc
                     ret[i] = new ChooseOneInCategoriesBody.BtnRow(b.name(), b.desc(), new BuffIcon(b, true)) {
                         @Override
                         protected void onClick() {

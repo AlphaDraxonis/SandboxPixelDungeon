@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
@@ -270,7 +271,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
     private static Image createIcon(int indexTab) {
         switch (indexTab) {
             case 1:
-                return new ItemSprite(new TileItem(Terrain.EMPTY, -1));
+                return new TileSprite(Terrain.EMPTY);
             case 2:
                 return new SkeletonSprite();
             case 3:

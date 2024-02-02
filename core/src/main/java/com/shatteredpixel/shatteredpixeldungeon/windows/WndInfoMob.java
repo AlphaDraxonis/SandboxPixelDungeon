@@ -21,7 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -34,12 +36,11 @@ import com.watabou.noosa.ui.Component;
 public class WndInfoMob extends WndTitledMessage {
 
     public WndInfoMob(Mob mob) {
-        this(mob, true);
+        this(mob, Mimic.isLikeMob(mob));
     }
 
     public WndInfoMob(Mob mob, boolean includeHealthBar) {
         super(new MobTitle(mob, includeHealthBar), mob.info());
-
     }
 
     public static class MobTitle extends Component {
@@ -66,6 +67,7 @@ public class WndInfoMob extends WndTitledMessage {
             }
 
             buffs = createBuffIndicator(mob, false);
+            buffs.visible = CustomDungeon.isEditing() || Mimic.isLikeMob(mob);
             add(buffs);
         }
 
