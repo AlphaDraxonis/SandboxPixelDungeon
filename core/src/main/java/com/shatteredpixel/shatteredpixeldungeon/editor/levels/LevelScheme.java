@@ -107,6 +107,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public boolean hungerDepletion = true, naturalRegeneration = true;
     public boolean allowPickaxeMining = false;
     public boolean rememberLayout = true;
+    public boolean magicMappingDisabled = false;
 
     public Class<? extends Builder> builder;
 
@@ -664,6 +665,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String SHOP_PRICE_MULTIPLIER = "shop_price_multiplier";
     private static final String ALLOW_PICKAXE_MINING = "allow_pickaxe_mining";
     private static final String REMEMBER_LAYOUT = "remember_layout";
+    private static final String MAGIC_MAPPING_DISABLED = "magic_mapping_disabled";
 
     private static final String MOBS_TO_SPAWN = "mobs_to_spawn";
     private static final String ROOMS_TO_SPAWN = "rooms_to_spawn";
@@ -704,6 +706,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(SHOP_PRICE_MULTIPLIER, shopPriceMultiplier);
         bundle.put(ALLOW_PICKAXE_MINING, allowPickaxeMining);
         bundle.put(REMEMBER_LAYOUT, rememberLayout);
+        bundle.put(MAGIC_MAPPING_DISABLED, magicMappingDisabled);
 
         bundle.put(SPAWN_TORCH_IF_DARKNESS, spawnTorchIfDarkness);
         bundle.put(REDUCE_VIEW_DISTANCE_IF_DARKNESS, reduceViewDistanceIfDarkness);
@@ -761,6 +764,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         shopPriceMultiplier = bundle.getFloat(SHOP_PRICE_MULTIPLIER);
         allowPickaxeMining = bundle.getBoolean(ALLOW_PICKAXE_MINING);
         rememberLayout = !bundle.contains(REMEMBER_LAYOUT) || bundle.getBoolean(REMEMBER_LAYOUT);
+        magicMappingDisabled = bundle.getBoolean(MAGIC_MAPPING_DISABLED);
 
         spawnTorchIfDarkness = bundle.getBoolean(SPAWN_TORCH_IF_DARKNESS);
         reduceViewDistanceIfDarkness = bundle.getBoolean(REDUCE_VIEW_DISTANCE_IF_DARKNESS);

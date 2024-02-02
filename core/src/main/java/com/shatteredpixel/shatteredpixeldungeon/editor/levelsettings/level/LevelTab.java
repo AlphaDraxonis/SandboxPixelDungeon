@@ -48,7 +48,7 @@ public class LevelTab extends MultiWindowTabComp {
         StyledButton mobSpawn;
         Spinner viewDistance, depth, shopPrice;
         StyledButton changeSize;
-        StyledCheckBox hungerDepletion, naturalRegen, allowPickaxeMining, rememberLayout;
+        StyledCheckBox hungerDepletion, naturalRegen, allowPickaxeMining, rememberLayout, magicMappingDisabled;
         StyledButton bossLevelRetexture;
         StyledButton levelColoring;
 
@@ -135,11 +135,24 @@ public class LevelTab extends MultiWindowTabComp {
             }
         };
         Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_MAGICMAP);
-        icon.scale.set(DungeonTilemap.SIZE /Math.max(icon.width(), icon.height()));
+        icon.scale.set(DungeonTilemap.SIZE / Math.max(icon.width(), icon.height()));
         rememberLayout.icon(icon);
         rememberLayout.checked(level.levelScheme.rememberLayout);
         rememberLayout.addChangeListener(v -> level.levelScheme.rememberLayout = v);
         content.add(rememberLayout);
+
+        magicMappingDisabled = new StyledCheckBox(Messages.get(this, "magic_mapping_disabled")) {
+            @Override
+            protected int textSize() {
+                return 8;
+            }
+        };
+        icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_MAGICMAP);
+        icon.scale.set(DungeonTilemap.SIZE / Math.max(icon.width(), icon.height()));
+        magicMappingDisabled.icon(icon);
+        magicMappingDisabled.checked(level.levelScheme.magicMappingDisabled);
+        magicMappingDisabled.addChangeListener(v -> level.levelScheme.magicMappingDisabled = v);
+        content.add(magicMappingDisabled);
 
         changeSize = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(ChangeMapSize.class, "title"), 8) {
 
@@ -210,7 +223,7 @@ public class LevelTab extends MultiWindowTabComp {
         mainWindowComps = new Component[]{
                 region, mobSpawn, changeSize,
                 hungerDepletion, naturalRegen, allowPickaxeMining, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                depth, viewDistance, shopPrice, rememberLayout, levelColoring, bossLevelRetexture
+                depth, viewDistance, shopPrice, rememberLayout, magicMappingDisabled, levelColoring, bossLevelRetexture
         };
     }
 

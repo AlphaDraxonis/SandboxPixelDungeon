@@ -331,7 +331,12 @@ public class SideControlPane extends Component {
                     final Hero oldUser = curUser;
                     curUser = Dungeon.hero;
                     anonymize();
-                    doRead();
+                    if (Dungeon.level.levelScheme.magicMappingDisabled) {
+                        Dungeon.level.levelScheme.magicMappingDisabled = false;
+                        doRead();
+                        Dungeon.level.levelScheme.magicMappingDisabled = true;
+                    }
+                    else doRead();
                     curUser = oldUser;
                 }
             };

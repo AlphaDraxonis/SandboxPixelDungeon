@@ -42,6 +42,15 @@ public class ScrollOfMagicMapping extends Scroll {
 	@Override
 	public void doRead() {
 
+		if (Dungeon.level.levelScheme.magicMappingDisabled) {
+			if (!isIdentified()) {
+				detach(curUser.belongings.backpack);
+				identify();
+			}
+			GLog.i( Messages.get(this, "disabled") );
+			return;
+		}
+
 		detach(curUser.belongings.backpack);
 		int length = Dungeon.level.length();
 		int[] map = Dungeon.level.map;
