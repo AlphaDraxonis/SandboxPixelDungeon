@@ -201,7 +201,7 @@ public class FogOfWar extends Image {
 							|| (!visible[cell] && !visited[cell] && !mapped[cell])) {
 						//we skip filling cells here if it isn't a full update
 						// because they must already be dark
-						if (fullUpdate)
+						if (fullUpdate || !Dungeon.level.levelScheme.rememberLayout)
 							fillCell(fog, j, i, FOG_COLORS[INVISIBLE][brightness]);
 						cell++;
 						continue;

@@ -111,49 +111,34 @@ public class DungeonTab extends MultiWindowTabComp {
         customRecipes.icon(new TileSprite(Terrain.ALCHEMY));
         content.add(customRecipes);
 
-        view2d = new StyledCheckBox(Messages.get(DungeonTab.class, "enable_2d")){
-            @Override
-            public void checked(boolean value) {
-                super.checked(value);
-                Dungeon.customDungeon.view2d = value;
-            }
-
+        view2d = new StyledCheckBox(Messages.get(DungeonTab.class, "enable_2d")) {
             @Override
             protected int textSize() {
                 return 8;
             }
         };
         view2d.checked(Dungeon.customDungeon.view2d);
+        view2d.addChangeListener(v -> Dungeon.customDungeon.view2d = v);
         content.add(view2d);
 
-        seeLevelOnDeath = new StyledCheckBox(Messages.get(DungeonTab.class, "see_level_on_death")){
-            @Override
-            public void checked(boolean value) {
-                super.checked(value);
-                Dungeon.customDungeon.seeLevelOnDeath = value;
-            }
-
+        seeLevelOnDeath = new StyledCheckBox(Messages.get(DungeonTab.class, "see_level_on_death")) {
             @Override
             protected int textSize() {
                 return 8;
             }
         };
         seeLevelOnDeath.checked(Dungeon.customDungeon.seeLevelOnDeath);
+        seeLevelOnDeath.addChangeListener(v -> Dungeon.customDungeon.seeLevelOnDeath = v);
         content.add(seeLevelOnDeath);
 
-        autoRevealSecrets = new StyledCheckBox(Messages.get(DungeonTab.class, "reveal_secrets")){
-            @Override
-            public void checked(boolean value) {
-                super.checked(value);
-                Dungeon.customDungeon.notRevealSecrets = !value;
-            }
-
+        autoRevealSecrets = new StyledCheckBox(Messages.get(DungeonTab.class, "reveal_secrets")) {
             @Override
             protected int textSize() {
                 return 8;
             }
         };
         autoRevealSecrets.checked(!Dungeon.customDungeon.notRevealSecrets);
+        autoRevealSecrets.addChangeListener(v -> Dungeon.customDungeon.notRevealSecrets = !v);
         content.add(autoRevealSecrets);
 
         mainWindowComps = new Component[]{potionColors, scrollRunes, ringGems, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,

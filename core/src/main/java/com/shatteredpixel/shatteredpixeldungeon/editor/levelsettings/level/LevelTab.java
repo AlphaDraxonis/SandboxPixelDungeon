@@ -22,6 +22,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
@@ -40,20 +41,20 @@ public class LevelTab extends MultiWindowTabComp {
 
         super.createChildren(params);
 
-        title = new IconTitle(Icons.get(Icons.PREFS), Messages.get(LevelTab.class, "title"));
+        title = new IconTitle(Icons.get(Icons.PREFS), Messages.get(this, "title"));
         add(title);
 
         StyledButton region;
         StyledButton mobSpawn;
         Spinner viewDistance, depth, shopPrice;
         StyledButton changeSize;
-        StyledCheckBox hungerDepletion, naturalRegen, allowPickaxeMining;
+        StyledCheckBox hungerDepletion, naturalRegen, allowPickaxeMining, rememberLayout;
         StyledButton bossLevelRetexture;
         StyledButton levelColoring;
 
         final CustomLevel level = EditorScene.customLevel();
 
-        region = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "region"), 8) {
+        region = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "region"), 8) {
             @Override
             protected void onClick() {
                 ChangeRegion changeRegion = new ChangeRegion(() -> closeCurrentSubMenu());
@@ -63,7 +64,7 @@ public class LevelTab extends MultiWindowTabComp {
         region.icon(Icons.get(Icons.CHANGES));
         content.add(region);
 
-        mobSpawn = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "mobs"), 8) {
+        mobSpawn = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "mobs"), 8) {
             @Override
             protected void onClick() {
                 MobSettings ms = new MobSettings();
@@ -73,7 +74,7 @@ public class LevelTab extends MultiWindowTabComp {
         mobSpawn.icon(new GnollSprite());
         content.add(mobSpawn);
 
-        hungerDepletion = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "hunger")) {
+        hungerDepletion = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "hunger")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -89,7 +90,7 @@ public class LevelTab extends MultiWindowTabComp {
         hungerDepletion.icon(new ItemSprite(ItemSpriteSheet.RATION));
         content.add(hungerDepletion);
 
-        naturalRegen = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "regeneration")) {
+        naturalRegen = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "regeneration")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -111,7 +112,7 @@ public class LevelTab extends MultiWindowTabComp {
         }
         content.add(naturalRegen);
 
-        allowPickaxeMining = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(LevelTab.class, "mining")) {
+        allowPickaxeMining = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "mining")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
@@ -126,6 +127,19 @@ public class LevelTab extends MultiWindowTabComp {
         allowPickaxeMining.checked(level.levelScheme.allowPickaxeMining);
         allowPickaxeMining.icon(new ItemSprite(ItemSpriteSheet.PICKAXE));
         content.add(allowPickaxeMining);
+
+        rememberLayout = new StyledCheckBox(Messages.get(this, "remember_level_layout")) {
+            @Override
+            protected int textSize() {
+                return 8;
+            }
+        };
+        Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_MAGICMAP);
+        icon.scale.set(DungeonTilemap.SIZE /Math.max(icon.width(), icon.height()));
+        rememberLayout.icon(icon);
+        rememberLayout.checked(level.levelScheme.rememberLayout);
+        rememberLayout.addChangeListener(v -> level.levelScheme.rememberLayout = v);
+        content.add(rememberLayout);
 
         changeSize = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(ChangeMapSize.class, "title"), 8) {
 
@@ -196,7 +210,7 @@ public class LevelTab extends MultiWindowTabComp {
         mainWindowComps = new Component[]{
                 region, mobSpawn, changeSize,
                 hungerDepletion, naturalRegen, allowPickaxeMining, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                depth, viewDistance, shopPrice,  levelColoring, bossLevelRetexture
+                depth, viewDistance, shopPrice, rememberLayout, levelColoring, bossLevelRetexture
         };
     }
 
