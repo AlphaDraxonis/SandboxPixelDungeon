@@ -63,6 +63,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobBasedOnDepth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
@@ -2088,20 +2089,24 @@ public abstract class Level implements Bundlable {
 			Dungeon.hero.mindVisionEnemies.clear();
 			if (c.buff( MindVision.class ) != null) {
 				for (Mob mob : mobs) {
-					for (int i : PathFinder.NEIGHBOURS9) {
-						int cell = mob.pos + i;
-						if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;
+					if (Mimic.isLikeMob(mob)) {
+						for (int i : PathFinder.NEIGHBOURS9) {
+							int cell = mob.pos + i;
+							if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;
+						}
 					}
 				}
 			} else if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES)) {
 				Hero h = (Hero) c;
 				int range = 1+h.pointsInTalent(Talent.HEIGHTENED_SENSES);
 				for (Mob mob : mobs) {
-					int p = mob.pos;
-					if (!fieldOfView[p] && distance(c.pos, p) <= range) {
-						for (int i : PathFinder.NEIGHBOURS9) {
-							int cell = mob.pos + i;
-							if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;
+					if (Mimic.isLikeMob(mob)) {
+						int p = mob.pos;
+						if (!fieldOfView[p] && distance(c.pos, p) <= range) {
+							for (int i : PathFinder.NEIGHBOURS9) {
+								int cell = mob.pos + i;
+								if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;
+							}
 						}
 					}
 				}
@@ -2147,7 +2152,7 @@ public abstract class Level implements Bundlable {
 
 			//set mind vision chars
 			for (Mob mob : mobs) {
-				if (heroMindFov[mob.pos] && (!fieldOfView[mob.pos] || mob.invisible > 0)){
+				if (heroMindFov[mob.pos] && (!fieldOfView[mob.pos] || mob.invisible > 0) && Mimic.isLikeMob(mob)){
 					Dungeon.hero.mindVisionEnemies.add(mob);
 				}
 			}
@@ -2231,6 +2236,8 @@ public abstract class Level implements Bundlable {
 				return Messages.get(Level.class, CustomDungeon.showHiddenDoors() ? "hidden_crystal_wall_name" : "wall_name");
 			case Terrain.DOOR:
 				return Messages.get(Level.class, "closed_door_name");
+			case Terrain.MIMIC_DOOR:
+				return Messages.get(Level.class, CustomDungeon.showHiddenDoors() ? "mimic_door_name" : "closed_door_name");
 			case Terrain.OPEN_DOOR:
 				return Messages.get(Level.class, "open_door_name");
 			case Terrain.ENTRANCE:
@@ -2299,6 +2306,9 @@ public abstract class Level implements Bundlable {
 			case Terrain.HIGH_GRASS:
 			case Terrain.FURROWED_GRASS:
 				return Messages.get(Level.class, "high_grass_desc");
+			case Terrain.MIMIC_DOOR:
+				if (CustomDungeon.showHiddenDoors()) return Messages.get(Level.class, "mimic_door_desc");
+				else return "";
 			case Terrain.COIN_DOOR:
 				return Messages.get(Level.class, "coin_door_desc");
 			case Terrain.LOCKED_DOOR:
@@ -2342,6 +2352,7 @@ public abstract class Level implements Bundlable {
 			case Terrain.EXIT:
 			case Terrain.UNLOCKED_EXIT: return "exit";
 			case Terrain.EMBERS: return "embers";
+			case Terrain.MIMIC_DOOR: return "mimic_door";
 			case Terrain.COIN_DOOR: return "coin_door";
 			case Terrain.CRYSTAL_DOOR: return "crystal_door";
 			case Terrain.LOCKED_DOOR: return "locked_door";

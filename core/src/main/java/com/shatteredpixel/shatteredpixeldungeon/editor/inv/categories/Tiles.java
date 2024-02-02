@@ -19,6 +19,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.HIGH_GRASS
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.INACTIVE_TRAP;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_EXIT;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.MIMIC_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.MINE_BOULDER;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.MINE_CRYSTAL;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.OPEN_DOOR;
@@ -98,7 +99,7 @@ public enum Tiles {
 
     EMPTY(Terrain.EMPTY, EMPTY_DECO, WATER, GRASS, HIGH_GRASS, FURROWED_GRASS, EMPTY_SP, PEDESTAL, EMBERS),
     WALL(Terrain.WALL, WALL_DECO, BOOKSHELF, BARRICADE, STATUE, STATUE_SP, CHASM),
-    DOOR(Terrain.DOOR, OPEN_DOOR, LOCKED_DOOR, CRYSTAL_DOOR, SECRET_DOOR, SECRET_LOCKED_DOOR, SECRET_CRYSTAL_DOOR, COIN_DOOR, LOCKED_EXIT, UNLOCKED_EXIT),
+    DOOR(Terrain.DOOR, OPEN_DOOR, LOCKED_DOOR, CRYSTAL_DOOR, SECRET_DOOR, SECRET_LOCKED_DOOR, SECRET_CRYSTAL_DOOR, COIN_DOOR, LOCKED_EXIT, UNLOCKED_EXIT, MIMIC_DOOR),
     SPECIAL(ENTRANCE, EXIT, EMPTY_WELL, WELL, ALCHEMY, SIGN, MINE_CRYSTAL, MINE_BOULDER);
 
     public final int[] terrains;

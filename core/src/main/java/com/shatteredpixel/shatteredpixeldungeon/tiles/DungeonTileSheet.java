@@ -114,6 +114,7 @@ public class DungeonTileSheet {
 		chasmStitcheable.put( Terrain.WALL,         CHASM_WALL );
 		chasmStitcheable.put( Terrain.DOOR,         CHASM_WALL );
 		chasmStitcheable.put( Terrain.OPEN_DOOR,    CHASM_WALL );
+		chasmStitcheable.put( Terrain.MIMIC_DOOR,   CHASM_WALL );
 		chasmStitcheable.put( Terrain.COIN_DOOR,    CHASM_WALL );
 		chasmStitcheable.put( Terrain.LOCKED_DOOR,  CHASM_WALL );
 		chasmStitcheable.put( Terrain.SECRET_DOOR,  CHASM_WALL );
@@ -145,7 +146,7 @@ public class DungeonTileSheet {
 			Terrain.TRAP, Terrain.INACTIVE_TRAP, Terrain.EMPTY_DECO,
 			Terrain.SIGN, Terrain.SIGN_SP, Terrain.CUSTOM_DECO, Terrain.WELL, Terrain.STATUE,
 			Terrain.ALCHEMY, Terrain.CUSTOM_DECO_EMPTY, Terrain.MINE_CRYSTAL, Terrain.MINE_BOULDER,
-			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.COIN_DOOR, Terrain.LOCKED_DOOR, Terrain.CRYSTAL_DOOR
+			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.MIMIC_DOOR, Terrain.COIN_DOOR, Terrain.LOCKED_DOOR, Terrain.CRYSTAL_DOOR
 	));
 	public static HashSet<Integer> waterStitcheableWithSecretDoor = new HashSet<>(Arrays.asList(
 			Terrain.EMPTY, Terrain.GRASS, Terrain.EMPTY_WELL,
@@ -154,7 +155,7 @@ public class DungeonTileSheet {
 			Terrain.TRAP, Terrain.INACTIVE_TRAP, Terrain.EMPTY_DECO,
 			Terrain.SIGN, Terrain.SIGN_SP, Terrain.CUSTOM_DECO, Terrain.WELL, Terrain.STATUE,
 			Terrain.ALCHEMY, Terrain.CUSTOM_DECO_EMPTY, Terrain.MINE_CRYSTAL, Terrain.MINE_BOULDER,
-			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.COIN_DOOR, Terrain.LOCKED_DOOR, Terrain.CRYSTAL_DOOR,
+			Terrain.DOOR, Terrain.OPEN_DOOR, Terrain.MIMIC_DOOR, Terrain.COIN_DOOR, Terrain.LOCKED_DOOR, Terrain.CRYSTAL_DOOR,
 			Terrain.SECRET_DOOR, Terrain.SECRET_LOCKED_DOOR, Terrain.SECRET_CRYSTAL_DOOR
 	));
 
@@ -289,6 +290,7 @@ public class DungeonTileSheet {
 		if (wallStitcheable(below))             return RAISED_DOOR_SIDEWAYS;
 		else if (tile == Terrain.DOOR)          return DungeonTileSheet.RAISED_DOOR;
 		else if (tile == Terrain.OPEN_DOOR)     return DungeonTileSheet.RAISED_DOOR_OPEN;
+		else if (tile == Terrain.MIMIC_DOOR)    return DungeonTileSheet.RAISED_DOOR;
 		else if (tile == Terrain.COIN_DOOR)     return DungeonTileSheet.RAISED_DOOR_COIN;
 		else if (tile == Terrain.LOCKED_DOOR)   return DungeonTileSheet.RAISED_DOOR_LOCKED;
 		else if (tile == Terrain.CRYSTAL_DOOR)  return DungeonTileSheet.RAISED_DOOR_CRYSTAL;
@@ -297,7 +299,7 @@ public class DungeonTileSheet {
 	}
 
 	private static int[] doorTiles = new int[]{
-			Terrain.DOOR, Terrain.LOCKED_DOOR, Terrain.COIN_DOOR, Terrain.CRYSTAL_DOOR, Terrain.OPEN_DOOR
+			Terrain.DOOR, Terrain.LOCKED_DOOR, Terrain.MIMIC_DOOR, Terrain.COIN_DOOR, Terrain.CRYSTAL_DOOR, Terrain.OPEN_DOOR
 	};
 
 	public static boolean doorTile(int tile){
@@ -371,6 +373,7 @@ public class DungeonTileSheet {
 		int visual;
 		if (tile == Terrain.OPEN_DOOR)                              visual = DOOR_SIDEWAYS_OVERHANG;
 		else if (tile == Terrain.DOOR)                              visual = DOOR_SIDEWAYS_OVERHANG_CLOSED;
+		else if (tile == Terrain.MIMIC_DOOR)                        visual = DOOR_SIDEWAYS_OVERHANG_CLOSED;
 		else if (tile == Terrain.COIN_DOOR)                         visual = DOOR_SIDEWAYS_OVERHANG_COIN;
 		else if (tile == Terrain.LOCKED_DOOR)                       visual = DOOR_SIDEWAYS_OVERHANG_LOCKED;
 		else if (tile == Terrain.CRYSTAL_DOOR)                      visual = DOOR_SIDEWAYS_OVERHANG_CRYSTAL;
@@ -462,7 +465,8 @@ public class DungeonTileSheet {
 		directFlatVisuals.put(Terrain.WALL,             FLAT_WALL);
 		directFlatVisuals.put(Terrain.DOOR,             FLAT_DOOR);
 		directFlatVisuals.put(Terrain.OPEN_DOOR,        FLAT_DOOR_OPEN);
-		directFlatVisuals.put(Terrain.COIN_DOOR, FLAT_DOOR_COIN);
+		directFlatVisuals.put(Terrain.MIMIC_DOOR, 		FLAT_DOOR);
+		directFlatVisuals.put(Terrain.COIN_DOOR, 		FLAT_DOOR_COIN);
 		directFlatVisuals.put(Terrain.LOCKED_DOOR,      FLAT_DOOR_LOCKED);
 		directFlatVisuals.put(Terrain.CRYSTAL_DOOR,     FLAT_DOOR_CRYSTAL);
 		directFlatVisuals.put(Terrain.WALL_DECO,        FLAT_WALL_DECO);

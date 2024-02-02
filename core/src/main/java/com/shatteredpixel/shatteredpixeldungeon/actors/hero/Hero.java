@@ -841,6 +841,9 @@ public class Hero extends Char {
 			} else if (curAction instanceof HeroAction.Alchemy) {
 				actResult = actAlchemy( (HeroAction.Alchemy)curAction );
 
+			} else if (curAction instanceof HeroAction.FightMimicDoor) {
+				actResult = actFightMimicDoor( (HeroAction.FightMimicDoor)curAction );
+
 			} else if (curAction instanceof HeroAction.ReadSign) {
 				actResult = actReadSign((HeroAction.ReadSign) curAction);
 
@@ -1015,6 +1018,30 @@ public class Hero extends Char {
 			}
 
 			Game.runOnRenderThread(() -> GameScene.show(new WndMessage(sign.text)));
+
+			return false;
+
+		} else if (getCloser( dst )) {
+
+			return true;
+
+		} else {
+			ready();
+			return false;
+		}
+	}
+
+	private boolean actFightMimicDoor(HeroAction.FightMimicDoor action){
+		int dst = action.dst;
+		if (Dungeon.level.distance(dst, pos) <= 1) {
+
+			ready();
+
+			damage(Random.NormalIntRange(4 + 2 * Dungeon.depth, 4 + 4 * Dungeon.depth), Mimic.class);
+			Sample.INSTANCE.play(Assets.Sounds.MIMIC);
+			GLog.w(Messages.get(this, "mimic_door"));
+
+			spend(TICK);
 
 			return false;
 
@@ -1752,9 +1779,13 @@ public class Hero extends Char {
 		Heap heap = Dungeon.level.heaps.get( cell );
 
 		if (Dungeon.level.map[cell] == Terrain.ALCHEMY && cell != pos) {
-			
-			curAction = new HeroAction.Alchemy( cell );
-			
+
+			curAction = new HeroAction.Alchemy(cell);
+
+		} else if (Dungeon.level.map[cell] == Terrain.MIMIC_DOOR && cell != pos) {
+
+			curAction = new HeroAction.FightMimicDoor( cell );
+
 		} else if (TileItem.isSignTerrainCell(Dungeon.level.map[cell]) && cell != pos) {
 
 			curAction = new HeroAction.ReadSign(cell);

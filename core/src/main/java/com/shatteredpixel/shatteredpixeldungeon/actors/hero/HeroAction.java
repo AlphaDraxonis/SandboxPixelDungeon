@@ -93,4 +93,10 @@ public class HeroAction {
 			this.target = target;
 		}
 	}
+
+	public static class FightMimicDoor extends HeroAction {
+		public FightMimicDoor( int target ) {
+			this.dst = target;
+		}
+	}
 }
