@@ -20,6 +20,7 @@ import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WELL;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
@@ -180,12 +181,13 @@ public class TileItem extends EditorItem {
                 CustomTilemap customTilemap;
                 if ((customTilemap = CustomTileItem.findCustomTileAt(cell, newCustomTileIsWall)) != null || forceChange)
                     init(oldTerrain, terrainType, cell,
-                            level.traps.get(cell), level.plants.get(cell), customTilemap, newCustomTileIsWall);
+                            level.traps.get(cell), level.plants.get(cell), Dungeon.level.getCoinDoorCost(cell), customTilemap, newCustomTileIsWall);
                 moreActions = null;
                 return; //no need to continue bc nothing changes at all
             }
             init(oldTerrain, terrainType, cell,
-                    level.traps.get(cell), level.plants.get(cell), CustomTileItem.findCustomTileAt(cell, newCustomTileIsWall), newCustomTileIsWall);
+                    level.traps.get(cell), level.plants.get(cell), terrainType == Terrain.COIN_DOOR ? CoinDoor.costInInventory : Dungeon.level.getCoinDoorCost(cell),
+                    CustomTileItem.findCustomTileAt(cell, newCustomTileIsWall), newCustomTileIsWall);
 
             moreActions = new ActionPartList();
 
@@ -206,7 +208,7 @@ public class TileItem extends EditorItem {
                     defaultTransition = Level.SURFACE.equals(defaultBelowOrAbove) ? new LevelTransition(level, cell, LevelTransition.Type.SURFACE)
                             : ((defaultDestlevelScheme = (Dungeon.customDungeon.getFloor(defaultBelowOrAbove))) == null
                             || defaultDestlevelScheme.exitCells.isEmpty() ? null
-                            : new LevelTransition(level, cell, defaultDestlevelScheme.entranceCells.get(0), defaultBelowOrAbove));
+                            : new LevelTransition(level, cell, defaultDestlevelScheme.exitCells.get(0), defaultBelowOrAbove));
                 } else if (terrainType == ENTRANCE) {
                     defaultBelowOrAbove = levelScheme.getDefaultAbove();
                     defaultTransition = Level.SURFACE.equals(defaultBelowOrAbove) ? new LevelTransition(level, cell, LevelTransition.Type.SURFACE)

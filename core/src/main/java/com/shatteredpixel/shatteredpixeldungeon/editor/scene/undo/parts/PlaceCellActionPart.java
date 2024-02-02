@@ -1,11 +1,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -17,20 +19,26 @@ public class PlaceCellActionPart implements ActionPart {
     private Plant oldPlant;
     private CustomTilemap oldCustomTile;
     private Boolean newCustomTileIsWall;
+    private int coinDoorPrice;
 
-    public PlaceCellActionPart(int oldTerrain, int newTerrain, int cell, Trap oldTrap, Plant oldPlant, CustomTilemap oldCustomTile, Boolean newCustomTileIsWall) {
-        init(oldTerrain, newTerrain, cell, oldTrap, oldPlant, oldCustomTile, newCustomTileIsWall);
+    public PlaceCellActionPart(int oldTerrain, int newTerrain, int cell,
+                               Trap oldTrap, Plant oldPlant, int coinDoorPrice,
+                               CustomTilemap oldCustomTile, Boolean newCustomTileIsWall) {
+        init(oldTerrain, newTerrain, cell, oldTrap, oldPlant, coinDoorPrice, oldCustomTile, newCustomTileIsWall);
     }
 
     public PlaceCellActionPart() {
     }
 
-    protected void init(int oldTerrain, int newTerrain, int cell, Trap oldTrap, Plant oldPlant, CustomTilemap oldCustomTile, Boolean newCustomTileIsWall) {
+    protected void init(int oldTerrain, int newTerrain, int cell,
+                        Trap oldTrap, Plant oldPlant, int coinDoorPrice,
+                        CustomTilemap oldCustomTile, Boolean newCustomTileIsWall) {
         this.oldTerrain = oldTerrain;
         this.newTerrain = newTerrain;
         this.cell = cell;
         this.oldTrap = oldTrap;
         this.oldPlant = oldPlant;
+        this.coinDoorPrice = coinDoorPrice;
         this.oldCustomTile = oldCustomTile;
         this.newCustomTileIsWall = newCustomTileIsWall;
 
@@ -40,6 +48,11 @@ public class PlaceCellActionPart implements ActionPart {
     @Override
     public void undo() {
         Level.set(cell, oldTerrain);
+        if (oldTerrain != Terrain.COIN_DOOR) {
+            Dungeon.level.coinDoors.remove(cell);
+        } else {
+            Dungeon.level.coinDoors.put(cell, new CoinDoor(cell, coinDoorPrice));
+        }
         if (oldTrap != null) Dungeon.level.setTrap(oldTrap, cell);
         Dungeon.level.plants.put(cell, oldPlant);
         CustomTileItem.removeCustomTilesAt(cell, Dungeon.level, newCustomTileIsWall);
@@ -53,6 +66,11 @@ public class PlaceCellActionPart implements ActionPart {
     @Override
     public void redo() {
         Level.set(cell, newTerrain); //old traps are already removed here
+        if (newTerrain != Terrain.COIN_DOOR) {
+            Dungeon.level.coinDoors.remove(cell);
+        } else {
+            Dungeon.level.coinDoors.put(cell, new CoinDoor(cell, coinDoorPrice));
+        }
         CustomTileItem.removeCustomTilesAt(cell, Dungeon.level, newCustomTileIsWall);
     }
 

@@ -73,6 +73,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
@@ -219,7 +220,8 @@ public abstract class Level implements Bundlable {
 	public SparseArray<Barrier> barriers;
 	public HashSet<CustomTilemap> customTiles;
 	public HashSet<CustomTilemap> customWalls;
-	
+	public SparseArray<CoinDoor> coinDoors;
+
 	protected ArrayList<Item> itemsToSpawn = new ArrayList<>();
 
 	protected Group visuals;
@@ -255,6 +257,7 @@ public abstract class Level implements Bundlable {
 	private static final String BARRIERS    = "barriers";
 	private static final String CUSTOM_TILES= "customTiles";
 	private static final String CUSTOM_WALLS= "customWalls";
+	private static final String COIN_DOORS = "coin_door";
 	private static final String MOBS		= "mobs";
 	private static final String BLOBS		= "blobs";
 	private static final String PARTICLES	= "particles";
@@ -362,7 +365,8 @@ public abstract class Level implements Bundlable {
 			barriers = new SparseArray<>();
 			customTiles = new HashSet<>();
 			customWalls = new HashSet<>();
-			
+			coinDoors = new SparseArray<>();
+
 		} while (!build());
 		
 		buildFlagMaps();
@@ -568,7 +572,8 @@ public abstract class Level implements Bundlable {
 		barriers = new SparseArray<>();
 		customTiles = new HashSet<>();
 		customWalls = new HashSet<>();
-		
+		coinDoors = new SparseArray<>();
+
 		map		= bundle.getIntArray( MAP );
 
 		if (initForPlayCalled) {
@@ -652,6 +657,12 @@ public abstract class Level implements Bundlable {
 			if(!(vis instanceof CustomTileLoader.UserCustomTile) || ((CustomTileLoader.UserCustomTile) vis).identifier != null)
 				customWalls.add(vis);
 		}
+
+		collection = bundle.getCollection(COIN_DOORS);
+		for (Bundlable c : collection) {
+			CoinDoor cost = (CoinDoor) c;
+			coinDoors.put(cost.pos, cost);
+		}
 		
 		collection = bundle.getCollection( MOBS );
 		for (Bundlable m : collection) {
@@ -715,6 +726,7 @@ public abstract class Level implements Bundlable {
 		bundle.put( BARRIERS, barriers.valueList() );
 		bundle.put( CUSTOM_TILES, customTiles );
 		bundle.put( CUSTOM_WALLS, customWalls );
+		bundle.put( COIN_DOORS, coinDoors.valueList() );
 		bundle.put( MOBS, mobs );
 		bundle.put( BLOBS, blobs.values() );
 		bundle.put( PARTICLES, particles.valueList() );
@@ -1528,6 +1540,19 @@ public abstract class Level implements Bundlable {
 
 	public void setFlamable(boolean[] flamable) {
 		this.flamable = flamable;
+	}
+
+	public int getCoinDoorCost(int cell) {
+		CoinDoor door = coinDoors.get(cell);
+		return door == null ? (cell >= 0 ? CoinDoor.DEFAULT_COST : CoinDoor.costInInventory) : door.cost;
+	}
+
+	public void setCoinDoorCost(int cell, int cost) {
+		CoinDoor c = coinDoors.get(cell);
+		if (c == null) {
+			c = new CoinDoor(cell, cost);
+			coinDoors.put(cell, c);
+		} else c.cost = cost;
 	}
 
 	public void destroy(int pos ) {

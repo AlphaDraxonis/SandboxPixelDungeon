@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
+import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.WellWaterSpinner;
@@ -22,6 +23,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -52,6 +55,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     private WellWaterSpinner wellWaterSpinner;
     private EditBlobComp.VolumeSpinner volumeSpinner;
     private EditBlobComp.SacrificialFirePrize sacrificialFirePrize;
+    private Spinner coinDoorCost;
 
     private List<ScrollingListPane.ListItem> customParticles;
 
@@ -180,6 +184,21 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
         }
 
+        if (item.terrainType() == Terrain.COIN_DOOR) {
+            coinDoorCost = new Spinner(new SpinnerIntegerModel(1, 100_000, Dungeon.level.getCoinDoorCost(cell), 10, false, null) {
+                @Override
+                public int getClicksPerSecondWhileHolding() {
+                    return 150;
+                }
+            }, Messages.get(this, "coin_door_cost"), 9);
+            coinDoorCost.addChangeListener(()-> {
+                if (cell == -1) CoinDoor.costInInventory = (int) coinDoorCost.getValue();
+                else Dungeon.level.setCoinDoorCost(cell, (int) coinDoorCost.getValue());
+                updateObj();
+            });
+            add(coinDoorCost);
+        }
+
     }
 
     public static LevelTransition createNewTransition(int cell) {
@@ -223,11 +242,10 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     @Override
     protected void layout() {
         super.layout();
-        Component[] comps = {//transitionEdit is later instantiated
-                transitionEdit, addTransition, editSignText, wellWaterSpinner, volumeSpinner, sacrificialFirePrize
-        };
-        layoutCompsLinear(comps);
-        if (!customParticles.isEmpty()) {
+        layoutCompsLinear(//transitionEdit is later instantiated
+                transitionEdit, addTransition, editSignText, wellWaterSpinner, volumeSpinner, sacrificialFirePrize, coinDoorCost
+        );
+        if (customParticles != null && !customParticles.isEmpty()) {
             layoutCompsLinear(customParticles.toArray(EditorUtilies.EMPTY_COMP_ARRAY));
         }
     }
@@ -317,7 +335,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         else if (obj.terrainType() == Terrain.CRYSTAL_DOOR || obj.terrainType() == Terrain.SECRET_CRYSTAL_DOOR)
             desc = EditorUtilies.addCrystalKeyDescription(desc, level);
         else if (obj.terrainType() == Terrain.LOCKED_EXIT) desc = EditorUtilies.addSkeletonKeyDescription(desc, level);
-        else if (obj.terrainType() == Terrain.COIN_DOOR) desc = EditorUtilies.addGoldDoorDescription(desc, level);
+        else if (obj.terrainType() == Terrain.COIN_DOOR) desc = EditorUtilies.addCoinDoorDescription(desc, level);
 
         if (obj.cell() >= 0) {
             for (Blob blob : Dungeon.level.blobs.values()) {

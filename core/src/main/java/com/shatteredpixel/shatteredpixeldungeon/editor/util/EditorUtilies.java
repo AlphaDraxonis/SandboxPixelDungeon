@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
@@ -239,11 +240,19 @@ public final class EditorUtilies {
         return desc;
     }
 
-    public static String addGoldDoorDescription(String desc, Level level) {
-        int numLockedDoors = EditorUtilies.getNumTiles(Terrain.COIN_DOOR, level);
+    public static String addCoinDoorDescription(String desc, Level level) {
         int numGold = EditorUtilies.getNumItem(Gold.class, level);
+        int numCoinDoors = 0;
+        int goldNeeded = 0;
+        for (CoinDoor door : level.coinDoors.values()) {
+            if (level.map[door.pos] == Terrain.COIN_DOOR) {
+                numCoinDoors++;
+                goldNeeded += door.cost;
+            }
+        }
         if (desc.length() > 0) desc += "\n";
-        desc += "\n" + Messages.get(EditTileComp.class, "num_coin_doors") + ": " + numLockedDoors;
+        desc += "\n" + Messages.get(EditTileComp.class, "num_coin_doors") + ": " + numCoinDoors;
+        desc += "\n" + Messages.get(EditTileComp.class, "total_coin_door_unlock_cost") + ": " + goldNeeded;
         desc += "\n" + Messages.get(EditTileComp.class, "num_gold") + ": " + numGold;
         return desc;
     }

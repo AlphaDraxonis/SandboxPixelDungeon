@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -909,6 +910,17 @@ public class CustomLevel extends Level {
         }
         level.barriers.clear();
         level.barriers.putAll(nBarriers);
+
+        SparseArray<CoinDoor> nCoinDoors = new SparseArray<>();
+        for (CoinDoor c : level.coinDoors.valueList()) {
+            int nPos = newPosition.get(c.pos);
+            if (isPositionValid.test(c.pos, nPos)) {
+                nCoinDoors.put(nPos, c);
+                c.pos = nPos;
+            }
+        }
+        level.coinDoors.clear();
+        level.coinDoors.putAll(nCoinDoors);
 
         SparseArray<Plant> nPlant = new SparseArray<>();
         for (Plant p : level.plants.valueList()) {

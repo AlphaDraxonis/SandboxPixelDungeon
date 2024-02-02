@@ -85,6 +85,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWea
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.LooseItemsTrap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -1135,29 +1136,9 @@ public abstract class Mob extends Char {
 	}
 
 	protected void doDropLoot(Item item) {
-		if (item.spreadIfLoot) {
-			int tries = 50;
-			int quantity = item.quantity();
-			while (quantity > 0) {
-
-				tries--;
-				int cell = pos + PathFinder.NEIGHBOURS8[Random.Int(8)];
-				if (Dungeon.level.isPassable(cell, this)) {
-					Item toDrop = item.getCopy();
-					toDrop.quantity(1);
-					quantity--;
-					tries = 50;
-					Dungeon.level.drop( toDrop, cell ).sprite.drop( Dungeon.level.heaps.get(cell) == null ? pos : cell);
-				}
-				else if (tries < 0) {
-					break;
-				}
-
-			}
-			if (tries > 0) return;
-			item.quantity(quantity);
+		if (!item.spreadIfLoot || !LooseItemsTrap.dropAround(item, this)) {
+			Dungeon.level.drop(item, pos).sprite.drop();
 		}
-		Dungeon.level.drop(item, pos).sprite.drop();
 	}
 
 	public Object loot = null;

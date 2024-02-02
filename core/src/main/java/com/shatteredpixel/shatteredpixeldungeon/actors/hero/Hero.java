@@ -1182,7 +1182,7 @@ public class Hero extends Char {
 				hasKey = true;
 				
 			} else if (door == Terrain.COIN_DOOR
-					&& Dungeon.gold > 0) {//tzz
+					&& Dungeon.gold >= Dungeon.level.getCoinDoorCost(doorCell)) {
 
 				hasKey = true;
 
@@ -2270,8 +2270,11 @@ public class Hero extends Char {
 					hasKey = Notes.remove(new SkeletonKey(Dungeon.levelName, doorCell));
 					if (hasKey) Level.set(doorCell, Terrain.UNLOCKED_EXIT);
 				} else if (door == Terrain.COIN_DOOR){
-					hasKey = Dungeon.gold > 0;//tzz
-					if (hasKey) Level.set(doorCell, Terrain.DOOR);
+					hasKey = Dungeon.gold >= Dungeon.level.getCoinDoorCost(doorCell);
+					if (hasKey) {
+						Dungeon.gold -= Dungeon.level.getCoinDoorCost(doorCell);
+						Level.set(doorCell, Terrain.DOOR);
+					}
 				}
 				
 				if (hasKey) {
