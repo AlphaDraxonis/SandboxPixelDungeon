@@ -174,12 +174,12 @@ public abstract class EditorItem<T> extends Item {
             ActionPart part = MobItem.remove(level.findMob(cell));
             //would be better if the if-statements were nested...
             if (part == null) part = BlobItem.remove(cell);
-            if (part == null) part = ParticleItem.remove(cell);
             if (part == null) part = ItemItem.remove(cell);
             if (part == null) part = PlantItem.remove(cell);
             if (part == null) part = TrapItem.remove(level.traps.get(cell));
             if (part == null) part = BarrierItem.remove(cell);
             if (part == null) part = CustomTileItem.remove(cell);
+            if (part == null) part = ParticleItem.remove(cell);
             if (part == null)
                 part = TileItem.place(cell, level.feeling == Level.Feeling.CHASM ? Terrain.CHASM : Terrain.EMPTY);
             Undo.addActionPart(part);

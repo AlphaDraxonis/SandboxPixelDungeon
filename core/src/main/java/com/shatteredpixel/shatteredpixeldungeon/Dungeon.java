@@ -957,7 +957,7 @@ public class Dungeon {
 		int width = r - l + 1;
 		int height = b - t + 1;
 
-        if (level.levelScheme.rememberLayout) {
+        if (level.levelScheme.rememberLayout || !Dungeon.hero.isAlive()) {
             int pos = l + t * level.width();
             for (int i = t; i <= b; i++) {
                 BArray.or(level.visited, level.heroFOV, pos, width, level.visited);

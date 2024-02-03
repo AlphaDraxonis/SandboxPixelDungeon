@@ -1037,7 +1037,7 @@ public class Hero extends Char {
 
 			ready();
 
-			damage(Random.NormalIntRange(4 + 2 * Dungeon.depth, 4 + 4 * Dungeon.depth), Mimic.class);
+			damage(Random.NormalIntRange(3 + Dungeon.depth, 4 + 3 * Dungeon.depth), Mimic.class);
 			Sample.INSTANCE.play(Assets.Sounds.MIMIC);
 			GLog.w(Messages.get(this, "mimic_door"));
 
