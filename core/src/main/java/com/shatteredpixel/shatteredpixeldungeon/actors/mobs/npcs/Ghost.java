@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.ExitRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -59,9 +60,6 @@ public class Ghost extends QuestNPC<GhostQuest> {
 
 		WANDERING = new Wandering();
 		state = WANDERING;
-
-		//not actually large of course, but this makes the ghost stick to the exit room
-		properties.add(Property.LARGE);
 	}
 
 	public Ghost() {
@@ -71,12 +69,34 @@ public class Ghost extends QuestNPC<GhostQuest> {
 		super(quest);
 	}
 
+	@Override
+	protected boolean cellIsPathable(int cell) {
+		if (!super.cellIsPathable(cell)) {
+			return false;
+		}
+		if (Dungeon.level.map[cell] == Terrain.DOOR || Dungeon.level.map[cell] == Terrain.OPEN_DOOR) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean[] modifyPassable(boolean[] passable) {
+		for (int i = 0; i < passable.length; i++){
+			passable[i] = passable[i] && Dungeon.level.map[i] != Terrain.DOOR && Dungeon.level.map[i] != Terrain.OPEN_DOOR;
+		}
+		return passable;
+	}
+
 	protected class Wandering extends Mob.Wandering{
 		@Override
 		protected int randomDestination() {
 			int pos = super.randomDestination();
 			//cannot wander onto heaps or the level exit
 			if (Dungeon.level.heaps.get(pos) != null || pos == Dungeon.level.exit()){
+				return -1;
+			}
+			if (Dungeon.level.map[pos] == Terrain.DOOR || Dungeon.level.map[pos] == Terrain.OPEN_DOOR) {
 				return -1;
 			}
 			return pos;
