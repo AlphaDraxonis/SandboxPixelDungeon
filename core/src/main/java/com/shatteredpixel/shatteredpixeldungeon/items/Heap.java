@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FakeTenguShocker;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.ChargrilledMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.FrozenCarpaccio;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
@@ -332,7 +333,7 @@ public class Heap implements Bundlable {
 					items.remove(item);
 					((Honeypot.ShatteredPot) item).destroyPot(pos);
 
-				} else if (item instanceof Bomb) {
+				} else if (item instanceof Bomb && !(item instanceof FakeTenguShocker)) {
 					items.remove( item );
 					((Bomb) item).explode(pos);
 					if (((Bomb) item).explodesDestructively()) {

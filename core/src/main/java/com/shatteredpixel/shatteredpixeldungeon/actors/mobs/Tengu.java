@@ -757,51 +757,11 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		public boolean act() {
 
 			if (smokeEmitters.isEmpty()){
-				fx(true);
+				fx(true);//tzz check if ignited on drop works
 			}
-			
-			PointF p = DungeonTilemap.raisedTileCenterToWorld(bombPos);
-			if (timer == 3) {
-				FloatingText.show(p.x, p.y, bombPos, "3...", CharSprite.WARNING);
-			} else if (timer == 2){
-				FloatingText.show(p.x, p.y, bombPos, "2...", CharSprite.WARNING);
-			} else if (timer == 1){
-				FloatingText.show(p.x, p.y, bombPos, "1...", CharSprite.WARNING);
-			} else {
-				PathFinder.buildDistanceMap( bombPos, BArray.not( Dungeon.level.solid, null ), 2 );
-				for (int cell = 0; cell < PathFinder.distance.length; cell++) {
 
-					if (PathFinder.distance[cell] < Integer.MAX_VALUE) {
-						Char ch = Actor.findChar(cell);
-						if (ch != null && !(ch instanceof Tengu)) {
-							int dmg = Random.NormalIntRange(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth() * 2);
-							dmg -= ch.drRoll();
-
-							if (dmg > 0) {
-								ch.damage(dmg, Bomb.class);
-							}
-
-							if (ch == Dungeon.hero){
-								reduceBossScore();
-
-								if (!ch.isAlive()) {
-									Dungeon.fail(Tengu.class);
-								}
-							}
-						}
-					}
-
-				}
-
-				Heap h = Dungeon.level.heaps.get(bombPos);
-				if (h != null) {
-					for (Item i : h.items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
-						if (i instanceof BombItem) {
-							h.remove(i);
-						}
-					}
-				}
-				Sample.INSTANCE.play(Assets.Sounds.BLAST);
+			if (!showTimer(bombPos, timer)){
+				doExplode(bombPos, this::reduceBossScore);
 				detach();
 				return true;
 			}
@@ -813,6 +773,10 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 		@Override
 		public void fx(boolean on) {
+			fxStatic(on, bombPos, smokeEmitters);
+		}
+
+		public static void fxStatic(boolean on, int bombPos, ArrayList<Emitter> smokeEmitters) {
 			if (on && bombPos != -1){
 				PathFinder.buildDistanceMap( bombPos, BArray.not( Dungeon.level.solid, null ), 2 );
 				for (int i = 0; i < PathFinder.distance.length; i++) {
@@ -827,6 +791,56 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 					e.burst(BlastParticle.FACTORY, 2);
 				}
 			}
+		}
+
+		public static boolean showTimer(int bombPos, int timer) {
+			PointF p = DungeonTilemap.raisedTileCenterToWorld(bombPos);
+			if (timer == 3) {
+				FloatingText.show(p.x, p.y, bombPos, "3...", CharSprite.WARNING);
+			} else if (timer == 2){
+				FloatingText.show(p.x, p.y, bombPos, "2...", CharSprite.WARNING);
+			} else if (timer == 1) {
+				FloatingText.show(p.x, p.y, bombPos, "1...", CharSprite.WARNING);
+			}
+			return timer > 0;
+		}
+
+		public static void doExplode(int bombPos, Runnable reduceHeroBossScore) {
+			PathFinder.buildDistanceMap( bombPos, BArray.not( Dungeon.level.solid, null ), 2 );
+			for (int cell = 0; cell < PathFinder.distance.length; cell++) {
+
+				if (PathFinder.distance[cell] < Integer.MAX_VALUE) {
+					Char ch = Actor.findChar(cell);
+					if (ch != null && !(ch instanceof Tengu)) {
+						int dmg = Random.NormalIntRange(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth() * 2);
+						dmg -= ch.drRoll();
+
+						if (dmg > 0) {
+							ch.damage(dmg, Bomb.class);
+						}
+
+						if (ch == Dungeon.hero){
+							if (reduceHeroBossScore != null)
+								reduceHeroBossScore.run();
+
+							if (!ch.isAlive()) {
+								Dungeon.fail(Tengu.class);
+							}
+						}
+					}
+				}
+
+			}
+
+			Heap h = Dungeon.level.heaps.get(bombPos);
+			if (h != null) {
+				for (Item i : h.items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
+					if (i instanceof BombItem) {
+						h.remove(i);
+					}
+				}
+			}
+			Sample.INSTANCE.play(Assets.Sounds.BLAST);
 		}
 
 		protected void reduceBossScore(){

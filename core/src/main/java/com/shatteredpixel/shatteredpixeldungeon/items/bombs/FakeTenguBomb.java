@@ -4,12 +4,17 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
+import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
+
+import java.util.ArrayList;
 
 public class FakeTenguBomb extends Bomb {
 
@@ -18,7 +23,7 @@ public class FakeTenguBomb extends Bomb {
         dropsDownHeap = true;
     }
 
-    private int throwPos;//we do not need to bundle this
+    private int throwPos = -1;//we do not need to bundle this
 
     @Override
     public void trigger(int cell) {
@@ -29,7 +34,7 @@ public class FakeTenguBomb extends Bomb {
     @Override
     protected Fuse createFuse() {
         TenguBombFuse fuse = new TenguBombFuse();
-        fuse.bombPos = throwPos;
+        fuse.throwPos = throwPos;
         fuse.actAfterThrow();
         return fuse;
     }
@@ -44,9 +49,21 @@ public class FakeTenguBomb extends Bomb {
         return null;
     }
 
+    private boolean showFakeParticles = true;
     @Override
     public void explode(int cell) {
-        //TenguBombFuse does everything
+        if (showFakeParticles) {
+            ArrayList<Emitter> smokeEmitters = new ArrayList<>(5);
+            Tengu.BombAbility.fxStatic(true, cell, smokeEmitters);
+            Tengu.BombAbility.doExplode(cell, null);
+            Tengu.BombAbility.fxStatic(false, cell, smokeEmitters);
+        }
+        else Tengu.BombAbility.doExplode(cell, null);
+    }
+
+    @Override
+    public boolean explodesDestructively() {
+        return false;
     }
 
     @Override
@@ -74,9 +91,12 @@ public class FakeTenguBomb extends Bomb {
             actPriority = BUFF_PRIO;//same as Tengu.BombAbility
         }
 
-        private int bombPos;
-        private TenguBombAbilityBuff bombAbility;
-        private int bombAbilityId = -1;
+        private int throwPos = -1;
+
+        private int timer = 3;
+        private boolean fxIsQueued = false;
+
+        protected ArrayList<Emitter> smokeEmitters = new ArrayList<>();
 
         @Override
         public boolean freeze() {
@@ -86,15 +106,66 @@ public class FakeTenguBomb extends Bomb {
 
         @Override
         protected boolean act() {
-            if (bombAbility == null) {
-                if (bombAbilityId == -1 || (bombAbility = (TenguBombAbilityBuff) Actor.findById(bombAbilityId)) == null) {
-                    bombAbility = new TenguBombAbilityBuff();
-                    bombAbility.bombPos = bombPos;
+
+            if (throwPos != -1) {
+                if (Game.scene() instanceof GameScene) fx(true, throwPos);
+                else {
+                    final int p = throwPos;
+                    GameScene.runAfterCreate.add(() -> fx(true, p));
+                    fxIsQueued = true;
                 }
-                bombAbility.fuse = this;
+                Tengu.BombAbility.showTimer(throwPos, timer);
+                timer--;
+                throwPos = -1;
+                return true;
             }
-            else spend(TICK);
-            return bombAbility.act();
+
+            //something caused our bomb to explode early, or be defused. Do nothing.
+            if (bomb.fuse != this){
+                Actor.remove( this );
+                fx(false, -1);
+                return true;
+            }
+
+            int bombPos = -1;
+            //look for our bomb, remove it from its heap, and blow it up.
+            for (Heap heap : Dungeon.level.heaps.valueList()) {
+                if (heap.items.contains(bomb)) {
+                    bombPos = heap.pos;
+                    break;
+                }
+            }
+            if (bombPos == -1) {
+                //can't find our bomb, something must have removed it, do nothing.
+                bomb.fuse = null;
+                Actor.remove( this );
+                fx(false, -1);
+                return true;
+            }
+
+            if (smokeEmitters.isEmpty() && !fxIsQueued){
+                fx(true, bombPos);
+            }
+
+            if (!Tengu.BombAbility.showTimer(bombPos, timer)){
+                trigger(Dungeon.level.heaps.get(bombPos));
+                return true;
+            }
+
+            timer--;
+            spend(TICK);
+            return true;
+        }
+
+        public void fx(boolean on, int bombPos) {
+            Tengu.BombAbility.fxStatic(on, bombPos, smokeEmitters);
+        }
+
+        @Override
+        protected void trigger(Heap heap) {
+            ((FakeTenguBomb) bomb).showFakeParticles = false;
+            super.trigger(heap);
+            fx(false, -1);
         }
 
         private void actAfterThrow() {
@@ -103,36 +174,18 @@ public class FakeTenguBomb extends Bomb {
             spendConstant(-1f);
         }
 
-        private static final String BOMB_ABILITY = "bomb_ability";
-        private static final String BOMB_POS = "bomb_pos";
+        private static final String FX_IS_QUEUED = "fx_is_queued";
 
         @Override
         public void storeInBundle(Bundle bundle) {
             super.storeInBundle(bundle);
-            bundle.put(BOMB_ABILITY, bombAbility == null ? -1 : bombAbility.id());
-            bundle.put(BOMB_POS, bombPos);
+            bundle.put(FX_IS_QUEUED, fxIsQueued);
         }
 
         @Override
         public void restoreFromBundle(Bundle bundle) {
             super.restoreFromBundle(bundle);
-            bombAbilityId = bundle.getInt(BOMB_ABILITY);
-            bombPos = bundle.getInt(BOMB_POS);
-        }
-    }
-
-    private static class TenguBombAbilityBuff extends Tengu.BombAbility {
-
-        private TenguBombFuse fuse;
-
-        @Override
-        public void detach() {
-            fuse.trigger(Dungeon.level.heaps.get(bombPos));
-            fx(false);
-        }
-
-        @Override
-        protected void reduceBossScore() {
+            fxIsQueued = bundle.getBoolean(FX_IS_QUEUED);
         }
     }
 }

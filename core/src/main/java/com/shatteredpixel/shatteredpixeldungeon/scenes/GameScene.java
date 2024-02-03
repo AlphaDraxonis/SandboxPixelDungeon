@@ -647,7 +647,14 @@ public class GameScene extends PixelScene {
 			}
 		}
 
+		for (Runnable runnable : runAfterCreate) {
+			runnable.run();
+		}
+		runAfterCreate.clear();
+
 	}
+
+	public static List<Runnable> runAfterCreate = new ArrayList<>();
 	
 	public void destroy() {
 		
