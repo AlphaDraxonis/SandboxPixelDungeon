@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Adrenaline;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
@@ -57,7 +58,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Fe
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PropertyItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
@@ -1212,29 +1213,33 @@ public abstract class Mob extends Char {
 	}
 
 	public String info(){
-		String desc = description();
+		StringBuilder desc = new StringBuilder(description());
 
 		for (Buff b : buffs(ChampionEnemy.class)){
-			desc += "\n\n_" + Messages.titleCase(b.name()) + "_\n" + b.desc();
+			desc.append("\n\n_").append(Messages.titleCase(b.name())).append("_\n").append(b.desc());
 		}
 
 		if (playerAlignment == NEUTRAL_ALIGNMENT) {
-			desc += "\n\n" + Messages.get(this, "neutral_desc");
+			desc.append("\n\n").append(Messages.get(this, "neutral_desc"));
 		} else if (playerAlignment == FRIENDLY_ALIGNMENT) {
-			desc += "\n\n" + Messages.get(this, "friendly_desc");
+			desc.append("\n\n").append(Messages.get(this, "friendly_desc"));
 		}
 		if (following) {
-			if (playerAlignment == NORMAL_ALIGNMENT) desc += "\n";
-			desc += "\n" + Messages.get(this, "following_desc");
+			if (playerAlignment == NORMAL_ALIGNMENT) desc.append('\n');
+			desc.append('\n').append(Messages.get(this, "following_desc"));
 		}
 
         Mob defaultStats = DefaultStatsCache.getDefaultObject(getClass());
         if (defaultStats != null) {
 
+			HashSet<Char.Property> defProps = defaultStats.properties;
+			HashSet<Char.Property> props = properties;
+
             if (DefaultStatsCache.useStatsScale(this)) {
                 if (defaultStats.baseSpeed != baseSpeed || defaultStats.statsScale != statsScale
 						|| defaultStats.viewDistance != viewDistance
 						|| defaultStats.tilesBeforeWakingUp != tilesBeforeWakingUp
+						|| !defProps.equals(props)
                         || this instanceof Brute && (
                         defaultStats.HT != HT || defaultStats.damageReductionMax != damageReductionMax
                                 || defaultStats.attackSkill != attackSkill || defaultStats.defenseSkill != defenseSkill
@@ -1242,64 +1247,73 @@ public abstract class Mob extends Char {
                                 || loot instanceof ItemsWithChanceDistrComp.RandomItemData
 								|| glyphArmor != null && glyphArmor.glyph != null
                 )) {
-                    desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
+                    desc.append("\n\n").append(Messages.get(Mob.class, "base_stats_changed"));
                     if (defaultStats.statsScale != statsScale)
-                        desc += "\n" + Messages.get(Mob.class, "stats_scale") + ": " + defaultStats.statsScale + " -> _" + statsScale + "_";
+                        desc.append('\n').append(Messages.get(Mob.class, "stats_scale")).append(": ").append(defaultStats.statsScale).append(" -> _").append(statsScale).append('_');
                     if (defaultStats.baseSpeed != baseSpeed)
-                        desc += "\n" + Messages.get(StoneOfAugmentation.WndAugment.class, "speed") + ": " + defaultStats.baseSpeed + " -> _" + baseSpeed + "_";
+                        desc.append('\n').append(Messages.get(StoneOfAugmentation.WndAugment.class, "speed")).append(": ").append(defaultStats.baseSpeed).append(" -> _").append(baseSpeed).append('_');
                     if (defaultStats.viewDistance != viewDistance)
-                        desc += "\n" + Messages.get(Mob.class, "view_distance") + ": " + defaultStats.viewDistance + " -> _" + viewDistance + "_";
+                        desc.append('\n').append(Messages.get(Mob.class, "view_distance")).append(": ").append(defaultStats.viewDistance).append(" -> _").append(viewDistance).append('_');
                     if (this instanceof Brute) {
-                        desc += infoStatsChangedHPAccuracyEvasionArmor(defaultStats);
+                        desc.append(infoStatsChangedHPAccuracyEvasionArmor(defaultStats));
                     }
 
 					if (defaultStats.tilesBeforeWakingUp != tilesBeforeWakingUp)
-						desc += "\n" + Messages.get(Mob.class, "tiles_before_waking_up") + ": " + defaultStats.tilesBeforeWakingUp + " -> _" + tilesBeforeWakingUp + "_";
+						desc.append('\n').append(Messages.get(Mob.class, "tiles_before_waking_up")).append(": ").append(defaultStats.tilesBeforeWakingUp).append(" -> _").append(tilesBeforeWakingUp).append('_');
 					if (defaultStats.EXP != EXP && !(this instanceof HeroMob))
-                        desc += "\n" + Messages.get(Mob.class, "xp") + ": " + defaultStats.EXP + " -> _" + EXP + "_";
+                        desc.append('\n').append(Messages.get(Mob.class, "xp")).append(": ").append(defaultStats.EXP).append(" -> _").append(EXP).append('_');
                     if (defaultStats.maxLvl != maxLvl)
-                        desc += "\n" + Messages.get(Mob.class, "max_lvl") + ": " + defaultStats.maxLvl + " -> _" + maxLvl + "_";
+                        desc.append('\n').append(Messages.get(Mob.class, "max_lvl")).append(": ").append(defaultStats.maxLvl).append(" -> _").append(maxLvl).append('_');
                 }
             } else {
 
                 if (!DefaultStatsCache.areStatsEqual(defaultStats, this)
                         || loot instanceof ItemsWithChanceDistrComp.RandomItemData
 					|| glyphArmor != null && glyphArmor.glyph != null) {
-                    desc += "\n\n" + Messages.get(Mob.class, "base_stats_changed");
+					desc.append("\n\n").append(Messages.get(Mob.class, "base_stats_changed"));
 
                     if (defaultStats.baseSpeed != baseSpeed)
-                        desc += "\n" + Messages.get(StoneOfAugmentation.WndAugment.class, "speed") + ": " + defaultStats.baseSpeed + " -> _" + baseSpeed + "_";
+						desc.append('\n').append(Messages.get(StoneOfAugmentation.WndAugment.class, "speed")).append(": ").append(defaultStats.baseSpeed).append(" -> _").append(baseSpeed).append('_');
 					if (defaultStats.viewDistance != viewDistance)
-						desc += "\n" + Messages.get(Mob.class, "view_distance") + ": " + defaultStats.viewDistance + " -> _" + viewDistance + "_";
-                    desc += infoStatsChangedHPAccuracyEvasionArmor(defaultStats);
+						desc.append('\n').append(Messages.get(Mob.class, "view_distance")).append(": ").append(defaultStats.viewDistance).append(" -> _").append(viewDistance).append('_');
+					desc.append(infoStatsChangedHPAccuracyEvasionArmor(defaultStats));
                     if (defaultStats.damageRollMin != damageRollMin)
-                        desc += "\n" + Messages.get(Mob.class, "dmg_min") + ": " + defaultStats.damageRollMin + " -> _" + damageRollMin + "_";
+                        desc.append('\n').append(Messages.get(Mob.class, "dmg_min")).append(": ").append(defaultStats.damageRollMin).append(" -> _").append(damageRollMin).append('_');
                     if (defaultStats.damageRollMax != damageRollMax)
-                        desc += "\n" + Messages.get(Mob.class, "dmg_max") + ": " + defaultStats.damageRollMax + " -> _" + damageRollMax + "_";
+                        desc.append('\n').append(Messages.get(Mob.class, "dmg_max")).append(": ").append(defaultStats.damageRollMax).append(" -> _").append(damageRollMax).append('_');
                     if (defaultStats.specialDamageRollMin != specialDamageRollMin)
-                        desc += "\n" + Messages.get(Mob.class, "special_dmg_min") + ": " + defaultStats.specialDamageRollMin + " -> _" + specialDamageRollMin + "_";
+                        desc.append('\n').append(Messages.get(Mob.class, "special_dmg_min")).append(": ").append(defaultStats.specialDamageRollMin).append(" -> _").append(specialDamageRollMin).append('_');
                     if (defaultStats.specialDamageRollMax != specialDamageRollMax)
-						desc += "\n" + Messages.get(Mob.class, "special_dmg_max") + ": " + defaultStats.specialDamageRollMax + " -> _" + specialDamageRollMax + "_";
+						desc.append('\n').append(Messages.get(Mob.class, "special_dmg_max")).append(": ").append(defaultStats.specialDamageRollMax).append(" -> _").append(specialDamageRollMax).append('_');
 
 					if (defaultStats.tilesBeforeWakingUp != tilesBeforeWakingUp)
-                        desc += "\n" + Messages.get(Mob.class, "tiles_before_waking_up") + ": " + defaultStats.tilesBeforeWakingUp + " -> _" + tilesBeforeWakingUp + "_";
+                        desc.append('\n').append(Messages.get(Mob.class, "tiles_before_waking_up")).append(": ").append(defaultStats.tilesBeforeWakingUp).append(" -> _").append(tilesBeforeWakingUp).append('_');
                     if (defaultStats.EXP != EXP)
-                        desc += "\n" + Messages.get(Mob.class, "xp") + ": " + defaultStats.EXP + " -> _" + EXP + "_";
+                        desc.append('\n').append(Messages.get(Mob.class, "xp")).append(": ").append(defaultStats.EXP).append(" -> _").append(EXP).append('_');
 					if (defaultStats.maxLvl != maxLvl)
-						desc += "\n" + Messages.get(Mob.class, "max_lvl") + ": " + (defaultStats.maxLvl+2) + " -> _" + (maxLvl+2) + "_";
+						desc.append('\n').append(Messages.get(Mob.class, "max_lvl")).append(": ").append(defaultStats.maxLvl + 2).append(" -> _").append(maxLvl + 2).append('_');
                 }
 
             }
 
 			if (glyphArmor != null && glyphArmor.glyph != null) {
-				desc += "\n" + Messages.get(Mob.class, "glyph") + ": _" + glyphArmor.glyph.name() + "_";
-				if (glyphArmor.level() != 0) desc += " +" + glyphArmor.level();
+				desc.append('\n').append(Messages.get(Mob.class, "glyph")).append(": _").append(glyphArmor.glyph.name()).append('_');
+				if (glyphArmor.level() != 0) desc.append(" +").append(glyphArmor.level());
 			}
-            if (loot instanceof ItemsWithChanceDistrComp.RandomItemData)
-                desc += "\n" + Messages.get(Mob.class, "loot");
+            if (loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
+				desc.append('\n').append(Messages.get(Mob.class, "loot"));
+			}
+			if (!defProps.equals(props)) {
+				desc.append("\n_").append(Messages.get(Mob.class, "properties")).append("_: ");
+				for (Property p : props) {
+					desc.append(PropertyItem.getName(p)).append(", ");
+				}
+				if (props.size() > 0) desc.delete(desc.length() - 2, desc.length());
+				else desc.append(Messages.get(Barrier.class, "block_none"));
+			}
         }
 
-        return desc;
+        return desc.toString();
     }
 
     private String infoStatsChangedHPAccuracyEvasionArmor(Mob defaultStats) {

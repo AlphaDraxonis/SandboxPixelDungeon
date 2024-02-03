@@ -265,7 +265,9 @@ public class CustomLevel extends Level {
             traps = level.traps;
             signs = level.signs;
             barriers = level.barriers;
+            coinDoors = level.coinDoors;
             blobs = level.blobs;
+            particles = level.particles;
             customTiles = level.customTiles;
             customWalls = level.customWalls;
             assignBossCustomTiles();

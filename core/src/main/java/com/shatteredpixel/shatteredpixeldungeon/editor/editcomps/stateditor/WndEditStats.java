@@ -2,6 +2,8 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
+import com.shatteredpixel.shatteredpixeldungeon.actors.PropertyListContainer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalWisp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
@@ -68,6 +70,7 @@ public class WndEditStats extends MultiWindowTabComp {
     private IntegerSpinner hp, viewDistance, attackSkill, defenseSkill, armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, tilesBeforeWakingUp, xp, maxLvl;
     private FloatSpinner speed, statsScale;
     private StyledButtonWithIconAndText loot;
+    private PropertyListContainer properties;
 
     private GlyphSpinner glyphSpinner;
 
@@ -188,6 +191,15 @@ public class WndEditStats extends MultiWindowTabComp {
             glyphSpinner.glyphLevelSpinner = new GlyphSpinner.GlyphLevelSpinner(current);
             content.add(glyphSpinner.glyphLevelSpinner);
 
+            properties = new PropertyListContainer(current, null) {
+                @Override
+                protected void onSlotNumChange() {
+                    super.onSlotNumChange();
+                    if (mainWindowComps != null) WndEditStats.this.layout();
+                }
+            };
+            content.add(properties);
+
         }
 
         restoreDefaults = new RedButton(Messages.get(WndEditStats.class, "restore_default")) {
@@ -256,6 +268,12 @@ public class WndEditStats extends MultiWindowTabComp {
             sp.setRect(sp.left(), sp.top(), width, height - title.bottom() - GAP * 2 - WndMenuEditor.BTN_HEIGHT);
             restoreDefaults.setRect(x, sp.bottom() + GAP, width, WndMenuEditor.BTN_HEIGHT);
         }
+    }
+
+    @Override
+    protected void layoutOwnContent() {
+        super.layoutOwnContent();
+        content.setSize(width, EditorUtilies.layoutCompsLinear(GAP, content, properties));
     }
 
     private void addSpeedViewDistanceSpinner(Mob def, Mob current) {
@@ -329,6 +347,10 @@ public class WndEditStats extends MultiWindowTabComp {
             if (tilesBeforeWakingUp != null) tilesBeforeWakingUp.setValue(def.tilesBeforeWakingUp);
             if (xp != null) xp.setValue(def.EXP);
             if (maxLvl != null) maxLvl.setValue(def.maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL);
+
+            if (properties != null) {
+                properties.setProperties(def);
+            }
         }
     }
 

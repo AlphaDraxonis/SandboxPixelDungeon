@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class ItemContainer<T extends Item> extends Component implements WndBag.ItemSelectorInterface { // needs access to protected methods
 
-    private final DefaultEditComp<?> editComp;
+    protected final DefaultEditComp<?> editComp;
     protected final boolean reverseUiOrder;
     protected final int maxSlots;
 

@@ -88,7 +88,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
@@ -132,6 +131,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.BArray;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
@@ -141,6 +141,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public abstract class Char extends Actor {
 	
@@ -334,6 +336,7 @@ public abstract class Char extends Actor {
 	protected static final String DAMAGE_REDUCTION_MAX= "damage_reduction_max";
 	protected static final String SPEED = "speed";
 	protected static final String VIEW_DISTANCE = "view_distance";
+	protected static final String PROPERTIES = "properties";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -350,6 +353,15 @@ public abstract class Char extends Actor {
 			if (defaultChar.damageReductionMax != damageReductionMax) bundle.put(DAMAGE_REDUCTION_MAX, damageReductionMax);
 			if (defaultChar.baseSpeed != baseSpeed) bundle.put(SPEED, baseSpeed);
 			if (defaultChar.viewDistance != viewDistance) bundle.put(VIEW_DISTANCE, viewDistance);
+			if (!defaultChar.properties.equals(properties)) {
+				int[] enumOrdinals = new int[properties.size()];
+				int index = 0;
+				for (Property p : properties) {
+					enumOrdinals[index] = p.ordinal();
+					index++;
+				}
+				bundle.put(PROPERTIES, enumOrdinals);
+			}
 		}
 
 	}
@@ -366,6 +378,14 @@ public abstract class Char extends Actor {
 		if (bundle.contains(DAMAGE_REDUCTION_MAX)) damageReductionMax = bundle.getInt(DAMAGE_REDUCTION_MAX);
 		if (bundle.contains(SPEED)) baseSpeed = bundle.getFloat(SPEED);
 		if (bundle.contains(VIEW_DISTANCE)) viewDistance = bundle.getInt(VIEW_DISTANCE);
+		if (bundle.contains(PROPERTIES)) {
+			int[] enumOrdinals = bundle.getIntArray(PROPERTIES);
+			properties.clear();
+			Property[] props = Property.values();
+			for (int i = 0; i < enumOrdinals.length; i++) {
+				properties.add(props[enumOrdinals[i]]);
+			}
+		}
 
 		for (Bundlable b : bundle.getCollection( BUFFS )) {
 			if (b != null) {
@@ -1144,7 +1164,10 @@ public abstract class Char extends Actor {
 	}
 
 	public boolean[] modPassable(boolean[] passable){
-		if (properties.contains(Property.GO_TROUGH_WALLS)) {
+		if (properties.contains(Property.IMMOVABLE)) {
+			BArray.setFalse(passable);
+		}
+		else if (properties.contains(Property.PERMEABLE)) {
 			for (int i = 0; i < passable.length; i++) {
 				if (!passable[i]) {
 					if ((Terrain.flags[Dungeon.level.map[i]] & Terrain.SOLID) != 0
@@ -1230,6 +1253,10 @@ public abstract class Char extends Actor {
 	}
 
 	public enum Property{
+		//WARNING keeping the same ordinal order is very important!
+		PERMEABLE,//walls become passable (barriers not), excluding walls at the level border
+		LARGE,
+		IMMOVABLE,
 		BOSS ( new HashSet<Class>( Arrays.asList(Grim.class, GrimTrap.class, ScrollOfRetribution.class, ScrollOfPsionicBlast.class)),
 				new HashSet<Class>( Arrays.asList(AllyBuff.class, Dread.class) )),
 		MINIBOSS ( new HashSet<Class>(),
@@ -1246,11 +1273,13 @@ public abstract class Char extends Actor {
 		ACIDIC ( new HashSet<Class>( Arrays.asList(Corrosion.class)),
 				new HashSet<Class>( Arrays.asList(Ooze.class))),
 		ELECTRIC ( new HashSet<Class>( Arrays.asList(WandOfLightning.class, Shocking.class, Potential.class, Electricity.class, ShockingDart.class, Elemental.ShockElemental.class )),
-				new HashSet<Class>()),
-		GO_TROUGH_WALLS,//walls become passable (barriers not), excluding walls at the level border
-		LARGE,
-		IMMOVABLE;
-		
+				new HashSet<Class>());
+
+		static {
+			//WARNING keeping the same ordinal order is very important for bundling
+			if (ELECTRIC.ordinal() != 12) throw new RuntimeException("Char.Property: PLEASE MAKE SURE THAT THE ORDINALS ARE ALWAYS IN THE CORRECT ORDER!!!");
+		}
+
 		private HashSet<Class> resistances;
 		private HashSet<Class> immunities;
 		
@@ -1271,6 +1300,14 @@ public abstract class Char extends Actor {
 			return new HashSet<>(immunities);
 		}
 
+		private static final Property[] EMPTY_PROPERTY_ARRAY = new Property[0];
+		public static Property[][] getAllProperties(Set<Property> propertiesToIgnore) {
+			List<Property> properties = new ArrayList<>(Arrays.asList(values()));
+			if (propertiesToIgnore != null) properties.removeAll(propertiesToIgnore);
+			Property[][] ret = new Property[1][];
+			ret[0] = properties.toArray(EMPTY_PROPERTY_ARRAY);
+			return ret;
+		}
 	}
 
 	public static boolean hasProp( Char ch, Property p){

@@ -1,4 +1,4 @@
-package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor;
+package com.shatteredpixel.shatteredpixeldungeon.actors;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bee;
@@ -94,7 +94,8 @@ public class DefaultStatsCache {
                 && a.maxLvl == b.maxLvl
                 && a.specialDamageRollMin == b.specialDamageRollMin
                 && a.specialDamageRollMax == b.specialDamageRollMax
-                && a.tilesBeforeWakingUp == b.tilesBeforeWakingUp;
+                && a.tilesBeforeWakingUp == b.tilesBeforeWakingUp
+                && a.properties.equals(b.properties);
     }
 
     public static boolean canModifyStats(Object obj) {
