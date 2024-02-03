@@ -1143,8 +1143,17 @@ public abstract class Char extends Actor {
 		return Dungeon.level.distance( pos, other.pos );
 	}
 
-	public boolean[] modifyPassable(boolean[] passable){
-		//do nothing by default
+	public boolean[] modPassable(boolean[] passable){
+		if (properties.contains(Property.GO_TROUGH_WALLS)) {
+			for (int i = 0; i < passable.length; i++) {
+				if (!passable[i]) {
+					if ((Terrain.flags[Dungeon.level.map[i]] & Terrain.SOLID) != 0
+							&& !Barrier.stopChar(i, this)) {
+						passable[i] = true;
+					}
+				}
+			}
+		}
 		return passable;
 	}
 	
@@ -1238,6 +1247,7 @@ public abstract class Char extends Actor {
 				new HashSet<Class>( Arrays.asList(Ooze.class))),
 		ELECTRIC ( new HashSet<Class>( Arrays.asList(WandOfLightning.class, Shocking.class, Potential.class, Electricity.class, ShockingDart.class, Elemental.ShockElemental.class )),
 				new HashSet<Class>()),
+		GO_TROUGH_WALLS,//walls become passable (barriers not), excluding walls at the level border
 		LARGE,
 		IMMOVABLE;
 		

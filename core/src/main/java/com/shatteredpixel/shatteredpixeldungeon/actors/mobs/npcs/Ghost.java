@@ -81,7 +81,8 @@ public class Ghost extends QuestNPC<GhostQuest> {
 	}
 
 	@Override
-	public boolean[] modifyPassable(boolean[] passable) {
+	public boolean[] modPassable(boolean[] passable) {
+		passable = super.modPassable(passable);
 		for (int i = 0; i < passable.length; i++){
 			passable[i] = passable[i] && Dungeon.level.map[i] != Terrain.DOOR && Dungeon.level.map[i] != Terrain.OPEN_DOOR;
 		}
