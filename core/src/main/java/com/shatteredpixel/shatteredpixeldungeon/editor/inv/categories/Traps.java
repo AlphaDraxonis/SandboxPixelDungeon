@@ -21,9 +21,11 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FrostTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GatewayTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GeyserTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GnollRockfallTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GoldDiggerTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrimTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrippingTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GuardianTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.LooseItemsTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.OozeTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ParalyticTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
@@ -122,7 +124,8 @@ public enum Traps {
                 WeakeningTrap.class,
                 CursingTrap.class,
                 DisarmingTrap.class,
-//                LooseItemsTrap.class,
+                LooseItemsTrap.class,
+                GoldDiggerTrap.class
         };
     }
 

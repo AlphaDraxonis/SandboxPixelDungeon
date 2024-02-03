@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.utils.PathFinder;
@@ -32,7 +33,7 @@ import com.watabou.utils.Random;
 public class LooseItemsTrap extends Trap {
 
 	{
-		color = GREY;
+		color = YELLOW;
 		shape = DOTS;
 	}
 
@@ -43,24 +44,38 @@ public class LooseItemsTrap extends Trap {
 
 		if (c instanceof Hero) {
 			Hero hero = (Hero) c;
-			int stealItems = hero.belongings.backpack.items.size() / 2;
+			int stealItems = (int) Math.ceil(countStealableItems(hero) / 2f);
 			int tries = 100;
 			while (stealItems > 0 && tries-- > 0) {
 				Item stolen = steal(hero);
 				if (stolen != null) {
 					stealItems--;
-					dropAround(stolen, c);
+					if (!dropAround(stolen, c, disarmedByActivation ? PathFinder.NEIGHBOURS9 : PathFinder.NEIGHBOURS8)) {
+						stolen.collect();
+					}
 				}
 			}
 		}
 
 	}
 
+	public static int countStealableItems(Hero hero) {
+		if (hero.buff(LostInventory.class) != null) return 0;
+
+		int count = 0;
+		for (Item item : hero.belongings.backpack.items) {
+			if (!item.unique) {
+				count += item.quantity();
+			}
+		}
+		return count;
+	}
+
 	public static Item steal(Hero hero) {
 		Item toSteal = hero.belongings.randomUnequipped();
 		if (toSteal != null && !toSteal.unique) {
-			toSteal.detach( hero.belongings.backpack );
-			if (!toSteal.stackable) {
+			toSteal = toSteal.detach( hero.belongings.backpack );
+			if (toSteal != null && !toSteal.stackable) {
 				Dungeon.quickslot.convertToPlaceholder(toSteal);
 			}
 			return toSteal;
@@ -68,25 +83,34 @@ public class LooseItemsTrap extends Trap {
 		return null;
 	}
 
-	public static boolean dropAround(Item item, Char ch) {
-		int tries = 50;
+	public static boolean dropAround(Item item, Char ch, int[] neighbours) {
+		int tries = 60;
 		int quantity = item.quantity();
+		int[] dropQuantities = new int[neighbours.length];
 		while (quantity > 0) {
 
 			tries--;
-			int cell = ch.pos + PathFinder.NEIGHBOURS8[Random.Int(8)];
+			int dropIndex = Random.Int(neighbours.length);
+			int cell = ch.pos + neighbours[dropIndex];
 			if (Dungeon.level.isPassable(cell, ch)) {
-				Item toDrop = item.getCopy();
-				toDrop.quantity(1);
+				dropQuantities[dropIndex]++;
 				quantity--;
-				tries = 50;
-				Dungeon.level.drop( toDrop, cell ).sprite.drop( Dungeon.level.heaps.get(cell) == null ? ch.pos : cell);
+				tries = 60;
 			}
 			else if (tries < 0) {
 				break;
 			}
 
 		}
+
+		for (int i = 0; i < dropQuantities.length; i++) {
+			if (dropQuantities[i] > 0) {
+				Item toDrop = item.getCopy();
+				toDrop.quantity(dropQuantities[i]);
+				Dungeon.level.drop(toDrop,ch.pos + neighbours[i]).sprite.drop(ch.pos);
+			}
+		}
+
 		if (tries > 0) {
 			return true;
 		}

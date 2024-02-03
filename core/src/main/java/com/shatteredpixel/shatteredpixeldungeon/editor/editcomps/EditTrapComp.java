@@ -229,13 +229,14 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             comps = new Component[]{
                     visible, active, disarmedByActivation,
                     pitfallDelay, pitfallRadius, revealedWhenTriggered,
-                    searchable, searchableByMagic};
+                    searchable, searchableByMagic, gatewayTelePos};
         } else {
             comps = new Component[]{
                     visible, active,
                     pitfallDelay, pitfallRadius,
                     searchable, searchableByMagic,
-                    revealedWhenTriggered, disarmedByActivation};
+                    revealedWhenTriggered, disarmedByActivation,
+                    gatewayTelePos};
         }
 
 

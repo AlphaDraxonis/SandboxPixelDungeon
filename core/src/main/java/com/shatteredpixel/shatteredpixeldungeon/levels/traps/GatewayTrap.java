@@ -137,7 +137,7 @@ public class GatewayTrap extends Trap {
 				}
 
 				Heap heap = Dungeon.level.heaps.get(pos + i);
-				if (heap != null && heap.type == Heap.Type.HEAP){
+				if (heap != null && heap.type == Heap.Type.HEAP && !telePositions.isEmpty()){
 					Item item = heap.pickUp();
 					int actualTelepos = telePos;
 					if (!Dungeon.level.isPassableHero(actualTelepos)) actualTelepos = telePositions.get(Random.Int(telePositions.size()));

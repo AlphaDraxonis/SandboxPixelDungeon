@@ -1136,7 +1136,7 @@ public abstract class Mob extends Char {
 	}
 
 	protected void doDropLoot(Item item) {
-		if (!item.spreadIfLoot || !LooseItemsTrap.dropAround(item, this)) {
+		if (!item.spreadIfLoot || !LooseItemsTrap.dropAround(item, this, PathFinder.NEIGHBOURS8)) {
 			Dungeon.level.drop(item, pos).sprite.drop();
 		}
 	}
