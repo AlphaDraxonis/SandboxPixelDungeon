@@ -14,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Skeleton;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.GlyphSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
@@ -107,6 +108,7 @@ public class WndEditStats extends MultiWindowTabComp {
 
             @Override
             protected void layout() {
+                t.maxWidth((int) width);
                 t.setPos(x + (width - title.width()) * 0.5f, y + GAP);
             }
         };
@@ -216,6 +218,16 @@ public class WndEditStats extends MultiWindowTabComp {
                 armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 tilesBeforeWakingUp, xp, maxLvl, loot, glyphSpinner, glyphSpinner.glyphLevelSpinner
         };
+
+        if (editStats instanceof NPC && !(editStats instanceof SentryRoom.Sentry)) {
+            for (Component c : mainWindowComps) {
+                if (c != null) {
+                    c.killAndErase();
+                    c.destroy();
+                }
+            }
+            mainWindowComps = new Component[] {};
+        }
     }
 
     @Override

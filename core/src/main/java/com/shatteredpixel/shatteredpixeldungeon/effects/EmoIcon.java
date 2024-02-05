@@ -43,7 +43,7 @@ public class EmoIcon extends Image {
 		super();
 		
 		this.owner = owner;
-		if(CustomDungeon.isEditing()) EditorScene.add(this);
+		if (CustomDungeon.isEditing()) EditorScene.add(this);
 		else GameScene.add( this );
 	}
 	

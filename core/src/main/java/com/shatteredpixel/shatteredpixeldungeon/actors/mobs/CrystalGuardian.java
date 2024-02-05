@@ -260,7 +260,6 @@ public class CrystalGuardian extends Mob{
 		}
 	}
 
-	public static final String SPRITE = "sprite";
 	public static final String RECOVERING = "recovering";
 
 	@Override

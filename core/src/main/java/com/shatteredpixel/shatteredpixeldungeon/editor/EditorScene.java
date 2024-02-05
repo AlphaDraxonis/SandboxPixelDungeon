@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
+import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -82,6 +83,7 @@ import com.watabou.utils.FileUtils;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.PointF;
+import com.watabou.utils.Reflection;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -128,6 +130,7 @@ public class EditorScene extends PixelScene {
     private Group transitionIndicators;
     private Map<LevelTransition, BitmapText> transitionIndicatorsMap;
     private Group mobs;
+    private Group realMobs;
     private Group floorEmitters;
     private Group emitters;
     private Group effects;
@@ -295,6 +298,9 @@ public class EditorScene extends PixelScene {
 
         mobs = new Group();
         add(mobs);
+
+        realMobs = new Group();
+        add(realMobs);
 
         for (Mob mob : customLevel().mobs) {
             addMobSprite(mob);
@@ -672,11 +678,42 @@ public class EditorScene extends PixelScene {
         }
     }
 
+    public static void replaceMobSprite(Mob mob, Class<? extends CharSprite> newSprite) {
+        if (scene != null) {
+            CharSprite sprite = mob.sprite;
+            sprite.clearAura();
+            sprite.killAndErase();
+            if (sprite.realCharSprite != null) {
+                sprite.realCharSprite.killAndErase();
+            }
+            mob.spriteClass = newSprite;
+            new Thread(() -> {//don't ask me why this works... (2 different buffers apparently would share the same id)
+                try {Thread.sleep(50);} catch (InterruptedException ignored) {}
+                scene.addMobSprite(mob);
+            }).start();
+
+        }
+    }
+
     private void addMobSprite(Mob mob) {
         CharSprite sprite = mob.sprite();
         sprite.visible = true;
         mobs.add(sprite);
+
+        Mob defMob = DefaultStatsCache.getDefaultObject(mob.getClass());
+        if (defMob != null && defMob.spriteClass != mob.spriteClass
+                && (sprite.getClass().getEnclosingClass() == null || mob.getClass().getEnclosingClass() != null)) {
+            sprite.realCharSprite = Reflection.newInstance(defMob.spriteClass);
+            if (sprite.realCharSprite != null) {
+                sprite.realCharSprite.subSprite = true;
+                sprite.realCharSprite.scale.set(0.5f);
+                realMobs.add(sprite.realCharSprite);
+                sprite.realCharSprite.visible = true;
+                sprite.realCharSprite.link(mob);
+            }
+        }
         sprite.link(mob);
+        sortMobSprites();
     }
 
     public static void add(Blob gas) {

@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.KingsCrown;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -132,7 +133,10 @@ public class RatKing extends NPC {
 							protected void onSelect(int index) {
 								if (index == 0){
 									crown.upgradeArmor(Dungeon.hero, Dungeon.hero.belongings.armor(), new Ratmogrify());
-									((RatKingSprite)sprite).resetAnims();
+									for (Mob m : Dungeon.level.mobs) {
+										if (m.sprite instanceof RatKingSprite)
+											((RatKingSprite)m.sprite).resetAnims();
+									}
 									yell(Messages.get(RatKing.class, "crown_thankyou"));
 								} else if (index == 1) {
 									GameScene.show(new WndInfoArmorAbility(Dungeon.hero.heroClass, new Ratmogrify()));

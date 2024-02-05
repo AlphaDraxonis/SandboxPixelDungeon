@@ -62,6 +62,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PropertyItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.DungeonToJsonConverter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
@@ -192,6 +193,7 @@ public abstract class Mob extends Char {
 	private static final String CUSTOM_NAME = "custom_name";
 	private static final String CUSTOM_DESC = "custom_desc";
 	private static final String DIALOG = "dialog";
+	public static final String SPRITE = "sprite";
 
 	private static final String ENEMY_ID	= "enemy_id";
 	
@@ -227,6 +229,8 @@ public abstract class Mob extends Char {
             if (defaultMob.tilesBeforeWakingUp != tilesBeforeWakingUp) bundle.put(TILES_BEFORE_WAKING_UP, tilesBeforeWakingUp);
             if (defaultMob.EXP != EXP) bundle.put(XP, EXP);
             if (defaultMob.statsScale != statsScale) bundle.put(STATS_SCALE, statsScale);
+
+            if (defaultMob.spriteClass != spriteClass) bundle.put(SPRITE, spriteClass);
         }
 
         bundle.put(GLYPH_ARMOR, glyphArmor);
@@ -287,6 +291,8 @@ public abstract class Mob extends Char {
 		if (bundle.contains(TILES_BEFORE_WAKING_UP)) tilesBeforeWakingUp = bundle.getInt(TILES_BEFORE_WAKING_UP);
 		if (bundle.contains(XP)) EXP = bundle.getInt(XP);
 		if (bundle.contains(STATS_SCALE)) statsScale = bundle.getFloat(STATS_SCALE);
+
+		if (bundle.contains(SPRITE)) spriteClass = bundle.getClass(SPRITE);
 
 		if (bundle.contains(CUSTOM_NAME)) customName = bundle.getString(CUSTOM_NAME);
 		if (bundle.contains(CUSTOM_DESC)) customDesc = bundle.getString(CUSTOM_DESC);
@@ -1205,11 +1211,13 @@ public abstract class Mob extends Char {
 
 	@Override
 	public String name() {
-		return customName == null ? super.name() : customName;
+		String msg;
+		return customName == null ? super.name() : Messages.NO_TEXT_FOUND.equals(msg = Messages.get(customName)) ? customName : msg;
 	}
 
 	public String description() {
-		return customDesc == null ? Messages.get(this, "desc") : customDesc;
+		String msg;
+		return customDesc == null ? Messages.get(this, "desc") : Messages.NO_TEXT_FOUND.equals(msg = Messages.get(customDesc)) ? customDesc : msg;
 	}
 
 	public String info(){
@@ -1315,6 +1323,10 @@ public abstract class Mob extends Char {
 
         return desc.toString();
     }
+
+	public String getMessageKey() {
+		return getClass().getName().substring(DungeonToJsonConverter.PACKAGE_NAME_LENGTH).toLowerCase() + ".";
+	}
 
     private String infoStatsChangedHPAccuracyEvasionArmor(Mob defaultStats) {
         String ret = "";

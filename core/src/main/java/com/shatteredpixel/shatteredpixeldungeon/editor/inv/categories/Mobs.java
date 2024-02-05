@@ -103,6 +103,7 @@ import java.util.Set;
 public enum Mobs {
 
 
+    //Any changes in ordinal should also be made in MobSprites!!!
     SEWER,
     PRISON,
     CAVES,
@@ -307,6 +308,20 @@ public enum Mobs {
 
     }
 
+    public static Mob initMob(Class<? extends Mob> mobClass) {
+        Mob mob = (Mob) Reflection.newInstance(mobClass);
+        if (mob instanceof WandOfRegrowth.Lotus) {
+            ((WandOfRegrowth.Lotus) mob).setLevel(7);
+        }
+        if (mob instanceof QuestNPC) {
+            ((QuestNPC<?>) mob).createNewQuest();
+        }
+        if (mob instanceof HeroMob) ((HeroMob) mob).setInternalHero(new HeroMob.InternalHero());
+        if (mob == null) throw new RuntimeException(mobClass.getName());
+        mob.pos = -1;
+        return mob;
+    }
+
     public static class MobBag extends EditorItemBag {
         private final Mobs mobs;
 
@@ -314,17 +329,7 @@ public enum Mobs {
             super(null, 0);
             this.mobs = mobs;
             for (Class<?> m : mobs.classes) {
-                Mob mob = (Mob) Reflection.newInstance(m);
-                if (mob instanceof WandOfRegrowth.Lotus) {
-                    ((WandOfRegrowth.Lotus) mob).setLevel(7);
-                }
-                if (mob instanceof QuestNPC) {
-                    ((QuestNPC<?>) mob).createNewQuest();
-                }
-                if (mob instanceof HeroMob) ((HeroMob) mob).setInternalHero(new HeroMob.InternalHero());
-                if (mob == null) throw new RuntimeException(m.getName());
-                mob.pos = -1;
-                items.add(new MobItem(mob));
+                items.add(new MobItem(initMob((Class<? extends Mob>) m)));
             }
         }
 

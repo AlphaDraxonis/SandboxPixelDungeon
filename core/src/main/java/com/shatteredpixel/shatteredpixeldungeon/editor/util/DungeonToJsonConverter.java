@@ -367,7 +367,7 @@ public class DungeonToJsonConverter {
         b.append("\"x\": ").append(cell % width).append(", \"y\": ").append(cell / width).append("\n");
     }
 
-    private static final int PACKAGE_NAME_LENGTH = "com.shatteredpixel.shatteredpixeldungeon.".length();
+    public static final int PACKAGE_NAME_LENGTH = "com.shatteredpixel.shatteredpixeldungeon.".length();
     private static final int PACKAGE_NAME_ITEMS_LENGTH = PACKAGE_NAME_LENGTH + "items.".length();
     private static final int PACKAGE_NAME_SEEDS_LENGTH = PACKAGE_NAME_LENGTH /*+ "plants.".length()*/;
     private static final int PACKAGE_NAME_MOBS_LENGTH = PACKAGE_NAME_LENGTH + "actors.mobs.".length();

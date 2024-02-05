@@ -124,6 +124,9 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 
 	public Char ch;
 
+	public CharSprite realCharSprite;//only in editor, used to indicate the actual mob sprite
+	public boolean subSprite;
+
 	//used to prevent the actor associated with this sprite from acting until movement completes
 	public volatile boolean isMoving = false;
 	
@@ -260,7 +263,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	public synchronized void attack( int cell, Callback callback ) {
 		animCallback = callback;
 		turnTo( ch.pos, cell );
-		play( attack );
+		if (attack != null) play( attack );
 	}
 	
 	public void operate( int cell ) {
@@ -270,7 +273,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	public synchronized void operate( int cell, Callback callback ) {
 		animCallback = callback;
 		turnTo( ch.pos, cell );
-		play( operate );
+		if (operate != null) play( operate );
 	}
 	
 	public void zap( int cell ) {
@@ -280,7 +283,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	public synchronized void zap( int cell, Callback callback ) {
 		animCallback = callback;
 		turnTo( ch.pos, cell );
-		play( zap );
+		if (zap != null) play( zap );
 	}
 	
 	public void turnTo( int from, int to ) {
@@ -316,6 +319,10 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		
 		if (health != null){
 			health.killAndErase();
+		}
+
+		if (realCharSprite != null) {
+			realCharSprite.killAndErase();
 		}
 	}
 	
@@ -419,6 +426,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 				hearts.pour(Speck.factory(Speck.HEART), 0.5f);
 				break;
 		}
+		if (realCharSprite != null) realCharSprite.add(state);
 	}
 	
 	public void remove( State state ) {
@@ -493,12 +501,14 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 				}
 				break;
 		}
+		if (realCharSprite != null) realCharSprite.remove(state);
 	}
 
 	public void aura( int color ){
 		if (aura != null){
 			aura.killAndErase();
 		}
+		if (subSprite) return;
 		float size = Math.max(width(), height());
 		size = Math.max(size+4, 16);
 		aura = new Flare(5, size);
@@ -526,6 +536,8 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		}
 		
 		super.update();
+
+		if (subSprite) return;
 		
 		if (flashTime > 0 && (flashTime -= Game.elapsed) <= 0) {
 			resetColor();
@@ -690,6 +702,10 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		
 		if (health != null){
 			health.killAndErase();
+		}
+
+		if (realCharSprite != null){
+			realCharSprite.killAndErase();
 		}
 	}
 

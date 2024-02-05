@@ -57,6 +57,11 @@ public class ItemSelector extends Component {
                 else
                     setSelectedItem(item instanceof ItemItem ? ((ItemItem) item).item().getCopy() : item.getCopy());
             }
+
+            @Override
+            public boolean acceptsNull() {
+                return nullTypeSelector != NullTypeSelector.NONE;
+            }
         };
 
         renderedTextBlock = PixelScene.renderTextBlock(text, 9);

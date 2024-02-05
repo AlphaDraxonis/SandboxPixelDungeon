@@ -79,6 +79,7 @@ public class EditorItemBag extends Bag {
         if (Items.class == cl) return (T) Items.bag;
         if (Traps.class == cl) return (T) Traps.bag;
         if (Plants.class == cl) return (T) Plants.bag;
+        if (MobSprites.class == cl) return (T) MobSprites.bag;
 
         return null;
     }

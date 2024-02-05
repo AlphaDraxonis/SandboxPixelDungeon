@@ -4,9 +4,11 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
@@ -711,6 +713,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                         }
                         buffsToIgnore.add(MagicalSight.class);
                         buffsToIgnore.add(Foresight.class);
+                        buffsToIgnore.add(Light.class);
+                        buffsToIgnore.add(Blindness.class);
                         return buffsToIgnore;
                     }
 
@@ -752,7 +756,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         rectComps = new Component[]{
 
-                mobStateSpinner, playerAlignment, editStats,
+                mobStateSpinner, playerAlignment, mob instanceof Ghost ? questSpinner : null, editStats,
 
                 yogSpawnersAlive,
                 pylonAlwaysActive,
@@ -776,7 +780,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 heroClassSpinner, heroSubclassSpinner,
                 heroMobLvl, heroMobStr,
 
-                questSpinner, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE, questItem1, questItem2, spawnQuestRoom,
+                mob instanceof Ghost ? null : questSpinner, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE, questItem1, questItem2, spawnQuestRoom,
 
         };
         linearComps = new Component[]{
@@ -896,6 +900,14 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         super.updateObj();
     }
 
+    public void updateTitleIcon() {
+        if (title instanceof MobTitleEditor) {
+            ((MobTitleEditor) title).image.destroy();
+            ((MobTitleEditor) title).image.killAndErase();
+            title.add(((MobTitleEditor) title).image = obj.sprite());
+        }
+    }
+
     public static boolean areEqual(Mob a, Mob b) {
         if (a == null && b == null) return true;
         if (a == null || b == null) return false;
@@ -909,6 +921,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (!Objects.equals(a.customName, b.customName)) return false;
         if (!Objects.equals(a.customDesc, b.customDesc)) return false;
         if (!Objects.equals(a.dialog, b.dialog)) return false;
+
+        if (a.spriteClass != b.spriteClass) return false;
 
         Set<Class<? extends Buff>> aBuffs = new HashSet<>(4);
         Set<Class<? extends Buff>> bBuffs = new HashSet<>(4);
@@ -1007,7 +1021,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                             updateObj();
                         }
                     };
-                    w.initComponents(ChangeMobNameDesc.createTitle(), new ChangeMobNameDesc(obj), null, 0f, 0.5f);
+                    w.initComponents(ChangeMobNameDesc.createTitle(), new ChangeMobNameDesc(EditMobComp.this), null, 0f, 0.5f);
                     EditorScene.show(w);
                 }
             };

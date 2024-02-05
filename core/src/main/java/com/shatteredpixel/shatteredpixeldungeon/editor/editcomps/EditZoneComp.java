@@ -4,10 +4,12 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -241,6 +243,8 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
                 Set<Class<? extends Buff>> buffsToIgnore = super.getBuffsToIgnore();
                 buffsToIgnore.add(MagicalSight.class);
                 buffsToIgnore.add(Foresight.class);
+                buffsToIgnore.add(Light.class);
+                buffsToIgnore.add(Blindness.class);
                 return buffsToIgnore;
             }
 

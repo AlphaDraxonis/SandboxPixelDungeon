@@ -167,8 +167,6 @@ public class CrystalWisp extends Mob{
 		next();
 	}
 
-	public static final String SPRITE = "sprite";
-
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);

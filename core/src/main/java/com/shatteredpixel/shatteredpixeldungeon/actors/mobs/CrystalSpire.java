@@ -498,7 +498,6 @@ public class CrystalSpire extends Mob {
 		return 0;
 	}
 
-	public static final String SPRITE = "sprite";
 	public static final String HITS = "hits";
 
 	public static final String ABILITY_COOLDOWN = "ability_cooldown";
