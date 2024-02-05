@@ -55,9 +55,13 @@ public abstract class Plant implements Bundlable {
     public int image;
     public int pos;
 
+    public boolean activateOnTrigger = true;
+
     protected Class<? extends Plant.Seed> seedClass;
 
     public void trigger() {
+
+        if (!activateOnTrigger) return;
 
         Char ch = Actor.findChar(pos);
 
@@ -102,16 +106,20 @@ public abstract class Plant implements Bundlable {
     }
 
     private static final String POS = "pos";
+    private static final String ACTIVATE_ON_TRIGGER = "activate_on_trigger";
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         pos = bundle.getInt(POS);
+        activateOnTrigger = !bundle.contains(ACTIVATE_ON_TRIGGER) || bundle.getBoolean(ACTIVATE_ON_TRIGGER);
     }
 
     @Override
     public void storeInBundle(Bundle bundle) {
         bundle.put(POS, pos);
+        bundle.put(ACTIVATE_ON_TRIGGER, activateOnTrigger);
     }
+
     public Plant getCopy(){
         Bundle b = new Bundle();
         b.put("PLANT", this);
