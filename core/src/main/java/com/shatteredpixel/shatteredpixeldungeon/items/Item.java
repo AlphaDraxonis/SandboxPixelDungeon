@@ -664,7 +664,7 @@ public class Item implements Bundlable {
 	}
 
 	public int throwPos( Hero user, int dst){
-		return new Ballistica( user.pos, dst, Ballistica.PROJECTILE, null ).collisionPos;
+		return new Ballistica( user.pos, dst, Ballistica.REAL_PROJECTILE, null ).collisionPos;
 	}
 
 	public void throwSound(){

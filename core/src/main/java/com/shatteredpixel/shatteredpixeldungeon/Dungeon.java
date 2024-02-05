@@ -1073,20 +1073,26 @@ public class Dungeon {
 
 	public static boolean[] findPassable(Char ch, boolean[] pass, boolean[] vis, boolean chars, boolean considerLarge){
 		setupPassable();
-		if (ch.isFlying() || ch.buff( Amok.class ) != null) {
-			BArray.or( pass, Dungeon.level.avoid, passable );
-            for (Barrier b : Dungeon.level.barriers.values()) {
-                if (b.blocksChar(ch)) passable[b.pos] = false;
+        if (Char.hasProp(ch, Char.Property.IMMOVABLE)) {
+            BArray.setFalse(passable);
+        } else {
+
+            if (ch.isFlying() || ch.buff(Amok.class) != null) {
+                BArray.or(pass, Dungeon.level.avoid, passable);
+                for (Barrier b : Dungeon.level.barriers.values()) {
+                    if (b.blocksChar(ch)) passable[b.pos] = false;
+                }
+            } else {
+                System.arraycopy(pass, 0, passable, 0, Dungeon.level.length());
             }
-		} else {
-			System.arraycopy( pass, 0, passable, 0, Dungeon.level.length() );
-		}
 
-		if (considerLarge && Char.hasProp(ch, Char.Property.LARGE)){
-			BArray.and( passable, Dungeon.level.openSpace, passable );
-		}
+            if (considerLarge && Char.hasProp(ch, Char.Property.LARGE)) {
+                BArray.and(passable, Dungeon.level.openSpace, passable);
+            }
 
-		ch.modPassable(passable);
+            ch.modPassable(passable);
+
+        }
 
 		if (chars) {
 			for (Char c : Actor.chars()) {

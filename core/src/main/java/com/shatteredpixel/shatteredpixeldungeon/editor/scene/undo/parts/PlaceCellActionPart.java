@@ -17,7 +17,7 @@ public class PlaceCellActionPart implements ActionPart {
     private int oldTerrain, newTerrain, cell;
     private Trap oldTrap;
     private Plant oldPlant;
-    private CustomTilemap oldCustomTile;
+    protected CustomTilemap oldCustomTile;
     private Boolean newCustomTileIsWall;
     private int coinDoorPrice;
 

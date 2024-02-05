@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditPlantComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
@@ -41,7 +42,12 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
     public static final class Place extends PlantActionPart {
 
         public Place(Plant plant) {
-            super(plant, Terrain.GRASS, true);
+            super(plant,
+                    (Dungeon.level.map[plant.pos] == Terrain.EMPTY
+                    ||Dungeon.level.map[plant.pos] == Terrain.EMPTY_DECO
+                    ||Dungeon.level.map[plant.pos] == Terrain.EMPTY_SP)
+                            && CustomTileItem.findCustomTileAt(plant.pos, false) == null
+                            || TileItem.isTrapTerrainCell(Dungeon.level.map[plant.pos]) ? Terrain.GRASS : Dungeon.level.map[plant.pos], false);
             ActionPart part = new ActionPart() {
                 @Override
                 public void undo() {
@@ -51,6 +57,11 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
                 @Override
                 public void redo() {
                     place();
+                    if (oldCustomTile != null) {
+                        if (oldCustomTile.wallVisual) Dungeon.level.customWalls.add(oldCustomTile);
+                        else Dungeon.level.customTiles.add(oldCustomTile);
+                        EditorScene.add(oldCustomTile);
+                    }
                 }
 
                 @Override
@@ -66,7 +77,7 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
 
     public static final class Remove extends PlantActionPart {
         public Remove(Plant plant) {
-            super(plant, Terrain.GRASS, false);
+            super(plant, Dungeon.level.map[plant.pos], false);
             ActionPart part = new ActionPart() {
                 @Override
                 public void undo() {
@@ -76,6 +87,11 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
                 @Override
                 public void redo() {
                     remove();
+                    if (oldCustomTile != null) {
+                        if (oldCustomTile.wallVisual) Dungeon.level.customWalls.add(oldCustomTile);
+                        else Dungeon.level.customTiles.add(oldCustomTile);
+                        EditorScene.add(oldCustomTile);
+                    }
                 }
 
                 @Override

@@ -131,7 +131,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.BArray;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
@@ -1164,10 +1163,7 @@ public abstract class Char extends Actor {
 	}
 
 	public boolean[] modPassable(boolean[] passable){
-		if (properties.contains(Property.IMMOVABLE)) {
-			BArray.setFalse(passable);
-		}
-		else if (properties.contains(Property.PERMEABLE)) {
+		if (properties.contains(Property.PERMEABLE)) {
 			for (int i = 0; i < passable.length; i++) {
 				if (!passable[i]) {
 					if ((Terrain.flags[Dungeon.level.map[i]] & Terrain.SOLID) != 0

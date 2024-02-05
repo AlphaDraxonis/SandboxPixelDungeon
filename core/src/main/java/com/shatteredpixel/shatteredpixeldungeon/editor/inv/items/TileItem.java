@@ -366,7 +366,7 @@ public class TileItem extends EditorItem {
                 }
             }
 
-            if (PlantItem.invalidPlacement(cell) || terrainType != Terrain.GRASS) {
+            if (PlantItem.invalidPlacement(cell) || isTrapTerrainCell(terrainType)) {
                 Plant p = level.plants.get(cell);
                 if (p != null) {
                     ActionPart part = new ActionPart() {

@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditPlantComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlantActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Image;
@@ -58,7 +59,8 @@ public class PlantItem extends EditorItem<Plant> {
     }
 
     public static boolean invalidPlacement(int cell) {
-        return !Dungeon.level.isPassable(cell) || !Dungeon.level.insideMap(cell);
+        return Dungeon.level.solid[cell] || Dungeon.level.pit[cell] || Dungeon.level.map[cell] == Terrain.OPEN_DOOR;
+//        return !Dungeon.level.isPassable(cell) || !Dungeon.level.insideMap(cell);
 //        return level.map[cell] == Terrain.EMPTY || TileItem.isGrassTerrainCell(level.map[cell]);
     }
 
