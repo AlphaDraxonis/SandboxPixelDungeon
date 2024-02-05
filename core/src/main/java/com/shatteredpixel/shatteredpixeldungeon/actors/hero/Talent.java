@@ -27,21 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.CounterBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.EnhancedRings;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PhysicalEmpower;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ScrollEmpower;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WandEmpower;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -77,11 +63,7 @@ import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 public enum Talent {
 
@@ -431,7 +413,7 @@ public enum Talent {
 		if (talent == LIGHT_CLOAK && hero.heroClass == HeroClass.ROGUE){
 			for (Item item : Dungeon.hero.belongings.backpack){
 				if (item instanceof CloakOfShadows){
-					if (hero.buff(LostInventory.class) == null || item.keptThroughLostInventory()) {
+					if (!hero.belongings.lostInventory() || item.keptThroughLostInventory()) {
 						((CloakOfShadows) item).activate(Dungeon.hero);
 					}
 				}

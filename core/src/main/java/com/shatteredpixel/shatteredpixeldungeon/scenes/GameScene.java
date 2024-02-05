@@ -688,11 +688,13 @@ public class GameScene extends DungeonScene {
 		}
 
 		cellSelector.enable(Dungeon.hero.ready);
-		
-		for (Gizmo g : toDestroy){
-			g.destroy();
+
+		if (!toDestroy.isEmpty()) {
+			for (Gizmo g : toDestroy) {
+				g.destroy();
+			}
+			toDestroy.clear();
 		}
-		toDestroy.clear();
 	}
 
 	private boolean tagAttack    = false;

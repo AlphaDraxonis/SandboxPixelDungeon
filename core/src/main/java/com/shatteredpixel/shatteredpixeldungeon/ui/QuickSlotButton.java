@@ -24,7 +24,6 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
@@ -79,64 +78,65 @@ public class QuickSlotButton extends Button {
 	public static void reset() {
 		instance = new QuickSlotButton[QuickSlot.SIZE];
 
-        lastTarget = null;
-    }
+		lastTarget = null;
+	}
+	
+	@Override
+	protected void createChildren(Object... params) {
+		super.createChildren(params);
 
-    @Override
-    protected void createChildren(Object... params) {
-        super.createChildren(params);
+		if (CustomDungeon.isEditing()) {
+			slot = new QuickItemSlot() {
+				@Override
+				protected void onClick() {
+					EToolbar.select(slotNum);
+				}
+			};
+		} else {
+			slot = new QuickItemSlot() {
+				@Override
+				protected void onClick() {
+					if (!Dungeon.hero.isAlive() || !Dungeon.hero.ready) {
+						return;
+					}
+					if (targetingSlot == slotNum) {
+						int cell = autoAim(lastTarget, select(slotNum));
 
-        if (CustomDungeon.isEditing()) {
-            slot = new QuickItemSlot() {
-                @Override
-                protected void onClick() {
-                    EToolbar.select(slotNum);
-                }
-            };
-        } else {
-            slot = new QuickItemSlot() {
-                @Override
-                protected void onClick() {
-                    if (!Dungeon.hero.isAlive() || !Dungeon.hero.ready) {
-                        return;
-                    }
-                    if (targetingSlot == slotNum) {
-                        int cell = autoAim(lastTarget, select(slotNum));
+						if (cell != -1) {
+							GameScene.handleCell(cell);
+						} else {
+							//couldn't auto-aim, just target the position and hope for the best.
+							GameScene.handleCell(lastTarget.pos);
+						}
+					} else {
+						Item item = select(slotNum);
+						if (Dungeon.hero.belongings.contains(item) && !GameScene.cancel()) {
+							GameScene.centerNextWndOnInvPane();
+							item.execute(Dungeon.hero);
+							if (item.usesTargeting) {
+								useTargeting();
+							}
+						}
+					}
+				}
+			};
+		}
+		slot.showExtraInfo(false);
+		add(slot);
 
-                        if (cell != -1) {
-                            GameScene.handleCell(cell);
-                        } else {
-                            //couldn't auto-aim, just target the position and hope for the best.
-                            GameScene.handleCell(lastTarget.pos);
-                        }
-                    } else {
-                        Item item = select(slotNum);
-                        if (Dungeon.hero.belongings.contains(item) && !GameScene.cancel()) {
-                            GameScene.centerNextWndOnInvPane();
-                            item.execute(Dungeon.hero);
-                            if (item.usesTargeting) {
-                                useTargeting();
-                            }
-                        }
-                    }
-                }
-            };
-        }
-        slot.showExtraInfo(false);
-        add(slot);
+		crossB = Icons.TARGET.get();
+		crossB.visible = false;
+		add(crossB);
 
-        crossB = Icons.TARGET.get();
-        crossB.visible = false;
-        add(crossB);
+		crossM = new Image();
+		crossM.copy(crossB);
 
-        crossM = new Image();
-        crossM.copy(crossB);
-    }
+	}
 
-    private abstract class QuickItemSlot extends ItemSlot {
-        public QuickItemSlot() {
-            super();
-        }
+	private abstract class QuickItemSlot extends ItemSlot {
+		public QuickItemSlot() {
+			super();
+		}
 
 		@Override
 		protected void onRightClick() {
@@ -152,22 +152,35 @@ public class QuickSlotButton extends Button {
 		public GameAction keyAction() {
 			return QuickSlotButton.this.keyAction();
 		}
+
 		@Override
-		public GameAction secondaryTooltipAction(){
+		public GameAction secondaryTooltipAction() {
 			return QuickSlotButton.this.secondaryTooltipAction();
 		}
+
 		@Override
 		protected boolean onLongClick() {
 			return QuickSlotButton.this.onLongClick();
 		}
+
 		@Override
 		protected void onPointerDown() {
 			sprite.lightness(CustomDungeon.isEditing() ? 0.55f : 0.7f);
 			if (CustomDungeon.isEditing()) Sample.INSTANCE.play(Assets.Sounds.CLICK);
 		}
+
 		@Override
 		protected void onPointerUp() {
 			sprite.resetColor();
+		}
+
+		@Override
+		protected String hoverText() {
+			if (item == null) {
+				return Messages.titleCase(Messages.get(WndKeyBindings.class, "quickslot", (slotNum + 1)));
+			} else {
+				return super.hoverText();
+			}
 		}
 
 		@Override
@@ -176,23 +189,14 @@ public class QuickSlotButton extends Button {
 				remove(sprite);
 				sprite.destroy();
 			}
-			if (item instanceof EditorItem) sprite = ((EditorItem) item).getSprite();
+			if (item instanceof EditorItem) sprite = ((EditorItem<?>) item).getSprite();
 			else sprite = new ItemSprite(item);
 			if (sprite != null) {
 				addToBack(sprite);
 			}
 		}
+	};
 
-		@Override
-		protected String hoverText() {
-			if (item == null){
-				return Messages.titleCase(Messages.get(WndKeyBindings.class, "quickslot", (slotNum+1)));
-			} else {
-				return super.hoverText();
-			}
-		}
-	}
-	
 	@Override
 	protected void layout() {
 		super.layout();
@@ -249,25 +253,25 @@ public class QuickSlotButton extends Button {
 		return SPDAction.QUICKSLOT_SELECTOR;
 	}
 
-    @Override
-    protected String hoverText() {
-        if (slot.item == null) {
-            return Messages.titleCase(Messages.get(WndKeyBindings.class, "quickslot", (slotNum + 1)));
-        } else {
-            return super.hoverText();
-        }
-    }
-
-    @Override
-    protected void onClick() {
-        if (CustomDungeon.isEditing()) {
-            EditorScene.selectItem(editorItemSelector);
-            return;
-        }
-        if (Dungeon.hero.ready && !GameScene.cancel()) {
-            GameScene.selectItem(itemSelector);
-        }
-    }
+	@Override
+	protected String hoverText() {
+		if (slot.item == null){
+			return Messages.titleCase(Messages.get(WndKeyBindings.class, "quickslot", (slotNum+1)));
+		} else {
+			return super.hoverText();
+		}
+	}
+	
+	@Override
+	protected void onClick() {
+		if (CustomDungeon.isEditing()) {
+			EditorScene.selectItem(editorItemSelector);
+			return;
+		}
+		if (Dungeon.hero.ready && !GameScene.cancel()) {
+			GameScene.selectItem(itemSelector);
+		}
+	}
 
 	@Override
 	protected void onRightClick() {
@@ -337,20 +341,21 @@ public class QuickSlotButton extends Button {
 
 	public static int lastVisible = instance.length;
 
-    public static void set(Item item) {
-        boolean containsItem = containsItem(item) != null;
-        if (EToolbar.getSelectedSlot() != -1 && select(EToolbar.getSelectedSlot()) == null && !containsItem) {
-            set(EToolbar.getSelectedSlot(), item);
-            return;
-        }
-        for (int i = 0; i < lastVisible; i++) {
-            if ((select(i) == null && (instance[i].active || (Toolbar.SWAP_INSTANCE != null && Toolbar.SWAP_INSTANCE.active))) && !containsItem || select(i) == item) {
-                set(i, item);
-                return;
-            }
-        }
-        set(0, item);
-    }
+	public static void set(Item item){
+		boolean containsItem = containsItem(item) != null;
+		if (EToolbar.getSelectedSlot() != -1 && select(EToolbar.getSelectedSlot()) == null && !containsItem) {
+			set(EToolbar.getSelectedSlot(), item);
+			return;
+		}
+		for (int i = 0; i < lastVisible; i++) {
+			if ((select(i) == null && (instance[i].active || (Toolbar.SWAP_INSTANCE != null && Toolbar.SWAP_INSTANCE.active))) && !containsItem
+					|| select(i) == item) {
+				set(i, item);
+				return;
+			}
+		}
+		set(0, item);
+	}
 
 	public static void set(int slotNum, Item item){
 		EToolbar.select(slotNum);
@@ -387,7 +392,7 @@ public class QuickSlotButton extends Button {
 	
 	private void enableSlot() {
 		slot.enable(Dungeon.quickslot.isNonePlaceholder( slotNum )
-				&& (Dungeon.hero == null || Dungeon.hero.buff(LostInventory.class) == null || Dungeon.quickslot.getItem(slotNum).keptThroughLostInventory()));
+				&& (Dungeon.hero == null || Dungeon.hero.belongings.lostInventory() || Dungeon.quickslot.getItem(slotNum).keptThroughLostInventory()));
 	}
 
 	public void slotMargins( int left, int top, int right, int bottom){
@@ -490,7 +495,6 @@ public class QuickSlotButton extends Button {
 		}
 	}
 
-	//TODO pretty expensive??
 	public static ItemSlot containsItem(Item item) {
 		for (int i = 0; i < instance.length; i++) {
 			if (instance[i].slot.item == item) return instance[i].slot;

@@ -35,11 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.watabou.input.GameAction;
-import com.watabou.noosa.BitmapText;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.NinePatch;
+import com.watabou.noosa.*;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.ColorMath;
@@ -235,6 +231,10 @@ public class StatusPane extends Component {
 	
 	private static final int[] warningColors = new int[]{0x660000, 0xCC0000, 0x660000};
 
+	private int oldHP = 0;
+	private int oldShield = 0;
+	private int oldMax = 0;
+
 	@Override
 	public void update() {
 		super.update();
@@ -265,10 +265,15 @@ public class StatusPane extends Component {
 			rawShielding.scale.x = 0;
 		}
 
-		if (shield <= 0){
-			hpText.text(health + "/" + max);
-		} else {
-			hpText.text(health + "+" + shield +  "/" + max);
+		if (oldHP != health || oldShield != shield || oldMax != max){
+			if (shield <= 0) {
+				hpText.text(health + "/" + max);
+			} else {
+				hpText.text(health + "+" + shield + "/" + max);
+			}
+			oldHP = health;
+			oldShield = shield;
+			oldMax = max;
 		}
 
 		if (large) {
