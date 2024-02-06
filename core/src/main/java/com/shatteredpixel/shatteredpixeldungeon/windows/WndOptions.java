@@ -26,8 +26,10 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.ui.Component;
 
 public class WndOptions extends Window {
 
@@ -37,21 +39,25 @@ public class WndOptions extends Window {
 	protected static final int MARGIN 		= 2;
 	protected static final int BUTTON_HEIGHT	= 18;
 
+	private ScrollPane sp;
+	private Component content;
+
+	protected RenderedTextBlock tfMessage;
+	protected Component tfTitle;
+	protected RedButton[] buttons;
+	protected IconButton[] infos;
+
 	public WndOptions(Image icon, String title, String message, String... options) {
 		super();
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
-		float pos = 0;
 		if (title != null) {
-			IconTitle tfTitle = new IconTitle(icon, title);
-			tfTitle.setRect(0, pos, width, 0);
+			tfTitle = new IconTitle(icon, title);
 			add(tfTitle);
-
-			pos = tfTitle.bottom() + 2*MARGIN;
 		}
 
-		layoutBody(pos, message, options);
+		layoutBody(message, options);
 	}
 	
 	public WndOptions( String title, String message, String... options ) {
@@ -59,61 +65,95 @@ public class WndOptions extends Window {
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
-		float pos = MARGIN;
 		if (title != null) {
 			RenderedTextBlock tfTitle = PixelScene.renderTextBlock(title, 9);
 			tfTitle.hardlight(TITLE_COLOR);
-			tfTitle.setPos(MARGIN, pos);
 			tfTitle.maxWidth(width - MARGIN * 2);
 			add(tfTitle);
-
-			pos = tfTitle.bottom() + 2*MARGIN;
+			this.tfTitle = tfTitle;
 		}
 		
-		layoutBody(pos, message, options);
+		layoutBody(message, options);
 	}
 
-	protected void layoutBody(float pos, String message, String... options){
-		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
+	protected void layoutBody(String message, String... options){
 
-		RenderedTextBlock tfMesage = PixelScene.renderTextBlock( 6 );
-		tfMesage.text(message, width);
-		tfMesage.setPos( 0, pos );
-		add( tfMesage );
+		tfMessage = PixelScene.renderTextBlock( message, 6 );
+		add(tfMessage);
 
-		pos = tfMesage.bottom() + 2*MARGIN;
+		content = new Component();
+
+		buttons = new RedButton[options.length];
+		infos = new IconButton[options.length];
 
 		for (int i=0; i < options.length; i++) {
 			final int index = i;
-			RedButton btn = new RedButton( options[i] ) {
+			buttons[i] = new RedButton( options[i] ) {
 				@Override
 				protected void onClick() {
 					hide();
 					onSelect( index );
 				}
 			};
-			if (hasIcon(i)) btn.icon(getIcon(i));
-			btn.enable(enabled(i));
-			add( btn );
+			if (hasIcon(i)) buttons[i].icon(getIcon(i));
+			buttons[i].enable(enabled(i));
+			content.add( buttons[i] );
 
-			if (!hasInfo(i)) {
-				btn.setRect(0, pos, width, BUTTON_HEIGHT);
-			} else {
-				btn.setRect(0, pos, width - BUTTON_HEIGHT, BUTTON_HEIGHT);
-				IconButton info = new IconButton(Icons.get(Icons.INFO)){
+			if (hasInfo(i)) {
+				infos[i] = new IconButton(Icons.get(Icons.INFO)){
 					@Override
 					protected void onClick() {
 						onInfo( index );
 					}
 				};
-				info.setRect(width-BUTTON_HEIGHT, pos, BUTTON_HEIGHT, BUTTON_HEIGHT);
-				add(info);
+				content.add(infos[i]);
 			}
-
-			pos += BUTTON_HEIGHT + MARGIN;
 		}
 
-		resize( width, (int)(pos - MARGIN) );
+		sp = new ScrollPane(content);
+		add(sp);
+
+		layout(PixelScene.landscape() ? WIDTH_L : WIDTH_P);
+	}
+
+	protected void layout(int width) {
+
+		float pos = 0;
+
+		if (tfTitle instanceof RenderedTextBlock) {
+			pos += MARGIN;
+			((RenderedTextBlock) tfTitle).maxWidth(width - MARGIN * 2);
+			tfTitle.setPos(MARGIN, pos);
+		} else {
+			tfTitle.setRect(0, pos, width, 0);
+		}
+		pos = tfTitle.bottom() + 2*MARGIN;
+
+		tfMessage.maxWidth(width);
+		tfMessage.setPos(0, pos);
+		pos = tfMessage.bottom() + 2*MARGIN;
+
+		float posInSp = 0;
+
+		for (int i = 0; i < buttons.length; i++) {
+			if (infos[i] == null) {
+				buttons[i].setRect(0, posInSp, width, BUTTON_HEIGHT);
+			} else {
+				buttons[i].setRect(0, posInSp, width - BUTTON_HEIGHT, BUTTON_HEIGHT);
+				infos[i].setRect(width-BUTTON_HEIGHT, posInSp, BUTTON_HEIGHT, BUTTON_HEIGHT);
+			}
+
+			posInSp += BUTTON_HEIGHT + MARGIN;
+		}
+
+		content.setSize(width, posInSp - MARGIN);
+
+		float spHeight = Math.min(content.height(), PixelScene.uiCamera.height * 0.88f - pos);
+
+		resize(width, (int)(pos + spHeight));
+
+		sp.setRect(0, pos, width, spHeight);
+
 	}
 
 	protected boolean enabled( int index ){
@@ -134,5 +174,24 @@ public class WndOptions extends Window {
 
 	protected Image getIcon( int index ) {
 		return null;
+	}
+
+	public void setHighlightingEnabled(boolean flag) {
+//		float plusHeight = 0f;
+//		for (Gizmo g : content.me) {
+//			if (g instanceof RenderedTextBlock) {
+//				float h = ((RenderedTextBlock) g).height();
+//				((RenderedTextBlock) g).setHighlighting(flag);
+//				plusHeight += ((RenderedTextBlock) g).height() - h;
+//			}
+//		}
+//		if (plusHeight != 0) {
+//			for (Gizmo g : members) {
+//				if (g instanceof Button) {
+//					((Button) g).setPos(((Button) g).left(), ((Button) g).top() + plusHeight);
+//				}
+//			}
+//			resize(width, (int) (height + plusHeight));
+//		}
 	}
 }
