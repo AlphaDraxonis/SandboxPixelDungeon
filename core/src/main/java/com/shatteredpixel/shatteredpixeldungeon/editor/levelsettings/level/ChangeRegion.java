@@ -1,27 +1,29 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
 public class ChangeRegion extends Component {
 
-    private final RenderedTextBlock[] catTitles;
-    private final Component outsideSp;
-
-    private static final int CAT_REGION = 0, CAT_WATER = 1, CAT_MUSIC = 2;
     public static final String[] REGION_KEYS = {
             "Sewers",
             "Prison",
@@ -29,31 +31,37 @@ public class ChangeRegion extends Component {
             "City",
             "Halls"
     };
-    private final AssetCheckbox[][] checkboxes = {
-            {
-                    new AssetCheckbox(null, LevelScheme.REGION_SEWERS, CAT_REGION),
-                    new AssetCheckbox(null, LevelScheme.REGION_PRISON, CAT_REGION),
-                    new AssetCheckbox(null, LevelScheme.REGION_CAVES, CAT_REGION),
-                    new AssetCheckbox(null, LevelScheme.REGION_CITY, CAT_REGION),
-                    new AssetCheckbox(null, LevelScheme.REGION_HALLS, CAT_REGION)
-            }, {
-            new AssetCheckbox(Messages.get(ChangeRegion.class, "same"), 0, CAT_WATER),
-            new AssetCheckbox(null, LevelScheme.REGION_SEWERS, CAT_WATER),
-            new AssetCheckbox(null, LevelScheme.REGION_PRISON, CAT_WATER),
-            new AssetCheckbox(null, LevelScheme.REGION_CAVES, CAT_WATER),
-            new AssetCheckbox(null, LevelScheme.REGION_CITY, CAT_WATER),
-            new AssetCheckbox(null, LevelScheme.REGION_HALLS, CAT_WATER)
-    }, {
-            new AssetCheckbox(Messages.get(ChangeRegion.class, "same"), 0, CAT_MUSIC),
-            new AssetCheckbox(null, LevelScheme.REGION_SEWERS, CAT_MUSIC),
-            new AssetCheckbox(null, LevelScheme.REGION_PRISON, CAT_MUSIC),
-            new AssetCheckbox(null, LevelScheme.REGION_CAVES, CAT_MUSIC),
-            new AssetCheckbox(null, LevelScheme.REGION_CITY, CAT_MUSIC),
-            new AssetCheckbox(null, LevelScheme.REGION_HALLS, CAT_MUSIC),
-            new AssetCheckbox(Messages.get(ChangeRegion.class, "theme_final"), -1, CAT_MUSIC),
-            new AssetCheckbox(Messages.get(ChangeRegion.class, "none"), -2, CAT_MUSIC)
-    }
+
+    private static final Object[] REGION_DATA = {
+            LevelScheme.REGION_SEWERS,
+            LevelScheme.REGION_PRISON,
+            LevelScheme.REGION_CAVES,
+            LevelScheme.REGION_CITY,
+            LevelScheme.REGION_HALLS
     };
+
+    private static final Object[] WATER_DATA = {
+            LevelScheme.REGION_NONE,//same as region
+            LevelScheme.REGION_SEWERS,
+            LevelScheme.REGION_PRISON,
+            LevelScheme.REGION_CAVES,
+            LevelScheme.REGION_CITY,
+            LevelScheme.REGION_HALLS
+    };
+
+    private static final Object[] MUSIC_DATA = {
+            LevelScheme.REGION_NONE,//same as region
+            LevelScheme.REGION_SEWERS,
+            LevelScheme.REGION_PRISON,
+            LevelScheme.REGION_CAVES,
+            LevelScheme.REGION_CITY,
+            LevelScheme.REGION_HALLS,
+            -1,//theme final
+            -2//none
+    };
+
+    protected StyledSpinner region, water, music;
+    private final Component outsideSp;
 
     private final MusicVariantSpinner musicVariantSpinner;
 
@@ -68,30 +76,80 @@ public class ChangeRegion extends Component {
                 f.getMusicValue()
         };
         int oldMusicVariant = f.musicVariant;
+        int[] newValues = {
+                oldValues[0],
+                oldValues[1],
+                oldValues[2]
+        };
 
+        region = new StyledSpinner(new SpinnerTextIconModel(true, oldValues[0] - 1, REGION_DATA) {
+            @Override
+            protected Image getIcon(Object value) {
+                return new TileSprite(CustomLevel.tilesTex((int) value, false), Terrain.EMPTY);
+            }
+
+            @Override
+            protected String getAsString(Object value) {
+                return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) value - 1]);
+            }
+        }, Messages.get(ChangeRegion.class, "region"), 9);
+        region.addChangeListener(() -> newValues[0] = (int) region.getValue());
+        region.setSpinnerHeight(21);
+        add(region);
+
+        water = new StyledSpinner(new SpinnerTextIconModel(true, oldValues[1], WATER_DATA) {
+            @Override
+            protected Image getIcon(Object value) {
+                int waterRegion = (int) ((int) value == LevelScheme.REGION_NONE ? region == null ? oldValues[0] : region.getValue() : value);
+                return new TileSprite(CustomLevel.tilesTex(waterRegion, true), Terrain.WATER);
+            }
+
+            @Override
+            protected String getAsString(Object value) {
+                if ((int) value == LevelScheme.REGION_NONE) return Messages.get(ChangeRegion.class, "same");
+                return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) value - 1]);
+            }
+        }, Messages.get(ChangeRegion.class, "water"), 9);
+        water.addChangeListener(() -> newValues[1] = (int) water.getValue());
+        water.setSpinnerHeight(21);
+        add(water);
+
+        music = new StyledSpinner(new SpinnerTextModel(true, oldValues[2] < 0 ? 5 - oldValues[2] : oldValues[2], MUSIC_DATA) {
+            @Override
+            protected String getAsString(Object value) {
+                switch ((int)value) {
+                    case LevelScheme.REGION_NONE:
+                        return Messages.get(ChangeRegion.class, "same");
+                    case -1:
+                        return Messages.get(ChangeRegion.class, "theme_final");
+                    case -2:
+                        return Messages.get(ChangeRegion.class, "none");
+                    default:
+                        return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) value - 1]);
+                }
+            }
+        }, Messages.get(ChangeRegion.class, "music"), 9);
+        music.addChangeListener(() -> newValues[2] = (int) music.getValue());
+        music.setSpinnerHeight(21);
+        add(music);
 
         outsideSp = new Component() {
             RedButton save, cancel;
+
             @Override
             protected void createChildren(Object... params) {
 
                 save = new RedButton(Messages.get(ChangeRegion.class, "close")) {
                     @Override
                     protected void onClick() {
-                        int[] newValues = oldValues.clone();
                         int newMusicVariant = (int) musicVariantSpinner.getValue();
 
-                        for (int i = 0; i < checkboxes.length; i++) {
-                            for (AssetCheckbox cb : checkboxes[i]) {
-                                if (cb.checked()) newValues[i] = cb.region;
-                            }
-                        }
                         onClose.run();
                         for (int i = 0; i < newValues.length; i++) {
                             if (newValues[i] != oldValues[i] || newMusicVariant != oldMusicVariant) {
-                                f.setRegion(newValues[CAT_REGION]);
-                                f.setWaterTexture(newValues[CAT_WATER]);
-                                f.setMusic(newValues[CAT_MUSIC]);
+                                f.setRegion(newValues[0]);
+                                f.setWaterTexture(newValues[1]);
+                                f.setMusic(newValues[2]);
                                 f.musicVariant = newMusicVariant;
                                 Game.switchScene(EditorScene.class);
                                 return;
@@ -118,68 +176,24 @@ public class ChangeRegion extends Component {
                 save.setRect(cancel.right() + LevelTab.GAP, pos, w * 2, ChooseOneInCategoriesBody.BUTTON_HEIGHT);
                 PixelScene.align(save);
 
-                height =  ChooseOneInCategoriesBody.BUTTON_HEIGHT;
+                height = ChooseOneInCategoriesBody.BUTTON_HEIGHT;
             }
         };
-
-
-        catTitles = new RenderedTextBlock[]{
-                PixelScene.renderTextBlock(Messages.get(ChangeRegion.class, "region"), 9),
-                PixelScene.renderTextBlock(Messages.get(ChangeRegion.class, "water"), 9),
-                PixelScene.renderTextBlock(Messages.get(ChangeRegion.class, "music"), 9)
-        };
-        for (RenderedTextBlock t : catTitles) {
-            t.hardlight(Window.TITLE_COLOR);
-            add(t);
-        }
-
-        for (int i = 0; i < checkboxes.length; i++) {
-            for (AssetCheckbox cb : checkboxes[i]) {
-                cb.checked(cb.region == oldValues[i]);
-                add(cb);
-            }
-        }
 
         musicVariantSpinner = new MusicVariantSpinner(oldMusicVariant);
+        musicVariantSpinner.setSpinnerHeight(21);
         add(musicVariantSpinner);
     }
 
+    @Override
     protected void layout() {
-        final int GAP = ChooseOneInCategoriesBody.GAP;
-
-        float pos = GAP * 3;
-
-        for (int i = 0; i < checkboxes.length; i++) {
-
-            catTitles[i].maxWidth((int) width);
-            catTitles[i].setPos(((width - catTitles[i].width()) * 0.5f), pos);
-            pos = catTitles[i].bottom() + GAP * 3;
-
-            if( i == CAT_MUSIC){
-                musicVariantSpinner.setRect(0, pos, width, ChooseOneInCategoriesBody.BUTTON_HEIGHT);
-                PixelScene.align(musicVariantSpinner);
-                pos = musicVariantSpinner.bottom() + GAP;
-            }
-
-            for (AssetCheckbox cb : checkboxes[i]) {
-                cb.setRect(0, pos, width, ChooseOneInCategoriesBody.BUTTON_HEIGHT);
-                PixelScene.align(cb);
-                pos = cb.bottom() + GAP;
-            }
-            if (i + 1 < checkboxes.length) pos += GAP * 4;
-        }
-
-        height = pos;
-    }
-
-    private void uncheckAll(int category) {
-        for (AssetCheckbox cb : checkboxes[category]) {
-            cb.checked(false);
-        }
+        height = 0;
+        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, region, water, music, musicVariantSpinner);
+//        height = EditorUtilies.layoutCompsLinear(2, this, musicVariantSpinner);
     }
 
     public static Component createTitle() {
-        RenderedTextBlock textBlock = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(LevelTab.class, "region")),12);
+        RenderedTextBlock textBlock = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(LevelTab.class, "region")), 12);
         textBlock.hardlight(Window.TITLE_COLOR);
         return textBlock;
     }
@@ -188,31 +202,11 @@ public class ChangeRegion extends Component {
         return outsideSp;
     }
 
-    private class AssetCheckbox extends CheckBox {
-
-        private final int region;
-        private final int category;
-
-        public AssetCheckbox(String label, int region, int category) {
-            super(Messages.titleCase(label == null ? Document.INTROS.pageTitle(REGION_KEYS[region-1]) : label));
-            this.region = region;
-            this.category = category;
-        }
-
-        @Override
-        protected void onClick() {
-            if (!checked()) {
-                uncheckAll(category);
-                super.onClick();
-            }
-        }
-    }
-
-    private static class MusicVariantSpinner extends Spinner {
+    private static class MusicVariantSpinner extends StyledSpinner {
 
 
         public MusicVariantSpinner(int val) {
-            super(new SpinnerIntegerModel(0,3, val, 1, true, null){
+            super(new SpinnerIntegerModel(0, 3, val, 1, true, null) {
                 @Override
                 public String getDisplayString() {
                     switch ((int) getValue()) {

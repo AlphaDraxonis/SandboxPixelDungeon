@@ -144,7 +144,7 @@ public class LevelTab extends MultiWindowTabComp {
         magicMappingDisabled = new StyledCheckBox(Messages.get(this, "magic_mapping_disabled")) {
             @Override
             protected int textSize() {
-                return 8;
+                return SPDSettings.language() == Languages.GERMAN ? 6 : 8;
             }
         };
         icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_MAGICMAP);

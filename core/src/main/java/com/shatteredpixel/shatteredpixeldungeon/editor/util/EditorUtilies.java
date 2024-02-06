@@ -344,9 +344,13 @@ public final class EditorUtilies {
     }
 
     public static float layoutStyledCompsInRectangles(int gap, float width, Component parent, Component... comps) {
+        return layoutStyledCompsInRectangles(gap, width, PixelScene.landscape() ? 3 : 2, parent, comps);
+    }
+
+    public static float layoutStyledCompsInRectangles(int gap, float width, int numColumns, Component parent, Component... comps) {
         if (comps == null) return parent.height();
 
-        final int compsPerRow = PixelScene.landscape() ? 3 : 2;
+        final int compsPerRow = numColumns;
 
         float widthOnePart = (width - gap * (compsPerRow - 1)) / compsPerRow;
 
