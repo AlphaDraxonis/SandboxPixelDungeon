@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.watabou.noosa.Tilemap;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -25,7 +26,7 @@ import java.util.Map;
 
 public final class CustomTileLoader {
 
-    static final String CUSTOM_TILES = "custom_tiles/";
+    static final String EXTRA_FILES = "files/";
     private static final String DESC_FILE_EXTENSION = ".dat";
 
     public static String dungeonNameOfLastLoadedTiles;
@@ -45,6 +46,11 @@ public final class CustomTileLoader {
 
         for (SimpleCustomTile customTile : Dungeon.customDungeon.customTiles) {
             Tiles.addCustomTile(customTile);
+        }
+
+        //Remove with loss of support of Shattered 2.3.0
+        if (FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + "custom_tiles").exists()) {
+            FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + "custom_tiles").file().renameTo(CustomDungeonSaves.getAdditionalFilesDir().file());
         }
 
         FileHandle dir = CustomDungeonSaves.getAdditionalFilesDir();

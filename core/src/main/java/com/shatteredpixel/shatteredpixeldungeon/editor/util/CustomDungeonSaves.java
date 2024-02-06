@@ -249,7 +249,7 @@ public class CustomDungeonSaves {
     }
 
     public static FileHandle getAdditionalFilesDir() {
-        return FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CustomTileLoader.CUSTOM_TILES);
+        return FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CustomTileLoader.EXTRA_FILES);
     }
 
     public static List<String> findAllAudioFiles() {
@@ -289,7 +289,7 @@ public class CustomDungeonSaves {
     }
 
     public static FileHandle getExternalFile(String pathFromRoot) {
-        return FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CustomTileLoader.CUSTOM_TILES + pathFromRoot);
+        return FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CustomTileLoader.EXTRA_FILES + pathFromRoot);
     }
 
     public static void copyLevelsForNewGame(String dungeonName, String dirDestination) throws IOException {
@@ -302,7 +302,7 @@ public class CustomDungeonSaves {
             }
 
             src = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(),
-                    DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + CustomTileLoader.CUSTOM_TILES);
+                    DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + CustomTileLoader.EXTRA_FILES);
             if (src.exists()) {
                 FileHandle dest = FileUtils.getFileHandle(dirDestination.replace(' ', '_'));
                 src.copyTo(dest);

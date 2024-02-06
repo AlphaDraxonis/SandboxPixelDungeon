@@ -33,7 +33,7 @@ public class ExportDungeonWrapper implements Bundlable {
 
     private static final String DUNGEON = "dungeon";
     private static final String LEVEL = "level";
-    private static final String CUSTOM_TILES = "custom_tiles";
+    private static final String FILES = "files";
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
@@ -50,8 +50,8 @@ public class ExportDungeonWrapper implements Bundlable {
             i++;
         }
 
-        if (bundle.contains(CUSTOM_TILES)) {
-            customTiles = (AdditionalFileInfo) bundle.get(CUSTOM_TILES);
+        if (bundle.contains(FILES)) {
+            customTiles = (AdditionalFileInfo) bundle.get(FILES);
         }
     }
 
@@ -73,9 +73,9 @@ public class ExportDungeonWrapper implements Bundlable {
         }
 
         FileHandle customTiles = FileUtils.getFileHandle(
-                CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_') + "/" + CustomTileLoader.CUSTOM_TILES);
+                CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_') + "/" + CustomTileLoader.EXTRA_FILES);
         if (customTiles.exists() && customTiles.isDirectory() && customTiles.list().length > 0) {
-            bundle.put(CUSTOM_TILES, new AdditionalFileInfo(customTiles));
+            bundle.put(FILES, new AdditionalFileInfo(customTiles));
         }
     }
 

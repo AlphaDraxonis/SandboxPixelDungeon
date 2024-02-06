@@ -153,7 +153,6 @@ public class ChangeRegion extends Component {
             }
             @Override
             protected void onClick() {
-                //tzz rename 'custom_tiles' to 'files'
                 List<String> audioFiles = CustomDungeonSaves.findAllAudioFiles();
                 String[] options = new String[audioFiles.size() + 1];
                 options[0] = Messages.get(ChangeRegion.class, "no_custom_music");
