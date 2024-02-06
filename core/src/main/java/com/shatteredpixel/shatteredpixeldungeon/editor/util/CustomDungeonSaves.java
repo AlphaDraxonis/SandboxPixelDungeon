@@ -301,6 +301,26 @@ public class CustomDungeonSaves {
         }
     }
 
+    public static void writeBytes(String fileName, byte[] bytes) throws IOException {
+        try {
+            FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), ROOT_DIR + fileName.replace(' ', '_'));
+            //write to a temp file, then move the files.
+            // This helps prevent save corruption if writing is interrupted
+            if (file.exists()) {
+                FileHandle temp = FileUtils.getFileHandle(fileName.replace(' ', '_') + ".tmp");
+                temp.writeBytes(bytes, false);
+                file.delete();
+                temp.moveTo(file);
+            } else {
+                file.writeBytes(bytes, false);
+            }
+
+        } catch (GdxRuntimeException e) {
+            //game classes expect an IO exception, so wrap the GDX exception in that
+            throw new IOException(e);
+        }
+    }
+
     public static String getAbsolutePath(String fileName) {
         String path = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), ROOT_DIR + fileName.replace(' ', '_')).file().getAbsolutePath();
         if (DeviceCompat.isAndroid()) {

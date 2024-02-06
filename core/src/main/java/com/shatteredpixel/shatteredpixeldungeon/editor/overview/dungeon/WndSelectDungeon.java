@@ -517,8 +517,7 @@ public class WndSelectDungeon extends Window {
             Sample.INSTANCE.play(Assets.Sounds.EVOKE);
             EditorScene.show(new WndOptions(
                     Messages.get(WndSelectDungeon.class, "export_dun_confirm_title", info.name),
-                    Messages.get(WndSelectDungeon.class, "export_dun_confirm_body", destLocation)
-                            + (ExportDungeonWrapper.hasCustomTiles(info.name) ? Messages.get(WndSelectDungeon.class, "export_dun_confirm_custom_tile_hint") : ""),
+                    Messages.get(WndSelectDungeon.class, "export_dun_confirm_body", destLocation),
                     Messages.get(WndSupportPrompt.class, "close")));
         }
 

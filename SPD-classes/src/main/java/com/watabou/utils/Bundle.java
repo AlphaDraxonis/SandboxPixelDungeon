@@ -198,6 +198,21 @@ public class Bundle {
 		}
 	}
 
+	public byte[] getByteArray( String key ) {
+		try {
+			JSONArray array = data.getJSONArray( key );
+			int length = array.length();
+			byte[] result = new byte[length];
+			for (int i=0; i < length; i++) {
+				result[i] = (byte) array.getInt( i );
+			}
+			return result;
+		} catch (JSONException e) {
+			Game.reportException(e);
+			return null;
+		}
+	}
+
 	public long[] getLongArray( String key ) {
 		try {
 			JSONArray array = data.getJSONArray( key );
@@ -394,6 +409,18 @@ public class Bundle {
 	}
 
 	public void put( String key, int[] array ) {
+		try {
+			JSONArray jsonArray = new JSONArray();
+			for (int i=0; i < array.length; i++) {
+				jsonArray.put( i, array[i] );
+			}
+			data.put( key, jsonArray );
+		} catch (JSONException e) {
+			Game.reportException(e);
+		}
+	}
+
+	public void put( String key, byte[] array ) {
 		try {
 			JSONArray jsonArray = new JSONArray();
 			for (int i=0; i < array.length; i++) {

@@ -31,12 +31,6 @@ public class ExportDungeonWrapper implements Bundlable {
         this.dungeon = dungeon;
     }
 
-    public static boolean hasCustomTiles(String dungeonName){
-        FileHandle file = FileUtils.getFileHandle(
-                CustomDungeonSaves.DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + CustomTileLoader.CUSTOM_TILES);
-        return file.exists() && file.isDirectory() && file.list().length > 0;
-    }
-
     private static final String DUNGEON = "dungeon";
     private static final String LEVEL = "level";
     private static final String CUSTOM_TILES = "custom_tiles";
@@ -56,9 +50,9 @@ public class ExportDungeonWrapper implements Bundlable {
             i++;
         }
 
-//        if (bundle.contains(CUSTOM_TILES)) {
-//            customTiles = (AdditionalFileInfo) bundle.get(CUSTOM_TILES);
-//        }
+        if (bundle.contains(CUSTOM_TILES)) {
+            customTiles = (AdditionalFileInfo) bundle.get(CUSTOM_TILES);
+        }
     }
 
     @Override
@@ -78,11 +72,11 @@ public class ExportDungeonWrapper implements Bundlable {
             }
         }
 
-//        FileHandle customTiles = FileUtils.getFileHandle(
-//                CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_') + "/" + CustomTileLoader.CUSTOM_TILES);
-//        if (customTiles.exists() && customTiles.isDirectory() && customTiles.list().length > 0) {
-//            bundle.put(CUSTOM_TILES, new AdditionalFileInfo(customTiles));
-//        }
+        FileHandle customTiles = FileUtils.getFileHandle(
+                CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_') + "/" + CustomTileLoader.CUSTOM_TILES);
+        if (customTiles.exists() && customTiles.isDirectory() && customTiles.list().length > 0) {
+            bundle.put(CUSTOM_TILES, new AdditionalFileInfo(customTiles));
+        }
     }
 
     public static CustomDungeonSaves.Info doImport(FileHandle file) {
@@ -106,10 +100,10 @@ public class ExportDungeonWrapper implements Bundlable {
                 CustomDungeonSaves.saveLevel(l);
             }
 
-//            if (export.customTiles != null) {
-//                export.customTiles.doImport(
-//                        CustomDungeonSaves.DUNGEON_FOLDER + export.dungeon.getName().replace(' ', '_') + "/");
-//            }
+            if (customTiles != null) {
+                customTiles.doImport(
+                        CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_') + "/");
+            }
 
             return dungeonInfo;
 
@@ -125,7 +119,7 @@ public class ExportDungeonWrapper implements Bundlable {
 
         private String name;
         private boolean isDirectory;
-        private String content;
+        private byte[] content;
         private AdditionalFileInfo[] subFiles;
 
         public AdditionalFileInfo() {
@@ -143,7 +137,7 @@ public class ExportDungeonWrapper implements Bundlable {
                 }
             } else {
                 try {
-                    content = file.readString();
+                    content = file.readBytes();
                 } catch (Exception ignored) {
                     content = null;
                     throw new RuntimeException(ignored);
@@ -154,7 +148,7 @@ public class ExportDungeonWrapper implements Bundlable {
 
         private static final String NAME = "name";
         private static final String IS_DIRECTORY = "is_directory";
-        private static final String CONTENT_AS_STRING = "content_as_string";
+        private static final String CONTENT = "content";
         private static final String SUB_FILE = "sub_file";
 
         @Override
@@ -162,7 +156,7 @@ public class ExportDungeonWrapper implements Bundlable {
             name = bundle.getString(NAME);
             isDirectory = bundle.getBoolean(IS_DIRECTORY);
 
-            if (bundle.contains(CONTENT_AS_STRING)) content = bundle.getString(CONTENT_AS_STRING);
+            if (bundle.contains(CONTENT)) content = bundle.getByteArray(CONTENT);
 
             int i = 0;
             List<AdditionalFileInfo> subFilesList = new ArrayList<>();
@@ -179,12 +173,12 @@ public class ExportDungeonWrapper implements Bundlable {
             bundle.put(NAME, name);
             bundle.put(IS_DIRECTORY, isDirectory);
 
-            if (content != null) bundle.put(CONTENT_AS_STRING, content);
+            if (content != null) bundle.put(CONTENT, content);
 
             if (isDirectory) {
                 int i = 0;
                 for (AdditionalFileInfo afi : subFiles) {
-                    bundle.put(SUB_FILE + "_" + i, afi);
+                    bundle.put(SUB_FILE + "_" + i++, afi);
                 }
             }
         }
@@ -195,7 +189,7 @@ public class ExportDungeonWrapper implements Bundlable {
                     FileUtils.getFileHandle(path + name).mkdirs();
                 } else {
                     try {
-                        CustomDungeonSaves.writeClearText(path + name, content);
+                        CustomDungeonSaves.writeBytes(path + name, content);
                     } catch (IOException ignored) {
                     }
                 }
