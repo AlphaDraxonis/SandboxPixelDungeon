@@ -75,6 +75,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
             posY += GAP * 2;
             float backW = buttonBack.width();
             float backH = buttonBack.height();
+            if (otherTitle instanceof RenderedTextBlock) ((RenderedTextBlock) otherTitle).maxWidth((int) (width - GAP - backW));
             otherTitle.setRect(x + Math.max(backW + GAP, (width - otherTitle.width()) * titleAlignmentOther), posY,
                     width - GAP - backW, Math.max(otherTitle.height(), backH));
             buttonBack.setPos(x, posY + (otherTitle.height() - backH) * 0.5f);

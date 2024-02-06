@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
@@ -12,7 +13,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -47,7 +50,7 @@ public class DungeonTab extends MultiWindowTabComp {
         potionColors.icon(new ItemSprite(ItemSpriteSheet.POTION_AMBER));
         content.add(potionColors);
 
-        scrollRunes = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_scroll"), 8) {
+        scrollRunes = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_scroll"), SPDSettings.language() == Languages.GERMAN ? 7 : 8) {
             @Override
             protected void onClick() {
                 SetPotionScrollRingType change = SetPotionScrollRingType.createScrollWnd(() -> closeCurrentSubMenu());
@@ -58,7 +61,7 @@ public class DungeonTab extends MultiWindowTabComp {
         scrollRunes.icon(new ItemSprite(ItemSpriteSheet.SCROLL_BERKANAN));
         content.add(scrollRunes);
 
-        ringGems = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_ring"), 8) {
+        ringGems = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "set_ring"), SPDSettings.language() == Languages.GERMAN ? 7 : 8) {
             @Override
             protected void onClick() {
                 SetPotionScrollRingType change = SetPotionScrollRingType.createRingWnd(() -> closeCurrentSubMenu());
@@ -89,7 +92,7 @@ public class DungeonTab extends MultiWindowTabComp {
         durationSettings.icon(new ItemSprite(ItemSpriteSheet.POTION_JADE));
         content.add(durationSettings);
 
-        forceChallenges = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndForceChallenges.class, "title"), 8){
+        forceChallenges = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(WndForceChallenges.class, "title"), SPDSettings.language() == Languages.GERMAN ? 7 : 8){
             @Override
             protected void onClick() {
                 int forceChallenges = Dungeon.customDungeon.forceChallenges;//prevent cbs from being disabled
@@ -101,7 +104,7 @@ public class DungeonTab extends MultiWindowTabComp {
         forceChallenges.icon(Icons.CHALLENGE_ON.get());
         content.add(forceChallenges);
 
-        customRecipes = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "custom_recipes"), 8){
+        customRecipes = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(DungeonTab.class, "custom_recipes"), PixelScene.landscape() ? 8 : 6){
             @Override
             protected void onClick() {
                 CustomRecipeList crl = new CustomRecipeList();
@@ -124,7 +127,7 @@ public class DungeonTab extends MultiWindowTabComp {
         seeLevelOnDeath = new StyledCheckBox(Messages.get(DungeonTab.class, "see_level_on_death")) {
             @Override
             protected int textSize() {
-                return 8;
+                return super.textSize() - 1;
             }
         };
         seeLevelOnDeath.checked(Dungeon.customDungeon.seeLevelOnDeath);
@@ -134,7 +137,7 @@ public class DungeonTab extends MultiWindowTabComp {
         autoRevealSecrets = new StyledCheckBox(Messages.get(DungeonTab.class, "reveal_secrets")) {
             @Override
             protected int textSize() {
-                return 8;
+                return SPDSettings.language() == Languages.GERMAN ? 7 : 8;
             }
         };
         autoRevealSecrets.checked(!Dungeon.customDungeon.notRevealSecrets);

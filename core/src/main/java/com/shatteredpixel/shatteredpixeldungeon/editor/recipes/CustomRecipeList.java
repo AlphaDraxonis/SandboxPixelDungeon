@@ -109,9 +109,9 @@ public class CustomRecipeList extends Component {
     }
 
     public Component createTitle() {
-        RenderedTextBlock titleTextBlock = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(CustomRecipeList.class, "title")), 12);
-        titleTextBlock.hardlight(Window.TITLE_COLOR);
-        return titleTextBlock;
+        RenderedTextBlock title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(CustomRecipeList.class, "title")), 11);
+        title.hardlight(Window.TITLE_COLOR);
+        return title;
     }
 
     public class RecipeListItem extends Component {
@@ -143,6 +143,7 @@ public class CustomRecipeList extends Component {
                 }
             }, "", 8);
             cost.addChangeListener(() -> recipe.setCost((int) cost.getValue()));
+            cost.setButtonWidth(10f);
             add(cost);
 
             updateState();
@@ -157,9 +158,8 @@ public class CustomRecipeList extends Component {
                 protected void onClick() {
                     Dungeon.customDungeon.recipes.remove(recipe);
                     recipeListItems.remove(RecipeListItem.this);
-                    RecipeListItem.this.remove();
-                    RecipeListItem.this.destroy();
                     RecipeListItem.this.killAndErase();
+                    RecipeListItem.this.destroy();
                     DungeonTab.updateLayout();
                 }
             };
@@ -212,14 +212,29 @@ public class CustomRecipeList extends Component {
             PixelScene.align(cost);
             posX = cost.right() + 2;
 
-            remove.setRect(width - 2 - remove.icon().width(), y + (height - remove.icon().height()) * 0.5f, remove.icon().width(), remove.icon().height());
-            PixelScene.align(remove);
+            if (PixelScene.landscape()) {
+                remove.setRect(width - 2 - remove.icon().width(), y + (height - remove.icon().height()) * 0.5f, remove.icon().width(), remove.icon().height());
+                PixelScene.align(remove);
 
-            output.setRect(remove.left() - ItemSpriteSheet.SIZE - 3, y + (height - ItemSpriteSheet.SIZE) * 0.5f, ItemSpriteSheet.SIZE, ItemSpriteSheet.SIZE);
+                output.setRect(remove.left() - ItemSpriteSheet.SIZE - 3, y + (height - ItemSpriteSheet.SIZE) * 0.5f, ItemSpriteSheet.SIZE, ItemSpriteSheet.SIZE);
 
-            arrow.x = posX + (output.left() - posX - arrow.width()) * 0.5f;
-            arrow.y = y + (height - arrow.height()) * 0.5f;
-            PixelScene.align(arrow);
+                arrow.x = posX + (output.left() - posX - arrow.width()) * 0.5f;
+                arrow.y = y + (height - arrow.height()) * 0.5f;
+                PixelScene.align(arrow);
+            } else {
+                remove.setRect(width - 2 - remove.icon().width(), y + height + (height - remove.icon().height()) * 0.5f, remove.icon().width(), remove.icon().height());
+                PixelScene.align(remove);
+
+                float outputPlusArrowWidth = ItemSpriteSheet.SIZE + arrow.width() + 6;
+
+                arrow.x = (width - outputPlusArrowWidth)*0.5f;
+                arrow.y = y + height + (height - arrow.height()) * 0.5f;
+                PixelScene.align(arrow);
+
+                output.setRect(arrow.x + arrow.width() + 6, y + height + (height - ItemSpriteSheet.SIZE) * 0.5f, ItemSpriteSheet.SIZE, ItemSpriteSheet.SIZE);
+
+                height *= 2;
+            }
         }
 
         private void updateState() {

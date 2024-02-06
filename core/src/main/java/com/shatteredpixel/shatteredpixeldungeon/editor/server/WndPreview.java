@@ -186,9 +186,15 @@ public class WndPreview extends Component {
         height = 0;
         float posY = y + EditorUtilies.layoutCompsLinear(4, this, desc, creator, difficulty, time, version) + 5;
         download.setRect(x + width / 5, posY, width * 3 / 5, 16);
-        delete.setRect(x + width - 16, posY, 16, 16);
-        edit.setRect(delete.left() - 16, posY, 16, 16);
         height = posY - y + 16 + 2;
+
+        if (PixelScene.landscape()) {
+            delete.setRect(x + width - 16, posY, 16, 16);
+            edit.setRect(delete.left() - 16, posY, 16, 16);
+        } else {
+            delete.setRect(x + width - delete.icon().width(), posY + (16 - delete.icon().width()) * 0.5f, delete.icon().width(), delete.icon().width());
+            edit.setRect(delete.left() - edit.icon().width() - 1, posY + (16 - edit.icon().width()) * 0.5f, edit.icon().width(), edit.icon().width());
+        }
     }
 
     public Component createTitle() {

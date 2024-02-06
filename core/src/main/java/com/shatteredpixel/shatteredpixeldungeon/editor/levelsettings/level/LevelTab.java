@@ -83,7 +83,7 @@ public class LevelTab extends MultiWindowTabComp {
 
             @Override
             protected int textSize() {
-                return 8;
+                return super.textSize() - 1;
             }
         };
         hungerDepletion.checked(level.levelScheme.hungerDepletion);
@@ -99,7 +99,7 @@ public class LevelTab extends MultiWindowTabComp {
 
             @Override
             protected int textSize() {
-                return 8;
+                return super.textSize() - 1;
             }
         };
         naturalRegen.checked(level.levelScheme.naturalRegeneration);
@@ -121,7 +121,7 @@ public class LevelTab extends MultiWindowTabComp {
 
             @Override
             protected int textSize() {
-                return SPDSettings.language() == Languages.GERMAN ? 6 : 8;
+                return SPDSettings.language() == Languages.GERMAN ? 6 : super.textSize() - 1;
             }
         };
         allowPickaxeMining.checked(level.levelScheme.allowPickaxeMining);
@@ -131,7 +131,7 @@ public class LevelTab extends MultiWindowTabComp {
         rememberLayout = new StyledCheckBox(Messages.get(this, "remember_level_layout")) {
             @Override
             protected int textSize() {
-                return 8;
+                return super.textSize() - 1;
             }
         };
         Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_MAGICMAP);
@@ -144,7 +144,7 @@ public class LevelTab extends MultiWindowTabComp {
         magicMappingDisabled = new StyledCheckBox(Messages.get(this, "magic_mapping_disabled")) {
             @Override
             protected int textSize() {
-                return SPDSettings.language() == Languages.GERMAN ? 6 : 8;
+                return SPDSettings.language() == Languages.GERMAN ? 6 : super.textSize() - 1;
             }
         };
         icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_MAGICMAP);

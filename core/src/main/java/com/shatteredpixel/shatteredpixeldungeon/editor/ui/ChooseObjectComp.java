@@ -42,12 +42,12 @@ public abstract class ChooseObjectComp extends Component {
         float displayWidth = getDisplayWidth();
         changeObjBtn.setRect(x + width - height, y, height, height);
         if (displayWidth == -1) {
-            label.maxWidth((int) (changeObjBtn.left() - 1));
+            label.maxWidth((int) ((changeObjBtn.left() - 1)*2/3f));
             displayWidth = (changeObjBtn.left() - x - label.width() - 3 - 2);
         }
         display.setRect(x + changeObjBtn.left() - 2 - displayWidth, y, displayWidth, height);
 
-        label.maxWidth((int) (display.left() - 3));
+        label.maxWidth((int) (display.left() - 2));
         label.setPos(x, y + (height - label.height()) * 0.5f);
 
     }
