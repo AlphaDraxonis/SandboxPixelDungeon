@@ -22,9 +22,12 @@
 package com.watabou.noosa.audio;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Callback;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -210,11 +213,17 @@ public enum Music {
 		play(trackQueue.remove(0), trackLooper);
 	};
 
+	public static Function<String, FileHandle> getExternalAudioFile;
+
 	private synchronized void play(String track, com.badlogic.gdx.audio.Music.OnCompletionListener listener){
 		try {
 			fadeTime = fadeTotal = -1;
 
-			player = Gdx.audio.newMusic(Gdx.files.internal(track));
+			try {
+				player = Gdx.audio.newMusic(Gdx.files.internal(track));
+			} catch (GdxRuntimeException notFound) {
+				player = Gdx.audio.newMusic(getExternalAudioFile.apply(track));
+			}
 			player.setLooping(looping);
 			player.setVolume(volumeWithFade());
 			player.play();

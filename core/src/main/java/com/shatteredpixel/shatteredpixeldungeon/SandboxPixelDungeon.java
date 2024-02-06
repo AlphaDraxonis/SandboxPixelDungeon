@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
@@ -42,6 +43,10 @@ public class SandboxPixelDungeon extends Game {
 	public static final int _0_3_v2_1_0  = 723;
 	public static final int _0_8_v2_2_0  = 755;
 	public static final int _1_0_v2_3_0  = 766;
+
+	static {
+		Music.getExternalAudioFile = CustomDungeonSaves::getExternalFile;
+	}
 
 	public SandboxPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );

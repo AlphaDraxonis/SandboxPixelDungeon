@@ -26,7 +26,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CustomDungeonSaves {
 
@@ -244,6 +246,50 @@ public class CustomDungeonSaves {
                             + e.getClass().getSimpleName() + ": " + e.getMessage()));
             return null;
         }
+    }
+
+    public static FileHandle getAdditionalFilesDir() {
+        return FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CustomTileLoader.CUSTOM_TILES);
+    }
+
+    public static List<String> findAllAudioFiles() {
+        FileHandle dir = getAdditionalFilesDir();
+        if (!dir.exists()) {
+            dir.mkdirs();
+        } else if (!dir.isDirectory()) {
+            return null;
+        }
+
+        Set<FileHandle> files = new HashSet<>();
+        addAddSubdirFiles(files, dir);
+        List<String> fullFilePaths = new ArrayList<>(8);
+
+        String rootDir = dir.path() + "/";
+
+        for (FileHandle f : files) {
+            String extension = f.extension();
+            if (extension.equals("ogg") || extension.equals("mp3") || extension.equals("wav")) {
+                fullFilePaths.add(f.path().replaceFirst(rootDir, ""));
+            }
+        }
+
+        Collections.sort(fullFilePaths);
+
+        return fullFilePaths;
+    }
+
+    private static void addAddSubdirFiles(Set<FileHandle> files, FileHandle parentDir) {
+        for (FileHandle f : parentDir.list()) {
+            if (f.isDirectory()) {
+                addAddSubdirFiles(files, f);
+            } else {
+                files.add(f);
+            }
+        }
+    }
+
+    public static FileHandle getExternalFile(String pathFromRoot) {
+        return FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CustomTileLoader.CUSTOM_TILES + pathFromRoot);
     }
 
     public static void copyLevelsForNewGame(String dungeonName, String dirDestination) throws IOException {

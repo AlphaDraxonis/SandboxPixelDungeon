@@ -70,6 +70,7 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
@@ -96,6 +97,7 @@ public class CustomLevel extends Level {
     int region;
     private int waterTexture = REGION_NONE;
     private int music = REGION_NONE;
+    public String customMusic;
 
     {
         setRegion(REGION_SEWERS);
@@ -437,7 +439,12 @@ public class CustomLevel extends Level {
 
     @Override
     public void playLevelMusic() {
-        playLevelMusic(music == REGION_NONE ? region : music, musicVariant);
+        if (customMusic != null) {
+            Music.INSTANCE.play(customMusic, true);
+        }
+        else {
+            playLevelMusic(music == REGION_NONE ? region : music, musicVariant);
+        }
     }
 
     @Override
@@ -640,6 +647,7 @@ public class CustomLevel extends Level {
     private static final String REGION = "region";
     private static final String WATER_TEXTUTE = "water_texture";
     private static final String MUSIC = "music";
+    private static final String CUSTOM_MUSIC = "custom_music";
     private static final String ENABLE_RESPAWNING = "enable_respawning";
     private static final String RESPAWN_COOLDOWN = "respawn_cooldown";
     private static final String MOB_LIMIT = "mob_limit";
@@ -653,6 +661,7 @@ public class CustomLevel extends Level {
         bundle.put(REGION, region);
         bundle.put(WATER_TEXTUTE, waterTexture);
         bundle.put(MUSIC, music);
+        bundle.put(CUSTOM_MUSIC, customMusic);
         bundle.put(ENABLE_RESPAWNING, enableRespawning);
         bundle.put(RESPAWN_COOLDOWN, respawnCooldown);
         bundle.put(MOB_LIMIT, mobLimit);
@@ -679,6 +688,9 @@ public class CustomLevel extends Level {
         for (Mob m : mobs) {
             m.clearTime();//Fix wrong time caused by v0.7
         }
+
+        customMusic = bundle.getString(CUSTOM_MUSIC);
+        if ("".equals(customMusic)) customMusic = null;
     }
     //----------------------
 

@@ -348,6 +348,10 @@ public final class EditorUtilies {
     }
 
     public static float layoutStyledCompsInRectangles(int gap, float width, int numColumns, Component parent, Component... comps) {
+        return layoutStyledCompsInRectangles(gap, width, 0, numColumns, parent, comps);
+    }
+
+    public static float layoutStyledCompsInRectangles(int gap, float width, float minCompHeight, int numColumns, Component parent, Component... comps) {
         if (comps == null) return parent.height();
 
         final int compsPerRow = numColumns;
@@ -359,7 +363,7 @@ public final class EditorUtilies {
         for (Component c : comps) {
             if (c != null && c.visible) c.setSize(widthOnePart, -1);
         }
-        float maxCompHeight = 0;
+        float maxCompHeight = minCompHeight;
         for (Component c : comps) {
             if (c != null && c.visible && c.height() > maxCompHeight) maxCompHeight = c.height();
         }

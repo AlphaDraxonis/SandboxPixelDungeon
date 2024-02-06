@@ -40,7 +40,19 @@ public class WndOptionsCondensed extends WndOptions {
 	}
 
 	@Override
-	protected void layoutBody(float pos, String message, String... options) {
+	protected void layoutBody(String message, String... options) {
+
+		float pos = 0;
+
+		if (tfTitle instanceof RenderedTextBlock) {
+			pos += MARGIN;
+			((RenderedTextBlock) tfTitle).maxWidth(width - MARGIN * 2);
+			tfTitle.setPos(MARGIN, pos);
+		} else {
+			tfTitle.setRect(0, pos, width, 0);
+		}
+		pos = tfTitle.bottom() + 2*MARGIN;
+
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
 		RenderedTextBlock tfMesage = PixelScene.renderTextBlock( 6 );

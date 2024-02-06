@@ -43,6 +43,7 @@ import com.watabou.glwrap.Texture;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
+import com.watabou.utils.Function;
 import com.watabou.utils.Point;
 
 import java.util.Objects;
@@ -59,10 +60,6 @@ public class TextInput extends Component {
 	private NinePatch bg;
 
 	public Function<String, String> convertStringToValidString;
-
-	public interface Function<T, R> {
-		R apply(T t);
-	}
 
 	public TextInput( NinePatch bg, boolean multiline, int size ){
 		super();

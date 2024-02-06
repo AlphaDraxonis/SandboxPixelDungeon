@@ -24,6 +24,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.DeviceCompat;
 
 import java.util.List;
 
@@ -189,7 +190,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                 return;
             }
             String uploader = userName.getText();
-            if (uploader == null || uploader.equals(userName.defaultValue)) {
+            if (uploader == null || uploader.equals(userName.defaultValue) || ("AlphaDraxonis".equals(uploader) && !DeviceCompat.isDebug())) {
                 Game.scene().addToFront(new WndMessage(Messages.get(UploadDungeon.class, "no_username")));
                 return;
             }

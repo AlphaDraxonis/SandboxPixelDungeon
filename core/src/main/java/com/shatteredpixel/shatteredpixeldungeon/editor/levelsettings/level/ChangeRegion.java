@@ -1,15 +1,18 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -17,10 +20,15 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+
+import java.util.List;
+import java.util.Objects;
 
 public class ChangeRegion extends Component {
 
@@ -61,9 +69,12 @@ public class ChangeRegion extends Component {
     };
 
     protected StyledSpinner region, water, music;
+    protected MusicVariantSpinner musicVariantSpinner;
+    protected StyledButton customMusic;
+
     private final Component outsideSp;
 
-    private final MusicVariantSpinner musicVariantSpinner;
+    private String newCustomMusic;
 
     public ChangeRegion(Runnable onClose) {
         super();
@@ -76,11 +87,13 @@ public class ChangeRegion extends Component {
                 f.getMusicValue()
         };
         int oldMusicVariant = f.musicVariant;
+        String oldCustomMusic = f.customMusic;
         int[] newValues = {
                 oldValues[0],
                 oldValues[1],
                 oldValues[2]
         };
+        newCustomMusic = oldCustomMusic;
 
         region = new StyledSpinner(new SpinnerTextIconModel(true, oldValues[0] - 1, REGION_DATA) {
             @Override
@@ -133,6 +146,49 @@ public class ChangeRegion extends Component {
         music.setSpinnerHeight(21);
         add(music);
 
+        String customMusicLabel = Messages.get(ChangeRegion.class, "custom_music");
+        customMusic = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, customMusicLabel) {
+            {
+                text.setHighlighting(false);
+            }
+            @Override
+            protected void onClick() {
+                //tzz rename 'custom_tiles' to 'files'
+                List<String> audioFiles = CustomDungeonSaves.findAllAudioFiles();
+                String[] options = new String[audioFiles.size() + 1];
+                options[0] = Messages.get(ChangeRegion.class, "no_custom_music");
+                int i = 1;
+                for (String m : audioFiles) {
+                    options[i++] = m;
+                }
+                EditorScene.show(new WndOptions(
+                        Messages.get(ChangeRegion.class, "custom_music"),
+                        Messages.get(ChangeRegion.class, "custom_music_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()),
+                        options
+                ) {
+                    @Override
+                    protected boolean hasInfo(int index) {
+                        tfMessage.setHighlighting(false);
+                        return super.hasInfo(index);
+                    }
+
+                    @Override
+                    protected void onSelect(int index) {
+                        super.onSelect(index);
+                        if (index == 0) {
+                            newCustomMusic = null;
+                        } else {
+                            newCustomMusic = options[index];
+                        }
+                        customMusic.text(customMusicLabel + "\n" + options[index]);
+                    }
+                });
+            }
+        };
+        add(customMusic);
+        if (oldCustomMusic != null) customMusic.text(customMusicLabel + "\n" + oldCustomMusic);
+        else customMusic.text(customMusicLabel + "\n" + Messages.get(ChangeRegion.class, "no_custom_music"));
+
         outsideSp = new Component() {
             RedButton save, cancel;
 
@@ -146,11 +202,12 @@ public class ChangeRegion extends Component {
 
                         onClose.run();
                         for (int i = 0; i < newValues.length; i++) {
-                            if (newValues[i] != oldValues[i] || newMusicVariant != oldMusicVariant) {
+                            if (newValues[i] != oldValues[i] || newMusicVariant != oldMusicVariant || !Objects.equals(oldCustomMusic, newCustomMusic)) {
                                 f.setRegion(newValues[0]);
                                 f.setWaterTexture(newValues[1]);
                                 f.setMusic(newValues[2]);
                                 f.musicVariant = newMusicVariant;
+                                f.customMusic = newCustomMusic;
                                 Game.switchScene(EditorScene.class);
                                 return;
                             }
@@ -189,7 +246,7 @@ public class ChangeRegion extends Component {
     protected void layout() {
         height = 0;
         height = EditorUtilies.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, region, water, music, musicVariantSpinner);
-//        height = EditorUtilies.layoutCompsLinear(2, this, musicVariantSpinner);
+        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, 24, 1, this, customMusic);
     }
 
     public static Component createTitle() {

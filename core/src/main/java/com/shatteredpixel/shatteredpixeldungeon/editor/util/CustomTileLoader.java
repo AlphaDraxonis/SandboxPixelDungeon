@@ -13,7 +13,6 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.watabou.noosa.Tilemap;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -48,7 +47,7 @@ public final class CustomTileLoader {
             Tiles.addCustomTile(customTile);
         }
 
-        FileHandle dir = FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CUSTOM_TILES);
+        FileHandle dir = CustomDungeonSaves.getAdditionalFilesDir();
         if (!dir.exists()) {
             dir.mkdirs();
         } else if (!dir.isDirectory()) {
