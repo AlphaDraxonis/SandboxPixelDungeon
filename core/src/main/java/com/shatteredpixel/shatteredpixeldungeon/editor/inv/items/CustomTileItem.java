@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.DefaultListItemWithRemoveBtn;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.CustomTileActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
@@ -68,11 +69,47 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
             return new DefaultListItemWithRemoveBtn(this, window, name(), getSprite()) {
                 @Override
                 protected void onRemove() {
-                    //TODO tzz do this as undoable action!!!
-                    Dungeon.customDungeon.customTiles.remove(getObject());
-                    Tiles.removeCustomTile(CustomTileItem.this);
-                    WndEditorInv.updateCurrentTab();
-                    EditorScene.revalidateCustomTiles();
+                    CustomTileLoader.SimpleCustomTile del = (CustomTileLoader.SimpleCustomTile) getObject();
+
+                    Undo.startAction();
+
+                    ActionPartList actionPart = new ActionPartList() {
+                        @Override
+                        public void undo() {
+                            Dungeon.customDungeon.customTiles.add(del);
+                            Tiles.addCustomTile(del);
+                            WndEditorInv.updateCurrentTab();
+                            super.undo();
+                        }
+
+                        @Override
+                        public void redo() {
+                            Dungeon.customDungeon.customTiles.remove(del);
+                            Tiles.removeCustomTile(CustomTileItem.this);
+                            WndEditorInv.updateCurrentTab();
+                            super.redo();
+                            EditorScene.revalidateCustomTiles();
+                        }
+
+                        @Override
+                        public boolean hasContent() {
+                            return true;
+                        }
+                    };
+
+                    for (CustomTilemap ct : Dungeon.level.customTiles.toArray(new CustomTilemap[0])) {
+                        if (ct instanceof CustomTileLoader.SimpleCustomTile && ((CustomTileLoader.SimpleCustomTile) ct).identifier.equals(del.identifier)) {
+                            int cell = ct.tileX + ct.tileY * Dungeon.level.width();
+                            actionPart.addActionPart(new CustomTileActionPart.Remove(cell, Dungeon.level.map[cell], ct));
+                        }
+                    }
+
+                    Undo.addActionPart(actionPart);
+
+                    Undo.endAction();
+
+                    actionPart.redo();
+
                 }
             };
         }
