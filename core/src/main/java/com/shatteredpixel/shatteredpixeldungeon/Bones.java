@@ -265,11 +265,9 @@ public class Bones {
 			if (branch == 0) {
 				//always match depth exactly for main path
 				return level.equals(Dungeon.level.name);
-			} else if (branch >= 1) {
-				//just match the region for quest sub-floors
-				//TODO tzz
-//				return Dungeon.customDungeon.getFloor(level).getRegion() == Dungeon.level.levelScheme.getRegion();
-				return false;
+			} else {
+				//branch are level ids, so same branch is always same area
+				return branch >= 1;
 			}
 		}
 		return false;

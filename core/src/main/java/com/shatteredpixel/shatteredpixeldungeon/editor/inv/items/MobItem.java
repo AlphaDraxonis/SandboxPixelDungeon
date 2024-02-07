@@ -56,9 +56,7 @@ public class MobItem extends EditorItem<Mob> {
 
     public static boolean invalidPlacement(Mob mob, int cell) {
         return Dungeon.level.solid[cell] || (Dungeon.level.pit[cell] && !mob.isFlying()) || !Dungeon.level.insideMap(cell)
-                || (Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[cell])
-//                || (mob instanceof Piranha && !Dungeon.level.water[cell])
-                ;//&& level.map[cell] != Terrain.DOOR;//TODO make placement on doors possible FIXME WICHTIG tzz
+                || (Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[cell]);
     }
 
     public static ActionPart remove(Mob mob) {

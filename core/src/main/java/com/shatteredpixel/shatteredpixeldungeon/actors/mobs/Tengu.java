@@ -759,7 +759,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		public boolean act() {
 
 			if (smokeEmitters.isEmpty()){
-				fx(true);//tzz check if ignited on drop works
+				fx(true);
 			}
 
 			if (!showTimer(bombPos, timer)){

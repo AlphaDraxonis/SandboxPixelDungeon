@@ -1,13 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.watabou.noosa.Image;
@@ -111,15 +108,11 @@ public class InspectObj extends Component {
     }
 
     public static Image createTabIcon(int index) {
-        //TODO tzz
-        if (index == 0) return Icons.ANY_HERO.get();
-        return BadgeBanner.image(index - 1);
+        return new ItemSprite();
     }
 
     public static String getTabName(int index) {
-        //TODO tzz
-        if (index > 0) return HeroClass.values()[index - 1].title();
-        return Messages.get(HeroSettings.class, "general");
+        return "Tab " + index;
     }
 
     private static final Component[] EMPTY_COMPONENT_ARRAY = new Component[0];

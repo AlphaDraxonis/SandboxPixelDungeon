@@ -273,7 +273,7 @@ public abstract class Level implements Bundlable {
 
 	public void create() {
 
-        Random.pushGenerator(Dungeon.seedForLevel(name,this instanceof MiningLevel ? 1 + ((MiningLevel)this).questId : 0 ));//TODO fixme tzz
+        Random.pushGenerator(Dungeon.seedForLevel(name, this instanceof MiningLevel ? Dungeon.branch + ((MiningLevel)this).questId : 0 ));
 
 		if (!Dungeon.bossLevel() && Dungeon.branch == 0) {
 
