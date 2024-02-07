@@ -75,13 +75,12 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
     @Override
     public String name() {
-        return internalHero.name();
+        return customName == null ? internalHero.name() : super.name();
     }
 
     @Override
     public String description() {
         return customDesc == null ? internalHero.heroClass.shortDesc() : super.description();
-//                + (internalHero.subClass != HeroSubClass.NONE ? "\n\n" + internalHero.subClass.desc() : "");
     }
 
     @Override

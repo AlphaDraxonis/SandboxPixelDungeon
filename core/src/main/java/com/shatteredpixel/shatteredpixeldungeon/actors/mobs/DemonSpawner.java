@@ -92,7 +92,7 @@ public class DemonSpawner extends SpawnerMob implements MobBasedOnDepth {
 	}
 
 	private float spawnCooldown = 0;
-	public float maxSpawnCooldown = -1;
+	public float maxSpawnCooldown = 0;
 
 	public boolean spawnRecorded = false;
 

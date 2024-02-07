@@ -733,10 +733,12 @@ public class Hero extends Char {
 	}
 
 	private void updatePermaBuffs(float timeSpend){
-		if (Dungeon.customDungeon.permaMindVision) Buff.affect(this, MindVision.class, timeSpend);
-		if (Dungeon.customDungeon.permaInvis) {
-			Buff.affect(this, Invisibility.class, timeSpend);
-			invisible = (int) Math.ceil(timeSpend);
+		if (Dungeon.hero == this) {
+			if (Dungeon.customDungeon.permaMindVision) Buff.affect(this, MindVision.class, timeSpend);
+			if (Dungeon.customDungeon.permaInvis) {
+				Buff.affect(this, Invisibility.class, timeSpend);
+				invisible = (int) Math.ceil(timeSpend);
+			}
 		}
 	}
 

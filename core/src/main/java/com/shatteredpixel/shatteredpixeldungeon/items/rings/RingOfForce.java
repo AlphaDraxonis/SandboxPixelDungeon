@@ -112,7 +112,7 @@ public class RingOfForce extends Ring {
 
 	@Override
 	public String statsInfo() {
-		float tier = CustomDungeon.isEditing() ? 10 : tier(Dungeon.hero.STR());
+		float tier = CustomDungeon.isEditing() ? tier(Hero.STARTING_STR) : tier(Dungeon.hero.STR());
 		if (isIdentified()) {
 			int level = soloBuffedBonus();
 			String info = Messages.get(this, "stats", min(level, tier), max(level, tier), level);
