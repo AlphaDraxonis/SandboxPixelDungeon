@@ -61,12 +61,17 @@ import java.util.ArrayList;
 public class ChangesScene extends PixelScene {
 	
 	public static int changesSelected = 0;
+	public static boolean viewShatteredChanges = true;
+	private static int otherChangesSelected = 0;
 
 	private NinePatch rightPanel;
 	private ScrollPane rightScroll;
 	private IconTitle changeTitle;
 	private RenderedTextBlock changeBody;
-	
+
+	private StyledButton[] shatteredButtons;
+	private StyledButton[] sandboxButtons;
+
 	@Override
 	public void create() {
 		super.create();
@@ -91,6 +96,20 @@ public class ChangesScene extends PixelScene {
 		ExitButton btnExit = new ExitButton();
 		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
 		add( btnExit );
+
+//		StyledButton switcher = new RedButton("Switch tzz") {
+//			@Override
+//			protected void onClick() {
+//				super.onClick();
+//				int temp = changesSelected;
+//				changesSelected = otherChangesSelected;
+//				otherChangesSelected = temp;
+//				viewShatteredChanges = !viewShatteredChanges;
+//				SandboxPixelDungeon.seamlessResetScene();
+//			}
+//		};
+//		switcher.setRect(0,0, 40, 16);//tzz
+//		add(switcher);
 
 		NinePatch panel = Chrome.get(Chrome.Type.TOAST);
 
@@ -144,33 +163,63 @@ public class ChangesScene extends PixelScene {
 			langWarn.hardlight(CharSprite.WARNING);
 			changeInfos.add(langWarn);
 		}
-		
-		switch (changesSelected){
-			case 0: default:
-				v2_X_Changes.addAllChanges(changeInfos);
-				break;
-			case 1:
-				v1_X_Changes.addAllChanges(changeInfos);
-				break;
-			case 2:
-				v0_9_X_Changes.addAllChanges(changeInfos);
-				break;
-			case 3:
-				v0_8_X_Changes.addAllChanges(changeInfos);
-				break;
-			case 4:
-				v0_7_X_Changes.addAllChanges(changeInfos);
-				break;
-			case 5:
-				v0_6_X_Changes.addAllChanges(changeInfos);
-				break;
-			case 6:
-				v0_5_X_Changes.addAllChanges(changeInfos);
-				v0_4_X_Changes.addAllChanges(changeInfos);
-				v0_3_X_Changes.addAllChanges(changeInfos);
-				v0_2_X_Changes.addAllChanges(changeInfos);
-				v0_1_X_Changes.addAllChanges(changeInfos);
-				break;
+
+		if (viewShatteredChanges) {
+			switch (changesSelected) {
+				case 0:
+				default:
+					v2_X_Changes.addAllChanges(changeInfos);
+					break;
+				case 1:
+					v1_X_Changes.addAllChanges(changeInfos);
+					break;
+				case 2:
+					v0_9_X_Changes.addAllChanges(changeInfos);
+					break;
+				case 3:
+					v0_8_X_Changes.addAllChanges(changeInfos);
+					break;
+				case 4:
+					v0_7_X_Changes.addAllChanges(changeInfos);
+					break;
+				case 5:
+					v0_6_X_Changes.addAllChanges(changeInfos);
+					break;
+				case 6:
+					v0_5_X_Changes.addAllChanges(changeInfos);
+					v0_4_X_Changes.addAllChanges(changeInfos);
+					v0_3_X_Changes.addAllChanges(changeInfos);
+					v0_2_X_Changes.addAllChanges(changeInfos);
+					v0_1_X_Changes.addAllChanges(changeInfos);
+					break;
+			}
+		} else {
+			switch (changesSelected) {//tzz
+//				case 0:
+//				default:
+//					vSa1_1_X_Changes.addAllChanges(changeInfos);
+//					break;
+//				case 1:
+//					vSa1_0_X_Changes.addAllChanges(changeInfos);
+//					break;
+//				case 2:
+//					vSa0_9_X_Changes.addAllChanges(changeInfos);
+//					break;
+//				case 3:
+//					vSa0_8_X_Changes.addAllChanges(changeInfos);
+//					break;
+//				case 4:
+//					vSa0_7_X_Changes.addAllChanges(changeInfos);
+//					break;
+//				case 5:
+//					vSa0_6_X_Changes.addAllChanges(changeInfos);
+//					vSa0_5_X_Changes.addAllChanges(changeInfos);
+//					vSa0_4_X_Changes.addAllChanges(changeInfos);
+//					vSa0_3_X_Changes.addAllChanges(changeInfos);
+//					vSa0_2_X_Changes.addAllChanges(changeInfos);
+//					vSa0_1_X_Changes.addAllChanges(changeInfos);
+//					break;
+			}
 		}
 
 		ScrollPane list = new ScrollPane( new Component() ){
@@ -224,6 +273,10 @@ public class ChangesScene extends PixelScene {
 				panel.innerWidth() + 2,
 				panel.innerHeight() + 2);
 		list.scrollTo(0, 0);
+
+		//************************
+		//****SHATTERED BUTTONS***
+		//*********START**********
 
 		StyledButton btn2_X = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "2.X"){
 			@Override
@@ -323,11 +376,126 @@ public class ChangesScene extends PixelScene {
 		btnOld.setRect(btn0_6.right()-2, btn0_8.top(), 27, changesSelected == 6 ? 19 : 15);
 		addToBack(btnOld);
 
+		shatteredButtons = new StyledButton[] {
+				btn2_X, btn1_X, btn0_9, btn0_8, btn0_7, btn0_6, btnOld
+		};
+
+		//**********END***********
+		//****SHATTERED BUTTONS***
+		//************************
+
+		//************************
+		//*****SANDBOX BUTTONS****
+		//*********START**********
+
+		StyledButton btnSa1_1 = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "1.1"){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				if (changesSelected != 0) {
+					changesSelected = 0;
+					SandboxPixelDungeon.seamlessResetScene();
+				}
+			}
+		};
+		if (changesSelected != 0) btnSa1_1.textColor( 0xBBBBBB );
+		btnSa1_1.setRect(list.left()-4f, list.bottom(), 22, changesSelected == 0 ? 19 : 15);
+		addToBack(btnSa1_1);
+
+		StyledButton btnSa1_0 = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "1.0"){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				if (changesSelected != 1) {
+					changesSelected = 1;
+					SandboxPixelDungeon.seamlessResetScene();
+				}
+			}
+		};
+		if (changesSelected != 1) btnSa1_0.textColor( 0xBBBBBB );
+		btnSa1_0.setRect(btnSa1_1.right()+1, list.bottom(), 22, changesSelected == 1 ? 19 : 15);
+		addToBack(btnSa1_0);
+
+		StyledButton btnSa0_9 = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "0.9"){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				if (changesSelected != 2) {
+					changesSelected = 2;
+					SandboxPixelDungeon.seamlessResetScene();
+				}
+			}
+		};
+		if (changesSelected != 2) btnSa0_9.textColor( 0xBBBBBB );
+		btnSa0_9.setRect(btnSa1_0.right() + 1, list.bottom(), 22, changesSelected == 2 ? 19 : 15);
+		addToBack(btnSa0_9);
+
+		StyledButton btnSa0_8 = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "0.8"){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				if (changesSelected != 3) {
+					changesSelected = 3;
+					SandboxPixelDungeon.seamlessResetScene();
+				}
+			}
+		};
+		if (changesSelected != 3) btnSa0_8.textColor( 0xBBBBBB );
+		btnSa0_8.setRect(btnSa0_9.right() + 1, btnSa0_9.top(), 22, changesSelected == 3 ? 19 : 15);
+		addToBack(btnSa0_8);
+
+		StyledButton btnSa0_7 = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "0.7"){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				if (changesSelected != 4) {
+					changesSelected = 4;
+					SandboxPixelDungeon.seamlessResetScene();
+				}
+			}
+		};
+		if (changesSelected != 4) btnSa0_7.textColor( 0xBBBBBB );
+		btnSa0_7.setRect(btnSa0_8.right() + 1, btnSa0_9.top(), 22, changesSelected == 4 ? 19 : 15);
+		addToBack(btnSa0_7);
+
+		StyledButton btnSaOld = new StyledButton(Chrome.Type.GREY_BUTTON_TR,"0.6-1"){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				if (changesSelected != 5) {
+					changesSelected = 5;
+					SandboxPixelDungeon.seamlessResetScene();
+				}
+			}
+		};
+		if (changesSelected != 5) btnSaOld.textColor( 0xBBBBBB );
+		btnSaOld.setRect(btnSa0_7.right() + 1, btnSa0_9.top(), 26, changesSelected == 5 ? 19 : 15);
+		addToBack(btnSaOld);
+
+		sandboxButtons = new StyledButton[] {
+				btnSa1_1, btnSa1_0, btnSa0_9, btnSa0_8, btnSa0_7, btnSaOld
+		};
+
+		//**********END***********
+		//****SANDBOX BUTTONS*****
+		//************************
+
+		updateButtons();
+
 		Archs archs = new Archs();
 		archs.setSize( Camera.main.width, Camera.main.height );
 		addToBack( archs );
 
 		fadeIn();
+	}
+
+	private void updateButtons() {
+		for (StyledButton btn : shatteredButtons) {
+			btn.active = btn.visible = viewShatteredChanges;
+		}
+		for (StyledButton btn : sandboxButtons) {
+			btn.active = btn.visible = !viewShatteredChanges;
+		}
 	}
 
 	private void updateChangesText(Image icon, String title, String... messages){
