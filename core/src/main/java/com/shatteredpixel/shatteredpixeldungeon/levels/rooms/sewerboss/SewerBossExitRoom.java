@@ -131,7 +131,7 @@ public class SewerBossExitRoom extends ExitRoom {
 		@Override
 		public Tilemap create() {
 			Tilemap v = super.create();
-			v.map(layout, 3);
+			v.map(layout, tileW);
 			return v;
 		}
 		

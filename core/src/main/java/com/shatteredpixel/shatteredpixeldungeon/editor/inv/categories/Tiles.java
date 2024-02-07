@@ -75,6 +75,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.DemonSpawnerRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -298,6 +299,8 @@ public enum Tiles {
         customTileBag.items.add(new CustomTileItem(new CityBossLevel.KingsThrone(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExit(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExitOverhang(), -1));
+        customTileBag.items.add(new CustomTileItem(new DemonSpawnerRoom.NoDemonSpawnerFloor(), -1));
+        customTileBag.items.add(new CustomTileItem(new DemonSpawnerRoom.DemonSpawnerFloor(), -1));
 
         customTileBag.items.add(new CustomTileItem(new HallsBossLevel.CenterPieceVisuals(), -1));
         customTileBag.items.add(new CustomTileItem(new HallsBossLevel.BigPillarVisual(), -1));

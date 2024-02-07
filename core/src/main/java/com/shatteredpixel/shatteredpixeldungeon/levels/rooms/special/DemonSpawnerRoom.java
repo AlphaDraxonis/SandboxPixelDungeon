@@ -120,4 +120,43 @@ public class DemonSpawnerRoom extends SpecialRoom {
 		}
 
 	}
+
+	public static class DemonSpawnerFloor extends CustomTilemap {
+		{
+			texture = Assets.Environment.HALLS_SP;
+
+			tileW = 3;
+			tileH = 1;
+
+			offsetCenterX = 1;
+		}
+
+		private static final int[] layout = {
+				37, 38, 39
+		};
+
+		@Override
+		public Tilemap create() {
+			Tilemap v = super.create();
+			v.map(layout, tileW);
+			return v;
+		}
+	}
+
+	public static class NoDemonSpawnerFloor extends CustomTilemap {
+		{
+			texture = Assets.Environment.HALLS_SP;
+		}
+
+		private static final int[] layout = {
+				19
+		};
+
+		@Override
+		public Tilemap create() {
+			Tilemap v = super.create();
+			v.map(layout, tileW);
+			return v;
+		}
+	}
 }
