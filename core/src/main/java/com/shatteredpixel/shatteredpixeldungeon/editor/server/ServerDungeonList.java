@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.server;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -10,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.services.server.DungeonPreview;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -27,6 +29,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
     private final DungeonPreview[] dungeons;
 
     private Spinner outsideSp;
+    private RedButton upload;
 
     private int page = 0;
     private static final int PREVIEWS_PER_PAGE = 20;
@@ -73,6 +76,20 @@ public class ServerDungeonList extends MultiWindowTabComp {
             });
         }
 
+        upload = new RedButton("") {
+            @Override
+            protected void onClick() {
+                UploadDungeon.showUploadWindow(ServerCommunication.UploadType.UPLOAD, null);
+            }
+
+            @Override
+            protected String hoverText() {
+                return Messages.get(WndSelectDungeon.class, "upload_label");
+            }
+        };
+        upload.icon(Icons.UPLOAD.get());
+        add(upload);
+
         initPage(page);
     }
 
@@ -107,6 +124,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
     protected void layoutOwnContent() {
         content.setSize(width, -1);
         content.setSize(width, EditorUtilies.layoutCompsLinear(GAP, content, mainWindowComps));
+        upload.setRect(width - 17, height - 15,16,16);
     }
 
     public Component createTitle() {
