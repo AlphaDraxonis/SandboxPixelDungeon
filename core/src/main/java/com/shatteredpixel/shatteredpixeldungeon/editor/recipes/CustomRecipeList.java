@@ -212,7 +212,7 @@ public class CustomRecipeList extends Component {
             PixelScene.align(cost);
             posX = cost.right() + 2;
 
-            if (PixelScene.landscape()) {
+            if (width >= posX + remove.icon().width() + 2 + ItemSpriteSheet.SIZE + 3 + arrow.width()) {
                 remove.setRect(width - 2 - remove.icon().width(), y + (height - remove.icon().height()) * 0.5f, remove.icon().width(), remove.icon().height());
                 PixelScene.align(remove);
 

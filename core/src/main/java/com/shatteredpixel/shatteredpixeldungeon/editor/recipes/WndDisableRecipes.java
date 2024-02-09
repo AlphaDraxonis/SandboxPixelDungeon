@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LiquidMetal;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
@@ -23,6 +24,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfHo
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfIcyTouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfToxicEssence;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.AquaBlast;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.ArcaneCatalyst;
@@ -37,7 +40,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.SummonElemental;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.TelekineticGrab;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.WildEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
-import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -54,12 +56,16 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
     public WndDisableRecipes() {
         super(Messages.titleCase(Messages.get(WndDisableRecipes.class, "title")),
                 Messages.get(WndDisableRecipes.class, "desc"),
-                new Object[][]{{0}, {1}, {2}, {3}, {4}}, new String[]{
+                new Object[][]{{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}}, new String[]{
                         Messages.get(WndDisableRecipes.class, "cat_1"),
                         Messages.get(WndDisableRecipes.class, "cat_2"),
                         Messages.get(WndDisableRecipes.class, "cat_3"),
                         Messages.get(WndDisableRecipes.class, "cat_4"),
                         Messages.get(WndDisableRecipes.class, "cat_5"),
+                        Messages.get(WndDisableRecipes.class, "specific_potions"),
+                        Messages.get(WndDisableRecipes.class, "specific_runestones"),
+                        Messages.get(WndDisableRecipes.class, "specific_exotic_potions"),
+                        Messages.get(WndDisableRecipes.class, "specific_exotic_scrolls"),
                 });
         body.setCancelText(Messages.get(WndSupportPrompt.class, "close"));
     }
@@ -81,11 +87,20 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
                         @Override
                         public void checked(boolean value) {
                             super.checked(value);
-                            if (value) Dungeon.customDungeon.blockedRecipes.add(r.index);
-                            else Dungeon.customDungeon.blockedRecipes.remove(r.index);
+                            if (r.index == -1) {
+                                if (value) Dungeon.customDungeon.blockedRecipeResults.add(r.item);
+                                else Dungeon.customDungeon.blockedRecipeResults.remove(r.item);
+                            } else {
+                                if (value) Dungeon.customDungeon.blockedRecipes.add(r.index);
+                                else Dungeon.customDungeon.blockedRecipes.remove(r.index);
+                            }
                         }
                     };
-                    ((CheckBox) btn).checked(Dungeon.customDungeon.blockedRecipes.contains(r.index));
+                    if (r.index == -1) {
+                        ((CheckBox) btn).checked(Dungeon.customDungeon.blockedRecipeResults.contains(r.item));
+                    } else {
+                        ((CheckBox) btn).checked(Dungeon.customDungeon.blockedRecipes.contains(r.index));
+                    }
                     add(btn);
                 }
             };
@@ -100,9 +115,11 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
         int sampleOutputImage;
         int index;
         String name, desc;
+        Class<? extends Item> item;
 
         public RecipeInfo(int sampleOutputImage, int index, Class<? extends Item> item) {
             this.sampleOutputImage = sampleOutputImage;
+            this.item = item;
             this.index = index;
             this.name = Messages.get(item, "name");
             this.desc = Messages.get(item, "desc");
@@ -111,6 +128,7 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
 
         public RecipeInfo(int sampleOutputImage, int index, String name, Class<? extends Item> item) {
             this.sampleOutputImage = sampleOutputImage;
+            this.item = item;
             this.index = index;
             this.name = name;
             this.desc = item == null ? "" : Messages.get(item, "desc");
@@ -122,10 +140,10 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
         switch (index) {
             case 0:
             default:
-                result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, 300, Potion.PlaceHolder.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.STONE_HOLDER, 100, Runestone.PlaceHolder.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, 101, Messages.get(Document.class, "alchemy_guide.exotic_potions.title"), null));
-                result.add(new RecipeInfo(ItemSpriteSheet.SCROLL_HOLDER, 102, Messages.get(Document.class, "alchemy_guide.exotic_scrolls.title"), null));
+                result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, 300, Messages.get(WndDisableRecipes.class, "potions"), Potion.PlaceHolder.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.STONE_HOLDER, 100, Messages.get(WndDisableRecipes.class, "runestones"), Runestone.PlaceHolder.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, 101, Messages.get(WndDisableRecipes.class, "exotic_potions"), null));
+                result.add(new RecipeInfo(ItemSpriteSheet.SCROLL_HOLDER, 102, Messages.get(WndDisableRecipes.class, "exotic_scrolls"), null));
                 return result;
             case 1:
                 result.add(new RecipeInfo(ItemSpriteSheet.STEWED, 105, "1x " + Messages.get(StewedMeat.class, "name"), StewedMeat.class));
@@ -167,6 +185,27 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
                 result.add(new RecipeInfo(ItemSpriteSheet.MAGIC_INFUSE, 219, MagicalInfusion.class));
                 result.add(new RecipeInfo(ItemSpriteSheet.CURSE_INFUSE, 217, CurseInfusion.class));
                 result.add(new RecipeInfo(ItemSpriteSheet.RECYCLE, 222, Recycle.class));
+                return result;
+
+            case 5:
+                for (Class c : Generator.Category.POTION.classes){
+                    result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, -1, c));
+                }
+                return result;
+            case 6:
+                for (Class c : Generator.Category.STONE.classes){
+                    result.add(new RecipeInfo(ItemSpriteSheet.STONE_HOLDER, -1, c));
+                }
+                return result;
+            case 7:
+                for (Class c : Generator.Category.SCROLL.classes){
+                    result.add(new RecipeInfo(ItemSpriteSheet.SCROLL_HOLDER, -1, ExoticScroll.regToExo.get(c)));
+                }
+                return result;
+            case 8:
+                for (Class c : Generator.Category.POTION.classes){
+                    result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, -1, ExoticPotion.regToExo.get(c)));
+                }
                 return result;
         }
     }

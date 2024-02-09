@@ -269,17 +269,17 @@ public class WndJournal extends WndTabbed {
 				}
 			} else {
 				//for first row
-				float buttonWidth = width()/5;
+				float buttonWidth = (float) (width() / Math.ceil(pageButtons.length/2f));
 				float y = 0;
 				float x = 0;
 				for (int i = 0; i < pageButtons.length; i++) {
 					pageButtons[i].setRect(x, y, buttonWidth, ITEM_HEIGHT);
 					PixelScene.align(pageButtons[i]);
 					x += buttonWidth;
-					if (i == 4){
+					if (i == Math.ceil(pageButtons.length / 2f) - 1) {
 						y += ITEM_HEIGHT;
 						x = 0;
-						buttonWidth = width()/5;
+						buttonWidth = (float) (width() / Math.ceil(pageButtons.length / 2f));
 					}
 				}
 			}

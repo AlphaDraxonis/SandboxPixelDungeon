@@ -145,10 +145,8 @@ public class Tilemap extends Visual {
 				bottomRightUpdating = pos + 1;
 
 				((Buffer)quads).position(pos*16);
-				
-				uv = tileset.get(data[pos]);
-				
-				if (needsRender(pos) && uv != null) {
+
+				if (needsRender(pos) && (uv = tileset.get(data[pos])) != null) {
 
 					vertices[0] = x1;
 					vertices[1] = y1;

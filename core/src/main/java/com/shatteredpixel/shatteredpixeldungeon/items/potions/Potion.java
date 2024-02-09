@@ -469,7 +469,8 @@ public class Potion extends Item {
 					return false;
 				}
 			}
-			return true;
+
+			return canBrewNormalPots() || canBrewHealing() || canBrewStrength(ingredients);
 		}
 		
 		@Override
@@ -503,15 +504,29 @@ public class Potion extends Item {
 				result = Reflection.newInstance(types.get(Random.element(ingredients).getClass()));
 				
 			}
+
+			boolean forceHealing = false;
+			if (canBrewNormalPots()) {
+				while (Dungeon.customDungeon.blockedRecipeResults.contains(result.getClass())) {
+					result = (Potion) Generator.randomUsingDefaults( Generator.Category.POTION );
+				}
+			} else if (result instanceof PotionOfStrength || Random.Int(10) < Dungeon.LimitedDrops.COOKING_HP.count && canBrewStrength(ingredients)) {
+				result = new PotionOfStrength();
+			} else {
+				forceHealing = true;
+				result = new PotionOfHealing();
+			}
 			
 			if (seeds.size() == 1){
 				result.identify();
 			}
 
-			while (result instanceof PotionOfHealing
-					&& Random.Int(10) < Dungeon.LimitedDrops.COOKING_HP.count) {
+			if (!forceHealing) {
+				while (result instanceof PotionOfHealing
+						&& Random.Int(10) < Dungeon.LimitedDrops.COOKING_HP.count) {
 
-				result = (Potion) Generator.randomUsingDefaults(Generator.Category.POTION);
+					result = (Potion) Generator.randomUsingDefaults(Generator.Category.POTION);
+				}
 			}
 			
 			if (result instanceof PotionOfHealing) {
@@ -535,6 +550,28 @@ public class Potion extends Item {
 					return "";
 				}
 			};
+		}
+
+		private static boolean canBrewNormalPots() {
+			for (int i = 0; i < Generator.Category.POTION.classes.length; i++) {
+				if (Generator.Category.POTION.classes[i] == PotionOfHealing.class) continue;
+				if (Generator.Category.POTION.defaultProbs[i] > 0) {
+					if (!Dungeon.customDungeon.blockedRecipeResults.contains(Generator.Category.POTION.classes[i])) return true;
+				}
+			}
+			return false;
+		}
+
+		private static boolean canBrewHealing() {
+			return !Dungeon.customDungeon.blockedRecipeResults.contains(PotionOfHealing.class);
+		}
+
+		private static boolean canBrewStrength(ArrayList<Item> ingredients) {
+			for (Item ingredient : ingredients){
+				if (types.get(ingredient.getClass()) == PotionOfStrength.class)
+					return true;
+			}
+			return false;
 		}
 	}
 }

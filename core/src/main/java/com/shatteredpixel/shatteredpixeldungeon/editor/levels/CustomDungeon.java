@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -171,6 +172,7 @@ public class CustomDungeon implements Bundlable {
 
     public List<CustomRecipe> recipes;
     public Set<Integer> blockedRecipes;
+    public Set<Class<? extends Item>> blockedRecipeResults;
     public int nextParticleID = 1;
 
     public Map<Integer, CustomParticle.ParticleProperty> particles;
@@ -182,6 +184,7 @@ public class CustomDungeon implements Bundlable {
         customTiles = new HashSet<>(5);
         recipes = new ArrayList<>(5);
         blockedRecipes = new HashSet<>(5);
+        blockedRecipeResults = new HashSet<>(5);
         particles = new HashMap<>();
         heroesEnabled = new boolean[HeroClass.values().length];
         heroSubClassesEnabled = new boolean[heroesEnabled.length * 2];
@@ -557,6 +560,7 @@ public class CustomDungeon implements Bundlable {
     private static final String CUSTOM_TILES = "custom_tiles";
     private static final String RECIPES = "recipes";
     private static final String BLOCKED_RECIPES = "blocked_recipes";
+    private static final String BLOCKED_RECIPE_RESULTS = "blocked_recipe_results";
     private static final String PARTICLES = "particles";
 
     private static final String RUNE_LABELS = "rune_labels";
@@ -607,6 +611,8 @@ public class CustomDungeon implements Bundlable {
             index++;
         }
         bundle.put(BLOCKED_RECIPES, intArray);
+
+        bundle.put(BLOCKED_RECIPE_RESULTS, blockedRecipeResults.toArray(EditorUtilies.EMPTY_CLASS_ARRAY));
 
         bundle.put(PARTICLES, particles.values());
 
@@ -730,6 +736,9 @@ public class CustomDungeon implements Bundlable {
             for (int i : intArray)
                 blockedRecipes.add(i);
         }
+        blockedRecipeResults = new HashSet<>(5);
+        if (bundle.contains(BLOCKED_RECIPE_RESULTS))
+            Collections.addAll(blockedRecipeResults, (Class<? extends Item>[]) bundle.getClassArray(BLOCKED_RECIPE_RESULTS));
 
         particles = new HashMap<>();
         Collection<Bundlable> collection = bundle.getCollection(PARTICLES);

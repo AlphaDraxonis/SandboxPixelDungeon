@@ -308,7 +308,8 @@ public abstract class Scroll extends Item {
 		public boolean testIngredients(ArrayList<Item> ingredients) {
 			if (ingredients.size() != 1
 					|| !(ingredients.get(0) instanceof Scroll)
-					|| !stones.containsKey(ingredients.get(0).getClass())){
+					|| !stones.containsKey(ingredients.get(0).getClass())
+					|| Dungeon.customDungeon.blockedRecipeResults.contains(stones.get(ingredients.get(0).getClass()))){
 				return false;
 			}
 			

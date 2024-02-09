@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
@@ -126,7 +127,8 @@ public class ExoticPotion extends Potion {
 
 		@Override
 		public boolean testIngredients(ArrayList<Item> ingredients) {
-			if (ingredients.size() == 1 && regToExo.containsKey(ingredients.get(0).getClass())){
+			if (ingredients.size() == 1 && regToExo.containsKey(ingredients.get(0).getClass())
+					&& !Dungeon.customDungeon.blockedRecipeResults.contains(regToExo.get(ingredients.get(0).getClass()))){
 				return true;
 			}
 
