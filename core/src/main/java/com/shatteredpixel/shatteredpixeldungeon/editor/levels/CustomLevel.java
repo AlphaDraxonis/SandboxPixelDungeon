@@ -849,7 +849,13 @@ public class CustomLevel extends Level {
         for (Mob m : level.mobs) {
             int nPos = newPosition.get(m.pos);
             if (!isPositionValid.test(m.pos, nPos)) removeEntities.add(m);
-            else m.pos = nPos;
+            else {
+                m.pos = nPos;
+                if (m.turnToCell != -1) {
+                    int nTurn = newPosition.get(m.turnToCell);
+                    m.turnToCell = isPositionValid.test(m.turnToCell, nTurn) ? nTurn : -1;
+                }
+            }
         }
         level.mobs.removeAll(removeEntities);
         removeEntities.clear();

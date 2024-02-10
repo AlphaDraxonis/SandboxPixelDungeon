@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
@@ -88,6 +89,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -106,8 +108,12 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -122,6 +128,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private MobStateSpinner mobStateSpinner;
     private StyledSpinner playerAlignment;
     private StyledButton editStats;
+    private StyledButton turnTo;
     BuffListContainer buffs;
 
     private ItemContainer<Item> mimicItems;
@@ -146,6 +153,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private HeroClassSpinner heroClassSpinner;
     private HeroClassSpinner.SubclassSpinner heroSubclassSpinner;
 
+
+    private Window windowInstance;
 
     private final Component[] rectComps, linearComps;
 
@@ -742,9 +751,26 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             }
         }
 
+        if (mob.pos != -1) {
+            turnTo = new StyledButton(Chrome.Type.GREY_BUTTON_TR,
+                    Messages.get(this, "turn_to", mob.turnToCell == -1 ? label("turn_to_random") : EditorUtilies.cellToString(mob.turnToCell))) {
+                @Override
+                protected void onClick() {
+                    EditorScene.selectCell(turnToListener);
+                    windowInstance = EditorUtilies.getParentWindow(turnTo);
+                    windowInstance.active = false;
+                    if (windowInstance instanceof WndTabbed)
+                        ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
+                    Game.scene().remove(windowInstance);
+                }
+            };
+            turnTo.leftJustify = false;
+            add(turnTo);
+        }
+
         Mob defaultStats = DefaultStatsCache.getDefaultObject(mob.getClass());
         if (defaultStats != null) {
-            editStats = new StyledButton(Chrome.Type.GREY_BUTTON_TR, label("edit_stats"), PixelScene.landscape() ? 9 : 8) {
+            editStats = new StyledButton(Chrome.Type.GREY_BUTTON_TR, label("edit_stats")) {
                 @Override
                 protected void onClick() {
                     EditorScene.show(WndEditStats.createWindow((int) Math.ceil(EditMobComp.this.width),
@@ -756,7 +782,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         rectComps = new Component[]{
 
-                mobStateSpinner, playerAlignment, mob instanceof Ghost ? questSpinner : null, editStats,
+                mobStateSpinner, playerAlignment, mob instanceof Ghost ? questSpinner : null, editStats, turnTo,
 
                 yogSpawnersAlive,
                 pylonAlwaysActive,
@@ -918,6 +944,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (a.alignment != b.alignment) return false;
         if (a.playerAlignment != b.playerAlignment) return false;
 
+        if (a.turnToCell != b.turnToCell) return false;
+
         if (!Objects.equals(a.customName, b.customName)) return false;
         if (!Objects.equals(a.customDesc, b.customDesc)) return false;
         if (!Objects.equals(a.dialog, b.dialog)) return false;
@@ -1045,4 +1073,34 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             width += rename.icon().width + 3;
         }
     }
+
+    private final CellSelector.Listener turnToListener = new CellSelector.Listener() {
+        private int ignoreNextSelections = 0;
+        @Override
+        public void onSelect(Integer cell) {
+            if (cell == null) {
+                if (ignoreNextSelections > 0) {
+                    ignoreNextSelections--;
+                    return;
+                }
+                cell = -1;
+            }
+
+            obj.turnToCell = cell;
+            turnTo.text(Messages.get(EditMobComp.class, "turn_to", obj.turnToCell == -1 ? label("turn_to_random") : EditorUtilies.cellToString(obj.turnToCell)));
+
+            obj.sprite.turnTo(obj.pos, obj.turnToCell == -1 ? Random.Int( Dungeon.level.length() ) : obj.turnToCell);
+
+            ignoreNextSelections = 2;//will be canceled
+            windowInstance.active = true;
+            if (windowInstance instanceof WndTabbed)
+                ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
+            EditorScene.show(windowInstance);
+        }
+
+        @Override
+        public String prompt() {
+            return Messages.get(EditMobComp.class, "turn_to_prompt");
+        }
+    };
 }

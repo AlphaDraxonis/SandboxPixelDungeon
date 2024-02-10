@@ -153,6 +153,7 @@ public abstract class Char extends Actor {
 	public int HP;
 
 	public int damageReductionMax = 0;
+	public int turnToCell = -1;
 
 	public float baseSpeed	= 1;
 	protected PathFinder.Path path;
@@ -332,6 +333,7 @@ public abstract class Char extends Actor {
 	protected static final String TAG_HT    = "HT";
 	protected static final String TAG_SHLD  = "SHLD";
 	protected static final String BUFFS	    = "buffs";
+	protected static final String TURN_TO_CELL = "turn_to_cell";
 	protected static final String DAMAGE_REDUCTION_MAX= "damage_reduction_max";
 	protected static final String SPEED = "speed";
 	protected static final String VIEW_DISTANCE = "view_distance";
@@ -346,6 +348,8 @@ public abstract class Char extends Actor {
 		bundle.put( TAG_HP, HP );
 		bundle.put( TAG_HT, HT );
 		bundle.put( BUFFS, buffs );
+
+		bundle.put( TURN_TO_CELL, turnToCell );
 
 		Char defaultChar = DefaultStatsCache.getDefaultObject(getClass());
 		if (defaultChar != null) {
@@ -373,6 +377,8 @@ public abstract class Char extends Actor {
 		pos = bundle.getInt( POS );
 		HP = bundle.getInt( TAG_HP );
 		HT = bundle.getInt( TAG_HT );
+
+		if (bundle.contains(TURN_TO_CELL)) turnToCell = bundle.getInt( TURN_TO_CELL );
 
 		if (bundle.contains(DAMAGE_REDUCTION_MAX)) damageReductionMax = bundle.getInt(DAMAGE_REDUCTION_MAX);
 		if (bundle.contains(SPEED)) baseSpeed = bundle.getFloat(SPEED);

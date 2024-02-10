@@ -52,10 +52,10 @@ public class Toast extends Component {
 	public void setMaxWidth(float maxWidth) {
 		this.maxWidth = maxWidth;
 
-		width = this.text.width() + close.width() + bg.marginHor() + MARGIN_HOR * 3;
+		width = this.text.width() + close.width() + bg.marginHor() + MARGIN_HOR * 2;
 		if (maxWidth < width) {
 			width = maxWidth;
-			this.text.maxWidth((int) (maxWidth - close.width() - bg.marginHor() - MARGIN_HOR * 3));
+			this.text.maxWidth((int) (maxWidth - close.width() - bg.marginHor() - MARGIN_HOR * 2));
 		}
 		height = Math.max( this.text.height(), close.height() ) + bg.marginVer() + MARGIN_VER * 2;
 	}

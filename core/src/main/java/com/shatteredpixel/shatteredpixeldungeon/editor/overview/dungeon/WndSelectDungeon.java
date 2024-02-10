@@ -428,7 +428,7 @@ public class WndSelectDungeon extends Window {
                 PixelScene.align(txt);
                 add(txt);
 
-                return GAP + txt.height();
+                return txt.bottom();
             }
 
         }
