@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.LeatherArmor;
@@ -26,12 +27,16 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class GhostQuest extends Quest {
 
     public static final int RAT = 0, GNOLL = 1, CRAB = 2;
 
     private static boolean completedOnce;
-    private static int questsActive;
+    private static List<String> questsActive = new ArrayList<>(3);
 
 
     public Weapon weapon;
@@ -120,7 +125,7 @@ public class GhostQuest extends Quest {
             Sample.INSTANCE.play(Assets.Sounds.GHOST);
             super.complete();
             addScore(0, 1000);
-            questsActive--;
+            questsActive.remove(Dungeon.levelName);
 
             if (Dungeon.level.playsMusicFromRegion() == LevelScheme.REGION_SEWERS) {
                 Game.runOnRenderThread(new Callback() {
@@ -144,7 +149,7 @@ public class GhostQuest extends Quest {
     public void start() {
         super.start();
         Notes.add(Notes.Landmark.GHOST);
-        questsActive++;
+        questsActive.add(Dungeon.levelName);
     }
 
     private static final String WEAPON = "weapon";
@@ -182,28 +187,31 @@ public class GhostQuest extends Quest {
 
     private static final String NODE = "sad_ghost";
     private static final String COMPLETED_ONCE = "completed_once";
-    private static final String QUESTS_ACTIVE = "quests_active";
+    private static final String QUESTS_ACTIVE_LIST = "quests_active_list";
 
     public static void storeStatics(Bundle bundle) {
         Bundle node = new Bundle();
         node.put(COMPLETED_ONCE, completedOnce);
-        node.put(QUESTS_ACTIVE, questsActive);
+        node.put(QUESTS_ACTIVE_LIST, questsActive.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
         bundle.put(NODE, node);
     }
 
     public static void restoreStatics(Bundle bundle) {
         Bundle b = bundle.getBundle(NODE);
         completedOnce = b.getBoolean(COMPLETED_ONCE);
-        questsActive = b.getInt(QUESTS_ACTIVE);
+        questsActive.clear();
+        if (bundle.contains(QUESTS_ACTIVE_LIST)) {
+            questsActive.addAll(Arrays.asList(b.getStringArray(QUESTS_ACTIVE_LIST)));
+        }
     }
 
     public static boolean areQuestsActive() {
-        return questsActive > 0;
+        return questsActive.contains(Dungeon.levelName);
     }
 
     public static void reset() {
         completedOnce = false;
-        questsActive = 0;
+        questsActive.clear();
     }
 
     @Override

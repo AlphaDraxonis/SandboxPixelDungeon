@@ -76,7 +76,7 @@ public class SewerLevel extends RegularLevel {
 			Game.runOnRenderThread(() -> Music.INSTANCE.fadeOut(1f, () -> Music.INSTANCE.play(Assets.Music.SEWERS_TENSE, true)));
 		else if (playingQuestMusic = (GhostQuest.areQuestsActive() || (Statistics.amuletObtained && Dungeon.depth != 1)))
 			Music.INSTANCE.play(Assets.Music.SEWERS_TENSE, true);
-		else if(Statistics.amuletObtained && Dungeon.depth == 1)
+		else if (Statistics.amuletObtained && Dungeon.depth == 1)
 			Music.INSTANCE.play(Assets.Music.THEME_FINALE, true);
 		else
 			Music.INSTANCE.playTracks(SEWER_TRACK_LIST, SEWER_TRACK_CHANCES, false);

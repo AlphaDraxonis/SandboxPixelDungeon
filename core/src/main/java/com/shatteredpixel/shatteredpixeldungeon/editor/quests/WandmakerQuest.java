@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -18,6 +19,10 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class WandmakerQuest extends Quest {
 
     public static final int NUM_QUESTS = 3;
@@ -28,7 +33,7 @@ public class WandmakerQuest extends Quest {
 
     public boolean spawnQuestRoom = true;
 
-    public static int questsActive;//used for music tracking
+    public static List<String> questsActive = new ArrayList<>(3);//used for music tracking
 
 
     @Override
@@ -77,14 +82,14 @@ public class WandmakerQuest extends Quest {
 
         Notes.remove(Notes.Landmark.WANDMAKER);
         addScore(1, 2000);
-        if (type() != CANDLE && type() != ASH) questsActive--;//already reduced when killing elemental
+        if (type() != CANDLE && type() != ASH) questsActive.remove(Dungeon.levelName);//already reduced when killing elemental
     }
 
     @Override
     public void start() {
         super.start();
         Notes.add(Notes.Landmark.WANDMAKER);
-        if (type() != CANDLE && type() != ASH) questsActive++;//already increased when summoning elemental
+        if (type() != CANDLE && type() != ASH) questsActive.add(Dungeon.levelName);//already increased when summoning elemental
     }
 
 
@@ -109,37 +114,38 @@ public class WandmakerQuest extends Quest {
     }
 
     private static final String NODE = "wandmaker";
-    private static final String QUESTS_ACTIVE = "quests_active";
+    private static final String QUESTS_ACTIVE_LIST = "quests_active_list";
 
     public static void storeStatics(Bundle bundle) {
         Bundle node = new Bundle();
-        node.put(QUESTS_ACTIVE, questsActive);
+        node.put(QUESTS_ACTIVE_LIST, questsActive.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
         bundle.put(NODE, node);
     }
 
     public static void restoreStatics(Bundle bundle) {
         Bundle b = bundle.getBundle(NODE);
-        if (b.contains(QUESTS_ACTIVE)) {
-            questsActive = b.getInt(QUESTS_ACTIVE);
-        } else reset();
+        questsActive.clear();
+        if (b.contains(QUESTS_ACTIVE_LIST)) {
+            questsActive.addAll(Arrays.asList(b.getStringArray(QUESTS_ACTIVE_LIST)));
+        }
     }
 
     public static boolean areQuestsActive() {
-        return questsActive > 0;
+        return questsActive.contains(Dungeon.levelName);
     }
 
     public static void reset() {
-        questsActive = 0;
+        questsActive.clear();
     }
 
     public static void maybeStartPlayingQuestMusic(){
-        WandmakerQuest.questsActive++;
+        WandmakerQuest.questsActive.add(Dungeon.levelName);
         if (!PrisonLevel.playingQuestMusic && Dungeon.level.playsMusicFromRegion() == LevelScheme.REGION_PRISON)
             Dungeon.level.playLevelMusic();
     }
 
     public static void maybeStopPlayingQuestMusic(){
-        WandmakerQuest.questsActive--;
+        WandmakerQuest.questsActive.remove(Dungeon.levelName);
         if (Dungeon.level.playsMusicFromRegion() == LevelScheme.REGION_PRISON) {
             Game.runOnRenderThread(new Callback() {
                 @Override
