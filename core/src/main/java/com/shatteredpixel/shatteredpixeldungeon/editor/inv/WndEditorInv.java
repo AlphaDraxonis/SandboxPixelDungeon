@@ -123,8 +123,11 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                 @Override
                 protected List<?> getItems() {
                     List<Object> ret = new ArrayList<>(b.items);
-                    if (selector == null || selector().acceptsNull())
-                        ret.add(0, addTabs ? EditorItem.REMOVER_ITEM : EditorItem.NULL_ITEM);
+                    if (selector == null) {
+                        ret.add(0, EditorItem.REMOVER_ITEM);
+                    } else if (selector.acceptsNull()) {
+                        ret.add(0, selector.getItemForNull());
+                    }
 
                     if (selector != null) {
                         for (Item i : b.items) {

@@ -133,7 +133,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     BuffListContainer buffs;
 
     private ItemContainer<Item> mimicItems;
-    private StyledItemSelector mobWeapon, mobArmor, thiefItem;
+    private StyledItemSelector mobWeapon, mobArmor, thiefItem, tormentedSpiritPrize;
     private StyledItemSelector mobRing, mobArti, mobMisc;
     private LotusLevelSpinner lotusLevelSpinner;
     private StyledSpinner sheepLifespan;
@@ -296,7 +296,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (mob instanceof Thief) {
             thiefItem = new StyledItemSelector(label("item"),
-                    Item.class, ((Thief) mob).item, ItemSelector.NullTypeSelector.NONE) {
+                    Item.class, ((Thief) mob).item, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -310,6 +310,25 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 }
             };
             add(thiefItem);
+        }
+
+        if (mob instanceof TormentedSpirit) {
+            tormentedSpiritPrize = new StyledItemSelector(label("prize"),
+                    Item.class, ((TormentedSpirit) mob).prize, ItemSelector.NullTypeSelector.RANDOM) {
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+                    ((TormentedSpirit) mob).prize = selectedItem;
+                    EditMobComp.this.updateObj();
+                }
+
+                @Override
+                public void change() {
+                    EditorScene.selectItem(selector);
+                }
+            };
+            tormentedSpiritPrize.setShowWhenNull(ItemSpriteSheet.SOMETHING);
+            add(tormentedSpiritPrize);
         }
 
         if (!(mob instanceof Pylon) || mob instanceof QuestNPC<?>) {//mob (Pylon) should not be instanceof QuestNPC!!!
@@ -791,14 +810,14 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 abilityCooldown,
                 dm300pylonsNeeded,
 
-                questSpinner == null && playerAlignment != null && mobArmor == null
-                        ? EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE : null,
+//                questSpinner == null && playerAlignment != null && mobArmor == null
+//                        ? EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE : null,
 
-                mob instanceof SentryRoom.Sentry ? EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE : null,
+//                mob instanceof SentryRoom.Sentry ? EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE : null,
 
                 showBossBar,
 
-                mobWeapon, mobArmor, mobRing, mobArti, mobMisc, thiefItem,
+                mobWeapon, mobArmor, mobRing, mobArti, mobMisc, thiefItem, tormentedSpiritPrize,
                 lotusLevelSpinner, sheepLifespan, sentryRange, sentryDelay,
                 mimicSuperHidden, dm300destroyWalls,
 

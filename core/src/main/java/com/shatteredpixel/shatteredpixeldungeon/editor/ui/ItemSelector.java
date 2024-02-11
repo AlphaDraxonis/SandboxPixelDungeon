@@ -53,7 +53,7 @@ public class ItemSelector extends Component {
             @Override
             public void onSelect(Item item) {
                 if (item == null) return;//if window is canceled
-                if (item == EditorItem.NULL_ITEM) setSelectedItem(null);
+                if (item instanceof EditorItem.NullItemClass) setSelectedItem(null);
                 else
                     setSelectedItem(item instanceof ItemItem ? ((ItemItem) item).item().getCopy() : item.getCopy());
             }
@@ -61,6 +61,11 @@ public class ItemSelector extends Component {
             @Override
             public boolean acceptsNull() {
                 return nullTypeSelector != NullTypeSelector.NONE;
+            }
+
+            @Override
+            public EditorItem.NullItemClass getItemForNull() {
+                return nullTypeSelector == NullTypeSelector.NOTHING ? EditorItem.NULL_ITEM : EditorItem.RANDOM_ITEM;
             }
         };
 

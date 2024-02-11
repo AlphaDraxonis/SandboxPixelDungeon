@@ -57,7 +57,7 @@ public abstract class EditorItem<T> extends Item {
 
     //Constant items
 
-    public static final EditorItem NULL_ITEM = new NullItemClass(), RANDOM_ITEM = new NullItemClass() {
+    public static final NullItemClass NULL_ITEM = new NullItemClass(), RANDOM_ITEM = new NullItemClass() {
         @Override
         public String name() {
             return Messages.get(EditorItem.class, "random_name");

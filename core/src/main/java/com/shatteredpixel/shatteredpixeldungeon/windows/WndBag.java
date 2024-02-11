@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -498,6 +499,10 @@ public class WndBag extends WndTabbed {
         boolean addOtherTabs();
 
         boolean acceptsNull();
+
+        default EditorItem.NullItemClass getItemForNull() {
+            return EditorItem.NULL_ITEM;
+        }
     }
 
     public abstract static class ItemSelector implements ItemSelectorInterface {
