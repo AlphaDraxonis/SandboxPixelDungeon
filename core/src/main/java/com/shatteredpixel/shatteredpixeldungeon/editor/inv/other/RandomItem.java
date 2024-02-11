@@ -92,7 +92,6 @@ public interface RandomItem<T> {
         return Messages.get(RandomItem.class, "desc");
     }
 
-    boolean removeInvalidKeys(String invalidLevelName);
     static boolean removeInvalidKeys(ItemsWithChanceDistrComp.RandomItemData internalRandomItem, String invalidLevelName) {
         boolean removedSth = false;
         for (ItemsWithChanceDistrComp.ItemWithCount items : internalRandomItem.distrSlots) {
@@ -101,7 +100,6 @@ public interface RandomItem<T> {
         return removedSth;
     }
 
-    boolean renameInvalidKeys(String oldName, String newName);
     static boolean renameInvalidKeys(ItemsWithChanceDistrComp.RandomItemData internalRandomItem, String oldName, String newName) {
         boolean needsSave = false;
         for (ItemsWithChanceDistrComp.ItemWithCount items : internalRandomItem.distrSlots) {
@@ -119,7 +117,6 @@ public interface RandomItem<T> {
         }
     }
 
-    void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid);
     static void repositionKeyCells(ItemsWithChanceDistrComp.RandomItemData internalRandomItem, IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
         for (ItemsWithChanceDistrComp.ItemWithCount items : internalRandomItem.distrSlots) {
             for (Item item : items.items) {
@@ -209,23 +206,24 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean removeInvalidKeys(String invalidLevelName) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, invalidLevelName);
+        public boolean onDeleteLevelScheme(String name) {
+            return RandomItem.removeInvalidKeys(internalRandomItem, name);
         }
 
         @Override
-        public boolean renameInvalidKeys(String oldName, String newName) {
+        public boolean onRenameLevelScheme(String oldName, String newName) {
             return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
+        }
+
+        @Override
+        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
+            super.onMapSizeChange(newPosition, isPositionValid);
         }
 
         @Override
         public void updateInvalidKeys(String oldLvlName, String newLvlName) {
             RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
-
-        @Override
-        public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
         }
 
         @Override
@@ -299,23 +297,24 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean removeInvalidKeys(String invalidLevelName) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, invalidLevelName);
+        public boolean onDeleteLevelScheme(String name) {
+            return RandomItem.removeInvalidKeys(internalRandomItem, name);
         }
 
         @Override
-        public boolean renameInvalidKeys(String oldName, String newName) {
+        public boolean onRenameLevelScheme(String oldName, String newName) {
             return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
+        }
+
+        @Override
+        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
+            super.onMapSizeChange(newPosition, isPositionValid);
         }
 
         @Override
         public void updateInvalidKeys(String oldLvlName, String newLvlName) {
             RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
-
-        @Override
-        public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
         }
 
         @Override
@@ -399,23 +398,24 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean removeInvalidKeys(String invalidLevelName) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, invalidLevelName);
+        public boolean onDeleteLevelScheme(String name) {
+            return RandomItem.removeInvalidKeys(internalRandomItem, name);
         }
 
         @Override
-        public boolean renameInvalidKeys(String oldName, String newName) {
+        public boolean onRenameLevelScheme(String oldName, String newName) {
             return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
+        }
+
+        @Override
+        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
+            super.onMapSizeChange(newPosition, isPositionValid);
         }
 
         @Override
         public void updateInvalidKeys(String oldLvlName, String newLvlName) {
             RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
-
-        @Override
-        public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
         }
     }
 
@@ -488,23 +488,24 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean removeInvalidKeys(String invalidLevelName) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, invalidLevelName);
+        public boolean onDeleteLevelScheme(String name) {
+            return RandomItem.removeInvalidKeys(internalRandomItem, name);
         }
 
         @Override
-        public boolean renameInvalidKeys(String oldName, String newName) {
+        public boolean onRenameLevelScheme(String oldName, String newName) {
             return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
+        }
+
+        @Override
+        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
+            super.onMapSizeChange(newPosition, isPositionValid);
         }
 
         @Override
         public void updateInvalidKeys(String oldLvlName, String newLvlName) {
             RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
-
-        @Override
-        public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
         }
     }
 
@@ -573,23 +574,24 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean removeInvalidKeys(String invalidLevelName) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, invalidLevelName);
+        public boolean onDeleteLevelScheme(String name) {
+            return RandomItem.removeInvalidKeys(internalRandomItem, name);
         }
 
         @Override
-        public boolean renameInvalidKeys(String oldName, String newName) {
+        public boolean onRenameLevelScheme(String oldName, String newName) {
             return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
+        }
+
+        @Override
+        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
+            super.onMapSizeChange(newPosition, isPositionValid);
         }
 
         @Override
         public void updateInvalidKeys(String oldLvlName, String newLvlName) {
             RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
-
-        @Override
-        public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
         }
 
     }
@@ -659,23 +661,24 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean removeInvalidKeys(String invalidLevelName) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, invalidLevelName);
+        public boolean onDeleteLevelScheme(String name) {
+            return RandomItem.removeInvalidKeys(internalRandomItem, name);
         }
 
         @Override
-        public boolean renameInvalidKeys(String oldName, String newName) {
+        public boolean onRenameLevelScheme(String oldName, String newName) {
             return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
+        }
+
+        @Override
+        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
+            super.onMapSizeChange(newPosition, isPositionValid);
         }
 
         @Override
         public void updateInvalidKeys(String oldLvlName, String newLvlName) {
             RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
-
-        @Override
-        public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
         }
 
     }
@@ -750,23 +753,24 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean removeInvalidKeys(String invalidLevelName) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, invalidLevelName);
+        public boolean onDeleteLevelScheme(String name) {
+            return RandomItem.removeInvalidKeys(internalRandomItem, name);
         }
 
         @Override
-        public boolean renameInvalidKeys(String oldName, String newName) {
+        public boolean onRenameLevelScheme(String oldName, String newName) {
             return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
+        }
+
+        @Override
+        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
+            super.onMapSizeChange(newPosition, isPositionValid);
         }
 
         @Override
         public void updateInvalidKeys(String oldLvlName, String newLvlName) {
             RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
-
-        @Override
-        public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
         }
     }
 
@@ -835,11 +839,6 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean removeInvalidKeys(String invalidLevelName) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, invalidLevelName);
-        }
-
-        @Override
         public void onZap(Ballistica attack) {
         }
 
@@ -848,8 +847,19 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean renameInvalidKeys(String oldName, String newName) {
+        public boolean onDeleteLevelScheme(String name) {
+            return RandomItem.removeInvalidKeys(internalRandomItem, name);
+        }
+
+        @Override
+        public boolean onRenameLevelScheme(String oldName, String newName) {
             return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
+        }
+
+        @Override
+        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
+            super.onMapSizeChange(newPosition, isPositionValid);
         }
 
         @Override
@@ -857,10 +867,6 @@ public interface RandomItem<T> {
             RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
         }
 
-        @Override
-        public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
-        }
     }
 
 
@@ -928,23 +934,24 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean removeInvalidKeys(String invalidLevelName) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, invalidLevelName);
+        public boolean onDeleteLevelScheme(String name) {
+            return RandomItem.removeInvalidKeys(internalRandomItem, name);
         }
 
         @Override
-        public boolean renameInvalidKeys(String oldName, String newName) {
+        public boolean onRenameLevelScheme(String oldName, String newName) {
             return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
+        }
+
+        @Override
+        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
+            super.onMapSizeChange(newPosition, isPositionValid);
         }
 
         @Override
         public void updateInvalidKeys(String oldLvlName, String newLvlName) {
             RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
-
-        @Override
-        public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
         }
     }
 
@@ -1013,18 +1020,8 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean removeInvalidKeys(String invalidLevelName) {
-            return false;
-        }
-        @Override
-        public boolean renameInvalidKeys(String oldName, String newName) {
-            return false;
-        }
-        @Override
         public void updateInvalidKeys(String oldLvlName, String newLvlName) {
         }
-        @Override
-        public void repositionKeyCells(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-        }
+
     }
 }

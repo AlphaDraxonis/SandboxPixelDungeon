@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SpawnerMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.TormentedSpirit;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
@@ -978,6 +979,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (a instanceof Mimic) {
             if (((Mimic) a).superHidden != ((Mimic) b).superHidden) return false;
             if (!EditItemComp.isItemListEqual(((Mimic) a).items, ((Mimic) b).items)) return false;
+        }
+        if (a instanceof TormentedSpirit) {
+            if (!EditItemComp.areEqual(((TormentedSpirit) a).prize, ((TormentedSpirit) b).prize)) return false;
         }
         if (a instanceof YogDzewa) {
             if (((YogDzewa) a).spawnersAlive != ((YogDzewa) b).spawnersAlive) return false;

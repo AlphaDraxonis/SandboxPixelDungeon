@@ -21,6 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.TormentedSpirit;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
@@ -868,7 +869,7 @@ public enum Items {
     }
 
     private static void updateKeysInMobContrainer(MobItem mobItem, String oldLvlName, String newLvlName){
-        Mob m = ((MobItem) mobItem).mob();
+        Mob m = mobItem.mob();
         if (m instanceof Mimic && ((Mimic) m).items != null) {
             for (Item item : ((Mimic) m).items) {
                 maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
@@ -876,6 +877,9 @@ public enum Items {
         }
         else if (m instanceof Thief) {
             maybeUpdateKeyLevel(((Thief) m).item, oldLvlName, newLvlName);
+        }
+        else if (m instanceof TormentedSpirit) {
+            maybeUpdateKeyLevel(((TormentedSpirit) m).prize, oldLvlName, newLvlName);
         }
         if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
             for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {

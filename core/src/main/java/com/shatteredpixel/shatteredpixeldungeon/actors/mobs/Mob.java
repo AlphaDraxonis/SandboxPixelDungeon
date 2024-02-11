@@ -62,7 +62,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PropertyItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.DungeonToJsonConverter;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
@@ -167,6 +169,39 @@ public abstract class Mob extends Char {
 			HT = Math.round(HT * AscensionChallenge.statModifier(this));
 			HP = Math.round(HT * percent);
 			firstAdded = false;
+		}
+	}
+
+	public boolean onDeleteLevelScheme(String name) {
+		boolean changedSth = false;
+
+		if (loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
+			for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) loot).distrSlots) {
+				if (CustomDungeon.removeInvalidKeys(itemsWithCount.items, name)) {
+					changedSth = true;
+				}
+			}
+		}
+		return changedSth;
+	}
+
+	public boolean onRenameLevelScheme(String oldName, String newName) {
+		boolean changedSth = false;
+
+		if (loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
+			for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) loot).distrSlots) {
+				if (CustomDungeon.renameInvalidKeys(itemsWithCount.items, oldName, newName)) {
+					changedSth = true;
+				}
+			}
+		}
+		return changedSth;
+	}
+
+	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+		if (turnToCell != -1) {
+			int nTurn = newPosition.get(turnToCell);
+			turnToCell = isPositionValid.test(turnToCell, nTurn) ? nTurn : -1;
 		}
 	}
 

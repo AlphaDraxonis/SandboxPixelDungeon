@@ -141,7 +141,19 @@ public class WandmakerQuest extends Quest {
     public static void maybeStartPlayingQuestMusic(){
         WandmakerQuest.questsActive.add(Dungeon.levelName);
         if (!PrisonLevel.playingQuestMusic && Dungeon.level.playsMusicFromRegion() == LevelScheme.REGION_PRISON)
-            Dungeon.level.playLevelMusic();
+            Game.runOnRenderThread(new Callback() {
+                @Override
+                public void call() {
+                    Music.INSTANCE.fadeOut(1f, new Callback() {
+                        @Override
+                        public void call() {
+                            if (Dungeon.level != null) {
+                                Dungeon.level.playLevelMusic();
+                            }
+                        }
+                    });
+                }
+            });
     }
 
     public static void maybeStopPlayingQuestMusic(){

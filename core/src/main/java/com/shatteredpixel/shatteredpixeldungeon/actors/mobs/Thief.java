@@ -24,7 +24,10 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -85,7 +88,29 @@ public class Thief extends Mob {
 		else return super.speed();
 	}
 
-//    @Override
+	@Override
+	public boolean onDeleteLevelScheme(String name) {
+		boolean changedSth = false;
+		if (item != null && item.onDeleteLevelScheme(name)) {
+			if (!(item instanceof RandomItem)) item = null;
+			changedSth = true;
+		}
+		return changedSth || super.onDeleteLevelScheme(name);
+	}
+
+	@Override
+	public boolean onRenameLevelScheme(String oldName, String newName) {
+		boolean changedSth = item != null && item.onRenameLevelScheme(oldName, newName);
+		return super.onRenameLevelScheme(oldName, newName) || changedSth;
+	}
+
+	@Override
+	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+		super.onMapSizeChange(newPosition, isPositionValid);
+		if (item != null) item.onMapSizeChange(newPosition, isPositionValid);
+	}
+
+	//    @Override
 //    public int damageRoll() {
 //        return Random.NormalIntRange(1, 10);
 //    }

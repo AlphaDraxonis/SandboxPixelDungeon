@@ -32,6 +32,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Backpack;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -501,6 +503,17 @@ public class Item implements Bundlable {
 	
 	public void onHeroGainExp( float levelPercent, Hero hero ){
 		//do nothing by default
+	}
+
+	public boolean onDeleteLevelScheme(String name) {
+		return false;
+	}
+
+	public boolean onRenameLevelScheme(String oldName, String newName) {
+		return false;
+	}
+
+	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
 	}
 	
 	public static void evoke( Hero hero ) {

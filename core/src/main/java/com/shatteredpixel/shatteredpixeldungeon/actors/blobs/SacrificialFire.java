@@ -37,13 +37,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Swarm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.ItemWithPos;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SacrificialParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SacrificeRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -175,34 +173,27 @@ public class SacrificialFire extends Blob {
 		return prizes.get(cell);
 	}
 
-	public boolean removeInvalidKeys(String invalidLevelName) {
-		boolean removedSth = false;
+	public boolean removeInvalidKeys(String name) {
+		boolean changedSth = false;
 		for (Integer cell : prizes.keySet()) {
 			Item i = prizes.get(cell);
-			if (CustomDungeon.isInvalidKey(i, invalidLevelName)) {
-				prizes.remove(cell);
-				removedSth = true;
-			}
-			if (i instanceof RandomItem<?>) {
-				if (((RandomItem<?>) i).removeInvalidKeys(invalidLevelName)) removedSth = true;
+			if (i.onDeleteLevelScheme(name)) {
+				if (!(i instanceof RandomItem)) prizes.remove(cell);
+				changedSth = true;
 			}
 		}
-		return removedSth;
+		return changedSth;
 	}
 
-	public boolean renameInvalidKeys(String invalidLevelName, String newName) {
-		boolean removedSth = false;
+	public boolean renameInvalidKeys(String oldName, String newName) {
+		boolean changedSth = false;
 		for (Integer cell : prizes.keySet()) {
 			Item i = prizes.get(cell);
-			if (CustomDungeon.isInvalidKey(i, invalidLevelName)) {
-				((Key) i).levelName = newName;
-				removedSth = true;
-			}
-			if (i instanceof RandomItem) {
-				if (((RandomItem<?>) i).renameInvalidKeys(invalidLevelName, newName)) removedSth = true;
+			if (i.onRenameLevelScheme(oldName, newName)) {
+				changedSth = true;
 			}
 		}
-		return removedSth;
+		return changedSth;
 	}
 
 	public Map<Integer, Item> getPrizes() {//Only for changeMapSize

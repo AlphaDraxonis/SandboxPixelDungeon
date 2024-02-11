@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -851,10 +850,7 @@ public class CustomLevel extends Level {
             if (!isPositionValid.test(m.pos, nPos)) removeEntities.add(m);
             else {
                 m.pos = nPos;
-                if (m.turnToCell != -1) {
-                    int nTurn = newPosition.get(m.turnToCell);
-                    m.turnToCell = isPositionValid.test(m.turnToCell, nTurn) ? nTurn : -1;
-                }
+                m.onMapSizeChange(newPosition, isPositionValid);
             }
         }
         level.mobs.removeAll(removeEntities);
@@ -873,17 +869,8 @@ public class CustomLevel extends Level {
             if (isPositionValid.test(h.pos, nPos)) {
                 nHeaps.put(nPos, h);
                 h.pos = nPos;
-
                 for (Item i : h.items){
-                    if (i instanceof Key) {
-                        int cell = ((Key) i).cell;
-                        if (cell != -1) {
-                            int nCell = newPosition.get(cell);
-                            ((Key) i).cell = isPositionValid.test(cell, nCell) ? nCell : -1;
-                        }
-                    } else if (i instanceof RandomItem<?>) {
-                        ((RandomItem<?>) i).repositionKeyCells(newPosition, isPositionValid);
-                    }
+                    i.onMapSizeChange(newPosition, isPositionValid);
                 }
 
             }
@@ -1114,15 +1101,7 @@ public class CustomLevel extends Level {
                     Map<Integer, Item> prizes = ((SacrificialFire) b).getPrizes();
                     Map<Integer, Item> newPrizePositions = new HashMap<>(3);
                     for (Item i : prizes.values()){
-                        if (i instanceof Key) {
-                            int cell = ((Key) i).cell;
-                            if (cell != -1) {
-                                int nCell = newPosition.get(cell);
-                                ((Key) i).cell = isPositionValid.test(cell, nCell) ? nCell : -1;
-                            }
-                        } else if (i instanceof RandomItem<?>) {
-                            ((RandomItem<?>) i).repositionKeyCells(newPosition, isPositionValid);
-                        }
+                        i.onMapSizeChange(newPosition, isPositionValid);
                     }
                     for (Integer oldPos : prizes.keySet()) {
                         int nPos = newPosition.get(oldPos);

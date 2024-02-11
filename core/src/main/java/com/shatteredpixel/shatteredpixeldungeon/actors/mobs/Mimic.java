@@ -30,6 +30,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -260,6 +262,31 @@ public class Mimic extends Mob implements MobBasedOnDepth {
         } else {
             return (int) ((6 + level) * statsScale);
         }
+    }
+
+    @Override
+    public boolean onDeleteLevelScheme(String name) {
+        boolean changedSth = false;
+        if (items != null) {
+            if (CustomDungeon.removeInvalidKeys(items, name)) changedSth = true;
+        }
+        return super.onDeleteLevelScheme(name) || changedSth;
+    }
+
+    @Override
+    public boolean onRenameLevelScheme(String oldName, String newName) {
+        boolean changedSth = CustomDungeon.renameInvalidKeys(items, oldName, newName);
+        return super.onRenameLevelScheme(oldName, newName) || changedSth;
+    }
+
+    @Override
+    public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+        if (items != null) {
+            for (Item i : items) {
+                i.onMapSizeChange(newPosition, isPositionValid);
+            }
+        }
+        super.onMapSizeChange(newPosition, isPositionValid);
     }
 
     @Override

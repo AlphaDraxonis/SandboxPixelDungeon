@@ -884,7 +884,7 @@ public class CustomDungeon implements Bundlable {
                     }
                     if (zone.mobRotation != null) {
                         for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot : zone.mobRotation.distrSlots) {
-                            if (removeInvalidKeys(((MobItem) mobRotationSlot.items.get(0)).mob(), n)) saveNeeded = true;
+                            if (((MobItem) mobRotationSlot.items.get(0)).mob().onDeleteLevelScheme(n)) saveNeeded = true;
                         }
                     }
                 }
@@ -899,13 +899,14 @@ public class CustomDungeon implements Bundlable {
                         }
                     }
                 }
+
                 //Remove invalid keys in mob containers
                 for (Mob m : level.mobs) {
-                    if (removeInvalidKeys(m, n)) saveNeeded = true;
+                    if (m.onDeleteLevelScheme(n)) saveNeeded = true;
                 }
 
                 for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot : level.getMobRotationVar().distrSlots) {
-                    if (removeInvalidKeys(((MobItem) mobRotationSlot.items.get(0)).mob(), n)) saveNeeded = true;
+                    if (((MobItem) mobRotationSlot.items.get(0)).mob().onDeleteLevelScheme(n)) saveNeeded = true;
                 }
 
                 //Remove invalid keys as sacrificial fire reward
@@ -953,53 +954,16 @@ public class CustomDungeon implements Bundlable {
         CustomDungeonSaves.saveDungeon(this);
     }
 
-    public static boolean removeInvalidKeys(Mob m, String invalidLevelName) {
-        boolean changedSth = false;
-
-        if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
-            Set<ItemsWithChanceDistrComp.ItemWithCount> toRemove = new HashSet<>(4);
-            for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {
-                if (removeInvalidKeys(itemsWithCount.items, invalidLevelName)) {
-                    changedSth = true;
-                    if (itemsWithCount.items.isEmpty()) toRemove.add(itemsWithCount);
-                }
-            }
-            ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots.removeAll(toRemove);
-        }
-
-        if (m instanceof Mimic && ((Mimic) m).items != null) {
-            if (removeInvalidKeys(((Mimic) m).items, invalidLevelName)) changedSth = true;
-        }
-        else if (m instanceof Thief) {
-            if (isInvalidKey(((Thief) m).item, invalidLevelName)) {
-                ((Thief) m).item = null;
-                changedSth = true;
-            }
-            if (((Thief) m).item instanceof RandomItem<?>) {
-                if (((RandomItem<?>) ((Thief) m).item).removeInvalidKeys(invalidLevelName)) changedSth = true;
-            }
-        }
-
-        return changedSth;
-    }
-
     public static boolean removeInvalidKeys(List<Item> items, String invalidLevelName) {
         if (items == null) return false;
         boolean changedSth = false;
         for (Item i : new ArrayList<>(items)) {
-            if (isInvalidKey(i, invalidLevelName)) {
-                items.remove(i);
+            if (i != null && i.onDeleteLevelScheme(invalidLevelName)) {
+                if (!(i instanceof RandomItem)) items.remove(i);
                 changedSth = true;
-            } else if (i instanceof RandomItem<?>) {
-                return ((RandomItem<?>) i).removeInvalidKeys(invalidLevelName);
             }
         }
         return changedSth;
-    }
-
-    public static boolean isInvalidKey(Item item, String invalidLevelName) {
-        if (item == null) return false;
-        return item instanceof Key && ((Key) item).levelName.equals(invalidLevelName);
     }
 
     public void renameZone(Zone zone, String newName) {
@@ -1172,18 +1136,7 @@ public class CustomDungeon implements Bundlable {
                 }
                 //Change invalid keys in mob containers
                 for (Mob m : level.mobs) {
-                    if (m instanceof Mimic && ((Mimic) m).items != null) {
-                        renameInvalidKeys(((Mimic) m).items, oldName, newName);
-                    } else if (m instanceof Thief) {
-                        if (isInvalidKey(((Thief) m).item, oldName)) ((Key) ((Thief) m).item).levelName = newName;
-                        if (((Thief) m).item instanceof RandomItem<?>)
-                            ((RandomItem<?>) ((Thief) m).item).renameInvalidKeys(oldName, newName);
-                    }
-                    if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
-                        for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {
-                            renameInvalidKeys(itemsWithCount.items, oldName, newName);
-                        }
-                    }
+                    m.onRenameLevelScheme(oldName, newName);
                 }
 
                 //Remove invalid keys as sacrificial fire reward
@@ -1284,7 +1237,7 @@ public class CustomDungeon implements Bundlable {
                         }
                         if (zone.mobRotation != null) {
                             for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot : zone.mobRotation.distrSlots) {
-                                if (renameInvalidKeys(((MobItem) mobRotationSlot.items.get(0)).mob(), oldName, newName)) saveNeeded = true;
+                                if (((MobItem) mobRotationSlot.items.get(0)).mob().onRenameLevelScheme(oldName, newName)) saveNeeded = true;
                             }
                         }
                     }
@@ -1297,11 +1250,11 @@ public class CustomDungeon implements Bundlable {
                     }
                     //Change invalid keys in mob containers
                     for (Mob m : level.mobs) {
-                        renameInvalidKeys(m, oldName, newName);
+                        m.onRenameLevelScheme(oldName, newName);
                     }
 
                     for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot : level.getMobRotationVar().distrSlots) {
-                        if (renameInvalidKeys(((MobItem) mobRotationSlot.items.get(0)).mob(), oldName, newName)) saveNeeded = true;
+                        if (((MobItem) mobRotationSlot.items.get(0)).mob().onRenameLevelScheme(oldName, newName)) saveNeeded = true;
                     }
 
                     //Remove invalid keys as sacrificial fire reward
@@ -1392,43 +1345,12 @@ public class CustomDungeon implements Bundlable {
 
     }
 
-    public static boolean renameInvalidKeys(Mob m, String invalidLevelName, String newName) {
-
-        boolean changedSth = false;
-
-        if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
-            for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {
-                if (renameInvalidKeys(itemsWithCount.items, invalidLevelName, newName)) {
-                    changedSth = true;
-                }
-            }
-        }
-
-        if (m instanceof Mimic && ((Mimic) m).items != null) {
-            if (renameInvalidKeys(((Mimic) m).items, invalidLevelName, newName))
-                changedSth = true;
-        } else if (m instanceof Thief) {
-            if (isInvalidKey(((Thief) m).item, invalidLevelName)) {
-                ((Key) ((Thief) m).item).levelName = newName;
-                changedSth = true;
-            }
-            if (((Thief) m).item instanceof RandomItem<?>) {
-                if (((RandomItem<?>) ((Thief) m).item).renameInvalidKeys(invalidLevelName, newName)) changedSth = true;
-            }
-        }
-        return changedSth;
-    }
-
-    public static boolean renameInvalidKeys(List<Item> items, String invalidLevelName, String newName) {
+    public static boolean renameInvalidKeys(List<Item> items, String oldName, String newName) {
         if (items == null) return false;
         boolean changedSth = false;
         for (Item i : new ArrayList<>(items)) {
-            if (isInvalidKey(i, invalidLevelName)) {
-                ((Key) i).levelName = newName;
+            if (i != null && i.onRenameLevelScheme(oldName, newName)) {
                 changedSth = true;
-            }
-            if (i instanceof RandomItem<?>) {
-                if (((RandomItem<?>) i).renameInvalidKeys(invalidLevelName, newName)) changedSth = true;
             }
         }
         return changedSth;
