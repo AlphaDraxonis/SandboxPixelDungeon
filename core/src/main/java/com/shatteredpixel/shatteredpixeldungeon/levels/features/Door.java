@@ -35,6 +35,7 @@ public class Door {
 	public static void enter( int pos ) {
 		Level.set( pos, Terrain.OPEN_DOOR );
 		GameScene.updateMap( pos );
+		if (pos >= Dungeon.level.width()) GameScene.updateMap( pos - Dungeon.level.width() );//for wall coloring
 
 		if (Dungeon.level.heroFOV[pos]) {
 			Dungeon.observe();
@@ -53,6 +54,7 @@ public class Door {
 		if (Dungeon.level.heaps.get( pos ) == null && chars <= 1) {
 			Level.set( pos, Terrain.DOOR );
 			GameScene.updateMap( pos );
+			if (pos >= Dungeon.level.width()) GameScene.updateMap( pos - Dungeon.level.width() );//for wall coloring
 			if (Dungeon.level.heroFOV[pos])
 				Dungeon.observe();
 		}

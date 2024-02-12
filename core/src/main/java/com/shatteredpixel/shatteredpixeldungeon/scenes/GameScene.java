@@ -341,6 +341,7 @@ public class GameScene extends PixelScene {
 		add( levelWallVisuals );
 
 		if (Dungeon.customDungeon.view2d) terrain.add( LevelColoring.getWall() );
+		else add( LevelColoring.getWall() );
 
 		if (!Dungeon.customDungeon.view2d) {
 			wallBlocking = new WallBlockingTilemap();

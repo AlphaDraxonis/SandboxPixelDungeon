@@ -1,12 +1,17 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.COIN_DOOR;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.CRYSTAL_DOOR;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ENTRANCE;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EXIT;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.FURROWED_GRASS;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.GRASS;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.HIGH_GRASS;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.INACTIVE_TRAP;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_EXIT;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.OPEN_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_CRYSTAL_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_DOOR;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_LOCKED_DOOR;
@@ -138,6 +143,10 @@ public class TileItem extends EditorItem {
         return terrain == SIGN || terrain == SIGN_SP;
     }
 
+    public static boolean isDoor(int terrain) {
+        return terrain == DOOR || terrain == OPEN_DOOR || terrain == LOCKED_DOOR || terrain == CRYSTAL_DOOR || terrain == COIN_DOOR;
+    }
+
     public static boolean isSecretDoor(int terrain) {
         return terrain == SECRET_DOOR || terrain == SECRET_LOCKED_DOOR || terrain == SECRET_CRYSTAL_DOOR;
     }
@@ -186,7 +195,7 @@ public class TileItem extends EditorItem {
                 return; //no need to continue bc nothing changes at all
             }
             init(oldTerrain, terrainType, cell,
-                    level.traps.get(cell), level.plants.get(cell), terrainType == Terrain.COIN_DOOR ? CoinDoor.costInInventory : Dungeon.level.getCoinDoorCost(cell),
+                    level.traps.get(cell), level.plants.get(cell), terrainType == COIN_DOOR ? CoinDoor.costInInventory : Dungeon.level.getCoinDoorCost(cell),
                     CustomTileItem.findCustomTileAt(cell, newCustomTileIsWall), newCustomTileIsWall);
 
             moreActions = new ActionPartList();
