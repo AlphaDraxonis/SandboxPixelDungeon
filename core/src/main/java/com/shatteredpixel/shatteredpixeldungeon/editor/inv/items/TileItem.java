@@ -231,6 +231,9 @@ public class TileItem extends EditorItem {
                     @Override
                     public void undo() {
 
+                        Level level = Dungeon.level;
+                        LevelScheme levelScheme = level.levelScheme;
+
                         level.transitions.remove(cell);
                         EditorScene.remove(defaultTransition);
 
@@ -270,6 +273,9 @@ public class TileItem extends EditorItem {
 
                     @Override
                     public void redo() {//sorry for comments you don't understand...
+
+                        Level level = Dungeon.level;
+                        LevelScheme levelScheme = level.levelScheme;
 
                         if (terrainType == Terrain.ENTRANCE) {  //neu entrance
                             levelScheme.entranceCells.add((Integer) cell);  //füge entrance cell hinzu

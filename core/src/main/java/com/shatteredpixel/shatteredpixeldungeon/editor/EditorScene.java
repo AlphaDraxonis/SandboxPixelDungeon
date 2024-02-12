@@ -606,6 +606,16 @@ public class EditorScene extends PixelScene {
     public static void remove(LevelTransition transition) {
         if (scene == null) return;
         BitmapText text = scene.transitionIndicatorsMap.get(transition);
+        if (text == null) {
+            for (LevelTransition trans : scene.transitionIndicatorsMap.keySet()) {
+                if (trans.departCell == transition.departCell && trans.destCell == transition.destCell
+                        && trans.destLevel.equals(transition.destLevel)) {
+                    //just assume that this is effectively the same transition (relevant for undo working after level was reloaded)
+                    text = scene.transitionIndicatorsMap.get(trans);
+                    break;
+                }
+            }
+        }
         scene.transitionIndicators.remove(text);
         if (text == null) return;
         text.destroy();
