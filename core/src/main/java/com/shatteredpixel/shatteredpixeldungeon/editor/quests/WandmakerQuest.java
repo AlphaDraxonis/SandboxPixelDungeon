@@ -1,39 +1,45 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RotHeart;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RotLasher;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
-import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RotGardenRoom;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class WandmakerQuest extends Quest {
 
     public static final int NUM_QUESTS = 3;
-    public static final int ASH = 0, SEED = 1, CANDLE = 2;
+    public static final int DUST = 0, SEED = 1, CANDLE = 2;
 
     public Wand wand1;
     public Wand wand2;
 
     public boolean spawnQuestRoom = true;
 
-    public static List<String> questsActive = new ArrayList<>(3);//used for music tracking
+    public static int[] questsActive = new int[NUM_QUESTS];//used for music tracking
 
 
     @Override
@@ -57,7 +63,7 @@ public class WandmakerQuest extends Quest {
 
         if (spawnQuestRoom) {
             switch (type) {
-                case ASH:
+                case DUST:
                     levelScheme.roomsToSpawn.add(new MassGraveRoom());
                     break;
                 case SEED:
@@ -81,15 +87,15 @@ public class WandmakerQuest extends Quest {
         wand2 = null;
 
         Notes.remove(Notes.Landmark.WANDMAKER);
-        addScore(1, 2000);
-        if (type() != CANDLE && type() != ASH) questsActive.remove(Dungeon.levelName);//already reduced when killing elemental
+        if (type() != SEED) addScore(1, 2000);
+        if (type() != CANDLE) questsActive[type()]--;
     }
 
     @Override
     public void start() {
         super.start();
         Notes.add(Notes.Landmark.WANDMAKER);
-        if (type() != CANDLE && type() != ASH) questsActive.add(Dungeon.levelName);//already increased when summoning elemental
+        if (type() != CANDLE) questsActive[type()]++;
     }
 
 
@@ -114,65 +120,191 @@ public class WandmakerQuest extends Quest {
     }
 
     private static final String NODE = "wandmaker";
-    private static final String QUESTS_ACTIVE_LIST = "quests_active_list";
+    private static final String QUESTS_ACTIVE_ARRAY = "quests_active_array";
 
     public static void storeStatics(Bundle bundle) {
         Bundle node = new Bundle();
-        node.put(QUESTS_ACTIVE_LIST, questsActive.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
+        node.put(QUESTS_ACTIVE_ARRAY, questsActive);
         bundle.put(NODE, node);
     }
 
     public static void restoreStatics(Bundle bundle) {
         Bundle b = bundle.getBundle(NODE);
-        questsActive.clear();
-        if (b.contains(QUESTS_ACTIVE_LIST)) {
-            questsActive.addAll(Arrays.asList(b.getStringArray(QUESTS_ACTIVE_LIST)));
-        }
-    }
-
-    public static boolean areQuestsActive() {
-        return questsActive.contains(Dungeon.levelName);
+        if (b.contains(QUESTS_ACTIVE_ARRAY)) questsActive = bundle.getIntArray(QUESTS_ACTIVE_ARRAY);
+        else questsActive = new int[NUM_QUESTS];
     }
 
     public static void reset() {
-        questsActive.clear();
+        questsActive = new int[NUM_QUESTS];
+        wandmakerQuestWasActive = null;
     }
 
-    public static void maybeStartPlayingQuestMusic(){
-        WandmakerQuest.questsActive.add(Dungeon.levelName);
-        if (!PrisonLevel.playingQuestMusic && Dungeon.level.playsMusicFromRegion() == LevelScheme.REGION_PRISON)
-            Game.runOnRenderThread(new Callback() {
-                @Override
-                public void call() {
-                    Music.INSTANCE.fadeOut(1f, new Callback() {
-                        @Override
-                        public void call() {
-                            if (Dungeon.level != null) {
-                                Dungeon.level.playLevelMusic();
-                            }
-                        }
-                    });
-                }
-            });
-    }
+    private static Boolean wandmakerQuestWasActive = null;
 
-    public static void maybeStopPlayingQuestMusic(){
-        WandmakerQuest.questsActive.remove(Dungeon.levelName);
-        if (Dungeon.level.playsMusicFromRegion() == LevelScheme.REGION_PRISON) {
-            Game.runOnRenderThread(new Callback() {
-                @Override
-                public void call() {
-                    Music.INSTANCE.fadeOut(1f, new Callback() {
-                        @Override
-                        public void call() {
-                            if (Dungeon.level != null) {
-                                Dungeon.level.playLevelMusic();
-                            }
-                        }
-                    });
-                }
-            });
+    public static void updateMusic() {
+
+        if (LevelScheme.getRegion(Dungeon.level) != LevelScheme.REGION_PRISON) {
+            return;
         }
+
+        boolean nowActive = WandmakerQuest.active();
+        if (wandmakerQuestWasActive == null) {
+            wandmakerQuestWasActive = nowActive;
+            return;
+        }
+        if (nowActive != wandmakerQuestWasActive) {
+            wandmakerQuestWasActive = nowActive;
+
+            Game.runOnRenderThread(() -> Music.INSTANCE.fadeOut(1f, () -> {
+                if (Dungeon.level != null) {
+                    Dungeon.level.playLevelMusic();
+                }
+            }));
+        }
+    }
+
+    public static void setMusicPlaying(boolean questActive) {
+        wandmakerQuestWasActive = questActive;
+    }
+
+    //quest is active if:
+    public static boolean active() {
+        //it is not completed
+        if (Dungeon.hero == null) {
+            return false;
+        }
+
+        if (Dungeon.level instanceof RegularLevel) {
+
+            RegularLevel l = (RegularLevel) Dungeon.level;
+
+            if (true || questsActive[DUST] > 0) {
+                //hero is in the mass grave room
+                if (l.room(Dungeon.hero.pos) instanceof MassGraveRoom) {
+                    return true;
+                }
+                //or if they are corpse dust cursed
+                for (Buff b : Dungeon.hero.buffs()) {
+                    if (b instanceof CorpseDust.DustGhostSpawner) {
+                        return true;
+                    }
+                }
+            }
+
+            if (true || questsActive[SEED] > 0) {
+                //hero is in the rot garden room and the rot heart in the same room is alive
+                Room room = l.room(Dungeon.hero.pos);
+                if (l.room(Dungeon.hero.pos) instanceof RotGardenRoom) {
+                    for (Mob m : Dungeon.level.mobs) {
+                        if (m instanceof RotHeart && l.room(m.pos) == room) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            if (true || questsActive[CANDLE] > 0) {
+                //hero has summoned the newborn elemental
+                for (Mob m : Dungeon.level.mobs) {
+                    if (m instanceof Elemental.NewbornFireElemental && ((Elemental.NewbornFireElemental) m).spawnedByQuest) {
+                        return true;
+                    }
+                }
+                //or hero is in the ritual room and all 4 candles are with them
+                if (l.room(Dungeon.hero.pos) instanceof RitualSiteRoom) {
+                    int candles = 0;
+                    if (Dungeon.hero.belongings.getItem(CeremonialCandle.class) != null){
+                        candles += Dungeon.hero.belongings.getItem(CeremonialCandle.class).quantity();
+                    }
+                    if (candles >= 4) return true;
+
+                    for (Heap h : Dungeon.level.heaps.valueList()){
+                        if (l.room(h.pos) instanceof RitualSiteRoom){
+                            for (Item i : h.items){
+                                if (i instanceof CeremonialCandle){
+                                    candles += i.quantity();
+                                }
+                            }
+                        }
+                    }
+                    if (candles >= 4) return true;
+                }
+            }
+        } else {
+
+            if (questsActive[DUST] > 0) {
+                //hero is on mass grave room floor
+                if (CustomTileItem.findCustomTileAt(Dungeon.hero.pos, false) instanceof MassGraveRoom.Bones) {
+                    return true;
+                }
+            }
+            //or if they are corpse dust cursed
+            for (Buff b : Dungeon.hero.buffs()) {
+                if (b instanceof CorpseDust.DustGhostSpawner) {
+                    return true;
+                }
+            }
+
+            if (questsActive[SEED] > 0) {
+                //hero can see the rot heart or the lasher
+                for (Mob m : Dungeon.level.mobs) {
+                    if ( (m instanceof RotLasher || m instanceof RotHeart) && Dungeon.level.heroFOV[m.pos]) {
+                        return true;
+                    }
+                }
+            }
+
+            if (questsActive[CANDLE] > 0 || true) {
+                //hero has summoned the newborn elemental
+                for (Mob m : Dungeon.level.mobs) {
+                    if (m instanceof Elemental.NewbornFireElemental && ((Elemental.NewbornFireElemental) m).spawnedByQuest) {
+                        return true;
+                    }
+                }
+
+                //level contains ritual marker and hero has 4 candles
+
+                boolean containsMarker = false;
+                for (CustomTilemap ct : Dungeon.level.customTiles) {
+                    if (ct instanceof RitualSiteRoom.RitualMarker && !((RitualSiteRoom.RitualMarker) ct).used) {
+                        containsMarker = true;
+                        break;
+                    }
+                }
+
+                if (containsMarker) {
+                    int candles = 0;
+                    if (Dungeon.hero.belongings.getItem(CeremonialCandle.class) != null){
+                        candles += Dungeon.hero.belongings.getItem(CeremonialCandle.class).quantity();
+                    }
+                    if (candles >= 4) return true;
+
+                    for (CustomTilemap ct : Dungeon.level.customTiles) {
+                        if (ct instanceof RitualSiteRoom.RitualMarker && !((RitualSiteRoom.RitualMarker) ct).used) {
+                            int ritualPos = (ct.tileX + 1) + (ct.tileY + 1) * Dungeon.level.width();
+                            Heap[] candleHeaps = new Heap[4];
+                            candleHeaps[0] = Dungeon.level.heaps.get(ritualPos - Dungeon.level.width());
+                            candleHeaps[1] = Dungeon.level.heaps.get(ritualPos + 1);
+                            candleHeaps[2] = Dungeon.level.heaps.get(ritualPos + Dungeon.level.width());
+                            candleHeaps[3] = Dungeon.level.heaps.get(ritualPos - 1);
+                            for (Heap h : candleHeaps) {
+                                if (h != null) {
+                                    for (Item i : h.items){
+                                        if (i instanceof CeremonialCandle){
+                                            candles += i.quantity();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (candles >= 4) return true;
+                }
+            }
+
+        }
+
+        return false;
     }
 
     @Override
@@ -184,7 +316,7 @@ public class WandmakerQuest extends Quest {
     @Override
     public Image getIcon() {
         switch (type) {
-            case ASH:
+            case DUST:
                 return new ItemSprite(ItemSpriteSheet.DUST);
             case SEED:
                 return new ItemSprite(ItemSpriteSheet.SEED_ROTBERRY);
@@ -202,7 +334,7 @@ public class WandmakerQuest extends Quest {
     @Override
     public String getMessageString(int type) {
         switch (type) {
-            case ASH:
+            case DUST:
                 return "dust";
             case SEED:
                 return "berry";

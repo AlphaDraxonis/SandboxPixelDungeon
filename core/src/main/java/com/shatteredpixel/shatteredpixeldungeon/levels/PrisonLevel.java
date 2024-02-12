@@ -45,7 +45,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.TeleportationTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ToxicTrap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Halo;
 import com.watabou.noosa.audio.Music;
@@ -72,12 +71,14 @@ public class PrisonLevel extends RegularLevel {
 
 	public static boolean playingQuestMusic;
 	public static void playPrisonLevelMusic() {
-		if (!playingQuestMusic && WandmakerQuest.areQuestsActive())
-			Game.runOnRenderThread(() -> Music.INSTANCE.fadeOut(1f, () -> Music.INSTANCE.play(Assets.Music.PRISON_TENSE, true)));
-		else if (playingQuestMusic = (WandmakerQuest.areQuestsActive() || Statistics.amuletObtained))
-			Music.INSTANCE.play(Assets.Music.PRISON_TENSE, true);
-		else
+
+		boolean questActive = Statistics.amuletObtained || WandmakerQuest.active();
+		if (questActive){
+			Music.INSTANCE.play(Assets.Sounds.CURSED, true);
+		} else {
 			Music.INSTANCE.playTracks(PRISON_TRACK_LIST, PRISON_TRACK_CHANCES, false);
+		}
+		WandmakerQuest.setMusicPlaying(questActive);
 	}
 
 	@Override

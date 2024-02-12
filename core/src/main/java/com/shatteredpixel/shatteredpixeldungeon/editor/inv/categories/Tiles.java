@@ -168,6 +168,9 @@ public enum Tiles {
                 return null;
             }
             int val = (int) src;
+            if (val == Terrain.CUSTOM_DECO_EMPTY) {
+                val = EMPTY_DECO;
+            }
             if (val == Terrain.CUSTOM_DECO) {
                 if (EditorScene.customLevel().bossGroundVisuals instanceof CityBossLevel.CustomGroundVisuals)
                     return findItem(CityBossLevel.KingsThrone.class);

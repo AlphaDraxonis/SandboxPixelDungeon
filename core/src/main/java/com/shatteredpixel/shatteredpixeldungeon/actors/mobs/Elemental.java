@@ -393,7 +393,8 @@ public abstract class Elemental extends Mob {
 			super.die(cause);
 			if (alignment == Alignment.ENEMY) {
 				Dungeon.level.drop( new Embers(), pos ).sprite.drop();
-				if (spawnedByQuest)	WandmakerQuest.maybeStopPlayingQuestMusic();
+				WandmakerQuest.questsActive[WandmakerQuest.CANDLE]--;
+				WandmakerQuest.updateMusic();
 			}
 		}
 

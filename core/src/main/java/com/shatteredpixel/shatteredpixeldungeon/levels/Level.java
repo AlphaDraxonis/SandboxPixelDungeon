@@ -84,6 +84,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
+import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
@@ -1867,6 +1868,10 @@ public abstract class Level implements Bundlable {
 
 		if (ch.isAlive() && ch instanceof Piranha && !water[ch.pos] && !CustomDungeon.isEditing()){
 			((Piranha) ch).dieOnLand();
+		}
+
+		if (ch == Dungeon.hero) {
+			WandmakerQuest.updateMusic();
 		}
 	}
 

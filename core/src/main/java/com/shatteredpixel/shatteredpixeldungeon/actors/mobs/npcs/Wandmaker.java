@@ -88,7 +88,7 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 			
 			Item item;
 			switch (quest.type()) {
-				case WandmakerQuest.ASH:
+				case WandmakerQuest.DUST:
 				default:
 					item = Dungeon.hero.belongings.getItem(CorpseDust.class);
 					break;

@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -183,7 +184,7 @@ public enum Rankings {
                 Statistics.heldItemValue += i.value();
                 if (i instanceof CorpseDust && Statistics.deepestFloor >= 10) {
                     // in case player kept the corpse dust, for a necromancer run
-                    Statistics.questScores[1] = 2000;
+                    Quest.addScore(1, 2000);
                 }
             }
         }

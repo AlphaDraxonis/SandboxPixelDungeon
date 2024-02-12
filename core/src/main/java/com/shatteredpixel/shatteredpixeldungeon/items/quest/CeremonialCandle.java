@@ -51,9 +51,6 @@ import java.util.ArrayList;
 
 public class CeremonialCandle extends Item {
 
-	//generated with the wandmaker quest
-	public static int ritualPos_UNUSED;
-
 	{
 		image = ItemSpriteSheet.CANDLE;
 
@@ -91,6 +88,7 @@ public class CeremonialCandle extends Item {
 	public boolean doPickUp(Hero hero, int pos) {
 		if (super.doPickUp(hero, pos)){
 			aflame = false;
+			WandmakerQuest.updateMusic();
 			return true;
 		}
 		return false;
@@ -135,6 +133,8 @@ public class CeremonialCandle extends Item {
 						checkRitualPosition((ritualMarker.tileX + 1) + (ritualMarker.tileY + 1) * Dungeon.level.width());
 			}
 		}
+
+		WandmakerQuest.updateMusic();
 
 	}
 
@@ -205,7 +205,8 @@ public class CeremonialCandle extends Item {
 			elemental.state = elemental.HUNTING;
 			GameScene.add(elemental, 1);
 
-			WandmakerQuest.maybeStartPlayingQuestMusic();
+			WandmakerQuest.questsActive[WandmakerQuest.CANDLE]++;
+			WandmakerQuest.updateMusic();
 
 			for (int i : PathFinder.NEIGHBOURS9){
 				CellEmitter.get(ritualPos+i).burst(ElmoParticle.FACTORY, 10);

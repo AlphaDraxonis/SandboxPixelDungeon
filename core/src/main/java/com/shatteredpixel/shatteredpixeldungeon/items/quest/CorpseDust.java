@@ -71,7 +71,8 @@ public class CorpseDust extends Item {
 			GLog.n( Messages.get( this, "chill") );
 			Buff.affect(hero, DustGhostSpawner.class);
 
-			WandmakerQuest.maybeStartPlayingQuestMusic();
+			WandmakerQuest.questsActive[WandmakerQuest.DUST]++;
+			WandmakerQuest.updateMusic();
 
 			return true;
 		}
@@ -149,7 +150,8 @@ public class CorpseDust extends Item {
 				}
 			}
 
-			WandmakerQuest.maybeStopPlayingQuestMusic();
+			WandmakerQuest.questsActive[WandmakerQuest.DUST]--;
+			WandmakerQuest.updateMusic();
 		}
 
 		private static String SPAWNPOWER = "spawnpower";
