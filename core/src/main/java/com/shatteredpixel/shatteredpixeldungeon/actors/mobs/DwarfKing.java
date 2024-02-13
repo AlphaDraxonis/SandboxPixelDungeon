@@ -558,7 +558,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			}
 		}
 		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof CityBossLevel)) {
-			Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
+			if (showBossBar) Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
 		}
 	}
 
@@ -650,7 +650,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 						});
 					}
 				});
-			} else if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
+			} else if (playerAlignment == Mob.NORMAL_ALIGNMENT && showBossBar) {
 				Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS);
 				Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS_FINAL);
 			}
