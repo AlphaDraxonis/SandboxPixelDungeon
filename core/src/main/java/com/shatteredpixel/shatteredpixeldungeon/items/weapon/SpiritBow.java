@@ -30,6 +30,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.NaturesPower;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
@@ -190,19 +192,29 @@ public class SpiritBow extends Weapon {
 
     @Override
     public int min(int lvl) {
-        int dmg = 1 + Dungeon.hero.lvl / 5
-                + RingOfSharpshooting.levelDamageBonus(Dungeon.hero)
-                + (curseInfusionBonus ? 1 + Dungeon.hero.lvl / 30 : 0);
+		Hero owner = findRealOwner();
+        int dmg = 1 + owner.lvl / 5
+                + RingOfSharpshooting.levelDamageBonus(owner)
+                + (curseInfusionBonus ? 1 + owner.lvl / 30 : 0);
         return Math.max(0, dmg);
     }
 
     @Override
     public int max(int lvl) {
-        int dmg = 6 + (int) (Dungeon.hero.lvl / 2.5f)
-                + 2 * RingOfSharpshooting.levelDamageBonus(Dungeon.hero)
-                + (curseInfusionBonus ? 2 + Dungeon.hero.lvl / 15 : 0);
+		Hero owner = findRealOwner();
+        int dmg = 6 + (int) (owner.lvl / 2.5f)
+                + 2 * RingOfSharpshooting.levelDamageBonus(owner)
+                + (curseInfusionBonus ? 2 + owner.lvl / 15 : 0);
         return Math.max(0, dmg);
     }
+
+	private Hero findRealOwner() {
+		if (Dungeon.hero.belongings.contains(this)) return Dungeon.hero;
+		for (Mob m : Dungeon.level.mobs) {
+			if (m instanceof HeroMob && ((HeroMob) m).weapon() == this) return ((HeroMob) m).hero();
+		}
+		return null;
+	}
 
 	@Override
 	public int targetingPos(Hero user, int dst) {
@@ -303,7 +315,7 @@ public class SpiritBow extends Weapon {
 
 		@Override
 		public Emitter emitter() {
-			if (Dungeon.hero.buff(NaturesPower.naturesPowerTracker.class) != null && !sniperSpecial){
+			if (findRealOwner().buff(NaturesPower.naturesPowerTracker.class) != null && !sniperSpecial){
 				Emitter e = new Emitter();
 				e.pos(5, 5);
 				e.fillTarget = false;

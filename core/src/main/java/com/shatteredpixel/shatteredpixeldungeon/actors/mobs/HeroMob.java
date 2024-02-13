@@ -16,7 +16,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.Item
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
@@ -138,6 +140,53 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         boolean ret = internalHero.canSurpriseAttack();
         updateStats();
         return ret;
+    }
+
+    @Override
+    protected boolean canAttack( Char enemy ) {
+        return super.canAttack(enemy)
+                || internalHero.belongings.weapon() instanceof SpiritBow
+                    && new Ballistica( pos, enemy.pos, Ballistica.REAL_PROJECTILE, null).collisionPos == enemy.pos;
+    }
+
+    @Override
+    protected boolean doAttack(Char enemy) {
+        if (Dungeon.level.adjacent( pos, enemy.pos ) || !(internalHero.belongings.weapon() instanceof SpiritBow)
+                || new Ballistica( pos, enemy.pos, Ballistica.REAL_PROJECTILE, null).collisionPos != enemy.pos) {
+
+            return super.doAttack( enemy );
+
+        } else {
+
+            if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
+                sprite.zap( enemy.pos );
+                shootMissile();
+                return false;
+            } else {
+                shootMissile();
+                return true;
+            }
+        }
+    }
+
+    protected void shootMissile() {
+
+        if (!(internalHero.belongings.weapon() instanceof SpiritBow)) {
+            return;
+        }
+
+//        spend( 1f );
+
+//        Invisibility.dispel(this);
+
+        SpiritBow bow = (SpiritBow) internalHero.belongings.weapon();
+
+        bow.knockArrow().cast(internalHero, target);
+    }
+
+    public void onZapComplete() {
+        shootMissile();
+        next();
     }
 
     @Override
