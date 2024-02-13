@@ -56,6 +56,7 @@ public abstract class Plant implements Bundlable {
     public int pos;
 
     public boolean activateOnTrigger = true;
+    public String customName, customDesc;
 
     protected Class<? extends Plant.Seed> seedClass;
 
@@ -107,17 +108,25 @@ public abstract class Plant implements Bundlable {
 
     private static final String POS = "pos";
     private static final String ACTIVATE_ON_TRIGGER = "activate_on_trigger";
+    private static final String CUSTOM_NAME = "custom_name";
+    private static final String CUSTOM_DESC = "custom_desc";
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
         pos = bundle.getInt(POS);
         activateOnTrigger = !bundle.contains(ACTIVATE_ON_TRIGGER) || bundle.getBoolean(ACTIVATE_ON_TRIGGER);
+
+        if (bundle.contains(CUSTOM_NAME)) customName = bundle.getString(CUSTOM_NAME);
+        if (bundle.contains(CUSTOM_DESC)) customDesc = bundle.getString(CUSTOM_DESC);
     }
 
     @Override
     public void storeInBundle(Bundle bundle) {
         bundle.put(POS, pos);
         bundle.put(ACTIVATE_ON_TRIGGER, activateOnTrigger);
+
+        if (customName != null) bundle.put(CUSTOM_NAME, customName);
+        if (customDesc != null) bundle.put(CUSTOM_DESC, customDesc);
     }
 
     public Plant getCopy(){
@@ -127,13 +136,19 @@ public abstract class Plant implements Bundlable {
     }
 
     public String name() {
-        return Messages.get(this, "name");
+        String msg;
+        return customName == null ? Messages.get(this, "name") : Messages.NO_TEXT_FOUND.equals(msg = Messages.get(customName)) ? customName : msg;
     }
 
     public String desc() {
-        String desc = Messages.get(this, "desc");
+        String msg;
+        return customDesc == null ? regularDesc(this) : Messages.NO_TEXT_FOUND.equals(msg = Messages.get(customDesc)) ? customDesc : msg;
+    }
+
+    private static String regularDesc(Plant plant) {
+        String desc = Messages.get(plant, "desc");
         if (Dungeon.hero != null && Dungeon.hero.subClass == HeroSubClass.WARDEN) {
-            desc += "\n\n" + Messages.get(this, "warden_desc");
+            desc += "\n\n" + Messages.get(plant, "warden_desc");
         }
         return desc;
     }
