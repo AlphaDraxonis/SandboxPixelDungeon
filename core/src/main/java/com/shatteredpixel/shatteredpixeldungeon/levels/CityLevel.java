@@ -67,7 +67,7 @@ public class CityLevel extends RegularLevel {
 
 	@Override
 	public void playLevelMusic() {
-		playLevelMusic(LevelScheme.REGION_CITY, 0);
+		playLevelMusic(LevelScheme.REGION_CITY, Level.MUSIC_NORMAL);
 	}
 
 	public static void playCityLevelMusic() {

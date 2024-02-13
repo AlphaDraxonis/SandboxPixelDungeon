@@ -54,6 +54,7 @@ public class Zone implements Bundlable {
     public boolean canDestroyWalls = true;//If Pickaxe/DM300 can destroy walls
     public GrassType grassType = GrassType.NONE;
     public boolean blocksVision = false;
+    public int musicVariant = -3;
 
     public String chasmDestZone;
     public LevelTransition zoneTransition;
@@ -84,6 +85,7 @@ public class Zone implements Bundlable {
     public static final String CAN_DESTROY_WALLS = "can_destroy_walls";
     public static final String GRASS_TYPE = "grass_type";
     public static final String BLOCKS_VISION = "blocks_vision";
+    public static final String MUSIC_VARIANT = "music_variant";
     public static final String CHASM_DEST_ZONE = "chasm_dest_zone";
     public static final String ZONE_TRANSITION = "zone_transition";
     public static final String RESPAWN_COOLDOWN = "respawn_cooldown";
@@ -104,6 +106,7 @@ public class Zone implements Bundlable {
         canDestroyWalls = bundle.getBoolean(CAN_DESTROY_WALLS);
         grassType = bundle.getEnum(GRASS_TYPE, GrassType.class);
         blocksVision = bundle.getBoolean(BLOCKS_VISION);
+        musicVariant = bundle.contains(MUSIC_VARIANT) ? bundle.getInt(MUSIC_VARIANT) : -3;
         chasmDestZone = bundle.getString(CHASM_DEST_ZONE);
         zoneTransition = (LevelTransition) bundle.get(ZONE_TRANSITION);
         respawnCooldown = bundle.getFloat(RESPAWN_COOLDOWN);
@@ -136,6 +139,7 @@ public class Zone implements Bundlable {
         bundle.put(CAN_DESTROY_WALLS, canDestroyWalls);
         bundle.put(GRASS_TYPE, grassType);
         bundle.put(BLOCKS_VISION, blocksVision);
+        bundle.put(MUSIC_VARIANT, musicVariant);
         bundle.put(CHASM_DEST_ZONE, chasmDestZone);
         bundle.put(ZONE_TRANSITION, zoneTransition);
         bundle.put(RESPAWN_COOLDOWN, respawnCooldown);
@@ -293,6 +297,11 @@ public class Zone implements Bundlable {
     public static GrassType getGrassType(Level level, int cell) {
         Zone z = level.zone[cell];
         return z == null ? GrassType.NONE : z.grassType;
+    }
+
+    public static int getMusicVariant(Level level, int cell) {
+        Zone z = level.zone[cell];
+        return z == null ? -3 : z.musicVariant;
     }
 
     public Mob createMob() {

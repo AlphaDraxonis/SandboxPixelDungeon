@@ -130,7 +130,7 @@ public class WandmakerQuest extends Quest {
 
     public static void restoreStatics(Bundle bundle) {
         Bundle b = bundle.getBundle(NODE);
-        if (b.contains(QUESTS_ACTIVE_ARRAY)) questsActive = bundle.getIntArray(QUESTS_ACTIVE_ARRAY);
+        if (b.contains(QUESTS_ACTIVE_ARRAY)) questsActive = b.getIntArray(QUESTS_ACTIVE_ARRAY);
         else questsActive = new int[NUM_QUESTS];
     }
 
@@ -141,16 +141,16 @@ public class WandmakerQuest extends Quest {
 
     private static Boolean wandmakerQuestWasActive = null;
 
-    public static void updateMusic() {
+    public static boolean updateMusic() {
 
         if (LevelScheme.getRegion(Dungeon.level) != LevelScheme.REGION_PRISON) {
-            return;
+            return false;
         }
 
         boolean nowActive = WandmakerQuest.active();
         if (wandmakerQuestWasActive == null) {
             wandmakerQuestWasActive = nowActive;
-            return;
+            return false;
         }
         if (nowActive != wandmakerQuestWasActive) {
             wandmakerQuestWasActive = nowActive;
@@ -160,7 +160,9 @@ public class WandmakerQuest extends Quest {
                     Dungeon.level.playLevelMusic();
                 }
             }));
+            return true;
         }
+        return false;
     }
 
     public static void setMusicPlaying(boolean questActive) {

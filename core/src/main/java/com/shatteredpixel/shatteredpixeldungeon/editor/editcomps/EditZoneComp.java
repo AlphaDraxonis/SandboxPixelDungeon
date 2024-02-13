@@ -23,6 +23,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ZoneMobSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndZones;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
@@ -35,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIco
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -152,6 +154,24 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         };
         mobRotation.multiline = true;
 
+        StyledSpinner music = new StyledSpinner(new SpinnerTextModel(true, zone.musicVariant < 0 ? 0 : zone.musicVariant + 1, new Object[] {
+                -3, Level.MUSIC_NORMAL, Level.MUSIC_TENSE, Level.MUSIC_BOSS, Level.MUSIC_BOSS_FINAL
+        }) {
+            @Override
+            protected String getAsString(Object value) {
+                switch ((int)value) {
+                    default:
+                    case -3: return Messages.get(EditZoneComp.class, "no_change");
+                    case 0: return Messages.get(ChangeRegion.class, "normal");
+                    case 1: return Messages.get(ChangeRegion.class, "tense");
+                    case 2: return Messages.get(ChangeRegion.class, "boss");
+                    case 3: return Messages.get(ChangeRegion.class, "boss_final");
+                }
+            }
+        }, Messages.get(ChangeRegion.MusicVariantSpinner.class, "label"), 7);
+        music.addChangeListener(() -> zone.musicVariant = (int) music.getValue());
+        add(music);
+
         LevelScheme chasm = Dungeon.customDungeon.getFloor(Dungeon.level.levelScheme.getChasm());
         Object[] data;
         int index = 0;
@@ -189,7 +209,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         };
         addTransition.multiline = true;
 
-        comps = new Component[]{pickColor, flamable, spawnMobs, spawnItems, teleportTo, destroyWalls, blocksVision, grassVisuals, mobRotation, addTransition};
+        comps = new Component[]{pickColor, flamable, spawnMobs, spawnItems, teleportTo, destroyWalls, blocksVision, grassVisuals, music, mobRotation, addTransition};
 
         if (zone.zoneTransition != null) {
             addTransition(zone.zoneTransition);

@@ -971,6 +971,7 @@ public abstract class Mob extends Char {
 		if (isBossMob && !BossHealthBar.isAssigned(this)){
 			BossHealthBar.addBoss( this );
 			Dungeon.level.seal();
+			Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
 			bleedingCheck = (HP*2 <= HT);
 		} else bleedingCheck = false;
 
@@ -1094,6 +1095,7 @@ public abstract class Mob extends Char {
 		}
 
 		if (isBossMob) {
+			if (BossHealthBar.isAssigned(this)) Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS);
 			Dungeon.level.unseal();
 			GameScene.bossSlain();
 		}
@@ -1388,6 +1390,7 @@ public abstract class Mob extends Char {
             if (!BossHealthBar.isAssigned(this)) {
                 BossHealthBar.addBoss(this);
                 Dungeon.level.seal();
+				Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
 //                yell(Messages.get(this, "notice"));
 //                for (Char ch : Actor.chars()) {
 //                    if (ch instanceof DriedRose.GhostHero) {

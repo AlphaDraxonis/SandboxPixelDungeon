@@ -471,15 +471,12 @@ public abstract class Level implements Bundlable {
 			{Assets.Music.CITY_TENSE, Assets.Music.CITY_BOSS, Assets.Music.CITY_BOSS_FINALE},
 			{Assets.Music.HALLS_TENSE, Assets.Music.HALLS_BOSS, Assets.Music.HALLS_BOSS_FINALE}
 	};
+	//music variants
 	public static final int MUSIC_NORMAL = 0, MUSIC_TENSE = 1, MUSIC_BOSS = 2, MUSIC_BOSS_FINAL = 3;
 	private int currentVariant;
 	public void playLevelMusic(int region, int variant) {
-		//variant = 0: normal
-		//variant = 1: tense
-		//variant = 2: boss normal
-		//variant = 3: boss final
 		//region = -1: theme final
-		//region == -2 do nothing
+		//region = -2: do nothing
 		if (region == -2) {
 			Music.INSTANCE.end();
 			return;
@@ -1871,7 +1868,28 @@ public abstract class Level implements Bundlable {
 		}
 
 		if (ch == Dungeon.hero) {
-			WandmakerQuest.updateMusic();
+			updateMusic();
+		}
+	}
+
+	protected Zone zoneWithPlayedMusic = null;
+
+	protected void updateMusic() {
+		if (WandmakerQuest.updateMusic()) {
+			return;
+		}
+		if (Zone.getMusicVariant(this, Dungeon.hero.pos)
+				== (zoneWithPlayedMusic == null ? -3 : zoneWithPlayedMusic.musicVariant)) {
+			return;
+		}
+		if (zoneWithPlayedMusic != zone[Dungeon.hero.pos]) {
+			zoneWithPlayedMusic = zone[Dungeon.hero.pos];
+
+			Game.runOnRenderThread(() -> Music.INSTANCE.fadeOut(1f, () -> {
+				if (Dungeon.level != null) {
+					Dungeon.level.playLevelMusic();
+				}
+			}));
 		}
 	}
 

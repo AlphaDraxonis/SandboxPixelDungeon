@@ -258,7 +258,7 @@ public class ChangeRegion extends Component {
         return outsideSp;
     }
 
-    private static class MusicVariantSpinner extends StyledSpinner {
+    public static class MusicVariantSpinner extends StyledSpinner {
 
 
         public MusicVariantSpinner(int val) {

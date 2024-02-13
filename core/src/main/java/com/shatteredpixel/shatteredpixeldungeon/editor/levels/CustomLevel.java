@@ -438,7 +438,11 @@ public class CustomLevel extends Level {
 
     @Override
     public void playLevelMusic() {
-        if (customMusic != null) {
+        if (Dungeon.hero != null && Zone.getMusicVariant(this, Dungeon.hero.pos) != -3) {
+            zoneWithPlayedMusic = zone[Dungeon.hero.pos];
+            playLevelMusic(music == REGION_NONE ? region : music, Zone.getMusicVariant(this, Dungeon.hero.pos));
+        }
+        else if (customMusic != null) {
             Music.INSTANCE.play(customMusic, true);
         }
         else {
