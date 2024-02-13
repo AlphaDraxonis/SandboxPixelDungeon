@@ -393,7 +393,12 @@ public class Potion extends Item {
 	}
 	
 	protected void splash( int cell ) {
-		Dungeon.level.blobs.doOnEach(Fire.class, b -> b.clear(cell));
+		if (this instanceof PotionOfLiquidFlame) {
+			//do not extinguish permanent fire
+			Fire fire = Dungeon.level.blobs.getOnly(Fire.class);
+			if (fire != null) fire.clear(cell);
+		}
+		else Dungeon.level.blobs.doOnEach(Fire.class, b -> b.clear(cell));
 
 		Char ch = Actor.findChar(cell);
 		if (ch != null && ch.alignment == Char.Alignment.ALLY) {
