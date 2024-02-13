@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -67,7 +68,9 @@ public class Fire extends Blob {
 					burn( cell );
 
 					fire = cur[cell] - 1;
-					if (fire <= 0 && Dungeon.level.isFlamable(cell)) {
+					if (fire <= 0 && Dungeon.level.isFlamable(cell) || this instanceof PermaGas && fire >= 5) {
+
+						if (this instanceof PermaGas) cur[cell] = 7;
 
 						Dungeon.level.destroy( cell );
 

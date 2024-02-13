@@ -20,12 +20,21 @@ public interface PermaGas {
         protected void evolve() {
             for (int i = 0; i < cur.length; i++) {
                 if (cur[i] > 0) {
-                    cur[i] += 1;
+                    if (cur[i] < 6) cur[i] = Math.min(cur[i] + 2, 6);
+                    else cur[i] += 1;
                     off[i] = cur[i];
                     volume += cur[i];
                 }
             }
             super.evolve();
+
+            //For newly spread fire
+            for (int i = 0; i < cur.length; i++) {
+                if (off[i] > cur[i]) {
+                    volume += 1 - off[i];
+                    off[i] = cur[i] = 1;
+                }
+            }
         }
     }
 
