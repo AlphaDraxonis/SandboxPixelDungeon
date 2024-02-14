@@ -312,7 +312,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		yell( Messages.get(this, "defeated") );
 
 		if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
-			if (showBossBar) Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS);
+			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
 		}
 	}
 	
@@ -332,7 +332,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 			}
 		}
 
-		if (showBossBar) Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
+		if (showBossBar) Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS, id());
 	}
 
 	private final String PUMPEDUP = "pumpedup";

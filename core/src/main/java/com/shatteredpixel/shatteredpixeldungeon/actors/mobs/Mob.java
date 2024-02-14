@@ -970,9 +970,11 @@ public abstract class Mob extends Char {
 		boolean bleedingCheck;
 		if (isBossMob && !BossHealthBar.isAssigned(this)){
 			BossHealthBar.addBoss( this );
-			Dungeon.level.seal();
-			Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
 			bleedingCheck = (HP*2 <= HT);
+			if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
+				Dungeon.level.seal();
+				Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS, id());
+			}
 		} else bleedingCheck = false;
 
 		if (!isInvulnerable(src.getClass())) {
@@ -1094,8 +1096,8 @@ public abstract class Mob extends Char {
 			}
 		}
 
-		if (isBossMob) {
-			if (BossHealthBar.isAssigned(this)) Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS);
+		if (isBossMob && playerAlignment == Mob.NORMAL_ALIGNMENT) {
+			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
 			Dungeon.level.unseal();
 			GameScene.bossSlain();
 		}
@@ -1389,8 +1391,10 @@ public abstract class Mob extends Char {
 		if (isBossMob) {
             if (!BossHealthBar.isAssigned(this)) {
                 BossHealthBar.addBoss(this);
-                Dungeon.level.seal();
-				Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
+				if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
+					Dungeon.level.seal();
+					Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS, id());
+				}
 //                yell(Messages.get(this, "notice"));
 //                for (Char ch : Actor.chars()) {
 //                    if (ch instanceof DriedRose.GhostHero) {

@@ -219,8 +219,8 @@ public class YogDzewa extends Mob {
 					}
 				});
 			} else if (playerAlignment == Mob.NORMAL_ALIGNMENT && showBossBar) {
-				Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS);
-				Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS_FINAL);
+				Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
+				Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS_FINAL, id());
 			}
 		}
 
@@ -602,9 +602,7 @@ public class YogDzewa extends Mob {
 
 		yell( Messages.get(this, "defeated") );
 
-		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof HallsBossLevel)) {
-			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS_FINAL);
-		}
+		Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS_FINAL, id());
 	}
 
 	@Override
@@ -635,7 +633,7 @@ public class YogDzewa extends Mob {
 		}
 		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof HallsBossLevel)) {
 			Dungeon.level.seal();
-			if (showBossBar) Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS);
+			if (showBossBar) Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS, id());
 		}
 	}
 
