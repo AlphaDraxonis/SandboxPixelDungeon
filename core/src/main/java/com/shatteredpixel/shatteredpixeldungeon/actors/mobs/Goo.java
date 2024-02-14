@@ -114,7 +114,11 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public void setLevel(int depth) {
-		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) HP = HT = (int) (HP * 1.2f);
+		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) {
+			boolean changeHP = HP == HT;
+			HT = (int) (HT * 1.2f);
+			if (changeHP) HP = HT;
+		}
 	}
 
 	@Override
@@ -311,9 +315,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		
 		yell( Messages.get(this, "defeated") );
 
-		if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
-			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
-		}
+		Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
 	}
 	
 	@Override

@@ -61,8 +61,16 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 
 	@Override
 	public void setLevel(int depth) {
-		HP = HT = (int) (15 + depth * 5 * statsScale);
+		HT = (int) (15 + depth * 5 * statsScale);
 		defenseSkill = 4 + depth;
+
+		if (HP == 0) HP = HT;
+	}
+
+	@Override
+	protected void onAdd() {
+		setLevel(Dungeon.depth);
+		super.onAdd();
 	}
 
 	@Override

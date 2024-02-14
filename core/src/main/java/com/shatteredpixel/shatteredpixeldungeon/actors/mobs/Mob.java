@@ -1096,8 +1096,8 @@ public abstract class Mob extends Char {
 			}
 		}
 
+		Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
 		if (isBossMob && playerAlignment == Mob.NORMAL_ALIGNMENT) {
-			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
 			Dungeon.level.unseal();
 			GameScene.bossSlain();
 		}

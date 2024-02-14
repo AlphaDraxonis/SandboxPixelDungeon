@@ -63,8 +63,12 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public void setLevel(int depth) {
-		HP = HT = (int) (10 + depth * 5 * statsScale);
+		HT = (int) (10 + depth * 5 * statsScale);
 		defenseSkill = 10 + depth * 2;
+
+		if (HP == 0) {
+			HP = HT;
+		}
 	}
 
 	@Override

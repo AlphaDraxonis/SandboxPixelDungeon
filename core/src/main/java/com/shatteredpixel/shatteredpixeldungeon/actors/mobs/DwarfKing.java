@@ -125,7 +125,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 	private static final int LINK = 1;
 	private static final int TELE = 2;
 
-	private int initialThrone;
+	private int initialThrone = -1;
 	private boolean yelledWavePhase2;
 
 	private static final String PHASE = "phase";
@@ -135,6 +135,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 	private static final String ABILITY_CD = "ability_cd";
 	private static final String LAST_ABILITY = "last_ability";
 	private static final String YELLED = "yelled";
+	private static final String INITIAL_THRONE = "initial_throne";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
@@ -145,6 +146,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		bundle.put( ABILITY_CD, abilityCooldown );
 		bundle.put( LAST_ABILITY, lastAbility );
 		bundle.put( YELLED, yelledWavePhase2 );
+		bundle.put( INITIAL_THRONE, initialThrone );
 	}
 
 	@Override
@@ -155,18 +157,30 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		summonCooldown = bundle.getFloat( SUMMON_CD );
 		abilityCooldown = bundle.getFloat( ABILITY_CD );
 		lastAbility = bundle.getInt( LAST_ABILITY );
-		yelledWavePhase2 = bundle.getBoolean(YELLED);
+		yelledWavePhase2 = bundle.getBoolean( YELLED );
+		initialThrone = bundle.getInt( INITIAL_THRONE );
 
 		if (phase == 2) properties.add(Property.IMMOVABLE);
 	}
 
 	@Override
 	public void setLevel(int depth) {
-		initialThrone = pos;
-		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) HP = HT = (int) (HP * 1.5f);
-		if (!(Dungeon.level instanceof CityBossLevel)) {
-			Dungeon.level.setPassableLater(initialThrone,false);
-			phase = 0;
+		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) {
+			boolean changeHP = HP == HT;
+			HT = (int) (HT * 1.5f);
+			if (changeHP) HP = HT;
+		}
+	}
+
+	@Override
+	protected void onAdd() {
+		super.onAdd();
+		if (initialThrone <= 0) {
+			initialThrone = pos;
+			if (!(Dungeon.level instanceof CityBossLevel)) {
+				Dungeon.level.setPassableLater(initialThrone,false);
+				phase = 0;
+			}
 		}
 	}
 

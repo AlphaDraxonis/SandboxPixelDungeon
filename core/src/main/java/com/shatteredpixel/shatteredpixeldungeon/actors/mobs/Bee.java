@@ -85,11 +85,14 @@ public class Bee extends Mob implements MobBasedOnDepth {
 	public void setLevel( int level ) {
 		this.level = level;
 
-		HT = HP = (2 + level) * 4;
+		HT = (2 + level) * 4;
 		defenseSkill = 9 + level;
 
-		if (potPos == 0) potPos = pos;
-		if (potHolder == 0) potHolder = -1;
+		if (HP == 0) {
+			HP = HT;
+			if (potPos == 0) potPos = pos;
+			if (potHolder == 0) potHolder = -1;
+		}
 	}
 
 	public void setPotInfo(int potPos, Char potHolder){

@@ -296,10 +296,14 @@ public class Mimic extends Mob implements MobBasedOnDepth {
     }
 
     public void adjustStats(int level) {
-        HP = HT = (int) ((1 + level) * 6 * statsScale);
+        HT = (int) ((1 + level) * 6 * statsScale);
         defenseSkill = 2 + level / 2;
 
         enemySeen = true;
+
+        if (HP == 0) {
+            HP = HT;
+        }
     }
 
     @Override

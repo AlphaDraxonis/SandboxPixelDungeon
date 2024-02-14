@@ -57,8 +57,10 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             internalHero.belongings.artifact.activate(internalHero);
         if (internalHero.belongings.misc != null)
             internalHero.belongings.misc.activate(internalHero);
-        Buff.affect( this, Regeneration.class );
-        Buff.affect( this, Hunger.class );
+        if (buff(Regeneration.class) == null) {
+            Buff.affect(this, Regeneration.class);
+            Buff.affect(this, Hunger.class);
+        }
         updateEXP();
     }
 

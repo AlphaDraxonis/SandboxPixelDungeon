@@ -51,8 +51,10 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 
 	@Override
 	public void setLevel(int depth) {
+		int loadedHP = HP;
 		super.setLevel(depth);
-		HP = HT = HT * 2;//double HP
+		HT *= 2;//double HP
+		if (loadedHP == 0) HP = HT;
 	}
 
 	@Override

@@ -110,7 +110,6 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 	public int phase = 1;//1 or 2, ONLY used for non PrisonBossLevels
 	public int arenaRadius = 10;//ONLY used for non PrisonBossLevels
-	private int initialPos;
 	private int stepsToDo;//only if state is Wandering
 	private boolean attackedPlayer;
 
@@ -136,12 +135,22 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	
 	@Override
 	public void setLevel(int depth) {
-		initialPos = pos;
-		if (Dungeon.level instanceof PrisonBossLevel) phase = 0;
-		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) HP = HT = (int) (HP * 1.25f);
+		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) {
+			boolean changeHP = HP == HT;
+			HT = (int) (HT * 1.25f);
+			if (changeHP) HP = HT;
+		}
 	}
 
-//	@Override
+	@Override
+	protected void onAdd() {
+		super.onAdd();
+		if (firstAdded) {
+			if (Dungeon.level instanceof PrisonBossLevel) phase = 0;
+		}
+	}
+
+	//	@Override
 //	public int drRoll() {
 //		return super.drRoll() + Random.NormalIntRange(0, 5);
 //	}
@@ -438,7 +447,6 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		bundle.put( ABILITY_COOLDOWN, abilityCooldown );
 		bundle.put(PHASE, phase);
 		bundle.put(ARENA_RADIUS, arenaRadius);
-		bundle.put(INITIAL_POS, initialPos);
 		bundle.put(STEPS_TO_DO, stepsToDo);
 		bundle.put(ATTACKED_PLAYER, attackedPlayer);
 	}
@@ -454,7 +462,6 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		abilityCooldown = bundle.getInt( ABILITY_COOLDOWN );
 		phase = bundle.getInt(PHASE);
 		arenaRadius = bundle.getInt(ARENA_RADIUS);
-		initialPos = bundle.getInt(INITIAL_POS);
 		stepsToDo = bundle.getInt(STEPS_TO_DO);
 		attackedPlayer = bundle.getBoolean(ATTACKED_PLAYER);
 	}
