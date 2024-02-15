@@ -3,9 +3,12 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ChangePlantNameDesc;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PlantItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -17,13 +20,14 @@ import java.util.Objects;
 public class EditPlantComp extends DefaultEditComp<Plant> {
 
     protected StyledCheckBox activateOnTrigger;
+    protected StyledItemSelector dropItem;
 
     public EditPlantComp(PlantItem plantItem) {
         this(plantItem.getObject());
     }
 
-    public EditPlantComp(Plant item) {
-        super(item);
+    public EditPlantComp(Plant plant) {
+        super(plant);
 
         rename.visible = rename.active = true;
 
@@ -36,12 +40,26 @@ public class EditPlantComp extends DefaultEditComp<Plant> {
             updateObj();
         });
         add(activateOnTrigger);
+
+        dropItem = new StyledItemSelector(Messages.get(this, "drop_item"), Item.class, plant.dropItem, ItemSelector.NullTypeSelector.NOTHING) {
+            @Override
+            public void setSelectedItem(Item selectedItem) {
+                super.setSelectedItem(selectedItem);
+                plant.dropItem = selectedItem == null ? null : selectedItem.getCopy();
+            }
+
+            @Override
+            public void change() {
+                EditorScene.selectItem(selector);
+            }
+        };
+        add(dropItem);
     }
 
     @Override
     protected void layout() {
         super.layout();
-        layoutCompsInRectangles(activateOnTrigger);
+        layoutCompsInRectangles(activateOnTrigger, dropItem);
     }
 
     @Override

@@ -57,6 +57,7 @@ public abstract class Plant implements Bundlable {
 
     public boolean activateOnTrigger = true;
     public String customName, customDesc;
+    public Item dropItem;
 
     protected Class<? extends Plant.Seed> seedClass;
 
@@ -76,6 +77,11 @@ public abstract class Plant implements Bundlable {
         }
 
         wither();
+
+        if (dropItem != null) {
+            Dungeon.level.drop(dropItem, pos).sprite.drop();
+        }
+
         activate(ch);
     }
 
@@ -108,6 +114,7 @@ public abstract class Plant implements Bundlable {
 
     private static final String POS = "pos";
     private static final String ACTIVATE_ON_TRIGGER = "activate_on_trigger";
+    private static final String DROP_ITEM = "drop_item";
     private static final String CUSTOM_NAME = "custom_name";
     private static final String CUSTOM_DESC = "custom_desc";
 
@@ -115,6 +122,7 @@ public abstract class Plant implements Bundlable {
     public void restoreFromBundle(Bundle bundle) {
         pos = bundle.getInt(POS);
         activateOnTrigger = !bundle.contains(ACTIVATE_ON_TRIGGER) || bundle.getBoolean(ACTIVATE_ON_TRIGGER);
+        dropItem = (Item) bundle.get(DROP_ITEM);
 
         if (bundle.contains(CUSTOM_NAME)) customName = bundle.getString(CUSTOM_NAME);
         if (bundle.contains(CUSTOM_DESC)) customDesc = bundle.getString(CUSTOM_DESC);
@@ -124,6 +132,7 @@ public abstract class Plant implements Bundlable {
     public void storeInBundle(Bundle bundle) {
         bundle.put(POS, pos);
         bundle.put(ACTIVATE_ON_TRIGGER, activateOnTrigger);
+        bundle.put(DROP_ITEM, dropItem);
 
         if (customName != null) bundle.put(CUSTOM_NAME, customName);
         if (customDesc != null) bundle.put(CUSTOM_DESC, customDesc);
