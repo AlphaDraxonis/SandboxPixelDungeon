@@ -44,6 +44,13 @@ public class MobItem extends EditorItem<Mob> {
     }
 
     @Override
+    public void setObject(Mob obj) {
+        Mob copy = (Mob) obj.getCopy();
+        copy.pos = -1;
+        super.setObject(copy);
+    }
+
+    @Override
     public void place(int cell) {
         Mob place = (Mob) getObject().getCopy();
         Mob remove = Dungeon.level.findMob(cell);

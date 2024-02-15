@@ -193,18 +193,20 @@ public class SpiritBow extends Weapon {
     @Override
     public int min(int lvl) {
 		Hero owner = findRealOwner();
-        int dmg = 1 + owner.lvl / 5
+		int heroLvl =  owner == null ? 1 : owner.lvl;
+        int dmg = 1 + heroLvl / 5
                 + RingOfSharpshooting.levelDamageBonus(owner)
-                + (curseInfusionBonus ? 1 + owner.lvl / 30 : 0);
+                + (curseInfusionBonus ? 1 + heroLvl / 30 : 0);
         return Math.max(0, dmg);
     }
 
     @Override
     public int max(int lvl) {
 		Hero owner = findRealOwner();
-        int dmg = 6 + (int) (owner.lvl / 2.5f)
+		int heroLvl =  owner == null ? 1 : owner.lvl;
+        int dmg = 6 + (int) (heroLvl / 2.5f)
                 + 2 * RingOfSharpshooting.levelDamageBonus(owner)
-                + (curseInfusionBonus ? 2 + owner.lvl / 15 : 0);
+                + (curseInfusionBonus ? 2 + heroLvl / 15 : 0);
         return Math.max(0, dmg);
     }
 

@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -37,6 +38,8 @@ public class ExportDungeonWrapper implements Bundlable {
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
+
+        EditorItemBag.callStaticInitializers();
 
         dungeon = (CustomDungeon) bundle.get(DUNGEON);
         dungeonInfo = dungeon.createInfo();

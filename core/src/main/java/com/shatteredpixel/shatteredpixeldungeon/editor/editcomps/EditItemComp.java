@@ -42,7 +42,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -217,7 +216,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             }
 
             if (item instanceof Potion || item instanceof Scroll || item instanceof Ring || item instanceof Wand || item instanceof Artifact
-                    || (item instanceof Weapon && !(item instanceof MissileWeapon || item instanceof SpiritBow))
+                    || (item instanceof Weapon && !(item instanceof MissileWeapon))
                     || (item instanceof Armor && !(item instanceof ClassArmor))) {
 //      if (!DefaultStatsCache.getDefaultObject(item.getClass()).isIdentified()) { // always returns true while editing
                 autoIdentify = new StyledCheckBox(label("auto_identify"));

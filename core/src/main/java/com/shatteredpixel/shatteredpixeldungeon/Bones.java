@@ -267,7 +267,7 @@ public class Bones {
 				return level.equals(Dungeon.level.name);
 			} else {
 				//branch are level ids, so same branch is always same area
-				return branch >= 1;
+				return true;
 			}
 		}
 		return false;

@@ -177,8 +177,6 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             return;
         }
 
-//        spend( 1f );
-
 //        Invisibility.dispel(this);
 
         SpiritBow bow = (SpiritBow) internalHero.belongings.weapon();

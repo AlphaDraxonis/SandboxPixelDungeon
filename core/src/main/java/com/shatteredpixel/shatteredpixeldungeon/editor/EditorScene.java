@@ -604,7 +604,7 @@ public class EditorScene extends PixelScene {
     }
 
     public static void remove(LevelTransition transition) {
-        if (scene == null) return;
+        if (scene == null || transition == null) return;
         BitmapText text = scene.transitionIndicatorsMap.get(transition);
         if (text == null) {
             for (LevelTransition trans : scene.transitionIndicatorsMap.keySet()) {

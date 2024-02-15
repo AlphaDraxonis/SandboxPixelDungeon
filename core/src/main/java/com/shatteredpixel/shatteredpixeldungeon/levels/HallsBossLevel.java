@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY_SP;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_EXIT;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL_DECO;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
@@ -33,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomTerrain;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
@@ -434,7 +436,7 @@ public class HallsBossLevel extends Level {
 		private void updateState(){
 			if (vis != null){
 				int[] data = map.clone();
-				if (Dungeon.level.map[Dungeon.level.exit()] == Terrain.EXIT) {
+				if (TileItem.isExitTerrainCell(Dungeon.level.map[Dungeon.level.exit()])) {
 					data[4] = 19;
 					data[12] = data[14] = 31;
 				}
@@ -445,7 +447,7 @@ public class HallsBossLevel extends Level {
 		@Override
 		public int[] getTerrain() {
 			return new int[]{
-					WALL_DECO, WALL_DECO, WALL_DECO, EMPTY, EMPTY, EMPTY, WALL_DECO, WALL_DECO, WALL_DECO,
+					WALL_DECO, WALL_DECO, WALL_DECO, WALL_DECO, LOCKED_EXIT, WALL_DECO, WALL_DECO, WALL_DECO, WALL_DECO,
 					EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY, EMPTY, EMPTY, EMPTY_SP, EMPTY_SP, EMPTY_SP,
 					EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY, EMPTY, EMPTY, EMPTY_SP, EMPTY_SP, EMPTY_SP,
 					EMPTY_SP, EMPTY_SP, EMPTY_SP, EMPTY, EMPTY, EMPTY, EMPTY_SP, EMPTY_SP, EMPTY_SP,

@@ -325,6 +325,11 @@ public class QuickSlotButton extends Button {
 				set(slotNum, item);
 			}
 		}
+
+		@Override
+		public EditorItem.NullItemClass getItemForNull() {
+			return EditorItem.REMOVER_ITEM;
+		}
 	};
 
 	public static int lastVisible = instance.length;

@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.watabou.noosa.NinePatch;
 
 public class StyledItemSelector extends ItemSelector {
@@ -15,6 +16,7 @@ public class StyledItemSelector extends ItemSelector {
 
     public StyledItemSelector(String text, Class<? extends Item> itemClasses, Item startItem, NullTypeSelector nullTypeSelector) {
         super(text, itemClasses, startItem, nullTypeSelector);
+        renderedTextBlock.align(RenderedTextBlock.CENTER_ALIGN);
     }
 
     @Override

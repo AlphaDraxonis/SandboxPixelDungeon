@@ -125,7 +125,7 @@ public abstract class EditorItem<T> extends Item {
 
     }
 
-    public final static EditorItem<Object> REMOVER_ITEM = new EditorItem<Object>() {//WARNING! DO NOT CHANGE THE POSITION (NUMBER) OF THIS INNER CLASS!!
+    public final static NullItemClass REMOVER_ITEM = new NullItemClass() {//WARNING! DO NOT CHANGE THE POSITION (NUMBER) OF THIS INNER CLASS!!
 
         @Override
         public String name() {

@@ -117,6 +117,11 @@ public class ItemItem extends EditorItem<Item> {
     }
 
     @Override
+    public void setObject(Item obj) {
+        super.setObject(obj.getCopy());
+    }
+
+    @Override
     public void place(int cell) {
 
         if (invalidPlacement(cell)) return;
