@@ -65,7 +65,8 @@ public class ChangeRegion extends Component {
             LevelScheme.REGION_CITY,
             LevelScheme.REGION_HALLS,
             -1,//theme final
-            -2//none
+            -2,//none
+            -3//vanilla game
     };
 
     protected StyledSpinner region, water, music;
@@ -137,6 +138,8 @@ public class ChangeRegion extends Component {
                         return Messages.get(ChangeRegion.class, "theme_final");
                     case -2:
                         return Messages.get(ChangeRegion.class, "none");
+                    case -3:
+                        return Messages.get(ChangeRegion.class, "vanilla");
                     default:
                         return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) value - 1]);
                 }

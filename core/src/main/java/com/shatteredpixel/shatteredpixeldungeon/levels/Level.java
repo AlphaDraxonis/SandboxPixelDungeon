@@ -479,13 +479,16 @@ public abstract class Level implements Bundlable {
 	public void playLevelMusic(int region, int variant) {
 		//region = -1: theme final
 		//region = -2: do nothing
+		//region = -3: vanilla game
 		if (region == -2) {
 			Music.INSTANCE.end();
 			return;
 		}
 
-		if (!musicRequests.isEmpty()) variant = musicRequests.getLast();
-		currentVariant = variant;
+		if (region == -3) {
+			Music.INSTANCE.play(Assets.Music.VANILLA_GAME, true);
+			return;
+		}
 
 		boolean hasTransitionToSurface = false;
 		for (LevelTransition transition : transitions.values()) {
@@ -499,6 +502,9 @@ public abstract class Level implements Bundlable {
 			Music.INSTANCE.play(Assets.Music.THEME_FINALE, true);
 			return;
 		}
+
+		if (!musicRequests.isEmpty()) variant = musicRequests.getLast();
+		currentVariant = variant;
 
 		if (variant > 0 && variant <= 3) {
 			Music.INSTANCE.play(SPECIAL_MUSIC[region-1][variant-1], true);
