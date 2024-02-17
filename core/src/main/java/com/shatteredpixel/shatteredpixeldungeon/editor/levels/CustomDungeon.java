@@ -55,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotio
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfWipeOut;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
@@ -269,6 +270,7 @@ public class CustomDungeon implements Bundlable {
         int code = -1;
         Class<? extends Item> c = item.getClass();
         if (item instanceof Scroll) {
+            if (item instanceof ScrollOfWipeOut) return item.image;
             if (item instanceof ExoticScroll) c = ExoticScroll.exoToReg.get(c);
             code = (scrollRuneLabels == null || !scrollRuneLabels.containsKey(c)) ?
                     ItemSpriteSheet.SCROLL_HOLDER :

@@ -159,6 +159,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfWipeOut;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfAntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfDivination;
@@ -649,7 +650,8 @@ public enum Items {
                 ScrollOfRage.class, ScrollOfChallenge.class,
                 ScrollOfRetribution.class, ScrollOfPsionicBlast.class,
                 ScrollOfTerror.class, ScrollOfDread.class,
-                ScrollOfTransmutation.class, ScrollOfMetamorphosis.class
+                ScrollOfTransmutation.class, ScrollOfMetamorphosis.class,
+                ScrollOfWipeOut.class
         };
 
         STONE.classes = Generator.Category.STONE.classes;

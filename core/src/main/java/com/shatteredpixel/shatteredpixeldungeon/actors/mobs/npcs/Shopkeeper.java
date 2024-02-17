@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfWipeOut;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -157,12 +158,20 @@ public class Shopkeeper extends NPC {
 			CellEmitter.get(pos).burst(ElmoParticle.FACTORY, 6);
 		}
 	}
-	
+
+	private boolean doNotDestroyHeapsAfterDeath = false;
+
+	@Override
+	public void die(Object cause) {
+		doNotDestroyHeapsAfterDeath = cause instanceof ScrollOfWipeOut;
+		super.die(cause);
+	}
+
 	@Override
 	public void destroy() {
 		super.destroy();
 
-		if (CustomDungeon.isEditing()) return;
+		if (CustomDungeon.isEditing() || doNotDestroyHeapsAfterDeath) return;
 		for (Heap heap: Dungeon.level.heaps.valueList()) {
 			if (heap.type == Heap.Type.FOR_SALE) {
 				if (SandboxPixelDungeon.scene() instanceof GameScene) {
