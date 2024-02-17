@@ -120,6 +120,11 @@ public class Heap implements Bundlable {
 			Sample.INSTANCE.play( Assets.Sounds.CURSED );
 		}
 
+		for (Item i : items) {
+			if (i instanceof Bomb && ((Bomb) i).igniteOnDrop)
+				((Bomb) i).trigger(pos);
+		}
+
 		type = Type.HEAP;
 		ArrayList<Item> bonus = RingOfWealth.tryForBonusDrop(hero, 1);
 		if (bonus != null && !bonus.isEmpty()) {
