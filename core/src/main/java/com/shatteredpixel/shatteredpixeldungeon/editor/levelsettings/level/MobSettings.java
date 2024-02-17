@@ -449,7 +449,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
         }
 
         public ChangeMobRotation(ItemsWithChanceDistrComp.RandomItemData mobRotation) {
-            super(mobRotation, 1);
+            super(mobRotation, 1, 1);
             hasNullInLoot = true;//so no "no mob" can be added
         }
 

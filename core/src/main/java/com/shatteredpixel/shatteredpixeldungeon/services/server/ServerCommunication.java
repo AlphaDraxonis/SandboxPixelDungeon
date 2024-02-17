@@ -82,7 +82,7 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return URL == null ? "https://script.google.com/macros/s/AKfycbwdZ33YW_XXxiV8-rOzrmzxIr5-RJSvhxDjLE4PfpWHRfR-0fQkNUu504kyxjoUebAOqQ/exec" : URL;
+        return URL == null ? "https://script.google.com/macros/s/AKfycbxyjOoSJMJjpDnlBh_2wDncnbnjnk6JEbRa2WcGR09y95wnWVuZziVeNkDaZ8suYu8GCw/exec" : URL;
     }
 
     private static String getUUID() {

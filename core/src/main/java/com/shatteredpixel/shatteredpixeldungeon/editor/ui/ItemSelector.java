@@ -28,7 +28,7 @@ import java.util.HashSet;
 public class ItemSelector extends Component {
 
     public enum NullTypeSelector {
-        NONE, NOTHING, RANDOM
+        DISABLED, NOTHING, RANDOM
     }
 
     public static final int MIN_GAP = 6;//Gap between text and title
@@ -60,7 +60,7 @@ public class ItemSelector extends Component {
 
             @Override
             public boolean acceptsNull() {
-                return nullTypeSelector != NullTypeSelector.NONE;
+                return nullTypeSelector != NullTypeSelector.DISABLED;
             }
 
             @Override

@@ -16,7 +16,7 @@ public class LootTableComp extends ItemsWithChanceDistrComp {
     protected final Mob mob;
 
     public LootTableComp(Mob mob) {
-        super(createRandomItemData(mob), Integer.MAX_VALUE);
+        super(createRandomItemData(mob), 0, Integer.MAX_VALUE);
         this.mob = mob;
     }
 

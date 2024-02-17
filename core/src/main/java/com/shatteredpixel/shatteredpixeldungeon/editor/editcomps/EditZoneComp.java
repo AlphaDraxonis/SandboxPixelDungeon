@@ -46,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
@@ -144,6 +145,9 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         grassVisuals.addChangeListener(() -> zone.setGrassType((Zone.GrassType) grassVisuals.getValue()));
 
         StyledButton mobRotation = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditTileComp.class, "mob_rotation"), 9) {
+            {
+                text.align(RenderedTextBlock.CENTER_ALIGN);
+            }
             @Override
             protected void onClick() {
                 SimpleWindow w = new SimpleWindow(WndEditorSettings.calclulateWidth(), WndEditorSettings.calclulateHeight());
@@ -202,6 +206,9 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         chasmDest.enable(chasm != null);
 
         addTransition = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditTileComp.class, "add_transition"), 9) {
+            {
+                text.align(RenderedTextBlock.CENTER_ALIGN);
+            }
             @Override
             protected void onClick() {
                 addTransition(new LevelTransition(EditorScene.customLevel(), TransitionEditPart.NONE, TransitionEditPart.DEFAULT, null));

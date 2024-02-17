@@ -103,17 +103,11 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         heapType = new HeapTypeSpinner(heap);
         add(heapType);
 
-        itemContainer = new ItemContainer<Item>(heap.items, this) {
+        itemContainer = new ItemContainer<Item>(heap.items, this, false, 1, Integer.MAX_VALUE) {
             @Override
             protected void doAddItem(Item item) {
                 EditHeapComp.this.obj.drop(item);
                 updateObj();
-            }
-
-            @Override
-            protected boolean removeSlot(ItemContainer<Item>.Slot slot) {
-                if (itemList.size() > 1) return super.removeSlot(slot);
-                return false;
             }
 
             @Override

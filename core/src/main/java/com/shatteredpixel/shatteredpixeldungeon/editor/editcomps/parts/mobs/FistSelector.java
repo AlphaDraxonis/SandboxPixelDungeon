@@ -61,6 +61,6 @@ public class FistSelector extends ItemSelectorList<MobItem> {
             public Class<? extends Bag> preferredBag() {
                 return Mobs.bag.getClass();
             }
-        }, ItemSelector.NullTypeSelector.NONE, YogFist.class, Mobs.bag, new HashSet<>());
+        }, ItemSelector.NullTypeSelector.DISABLED, YogFist.class, Mobs.bag, new HashSet<>());
     }
 }

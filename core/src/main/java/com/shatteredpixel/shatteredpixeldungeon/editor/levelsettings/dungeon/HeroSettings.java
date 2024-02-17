@@ -331,7 +331,7 @@ public class HeroSettings extends Component {
                 protected void showSelectWindow() {
                     Set<Class<?>> exclude = new HashSet<>(5);
 //                    for (Bag b : data.bags) exclude.add(b.getClass());
-                    ItemSelector.showSelectWindow(startBags, ItemSelector.NullTypeSelector.NONE, Bag.class, Items.bag, exclude);
+                    ItemSelector.showSelectWindow(startBags, ItemSelector.NullTypeSelector.DISABLED, Bag.class, Items.bag, exclude);
                 }
 
                 @Override

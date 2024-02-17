@@ -39,7 +39,7 @@ function doPost(e) {
 
     uploadFile(JSON.stringify(userIDFileContent), dungeonID, "", USER_ID_FOLDER, false);
 
-    sendNotificationEmail(fileName, "Uploaded", e.parameter.int_version);
+    sendNotificationEmail(fileName, "Uploaded", e.parameter.description, e.parameter.int_version);
 
     return ContentService.createTextOutput(true.toString() + dungeonID)
       .setMimeType(ContentService.MimeType.TEXT);
@@ -93,7 +93,7 @@ function doPost(e) {
 
     uploadFile(JSON.stringify(userIDFileContent), dungeonID, "", USER_ID_FOLDER, false);
 
-    sendNotificationEmail(fileName, "Updated", new_int_version);
+    sendNotificationEmail(fileName, "Updated", e.parameter.description, new_int_version);
 
     return ContentService.createTextOutput(true.toString() + dungeonID)
       .setMimeType(ContentService.MimeType.TEXT);
@@ -124,7 +124,7 @@ function doPost(e) {
     };
     uploadFile(JSON.stringify(preview), fileName, ".txt", BUG_REPORT_FOLDER, false);
 
-    sendNotificationEmail(fileName, "Bug report", e.parameter.version);
+    sendNotificationEmail(fileName, "Bug report", e.parameter.description, e.parameter.version);
 
     return ContentService.createTextOutput(true.toString())
       .setMimeType(ContentService.MimeType.TEXT);
@@ -152,7 +152,7 @@ function doGet(e) {
       result.export.dungeon.downloaded = false;
     }
 
-    return ContentService.createTextOutput(convertFileContentObjToSenableString(result))
+    return ContentService.createTextOutput(convertFileContentObjToSendableString(result))
       .setMimeType(ContentService.MimeType.JSON);
   }
   else if (e.parameter.action === "isCreator") {
@@ -276,7 +276,7 @@ function getFileContentAsJSON(fileID) {
   return obj;
 }
 
-function convertFileContentObjToSenableString(obj) {
+function convertFileContentObjToSendableString(obj) {
   const fileList = [];
   fileList.push({
     content: obj,
@@ -307,8 +307,7 @@ function compressGZip(decompressedBlob) {
 function readIntVersion(dungeonID) {
   const folder = DriveApp.getFolderById(PREVIEW_FOLDER);
   const file = folder.getFilesByName(dungeonID);
-  const content = file.next().getBlob().getDataAsString();
-  const asJSON = JSON.parse(content);
+  const asJSON = getFileContentAsJSON(file.next().getID());
   return asJSON.int_version;
 }
 
@@ -360,19 +359,24 @@ function hashUserID(userID, salt) {
 
 
 
-function sendNotificationEmail(fileName, msg, int_version) {
+function sendNotificationEmail(fileName, msg, description, int_version) {
   if (true) {
     MailApp.sendEmail({
       to: "alphadraxonis@gmail.com",
-      subject: "New File: " + msg,
-      body: `The file "${fileName}" has been uploaded.\nInternal version: ` + int_version,
+      subject: "SandboxPD File Upload: " + msg,
+      body: "The file " + fileName + " has been uploaded."
+        + "\nInternal version: " + int_version
+        + "\nDescription: " + description
+        + "\nTime: " + new Date().toDateString() + " " + new Date().toTimeString()
+        + "\nThis E-Mail was sent automatically.",
     });
   }
 }
 
 
 
-//SUPPLY URL SCRIPT
+
+//SUPPLY URL SCRIPT (This is the script it first connect to so it can then read the url for the actual script. That way, I can update the real script later.)
 const FOLDR     = "1miViNNWVeAaqg3GkCoO4HzcqolsRnKXc";
 const FILE_NAME = "url.txt";
 

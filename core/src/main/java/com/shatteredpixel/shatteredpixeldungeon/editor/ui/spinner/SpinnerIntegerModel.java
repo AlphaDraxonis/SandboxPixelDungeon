@@ -201,7 +201,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
 
     @Override
     public int getClicksPerSecondWhileHolding() {
-        return 60;
+        return (int)Math.ceil((getMaximum() - getMinimum()) / (float) getStepSize() / 2);
     }
 
     public void setAbsoluteMaximum(float absoluteMaximum) {

@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
@@ -30,7 +31,9 @@ public class ChangeMobNameDesc extends Component {
 
         if (MobSpriteItem.canChangeSprite(mob)) {
             currentSprite = new MobSpriteItem(mob.spriteClass);
-            mobSprite = new ItemSelector(Messages.get(this, "sprite"), MobSpriteItem.class, currentSprite, ItemSelector.NullTypeSelector.NONE) {
+            Mob defaultMob = DefaultStatsCache.getDefaultObject(mob.getClass());
+            mobSprite = new ItemSelector(Messages.get(this, "sprite", defaultMob == null ? mob.getClass().getSimpleName() : defaultMob.name()),
+                    MobSpriteItem.class, currentSprite, ItemSelector.NullTypeSelector.DISABLED) {
                 {
                     selector.preferredBag = MobSprites.bag.getClass();
                 }
@@ -62,6 +65,8 @@ public class ChangeMobNameDesc extends Component {
                     currentSprite = i;
                     editMobComp.updateTitleIcon();
                     editMobComp.updateObj();
+
+                    updateLayout();
                 }
             };
             add(mobSprite);

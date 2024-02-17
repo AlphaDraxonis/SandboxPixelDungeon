@@ -71,11 +71,11 @@ public class WndInfoMob extends WndTitledMessage {
             add(buffs);
         }
 
-        protected  BuffIndicator createBuffIndicator(Mob mob, boolean large){
+        protected BuffIndicator createBuffIndicator(Mob mob, boolean large){
             return  new BuffIndicator(mob,large);
         }
-        protected  String createTitle(Mob mob){
-            return  Messages.titleCase(mob.name());
+        protected String createTitle(Mob mob){
+            return Messages.titleCase(mob.name());
         }
 
         @Override

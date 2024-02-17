@@ -35,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
@@ -154,6 +155,9 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             if (obj instanceof GatewayTrap && obj.pos != -1) {
                 int telePos = ((GatewayTrap) obj).telePos;
                 gatewayTelePos = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "") {
+                    {
+                        text.align(RenderedTextBlock.CENTER_ALIGN);
+                    }
                     @Override
                     protected void onClick() {
                         EditorScene.selectCell(gatewayTelePosListener);

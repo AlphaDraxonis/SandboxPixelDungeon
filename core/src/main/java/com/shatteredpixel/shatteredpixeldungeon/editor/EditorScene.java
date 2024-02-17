@@ -712,7 +712,7 @@ public class EditorScene extends PixelScene {
 
         Mob defMob = DefaultStatsCache.getDefaultObject(mob.getClass());
         if (defMob != null && defMob.spriteClass != mob.spriteClass
-                && (sprite.getClass().getEnclosingClass() == null || mob.getClass().getEnclosingClass() != null)) {
+                && (sprite.getClass().getEnclosingClass() == null || sprite.getClass().getEnclosingClass() != defMob.spriteClass.getEnclosingClass())) {
             sprite.realCharSprite = Reflection.newInstance(defMob.spriteClass);
             if (sprite.realCharSprite != null) {
                 sprite.realCharSprite.subSprite = true;

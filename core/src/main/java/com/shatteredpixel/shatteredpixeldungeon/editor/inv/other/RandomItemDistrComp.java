@@ -19,7 +19,7 @@ public class RandomItemDistrComp extends ItemsWithChanceDistrComp {
     private final RandomItem<?> randomItem;
 
     public RandomItemDistrComp(RandomItem<?> randomItem) {
-        super(randomItem.getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI(), randomItem.getMaxLoottableSize());
+        super(randomItem.getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI(), 0, randomItem.getMaxLoottableSize());
         this.randomItem = randomItem;
     }
 

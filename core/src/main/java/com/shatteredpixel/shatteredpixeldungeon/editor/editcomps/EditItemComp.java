@@ -54,6 +54,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
@@ -228,6 +229,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
             if (item instanceof Weapon || item instanceof Armor) {//Missiles support enchantments too
                 enchantBtn = new StyledButton(Chrome.Type.GREY_BUTTON_TR, label("enchant"), PixelScene.landscape() ? 9 : 8) {
+                    {
+                        text.align(RenderedTextBlock.CENTER_ALIGN);
+                    }
                     @Override
                     protected void onClick() {
                         EditorScene.show(new WndChooseEnchant(item) {
@@ -528,9 +532,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
 
     public static boolean isItemListEqual(List<Item> a, List<Item> b) {
-        if (a == null) return b == null || b.size() == 0;
-        if (b == null) return a.size() == 0;
-        if (a.size() != b.size()) return false;
+        int sizeA = a == null ? 0 : a.size();
+        int sizeB = b == null ? 0 : b.size();
+        if (sizeA != sizeB || sizeA == 0) return false;
         int index = 0;
         for (Item i : a) {
             if (!EditItemComp.areEqual(i, b.get(index))) return false;

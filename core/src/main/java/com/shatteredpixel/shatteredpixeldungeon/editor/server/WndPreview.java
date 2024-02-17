@@ -46,7 +46,8 @@ public class WndPreview extends Component {
         desc = PixelScene.renderTextBlock(preview.description, 7);
         add(desc);
 
-        creator = PixelScene.renderTextBlock(Messages.get(WndPreview.class, "creator") + ": _" + preview.uploader, 6);
+        creator = PixelScene.renderTextBlock(Messages.get(WndPreview.class, "creator") + ": " + preview.uploader, 6);
+        creator.setHighlighting(false);
         add(creator);
 
         difficulty = PixelScene.renderTextBlock(Messages.get(UploadDungeon.class, "difficulty") + ": "
@@ -182,7 +183,7 @@ public class WndPreview extends Component {
 
     @Override
     protected void layout() {
-        desc.maxWidth((int) width);
+        desc.maxWidth((int) width);//tzz
         height = 0;
         float posY = y + EditorUtilies.layoutCompsLinear(4, this, desc, creator, difficulty, time, version) + 5;
         download.setRect(x + width / 5, posY, width * 3 / 5, 16);

@@ -111,6 +111,8 @@ public class ServerDungeonList extends MultiWindowTabComp {
             mainWindowComps[i - pageMultiply] = createListItem(dungeons[i]);
             content.add(mainWindowComps[i - pageMultiply]);
         }
+
+        upload.givePointerPriority();
     }
 
     public static void updatePage() {
@@ -125,6 +127,18 @@ public class ServerDungeonList extends MultiWindowTabComp {
         content.setSize(width, -1);
         content.setSize(width, EditorUtilies.layoutCompsLinear(GAP, content, mainWindowComps));
         upload.setRect(width - 17, height - 15,16,16);
+    }
+
+    @Override
+    public void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
+        upload.visible = upload.active = false;
+        super.changeContent(titleBar, body, outsideSp, alignment, titleAlignmentX);
+    }
+
+    @Override
+    public void closeCurrentSubMenu() {
+        upload.visible = upload.active = true;
+        super.closeCurrentSubMenu();
     }
 
     public Component createTitle() {

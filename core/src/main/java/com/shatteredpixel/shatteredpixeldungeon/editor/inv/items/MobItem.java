@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
@@ -28,6 +29,13 @@ public class MobItem extends EditorItem<Mob> {
 
     @Override
     public String name() {
+        Mob mob = getObject();
+        if (MobSpriteItem.canChangeSprite(mob)) {
+            Mob defaultMob = DefaultStatsCache.getDefaultObject(mob.getClass());
+            if (defaultMob != null && defaultMob.spriteClass != mob.spriteClass) {
+                    return mob.name() + " (" + defaultMob.name() + ")";
+            }
+        }
         return getObject().name();
     }
 
@@ -63,7 +71,7 @@ public class MobItem extends EditorItem<Mob> {
 
     public static boolean invalidPlacement(Mob mob, int cell) {
         return Dungeon.level.solid[cell] || (Dungeon.level.pit[cell] && !mob.isFlying()) || !Dungeon.level.insideMap(cell)
-                || (Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[cell]);
+                || (!Dungeon.level.openSpace[cell] && Char.hasProp(mob, Char.Property.LARGE));
     }
 
     public static ActionPart remove(Mob mob) {

@@ -31,7 +31,7 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
 
     protected final DefaultEditComp<?> editComp;
     protected final boolean reverseUiOrder;
-    protected final int maxSlots;
+    protected final int minSlots, maxSlots;
 
     public final Class<T> typeParameterClass;
     protected List<T> itemList;
@@ -58,13 +58,14 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
     }
 
     public ItemContainer(List<T> itemList, DefaultEditComp<?> editComp, boolean reverseUiOrder) {
-        this(itemList, editComp, reverseUiOrder, Integer.MAX_VALUE);
+        this(itemList, editComp, reverseUiOrder, 0, Integer.MAX_VALUE);
     }
 
-    public ItemContainer(List<T> itemList, DefaultEditComp<?> editComp, boolean reverseUiOrder, int maxSlots) {
+    public ItemContainer(List<T> itemList, DefaultEditComp<?> editComp, boolean reverseUiOrder, int minSlots, int maxSlots) {
         this.itemList = itemList;
         this.editComp = editComp;
         this.reverseUiOrder = reverseUiOrder;
+        this.minSlots = Math.min(itemList.size(), minSlots);
         this.maxSlots = Math.max(itemList.size(), maxSlots);
         slots = new LinkedList<>();
 
@@ -201,6 +202,8 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
     }
 
     protected boolean removeSlot(Slot slot) {
+        if (itemList.size() <=  minSlots) return false;
+
         slots.remove(slot);
         itemList.remove(slot.item());
         remove(slot);

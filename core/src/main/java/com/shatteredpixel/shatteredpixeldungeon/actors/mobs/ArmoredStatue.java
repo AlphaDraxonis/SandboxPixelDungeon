@@ -70,12 +70,12 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 
 	@Override
 	public ItemSelector.NullTypeSelector useNullArmor() {
-		return ItemSelector.NullTypeSelector.NONE;
+		return ItemSelector.NullTypeSelector.DISABLED;
 	}
 
 	@Override
 	public ItemSelector.NullTypeSelector useNullWeapon() {
-		return ItemSelector.NullTypeSelector.NONE;
+		return ItemSelector.NullTypeSelector.DISABLED;
 	}
 
 	@Override

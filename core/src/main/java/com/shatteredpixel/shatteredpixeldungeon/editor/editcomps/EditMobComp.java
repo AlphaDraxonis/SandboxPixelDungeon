@@ -61,6 +61,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BuffItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
@@ -103,6 +104,7 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
@@ -222,7 +224,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             Hero hero = ((HeroMob) mob).hero();
 
             mobRing = new StyledItemSelector(Messages.get(HeroSettings.class, "ring"),
-                    Ring.class, hero.belongings.ring, ItemSelector.NullTypeSelector.NONE) {
+                    Ring.class, hero.belongings.ring, ItemSelector.NullTypeSelector.DISABLED) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -774,6 +776,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         if (mob.pos != -1) {
             turnTo = new StyledButton(Chrome.Type.GREY_BUTTON_TR,
                     Messages.get(this, "turn_to", mob.turnToCell == -1 ? label("turn_to_random") : EditorUtilies.cellToString(mob.turnToCell))) {
+                {
+                    text.align(RenderedTextBlock.CENTER_ALIGN);
+                }
                 @Override
                 protected void onClick() {
                     EditorScene.selectCell(turnToListener);
@@ -791,6 +796,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         Mob defaultStats = DefaultStatsCache.getDefaultObject(mob.getClass());
         if (defaultStats != null) {
             editStats = new StyledButton(Chrome.Type.GREY_BUTTON_TR, label("edit_stats")) {
+                {
+                    text.align(RenderedTextBlock.CENTER_ALIGN);
+                }
                 @Override
                 protected void onClick() {
                     EditorScene.show(WndEditStats.createWindow((int) Math.ceil(EditMobComp.this.width),
@@ -1039,9 +1047,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     }
 
     public static boolean isMobListEqual(List<? extends Mob> a, List<? extends Mob> b) {
-        if (a == null) return b == null || b.size() == 0;
-        if (b == null) return a.size() == 0;
-        if (a.size() != b.size()) return false;
+        int sizeA = a == null ? 0 : a.size();
+        int sizeB = b == null ? 0 : b.size();
+        if (sizeA != sizeB || sizeA == 0) return false;
         int index = 0;
         for (Mob m : a) {
             if (!EditMobComp.areEqual(m, b.get(index))) return false;
@@ -1085,6 +1093,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         protected String createTitle(Mob mob) {
+            if (MobSpriteItem.canChangeSprite(mob)) {
+                Mob defaultMob = DefaultStatsCache.getDefaultObject(mob.getClass());
+                if (defaultMob != null && defaultMob.spriteClass != mob.spriteClass) {
+                    return super.createTitle(mob) + " (" + super.createTitle(defaultMob) + ")" + EditorUtilies.appendCellToString(mob.pos);
+                }
+            }
             return super.createTitle(mob) + EditorUtilies.appendCellToString(mob.pos);
         }
 

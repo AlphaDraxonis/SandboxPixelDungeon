@@ -46,11 +46,12 @@ public abstract class ItemsWithChanceDistrComp extends Component {
     private int sum;
     private boolean isInInit;
 
-    private final int numItemsPerSlot;
+    private final int minNumItemsPerSlot, maxNumItemsPerSlot;
 
-    public ItemsWithChanceDistrComp(RandomItemData randomItemData, int numItemsPerSlot) {
+    public ItemsWithChanceDistrComp(RandomItemData randomItemData, int minNumItemsPerSlot, int maxNumItemsPerSlot) {
         this.randomItemData = randomItemData;
-        this.numItemsPerSlot = numItemsPerSlot;
+        this.minNumItemsPerSlot = minNumItemsPerSlot;
+        this.maxNumItemsPerSlot = maxNumItemsPerSlot;
 
         isInInit = true;
         initComps();
@@ -191,7 +192,7 @@ public abstract class ItemsWithChanceDistrComp extends Component {
 
     private void addSlot(ItemWithCount item) {
         if (item.items.contains(EditorItem.NULL_ITEM)) hasNullInLoot = true;
-        item.slot = new Slot(item, numItemsPerSlot);
+        item.slot = new Slot(item, minNumItemsPerSlot, maxNumItemsPerSlot);
         add(item.slot);
         item.slot.setSize(width, ROW_HEIGHT);
     }
@@ -218,7 +219,7 @@ public abstract class ItemsWithChanceDistrComp extends Component {
         private final ItemContainer<Item> items;
         private final RenderedTextBlock text;
 
-        public Slot(ItemWithCount item, int maxSlots) {
+        public Slot(ItemWithCount item, int minSlots, int maxSlots) {
 
             this.item = item;
 
@@ -229,7 +230,7 @@ public abstract class ItemsWithChanceDistrComp extends Component {
             } else {
                 text = null;
 
-                items = new ItemContainer<Item>(item.items, null, true, maxSlots) {
+                items = new ItemContainer<Item>(item.items, null, true, minSlots, maxSlots) {
                     @Override
                     protected void onSlotNumChange() {
                         ItemsWithChanceDistrComp.Slot.this.layout();

@@ -74,7 +74,7 @@ public class EyeSprite extends MobSprite {
 		chargeParticles.pour(MagicMissile.MagicParticle.ATTRACTING, 0.05f);
 		chargeParticles.on = false;
 		
-		if (((Eye)ch).beamCharged) play(charging);
+		if (ch instanceof Eye && ((Eye)ch).beamCharged) play(charging);
 	}
 
 	@Override
