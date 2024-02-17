@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -53,7 +54,8 @@ public class Corrupting extends Weapon.Enchantment {
 				&& defender.isAlive()){
 			
 			Mob enemy = (Mob) defender;
-			Hero hero = (attacker instanceof Hero) ? (Hero) attacker : Dungeon.hero;
+			Hero hero = (attacker instanceof Hero) ? (Hero) attacker
+					: attacker instanceof  HeroMob ? ((HeroMob) attacker).hero() : Dungeon.hero;
 
 			Corruption.corruptionHeal(enemy);
 

@@ -5,8 +5,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIco
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.RandomGlyph;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.RandomCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.RandomEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -111,15 +114,20 @@ public class AugumentationSpinner extends StyledSpinner {
     //NEED TO RETURN ARRAY OF SIZE 1 IF SUBCLASS OF ITEM IS ARGUMENT!!!
     public static <T extends Item> T assignRandomAugmentation(T item) {
         if (item instanceof Weapon) {
-            Weapon w;
-            if ((w = (Weapon) item).augment == Weapon.Augment.RANDOM) {
+            Weapon w = (Weapon) item;
+            if (w.augment == Weapon.Augment.RANDOM) {
                 w.augment = (Random.Int(2) == 0) ? Weapon.Augment.DAMAGE : Weapon.Augment.SPEED;
             }
+            if (w.enchantment instanceof RandomEnchantment) w.enchantment = Weapon.Enchantment.random();
+            else if (w.enchantment instanceof RandomCurse) w.enchantment = Weapon.Enchantment.randomCurse();
         } else if (item instanceof Armor) {
-            Armor a;
-            if ((a = (Armor) item).augment == Armor.Augment.RANDOM) {
+            Armor a = (Armor) item;
+            if (a.augment == Armor.Augment.RANDOM) {
                 a.augment = (Random.Int(2) == 0) ? Armor.Augment.DEFENSE : Armor.Augment.EVASION;
             }
+            if (a.glyph instanceof RandomGlyph) a.glyph = Armor.Glyph.random();
+            else if (a.glyph instanceof com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.RandomCurse) a.glyph = Armor.Glyph.randomCurse();
+
         }
         if (item != null && item.stackable && item.randQuantMin > -1) {
             int qu = Random.Int(item.randQuantMin, item.randQuantMax);

@@ -85,6 +85,8 @@ public class GlyphSpinner extends StyledSpinner {
             label.text(Messages.get(this, "label"));
 
             ((SpinnerIntegerModel) getModel()).setAbsoluteMinimum(0f);
+            ((SpinnerIntegerModel) getModel()).setMinimum(0);
+
             removeChangeListener(getChangeListeners()[0]);
             addChangeListener(() -> {
                 if (mob.glyphArmor != null) mob.glyphArmor.level((int) getValue());
