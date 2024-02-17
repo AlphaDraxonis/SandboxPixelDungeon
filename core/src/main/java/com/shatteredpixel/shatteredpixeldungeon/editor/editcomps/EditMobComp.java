@@ -260,29 +260,18 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 {
                     setAbsoluteMinimum(1);
                 }
-
                 @Override
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
-                }
-
-                @Override
-                public int getClicksPerSecondWhileHolding() {
-                    return 15;
                 }
             }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
             heroMobLvl.addChangeListener(() -> ((HeroMob) mob).setHeroLvl((int) heroMobLvl.getValue()));
             add(heroMobLvl);
 
-            heroMobStr = new StyledSpinner(new SpinnerIntegerModel(1, 100, hero.STR, 1, false, null) {
+            heroMobStr = new StyledSpinner(new SpinnerIntegerModel(1, 50, hero.STR, 1, false, null) {
                 @Override
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
-                }
-
-                @Override
-                public int getClicksPerSecondWhileHolding() {
-                    return 15;
                 }
             }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
             heroMobStr.addChangeListener(() -> hero.STR = (int) heroMobStr.getValue());
@@ -359,7 +348,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             sheepLifespan = new StyledSpinner(new SpinnerIntegerModel(0, 600, (int) ((Sheep) mob).lifespan, 1, false, null) {
                 @Override
                 public int getClicksPerSecondWhileHolding() {
-                    return 120;
+                    return super.getClicksPerSecondWhileHolding() / 3;
                 }
             }, label("sheep_lifespan"), 8, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_HEALING));
             sheepLifespan.icon().scale.set(9f / sheepLifespan.icon().height());
@@ -692,6 +681,11 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 playerAlignment = new StyledSpinner(new SpinnerIntegerModel(Mob.NORMAL_ALIGNMENT, Mob.FRIENDLY_ALIGNMENT, mob.playerAlignment, 1, true, null) {
                     @Override
                     public void displayInputAnyNumberDialog() {
+                    }
+
+                    @Override
+                    public int getClicksPerSecondWhileHolding() {
+                        return 0;
                     }
 
                     @Override

@@ -42,11 +42,6 @@ public class LevelSpinner extends StyledSpinner {
         }
 
         @Override
-        public int getClicksPerSecondWhileHolding() {
-            return 12;
-        }
-
-        @Override
         public float getInputFieldWidth(float height) {
             return Spinner.FILL;
         }

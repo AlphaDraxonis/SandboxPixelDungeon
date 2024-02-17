@@ -84,11 +84,6 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             }
 
             @Override
-            public int getClicksPerSecondWhileHolding() {
-                return 20;
-            }
-
-            @Override
             public String getDisplayString() {
                 Item copy = heap.items.getLast().getCopy();
                 copy.identify(false);

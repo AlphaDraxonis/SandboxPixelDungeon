@@ -180,20 +180,12 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                     {
                         setAbsoluteMaximum(100f);
                     }
-                    @Override
-                    public int getClicksPerSecondWhileHolding() {
-                        return 30;
-                    }
                 }, Messages.get(EditMobComp.class, "radius"));
                 pitfallRadius.addChangeListener(() -> ((PitfallTrap) obj).radius = (int) pitfallRadius.getValue());
                 add(pitfallRadius);
 
-                pitfallDelay = new StyledSpinner(new SpinnerIntegerModel(0, 100, ((PitfallTrap) obj).delay, 1, false, null) {
-                    @Override
-                    public int getClicksPerSecondWhileHolding() {
-                        return 30;
-                    }
-                }, Messages.get(EditMobComp.class, "delay") + ":", 9);
+                pitfallDelay = new StyledSpinner(new SpinnerIntegerModel(0, 100, ((PitfallTrap) obj).delay, 1, false, null),
+                        Messages.get(EditMobComp.class, "delay"));
                 pitfallDelay.addChangeListener(() -> ((PitfallTrap) obj).delay = (int) pitfallDelay.getValue());
                 add(pitfallDelay);
             }

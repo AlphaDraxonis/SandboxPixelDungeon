@@ -35,11 +35,6 @@ public abstract class DepthSpinner extends Spinner {
             public float getInputFieldWidth(float height) {
                 return getInputFieldWith.apply(height);
             }
-
-            @Override
-            public int getClicksPerSecondWhileHolding() {
-                return 15;
-            }
         };
     }
 }

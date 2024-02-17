@@ -12,7 +12,7 @@ public class LotusLevelSpinner extends StyledSpinner {
 
 
     public LotusLevelSpinner(WandOfRegrowth.Lotus lotus) {
-        super(new LevelSpinnerModel(lotus.getLvl()), Messages.get(LevelSpinner.class,"label"), 9,
+        super(new SpinnerIntegerModel(0, 200, lotus.getLvl(), 1, false, null), Messages.get(LevelSpinner.class,"label"), 9,
                 EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_UPGRADE));
         icon.scale.set(9f / icon.height());
         addChangeListener(() -> {
@@ -27,18 +27,5 @@ public class LotusLevelSpinner extends StyledSpinner {
     }
 
     protected void updateDesc(boolean foreceUpdate) {
-    }
-
-    public static class LevelSpinnerModel extends SpinnerIntegerModel {
-
-        public LevelSpinnerModel(int level) {
-            super(0, 200, level, 1, false, null);
-
-        }
-
-        @Override
-        public int getClicksPerSecondWhileHolding() {
-            return 70;
-        }
     }
 }

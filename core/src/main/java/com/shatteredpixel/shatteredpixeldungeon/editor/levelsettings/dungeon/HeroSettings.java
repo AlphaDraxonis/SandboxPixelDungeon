@@ -273,7 +273,7 @@ public class HeroSettings extends Component {
 
                 @Override
                 public int getClicksPerSecondWhileHolding() {
-                    return 15;
+                    return super.getClicksPerSecondWhileHolding() / 10;
                 }
             }, Messages.titleCase(Messages.get(EnergyCrystal.class, "name")), 10, Icons.ENERGY.get());
             startEnergy.icon().scale = new PointF(0.5f, 0.5f);
@@ -288,24 +288,14 @@ public class HeroSettings extends Component {
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
-
-                @Override
-                public int getClicksPerSecondWhileHolding() {
-                    return 15;
-                }
             }, Messages.titleCase(Messages.get(HeroSettings.class, "lvl")), 10, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_EXP));
             plusLvl.addChangeListener(() -> data.plusLvl = (int) plusLvl.getValue() - 1);
             itemSelectorParent.add(plusLvl);
 
-            plusStr = new StyledSpinner(new SpinnerIntegerModel(0, 100, Hero.STARTING_STR + data.plusStr, 1, false, null) {
+            plusStr = new StyledSpinner(new SpinnerIntegerModel(0, 50, Hero.STARTING_STR + data.plusStr, 1, false, null) {
                 @Override
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
-                }
-
-                @Override
-                public int getClicksPerSecondWhileHolding() {
-                    return 15;
                 }
             }, Messages.titleCase(Messages.get(WndGameInProgress.class, "str")), 10, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_STRENGTH));
             plusStr.addChangeListener(() -> data.plusStr = (int) plusStr.getValue() - Hero.STARTING_STR);

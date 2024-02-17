@@ -124,13 +124,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
 
         if (item.stackable) {
-            final int quantityMultiplierForGold = item instanceof Gold ? 10 : 1;
-            quantity = new StyledSpinner(new SpinnerIntegerModel(1, 100 * quantityMultiplierForGold, item.quantity(), 1, false, null) {
-                @Override
-                public int getClicksPerSecondWhileHolding() {
-                    return 15 * quantityMultiplierForGold;
-                }
-            }, label("quantity"));
+            quantity = new StyledSpinner(new SpinnerIntegerModel(1, item instanceof Gold ? 1000 : 100, item.quantity(), 1, false, null), label("quantity"));
             ((SpinnerIntegerModel) quantity.getModel()).setAbsoluteMaximum(2_000_000_000f);
             quantity.addChangeListener(() -> {
                 item.quantity((int) quantity.getValue());

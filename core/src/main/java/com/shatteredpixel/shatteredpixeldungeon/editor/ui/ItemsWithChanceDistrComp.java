@@ -334,7 +334,7 @@ public abstract class ItemsWithChanceDistrComp extends Component {
 
         @Override
         public int getClicksPerSecondWhileHolding() {
-            return 40;
+            return super.getClicksPerSecondWhileHolding() / 100;
         }
 
         @Override

@@ -178,11 +178,6 @@ public class DurationSettings extends Component {
                 }
 
                 @Override
-                public int getClicksPerSecondWhileHolding() {
-                    return 25;
-                }
-
-                @Override
                 public void setMinimum(Integer minimum) {
                     super.setMinimum(minimum);
                     setAbsoluteMinimum((float) minimum);

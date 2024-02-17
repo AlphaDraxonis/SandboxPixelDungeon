@@ -136,11 +136,6 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
             }
 
             @Override
-            public int getClicksPerSecondWhileHolding() {
-                return 5;
-            }
-
-            @Override
             public void displayInputAnyNumberDialog() {
                 //do nothing
             }

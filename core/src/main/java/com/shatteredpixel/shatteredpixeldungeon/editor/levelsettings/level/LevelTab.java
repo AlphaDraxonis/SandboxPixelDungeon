@@ -182,11 +182,6 @@ public class LevelTab extends MultiWindowTabComp {
             public float getInputFieldWidth(float height) {
                 return Spinner.FILL;
             }
-
-            @Override
-            public int getClicksPerSecondWhileHolding() {
-                return 13;
-            }
         }, Messages.get(LevelTab.class, "view_distance"), 8);
         viewDistance.addChangeListener(() -> level.viewDistance = (int) viewDistance.getValue());
         content.add(viewDistance);
@@ -200,11 +195,6 @@ public class LevelTab extends MultiWindowTabComp {
             @Override
             public float getInputFieldWidth(float height) {
                 return Spinner.FILL;
-            }
-
-            @Override
-            public int getClicksPerSecondWhileHolding() {
-                return 20;
             }
         }, Messages.get(LevelTab.class, "shop_price"), 8);
         ((SpinnerIntegerModel) shopPrice.getModel()).setAbsoluteMinAndMax(0f, 10000f);
