@@ -158,6 +158,8 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         };
         mobRotation.multiline = true;
 
+        Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_LULLABY);
+        icon.scale.set(1.8f);
         StyledSpinner music = new StyledSpinner(new SpinnerTextModel(true, zone.musicVariant < 0 ? 0 : zone.musicVariant + 1, new Object[] {
                 -3, Level.MUSIC_NORMAL, Level.MUSIC_TENSE, Level.MUSIC_BOSS, Level.MUSIC_BOSS_FINAL
         }) {
@@ -172,8 +174,9 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
                     case 3: return Messages.get(ChangeRegion.class, "boss_final");
                 }
             }
-        }, Messages.get(ChangeRegion.MusicVariantSpinner.class, "label"), 7);
+        }, Messages.get(ChangeRegion.MusicVariantSpinner.class, "label"), 7, icon);
         music.addChangeListener(() -> zone.musicVariant = (int) music.getValue());
+        music.setButtonWidth(8f);
         add(music);
 
         LevelScheme chasm = Dungeon.customDungeon.getFloor(Dungeon.level.levelScheme.getChasm());

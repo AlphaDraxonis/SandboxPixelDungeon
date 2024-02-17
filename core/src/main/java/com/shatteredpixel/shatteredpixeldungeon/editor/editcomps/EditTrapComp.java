@@ -22,6 +22,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GatewayTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.RageTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.SummoningTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -50,7 +51,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
     protected StyledCheckBox visible, active;
     protected StyledCheckBox searchable, searchableByMagic, revealedWhenTriggered, disarmedByActivation;
     protected StyledButton gatewayTelePos;
-    protected Spinner pitfallRadius, pitfallDelay;
+    protected Spinner radius, pitfallDelay;
     protected ItemContainer<MobItem> summonMobs;
     protected RedButton randomTrap;
     private Window windowInstance;
@@ -175,16 +176,29 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
             }
 
-            if (obj instanceof PitfallTrap) {
-                pitfallRadius = new StyledSpinner(new SpinnerIntegerModel(0, 100, ((PitfallTrap) obj).radius, 1, false, null) {
+            if (obj instanceof PitfallTrap || obj instanceof RageTrap) {
+                int initValue = 0;
+                Runnable listener = null;
+                if (obj instanceof PitfallTrap) {
+                    initValue = ((PitfallTrap) obj).radius;
+                    listener = () -> ((PitfallTrap) obj).radius = (int) radius.getValue();
+                } else if (obj instanceof RageTrap) {
+                    initValue = ((RageTrap) obj).radius;
+                    listener = () -> ((RageTrap) obj).radius = (int) radius.getValue();
+                }
+
+                radius = new StyledSpinner(new SpinnerIntegerModel(0, 100, initValue, 1, false, null) {
                     {
                         setAbsoluteMaximum(100f);
                     }
                 }, Messages.get(EditMobComp.class, "radius"));
-                pitfallRadius.addChangeListener(() -> ((PitfallTrap) obj).radius = (int) pitfallRadius.getValue());
-                add(pitfallRadius);
+                radius.addChangeListener(listener);
+                add(radius);
 
-                pitfallDelay = new StyledSpinner(new SpinnerIntegerModel(0, 100, ((PitfallTrap) obj).delay, 1, false, null),
+            }
+
+            if (obj instanceof PitfallTrap) {
+                    pitfallDelay = new StyledSpinner(new SpinnerIntegerModel(0, 100, ((PitfallTrap) obj).delay, 1, false, null),
                         Messages.get(EditMobComp.class, "delay"));
                 pitfallDelay.addChangeListener(() -> ((PitfallTrap) obj).delay = (int) pitfallDelay.getValue());
                 add(pitfallDelay);
@@ -224,12 +238,12 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
         if (PixelScene.landscape()) {
             comps = new Component[]{
                     visible, active, disarmedByActivation,
-                    pitfallDelay, pitfallRadius, revealedWhenTriggered,
+                    pitfallDelay, radius, revealedWhenTriggered,
                     searchable, searchableByMagic, gatewayTelePos};
         } else {
             comps = new Component[]{
                     visible, active,
-                    pitfallDelay, pitfallRadius,
+                    pitfallDelay, radius,
                     searchable, searchableByMagic,
                     revealedWhenTriggered, disarmedByActivation,
                     gatewayTelePos};
