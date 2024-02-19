@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody.BtnRow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnchantmentLike;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.RandomGlyph;
@@ -20,8 +21,8 @@ public class WndChooseEnchant extends WndChooseOneInCategories {
     public WndChooseEnchant(Item item) {
 
         super(
-                new IconTitle(new ItemSprite(item.image), Messages.get(WndChooseEnchant.class, "title", getEnchantType(item instanceof Weapon))),
-                Messages.get(WndChooseEnchant.class, "body", getEnchantType(item instanceof Weapon)),
+                new IconTitle(new ItemSprite(item.image), Messages.get(WndChooseEnchant.class, "title", EnchantmentLike.getTypeName(item))),
+                Messages.get(WndChooseEnchant.class, "body", EnchantmentLike.getTypeName(item)),
                 createCategories(item),
                 getRarityNames()
         );
@@ -54,46 +55,34 @@ public class WndChooseEnchant extends WndChooseOneInCategories {
     @Override
     protected ChooseOneInCategoriesBody.BtnRow[] createCategoryRows(Object[] enchantments) {
 
-        boolean isWeapon;
+        Class<? extends EnchantmentLike> type;
         BtnRow[] ret = new BtnRow[enchantments.length];
 
         for (int i = 0; i < enchantments.length; i++) {
 
-            Class<?> clazz = (Class<?>) enchantments[i];
+            Class<? extends EnchantmentLike> clazz = (Class<? extends EnchantmentLike>) enchantments[i];
 
             if (clazz == null) {
-                isWeapon = Weapon.Enchantment.class.isAssignableFrom((Class<?>) enchantments[i-1]);
-                String descRemove = Messages.get(WndChooseEnchant.class, "remove_desc", getEnchantType(isWeapon));
+                type = (Class<? extends EnchantmentLike>) enchantments[i-1];
+                String descRemove = Messages.get(WndChooseEnchant.class, "remove_desc", EnchantmentLike.getTypeName(type));
                 ret[i] = new ChooseOneInCategoriesBody.BtnRow(Messages.get(WndChooseEnchant.class, "remove"), descRemove) {
                     @Override
                     protected void onClick() {
-                        removeEnchantment(item);
+                        EnchantmentLike.removeEnchantment(item);
                         finish();
                     }
                 };
                 continue;
             }
 
-            isWeapon = Weapon.Enchantment.class.isAssignableFrom(clazz);
-            if (isWeapon) {
-                Weapon.Enchantment enchantment = (Weapon.Enchantment) Reflection.newInstance(clazz);
-                ret[i] = new BtnRow(enchantment.name(), enchantment.desc()) {
-                    @Override
-                    protected void onClick() {
-                        ((Weapon) item).enchant(enchantment);
-                        finish();
-                    }
-                };
-            } else {
-                Armor.Glyph glyph = (Armor.Glyph) Reflection.newInstance(clazz);
-                ret[i] = new BtnRow(glyph.name(), glyph.desc()) {
-                    @Override
-                    protected void onClick() {
-                        ((Armor) item).inscribe(glyph);
-                        finish();
-                    }
-                };
-            }
+            EnchantmentLike enchantmentLike = Reflection.newInstance(clazz);
+            ret[i] = new BtnRow(enchantmentLike.name(), enchantmentLike.desc()) {
+                @Override
+                protected void onClick() {
+                    enchantmentLike.doApply(item);
+                    finish();
+                }
+            };
         }
         return ret;
     }
@@ -105,16 +94,6 @@ public class WndChooseEnchant extends WndChooseOneInCategories {
                 Messages.get(WndChooseEnchant.class, "rarity_uncommon"),
                 Messages.get(WndChooseEnchant.class, "rarity_rare"),
                 Messages.get(WndChooseEnchant.class, "rarity_curses")};
-    }
-
-    public static void removeEnchantment(Item item) {
-        if (item instanceof Weapon) ((Weapon) item).enchantment = null;
-        else if (item instanceof Armor) ((Armor) item).glyph = null;
-    }
-
-    private static String getEnchantType(boolean isWeapon) {
-        if (isWeapon) return Messages.get(Weapon.Enchantment.class, "enchant");
-        else return Messages.get(Armor.Glyph.class, "glyph");
     }
 
 }

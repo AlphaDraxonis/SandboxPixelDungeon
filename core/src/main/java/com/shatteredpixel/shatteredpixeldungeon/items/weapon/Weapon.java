@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.ElementalStrike;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnchantmentLike;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfArcana;
@@ -360,7 +361,7 @@ abstract public class Weapon extends KindOfWeapon {
 		return enchantment != null && (cursedKnown() || !enchantment.curse()) ? enchantment.glowing() : null;
 	}
 
-	public static abstract class Enchantment implements Bundlable {
+	public static abstract class Enchantment implements Bundlable, EnchantmentLike {
 
 		public static final Class<?>[] common = new Class<?>[]{
 				Blazing.class, Chilling.class, Kinetic.class, Shocking.class};
@@ -419,41 +420,11 @@ abstract public class Weapon extends KindOfWeapon {
 			return multi;
 		}
 
-		public String name() {
-			if (!curse())
-				return name( Messages.get(this, "enchant"));
-			else
-				return name( Messages.get(Item.class, "curse"));
-		}
-
-		public String name( String weaponName ) {
-			return Messages.get(this, "name", weaponName);
-		}
-
-		public String desc() {
-			return Messages.get(this, "desc");
-		}
-
-		public boolean curse() {
-			return false;
-		}
-
 		@Override
-		public void restoreFromBundle( Bundle bundle ) {
+		public void doApply(Item item) {
+			if (item instanceof Weapon) ((Weapon) item).enchant(this);
 		}
 
-		@Override
-		public void storeInBundle( Bundle bundle ) {
-		}
-
-		public Enchantment getCopy(){
-			Bundle bundle = new Bundle();
-			bundle.put("ENCHANTMENT",this);
-			return  (Enchantment) bundle.get("ENCHANTMENT");
-		}
-
-		public abstract ItemSprite.Glowing glowing();
-		
 		@SuppressWarnings("unchecked")
 		public static Enchantment random( Class<? extends Enchantment> ... toIgnore ) {
 			switch(Random.chances(typeChances)){

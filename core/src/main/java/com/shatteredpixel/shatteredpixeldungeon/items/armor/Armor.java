@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnchantmentLike;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.AntiEntropy;
@@ -633,7 +634,7 @@ public class Armor extends EquipableItem {
 		return glyph != null && (cursedKnown() || !glyph.curse()) ? glyph.glowing() : null;
 	}
 
-	public static abstract class Glyph implements Bundlable {
+	public static abstract class Glyph implements Bundlable, EnchantmentLike {
 
 		public static final Class<?>[] common = new Class<?>[]{
 				Obfuscation.class, Swiftness.class, Viscosity.class, Potential.class };
@@ -665,35 +666,11 @@ public class Armor extends EquipableItem {
 		public static float genericProcChanceMultiplier( Char defender ){
 			return RingOfArcana.enchantPowerMultiplier(defender);
 		}
-		
-		public String name() {
-			if (!curse())
-				return name( Messages.get(this, "glyph") );
-			else
-				return name( Messages.get(Item.class, "curse"));
-		}
-		
-		public String name( String armorName ) {
-			return Messages.get(this, "name", armorName);
-		}
-
-		public String desc() {
-			return Messages.get(this, "desc");
-		}
-
-		public boolean curse() {
-			return false;
-		}
-		
-		@Override
-		public void restoreFromBundle( Bundle bundle ) {
-		}
 
 		@Override
-		public void storeInBundle( Bundle bundle ) {
+		public void doApply(Item item) {
+			if (item instanceof Armor) ((Armor) item).inscribe(this);
 		}
-		
-		public abstract ItemSprite.Glowing glowing();
 
 		@SuppressWarnings("unchecked")
 		public static Glyph random( Class<? extends Glyph> ... toIgnore ) {
@@ -749,12 +726,6 @@ public class Armor extends EquipableItem {
 			} else {
 				return (Glyph) Reflection.newInstance(Random.element(glyphs));
 			}
-		}
-
-		public Glyph getCopy(){
-			Bundle bundle = new Bundle();
-			bundle.put("GLYPH",this);
-			return  (Glyph) bundle.get("GLYPH");
 		}
 		
 	}
