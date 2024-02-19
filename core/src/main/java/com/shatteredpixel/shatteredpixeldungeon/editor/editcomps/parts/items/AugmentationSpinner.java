@@ -19,14 +19,14 @@ import com.watabou.utils.Random;
 
 import java.util.Locale;
 
-public class AugumentationSpinner extends StyledSpinner {
+public class AugmentationSpinner extends StyledSpinner {
 
 
-    public AugumentationSpinner(Item item) {
+    public AugmentationSpinner(Item item) {
         super(item instanceof Weapon ?
                         new WeaponAugSpinnerModel((Weapon) item) :
                         new ArmorAugSpinnerModel((Armor) item),
-                Messages.get(AugumentationSpinner.class, "label"), 9,
+                Messages.get(AugmentationSpinner.class, "label"), 9,
                 new ItemSprite(ItemSpriteSheet.STONE_AUGMENTATION));
 
         addChangeListener(() -> {
@@ -67,7 +67,7 @@ public class AugumentationSpinner extends StyledSpinner {
 
         @Override
         protected String getAsString(Object value) {
-            if (value == Weapon.Augment.NONE) return Messages.get(AugumentationSpinner.class, "none");
+            if (value == Weapon.Augment.NONE) return Messages.get(AugmentationSpinner.class, "none");
             if (value == Weapon.Augment.RANDOM) return Messages.get(FeelingSpinner.class, "random");
             return Messages.get(StoneOfAugmentation.WndAugment.class, ((Weapon.Augment) value).name().toLowerCase(Locale.ENGLISH));
         }
@@ -100,7 +100,7 @@ public class AugumentationSpinner extends StyledSpinner {
 
         @Override
         protected String getAsString(Object value) {
-            if (value == Armor.Augment.NONE) return Messages.get(AugumentationSpinner.class, "none");
+            if (value == Armor.Augment.NONE) return Messages.get(AugmentationSpinner.class, "none");
             if (value == Armor.Augment.RANDOM) return Messages.get(FeelingSpinner.class, "random");
             return Messages.get(StoneOfAugmentation.WndAugment.class, ((Armor.Augment) value).name().toLowerCase(Locale.ENGLISH));
         }

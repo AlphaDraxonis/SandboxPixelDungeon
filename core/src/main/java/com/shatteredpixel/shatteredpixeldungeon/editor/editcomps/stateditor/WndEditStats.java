@@ -16,7 +16,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Skeleton;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.GlyphSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.EnchantmentListContainer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
@@ -72,8 +73,8 @@ public class WndEditStats extends MultiWindowTabComp {
     private FloatSpinner speed, statsScale;
     private StyledButtonWithIconAndText loot;
     private PropertyListContainer properties;
-
-    private GlyphSpinner glyphSpinner;
+    private EnchantmentListContainer enchantments;
+    private LevelSpinner enchantmentLevel;
 
     protected Object defaultStats;
 
@@ -187,11 +188,30 @@ public class WndEditStats extends MultiWindowTabComp {
                 content.add(loot);
             }
 
-            glyphSpinner = new GlyphSpinner(current);
-            content.add(glyphSpinner);
+            enchantmentLevel = new LevelSpinner(current.glyphArmor) {
+                {
+                    label.text(Messages.get(WndEditStats.class, "enchantment_level"));//tzz
 
-            glyphSpinner.glyphLevelSpinner = new GlyphSpinner.GlyphLevelSpinner(current);
-            content.add(glyphSpinner.glyphLevelSpinner);
+                    ((SpinnerIntegerModel) getModel()).setAbsoluteMinimum(0f);
+                    ((SpinnerIntegerModel) getModel()).setMinimum(0);
+
+                    removeChangeListener(getChangeListeners()[0]);
+                    addChangeListener(() -> {
+                        current.glyphArmor.level((int) getValue());
+                        current.enchantWeapon.level((int) getValue());
+                    });
+                }
+            };
+            content.add(enchantmentLevel);
+
+            enchantments = new EnchantmentListContainer(current, null) {
+                @Override
+                protected void onSlotNumChange() {
+                    super.onSlotNumChange();
+                    if (mainWindowComps != null) WndEditStats.this.layout();
+                }
+            };
+            content.add(enchantments);
 
             properties = new PropertyListContainer(current, null) {
                 @Override
@@ -216,7 +236,7 @@ public class WndEditStats extends MultiWindowTabComp {
                 statsScale, speed, viewDistance, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 hp, attackSkill, defenseSkill,
                 armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                tilesBeforeWakingUp, xp, maxLvl, loot, glyphSpinner, glyphSpinner.glyphLevelSpinner
+                tilesBeforeWakingUp, xp, maxLvl, loot, enchantmentLevel
         };
 
         if (editStats instanceof NPC && !(editStats instanceof SentryRoom.Sentry)) {
@@ -285,7 +305,7 @@ public class WndEditStats extends MultiWindowTabComp {
     @Override
     protected void layoutOwnContent() {
         super.layoutOwnContent();
-        content.setSize(width, EditorUtilies.layoutCompsLinear(GAP, content, properties));
+        content.setSize(width, EditorUtilies.layoutCompsLinear(GAP, content, enchantments, properties));
     }
 
     private void addSpeedViewDistanceSpinner(Mob def, Mob current) {

@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.ui.Component;
 
@@ -10,8 +11,16 @@ public abstract class WndChooseOneInCategories extends Window {
     protected final ChooseOneInCategoriesBody body;
 
     public WndChooseOneInCategories(String title, String desc,Object[][] categories, String[] categoryNames){
-        this(PixelScene.renderTextBlock(Messages.titleCase( title),10),desc,categories,categoryNames);
+        this(createDefaultTitle(title), desc, categories, categoryNames);
     }
+
+    private static RenderedTextBlock createDefaultTitle(String text) {
+        RenderedTextBlock title = PixelScene.renderTextBlock(Messages.titleCase( text),10);
+        title.hardlight(Window.TITLE_COLOR);
+        title.align(RenderedTextBlock.CENTER_ALIGN);
+        return title;
+    }
+
     public WndChooseOneInCategories(Component titleBar, String desc, Object[][] categories, String[] categoryNames) {
         super();
         int WIDTH = Math.min(160, (int) (PixelScene.uiCamera.width * 0.9));

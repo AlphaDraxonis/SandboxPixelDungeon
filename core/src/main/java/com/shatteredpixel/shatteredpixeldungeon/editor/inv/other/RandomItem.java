@@ -2,7 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.other;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugmentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -58,7 +58,7 @@ public interface RandomItem<T> {
                     int indexAdd = items.indexOf(i);
                     items.remove(i);
                     for (int j = newItems.length - 1; j >= 0; j--) {
-                        T add = AugumentationSpinner.assignRandomAugmentation(newItems[j]);
+                        T add = AugmentationSpinner.assignRandomAugmentation(newItems[j]);
                         if (add != null) {
                             add.spreadIfLoot = i.spreadIfLoot;
                             items.add(indexAdd, add);
@@ -66,7 +66,7 @@ public interface RandomItem<T> {
                     }
                 }
             } else {
-                Item changed = AugumentationSpinner.assignRandomAugmentation(i);
+                Item changed = AugmentationSpinner.assignRandomAugmentation(i);
                 if (changed == null) items.remove(i);
             }
         }
@@ -138,7 +138,7 @@ public interface RandomItem<T> {
             result[0].spreadIfLoot = item.spreadIfLoot;
             item = result[0];
         }
-        return AugumentationSpinner.assignRandomAugmentation(item);
+        return AugmentationSpinner.assignRandomAugmentation(item);
     }
 
     class RandomItemAny extends Item implements RandomItem<Item> {

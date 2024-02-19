@@ -61,6 +61,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             Buff.affect(this, Regeneration.class);
             Buff.affect(this, Hunger.class);
         }
+        //tzz do we need to update random items etc here???!!!
         updateEXP();
     }
 

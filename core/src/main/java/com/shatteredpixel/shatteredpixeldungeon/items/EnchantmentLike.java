@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
+//just holds enchantments for a mob
 public interface EnchantmentLike extends Bundlable {
 
     default String name() {

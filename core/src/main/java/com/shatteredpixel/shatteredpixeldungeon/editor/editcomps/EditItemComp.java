@@ -4,7 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ReorderHeapComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugumentationSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugmentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.ChargeSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.CurseButton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
@@ -89,7 +89,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledCheckBox blessed;
     protected StyledCheckBox igniteBombOnDrop;
     protected StyledSpinner shockerDuration;
-    protected AugumentationSpinner augumentationSpinner;
+    protected AugmentationSpinner augmentationSpinner;
     protected StyledButton enchantBtn;
     protected ChooseDestLevelComp keylevel;
     protected StyledButton keyCell;
@@ -242,13 +242,13 @@ public class EditItemComp extends DefaultEditComp<Item> {
             }
 
             if (ScrollOfEnchantment.enchantable(item)) {
-                augumentationSpinner = new AugumentationSpinner(item) {
+                augmentationSpinner = new AugmentationSpinner(item) {
                     @Override
                     protected void onChange() {
                         updateObj();
                     }
                 };
-                add(augumentationSpinner);
+                add(augmentationSpinner);
             }
 
             if (item instanceof Ankh) {
@@ -343,7 +343,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(randomItem);
         }
 
-        rectComps = new Component[]{quantity, quickslotPos, shockerDuration, chargeSpinner, levelSpinner, augumentationSpinner,
+        rectComps = new Component[]{quantity, quickslotPos, shockerDuration, chargeSpinner, levelSpinner, augmentationSpinner,
                 curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed, igniteBombOnDrop, spreadIfLoot};
         linearComps = new Component[]{randomItem, keylevel, keyCell};
     }
@@ -418,7 +418,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (curseBtn != null)               curseBtn.checked(obj.cursed);
         if (levelSpinner != null)           levelSpinner.setValue(obj.level());
         if (chargeSpinner != null)          chargeSpinner.updateValue(obj);
-        if (augumentationSpinner != null)   augumentationSpinner.updateValue(obj);
+        if (augmentationSpinner != null)   augmentationSpinner.updateValue(obj);
         if (autoIdentify != null)           autoIdentify.checked(obj.identifyOnStart);
         if (cursedKnown != null)            cursedKnown.checked(obj.getCursedKnownVar());
         if (spreadIfLoot != null)           spreadIfLoot.checked(obj.spreadIfLoot);
