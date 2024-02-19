@@ -24,10 +24,14 @@ package com.shatteredpixel.shatteredpixeldungeon.items.armor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.RandomCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.RandomGlyph;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 //just holds glyphs for a mob
 public class GlyphArmor extends Armor {
@@ -86,7 +90,9 @@ public class GlyphArmor extends Armor {
 	}
 
 	public void addGlyph(Glyph glyph) {
-		glyphs.put(glyph.getClass(), glyph);
+		if (!glyphs.containsKey(glyph.getClass())/* || glyph.getClass() == RandomGlyph.class || glyph.getClass() == RandomCurse.class*/) {
+			glyphs.put(glyph.getClass(), glyph);
+		}
 	}
 
 	public void removeGlyph(Class<? extends Glyph> glyph) {
@@ -95,5 +101,42 @@ public class GlyphArmor extends Armor {
 
 	public static boolean areEqual(GlyphArmor a, GlyphArmor b) {
 		return a.glyphs.keySet().equals(b.glyphs.keySet());
+	}
+
+	public void replaceRandom() {
+		Set<Class<? extends Glyph>> existingGlyphs = new HashSet<>();
+		existingGlyphs.addAll(glyphs.keySet());
+
+		if (glyphs.containsKey(RandomGlyph.class)) {
+			int tries = 100;
+			Glyph newGlyph;
+			do {
+				newGlyph = Glyph.random();
+				if (tries-- < 0) {
+					newGlyph = null;
+					break;
+				}
+			} while (existingGlyphs.contains(newGlyph.getClass()));
+			if (newGlyph != null) {
+				addGlyph(glyph);
+				existingGlyphs.add(glyph.getClass());
+			}
+		}
+
+		if (glyphs.containsKey(RandomCurse.class)) {
+			int tries = 100;
+			Glyph newGlyph;
+			do {
+				newGlyph = Glyph.randomCurse();
+				if (tries-- < 0) {
+					newGlyph = null;
+					break;
+				}
+			} while (existingGlyphs.contains(newGlyph.getClass()));
+			if (newGlyph != null) {
+				addGlyph(glyph);
+				existingGlyphs.add(glyph.getClass());
+			}
+		}
 	}
 }

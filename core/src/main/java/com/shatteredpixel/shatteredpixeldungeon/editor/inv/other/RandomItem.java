@@ -839,6 +839,16 @@ public interface RandomItem<T> {
         }
 
         @Override
+        public String info() {
+            return desc();
+        }
+
+        @Override
+        public String status() {
+            return null;
+        }
+
+        @Override
         public void onZap(Ballistica attack) {
         }
 

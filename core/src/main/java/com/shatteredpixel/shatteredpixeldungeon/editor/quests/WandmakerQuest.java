@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RotHeart;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RotLasher;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -49,14 +50,20 @@ public class WandmakerQuest extends Quest {
             wand1 = (Wand) Generator.randomUsingDefaults(Generator.Category.WAND);
             wand1.cursed = false;
             wand1.upgrade();
-        } else if (wand1.identifyOnStart) wand1.identify();
+        } else {
+            wand1 = RandomItem.initRandomStatsForItemSubclasses(wand1);
+            if (wand1 != null && wand1.identifyOnStart) wand1.identify();
+        }
         if (wand2 == null) {
             do {
                 wand2 = (Wand) Generator.randomUsingDefaults(Generator.Category.WAND);
             } while (wand2.getClass().equals(wand1.getClass()));
             wand2.cursed = false;
             wand2.upgrade();
-        } else if (wand2.identifyOnStart) wand2.identify();
+        } else {
+            wand2 = RandomItem.initRandomStatsForItemSubclasses(wand2);
+            if (wand2 != null && wand2.identifyOnStart) wand2.identify();
+        }
 
         if (type == BASED_ON_DEPTH) type = levelScheme.generateWandmakerQuest();
         else if (type == RANDOM) type = Random.Int(NUM_QUESTS);

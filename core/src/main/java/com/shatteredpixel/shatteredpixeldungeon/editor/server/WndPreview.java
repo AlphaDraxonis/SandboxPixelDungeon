@@ -183,7 +183,7 @@ public class WndPreview extends Component {
 
     @Override
     protected void layout() {
-        desc.maxWidth((int) width);//tzz
+        desc.maxWidth((int) width);
         height = 0;
         float posY = y + EditorUtilies.layoutCompsLinear(4, this, desc, creator, difficulty, time, version) + 5;
         download.setRect(x + width / 5, posY, width * 3 / 5, 16);

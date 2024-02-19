@@ -1,14 +1,18 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.weapon;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.RandomCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Projecting;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.RandomEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class EnchantmentWeapon extends MeleeWeapon {
 
@@ -37,6 +41,13 @@ public class EnchantmentWeapon extends MeleeWeapon {
         return !enchantments.isEmpty();
     }
 
+    public boolean hasEnchantment(Class<? extends Enchantment> enchantment) {
+        for (Enchantment ench : enchantments) {
+            if (ench.getClass() == enchantment) return true;
+        }
+        return false;
+    }
+
     private static final String ENCHANTMENTS = "enchantments";
     private static final String LEVEL = "level";
 
@@ -56,8 +67,10 @@ public class EnchantmentWeapon extends MeleeWeapon {
     }
 
     public void addEnchantment(Enchantment ench) {
-        enchantments.add(ench);
-        if (ench instanceof Projecting) enchantment = ench;
+        if (!hasEnchantment(ench.getClass())/* || ench.getClass() == RandomEnchantment.class || ench.getClass() == RandomCurse.class*/) {
+            enchantments.add(ench);
+            if (ench instanceof Projecting) enchantment = ench;
+        }
     }
 
     public void removeEnchantment(Enchantment ench) {
@@ -75,5 +88,45 @@ public class EnchantmentWeapon extends MeleeWeapon {
             index++;
         }
         return true;
+    }
+
+
+    public void replaceRandom() {
+        Set<Class<? extends Enchantment>> existingEnchs = new HashSet<>();
+        for (Enchantment ench : enchantments) {
+            existingEnchs.add(ench.getClass());
+        }
+
+        if (existingEnchs.contains(RandomEnchantment.class)) {
+            int tries = 100;
+            Enchantment newEnch;
+            do {
+                newEnch = Enchantment.random();
+                if (tries-- < 0) {
+                    newEnch = null;
+                    break;
+                }
+            } while (existingEnchs.contains(newEnch.getClass()));
+            if (newEnch != null) {
+                addEnchantment(newEnch);
+                existingEnchs.add(newEnch.getClass());
+            }
+        }
+
+        if (existingEnchs.contains(RandomCurse.class)) {
+            int tries = 100;
+            Enchantment newEnch;
+            do {
+                newEnch = Enchantment.randomCurse();
+                if (tries-- < 0) {
+                    newEnch = null;
+                    break;
+                }
+            } while (existingEnchs.contains(newEnch.getClass()));
+            if (newEnch != null) {
+                addEnchantment(newEnch);
+                existingEnchs.add(newEnch.getClass());
+            }
+        }
     }
 }

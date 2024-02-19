@@ -190,7 +190,7 @@ public class WndEditStats extends MultiWindowTabComp {
 
             enchantmentLevel = new LevelSpinner(current.glyphArmor) {
                 {
-                    label.text(Messages.get(WndEditStats.class, "enchantment_level"));//tzz
+                    label.text(Messages.get(WndEditStats.class, "enchantment_level"));
 
                     ((SpinnerIntegerModel) getModel()).setAbsoluteMinimum(0f);
                     ((SpinnerIntegerModel) getModel()).setMinimum(0);

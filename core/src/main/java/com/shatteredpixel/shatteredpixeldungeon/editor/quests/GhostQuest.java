@@ -103,6 +103,9 @@ public class GhostQuest extends Quest {
             } else {
                 weapon = RandomItem.initRandomStatsForItemSubclasses(weapon);
             }
+        } else {
+            armor = RandomItem.initRandomStatsForItemSubclasses(armor);
+            weapon = RandomItem.initRandomStatsForItemSubclasses(weapon);
         }
 
     }

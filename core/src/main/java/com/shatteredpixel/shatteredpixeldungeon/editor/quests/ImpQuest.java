@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
@@ -35,7 +36,10 @@ public class ImpQuest extends Quest {
             } while (reward.cursed);
             reward.upgrade(2);
             reward.cursed = true;
-        } else if (reward.identifyOnStart) reward.identify();
+        } else {
+            reward = RandomItem.initRandomStatsForItemSubclasses(reward);
+            if (reward != null && reward.identifyOnStart) reward.identify();
+        }
     }
 
 
