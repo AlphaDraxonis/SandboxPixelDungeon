@@ -35,7 +35,6 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
-
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
@@ -110,7 +109,7 @@ public class AndroidLauncher extends AndroidApplication {
 			GdxNativesLoader.load();
 			FreeType.initFreeType();
 		} catch (Exception e){
-			AndroidMissingNativesHandler.errorMsg = e.getMessage();
+			AndroidMissingNativesHandler.error = e;
 			Intent intent = new Intent(this, AndroidMissingNativesHandler.class);
 			startActivity(intent);
 			finish();
