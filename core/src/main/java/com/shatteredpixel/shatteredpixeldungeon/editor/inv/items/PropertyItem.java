@@ -3,10 +3,21 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditPropertyComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CausticSlimeSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.GhostSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.GolemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.GreatCrabSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.KingSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.LarvaSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.RipperSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.WandmakerSprite;
 import com.watabou.noosa.Image;
 
 import java.util.Locale;
@@ -59,32 +70,28 @@ public class PropertyItem extends EditorItem<Char.Property> {
 
         switch (p) {
 
-            case BOSS:
-                break;
-            case MINIBOSS:
-                break;
-            case BOSS_MINION:
-                break;
-            case UNDEAD:
-                break;
-            case DEMONIC:
-                break;
-            case INORGANIC:
-                break;
+            case BOSS: return new KingSprite();
+            case MINIBOSS: return new GreatCrabSprite();
+            case BOSS_MINION: return new LarvaSprite();
+            case UNDEAD: return new SkeletonSprite();
+            case DEMONIC: return new RipperSprite();
+            case INORGANIC: return new PylonSprite();
             case FIERY:
-                break;
+                Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_LIQFLAME);
+                icon.scale.set(ItemSpriteSheet.SIZE / Math.max(icon.width(), icon.height()));
+                return icon;
             case ICY:
-                break;
-            case ACIDIC:
-                break;
+                icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.POTION_FROST);
+                icon.scale.set(ItemSpriteSheet.SIZE / Math.max(icon.width(), icon.height()));
+                return icon;
+            case ACIDIC: return new CausticSlimeSprite();
             case ELECTRIC:
-                break;
-            case PERMEABLE:
-                break;
-            case LARGE:
-                break;
-            case IMMOVABLE:
-                break;
+                icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_RECHARGE);
+                icon.scale.set(ItemSpriteSheet.SIZE / Math.max(icon.width(), icon.height()));
+                return icon;
+            case PERMEABLE: return new GhostSprite();
+            case LARGE: return new GolemSprite();
+            case IMMOVABLE: return new WandmakerSprite();
         }
 
         return new ItemSprite(ItemSpriteSheet.SOMETHING);
