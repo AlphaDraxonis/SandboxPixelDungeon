@@ -1,22 +1,33 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRemoverComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Reflection;
 
 public abstract class EditorItem<T> extends Item {
 
@@ -144,44 +155,18 @@ public abstract class EditorItem<T> extends Item {
 
         @Override
         public DefaultEditComp<?> createEditComponent() {
-            return new DefaultEditComp<Item>(this) {
-
-                @Override
-                protected IconTitleWithSubIcon createTitle() {
-                    return new IconTitleWithSubIcon(getIcon(), getSubIcon(), createTitleText());
-                }
-
-                @Override
-                protected String createDescription() {
-                    return obj.desc();
-                }
-
-                @Override
-                protected String createTitleText() {
-                    return Messages.titleCase(obj.name());
-                }
-
-                @Override
-                public Image getIcon() {
-                    return getSprite();
-                }
-            };
+            return new EditRemoverComp();
         }
 
         @Override
         public void place(int cell) {
-            CustomLevel level = EditorScene.customLevel();
-            ActionPart part = MobItem.remove(level.findMob(cell));
-            //would be better if the if-statements were nested...
-            if (part == null) part = BlobItem.remove(cell);
-            if (part == null) part = ItemItem.remove(cell);
-            if (part == null) part = PlantItem.remove(cell);
-            if (part == null) part = TrapItem.remove(level.traps.get(cell));
-            if (part == null) part = BarrierItem.remove(cell);
-            if (part == null) part = CustomTileItem.remove(cell);
-            if (part == null) part = ParticleItem.remove(cell);
+            int i = 0;
+            ActionPart part;
+            do {
+                part = REMOVER_PRIORITY[i++].doRemove(cell);
+            } while (part == null && i < REMOVER_PRIORITY.length);
             if (part == null)
-                part = TileItem.place(cell, level.feeling == Level.Feeling.CHASM ? Terrain.CHASM : Terrain.EMPTY);
+                part = TileItem.place(cell, Dungeon.level.feeling == Level.Feeling.CHASM ? Terrain.CHASM : Terrain.EMPTY);
             Undo.addActionPart(part);
         }
 
@@ -190,5 +175,67 @@ public abstract class EditorItem<T> extends Item {
             return this;
         }
     };
+
+    public static final RemoverPriority[] REMOVER_PRIORITY = RemoverPriority.values().clone();
+
+    public enum RemoverPriority {
+        MOB,
+        BLOB,
+        ITEM,
+        PLANT,
+        TRAP,
+        BARRIER,
+        CUSTOM_TILE,
+        PARTICLE;
+
+        public ActionPart doRemove(int cell) {
+            Level level = EditorScene.customLevel();
+            switch (this) {
+                case MOB: return MobItem.remove(level.findMob(cell));
+                case BLOB: return BlobItem.remove(cell);
+                case ITEM: return ItemItem.remove(cell);
+                case PLANT: return PlantItem.remove(cell);
+                case TRAP: return TrapItem.remove(level.traps.get(cell));
+                case BARRIER: return BarrierItem.remove(cell);
+                case CUSTOM_TILE: return CustomTileItem.remove(cell);
+                case PARTICLE: return ParticleItem.remove(cell);
+            }
+            return null;
+        }
+
+        public String displayText() {
+            switch (this) {
+                case MOB: return Mobs.bag.name();
+                case BLOB: return Messages.get(Tiles.BlobBag.class, "name");
+                case ITEM: return Items.bag.name();
+                case PLANT: return Plants.bag.name();
+                case TRAP: return Traps.bag.name();
+                case BARRIER: return Messages.get(Barrier.class, "name");
+                case CUSTOM_TILE: return Messages.get(Tiles.CustomTileBag.class, "name");
+                case PARTICLE: return Tiles.particleBag.name();
+            }
+            return null;
+        }
+
+        public Image getSprite() {
+            switch (this) {
+                case MOB: return new SkeletonSprite();
+                case BLOB:
+                    Image icon = Icons.ETERNAL_FIRE.get();
+                    icon.scale.set(2.28f);// 16/7 = 2.28
+                    return icon;
+                case ITEM: return new ItemSprite(Reflection.newInstance(Items.getRandomItem(null)));
+                case PLANT: return Reflection.newInstance(Plants.getRandomPlant(null)).getSprite();
+                case TRAP:
+                    Trap t = Reflection.newInstance(Traps.getRandomTrap(null));
+                    t.visible = true;
+                    return t.getSprite();
+                case BARRIER: return EditorUtilies.getBarrierTexture(1);
+                case CUSTOM_TILE: return Icons.TALENT.get();
+                case PARTICLE: return Tiles.particleBag.getCategoryImage();
+            }
+            return null;
+        }
+    }
 
 }
