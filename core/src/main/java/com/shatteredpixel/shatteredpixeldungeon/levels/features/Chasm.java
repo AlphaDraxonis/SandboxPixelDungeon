@@ -31,7 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Levitation;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.items.spells.FeatherFall;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfFeatherFall;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -54,161 +54,160 @@ import com.watabou.utils.Random;
 
 public class Chasm implements Hero.Doom {
 
-    public static boolean jumpConfirmed = false;
-    private static int heroPos;
+	public static boolean jumpConfirmed = false;
+	private static int heroPos;
+	
+	public static void heroJump( final Hero hero ) {
+		heroPos = hero.pos;
+		Game.runOnRenderThread(new Callback() {
+			@Override
+			public void call() {
+				GameScene.show(
+						new WndOptions( new Image(Dungeon.level.tilesTex(), 176, 16, 16, 16),
+								Messages.get(Chasm.class, "chasm"),
+								Messages.get(Chasm.class, "jump"),
+								Messages.get(Chasm.class, "yes"),
+								Messages.get(Chasm.class, "no") ) {
 
-    public static void heroJump(final Hero hero) {
-        heroPos = hero.pos;
+							private float elapsed = 0f;
 
-        Game.runOnRenderThread(new Callback() {
-            @Override
-            public void call() {
-                GameScene.show(
-                        new WndOptions(new Image(Dungeon.level.tilesTex(), 176, 16, 16, 16),
-                                Messages.get(Chasm.class, "chasm"),
-                                Messages.get(Chasm.class, "jump"),
-                                Messages.get(Chasm.class, "yes"),
-                                Messages.get(Chasm.class, "no")) {
+							@Override
+							public synchronized void update() {
+								super.update();
+								elapsed += Game.elapsed;
+							}
 
-                            private float elapsed = 0f;
+							@Override
+							public void hide() {
+								if (elapsed > 0.2f){
+									super.hide();
+								}
+							}
 
-                            @Override
-                            public synchronized void update() {
-                                super.update();
-                                elapsed += Game.elapsed;
-                            }
+							@Override
+							protected void onSelect( int index ) {
+								if (index == 0 && elapsed > 0.2f) {
+									if (Dungeon.hero.pos == heroPos) {
+										jumpConfirmed = true;
+										hero.resume();
+									}
+								}
+							}
+						}
+				);
+			}
+		});
+	}
+	
+	public static void heroFall( int pos ) {
+		
+		jumpConfirmed = false;
 
-                            @Override
-                            public void hide() {
-                                if (elapsed > 0.2f) {
-                                    super.hide();
-                                }
-                            }
+		if (Dungeon.customDungeon.getFloor(Dungeon.customDungeon.getFloor(Dungeon.levelName).getChasm()) == null) {
+			//Cannot jump because there is no floor available to jump to
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					GameScene.show(
+							new WndOptions(Icons.get(Icons.WARNING),
+									Messages.get(Chasm.class,"no_chasm_title"),
+									Messages.get(Chasm.class,"no_chasm_body"),
+									Messages.get(WndSupportPrompt.class,"close")
+							) {
 
-                            @Override
-                            protected void onSelect(int index) {
-                                if (index == 0 && elapsed > 0.2f) {
-                                    if (Dungeon.hero.pos == heroPos) {
-                                        jumpConfirmed = true;
-                                        hero.resume();
-                                    }
-                                }
-                            }
-                        }
-                );
-            }
-        });
+								private float elapsed = 0f;
 
-    }
+								@Override
+								public synchronized void update() {
+									super.update();
+									elapsed += Game.elapsed;
+								}
 
-    public static void heroFall(int pos) {
+								@Override
+								public void hide() {
+									if (elapsed > 0.2f) {
+										super.hide();
+									}
+								}
+							}
+					);
+				}
+			});
+			if (Dungeon.level.map[Dungeon.hero.pos] == Terrain.CHASM)
+				Buff.affect(Dungeon.hero, Levitation.class,6);//avoid softlocks
+			return;
+		}
+				
+		Sample.INSTANCE.play( Assets.Sounds.FALLING );
 
-        jumpConfirmed = false;
-        if (Dungeon.customDungeon.getFloor(Dungeon.customDungeon.getFloor(Dungeon.levelName).getChasm()) == null) {
-            //Cannot jump because there is no floor available to jump to
-            Game.runOnRenderThread(new Callback() {
-                @Override
-                public void call() {
-                    GameScene.show(
-                            new WndOptions(Icons.get(Icons.WARNING),
-                                    Messages.get(Chasm.class,"no_chasm_title"),
-                                    Messages.get(Chasm.class,"no_chasm_body"),
-                                    Messages.get(WndSupportPrompt.class,"close")
-                            ) {
+		Level.beforeTransition();
 
-                                private float elapsed = 0f;
+		InterlevelScene.fallPosition = pos;
 
-                                @Override
-                                public synchronized void update() {
-                                    super.update();
-                                    elapsed += Game.elapsed;
-                                }
+		if (Dungeon.hero.isAlive()) {
+			Dungeon.hero.interrupt();
+			InterlevelScene.mode = InterlevelScene.Mode.FALL;
+			if (Dungeon.level instanceof RegularLevel) {
+				Room room = ((RegularLevel)Dungeon.level).room( pos );
+				InterlevelScene.fallIntoPit = room instanceof WeakFloorRoom;
+			} else {
+				InterlevelScene.fallIntoPit = false;
+			}
+			Game.switchScene( InterlevelScene.class );
+		} else {
+			Dungeon.hero.sprite.visible = false;
+		}
+	}
 
-                                @Override
-                                public void hide() {
-                                    if (elapsed > 0.2f) {
-                                        super.hide();
-                                    }
-                                }
-                            }
-                    );
-                }
-            });
-            if (Dungeon.level.map[Dungeon.hero.pos] == Terrain.CHASM)
-                Buff.affect(Dungeon.hero, Levitation.class,6);//avoid softlocks
-            return;
-        }
+	@Override
+	public void onDeath() {
+		Badges.validateDeathFromFalling();
 
-        Sample.INSTANCE.play(Assets.Sounds.FALLING);
+		Dungeon.fail( Chasm.class );
+		GLog.n( Messages.get(Chasm.class, "ondeath") );
+	}
 
-        Level.beforeTransition();
+	public static void heroLand() {
+		
+		Hero hero = Dungeon.hero;
+		
+		ElixirOfFeatherFall.FeatherBuff b = hero.buff(ElixirOfFeatherFall.FeatherBuff.class);
+		
+		if (b != null){
+			hero.sprite.emitter().burst( Speck.factory( Speck.JET ), 20);
+			b.detach();
+			return;
+		}
+		
+		PixelScene.shake( 4, 1f );
 
-        InterlevelScene.fallPosition = pos;
+		Dungeon.level.occupyCell(hero );
+		Buff.prolong( hero, Cripple.class, Cripple.DURATION );
 
-        if (Dungeon.hero.isAlive()) {
-            Dungeon.hero.interrupt();
-            InterlevelScene.mode = InterlevelScene.Mode.FALL;
-            if (Dungeon.level instanceof RegularLevel) {
-                Room room = ((RegularLevel) Dungeon.level).room(pos);
-                InterlevelScene.fallIntoPit = room instanceof WeakFloorRoom;
-            } else {
-                InterlevelScene.fallIntoPit = false;
-            }
-            Game.switchScene(InterlevelScene.class);
-        } else {
-            Dungeon.hero.sprite.visible = false;
-        }
-    }
+		//The lower the hero's HP, the more bleed and the less upfront damage.
+		//Hero has a 50% chance to bleed out at 66% HP, and begins to risk instant-death at 25%
+		Buff.affect( hero, Bleeding.class).set( Math.round(hero.HT / (6f + (6f*(hero.HP/(float)hero.HT)))), Chasm.class);
+		hero.damage( Math.max( hero.HP / 2, Random.NormalIntRange( hero.HP / 2, hero.HT / 4 )), new Chasm() );
+	}
 
-    @Override
-    public void onDeath() {
-        Badges.validateDeathFromFalling();
-
-        Dungeon.fail(Chasm.class);
-        GLog.n(Messages.get(Chasm.class, "ondeath"));
-    }
-
-    public static void heroLand() {
-
-        Hero hero = Dungeon.hero;
-
-        FeatherFall.FeatherBuff b = hero.buff(FeatherFall.FeatherBuff.class);
-
-        if (b != null) {
-            hero.sprite.emitter().burst(Speck.factory(Speck.JET), 20);
-            b.detach();
-            return;
-        }
-
-        PixelScene.shake(4, 1f);
-
-        Dungeon.level.occupyCell(hero);
-        Buff.prolong(hero, Cripple.class, Cripple.DURATION);
-
-        //The lower the hero's HP, the more bleed and the less upfront damage.
-        //Hero has a 50% chance to bleed out at 66% HP, and begins to risk instant-death at 25%
-        Buff.affect(hero, Bleeding.class).set(Math.round(hero.HT / (6f + (6f * (hero.HP / (float) hero.HT)))), Chasm.class);
-        hero.damage(Math.max(hero.HP / 2, Random.NormalIntRange(hero.HP / 2, hero.HT / 4)), new Chasm());
-    }
-
-    public static void mobFall(Mob mob) {
-        if (mob.isAlive()) mob.die(Chasm.class);
-
-        if (mob.sprite != null) ((MobSprite) mob.sprite).fall();
-    }
-
-    public static class Falling extends Buff {
-
-        {
-            actPriority = VFX_PRIO;
-        }
-
-        @Override
-        public boolean act() {
-            heroLand();
-            detach();
-            return true;
-        }
-    }
+	public static void mobFall( Mob mob ) {
+		if (mob.isAlive()) mob.die( Chasm.class );
+		
+		if (mob.sprite != null) ((MobSprite)mob.sprite).fall();
+	}
+	
+	public static class Falling extends Buff {
+		
+		{
+			actPriority = VFX_PRIO;
+		}
+		
+		@Override
+		public boolean act() {
+			heroLand();
+			detach();
+			return true;
+		}
+	}
 
 }
