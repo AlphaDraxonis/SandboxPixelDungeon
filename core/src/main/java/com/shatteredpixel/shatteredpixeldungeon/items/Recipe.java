@@ -28,7 +28,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Blandfruit;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.StewedMeat;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.*;
@@ -60,7 +59,7 @@ public abstract class Recipe {
 		protected int[] inQuantity;
 		
 		protected int cost;
-
+		
 		protected Class<?extends Item> output;
 		protected int outQuantity;
 		//***
@@ -176,12 +175,12 @@ public abstract class Recipe {
 	private static Recipe[] twoIngredientRecipes = new Recipe[]{
 		new Blandfruit.CookFruit(),
 		new Bomb.EnhanceBomb(),
-		new AlchemicalCatalyst.Recipe(),
-		new ArcaneCatalyst.Recipe(),
+		new UnstableBrew.Recipe(),
 		new CausticBrew.Recipe(),
 		new ElixirOfArcaneArmor.Recipe(),
 		new ElixirOfAquaticRejuvenation.Recipe(),
 		new ElixirOfHoneyedHealing.Recipe(),
+		new UnstableSpell.Recipe(),
 		new Alchemize.Recipe(),
 		new CurseInfusion.Recipe(),
 		new ReclaimTrap.Recipe(),
@@ -229,7 +228,7 @@ public abstract class Recipe {
 					result.add(twoIngredientRecipes[i]);
 				}
 			}
-			
+
 		} else if (numIngredients == 3){
 			for (int i = 0; i < threeIngredientRecipes.length; i++) {
 				if (!Dungeon.customDungeon.blockedRecipes.contains(i + 300)

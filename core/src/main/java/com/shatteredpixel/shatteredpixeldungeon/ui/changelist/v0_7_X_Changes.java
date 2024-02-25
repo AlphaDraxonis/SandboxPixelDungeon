@@ -35,11 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMirrorImag
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfCorruption;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLivingEarth;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Gauntlet;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Shuriken;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Tomahawk;
@@ -461,7 +457,7 @@ public class v0_7_X_Changes {
 				"\n" +
 				"This update also made some substantial design changes to enchantments. Since enchantments were more accessible after v0.7.0, I wanted to adjust them to be more about gameplay variety and less about raw damage. Prior to this update several of the most common enchantments were essentially direct increases to damage. Changing this was a good overall direction, but some of the specific changes in v0.7.2 missed the mark, and so I had to revisit enchantment mechanics shortly after."));
 		
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.POTION_CATALYST, null), "Catalysts!",
+		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.BREW_UNSTABLE, null), "Catalysts!",
 				"Added two new recipes: _Alchemical Catalysts_ and _Arcane Catalysts._\n\n" +
 				"These catalysts are made with any potion/scroll, and a seed/runestone. They replace many specific items for higher-cost recipes. Alchemy should be much more flexible now!\n\n" +
 				"Additional Alchemy Changes:\n\n" +
