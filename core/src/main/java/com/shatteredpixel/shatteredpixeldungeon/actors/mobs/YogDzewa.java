@@ -552,7 +552,7 @@ public class YogDzewa extends Mob {
 	public void aggro(Char ch) {
 		int id = id();
 		for (Mob mob : (Iterable<Mob>)Dungeon.level.mobs.clone()) {
-			if (Dungeon.level.distance(pos, mob.pos) <= 4 &&
+			if (mob != ch && Dungeon.level.distance(pos, mob.pos) <= 4 &&
 					mob instanceof YogDzewaMob && ((YogDzewaMob) mob).getId() == id) {
 				mob.aggro(ch);
 			}
