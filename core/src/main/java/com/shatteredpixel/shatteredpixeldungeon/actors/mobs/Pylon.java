@@ -226,7 +226,7 @@ public class Pylon extends Mob {
 	public void die(Object cause) {
 		super.die(cause);
 		DM300 dm300 = (DM300) Actor.findById(dm300id);
-		CavesBossLevel.eliminatePylon(Dungeon.level, dm300 != null && dm300.totalPylonsToActivate() - dm300.pylonsActivated > 0);
+		CavesBossLevel.eliminatePylon(Dungeon.level, dm300,dm300 != null && dm300.totalPylonsToActivate() - dm300.pylonsActivated > 0);
 	}
 
 	private static final String ALIGNMENT = "alignment";

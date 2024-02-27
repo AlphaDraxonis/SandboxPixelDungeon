@@ -335,6 +335,7 @@ public class CavesBossLevel extends Level {
 		Sample.INSTANCE.play( Assets.Sounds.ROCKS );
 
 		DM300 boss = new DM300();
+		boss.setLevel(Dungeon.depth);
 		boss.state = boss.WANDERING;
 		do {
 			boss.pos = pointToCell(Random.element(mainArena.getPoints()));
@@ -386,14 +387,22 @@ public class CavesBossLevel extends Level {
 
 	}
 
-	public Pylon activatePylon(){
-		ArrayList<Pylon> pylons = new ArrayList<>();
-		for (Mob m : mobs){
-			if (m instanceof Pylon && m.alignment == Char.Alignment.NEUTRAL && ((Pylon) m).dm300id <= 0){
+	public static List<Pylon> getAvailablePylons(Level level, int dm300id) {
+		ArrayList<Pylon> pylons = new ArrayList<>(5);
+		for (Mob m : level.mobs){
+			if (m instanceof Pylon
+					&& m.alignment == Char.Alignment.NEUTRAL
+					&& m.playerAlignment == Mob.NORMAL_ALIGNMENT
+					&& !((Pylon) m).alwaysActive
+					&& (((Pylon) m).dm300id <= 0 || ((Pylon) m).dm300id == dm300id)){
 				pylons.add((Pylon) m);
 			}
 		}
-		Pylon pylon = activatePylon(this, pylons);
+		return pylons;
+	}
+
+	public Pylon activatePylon(int dm300id){
+		Pylon pylon = activatePylon(this, getAvailablePylons(this, dm300id));
 
 		for( int i = (mainArena.top-1)*width; i <length; i++){
 			if (map[i] == Terrain.INACTIVE_TRAP || map[i] == Terrain.WATER || map[i] == Terrain.CUSTOM_DECO){
@@ -417,23 +426,22 @@ public class CavesBossLevel extends Level {
 				}
 			}
 			pylons.remove(closest);
-			Random.element(pylons).activate();
-			return closest;
+			Pylon p = Random.element(pylons);
+			p.activate();
+			return p;
 		}
 		return null;
 
 	}
 
-	public static void eliminatePylon(Level level, boolean clearPylonEnergy){
+	public static void eliminatePylon(Level level, DM300 boss, boolean clearPylonEnergy){
 		if (level instanceof CavesBossLevel){
 			if (((CavesBossLevel) level).customArenaVisuals != null)
 				((CavesBossLevel) level).customArenaVisuals.updateState();
 		}
-		for (Mob m : level.mobs) {
-			if (m instanceof DM300){
-				((DM300) m).loseSupercharge();
-				PylonEnergy.energySourceSprite = m.sprite;
-			}
+		if (boss != null) {
+			boss.loseSupercharge();
+			PylonEnergy.energySourceSprite = boss.sprite;
 		}
 		if (clearPylonEnergy) {
 			Blob energy = level.blobs.getOnly(PylonEnergy.class);

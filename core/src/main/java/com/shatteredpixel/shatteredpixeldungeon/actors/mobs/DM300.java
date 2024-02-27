@@ -30,7 +30,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
@@ -46,9 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
-import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.TargetedCell;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
@@ -348,23 +345,8 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		if (travelling) PixelScene.shake( supercharged ? 3 : 1, 0.25f );
 
 		if (Dungeon.level.map[step] == Terrain.INACTIVE_TRAP && state == HUNTING) {
-
-			//don't gain energy from cells that are energized
-			if (CavesBossLevel.PylonEnergy.volumeAt(pos, CavesBossLevel.PylonEnergy.class) > 0){
-				return;
-			}
-
-			if (Dungeon.level.heroFOV[step]) {
-				if (buff(Barrier.class) == null) {
-					GLog.w(Messages.get(this, "shield"));
-				}
-				Sample.INSTANCE.play(Assets.Sounds.LIGHTNING);
-				sprite.emitter().start(SparkParticle.STATIC, 0.05f, 20);
-				sprite.showStatusWithIcon(CharSprite.POSITIVE, String.valueOf(30 + (HT - HP)/10), FloatingText.SHIELDING);
-			}
-
-			Buff.affect(this, Barrier.class).setShield( 30 + (HT - HP)/10);
-
+			//WARNING: Make sure the shielding logic stays in DMMob after each update!
+			//This if is to trick git into actually showing me the diff if something is changed here
 		}
 	}
 
@@ -527,7 +509,8 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 
 	public int totalPylonsToActivate(){
 		if (Dungeon.level instanceof CavesBossLevel) {
-			return Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 3 : 2;
+			return Math.min(pylonsActivated + CavesBossLevel.getAvailablePylons(Dungeon.level, id()).size(),
+					Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 3 : 2);
 		}
 		return pylonsNeeded;
 	}
@@ -543,29 +526,22 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 
 	public void supercharge(){
 		supercharged = true;
-		if (Dungeon.level instanceof CavesBossLevel) ((CavesBossLevel)Dungeon.level).activatePylon().dm300id = id();
+		Pylon p;
+		if (Dungeon.level instanceof CavesBossLevel) {
+			p = ((CavesBossLevel)Dungeon.level).activatePylon(id());
+		}
 		else {
-			int id = id();
-			List<Pylon> pylons = new ArrayList<>();
-			for (Mob m : Dungeon.level.mobs) {
-				if (m instanceof Pylon
-						&& !((Pylon) m).alwaysActive
-						&& m.playerAlignment == Mob.NORMAL_ALIGNMENT
-						&& m.alignment == Char.Alignment.NEUTRAL
-						&& (((Pylon) m).dm300id <= 0 || ((Pylon) m).dm300id == id)
-				) pylons.add((Pylon) m);
-			}
 			Level level = Dungeon.level;
-			Pylon p = CavesBossLevel.activatePylon(level, pylons);
-			if (p != null) p.dm300id = id();
+			p = CavesBossLevel.activatePylon(level, CavesBossLevel.getAvailablePylons(level, id()));
 
 			for (int i = 0; i < level.length(); i++) {
-				if (level.map[i] == Terrain.WATER || level.map[i] == Terrain.CUSTOM_DECO
+				if (level.map[i] == Terrain.WATER
 						|| CustomTileItem.findCustomTileAt(i, false) instanceof CavesBossLevel.TrapTile) {
 					GameScene.add(Blob.seed(i, 1, CavesBossLevel.PylonEnergy.class));
 				}
 			}
 		}
+		if (p != null) p.dm300id = id();
 		pylonsActivated++;
 
 		spend(Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 2f : 3f);
