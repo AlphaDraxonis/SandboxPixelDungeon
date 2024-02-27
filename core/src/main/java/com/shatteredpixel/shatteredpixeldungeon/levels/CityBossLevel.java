@@ -336,6 +336,7 @@ public class CityBossLevel extends Level {
 		Mob.restoreAllies(this, Dungeon.hero.pos, doorPos);
 
 		DwarfKing boss = new DwarfKing();
+		boss.setLevel(Dungeon.depth);
 		boss.state = boss.WANDERING;
 		boss.pos = pointToCell(arena.center());
 		GameScene.add( boss );
