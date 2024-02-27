@@ -68,7 +68,7 @@ public class WandOfCorrosion extends Wand {
 				wandProc(ch, chargesPerCast());
 
 				if (i == 0 && ch instanceof DwarfKing){
-					Statistics.qualifiedForBossChallengeBadge = false;
+					Statistics.qualifiedForBossChallengesBadge[3] = false;
 				}
 			}
 		}

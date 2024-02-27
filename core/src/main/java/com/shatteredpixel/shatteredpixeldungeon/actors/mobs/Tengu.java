@@ -263,7 +263,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		super.die( cause );
 		
 		Badges.validateBossSlain(Tengu.class);
-		if (Statistics.qualifiedForBossChallengeBadge){
+		if (Statistics.qualifiedForBossChallengesBadge[1]){
 			Badges.validateBossChallengeCompleted(Tengu.class);
 		}
 		Statistics.bossScores[1] += 2000;
@@ -854,7 +854,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		}
 
 		protected void reduceBossScore(){
-			Statistics.qualifiedForBossChallengeBadge = false;
+			Statistics.qualifiedForBossChallengesBadge[1] = false;
 			Statistics.bossScores[1] -= 100;
 		}
 
@@ -1048,7 +1048,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 								Buff.affect( ch, Burning.class ).reignite( ch );
 							}
 							if (ch == Dungeon.hero){
-								Statistics.qualifiedForBossChallengeBadge = false;
+								Statistics.qualifiedForBossChallengesBadge[1] = false;
 								Statistics.bossScores[1] -= 100;
 							}
 
@@ -1300,7 +1300,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			}
 
 			protected void reduceBossScore() {
-				Statistics.qualifiedForBossChallengeBadge = false;
+				Statistics.qualifiedForBossChallengesBadge[1] = false;
 				Statistics.bossScores[1] -= 100;
 			}
 

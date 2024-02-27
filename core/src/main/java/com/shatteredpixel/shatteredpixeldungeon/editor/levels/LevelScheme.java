@@ -959,7 +959,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     }
 
     public final int getBoss() {
-//        if (level instanceof Floor) return ((Floor) level).region;
         return getBoss(level == null ? type : level.getClass());
     }
 

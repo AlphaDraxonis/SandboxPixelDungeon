@@ -144,7 +144,7 @@ public class WandOfLightning extends DamageWand {
 		Char ch = Actor.findChar( cell );
 		if (ch != null) {
 			if (ch instanceof DwarfKing){
-				Statistics.qualifiedForBossChallengeBadge = false;
+				Statistics.qualifiedForBossChallengesBadge[3] = false;
 			}
 
 			affected.add( ch );

@@ -591,12 +591,12 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 		//hero counts as unarmed if they aren't attacking with a weapon and aren't benefiting from force
 		if (src == Dungeon.hero && (!RingOfForce.fightingUnarmed(Dungeon.hero) || Dungeon.hero.buff(RingOfForce.Force.class) != null)){
-			Statistics.qualifiedForBossChallengeBadge = false;
+			Statistics.qualifiedForBossChallengesBadge[3] = false;
 		//Corrosion, corruption, and regrowth do no direct damage and so have their own custom logic
 		//Transfusion damages DK and so doesn't need custom logic
 		//Lightning has custom logic so that chaining it doesn't DQ for the badge
 		} else if (src instanceof Wand && !(src instanceof WandOfLightning)){
-			Statistics.qualifiedForBossChallengeBadge = false;
+			Statistics.qualifiedForBossChallengesBadge[3] = false;
 		}
 
 		if (isInvulnerable(src.getClass())){
@@ -696,7 +696,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		}
 
 		Badges.validateBossSlain(DwarfKing.class);
-		if (Statistics.qualifiedForBossChallengeBadge){
+		if (Statistics.qualifiedForBossChallengesBadge[3]){
 			Badges.validateBossChallengeCompleted(DwarfKing.class);
 		}
 		Statistics.bossScores[3] += 4000;

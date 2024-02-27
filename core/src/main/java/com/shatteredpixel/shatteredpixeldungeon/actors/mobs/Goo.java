@@ -87,7 +87,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		if (stronger) {
 			pumpedUp = 0;
 			if (enemy == Dungeon.hero) {
-				Statistics.qualifiedForBossChallengeBadge = false;
+				Statistics.qualifiedForBossChallengesBadge[0] = false;
 				Statistics.bossScores[0] -= 100;
 			}
 		}
@@ -131,7 +131,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 		if (Dungeon.level.water[pos] && HP < HT) {
 			HP += healInc;
-			Statistics.qualifiedForBossChallengeBadge = false;
+			Statistics.qualifiedForBossChallengesBadge[0] = false;
 
 			LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
 			if (lock != null){
@@ -252,7 +252,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		if (pumpedUp > 0) {
 			pumpedUp = 0;
 			if (enemy == Dungeon.hero) {
-				Statistics.qualifiedForBossChallengeBadge = false;
+				Statistics.qualifiedForBossChallengesBadge[0] = false;
 				Statistics.bossScores[0] -= 100;
 			}
 		}
@@ -308,7 +308,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		if (showBossBar) GameScene.bossSlain();
 		
 		Badges.validateBossSlain(Goo.class);
-		if (Statistics.qualifiedForBossChallengeBadge){
+		if (Statistics.qualifiedForBossChallengesBadge[0]){
 			Badges.validateBossChallengeCompleted(Goo.class);
 		}
 		Statistics.bossScores[0] += 1000;

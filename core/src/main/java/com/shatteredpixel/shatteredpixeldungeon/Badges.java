@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 
 import java.io.IOException;
@@ -817,7 +818,7 @@ public class Badges {
 				}
 			}
 
-			if (Statistics.qualifiedForBossRemainsBadge && Dungeon.hero.belongings.getItem(RemainsItem.class) != null){
+			if (Dungeon.levelName.equals(Statistics.qualifiedForBossRemainsBadge) && Dungeon.hero.belongings.getItem(RemainsItem.class) != null){
 				badge = Badge.BOSS_SLAIN_REMAINS;
 				if (!isUnlocked( badge )) {
 					displayBadge( badge );
@@ -1051,7 +1052,7 @@ public class Badges {
 	
 	private static void displayBadge( Badge badge ) {
 		
-		if (badge == null || !Dungeon.customSeedText.isEmpty() || Dungeon.isLevelTesting()) {
+		if (badge == null || (!Dungeon.customSeedText.isEmpty() || Dungeon.isLevelTesting()) && !DeviceCompat.isDebug()) {
 			return;
 		}
 		

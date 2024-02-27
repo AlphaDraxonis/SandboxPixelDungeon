@@ -136,7 +136,7 @@ public class WandOfCorruption extends Wand {
 			Mob enemy = (Mob) ch;
 
 			if (enemy instanceof DwarfKing){
-				Statistics.qualifiedForBossChallengeBadge = false;
+				Statistics.qualifiedForBossChallengesBadge[3] = false;
 			}
 
 			float corruptingPower = 3 + buffedLvl()/3f;

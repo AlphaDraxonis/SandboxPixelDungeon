@@ -407,8 +407,7 @@ public class Dungeon {
         visitedDepths.add(Dungeon.depth);
 
         if (branch == 0) Statistics.qualifiedForNoKilling = !bossLevel();
-        Statistics.qualifiedForBossChallengeBadge = false;
-		Statistics.qualifiedForBossRemainsBadge = false;
+        Arrays.fill(Statistics.qualifiedForBossChallengesBadge, true);
 
         return level;
     }

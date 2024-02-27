@@ -302,7 +302,6 @@ public class CavesBossLevel extends Level {
 	@Override
 	public void seal() {
 		super.seal();
-		Statistics.qualifiedForBossChallengeBadge = true;
 
 		int entrance = entrance();
 		set( entrance, Terrain.WALL );
@@ -997,7 +996,7 @@ public class CavesBossLevel extends Level {
 							if (ch == Dungeon.hero){
 								if (energySourceSprite != null && energySourceSprite instanceof PylonSprite){
 									//took damage while DM-300 was supercharged
-									Statistics.qualifiedForBossChallengeBadge = false;
+									Statistics.qualifiedForBossChallengesBadge[2] = false;
 								}
 								Statistics.bossScores[2] -= 200;
 								if ( !ch.isAlive()) {

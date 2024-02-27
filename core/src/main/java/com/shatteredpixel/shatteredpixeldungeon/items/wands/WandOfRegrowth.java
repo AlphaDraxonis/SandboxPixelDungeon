@@ -123,7 +123,7 @@ public class WandOfRegrowth extends Wand {
 				Char ch = Actor.findChar(cell);
 				if (ch != null){
 					if (ch instanceof DwarfKing){
-						Statistics.qualifiedForBossChallengeBadge = false;
+						Statistics.qualifiedForBossChallengesBadge[3] = false;
 					}
 					wandProc(ch, chargesPerCast());
 					Buff.prolong( ch, Roots.class, 4f * chrgUsed );

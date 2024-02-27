@@ -324,7 +324,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 	@Override
 	public boolean attack(Char enemy, float dmgMulti, float dmgBonus, float accMulti) {
 		if (enemy == Dungeon.hero && supercharged){
-			Statistics.qualifiedForBossChallengeBadge = false;
+			Statistics.qualifiedForBossChallengesBadge[2] = false;
 		}
 		return super.attack(enemy, dmgMulti, dmgBonus, accMulti);
 	}
@@ -602,7 +602,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		Dungeon.level.unseal();
 
 		Badges.validateBossSlain(DM300.class);
-		if (Statistics.qualifiedForBossChallengeBadge){
+		if (Statistics.qualifiedForBossChallengesBadge[2]){
 			Badges.validateBossChallengeCompleted(DM300.class);
 		}
 		Statistics.bossScores[2] += 3000;

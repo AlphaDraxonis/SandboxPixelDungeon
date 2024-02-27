@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon;
 
 import com.watabou.utils.Bundle;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,8 +64,8 @@ public class Statistics {
 	
 	public static boolean qualifiedForNoKilling = false;
 	public static boolean completedWithNoKilling = false;
-	public static boolean qualifiedForBossRemainsBadge = false;
-	public static boolean qualifiedForBossChallengeBadge = false;
+	public static String qualifiedForBossRemainsBadge = null;
+	public static boolean[] qualifiedForBossChallengesBadge = new boolean[5];
 	
 	public static boolean amuletObtained = false;
 	public static boolean gameWon = false;
@@ -103,8 +104,8 @@ public class Statistics {
 		duration	    = 0;
 		
 		qualifiedForNoKilling = false;
-		qualifiedForBossRemainsBadge = false;
-		qualifiedForBossChallengeBadge = false;
+		qualifiedForBossRemainsBadge = null;
+		Arrays.fill(qualifiedForBossChallengesBadge, false);
 		
 		amuletObtained = false;
 		gameWon = false;
@@ -145,7 +146,7 @@ public class Statistics {
 
 	private static final String NO_KILLING_QUALIFIED	= "qualifiedForNoKilling";
 	private static final String BOSS_REMAINS_QUALIFIED	= "qualifiedForBossRemainsBadge";
-	private static final String BOSS_CHALLENGE_QUALIFIED= "qualifiedForBossChallengeBadge";
+	private static final String BOSS_CHALLENGES_QUALIFIED = "qualifiedForBossChallengesBadge";
 	
 	private static final String AMULET          = "amuletObtained";
 	private static final String WON		        = "won";
@@ -188,7 +189,7 @@ public class Statistics {
 
 		bundle.put(NO_KILLING_QUALIFIED, qualifiedForNoKilling);
 		bundle.put(BOSS_REMAINS_QUALIFIED, qualifiedForBossRemainsBadge);
-		bundle.put(BOSS_CHALLENGE_QUALIFIED, qualifiedForBossChallengeBadge);
+		bundle.put(BOSS_CHALLENGES_QUALIFIED, qualifiedForBossChallengesBadge);
 		
 		bundle.put( AMULET,		amuletObtained );
 		bundle.put( WON,        gameWon );
@@ -235,8 +236,9 @@ public class Statistics {
 		duration		= bundle.getFloat( DURATION );
 
 		qualifiedForNoKilling = bundle.getBoolean( NO_KILLING_QUALIFIED );
-		qualifiedForBossRemainsBadge = bundle.getBoolean( BOSS_REMAINS_QUALIFIED );
-		qualifiedForBossChallengeBadge = bundle.getBoolean( BOSS_CHALLENGE_QUALIFIED );
+		qualifiedForBossRemainsBadge = bundle.getString( BOSS_REMAINS_QUALIFIED );
+		if (bundle.contains(BOSS_CHALLENGES_QUALIFIED)) qualifiedForBossChallengesBadge = bundle.getBooleanArray( BOSS_CHALLENGES_QUALIFIED );
+		else                                			qualifiedForBossChallengesBadge = new boolean[5];
 		
 		amuletObtained	= bundle.getBoolean( AMULET );
 		gameWon         = bundle.getBoolean( WON );
