@@ -614,7 +614,7 @@ public class YogDzewa extends Mob {
 			yell(Messages.get(this, "notice"));
 			for (Char ch : Actor.chars()){
 				if (ch instanceof DriedRose.GhostHero){
-					((DriedRose.GhostHero) ch).sayBoss();
+					((DriedRose.GhostHero) ch).sayBoss(YogDzewa.class);
 				}
 			}
 			if (Dungeon.level instanceof HallsBossLevel) {

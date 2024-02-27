@@ -36,7 +36,10 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
@@ -81,6 +84,7 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class DriedRose extends Artifact {
 
@@ -188,7 +192,7 @@ public class DriedRose extends Artifact {
 						
 					} else {
 						if (BossHealthBar.bossBarActive()) {
-							ghost.sayBoss();
+							BossHealthBar.doForEachBoss(boss -> ghost.sayBoss(boss.getClass()));
 						} else {
 							ghost.sayAppeared();
 						}
@@ -814,27 +818,17 @@ public class DriedRose extends Artifact {
 			}
 		}
 		
-		public void sayBoss(){
-			int depth = (Dungeon.depth - 1) / 5;
-			
-			switch(depth){
-				case 0:
-					yell( Messages.get( this, "seen_goo_" + Random.IntRange(1, 3) ));
-					break;
-				case 1:
-					yell( Messages.get( this, "seen_tengu_" + Random.IntRange(1, 3) ));
-					break;
-				case 2:
-					yell( Messages.get( this, "seen_dm300_" + Random.IntRange(1, 3) ));
-					break;
-				case 3:
-					yell( Messages.get( this, "seen_king_" + Random.IntRange(1, 3) ));
-					break;
-				case 4: default:
-					yell( Messages.get( this, "seen_yog_" + Random.IntRange(1, 3) ));
-					break;
+		public void sayBoss(Class<? extends Mob> boss){
+
+			String str = boss.getSimpleName().toLowerCase(Locale.ENGLISH);
+			if (boss == DwarfKing.class) str = "king";
+			if (boss == YogDzewa.class) str = "yog";
+			String txt = Messages.get(this, "seen_" + str + "_" + Random.IntRange(1, 3) );
+			if (txt != Messages.NO_TEXT_FOUND) {
+				yell( txt);
+				Sample.INSTANCE.play( Assets.Sounds.GHOST );
 			}
-			Sample.INSTANCE.play( Assets.Sounds.GHOST );
+
 		}
 		
 		public void sayDefeated(){

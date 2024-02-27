@@ -366,7 +366,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 			yell(Messages.get(this, "notice"));
 			for (Char ch : Actor.chars()){
 				if (ch instanceof DriedRose.GhostHero){
-					((DriedRose.GhostHero) ch).sayBoss();
+					((DriedRose.GhostHero) ch).sayBoss(DM300.class);
 				}
 			}
 		}

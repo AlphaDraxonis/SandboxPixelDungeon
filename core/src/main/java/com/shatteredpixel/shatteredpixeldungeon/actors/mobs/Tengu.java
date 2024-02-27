@@ -408,7 +408,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				yell(Messages.get(this, "notice_gotcha", Dungeon.hero.name()));
 				for (Char ch : Actor.chars()){
 					if (ch instanceof DriedRose.GhostHero){
-						((DriedRose.GhostHero) ch).sayBoss();
+						((DriedRose.GhostHero) ch).sayBoss(Tengu.class);
 					}
 				}
 			} else {

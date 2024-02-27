@@ -34,6 +34,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Consumer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -306,6 +307,11 @@ public class BossHealthBar extends Component {
 
     public static boolean bossBarActive() {
         return !bosses.isEmpty();
+    }
+
+    public static void doForEachBoss(Consumer<Mob> whatToDo) {
+        for (Mob boss : bosses)
+            whatToDo.accept(boss);
     }
 
     public static boolean bleedingActive() {
