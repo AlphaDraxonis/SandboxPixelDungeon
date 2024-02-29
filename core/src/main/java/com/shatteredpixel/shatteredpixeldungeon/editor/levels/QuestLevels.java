@@ -1,6 +1,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.watabou.noosa.Image;
 
 public enum QuestLevels implements LevelSchemeLike {
 
@@ -23,6 +26,24 @@ public enum QuestLevels implements LevelSchemeLike {
 
     public String getName() {
         return Messages.get(QuestLevels.class, name);
+    }
+
+    public static int getRegion(int id) {
+        switch (id) {
+            case 3: return LevelScheme.REGION_CAVES;
+        }
+        return LevelScheme.REGION_NONE;
+    }
+
+    public int getRegion() {
+        return getRegion(ID);
+    }
+
+    public Image createForegroundIcon() {
+        switch (this) {
+            case MINING: return new ItemSprite(ItemSpriteSheet.PICKAXE);
+        }
+        return null;
     }
 
     @Override

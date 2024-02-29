@@ -59,7 +59,13 @@ public class WndEditorSettings extends WndTabbed {
         ownTabs = new TabComp[]{
                 levelTab = new LevelTab(),
                 dungeonTab = new DungeonTab(),
-                levelGenTab = new LevelGenComp(EditorScene.customLevel().levelScheme),
+                levelGenTab = new LevelGenComp(EditorScene.customLevel().levelScheme) {
+                    @Override
+                    protected void onFeelingChange() {
+                        super.onFeelingChange();
+                        EditorScene.updateDepthIcon();
+                    }
+                },
                 transitionTab = new TransitionTab()};
 
         Tab[] tabs = new Tab[ownTabs.length];

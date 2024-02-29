@@ -44,7 +44,7 @@ public class ScrollingListPane extends ScrollPane {
     }
 
 
-    private boolean validClick() {
+    protected boolean validClick() {
         Group p = parent;
         while (p != null && !(p instanceof Window)) {
             p = p.parent;
@@ -90,14 +90,14 @@ public class ScrollingListPane extends ScrollPane {
         addItem(new ListItem(icon, iconText, text));
     }
 
-    public void addItem(ListItem item) {
+    public void addItem(Component item) {
         content.add(item);
         items.add(item);
         layout();
         givePointerPriority();
     }
 
-    public void removeItem(ListItem item) {
+    public void removeItem(Component item) {
         content.remove(item);
         items.remove(item);
         layout();

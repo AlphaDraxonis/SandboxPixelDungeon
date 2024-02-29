@@ -1,7 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
@@ -91,6 +90,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     private Class<? extends Level> type;
     private Level level;
+    int region = REGION_NONE;//only for custom levels
     private int numInRegion = 3;
     private Level.Feeling feeling = Level.Feeling.NONE;
     private float shopPriceMultiplier = 1f;
@@ -128,6 +128,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     LevelScheme(Level level, int numInRegion) {
         this.name = Level.NONE;
         this.level = level;
+        this.region = getRegion(level);
         this.numInRegion = numInRegion;
 
         mobsToSpawn = new ArrayList<>(4);
@@ -154,6 +155,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     //These setters are ONLY for NewFloorComp
     public void setType(Class<? extends Level> type) {
         this.type = type;
+        if (type != CustomLevel.class) region = getRegion(type);
     }
 
     public void setNumInRegion(int numInRegion) {
@@ -234,6 +236,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             default:
                 type = DeadEndLevel.class;
         }
+        region = getRegion(type);
         numInRegion = (depth - 1) % 5 + 1;
 
         if (depth == 6 || depth == 11 || depth == 16) roomsToSpawn.add(new ShopRoom());
@@ -438,7 +441,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     public void setLevel(Level level) {
         this.level = level;
-        type = level.getClass();
+        setType(level.getClass());
         level.levelScheme = this;
     }
 
@@ -680,6 +683,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String PASSAGE = "passage";
     private static final String DEPTH = "depth";
     private static final String TYPE = "type";
+            static final String REGION = "region";
     private static final String NUM_IN_REGION = "num_in_region";
     private static final String FEELING = "feeling";
     private static final String SEED = "seed";
@@ -721,6 +725,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(PASSAGE, passage);
         bundle.put(DEPTH, depth);
         bundle.put(TYPE, type);
+        bundle.put(REGION, region);
         bundle.put(NUM_IN_REGION, numInRegion);
         bundle.put(SEED, seed);
         bundle.put(SEED_SET, seedSet);
@@ -822,6 +827,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         }
 
         type = bundle.getClass(TYPE);
+        region = bundle.getInt(REGION);
+        if (region == REGION_NONE) region = getRegion(type);
         numInRegion = bundle.getInt(NUM_IN_REGION);
         seed = bundle.getLong(SEED);
         seedSet = bundle.getBoolean(SEED_SET);
@@ -878,6 +885,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             try {
                 level = CustomDungeonSaves.loadLevel(name, removeInvalidTransitions);
                 level.levelScheme = this;
+                if (region == REGION_NONE) region = ((CustomLevel) level).storeRegionTempSoItCanBeTransferredToLevelScheme;
                 levelLoadingException = null;
             }catch (GdxRuntimeException gdxEx){
                 levelLoadingException = gdxEx.getCause() instanceof IOException ? (Exception) gdxEx.getCause() : gdxEx;
@@ -906,9 +914,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     public static int getRegion(Level level) {
         if (Dungeon.branch != 0) {
-            if (Dungeon.branch == QuestLevels.MINING.ID) return REGION_CAVES;
+            return QuestLevels.getRegion(Dungeon.branch);
         }
-        if (level instanceof CustomLevel) return ((CustomLevel) level).region;
+        if (level instanceof CustomLevel) return ((CustomLevel) level).getRegionValue();
         if (level instanceof SewerLevel) return REGION_SEWERS;
         if (level instanceof PrisonLevel || level instanceof PrisonBossLevel) return REGION_PRISON;
         if (level instanceof CavesLevel || level instanceof CavesBossLevel) return REGION_CAVES;
@@ -921,27 +929,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public static int getRegion(Class<? extends Level> level) {
         if (level == SewerLevel.class || level == SewerBossLevel.class) return REGION_SEWERS;
         if (level == PrisonLevel.class || level == PrisonBossLevel.class) return REGION_PRISON;
-        if (level == CavesLevel.class || level == CavesBossLevel.class || level == MiningLevel.class) return REGION_CAVES;
+        if (level == CavesLevel.class || level == CavesBossLevel.class || MiningLevel.class.isAssignableFrom(level)) return REGION_CAVES;
         if (level == CityLevel.class || level == CityBossLevel.class) return REGION_CITY;
         if (level == HallsLevel.class || level == HallsBossLevel.class || level == LastLevel.class || level == DeadEndLevel.class)
             return REGION_HALLS;
         return REGION_NONE;
-    }
-
-    public static String getRegionTexture(int region) {
-        switch (region) {
-            case REGION_SEWERS:
-                return Assets.Environment.TILES_SEWERS;
-            case REGION_PRISON:
-                return Assets.Environment.TILES_PRISON;
-            case REGION_CAVES:
-                return Assets.Environment.TILES_CAVES;
-            case REGION_CITY:
-                return Assets.Environment.TILES_CITY;
-            case REGION_HALLS:
-                return Assets.Environment.TILES_HALLS;
-        }
-        return null;
     }
 
     public static int getBoss(Class<? extends Level> level) {
@@ -954,8 +946,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     }
 
     public final int getRegion() {
-        if (level == null) return getRegion(type);
-        return getRegion(level);
+        return region;
     }
 
     public final int getBoss() {

@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CAVES;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CITY;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_HALLS;
@@ -93,14 +94,9 @@ public class CustomLevel extends Level {
 
     private static final Map<String, TextureFilm> textureFilms = new HashMap<>();
 
-    int region;
     private int waterTexture = REGION_NONE;
     private int music = REGION_NONE;
     public String customMusic;
-
-    {
-        setRegion(REGION_SEWERS);
-    }
 
     public boolean enableRespawning = true;
     private float respawnCooldown = TIME_TO_RESPAWN;//How often new mobs spawn
@@ -243,7 +239,7 @@ public class CustomLevel extends Level {
             version = level.version;
             color1 = level.color1;
             color2 = level.color2;
-            region = temp.getRegion();
+            levelScheme.region = temp.getRegion();
             visited = level.visited;
             mapped = level.mapped;
             discoverable = level.discoverable;
@@ -348,7 +344,7 @@ public class CustomLevel extends Level {
 
     @Override
     public String tilesTex() {
-        return tilesTex(region, false);
+        return tilesTex(getRegionValue(), false);
     }
 
     public static String tilesTex(int region, boolean water) {
@@ -385,15 +381,15 @@ public class CustomLevel extends Level {
 
     @Override
     public String waterTex() {
-        return tilesTex(waterTexture == REGION_NONE ? region : waterTexture, true);
+        return tilesTex(waterTexture == REGION_NONE ? getRegionValue() : waterTexture, true);
     }
 
     public int getRegionValue() {
-        return region;
+        return levelScheme.region;
     }
 
     public void setRegion(int region) {
-        this.region = region;
+        levelScheme.region = region;
         switch (region) {
             //region colors and music are hardcoded in their region level...; not gonna create a new level just to read the color values
             case REGION_PRISON:
@@ -440,26 +436,25 @@ public class CustomLevel extends Level {
     public void playLevelMusic() {
         if (Dungeon.hero != null && Zone.getMusicVariant(this, Dungeon.hero.pos) != -3) {
             zoneWithPlayedMusic = zone[Dungeon.hero.pos];
-            playLevelMusic(music == REGION_NONE ? region : music, Zone.getMusicVariant(this, Dungeon.hero.pos));
+            playLevelMusic(music == REGION_NONE ? getRegionValue() : music, Zone.getMusicVariant(this, Dungeon.hero.pos));
         }
         else if (customMusic != null) {
             Music.INSTANCE.play(customMusic, true);
         }
         else {
-            playLevelMusic(music == REGION_NONE ? region : music, musicVariant);
+            playLevelMusic(music == REGION_NONE ? getRegionValue() : music, musicVariant);
         }
     }
 
     @Override
     public int playsMusicFromRegion() {
-        int music = ((CustomLevel) this).getMusicValue();
-        return music == REGION_NONE ? ((CustomLevel) this).getRegionValue() : music;
+        return music == REGION_NONE ? getRegionValue() : getMusicValue();
     }
 
     @Override
     public Group addVisuals() {
         Group g = super.addVisuals();
-        switch (region) {
+        switch (levelScheme.region) {
             case REGION_SEWERS:
                 SewerLevel.addSewerVisuals(this, g);
                 break;
@@ -472,14 +467,11 @@ public class CustomLevel extends Level {
             case REGION_CITY:
                 CityLevel.addCityVisuals(this, g);
                 break;
-            case REGION_HALLS:
-                HallsLevel.addHallsVisuals(this, g);
-                break;
 
             default:
                 break;
         }
-        if (waterTexture == REGION_HALLS && region != REGION_HALLS) {
+        if (waterTexture == REGION_HALLS) {
             HallsLevel.addHallsVisuals(this, g);//(only) HallsLevel adds WaterVisuals
         }
         SewerBossLevel.addSewerBossVisuals(this, g);
@@ -647,7 +639,6 @@ public class CustomLevel extends Level {
         return ret;
     }
 
-    private static final String REGION = "region";
     private static final String WATER_TEXTUTE = "water_texture";
     private static final String MUSIC = "music";
     private static final String CUSTOM_MUSIC = "custom_music";
@@ -661,7 +652,6 @@ public class CustomLevel extends Level {
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
 
-        bundle.put(REGION, region);
         bundle.put(WATER_TEXTUTE, waterTexture);
         bundle.put(MUSIC, music);
         bundle.put(CUSTOM_MUSIC, customMusic);
@@ -672,12 +662,17 @@ public class CustomLevel extends Level {
         bundle.put(IGNORE_TERRAIN_FOR_EXPLORING_SCORE, ignoreTerrainForExploringScore);
     }
 
+    int storeRegionTempSoItCanBeTransferredToLevelScheme = REGION_NONE;
+
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         assignBossCustomTiles();
 
-        region = bundle.getInt(REGION);
+        storeRegionTempSoItCanBeTransferredToLevelScheme = bundle.getInt(REGION);
+        if (storeRegionTempSoItCanBeTransferredToLevelScheme != REGION_NONE && levelScheme != null)
+            levelScheme.region = storeRegionTempSoItCanBeTransferredToLevelScheme;
+
         waterTexture = bundle.getInt(WATER_TEXTUTE);
         music = bundle.getInt(MUSIC);
         enableRespawning = bundle.getBoolean(ENABLE_RESPAWNING);

@@ -74,7 +74,13 @@ public class WndEditFloorInOverview extends WndTabbed {
         resize(PixelScene.landscape() ? 210 : Math.min(155, (int) (PixelScene.uiCamera.width * 0.85)), (int) (PixelScene.uiCamera.height * 0.75f));
 
         ownTabs = new WndEditorSettings.TabComp[]{
-                new General(), new LevelGenComp(levelScheme)};
+                new General(), new LevelGenComp(levelScheme) {
+            @Override
+            protected void onFeelingChange() {
+                super.onFeelingChange();
+                listItem.updateLevel();
+            }
+        }};
 
         WndTabbed.Tab[] tabs = new WndTabbed.Tab[ownTabs.length];
         for (int i = 0; i < ownTabs.length; i++) {

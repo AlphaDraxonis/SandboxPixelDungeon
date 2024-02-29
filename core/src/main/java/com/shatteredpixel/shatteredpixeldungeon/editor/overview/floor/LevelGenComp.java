@@ -111,7 +111,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         feelingSpinner = new FeelingSpinner(newLevelScheme.getFeeling(), 9, true);
         feelingSpinner.addChangeListener(() -> {
             newLevelScheme.setFeeling((Level.Feeling) feelingSpinner.getValue());
-            EditorScene.updateDepthIcon();
+            onFeelingChange();
         });
         content.add(feelingSpinner);
 
@@ -377,6 +377,8 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             sp.scrollToCurrentView();
         }
     }
+
+    protected void onFeelingChange() {}
 
     @Override
     public String hoverText() {
