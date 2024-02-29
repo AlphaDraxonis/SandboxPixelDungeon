@@ -337,6 +337,7 @@ public class SideControlPane extends Component {
                         Dungeon.level.levelScheme.magicMappingDisabled = true;
                     }
                     else doRead();
+                    curUser.spend(-TIME_TO_READ);
                     curUser = oldUser;
                 }
             };
