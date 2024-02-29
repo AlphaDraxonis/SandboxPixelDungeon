@@ -1,8 +1,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.BUTTON_HEIGHT;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.MARGIN;
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -14,11 +15,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.RoomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.FeelingSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.WndChallengeSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseObjectComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableCompWithAdd;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -30,15 +31,13 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.watabou.noosa.ColorBlock;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -52,15 +51,15 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
     protected RenderedTextBlock title;
 
-    protected ChooseObjectComp seed;
+    protected StyledButton seed;
     protected FeelingSpinner feelingSpinner;
+    private String currentSeed;
 
-    protected ColorBlock line;
+    protected FoldableComp challengeSettings;
 
     protected Component sectionItems;
     protected Component sectionMobs;
     protected SpawnSectionMore<RoomItem> sectionRooms;
-    protected RedButton challengeSettings;
 
     public LevelGenComp(LevelScheme newLevelScheme) {
         super(newLevelScheme);
@@ -77,12 +76,16 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         title.hardlight(Window.TITLE_COLOR);
         content.add(title);
 
-        seed = new ChooseObjectComp(Messages.get(WndNewFloor.class, "seed")) {
+        if (newLevelScheme.isSeedSet()) currentSeed = DungeonSeed.convertToCode(newLevelScheme.getSeed());
+        seed = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "") {
+            {
+                text.align(RenderedTextBlock.CENTER_ALIGN);
+            }
             @Override
-            protected void doChange() {
-                Window window = new WndTextInput(Messages.get(HeroSelectScene.class, "custom_seed_title"),
-                        "Enter seed for the template or generated level type",//FIXME unhardcode easy
-                        seed.getObject() == null ? "" : seed.getObject().toString(),
+            protected void onClick() {
+                EditorScene.show( new WndTextInput(Messages.get(HeroSelectScene.class, "custom_seed_title"),
+                        Messages.get(LevelGenComp.class, "enter_seed_prompt"),
+                        currentSeed == null ? "" : currentSeed,
                         20,
                         false,
                         Messages.get(HeroSelectScene.class, "custom_seed_set"),
@@ -92,20 +95,18 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                         text = DungeonSeed.formatText(text);
                         long s = DungeonSeed.convertFromText(text);
                         if (positive && s != -1) {
-                            seed.selectObject(text);
+                            currentSeed = text;
                             newLevelScheme.setSeed(s);
                         } else {
-                            seed.selectObject(null);
+                            currentSeed = null;
                             newLevelScheme.resetSeed();
                         }
+                        updateSeedText();
                     }
-                };
-                if (Game.scene() instanceof EditorScene) EditorScene.show(window);
-                else Game.scene().addToFront(window);
+                } );
             }
         };
-        if (newLevelScheme.isSeedSet())
-            seed.selectObject(DungeonSeed.convertToCode(newLevelScheme.getSeed()));
+        updateSeedText();
         content.add(seed);
 
         feelingSpinner = new FeelingSpinner(newLevelScheme.getFeeling(), 9, true);
@@ -115,8 +116,113 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         });
         content.add(feelingSpinner);
 
-        line = new ColorBlock(1, 1, 0xFF222222);
-        content.add(line);
+        challengeSettings = new FoldableComp(Messages.get(LevelGenComp.class, "challenge_settings_title")) {
+            @Override
+            protected void layoutParent() {
+                LevelGenComp.this.layout();
+            }
+        };
+        challengeSettings.setBody(new Component() {
+
+            private RenderedTextBlock info;
+            private RenderedTextBlock[] challengeTitles;
+            private StyledCheckBox[][] checkBoxes;
+
+            {
+                info = PixelScene.renderTextBlock(Messages.get(LevelGenComp.class, "challenge_settings_info"), 6);
+                add(info);
+
+                challengeTitles = new RenderedTextBlock[newLevelScheme.getName() != null && newLevelScheme.getType() == CustomLevel.class ? 3 : 2];
+                checkBoxes = new StyledCheckBox[challengeTitles.length][];
+
+                int i = 0;
+                challengeTitles[i++] = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(Challenges.class, "darkness")) + ":", 9);
+                challengeTitles[i++] = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(Challenges.class, "no_scrolls")) + ":", 9);
+                if (i < challengeTitles.length)
+                    challengeTitles[i++] = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(Challenges.class, "champion_enemies")) + ":", 9);
+
+                for (RenderedTextBlock chTitle : challengeTitles) {
+                    add(chTitle);
+                }
+
+                i = 0;
+                checkBoxes[i++] = new StyledCheckBox[] {
+                        new StyledCheckBox(Messages.titleCase(Messages.get(LevelGenComp.class, "spawn_torch"))) {
+                            {
+                                text.align(RenderedTextBlock.CENTER_ALIGN);
+                                super.checked(newLevelScheme.spawnTorchIfDarkness);
+                            }
+
+                            @Override
+                            public void checked(boolean value) {
+                                super.checked(value);
+                                newLevelScheme.spawnTorchIfDarkness = value;
+                            }
+                        },
+                        new StyledCheckBox(Messages.get(LevelGenComp.class, "reduce_view")) {
+                            {
+                                text.align(RenderedTextBlock.CENTER_ALIGN);
+                                super.checked(newLevelScheme.reduceViewDistanceIfDarkness);
+                            }
+
+                            @Override
+                            public void checked(boolean value) {
+                                super.checked(value);
+                                newLevelScheme.reduceViewDistanceIfDarkness = value;
+                            }
+                        }};
+                checkBoxes[i++] = new StyledCheckBox[] {
+                        new StyledCheckBox(Messages.get(LevelGenComp.class, "remove_scrolls")) {
+                            {
+                                text.align(RenderedTextBlock.CENTER_ALIGN);
+                                super.checked(newLevelScheme.affectedByNoScrolls);
+                            }
+
+                            @Override
+                            public void checked(boolean value) {
+                                super.checked(value);
+                                newLevelScheme.affectedByNoScrolls = value;
+                            }
+                        }
+                };
+                if (i < checkBoxes.length) {
+                    checkBoxes[i++] = new StyledCheckBox[] {
+                            new StyledCheckBox(Messages.get(LevelGenComp.class, "spawn_champs")) {
+                                {
+                                    text.align(RenderedTextBlock.CENTER_ALIGN);
+                                    super.checked(newLevelScheme.rollForChampionIfChampionChallenge);
+                                }
+
+                                @Override
+                                public void checked(boolean value) {
+                                    super.checked(value);
+                                    newLevelScheme.rollForChampionIfChampionChallenge = value;
+                                }
+                            }};
+                }
+
+                for (StyledCheckBox[] cbs : checkBoxes)
+                    for (StyledCheckBox cb : cbs)
+                        add(cb);
+            }
+
+            @Override
+            protected void layout() {
+                info.maxWidth((int) width);
+                info.setPos(x, y);
+
+                height = info.height() + 2;
+
+                for (int i = 0; i < challengeTitles.length; i++) {
+                    height = EditorUtilies.layoutCompsLinear(2, this, challengeTitles[i]);
+                    height = EditorUtilies.layoutStyledCompsInRectangles(
+                            2, width, Math.min(checkBoxes[i].length, PixelScene.landscape() ? 3 : 2), this, checkBoxes[i]);
+                }
+
+            }
+        });
+        challengeSettings.fold();
+        content.add(challengeSettings);
 
         if (newLevelScheme.getName() == null || newLevelScheme.getType() != CustomLevel.class) {
             sectionItems = new SpawnSectionMore<Item>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn, null, true) {
@@ -131,14 +237,12 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             }) {
                 @Override
                 protected void onAddClick() {
-                    Window w = new WndItemSettings(newLevelScheme.spawnItems) {
+                    EditorScene.show( new WndItemSettings(newLevelScheme.spawnItems) {
                         @Override
                         protected void finish() {
                             newLevelScheme.spawnItems = cb.checked();
                         }
-                    };
-                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                    else Game.scene().addToFront(w);
+                    } );
                 }
             };
 
@@ -187,14 +291,12 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             }) {
                 @Override
                 protected void onAddClick() {
-                    Window w = new WndMobSettings(newLevelScheme.spawnMobs) {
+                   EditorScene.show( new WndMobSettings(newLevelScheme.spawnMobs) {
                         @Override
                         protected void finish() {
                             newLevelScheme.spawnMobs = cb.checked();
                         }
-                    };
-                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                    else Game.scene().addToFront(w);
+                    } );
                 }
             };
         } else {
@@ -301,31 +403,18 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             }) {
                 @Override
                 protected void onAddClick() {
-                    Window w = new WndRoomSettings(newLevelScheme.spawnStandartRooms, newLevelScheme.spawnSecretRooms, newLevelScheme.spawnSpecialRooms) {
+                    EditorScene.show( new WndRoomSettings(newLevelScheme.spawnStandartRooms, newLevelScheme.spawnSecretRooms, newLevelScheme.spawnSpecialRooms) {
                         @Override
                         protected void finish() {
                             newLevelScheme.spawnStandartRooms = stand.checked();
                             newLevelScheme.spawnSecretRooms = sec.checked();
                             newLevelScheme.spawnSpecialRooms = spec.checked();
                         }
-                    };
-                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                    else Game.scene().addToFront(w);
+                    } );
                 }
             };
             content.add(sectionRooms);
         }
-
-        challengeSettings = new RedButton(Messages.get(WndChallengeSettings.class, "title")) {
-
-            @Override
-            protected void onClick() {
-                Window w = new WndChallengeSettings(newLevelScheme);
-                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                else Game.scene().addToFront(w);
-            }
-        };
-        content.add(challengeSettings);
 
         sp = new ScrollPane(content);
         add(sp);
@@ -336,46 +425,21 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
         float pos = MARGIN * 2;
         title.setPos((width - title.width()) / 2, pos);
-        pos = title.bottom() + 4 * MARGIN;
 
-        seed.setRect(MARGIN, pos, width - MARGIN * 2, BUTTON_HEIGHT);
-        pos += BUTTON_HEIGHT + MARGIN * 2;
+        content.setSize(width, title.bottom() + 4 * MARGIN);
 
-        feelingSpinner.setRect(MARGIN, pos, width - MARGIN * 2, BUTTON_HEIGHT);
-        pos = feelingSpinner.bottom() + MARGIN * 2;
+        content.setSize(width, EditorUtilies.layoutStyledCompsInRectangles(MARGIN * 2, width, 2, content, seed, feelingSpinner));
 
-        if (challengeSettings != null) {
-            challengeSettings.setRect(MARGIN, pos, width - MARGIN * 2, BUTTON_HEIGHT);
-            pos = challengeSettings.bottom() + MARGIN * 4;
-        }
+        content.setSize(width, EditorUtilies.layoutCompsLinear(MARGIN * 2, content, challengeSettings, sectionItems, sectionMobs, sectionRooms));
 
-        line.size(width, 1);
-        line.x = 0;
-        line.y = pos;
-        PixelScene.align(line);
-        pos += MARGIN * 4;
-
-        if (sectionItems != null) {
-            sectionItems.setRect(MARGIN, pos, width - MARGIN * 2, -1);
-            pos = sectionItems.bottom() + MARGIN;
-        }
-
-        if (sectionMobs != null) {
-            sectionMobs.setRect(MARGIN, pos, width - MARGIN * 2, -1);
-            pos = sectionMobs.bottom() + MARGIN;
-        }
-
-        if (sectionRooms != null) {
-            sectionRooms.setRect(MARGIN, pos, width - MARGIN * 2, -1);
-            pos = sectionRooms.bottom() + MARGIN;
-        }
-
-
-        content.setSize(width, pos);
         if (sp != null) {
             sp.setSize(width, height);
             sp.scrollToCurrentView();
         }
+    }
+
+    protected void updateSeedText() {
+        seed.text( Messages.get(this, "seed") + "\n" + (currentSeed == null ? Messages.get(this, "no_seed") : currentSeed) );
     }
 
     protected void onFeelingChange() {}
