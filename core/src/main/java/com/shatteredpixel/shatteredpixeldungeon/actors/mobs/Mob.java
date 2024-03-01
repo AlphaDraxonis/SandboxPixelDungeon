@@ -57,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Fe
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PropertyItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -267,7 +268,9 @@ public abstract class Mob extends Char {
             if (defaultMob.statsScale != statsScale) bundle.put(STATS_SCALE, statsScale);
 
             if (defaultMob.spriteClass != spriteClass) bundle.put(SPRITE, spriteClass);
-        }
+        } else if (MobSpriteItem.canChangeSprite(this)) {
+			if (Reflection.newInstance(getClass()).spriteClass != spriteClass) bundle.put(SPRITE, spriteClass);
+		}
 
         bundle.put(GLYPH_ARMOR, glyphArmor);
         bundle.put(ENCHANT_WEAPON, enchantWeapon);

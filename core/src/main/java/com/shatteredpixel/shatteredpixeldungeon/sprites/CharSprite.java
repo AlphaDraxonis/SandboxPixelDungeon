@@ -24,12 +24,23 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM201;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shaman;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.DarkBlock;
 import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.IceBlock;
+import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.ShieldHalo;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
@@ -46,8 +57,10 @@ import com.watabou.glwrap.Matrix;
 import com.watabou.glwrap.Vertexbuffer;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.NoosaScript;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.tweeners.AlphaTweener;
@@ -284,6 +297,54 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		animCallback = callback;
 		turnTo( ch.pos, cell );
 		if (zap != null) play( zap );
+
+		playZapAnim( cell );
+	}
+
+	protected void playZapAnim(int cell) {
+		//if it implements its own zap, then do that, otherwise just look for the correct animation based on the char this sprite belongs to
+
+		if (ch instanceof Warlock) WarlockSprite.playZap(parent, this, cell, ch);
+		else if (ch instanceof DM100) DM100Sprite.playZap(parent, this, cell, ch);
+		else if (ch instanceof DM201) DM201Sprite.playZap(parent, this, cell, ch);
+		else if (ch instanceof DM200) DM200Sprite.playZap(parent, this, cell, ch);
+		else if (ch instanceof FungalSpinner) FungalSpinnerSprite.playZap(parent, this, cell, ch);
+		else if (ch instanceof Spinner) SpinnerSprite.playZap(parent, this, cell, ch);
+		else if (ch instanceof Golem) GolemSprite.playZap(parent, this, cell, ch);
+
+		else if (ch instanceof Shaman.RedShaman) ShamanSprite.Red.playZap(parent, this, cell, ch);
+		else if (ch instanceof Shaman.BlueShaman) ShamanSprite.Blue.playZap(parent, this, cell, ch);
+		else if (ch instanceof Shaman.PurpleShaman) ShamanSprite.Purple.playZap(parent, this, cell, ch);
+
+		else if (ch instanceof Elemental.NewbornFireElemental) ElementalSprite.NewbornFire.playZap(parent, this, cell, ch);
+		else if (ch instanceof Elemental.FireElemental) ElementalSprite.Fire.playZap(parent, this, cell, ch);
+		else if (ch instanceof Elemental.FrostElemental) ElementalSprite.Frost.playZap(parent, this, cell, ch);
+		else if (ch instanceof Elemental.ChaosElemental) ElementalSprite.Chaos.playZap(parent, this, cell, ch);
+
+		else if (ch instanceof YogFist.BrightFist) FistSprite.Bright.playZap(parent, this, cell, ch);
+		else if (ch instanceof YogFist.BurningFist) FistSprite.Burning.playZap(parent, this, cell, ch);
+		else if (ch instanceof YogFist.DarkFist) FistSprite.Dark.playZap(parent, this, cell, ch);
+		else if (ch instanceof YogFist.RottingFist) FistSprite.Rotting.playZap(parent, this, cell, ch);
+		else if (ch instanceof YogFist.RustedFist) FistSprite.Rusted.playZap(parent, this, cell, ch);
+		else if (ch instanceof YogFist.SoiledFist) FistSprite.Soiled.playZap(parent, this, cell, ch);
+
+		else ch.onZapComplete();
+
+		//no crystal wisp, necromancer, sentry, etc
+	}
+
+	protected static void playZap(Group parent, Visual sprite, int cell, Char ch, int boldType) {
+		MagicMissile.boltFromChar( parent,
+				boldType,
+				sprite,
+				cell,
+				new Callback() {
+					@Override
+					public void call() {
+						ch.onZapComplete();
+					}
+				} );
+		Sample.INSTANCE.play( Assets.Sounds.ZAP );
 	}
 	
 	public void turnTo( int from, int to ) {

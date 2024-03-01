@@ -20,6 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -711,6 +712,7 @@ public class EditorScene extends PixelScene {
         mobs.add(sprite);
 
         Mob defMob = DefaultStatsCache.getDefaultObject(mob.getClass());
+        if (defMob == null && MobSpriteItem.canChangeSprite(mob)) defMob = Reflection.newInstance(mob.getClass());
         if (defMob != null && defMob.spriteClass != mob.spriteClass
                 && (sprite.getClass().getEnclosingClass() == null || sprite.getClass().getEnclosingClass() != defMob.spriteClass.getEnclosingClass())) {
             sprite.realCharSprite = Reflection.newInstance(defMob.spriteClass);
