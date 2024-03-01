@@ -59,6 +59,7 @@ import com.watabou.utils.PointF;
 import com.watabou.utils.Signal;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class InventoryPane extends Component {
 
@@ -81,7 +82,10 @@ public class InventoryPane extends Component {
 	private BitmapText energyTxt;
 	private RenderedTextBlock promptTxt;
 
-	private ArrayList<BagButton> bags;
+	private LinkedList<BagButton> bags;
+	private ScrollPane bagSp;
+	private Component bagSpContent;
+	private static int bagPage;
 
 	public static final int WIDTH = 187;
 	public static final int HEIGHT = 82;
@@ -188,12 +192,17 @@ public class InventoryPane extends Component {
 			add(btn);
 		}
 
-		bags = new ArrayList<>();
+		bagSpContent = new Component();
+
+		bags = new LinkedList<>();
 		for (int i = 0; i < 5; i++){
 			BagButton btn = new BagButton(null, i+1);
 			bags.add(btn);
-			add(btn);
+			bagSpContent.add(btn);
 		}
+
+		bagSp = new ScrollPane(bagSpContent);
+		add(bagSp);
 
 		crossB = Icons.TARGET.get();
 		crossB.visible = false;
@@ -246,9 +255,17 @@ public class InventoryPane extends Component {
 		energy.x = energyTxt.x + energyTxt.width() + 1;
 		energy.y = energyTxt.y;
 
+		float xOnBagSp = 0;
 		for (BagButton b : bags){
-			b.setRect(left, y + 14, SLOT_WIDTH, 14);
-			left = b.right()+1;
+			b.setRect(xOnBagSp, 0, SLOT_WIDTH, 14);
+			xOnBagSp += SLOT_WIDTH+1;
+		}
+
+		bagSpContent.setSize(xOnBagSp - 1, 14);
+
+		if (bagSp.camera() != null) {
+			bagSp.setRect(left, y + 14, SLOT_WIDTH * 5 + 4, 14);
+			bagSp.scrollToCurrentView();
 		}
 
 		left = x+4;
@@ -367,13 +384,21 @@ public class InventoryPane extends Component {
 		}
 
 		ArrayList<Bag> inventBags = stuff == null ? EditorItemBag.getBags() : stuff.getBags();
-		for (int i = 0; i < bags.size(); i++){
-			if (inventBags.size() > i){
-				bags.get(i).bag(inventBags.get(i));
-			} else {
-				bags.get(i).bag(null);
-			}
+		for (int i = 0; i < inventBags.size(); i++) {
+			BagButton bagButton;
+			if (bags.size() <= i) {
+				bagButton = new BagButton(null, i+1);
+				bags.add(bagButton);
+				bagSpContent.add(bagButton);
+			} else bagButton = bags.get(i);
+			bagButton.bag(inventBags.get(i));
 		}
+		while (bags.size() > inventBags.size()) {
+			BagButton last = bags.removeLast();
+			last.remove();
+			last.destroy();
+		}
+		bagSp.givePointerPriority();
 
 		boolean lostInvent = stuff != null && Dungeon.hero.buff(LostInventory.class) != null;
 		for (InventorySlot b : equipped){
