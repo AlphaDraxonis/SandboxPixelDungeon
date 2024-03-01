@@ -22,7 +22,7 @@ public class ChangePlantNameDesc extends Component {
         this.plant = editPlantComp.getObj();
 
         name = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "name_label"), null, 100, false,
-                plant.customName == null ? Messages.titleCase(plant.name()) : plant.name()) {
+                plant.customName == null ? Messages.getFullMessageKey(plant.getClass(), "name") : plant.customName) {
             @Override
             protected void onChange() {
                 super.onChange();
@@ -34,7 +34,8 @@ public class ChangePlantNameDesc extends Component {
         name.setHighlightingEnabled(false);
         add(name);
 
-        desc = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "desc_label"), null, 500, true, plant.customDesc == null ? plant.desc() : plant.customDesc) {
+        desc = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "desc_label"), null, 500, true,
+                plant.customDesc == null ? Messages.getFullMessageKey(plant.getClass(), "desc") : plant.customDesc) {
             @Override
             protected void onChange() {
                 super.onChange();

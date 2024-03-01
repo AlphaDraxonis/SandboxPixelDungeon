@@ -159,7 +159,7 @@ public abstract class LevelListPane extends ScrollingListPane {
                 newForegroundImg = new ItemSprite();
             } else {
                 LevelScheme ls = (LevelScheme) levelScheme;
-                name = ls.getName() + " (" + ls.getDepth() + ", " + ls.getType().getSimpleName() + ")";
+                name = ls.getName();
                 depth = ls.getDepth();
                 region = ls.getRegion();
                 feeling = ls.getFeeling();

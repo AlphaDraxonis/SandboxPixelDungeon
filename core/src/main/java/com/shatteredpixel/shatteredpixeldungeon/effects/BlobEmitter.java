@@ -72,8 +72,7 @@ public class BlobEmitter extends Emitter {
 				}
 			}
 		}
-		if (emits > 40 && interval < 0.1f) interval = 0.2f;
-		if (emits > 50 && interval < 0.2f) interval = 0.3f;
-		if (emits > 60 && interval < 0.3f) interval = 0.4f;
+		if (emits > 400 && interval < 0.1f) interval = 0.1f;
+		else if (emits > 700 && interval < 0.2f) interval = 0.25f;
 	}
 }

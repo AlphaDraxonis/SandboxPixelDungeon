@@ -50,15 +50,13 @@ public class ChangeMobNameDesc extends Component {
 
                     MobSpriteItem i = (MobSpriteItem) selectedItem;
 
-                    String msgKey = i.mob().getMessageKey();
-                    String msgKeyOld = currentSprite.mob().getMessageKey();
-                    if (mob.customName == null || mob.customName.equals(msgKeyOld + "name")) {
-                        mob.customName = msgKey + "name";
-                        name.setText(mob.name());
+                    if (mob.customName == null
+                            || mob.customName.equals(Messages.getFullMessageKey(currentSprite.mob().getClass(), "name"))) {
+                        name.setText(mob.customName = Messages.getFullMessageKey(i.mob().getClass(), "name"));
                     }
-                    if (mob.customDesc == null || mob.customDesc.equals(msgKeyOld + "desc")) {
-                        mob.customDesc = msgKey + "desc";
-                        desc.setText(mob.description());
+                    if (mob.customDesc == null
+                            || mob.customDesc.equals(Messages.getFullMessageKey(currentSprite.mob().getClass(), "desc"))) {
+                        desc.setText(mob.customDesc = Messages.getFullMessageKey(i.mob().getClass(), "desc"));
                     }
 
                     EditorScene.replaceMobSprite(mob, i.getObject());
@@ -73,7 +71,7 @@ public class ChangeMobNameDesc extends Component {
         }
 
         name = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "name_label"), null, 100, false,
-                mob.customName == null ? Messages.titleCase(mob.name()) : mob.name()) {
+                mob.customName == null ? Messages.getFullMessageKey(mob.getClass(), "name") : mob.customName) {
             @Override
             protected void onChange() {
                 super.onChange();
@@ -85,7 +83,8 @@ public class ChangeMobNameDesc extends Component {
         name.setHighlightingEnabled(false);
         add(name);
 
-        desc = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "desc_label"), null, 500, true, mob.customDesc == null ? mob.description() : mob.customDesc) {
+        desc = new StringInputComp(Messages.get(Tiles.WndCreateCustomTile.class, "desc_label"), null, 500, true,
+                mob.customDesc == null ? Messages.getFullMessageKey(mob.getClass(), "desc") : mob.customDesc) {
             @Override
             protected void onChange() {
                 super.onChange();

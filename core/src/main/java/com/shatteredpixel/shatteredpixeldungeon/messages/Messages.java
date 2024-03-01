@@ -117,7 +117,7 @@ public class Messages {
 	public static String get(Class c, String k, Object...args){
 		String key;
 		if (c != null){
-			key = c.getName().replace("com.shatteredpixel.shatteredpixeldungeon.", "");
+			key = trimPackageName( c.getName() );
 			key += "." + k;
 		} else 	key = k;
 
@@ -211,5 +211,21 @@ public class Messages {
 
 	public static String lowerCase( String str ){
 		return str.toLowerCase(locale);
+	}
+
+	public static final int PACKAGE_NAME_LENGTH = "com.shatteredpixel.shatteredpixeldungeon.".length();
+	public static String trimPackageName(String s) {
+		return s.substring(PACKAGE_NAME_LENGTH);
+	}
+
+	public static String getFullMessageKey(Class<?> clazz, String property) {
+		while (true) {
+			String key = Messages.trimPackageName(clazz.getName()) + "." + property;
+			if (Messages.get(key) != Messages.NO_TEXT_FOUND) {
+				return key;
+			}
+			clazz = clazz.getSuperclass();
+			if (clazz == null) return "";
+		}
 	}
 }

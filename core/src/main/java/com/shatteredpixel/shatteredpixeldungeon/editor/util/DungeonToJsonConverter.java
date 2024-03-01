@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 
 import java.util.ArrayList;
@@ -367,10 +368,9 @@ public class DungeonToJsonConverter {
         b.append("\"x\": ").append(cell % width).append(", \"y\": ").append(cell / width).append("\n");
     }
 
-    public static final int PACKAGE_NAME_LENGTH = "com.shatteredpixel.shatteredpixeldungeon.".length();
-    private static final int PACKAGE_NAME_ITEMS_LENGTH = PACKAGE_NAME_LENGTH + "items.".length();
-    private static final int PACKAGE_NAME_SEEDS_LENGTH = PACKAGE_NAME_LENGTH /*+ "plants.".length()*/;
-    private static final int PACKAGE_NAME_MOBS_LENGTH = PACKAGE_NAME_LENGTH + "actors.mobs.".length();
+    private static final int PACKAGE_NAME_ITEMS_LENGTH = Messages.PACKAGE_NAME_LENGTH + "items.".length();
+    private static final int PACKAGE_NAME_SEEDS_LENGTH = Messages.PACKAGE_NAME_LENGTH /*+ "plants.".length()*/;
+    private static final int PACKAGE_NAME_MOBS_LENGTH = Messages.PACKAGE_NAME_LENGTH + "actors.mobs.".length();
     private static final int PACKAGE_NAME_WEAPON_LENGTH = PACKAGE_NAME_ITEMS_LENGTH + "weapon.".length();
     private static final int PACKAGE_NAME_ARMOR_LENGTH = PACKAGE_NAME_ITEMS_LENGTH + "armor.".length();
 
