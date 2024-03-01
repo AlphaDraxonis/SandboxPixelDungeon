@@ -142,7 +142,7 @@ public class SpectralNecromancerSprite extends MobSprite {
 				if (((Necromancer) ch).summoning){
 					charge();
 				} else {
-					((Necromancer)ch).onZapComplete();
+					ch.onZapComplete();
 					idle();
 				}
 			} else {

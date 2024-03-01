@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalWisp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.TorchHalo;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -63,21 +62,18 @@ public abstract class CrystalWispSprite extends MobSprite {
 		play( idle );
 	}
 
-	public void zap( int cell ) {
-
-		super.zap( cell );
-
+	@Override
+	protected void playZapAnim(int cell) {
 		parent.add(new AlphaTweener(light, 1f, 0.2f) {
 			@Override
 			public void onComplete() {
 				light.alpha(0.3f);
-				((CrystalWisp)ch).onZapComplete();
+				ch.onZapComplete();
 				Beam ray = new Beam.LightRay(center(), DungeonTilemap.raisedTileCenterToWorld(cell));
 				ray.hardlight(blood() & 0x00FFFFFF);
 				parent.add( ray );
 			}
 		});
-
 	}
 
 	@Override

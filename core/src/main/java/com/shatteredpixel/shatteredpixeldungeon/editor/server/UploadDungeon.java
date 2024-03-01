@@ -30,11 +30,6 @@ import java.util.List;
 
 public class UploadDungeon extends Component implements MultiWindowTabComp.BackPressImplemented {
 
-    //select dungeon
-    //descr
-    //username
-    //password + infp and infobtn
-
     protected final SimpleWindow window;
 
     private final ServerCommunication.UploadType type;
@@ -154,11 +149,9 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
     @Override
     protected void layout() {
         height = 0;
-        if (info != null) {
-            info.maxWidth((int) width);
-            height -= 4;
-        }
+        if (info != null) info.maxWidth((int) width);
         if (legalInfo != null) legalInfo.maxWidth((int) width);
+        height = -4;
         height = EditorUtilies.layoutCompsLinear(4, this, info, selectDungeon, description, userName, difficulty, legalInfo) + 1;
     }
 

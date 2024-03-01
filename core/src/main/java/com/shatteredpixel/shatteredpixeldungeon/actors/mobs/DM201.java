@@ -61,12 +61,7 @@ public class DM201 extends DM200 {
 		super.damage(dmg, src);
 	}
 
-	public void onZapComplete(){
-		zap();
-		next();
-	}
-
-	private void zap( ){
+	public void zap(){
 		threatened = false;
 		spend(TICK);
 

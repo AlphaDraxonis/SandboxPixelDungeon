@@ -142,7 +142,8 @@ public class CrystalWisp extends Mob{
 	//used so resistances can differentiate between melee and magical attacks
 	public static class LightBeam {}
 
-	private void zap() {
+	@Override
+	protected void zap() {
 		spend( 1f );
 
 		Invisibility.dispel(this);
@@ -160,11 +161,6 @@ public class CrystalWisp extends Mob{
 		} else {
 			enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
 		}
-	}
-
-	public void onZapComplete() {
-		zap();
-		next();
 	}
 
 	@Override

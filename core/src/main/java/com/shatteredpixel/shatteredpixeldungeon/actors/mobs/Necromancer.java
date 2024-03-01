@@ -162,7 +162,8 @@ public class Necromancer extends SpawnerMob {
 			storedSkeletonID = bundle.getInt( MY_SKELETON );
 		}
 	}
-	
+
+	@Override
 	public void onZapComplete(){
 		if (mySummon == null || mySummon.sprite == null || !mySummon.isAlive()){
 			return;

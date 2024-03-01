@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -34,10 +33,10 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.Callback;
 
 public abstract class FistSprite extends MobSprite {
 
@@ -119,21 +118,9 @@ public abstract class FistSprite extends MobSprite {
 	}
 
 	//different bolt, so overrides zap
-	public void zap( int cell ) {
-
-		super.zap( cell );
-
-		MagicMissile.boltFromChar( parent,
-				boltType,
-				this,
-				cell,
-				new Callback() {
-					@Override
-					public void call() {
-						((YogFist)ch).onZapComplete();
-					}
-				} );
-		Sample.INSTANCE.play( Assets.Sounds.ZAP );
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch, boltType);
 	}
 
 	@Override
@@ -169,6 +156,9 @@ public abstract class FistSprite extends MobSprite {
 			return 0xFFFFDD34;
 		}
 
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.FIRE);
+		}
 	}
 
 	public static class Soiled extends FistSprite {
@@ -194,6 +184,9 @@ public abstract class FistSprite extends MobSprite {
 			return 0xFF7F5424;
 		}
 
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.FOLIAGE);
+		}
 	}
 
 	public static class Rotting extends FistSprite {
@@ -219,6 +212,9 @@ public abstract class FistSprite extends MobSprite {
 			return 0xFFB8BBA1;
 		}
 
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.TOXIC_VENT);
+		}
 	}
 
 	public static class Rusted extends FistSprite {
@@ -244,6 +240,9 @@ public abstract class FistSprite extends MobSprite {
 			return 0xFF7F7F7F;
 		}
 
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.CORROSION);
+		}
 	}
 
 	public static class Bright extends FistSprite {
@@ -268,7 +267,7 @@ public abstract class FistSprite extends MobSprite {
 		public void zap( int cell ) {
 			super.zap( cell, null );
 
-			((YogFist)ch).onZapComplete();
+			ch.onZapComplete();
 			parent.add( new Beam.LightRay(center(), DungeonTilemap.raisedTileCenterToWorld(cell)));
 		}
 		@Override
@@ -276,6 +275,9 @@ public abstract class FistSprite extends MobSprite {
 			return 0xFFFFFFFF;
 		}
 
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.RAINBOW);
+		}
 	}
 
 	public static class Dark extends FistSprite {
@@ -301,6 +303,9 @@ public abstract class FistSprite extends MobSprite {
 			return 0xFF4A2F53;
 		}
 
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.SHADOW);
+		}
 	}
 
 }

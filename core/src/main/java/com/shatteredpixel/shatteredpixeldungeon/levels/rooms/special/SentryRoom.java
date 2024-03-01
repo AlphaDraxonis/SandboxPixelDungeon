@@ -285,6 +285,7 @@ public class SentryRoom extends SpecialRoom {
 			return true;
 		}
 
+		@Override
 		public void onZapComplete(){
 			if (hit(this, Dungeon.hero, true)) {
 				Dungeon.hero.damage((int) (Random.NormalIntRange(2 + Dungeon.depth / 2, 4 + Dungeon.depth) * statsScale), new Eye.DeathGaze());
@@ -403,7 +404,7 @@ public class SentryRoom extends SpecialRoom {
 			} else {
 				parent.add(new Beam.DeathRay(center(), DungeonTilemap.raisedTileCenterToWorld(pos)));
 			}
-			((Sentry)ch).onZapComplete();
+			ch.onZapComplete();
 		}
 
 		@Override

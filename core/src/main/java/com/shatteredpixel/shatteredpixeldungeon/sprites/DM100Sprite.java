@@ -24,10 +24,11 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PointF;
 
@@ -57,29 +58,37 @@ public class DM100Sprite extends MobSprite {
 		
 		play( idle );
 	}
-	
-	public void zap( int pos ) {
 
-		Char enemy = Actor.findChar(pos);
+	@Override
+	public void zap(int cell) {
+		super.zap(cell);
+
+		flash();
+	}
+
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch);
+	}
+
+	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+		Char enemy = Actor.findChar(cell);
 
 		//shoot lightning from eye, not sprite center.
-		PointF origin = center();
-		if (flipHorizontal){
-			origin.y -= 6*scale.y;
-			origin.x -= 1*scale.x;
+		PointF origin = sprite.center();
+		if (((CharSprite) sprite).flipHorizontal){
+			origin.y -= 6*sprite.scale.y;
+			origin.x -= 1*sprite.scale.x;
 		} else {
-			origin.y -= 8*scale.y;
-			origin.x += 1*scale.x;
+			origin.y -= 8*sprite.scale.y;
+			origin.x += 1*sprite.scale.x;
 		}
 		if (enemy != null) {
-			parent.add(new Lightning(origin, enemy.sprite.destinationCenter(), (DM100) ch));
+			parent.add(new Lightning(origin, enemy.sprite.destinationCenter(), ch::onZapComplete));
 		} else {
-			parent.add(new Lightning(origin, pos, (DM100) ch));
+			parent.add(new Lightning(origin, cell, ch::onZapComplete));
 		}
 		Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
-		
-		super.zap( ch.pos );
-		flash();
 	}
 
 	@Override

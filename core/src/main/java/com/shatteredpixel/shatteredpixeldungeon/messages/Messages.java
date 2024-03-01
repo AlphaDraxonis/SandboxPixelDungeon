@@ -215,7 +215,7 @@ public class Messages {
 
 	public static final int PACKAGE_NAME_LENGTH = "com.shatteredpixel.shatteredpixeldungeon.".length();
 	public static String trimPackageName(String s) {
-		return s.substring(PACKAGE_NAME_LENGTH);
+		return s.replace("com.shatteredpixel.shatteredpixeldungeon.", "");
 	}
 
 	public static String getFullMessageKey(Class<?> clazz, String property) {

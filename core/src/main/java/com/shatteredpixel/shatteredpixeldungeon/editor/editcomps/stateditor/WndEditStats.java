@@ -6,6 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.PropertyListContainer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalWisp;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGuard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
@@ -145,7 +146,7 @@ public class WndEditStats extends MultiWindowTabComp {
                 dmgMax.addChangeListener(() -> current.damageRollMax = dmgMax.getAsInt());
                 content.add(dmgMax);
 
-                if (current instanceof Skeleton || current instanceof Warlock || current instanceof Brute
+                if (current instanceof Skeleton || current instanceof Warlock || current instanceof Brute || current instanceof DM100
                         || current instanceof Goo || current instanceof CrystalWisp || current instanceof Eye || current instanceof GnollGuard) {
                     specialDmgMin = new IntegerSpinner(Messages.get(Mob.class, "special_dmg_min"),
                             0, Math.max(10, def.specialDamageRollMin * 10), current.specialDamageRollMin, false);

@@ -109,7 +109,8 @@ public class Warlock extends Mob implements Callback {
 	
 	//used so resistances can differentiate between melee and magical attacks
 	public static class DarkBolt{}
-	
+
+	@Override
 	protected void zap() {
 		spend( TIME_TO_ZAP );
 
@@ -135,12 +136,7 @@ public class Warlock extends Mob implements Callback {
 			enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
 		}
 	}
-	
-	public void onZapComplete() {
-		zap();
-		next();
-	}
-	
+
 	@Override
 	public void call() {
 		next();

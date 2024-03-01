@@ -167,12 +167,8 @@ public abstract class YogFist extends Mob {
 		}
 	}
 
-	protected abstract void zap();
-
-	public void onZapComplete(){
-		zap();
-		next();
-	}
+	@Override
+	public abstract void zap();
 
 //	@Override
 //	public int attackSkill( Char target ) {
@@ -258,7 +254,7 @@ public abstract class YogFist extends Mob {
 		}
 
 		@Override
-		protected void zap() {
+        public void zap() {
 			spend( 1f );
 
 			if (Dungeon.level.map[enemy.pos] == Terrain.WATER){
@@ -345,7 +341,7 @@ public abstract class YogFist extends Mob {
 		}
 
 		@Override
-		protected void zap() {
+        public void zap() {
 			spend( 1f );
 
 			Invisibility.dispel(this);
@@ -430,7 +426,7 @@ public abstract class YogFist extends Mob {
 		}
 
 		@Override
-		protected void zap() {
+        public void zap() {
 			spend( 1f );
 			GameScene.add(Blob.seed(enemy.pos, 100, ToxicGas.class));
 		}
@@ -481,7 +477,7 @@ public abstract class YogFist extends Mob {
 		}
 
 		@Override
-		protected void zap() {
+        public void zap() {
 			spend( 1f );
 			Buff.affect(enemy, Cripple.class, 4f);
 		}
@@ -507,7 +503,7 @@ public abstract class YogFist extends Mob {
 		public static class LightBeam{}
 
 		@Override
-		protected void zap() {
+        public void zap() {
 			spend( 1f );
 
 			Invisibility.dispel(this);
@@ -578,7 +574,7 @@ public abstract class YogFist extends Mob {
 		public static class DarkBolt{}
 
 		@Override
-		protected void zap() {
+        public void zap() {
 			spend( 1f );
 
 			Invisibility.dispel(this);

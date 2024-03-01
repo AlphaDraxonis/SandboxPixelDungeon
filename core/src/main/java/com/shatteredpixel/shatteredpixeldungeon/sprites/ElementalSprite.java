@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
@@ -31,10 +30,10 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.RainbowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.Callback;
 
 public abstract class ElementalSprite extends MobSprite {
 	
@@ -104,21 +103,10 @@ public abstract class ElementalSprite extends MobSprite {
 			particles.killAndErase();
 		}
 	}
-	
-	public void zap( int cell ) {
-		super.zap( cell );
-		
-		MagicMissile.boltFromChar( parent,
-				boltType,
-				this,
-				cell,
-				new Callback() {
-					@Override
-					public void call() {
-						((Elemental)ch).onZapComplete();
-					}
-				} );
-		Sample.INSTANCE.play( Assets.Sounds.ZAP );
+
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch, boltType);
 	}
 	
 	@Override
@@ -151,6 +139,10 @@ public abstract class ElementalSprite extends MobSprite {
 		public int blood() {
 			return 0xFFFFBB33;
 		}
+
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.FIRE);
+		}
 	}
 	
 	public static class NewbornFire extends ElementalSprite {
@@ -174,6 +166,10 @@ public abstract class ElementalSprite extends MobSprite {
 		@Override
 		public int blood() {
 			return 0xFF85FFC8;
+		}
+
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.ELMO);
 		}
 	}
 	
@@ -199,6 +195,10 @@ public abstract class ElementalSprite extends MobSprite {
 		public int blood() {
 			return 0xFF8EE3FF;
 		}
+
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.FROST);
+		}
 	}
 	
 	public static class Shock extends ElementalSprite {
@@ -208,7 +208,7 @@ public abstract class ElementalSprite extends MobSprite {
 		public void zap( int cell ) {
 			super.zap( cell, null );
 			
-			((Elemental)ch).onZapComplete();
+			ch.onZapComplete();
 			parent.add( new Beam.LightRay(center(), DungeonTilemap.raisedTileCenterToWorld(cell)));
 		}
 		
@@ -251,6 +251,10 @@ public abstract class ElementalSprite extends MobSprite {
 		@Override
 		public int blood() {
 			return 0xFFE3E3E3;
+		}
+
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.RAINBOW);
 		}
 	}
 }

@@ -125,8 +125,9 @@ public abstract class Shaman extends Mob {
 	
 	//used so resistances can differentiate between melee and magical attacks
 	public static class EarthenBolt{}
-	
-	private void zap() {
+
+	@Override
+	protected void zap() {
 		spend( 1f );
 
 		Invisibility.dispel(this);
@@ -153,11 +154,6 @@ public abstract class Shaman extends Mob {
 	}
 	
 	protected abstract void debuff( Char enemy );
-	
-	public void onZapComplete() {
-		zap();
-		next();
-	}
 	
 	@Override
 	public String description() {

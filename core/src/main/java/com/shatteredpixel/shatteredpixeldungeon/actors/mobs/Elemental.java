@@ -159,7 +159,8 @@ public abstract class Elemental extends Mob {
 		
 		return damage;
 	}
-	
+
+	@Override
 	protected void zap() {
 		spend( 1f );
 
@@ -174,11 +175,6 @@ public abstract class Elemental extends Mob {
 		}
 
 		rangedCooldown = Random.NormalIntRange( 3, 5 );
-	}
-	
-	public void onZapComplete() {
-		zap();
-		next();
 	}
 	
 	@Override

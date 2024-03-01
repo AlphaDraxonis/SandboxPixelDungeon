@@ -22,12 +22,15 @@
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 
@@ -58,18 +61,20 @@ public class DM200Sprite extends MobSprite {
 		play( idle );
 	}
 
-	public void zap( int cell ) {
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch);
+	}
 
-		super.zap( cell );
-
+	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
 		MagicMissile.boltFromChar( parent,
 				MagicMissile.TOXIC_VENT,
-				this,
+				sprite,
 				cell,
 				new Callback() {
 					@Override
 					public void call() {
-						((DM200)ch).onZapComplete();
+						ch.onZapComplete();
 					}
 				} );
 		Sample.INSTANCE.play( Assets.Sounds.GAS );

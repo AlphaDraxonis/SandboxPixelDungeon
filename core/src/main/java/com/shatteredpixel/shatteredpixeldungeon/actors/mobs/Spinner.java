@@ -183,7 +183,12 @@ public class Spinner extends Mob {
 		}
 		
 	}
-	
+
+	@Override
+	public void onZapComplete() {
+		shootWeb();
+	}
+
 	public void shootWeb(){
 		int webPos = webPos();
 		if (webPos != -1){

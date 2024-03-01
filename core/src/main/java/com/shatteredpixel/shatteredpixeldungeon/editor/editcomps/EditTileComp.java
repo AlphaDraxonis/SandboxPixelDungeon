@@ -327,7 +327,9 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             if (TileItem.isExitTerrainCell(obj.terrainType()) || obj.terrainType() == Terrain.ENTRANCE)
                 desc += Dungeon.level.appendNoTransWarning(obj.cell());
 
-        } else desc = level.tileDesc(obj.terrainType(), obj.cell());
+        } else {
+            if (desc == null) desc = level.tileDesc(obj.terrainType(), obj.cell());
+        }
 
         //TODO make own statistic page
         if (obj.terrainType() == Terrain.LOCKED_DOOR || obj.terrainType() == Terrain.SECRET_LOCKED_DOOR)

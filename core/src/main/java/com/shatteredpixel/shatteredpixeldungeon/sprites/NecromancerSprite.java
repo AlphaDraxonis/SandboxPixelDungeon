@@ -121,8 +121,7 @@ public class NecromancerSprite extends MobSprite {
 	}
 
 	@Override
-	public void zap(int cell) {
-		super.zap(cell);
+	protected void playZapAnim(int cell) {
 		if (ch instanceof Necromancer && ((Necromancer) ch).summoning){
 			if (summoningBones != null){
 				summoningBones.on = false;
@@ -142,7 +141,7 @@ public class NecromancerSprite extends MobSprite {
 				if (((Necromancer) ch).summoning){
 					charge();
 				} else {
-					((Necromancer)ch).onZapComplete();
+					ch.onZapComplete();
 					idle();
 				}
 			} else {

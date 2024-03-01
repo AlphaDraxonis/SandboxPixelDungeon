@@ -375,12 +375,12 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		}
 	}
 
-	public void onZapComplete(){
+	@Override
+	protected void zap() {
 		ventGas(enemy);
-		next();
 	}
 
-	public void ventGas( Char target ){
+	public void ventGas(Char target ){
 		Dungeon.hero.interrupt();
 
 		int gasVented = 0;

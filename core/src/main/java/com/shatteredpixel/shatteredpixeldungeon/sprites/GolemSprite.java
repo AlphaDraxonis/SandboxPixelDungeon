@@ -23,13 +23,12 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.Callback;
 
 public class GolemSprite extends MobSprite {
 
@@ -102,21 +101,13 @@ public class GolemSprite extends MobSprite {
 		return 0xFF80706c;
 	}
 
-	public void zap( int cell ) {
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch);
+	}
 
-		super.zap( cell );
-
-		MagicMissile.boltFromChar( parent,
-				MagicMissile.ELMO,
-				this,
-				cell,
-				new Callback() {
-					@Override
-					public void call() {
-						((Golem)ch).onZapComplete();
-					}
-				} );
-		Sample.INSTANCE.play( Assets.Sounds.ZAP );
+	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+		playZap(parent, sprite, cell, ch, MagicMissile.ELMO);
 	}
 
 	private boolean died = false;

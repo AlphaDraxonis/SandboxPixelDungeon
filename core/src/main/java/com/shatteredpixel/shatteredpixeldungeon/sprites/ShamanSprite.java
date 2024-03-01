@@ -22,11 +22,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shaman;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
+import com.watabou.noosa.Visual;
 
 public abstract class ShamanSprite extends MobSprite {
 	
@@ -59,22 +59,10 @@ public abstract class ShamanSprite extends MobSprite {
 		
 		play( idle );
 	}
-	
-	public void zap( int cell ) {
 
-		super.zap( cell );
-		
-		MagicMissile.boltFromChar( parent,
-				boltType,
-				this,
-				cell,
-				new Callback() {
-					@Override
-					public void call() {
-						((Shaman)ch).onZapComplete();
-					}
-				} );
-		Sample.INSTANCE.play( Assets.Sounds.ZAP );
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch, boltType);
 	}
 
 	@Override
@@ -94,6 +82,10 @@ public abstract class ShamanSprite extends MobSprite {
 		protected int texOffset() {
 			return 0;
 		}
+
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.SHAMAN_RED);
+		}
 	}
 	
 	public static class Blue extends ShamanSprite {
@@ -105,6 +97,10 @@ public abstract class ShamanSprite extends MobSprite {
 		protected int texOffset() {
 			return 21;
 		}
+
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.SHAMAN_BLUE);
+		}
 	}
 	
 	public static class Purple extends ShamanSprite {
@@ -115,6 +111,10 @@ public abstract class ShamanSprite extends MobSprite {
 		@Override
 		protected int texOffset() {
 			return 42;
+		}
+
+		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+			playZap(parent, sprite, cell, ch, MagicMissile.SHAMAN_PURPLE);
 		}
 	}
 }

@@ -22,11 +22,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
+import com.watabou.noosa.Visual;
 
 public class WarlockSprite extends MobSprite {
 	
@@ -53,22 +53,14 @@ public class WarlockSprite extends MobSprite {
 		
 		play( idle );
 	}
-	
-	public void zap( int cell ) {
 
-		super.zap( cell );
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch);
+	}
 
-		MagicMissile.boltFromChar( parent,
-				MagicMissile.SHADOW,
-				this,
-				cell,
-				new Callback() {
-					@Override
-					public void call() {
-						((Warlock)ch).onZapComplete();
-					}
-				} );
-		Sample.INSTANCE.play( Assets.Sounds.ZAP );
+	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+		playZap(parent, sprite, cell, ch, MagicMissile.SHADOW);
 	}
 	
 	@Override

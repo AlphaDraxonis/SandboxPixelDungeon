@@ -23,9 +23,10 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 
@@ -69,19 +70,21 @@ public class SpinnerSprite extends MobSprite {
 		}
 		renderShadow = false;
 	}
-	
-	public void zap( int cell ) {
 
-		super.zap( cell );
-		
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch);
+	}
+
+	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
 		MagicMissile.boltFromChar( parent,
 				MagicMissile.MAGIC_MISSILE,
-				this,
+				sprite,
 				cell,
 				new Callback() {
 					@Override
 					public void call() {
-						((Spinner)ch).shootWeb();
+						ch.onZapComplete();
 					}
 				} );
 		Sample.INSTANCE.play( Assets.Sounds.MISS );

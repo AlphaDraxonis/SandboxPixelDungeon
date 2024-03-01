@@ -166,9 +166,9 @@ public class Golem extends Mob {
 		return super.act();
 	}
 
-	public void onZapComplete(){
+	@Override
+	protected void zap() {
 		teleportEnemy();
-		next();
 	}
 
 	public void teleportEnemy(){

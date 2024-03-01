@@ -327,7 +327,8 @@ public class WandOfWarding extends Wand {
 			return !visible;
 		}
 
-		private void zap() {
+		@Override
+		protected void zap() {
 			spend( 1f );
 
 			//always hits
@@ -361,11 +362,6 @@ public class WandOfWarding extends Wand {
 					damage(7, this);
 					break;
 			}
-		}
-
-		public void onZapComplete() {
-			zap();
-			next();
 		}
 
 		@Override
