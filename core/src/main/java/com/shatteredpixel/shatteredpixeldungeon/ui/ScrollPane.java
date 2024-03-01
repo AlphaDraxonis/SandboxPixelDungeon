@@ -46,7 +46,7 @@ public class ScrollPane extends Component {
     protected PointerController controller;
     protected Signal.Listener<KeyEvent> keyListener;
     protected Component content;
-    protected ColorBlock thumb;
+    protected ColorBlock thumbVer, thumbHor;
 
     private float keyScroll = 0;
 
@@ -110,9 +110,14 @@ public class ScrollPane extends Component {
         if (c.scroll.y < 0) {
             c.scroll.y = 0;
         }
-        thumb.y = this.y + height * c.scroll.y / content.height();
+        thumbVer.y = this.y + height * c.scroll.y / content.height();
+        thumbHor.x = this.x + width * c.scroll.x / content.width();
     }
-    public void scrollToCurrentView() {// if the size has changed, this method will move the camera to a valid position
+
+    /**
+     * If the size has changed, this method will move the camera to a valid position.
+     */
+    public void scrollToCurrentView() {
         scrollTo(content().camera.scroll.x, content().camera.scroll.y);
     }
 
@@ -129,9 +134,12 @@ public class ScrollPane extends Component {
         controller = new PointerController();
         add(controller);
 
-        thumb = new ColorBlock(1, 1, THUMB_COLOR);
-        thumb.am = THUMB_ALPHA;
-        add(thumb);
+        thumbVer = new ColorBlock(1, 1, THUMB_COLOR);
+        thumbVer.am = THUMB_ALPHA;
+        add(thumbVer);
+        thumbHor = new ColorBlock(1, 1, THUMB_COLOR);
+        thumbHor.am = THUMB_ALPHA;
+        add(thumbHor);
     }
 
     @Override
@@ -155,11 +163,17 @@ public class ScrollPane extends Component {
         }
         cs.resize((int) width, (int) height);
 
-        thumb.visible = height < content.height();
-        if (thumb.visible) {
-            thumb.scale.set(2, height * height / content.height());
-            thumb.x = right() - thumb.width();
-            thumb.y = y + height * content.camera.scroll.y / content.height();
+        thumbVer.visible = height < content.height();
+        thumbHor.visible = width < content.width();
+        if (thumbVer.visible) {
+            thumbVer.scale.set(2, height * height / content.height());
+            thumbVer.x = right() - thumbVer.width();
+            thumbVer.y = y + height * content.camera.scroll.y / content.height();
+        }
+        if (thumbHor.visible) {
+            thumbHor.scale.set(width * width / content.width(), 2);
+            thumbHor.y = bottom() - thumbHor.height();
+            thumbHor.x = x + width * content.camera.scroll.x / content.width();
         }
     }
 
@@ -180,8 +194,9 @@ public class ScrollPane extends Component {
     public void cancelClick() {
         super.cancelClick();
 
-        controller.dragging = false;//from controller.onPointerUp()
-        thumb.am = THUMB_ALPHA;
+        //from controller.onPointerUp()
+        controller.dragging = false;
+        thumbVer.am = thumbHor.am = THUMB_ALPHA;
 
         controller.resetCurrentEvent();
     }
@@ -208,7 +223,11 @@ public class ScrollPane extends Component {
         @Override
         protected void onScroll(ScrollEvent event) {
             PointF newPt = new PointF(lastPos);
-            newPt.y -= event.amount * content.camera.zoom * 10;
+            if (ScrollPane.this.width < content.width() && ScrollPane.this.height >= content.height()) {
+                newPt.x -= event.amount * content.camera.zoom * 10;
+            } else {
+                newPt.y -= event.amount * content.camera.zoom * 10;
+            }
             scroll(newPt);
             dragging = false;
         }
@@ -243,7 +262,7 @@ public class ScrollPane extends Component {
             if (dragging) {
 
                 dragging = false;
-                thumb.am = THUMB_ALPHA;
+                thumbVer.am = thumbHor.am = THUMB_ALPHA;
 
             } else {
 
@@ -279,7 +298,7 @@ public class ScrollPane extends Component {
 
                 dragging = true;
                 lastPos.set(event.current);
-                thumb.am = 1;
+                thumbVer.am = thumbHor.am = 1;
                 content.cancelClick();
 
             } else {
@@ -304,7 +323,8 @@ public class ScrollPane extends Component {
                 c.scroll.y = 0;
             }
 
-            thumb.y = y + height * c.scroll.y / content.height();
+            thumbVer.y = y + height * c.scroll.y / content.height();
+            thumbHor.x = x + width * c.scroll.x / content.width();
 
             lastPos.set(current);
 
