@@ -200,7 +200,7 @@ public enum HeroClass {
         data.items.add(new Food());
         data.items.add(new Waterskin());
 
-        data.bags.add(new VelvetPouch());
+        data.items.add(new VelvetPouch());
     }
 
     private static void initWarrior(Hero hero) {
@@ -349,8 +349,9 @@ public enum HeroClass {
             }
         }
 
-        for (Bag b : startItems.bags) {
-            if (!Challenges.isItemBlocked(b)) {
+        for (Item item : startItems.items) {
+            if (item instanceof Bag && !Challenges.isItemBlocked(item)) {
+                Bag b = (Bag) item;
                 b.collect();
                 if (b instanceof VelvetPouch) Dungeon.LimitedDrops.VELVET_POUCH.drop();
                 if (b instanceof ScrollHolder) Dungeon.LimitedDrops.SCROLL_HOLDER.drop();

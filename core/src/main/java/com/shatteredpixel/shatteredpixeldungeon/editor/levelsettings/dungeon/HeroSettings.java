@@ -5,8 +5,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
@@ -25,7 +23,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
@@ -49,9 +46,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PointF;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class HeroSettings extends Component {
 
@@ -149,7 +144,6 @@ public class HeroSettings extends Component {
         private CheckBox heroEnabled;
         private RedButton subClassesEnabled;
         private final ItemContainerWithLabel<Item> startItems;
-        private final ItemContainerWithLabel<Bag> startBags;
         private final ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
         private final StyledSpinner startGold, startEnergy, plusLvl, plusStr;
 
@@ -303,39 +297,11 @@ public class HeroSettings extends Component {
 
             add(itemSelectorParent);
 
-            startBags = new ItemContainerWithLabel<Bag>(data.bags, Messages.get(HeroSettings.class, "bags")) {
-                @Override
-                public boolean itemSelectable(Item item) {
-                    Item i = item instanceof ItemItem ? ((ItemItem) item).item() : item;
-                    return i instanceof Bag;
-                }
-
-                @Override
-                protected void onSlotNumChange() {
-                    if (startItems != null) {
-                        DungeonTab.updateLayout();
-                    }
-                }
-
-                @Override
-                protected void showSelectWindow() {
-                    Set<Class<?>> exclude = new HashSet<>(5);
-//                    for (Bag b : data.bags) exclude.add(b.getClass());
-                    ItemSelector.showSelectWindow(startBags, ItemSelector.NullTypeSelector.DISABLED, Bag.class, Items.bag, exclude);
-                }
-
-                @Override
-                protected void addItemToUI(Item item, boolean last) {
-                    super.addItemToUI(item, last);
-                    if (item != null && item.reservedQuickslot == 0) item.reservedQuickslot = -1;
-                }
-            };
-            add(startBags);
             startItems = new ItemContainerWithLabel<Item>(data.items, Messages.get(HeroSettings.class, "items")) {
 
                 @Override
                 public boolean itemSelectable(Item item) {
-                    return !(item instanceof Gold || item instanceof EnergyCrystal || item instanceof Bag);
+                    return !(item instanceof Gold || item instanceof EnergyCrystal);
                 }
 
                 @Override
@@ -352,9 +318,9 @@ public class HeroSettings extends Component {
                 }
             };
             add(startItems);
-            if (startItems.getStartColumnPos() > startBags.getStartColumnPos())
-                startBags.setStartColumnPos(startItems.getStartColumnPos());
-            else startItems.setStartColumnPos(startBags.getStartColumnPos());
+//            if (startItems.getStartColumnPos() > startBags.getStartColumnPos())
+//                startBags.setStartColumnPos(startItems.getStartColumnPos());
+//            else startItems.setStartColumnPos(startBags.getStartColumnPos());
         }
 
         @Override
@@ -374,16 +340,13 @@ public class HeroSettings extends Component {
                 PixelScene.align(subClassesEnabled);
                 posY = subClassesEnabled.bottom() + gap;
             }
-            itemSelectorParent.setSize(width, -1);
+            itemSelectorParent.setSize(width, 0);
             itemSelectorParent.setRect(x, posY, width,  EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
                     new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                             startGold, startEnergy, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                             plusLvl, plusStr}));
             PixelScene.align(itemSelectorParent);
             posY = itemSelectorParent.bottom() + gap;
-            startBags.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
-            PixelScene.align(startBags);
-            posY = startBags.bottom() + gap;
             startItems.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
             PixelScene.align(startItems);
             posY = startItems.bottom() + gap;
@@ -406,8 +369,7 @@ public class HeroSettings extends Component {
         public Ring ring;
         public Artifact artifact;
         public KindofMisc misc;
-        public List<Bag> bags = new ArrayList<>(2);
-        public List<Item> items = new ArrayList<>(3);
+        public List<Item> items = new ArrayList<>(4);
         public int gold, energy;
         public int plusLvl;//default is 0
         public int plusStr;//default is 0
@@ -423,7 +385,6 @@ public class HeroSettings extends Component {
         private static final String ENERGY = "energy";
         private static final String LVL = "lvl";
         private static final String STR = "str";
-        private static final String BAGS = "bags";
         private static final String ITEMS = "items";
 
         @Override
@@ -439,7 +400,6 @@ public class HeroSettings extends Component {
             bundle.put(LVL, plusLvl);
             bundle.put(STR, plusStr);
 
-            bundle.put(BAGS, bags);
             bundle.put(ITEMS, items);
         }
 
@@ -457,8 +417,10 @@ public class HeroSettings extends Component {
             plusLvl = bundle.getInt(LVL);
             plusStr = bundle.getInt(STR);
 
-            for (Bundlable b : bundle.getCollection(BAGS)) {
-                bags.add((Bag) b);
+            if (bundle.contains("bags")) {
+                for (Bundlable b : bundle.getCollection("bags")) {
+                    items.add((Item) b);
+                }
             }
             for (Bundlable b : bundle.getCollection(ITEMS)) {
                 items.add((Item) b);
@@ -517,7 +479,6 @@ public class HeroSettings extends Component {
             if (artifact != null) artifact.setCursedKnown(true);
             if (misc != null) misc.setCursedKnown(true);
             RandomItem.replaceRandomItemsInList(items);
-            RandomItem.replaceRandomItemsInList(bags);
         }
 
     }
