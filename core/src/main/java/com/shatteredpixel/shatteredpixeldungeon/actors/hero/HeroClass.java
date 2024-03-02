@@ -170,10 +170,6 @@ public enum HeroClass {
         }
     }
 
-    private void validateItemLevelAquired(Item item) {
-        if (item != null) Badges.validateItemLevelAquired(item);
-    }
-
     public Badges.Badge masteryBadge() {
         switch (this) {
             case WARRIOR:

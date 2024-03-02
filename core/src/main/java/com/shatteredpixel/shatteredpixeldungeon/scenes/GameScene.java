@@ -469,6 +469,9 @@ public class GameScene extends PixelScene {
                         Document.INTROS.readPage(region);
                     }
                 }
+				if (Dungeon.levelName.equals(Dungeon.customDungeon.getStart())) {
+					Badges.validateHeroStart();
+				}
                 if (Dungeon.hero.isAlive()) {
                     Badges.validateNoKilling();
                 }

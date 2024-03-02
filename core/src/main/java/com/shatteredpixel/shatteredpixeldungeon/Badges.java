@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
@@ -519,10 +520,6 @@ public class Badges {
 		
 		displayBadge( badge );
 	}
-
-	public static void validateItemLevelAquiredNullSafe( Item item ) {
-		if (item != null) validateItemLevelAquired(item);
-	}
 	
 	public static void validateItemLevelAquired( Item item ) {
 		
@@ -625,17 +622,23 @@ public class Badges {
 		}
 	}
 
-	public static void validateStartEqLevels(){
-		validateItemLevelAquiredNullSafe(Dungeon.hero.belongings.weapon);
-		validateItemLevelAquiredNullSafe(Dungeon.hero.belongings.armor);
-		validateItemLevelAquiredNullSafe(Dungeon.hero.belongings.ring);
-		validateItemLevelAquiredNullSafe(Dungeon.hero.belongings.artifact);
-		validateItemLevelAquiredNullSafe(Dungeon.hero.belongings.misc);
-		for (Item i : Dungeon.hero.belongings) {
-			validateItemLevelAquiredNullSafe(Dungeon.hero.belongings.misc);
-			if (i instanceof Bag) validateAllBagsBought(i);
+	public static void validateHeroStart(){
+		Item[] eq = {Dungeon.hero.belongings.weapon, Dungeon.hero.belongings.armor,
+				Dungeon.hero.belongings.ring, Dungeon.hero.belongings.artifact, Dungeon.hero.belongings.misc};
+		for (Item item : eq) {
+			if (item != null) validateItemLevelAquired(item);
+		}
+		for (Item item : Dungeon.hero.belongings) {
+			if (item != null) {
+				validateItemLevelAquired(item);
+				if (item instanceof Bag) validateAllBagsBought(item);
+				if (item instanceof TengusMask) validateMastery();
+			}
 		}
 		validateItemsIdentified();
+		validateGoldCollected();
+		validateLevelReached();
+		validateStrengthAttained();
 	}
 	
 	public static void validateDeathFromFire() {
