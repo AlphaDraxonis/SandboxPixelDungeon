@@ -55,7 +55,7 @@ public class WndWandmaker extends Window {
 		this.questItem = item;
 		
 		IconTitle titlebar = new IconTitle();
-		titlebar.icon(new ItemSprite(item.image(), null));
+		titlebar.icon(new ItemSprite(item, null));
 		titlebar.label(Messages.titleCase(item.name()));
 		titlebar.setRect(0, 0, WIDTH, 0);
 		add( titlebar );

@@ -259,9 +259,10 @@ public class CustomDungeon implements Bundlable {
     }
 
     public Image getItemImage(Item item) {
-        ItemSprite is = new ItemSprite(getItemSpriteOnSheet(item));
-        if (item.glowing() != null) is.view(item);
-        return is;
+        if (item.customImage != null) {
+            return new ItemSprite(item, item.glowing());
+        }
+        return new ItemSprite(getItemSpriteOnSheet(item), item.glowing());
     }
 
     public int getItemSpriteOnSheet(Item item) {

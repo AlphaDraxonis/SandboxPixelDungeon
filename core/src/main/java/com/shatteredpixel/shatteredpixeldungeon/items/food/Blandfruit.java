@@ -140,7 +140,7 @@ public class Blandfruit extends Food {
         if (potionAttrib == null) {
             return super.desc();
         } else {
-            String desc = Messages.get(this, "desc_cooked") + "\n\n";
+            String desc = (customDesc == null ? Messages.get(this, "desc_cooked") : customDesc) + "\n\n";
             if (potionAttrib instanceof PotionOfFrost
                     || potionAttrib instanceof PotionOfLiquidFlame
                     || potionAttrib instanceof PotionOfToxicGas

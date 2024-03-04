@@ -124,7 +124,7 @@ public final class CustomTileLoader {
                 value = value.replace(temp, "\\");
 
                 if (property.startsWith("i")) {
-                    // FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CUSTOM_TILES + value)
+//                     FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + EXTRA_FILES + value);
                     Pixmap texture = new Pixmap(fileMap.get(value));
                     ownCustomTile.tileW = texture.getWidth() / 16;
                     ownCustomTile.tileH = texture.getHeight() / 16;

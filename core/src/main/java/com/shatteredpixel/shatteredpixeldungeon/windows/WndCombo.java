@@ -21,17 +21,12 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.watabou.noosa.Image;
 
 public class WndCombo extends Window {
 
@@ -53,13 +48,6 @@ public class WndCombo extends Window {
 		add(title);
 
 		pos = title.bottom() + 3*MARGIN;
-
-		Image icon;
-		if (Dungeon.hero.belongings.weapon() != null){
-			icon = new ItemSprite(Dungeon.hero.belongings.weapon().image, null);
-		} else {
-			icon = new ItemSprite(new Item(){ {image = ItemSpriteSheet.WEAPON_HOLDER; }});
-		}
 
 		for (Combo.ComboMove move : Combo.ComboMove.values()) {
 

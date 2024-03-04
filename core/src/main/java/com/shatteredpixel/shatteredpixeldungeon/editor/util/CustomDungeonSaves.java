@@ -252,7 +252,7 @@ public class CustomDungeonSaves {
         return FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CustomTileLoader.EXTRA_FILES);
     }
 
-    public static List<String> findAllAudioFiles() {
+    public static List<String> findAllFiles(String... extensions) {
         FileHandle dir = getAdditionalFilesDir();
         if (!dir.exists()) {
             dir.mkdirs();
@@ -266,9 +266,14 @@ public class CustomDungeonSaves {
 
         String rootDir = dir.path() + "/";
 
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < extensions.length; i++) {
+            b.append(extensions[i]).append('/');
+        }
+        String extensionsCSV = b.toString();
+
         for (FileHandle f : files) {
-            String extension = f.extension();
-            if (extension.equals("ogg") || extension.equals("mp3") || extension.equals("wav")) {
+            if (extensionsCSV.contains(f.extension())) {
                 fullFilePaths.add(f.path().replaceFirst(rootDir, ""));
             }
         }
@@ -288,8 +293,12 @@ public class CustomDungeonSaves {
         }
     }
 
+    public static String getExternalFilePath(String pathFromRoot) {
+        return CustomDungeonSaves.curDirectory + CustomTileLoader.EXTRA_FILES + pathFromRoot;
+    }
+
     public static FileHandle getExternalFile(String pathFromRoot) {
-        return FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CustomTileLoader.EXTRA_FILES + pathFromRoot);
+        return FileUtils.getFileHandle(getExternalFilePath(pathFromRoot));
     }
 
     public static void copyLevelsForNewGame(String dungeonName, String dirDestination) throws IOException {

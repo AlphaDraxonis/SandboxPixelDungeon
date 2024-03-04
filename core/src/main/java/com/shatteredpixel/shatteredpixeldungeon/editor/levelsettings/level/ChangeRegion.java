@@ -156,7 +156,7 @@ public class ChangeRegion extends Component {
             }
             @Override
             protected void onClick() {
-                List<String> audioFiles = CustomDungeonSaves.findAllAudioFiles();
+                List<String> audioFiles = CustomDungeonSaves.findAllFiles("ogg", "mp3", "wav");
                 String[] options = new String[audioFiles.size() + 1];
                 options[0] = Messages.get(ChangeRegion.class, "no_custom_music");
                 int i = 1;

@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
@@ -91,6 +92,12 @@ public class ItemSprite extends MovieClip {
 
     public ItemSprite(int image) {
         this(image, null);
+    }
+
+    //uses image (maybe customImage) from item, this glowing, and no emitter
+    public ItemSprite(Item item, Glowing glowing) {
+        super(Assets.Sprites.ITEMS);
+        view(item, glowing);
     }
 
     public ItemSprite(int image, Glowing glowing) {
@@ -187,14 +194,7 @@ public class ItemSprite extends MovieClip {
     }
 
     public ItemSprite view(Item item) {
-        view(item.image(), item.glowing());
-        Emitter emitter = item.emitter();
-        if (emitter != null && parent != null) {
-            emitter.pos(this);
-            parent.add(emitter);
-            this.emitter = emitter;
-        }
-        return this;
+        return view(item, item.glowing());
     }
 
     public ItemSprite view(Heap heap) {
@@ -225,6 +225,20 @@ public class ItemSprite extends MovieClip {
             default:
                 return view(0, null);
         }
+    }
+
+    public ItemSprite view(Item item, Glowing glowing) {
+        SmartTexture tx;
+        if (item.customImage == null
+                || (tx = TextureCache.getFromCurrentSavePath(CustomDungeonSaves.getExternalFilePath(item.customImage))) == null)
+            return view(item.image(), glowing);
+
+        if (this.emitter != null) this.emitter.killAndErase();
+        emitter = null;
+        texture(tx);
+        scale.set(ItemSpriteSheet.SIZE / (float)(Math.max(tx.width, tx.height)));
+        glow(glowing);
+        return this;
     }
 
     public ItemSprite view(int image, Glowing glowing) {

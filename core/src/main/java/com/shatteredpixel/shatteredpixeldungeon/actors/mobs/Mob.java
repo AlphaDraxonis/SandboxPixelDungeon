@@ -342,7 +342,7 @@ public abstract class Mob extends Char {
 		if (bundle.contains(CUSTOM_NAME)) customName = bundle.getString(CUSTOM_NAME);
 		if (bundle.contains(CUSTOM_DESC)) customDesc = bundle.getString(CUSTOM_DESC);
 		if (bundle.contains("dialog")) dialogs.add(bundle.getString("dialog"));
-		else dialogs.addAll(Arrays.asList(bundle.getStringArray(DIALOGS)));
+		else if (bundle.contains(DIALOGS)) dialogs.addAll(Arrays.asList(bundle.getStringArray(DIALOGS)));
 
 		glyphArmor = (GlyphArmor) bundle.get(GLYPH_ARMOR);
 		enchantWeapon = (EnchantmentWeapon) bundle.get(ENCHANT_WEAPON);

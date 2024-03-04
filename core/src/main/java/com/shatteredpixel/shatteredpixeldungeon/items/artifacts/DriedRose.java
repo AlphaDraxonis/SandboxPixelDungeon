@@ -232,7 +232,7 @@ public class DriedRose extends Artifact {
 	public String desc() {
 		if (!GhostQuest.completedOnce()
 				&& (SandboxPixelDungeon.scene() instanceof GameScene || SandboxPixelDungeon.scene() instanceof AlchemyScene)){
-			return Messages.get(this, "desc_no_quest");
+			return customDesc == null ? Messages.get(this, "desc_no_quest") : customDesc;
 		}
 		
 		String desc = super.desc();

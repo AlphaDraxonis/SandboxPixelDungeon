@@ -60,11 +60,13 @@ public class FakeTenguShocker extends Bomb {
 
     @Override
     public String name() {
+        if (customName != null) return customName;
         return Messages.get(Tengu.ShockerAbility.ShockerItem.class, "name");
     }
 
     @Override
     public String desc() {
+        if (customDesc != null) return customDesc;
         return Messages.get(Tengu.ShockerAbility.ShockerItem.class, "desc");
     }
 

@@ -35,7 +35,7 @@ public class WndChooseEnchant extends WndChooseOneInCategories {
     public WndChooseEnchant(Item item) {
 
         super(
-                new IconTitle(new ItemSprite(item.image), Messages.get(WndChooseEnchant.class, "title", EnchantmentLike.getTypeName(item))),
+                new IconTitle(new ItemSprite(item), Messages.get(WndChooseEnchant.class, "title", EnchantmentLike.getTypeName(item))),
                 Messages.get(WndChooseEnchant.class, "body", EnchantmentLike.getTypeName(item)),
                 createCategories(item),
                 getRarityNames()

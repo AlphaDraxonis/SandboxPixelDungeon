@@ -25,6 +25,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.watabou.glwrap.Texture;
 import com.watabou.noosa.Game;
+import com.watabou.utils.FileUtils;
 
 import java.util.HashMap;
 
@@ -126,7 +127,21 @@ public class TextureCache {
 		}
 		
 	}
-	
+
+	public synchronized static SmartTexture getFromCurrentSavePath( String src ) {
+		if (all.containsKey( src )) {
+			return all.get( src );
+		} else {
+			try {
+				SmartTexture tx = new SmartTexture(new Pixmap(FileUtils.getFileHandle(src)));
+				all.put(src, tx);
+				return tx;
+			} catch (Exception ex) {
+				return null;
+			}
+		}
+	}
+
 	public synchronized static void clear() {
 		
 		for (Texture txt : all.values()) {

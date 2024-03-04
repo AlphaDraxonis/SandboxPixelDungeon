@@ -337,7 +337,7 @@ public class MagesStaff extends MeleeWeapon {
 
 	@Override
 	public String name() {
-		if (wand == null) {
+		if (wand == null || customName != null) {
 			return super.name();
 		} else {
 			String name = Messages.get(wand, "staff_name");

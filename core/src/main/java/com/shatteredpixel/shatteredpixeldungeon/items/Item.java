@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Item implements Bundlable {
@@ -79,6 +80,7 @@ public class Item implements Bundlable {
 	//TODO should these be private and accessed through methods?
 	public int image = 0;
 	public int icon = -1; //used as an identifier for items with randomized images
+	public String customImage, customName, customDesc;
 	
 	public boolean stackable = false;
 	protected int quantity = 1;
@@ -375,7 +377,10 @@ public class Item implements Bundlable {
 	}
 	
 	public boolean isSimilar( Item item ) {
-		return level == item.level && getClass() == item.getClass();
+		return level == item.level && getClass() == item.getClass()
+				&& Objects.equals(customImage, item.customImage)
+				&& Objects.equals(customName, item.customName)
+				&& Objects.equals(customDesc, item.customDesc);
 	}
 
 	protected void onDetach(){}
@@ -539,7 +544,8 @@ public class Item implements Bundlable {
 	}
 	
 	public final String trueName() {
-		return Messages.get(this, "name");
+		String msg;
+		return customName == null ? Messages.get(this, "name") : Messages.NO_TEXT_FOUND.equals(msg = Messages.get(customName)) ? customName : msg;
 	}
 	
 	public int image() {
@@ -603,6 +609,9 @@ public class Item implements Bundlable {
 	private static final String QUANTITY		= "quantity";
 	private static final String RAND_QUANT_MIN  = "rand_quant_min";
 	private static final String RAND_QUANT_MAX  = "rand_quant_max";
+	private static final String CUSTOM_IMAGE = "custom_image";
+	private static final String CUSTOM_NAME = "custom_name";
+	private static final String CUSTOM_DESC = "custom_desc";
 	private static final String LEVEL			= "level";
 	private static final String LEVEL_KNOWN		= "levelKnown";
 	private static final String CURSED			= "cursed";
@@ -617,6 +626,10 @@ public class Item implements Bundlable {
 	public void storeInBundle( Bundle bundle ) {
 		bundle.put( QUANTITY, quantity );
 		bundle.put( RAND_QUANT_MIN, randQuantMin );
+		bundle.put( RAND_QUANT_MAX, randQuantMax );
+		bundle.put( CUSTOM_IMAGE, customImage );
+		bundle.put( CUSTOM_NAME, customName );
+		bundle.put( CUSTOM_DESC, customDesc );
 		bundle.put( RAND_QUANT_MAX, randQuantMax );
 		bundle.put( LEVEL, level );
 		bundle.put( LEVEL_KNOWN, levelKnown );
@@ -644,6 +657,13 @@ public class Item implements Bundlable {
 		} else {
 			randQuantMin = randQuantMax = -1;
 		}
+
+		customImage = bundle.getString(CUSTOM_IMAGE);
+		customName = bundle.getString(CUSTOM_NAME);
+		customDesc = bundle.getString(CUSTOM_DESC);
+		if ("".equals(customImage)) customImage = null;
+		if ("".equals(customName)) customName = null;
+		if ("".equals(customDesc)) customDesc = null;
 
 		int level = bundle.getInt( LEVEL );
 		if (level > 0) {
