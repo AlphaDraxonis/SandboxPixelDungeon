@@ -63,6 +63,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
@@ -96,6 +97,9 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -141,7 +145,8 @@ public abstract class Mob extends Char {
 	public EnchantmentWeapon enchantWeapon = new EnchantmentWeapon();
 
 
-	public String customName, customDesc, dialog;
+	public String customName, customDesc;
+	public List<String> dialogs = new ArrayList<>(5);
 	public boolean isBossMob;//only real value while playing, use level.bossmobAt instead!, not meant for shattered bosses except goo!
 	public boolean showBossBar = true;
 	public boolean bleeding;
@@ -229,7 +234,7 @@ public abstract class Mob extends Char {
 	private static final String LOOT = "loot";
 	private static final String CUSTOM_NAME = "custom_name";
 	private static final String CUSTOM_DESC = "custom_desc";
-	private static final String DIALOG = "dialog";
+	private static final String DIALOGS = "dialogs";
 	public static final String SPRITE = "sprite";
 
 	private static final String ENEMY_ID	= "enemy_id";
@@ -283,7 +288,7 @@ public abstract class Mob extends Char {
 
 		if (customName != null) bundle.put(CUSTOM_NAME, customName);
 		if (customDesc != null) bundle.put(CUSTOM_DESC, customDesc);
-		if (dialog != null) bundle.put(DIALOG, dialog);
+		bundle.put(DIALOGS, dialogs.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
 
         if (enemy != null) {
             bundle.put(ENEMY_ID, enemy.id());
@@ -336,7 +341,8 @@ public abstract class Mob extends Char {
 
 		if (bundle.contains(CUSTOM_NAME)) customName = bundle.getString(CUSTOM_NAME);
 		if (bundle.contains(CUSTOM_DESC)) customDesc = bundle.getString(CUSTOM_DESC);
-		if (bundle.contains(DIALOG)) dialog = bundle.getString(DIALOG);
+		if (bundle.contains("dialog")) dialogs.add(bundle.getString("dialog"));
+		else dialogs.addAll(Arrays.asList(bundle.getStringArray(DIALOGS)));
 
 		glyphArmor = (GlyphArmor) bundle.get(GLYPH_ARMOR);
 		enchantWeapon = (EnchantmentWeapon) bundle.get(ENCHANT_WEAPON);
@@ -425,7 +431,19 @@ public abstract class Mob extends Char {
 					notice();
 					yell(Messages.get(RatKing.class, "not_sleeping"));
 					state = WANDERING;
-				} else yell(dialog == null ? Messages.get(this, "what_is_it") : dialog);
+				} else {
+					String tell;
+					if (dialogs.isEmpty()) tell = Messages.get(this, "what_is_it");
+					else {
+						String dialog = Random.element(dialogs);
+						tell = Messages.get(dialog);
+						if (tell == Messages.NO_TEXT_FOUND) tell = dialog;
+					}
+					if (tell.length() > 100) {
+						final String finalTell = tell;
+						Game.runOnRenderThread(() -> GameScene.show(new WndTitledMessage(new WndInfoMob.MobTitle(Mob.this, false), finalTell)));
+					} else yell(tell);
+				}
 			}
 		}
 		if (playerAlignment != NEUTRAL_ALIGNMENT || c != Dungeon.hero) {

@@ -632,6 +632,8 @@ public class Hero extends Char {
 
 		float speed = super.speed();
 
+		if (Dungeon.hero == this && Dungeon.customDungeon.extraSpeed) speed *= 10;
+
 		speed *= RingOfHaste.speedMultiplier(this);
 		
 		if (belongings.armor() != null) {
@@ -1824,7 +1826,7 @@ public class Hero extends Char {
 
 		} else if (heap != null
 				//moving to an item doesn't auto-pickup when enemies are near...
-				&& (visibleEnemies.size() == 0 || cell == pos ||
+				&& (visibleEnemies.size() == 0 || cell == pos || Dungeon.customDungeon.permaMindVision ||
 				//...but only for standard heaps. Chests and similar open as normal.
 				(heap.type != Type.HEAP && heap.type != Type.FOR_SALE))) {
 

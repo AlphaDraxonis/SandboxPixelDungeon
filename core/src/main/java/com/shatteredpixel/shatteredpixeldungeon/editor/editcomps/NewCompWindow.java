@@ -94,7 +94,7 @@ public abstract class NewCompWindow<T> extends Window {
         posY = title.bottom() + MARGIN * 2;
 
         final float textBoxPos = posY;
-        posY = textBoxPos + 16 + MARGIN;
+        posY = textBoxPos + 16;
 
         spContent.setSize(width, -1);
         final float spPos = posY;

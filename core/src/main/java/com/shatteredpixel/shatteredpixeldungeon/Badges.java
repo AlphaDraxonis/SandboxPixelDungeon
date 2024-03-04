@@ -44,7 +44,6 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 
 import java.io.IOException;
@@ -1055,7 +1054,7 @@ public class Badges {
 	
 	private static void displayBadge( Badge badge ) {
 		
-		if (badge == null || (!Dungeon.customSeedText.isEmpty() || Dungeon.isLevelTesting()) && !DeviceCompat.isDebug()) {
+		if (badge == null || Dungeon.isLevelTesting()) {
 			return;
 		}
 		
@@ -1092,7 +1091,7 @@ public class Badges {
 	}
 	
 	public static void unlock( Badge badge ){
-		if (!isUnlocked(badge) && Dungeon.customSeedText.isEmpty()){
+		if (!isUnlocked(badge) && !Dungeon.isLevelTesting()){
 			global.add( badge );
 			saveNeeded = true;
 		}

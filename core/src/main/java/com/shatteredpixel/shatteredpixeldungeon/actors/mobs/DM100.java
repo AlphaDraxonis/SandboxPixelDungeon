@@ -49,7 +49,7 @@ public class DM100 extends DMMob {
 		damageRollMin = 2;
 		damageRollMax = 8;
 		specialDamageRollMin = 3;
-		specialDamageRollMin = 10;
+		specialDamageRollMax = 10;
 		attackSkill = 11;
 		damageReductionMax = 4;
 		

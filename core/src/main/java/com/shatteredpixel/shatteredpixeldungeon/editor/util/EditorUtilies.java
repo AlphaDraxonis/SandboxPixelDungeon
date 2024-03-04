@@ -326,7 +326,7 @@ public final class EditorUtilies {
     public static float layoutCompsLinear(int gap, int compHeight, Component parent, Component... comps) {
         if (comps == null) return parent.height();
 
-        float posY = parent.top() + parent.height() + gap * 2 - 1;
+        float posY = parent.top() + parent.height();
 
         boolean hasAtLeastOneComp = false;
         for (Component c : comps) {
@@ -371,7 +371,7 @@ public final class EditorUtilies {
             if (c != null && c.visible) c.setSize(widthOnePart, maxCompHeight);
         }
 
-        float posY = parent.top() + parent.height() + gap * 2 - 1;
+        float posY = parent.top() + parent.height();
         float posX = parent.left();
         int indexInRow = 0;
         for (Component c : comps) {

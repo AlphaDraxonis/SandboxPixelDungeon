@@ -55,7 +55,7 @@ public class CustomParticle extends Blob {
         return properties == null || properties.removeOnEnter;
     }
 
-    private boolean alwaysEmitting() {
+    public boolean alwaysEmitting() {
         return properties == null || properties.alwaysEmitting;
     }
 
@@ -224,9 +224,10 @@ public class CustomParticle extends Blob {
 
     //this order is important!
     public static final int CELL_INACTIVE = 0;
-    public static final int CELL_ACTIVE = 1;
-    public static final int HERO_JUST_ENTERED = 2;
-    public static final int CHAR_JUST_ENTERED = 3;
+    public static final int CELL_WILL_GO_INACTIVE = 1;
+    public static final int CELL_ACTIVE = 2;
+    public static final int HERO_JUST_ENTERED = 3;
+    public static final int CHAR_JUST_ENTERED = 4;
 
     public static class ParticleEmitter extends BlobEmitter {
 
@@ -251,15 +252,16 @@ public class CustomParticle extends Blob {
         protected void updateCell(int cell) {
             if (cell < Dungeon.level.heroFOV.length
                     && (Dungeon.level.heroFOV[cell] || particle.alwaysVisible || Dungeon.hero == null)
-                    && particle.cur[cell] > (particle.alwaysEmitting() || Dungeon.hero == null ? 0 : 1)) {
+                    && particle.cur[cell] > (particle.alwaysEmitting() || Dungeon.hero == null ? CELL_INACTIVE : CELL_ACTIVE)) {
 
                 boolean heroJustEnteredCell = particle.cur[cell] == HERO_JUST_ENTERED;
                 boolean charJustEnteredCell = particle.cur[cell] >= HERO_JUST_ENTERED;
-                int valueOnEmitterKill = particle.removeOnEnter() ? particle.cur[cell] - HERO_JUST_ENTERED : CELL_ACTIVE;
+                int valueOnEmitterKill = particle.removeOnEnter() ? particle.cur[cell] - HERO_JUST_ENTERED - 1 : CELL_ACTIVE;
 
                 if (heroJustEnteredCell) {
-                    particle.volume += CELL_ACTIVE - particle.cur[cell];
-                    particle.cur[cell] = CELL_ACTIVE;
+                    int setValue = particle.removeOnEnter() ? CELL_WILL_GO_INACTIVE : CELL_ACTIVE;
+                    particle.volume += setValue - particle.cur[cell];
+                    particle.cur[cell] = setValue;
                 }
 
                 CellEmitter emitter;
@@ -272,14 +274,15 @@ public class CustomParticle extends Blob {
                     emitter = emitters[cell];
                     emitter.revive();
                 } else {
-                    if (particle.removeOnEnter() && heroJustEnteredCell) {
+                    if (charJustEnteredCell) {
                         emitter = emitters[cell];
                     }
                     else return;
                 }
-                if (particle.removeOnEnter() && heroJustEnteredCell) {
+                if (particle.cur[cell] == CELL_WILL_GO_INACTIVE) {
                     emitter.valueOnKill = valueOnEmitterKill;
-                    emitter.start(factory, interval, quantity == 0 ? Math.max(1, (int) (1.2f / interval)) : quantity);
+                    if (particle.alwaysEmitting()) emitter.start(factory, 0.01f, 1);
+                    else emitter.start(factory, interval, quantity == 0 ? Math.max(1, (int) (1.2f / interval)) : quantity);
                 } else {
                     emitter.valueOnKill = CELL_ACTIVE;
                     emitter.start(factory, interval, charJustEnteredCell && quantity == 0 ? Math.max(1, (int) (1.2f / interval)) : quantity);

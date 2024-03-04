@@ -11,7 +11,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RipperDemon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
@@ -81,7 +80,7 @@ public class MobSpriteItem extends EditorItem<Class<? extends CharSprite>> {
 
     public static boolean canChangeSprite(Mob mob) {
         return canSpriteBeUsedForOthers(mob)
-                && !(mob instanceof Ghoul || mob instanceof Golem || mob instanceof Necromancer
+                && !(mob instanceof Ghoul || mob instanceof Golem
                 || mob instanceof Goo || mob instanceof RipperDemon || mob instanceof SentryRoom.Sentry || mob instanceof CrystalGuardian);
     }
 

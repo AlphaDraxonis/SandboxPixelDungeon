@@ -50,8 +50,6 @@ public class WndOptions extends Window {
 	public WndOptions(Image icon, String title, String message, String... options) {
 		super();
 
-		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
-
 		if (title != null) {
 			tfTitle = new IconTitle(icon, title);
 			add(tfTitle);

@@ -112,7 +112,11 @@ public class ScrollPane extends Component {
         }
         thumbVer.y = this.y + height * c.scroll.y / content.height();
         thumbHor.x = this.x + width * c.scroll.x / content.width();
+
+        onScroll();
     }
+
+    protected void onScroll() {}
 
     /**
      * If the size has changed, this method will move the camera to a valid position.
@@ -328,6 +332,7 @@ public class ScrollPane extends Component {
 
             lastPos.set(current);
 
+            ScrollPane.this.onScroll();
         }
 
         private void resetCurrentEvent() {

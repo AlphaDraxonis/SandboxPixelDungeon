@@ -38,6 +38,7 @@ public class EditRemoverComp extends DefaultEditComp<EditorItem.NullItemClass> {
     @Override
     protected void layout() {
         super.layout();
+        height += 4;
         height = EditorUtilies.layoutCompsLinear(WndTitledMessage.GAP * 2, this, priorityLabel, priorityChanger);
     }
 

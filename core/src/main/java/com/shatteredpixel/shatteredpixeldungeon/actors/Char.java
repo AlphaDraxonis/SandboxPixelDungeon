@@ -657,6 +657,16 @@ public abstract class Char extends Actor {
 		
 		return (acuRoll * accMulti) >= defRoll;
 	}
+
+	protected void zap() {
+		//do nothing by default
+	}
+
+	//look for calls on an casted object and remove the cast, this cast was made by a shattered update!
+	public void onZapComplete() {
+		zap();
+		next();
+	}
 	
 	public int attackSkill( Char target ) {//accurancy
 		return 0;

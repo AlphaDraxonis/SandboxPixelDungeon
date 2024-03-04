@@ -32,7 +32,13 @@ public class SimpleWindow extends Window {
         this.contentAlignment = alignment;
         this.titleAlignment = titleAlignmentX;
 
-        sp = new ScrollPane(body);
+        sp = new ScrollPane(body) {
+            @Override
+            protected void onScroll() {
+                super.onScroll();
+                SimpleWindow.this.onScroll(this);
+            }
+        };
         add(sp);
 
         add(title);
@@ -69,6 +75,9 @@ public class SimpleWindow extends Window {
 
         sp.scrollToCurrentView();
         sp.givePointerPriority();
+    }
+
+    protected void onScroll(ScrollPane sp) {
     }
 
     public float preferredHeight() {

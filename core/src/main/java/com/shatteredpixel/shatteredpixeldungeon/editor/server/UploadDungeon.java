@@ -18,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunicat
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
@@ -46,6 +47,8 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
     private final MultiWindowTabComp.BackPressImplemented onBackPressed;
     private final DungeonPreview preview;
 
+    private boolean scrolledToBottom;
+
 
     public UploadDungeon(SimpleWindow window, ServerCommunication.UploadType type, String desc, DungeonPreview preview, Runnable onClose, MultiWindowTabComp.BackPressImplemented onBackPressed) {
 
@@ -53,6 +56,8 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         this.type = type;
         this.onBackPressed = onBackPressed;
         this.preview = preview;
+
+        scrolledToBottom = type != ServerCommunication.UploadType.UPLOAD;
 
         outsideSp = new Component() {
             private RedButton cancel, upload;
@@ -151,7 +156,6 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
         height = 0;
         if (info != null) info.maxWidth((int) width);
         if (legalInfo != null) legalInfo.maxWidth((int) width);
-        height = -4;
         height = EditorUtilies.layoutCompsLinear(4, this, info, selectDungeon, description, userName, difficulty, legalInfo) + 1;
     }
 
@@ -171,6 +175,11 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
 
     private void uploadDungeon(Runnable onSuccessful) {
         if (type == ServerCommunication.UploadType.UPLOAD) {
+
+            if (!scrolledToBottom) {
+                Game.scene().addToFront(new WndMessage(Messages.get(UploadDungeon.class, "scroll_to_bottom")));
+                return;
+            }
 
             if (!SPDSettings.canUploadedToServer()) {
                 Game.scene().addToFront(new WndMessage(Messages.get(UploadDungeon.class, "wait_upload")));
@@ -250,13 +259,24 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
 
     private static void forceShowWindow(ServerCommunication.UploadType type, String preselectDungeon) {
         SimpleWindow w = new SimpleWindow(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f)) {
+            private UploadDungeon uploadDungeon;
+            {
+                uploadDungeon = new UploadDungeon(this, type, null, null, this::hide, null);
+                uploadDungeon.selectDungeon.selectObject(preselectDungeon);
+                initComponents(uploadDungeon.createTitle(), uploadDungeon, uploadDungeon.getOutsideSp());
+            }
             @Override
             public void onBackPressed() {
             }
+
+            @Override
+            protected void onScroll(ScrollPane sp) {
+                super.onScroll(sp);
+                if (uploadDungeon != null && sp.content().camera.scroll.y >= sp.content().height() - sp.height() - 2) {
+                    uploadDungeon.scrolledToBottom = true;
+                }
+            }
         };
-        UploadDungeon uploadDungeon = new UploadDungeon(w, type, null, null, w::hide, null);
-        uploadDungeon.selectDungeon.selectObject(preselectDungeon);
-        w.initComponents(uploadDungeon.createTitle(), uploadDungeon, uploadDungeon.getOutsideSp());
         Game.scene().addToFront(w);
     }
 }

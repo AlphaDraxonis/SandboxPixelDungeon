@@ -119,7 +119,7 @@ public class ChangeLevelColoring extends Component {
                     Messages.get(ChangeLevelColoring.class, "invisible"), Messages.get(ChangeLevelColoring.class, "visible"),
                     0, 100, 11) {
                 @Override
-                protected void immediatlyOnChange(int currentVal) {
+                protected void immediatelyOnChange(int currentVal) {
                     setAlpha(currentVal / 100f);
                 }
 

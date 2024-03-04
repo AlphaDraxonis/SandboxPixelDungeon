@@ -83,7 +83,7 @@ public abstract class OptionSlider extends Component {
 
     protected abstract void onChange();
 
-    protected void immediatlyOnChange(int currentVal) {
+    protected void immediatelyOnChange(int currentVal) {
     }
 
     public int getSelectedValue() {
@@ -145,7 +145,7 @@ public abstract class OptionSlider extends Component {
                     PointF p = camera().screenToCamera((int) event.current.x, (int) event.current.y);
                     sliderNode.x = GameMath.gate(sliderBG.x - 2, p.x - sliderNode.width() / 2, sliderBG.x + sliderBG.width() - 2);
 
-                    immediatlyOnChange(minVal + Math.round((sliderNode.x - x) / tickDist));
+                    immediatelyOnChange(minVal + Math.round((sliderNode.x - x) / tickDist));
                 }
             }
         };

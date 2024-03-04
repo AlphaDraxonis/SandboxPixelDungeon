@@ -5,9 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
@@ -87,7 +85,7 @@ import java.util.Set;
 
 public class CustomDungeon implements Bundlable {
 
-    public boolean damageImmune, seeSecrets, permaMindVision, permaInvis, permaKey;// maybe add ScrollOfDebug?
+    public boolean damageImmune, seeSecrets, permaMindVision, permaInvis, permaKey, extraSpeed;// maybe add ScrollOfDebug?
 
     //FIXME: Was noch zu tun ist  FIXME FIXME TODO System.err.println()
     //general floor overview stuff

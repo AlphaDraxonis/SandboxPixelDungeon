@@ -247,7 +247,7 @@ public class ChangeRegion extends Component {
     @Override
     protected void layout() {
         height = 0;
-        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, region, water, music, musicVariantSpinner);
+        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, region, water, music, musicVariantSpinner) + 2;
         height = EditorUtilies.layoutStyledCompsInRectangles(2, width, 24, 1, this, customMusic);
     }
 

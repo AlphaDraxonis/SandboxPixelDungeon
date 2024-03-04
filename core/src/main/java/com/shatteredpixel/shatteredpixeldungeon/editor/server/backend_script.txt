@@ -35,7 +35,7 @@ function doPost(e) {
       difficulty: e.parameter.difficulty,
       upload_time: new Date().getTime(),
     };
-    uploadFile(JSON.stringify(preview), dungeonID, "", PREVIEW_FOLDER, true);
+    uploadFile(JSON.stringify(preview), dungeonID, "", PREVIEW_FOLDER, false);
 
     uploadFile(JSON.stringify(userIDFileContent), dungeonID, "", USER_ID_FOLDER, false);
 
@@ -89,7 +89,7 @@ function doPost(e) {
       difficulty: e.parameter.difficulty,
       upload_time: new Date().getTime(),
     };
-    uploadFile(JSON.stringify(preview), dungeonID, "", PREVIEW_FOLDER, true);
+    uploadFile(JSON.stringify(preview), dungeonID, "", PREVIEW_FOLDER, false);
 
     uploadFile(JSON.stringify(userIDFileContent), dungeonID, "", USER_ID_FOLDER, false);
 
@@ -241,7 +241,7 @@ function listFiles(folderID) {
       id: file.getId(),
       name: file.getName(),
       dungeonID: file.getName(),
-      content: decompressGZip(file.getBlob()),
+      content: file.getBlob().getDataAsString(),
     });
   }
 
@@ -306,8 +306,8 @@ function compressGZip(decompressedBlob) {
 
 function readIntVersion(dungeonID) {
   const folder = DriveApp.getFolderById(PREVIEW_FOLDER);
-  const file = folder.getFilesByName(dungeonID);
-  const asJSON = getFileContentAsJSON(file.next().getID());
+  const files = folder.getFilesByName(dungeonID);
+  const asJSON = JSON.parse(files.next().getBlob());
   return asJSON.int_version;
 }
 
@@ -376,7 +376,7 @@ function sendNotificationEmail(fileName, msg, description, int_version) {
 
 
 
-//SUPPLY URL SCRIPT (This is the script it first connect to so it can then read the url for the actual script. That way, I can update the real script later.)
+//SUPPLY URL SCRIPT (This is the script it first connects to so it can then read the URL for the actual script. That way, I can update the real script later.)
 const FOLDR     = "1miViNNWVeAaqg3GkCoO4HzcqolsRnKXc";
 const FILE_NAME = "url.txt";
 

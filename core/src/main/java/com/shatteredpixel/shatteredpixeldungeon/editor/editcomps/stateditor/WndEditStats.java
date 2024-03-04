@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -316,7 +317,8 @@ public class WndEditStats extends MultiWindowTabComp {
         content.add(speed);
 
         viewDistance = new IntegerSpinner(Messages.get(Mob.class, "view_distance"),
-                1, Math.max(10, def.viewDistance * 10), current.viewDistance, false);
+                1, Math.min(Math.max(10, def.viewDistance * 10), ShadowCaster.MAX_DISTANCE), current.viewDistance, false);
+        ((SpinnerIntegerModel) viewDistance.getModel()).setAbsoluteMaximum(ShadowCaster.MAX_DISTANCE);
         viewDistance.addChangeListener(() -> current.viewDistance = viewDistance.getAsInt());
         content.add(viewDistance);
     }

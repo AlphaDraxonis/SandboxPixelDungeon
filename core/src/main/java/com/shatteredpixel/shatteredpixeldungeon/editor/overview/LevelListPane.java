@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.overview;
 
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
@@ -13,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndEditFlo
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -153,7 +155,7 @@ public abstract class LevelListPane extends ScrollingListPane {
                 newForegroundImg = Icons.CLOSE.get();
             } else if (levelScheme == LevelScheme.SURFACE_LEVEL_SCHEME) {
                 name = EditorUtilies.getDispayName(Level.SURFACE);
-                newForegroundImg = null;//Clouds tzz
+                newForegroundImg = BadgeBanner.image(Badges.Badge.HAPPY_END.image);
             } else if (levelScheme == LevelScheme.ANY_LEVEL_SCHEME) {
                 name = EditorUtilies.getDispayName(Level.ANY);
                 newForegroundImg = new ItemSprite();

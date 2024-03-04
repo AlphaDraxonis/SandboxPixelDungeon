@@ -17,9 +17,6 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Reflection;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class ChooseOneInCategoriesBody extends Component {
 
     public static final int BUTTON_HEIGHT = 18, GAP = 1;
@@ -31,9 +28,9 @@ public abstract class ChooseOneInCategoriesBody extends Component {
 
     private final RedButton scrollUp, scrollDown, cancel;
 
-    private Integer[] titlePos;
+    private float[] titlePos;
 
-    private List<CategoryComp> categoryComps = new ArrayList<>();
+    private CategoryComp[] categoryComps;
 
     public ChooseOneInCategoriesBody(Component titleBar, String desc, Object[][] categories, String[] categoryNames) {
 
@@ -82,11 +79,12 @@ public abstract class ChooseOneInCategoriesBody extends Component {
 
         wrapper = new Component();
 
-        for (int i = 0; i < categories.length; i++) {
+        categoryComps = new CategoryComp[categories.length];
+        for (int i = 0; i < categoryComps.length; i++) {
             CategoryComp c = new CategoryComp(Messages.titleCase(categoryNames[i]),
                     createCategoryRows(categories[i]));
             wrapper.add(c);
-            categoryComps.add(c);
+            categoryComps[i] = c;
         }
         sp = new ScrollPane(wrapper);
         add(sp);
@@ -101,17 +99,17 @@ public abstract class ChooseOneInCategoriesBody extends Component {
 
         float pos = 0;
 
-        List<Integer> titlePosList = new ArrayList<>();
-        for (CategoryComp cat : categoryComps) {
+        titlePos = new float[categoryComps.length];
+        for (int i = 0; i < titlePos.length; i++) {
+            CategoryComp cat = categoryComps[i];
             if (cat.visible = cat.shouldBeVisible()) {
-                titlePosList.add((int) PixelScene.align(pos));
                 pos += GAP * 3;
                 cat.setRect(x, pos, width, 0);
                 PixelScene.align(cat);
+                titlePos[i] = cat.top() - GAP * 3;
                 pos = cat.bottom() + GAP;
             }
         }
-        titlePos = titlePosList.toArray(new Integer[0]);
 
         wrapper.setSize(width, pos);
 

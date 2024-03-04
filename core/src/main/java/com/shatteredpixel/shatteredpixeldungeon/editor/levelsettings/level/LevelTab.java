@@ -178,6 +178,9 @@ public class LevelTab extends MultiWindowTabComp {
 
 
         viewDistance = new StyledSpinner(new SpinnerIntegerModel(1, ShadowCaster.MAX_DISTANCE, level.viewDistance, 1, false, null) {
+            {
+                setAbsoluteMaximum(ShadowCaster.MAX_DISTANCE);
+            }
             @Override
             public float getInputFieldWidth(float height) {
                 return Spinner.FILL;

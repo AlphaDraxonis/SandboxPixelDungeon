@@ -14,13 +14,20 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.ui.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChangeMobNameDesc extends Component {
 
-    protected StringInputComp name, desc, dialog;
+    protected StringInputComp name, desc;
+    protected List<StringInputComp> dialogs = new ArrayList<>(5);
+    protected RedButton addDialog;
     protected ItemSelector mobSprite;
     protected final Mob mob;
 
@@ -95,16 +102,21 @@ public class ChangeMobNameDesc extends Component {
         };
         add(desc);
 
-        dialog = new StringInputComp(Messages.get(ChangeMobNameDesc.class, "dialog_label"), null, 500, true, mob.dialog) {
+        addDialog = new RedButton(Messages.get(ChangeMobNameDesc.class, "add_dialog")) {
             @Override
-            protected void onChange() {
-                super.onChange();
-                mob.dialog = getText();
-                if (mob.dialog.trim().isEmpty()) mob.dialog = null;
+            protected void onClick() {
+                mob.dialogs.add(null);
+                addDialogField(mob.dialogs.size() - 1);
                 updateLayout();
             }
         };
-        add(dialog);
+        add(addDialog);
+
+        if (mob.dialogs.isEmpty()) mob.dialogs.add(null);
+        addDialogField(0);
+        for (int i = 1; i < mob.dialogs.size(); i++) {
+            addDialogField(i);
+        }
     }
 
     protected void updateLayout() {
@@ -115,12 +127,41 @@ public class ChangeMobNameDesc extends Component {
     @Override
     protected void layout() {
         height = 0;
-        height = EditorUtilies.layoutCompsLinear(2, this, mobSprite, name, desc, dialog);
+        height = EditorUtilies.layoutCompsLinear(2, this, mobSprite, name, desc) + 2;
+        height = EditorUtilies.layoutCompsLinear(2, this, dialogs.toArray(new StringInputComp[0]));
+
+        addDialog.setRect(x + width / 5, height + 4,width * 3 / 5, ItemSpriteSheet.SIZE);
+        height = addDialog.bottom() + 1;
     }
 
     public static Component createTitle() {
         RenderedTextBlock title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(ChangeMobNameDesc.class, "title")), 11);
         title.hardlight(Window.TITLE_COLOR);
         return title;
+    }
+
+    @Override
+    public synchronized void destroy() {
+        super.destroy();
+        for (int i = mob.dialogs.size() - 1; i >= 0; i--) {
+            String dialog = mob.dialogs.get(i);
+            if (dialog == null || dialog.trim().isEmpty()) mob.dialogs.remove(i);
+        }
+    }
+
+    private void addDialogField(int index) {
+        StringInputComp dialog = new StringInputComp(Messages.get(ChangeMobNameDesc.class, "dialog_label") + " " + (index + 1) + ":", null, 500, true,
+                mob.dialogs.size() <= index || mob.dialogs.get(index) == null ? "" : mob.dialogs.get(index)) {
+            @Override
+            protected void onChange() {
+                super.onChange();
+                String txt = getText();
+                if (txt.trim().isEmpty()) txt = null;
+                mob.dialogs.set(index, txt);
+                updateLayout();
+            }
+        };
+        add(dialog);
+        dialogs.add(dialog);
     }
 }

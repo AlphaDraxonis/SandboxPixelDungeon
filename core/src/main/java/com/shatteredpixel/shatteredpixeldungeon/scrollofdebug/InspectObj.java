@@ -144,7 +144,7 @@ public class InspectObj extends Component {
         @Override
         protected void layout() {
             info.maxWidth((int) width);
-            height = -1;
+            height = 0;
             height = EditorUtilies.layoutCompsLinear(2, 16, this, comps);
         }
     }

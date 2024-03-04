@@ -970,7 +970,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (!Objects.equals(a.customName, b.customName)) return false;
         if (!Objects.equals(a.customDesc, b.customDesc)) return false;
-        if (!Objects.equals(a.dialog, b.dialog)) return false;
+
+        if (!(a.dialogs == null ? new HashSet<>() : new HashSet<>(a.dialogs)).equals(b.dialogs == null ? new HashSet<>() : new HashSet<>(b.dialogs))) return false;
 
         if (a.spriteClass != b.spriteClass) return false;
 
@@ -1067,13 +1068,14 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 @Override
                 protected void onClick() {
                     Window parent = EditorUtilies.getParentWindow(this);
-                    SimpleWindow w = new SimpleWindow(parent.camera().width - 10, parent.camera().height - 10) {
+                    SimpleWindow w = new SimpleWindow(parent.camera().width - 10, (int) Math.ceil(PixelScene.uiCamera.height * 0.8f - 10)) {
                         @Override
                         public void hide() {
                             super.hide();
                             updateObj();
                         }
                     };
+                    w.offset(0, EditorUtilies.getMaxWindowOffsetYForVisibleToolbar());
                     w.initComponents(ChangeMobNameDesc.createTitle(), new ChangeMobNameDesc(EditMobComp.this), null, 0f, 0.5f);
                     EditorScene.show(w);
                 }

@@ -377,12 +377,9 @@ public class SideControlPane extends Component {
 
         @Override
         protected void enable(boolean value) {
-            if (value != isBtnEnabled()) {
-                if (value) Dungeon.hero.baseSpeed *= 10;
-                else Dungeon.hero.baseSpeed /= 10;
-            }
             super.enable(value);
             shouldBeEnabled = value;
+            Dungeon.customDungeon.extraSpeed = value;
         }
     }
 

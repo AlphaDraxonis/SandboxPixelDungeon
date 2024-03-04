@@ -144,7 +144,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         }, Messages.get(EditZoneComp.class, "grass_label"), 9, new TileSprite(Terrain.HIGH_GRASS));
         grassVisuals.addChangeListener(() -> zone.setGrassType((Zone.GrassType) grassVisuals.getValue()));
 
-        StyledButton mobRotation = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditTileComp.class, "mob_rotation"), 9) {
+        StyledButton mobRotation = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditZoneComp.class, "custom_mob_cycle"), 9) {
             {
                 text.align(RenderedTextBlock.CENTER_ALIGN);
             }

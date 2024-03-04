@@ -124,7 +124,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
     @Override
     protected void layoutOwnContent() {
-        content.setSize(width, -1);
+        content.setSize(width, 0);
         content.setSize(width, EditorUtilies.layoutCompsLinear(GAP, content, mainWindowComps));
         upload.setRect(width - 17, height - 15,16,16);
     }

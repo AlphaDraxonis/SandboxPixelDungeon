@@ -332,7 +332,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 	@Override
 	protected Char chooseEnemy() {
 		Char enemy = super.chooseEnemy();
-		if (supercharged && enemy == null){
+		if (supercharged && enemy == null && alignment == Alignment.ENEMY){
 			enemy = Dungeon.hero;
 		}
 		return enemy;

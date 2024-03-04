@@ -117,10 +117,12 @@ public abstract class DefaultEditComp<T> extends Component {
     }
 
     protected final void layoutCompsLinear(Component... comps) {
+        height += WndTitledMessage.GAP;
         height = EditorUtilies.layoutCompsLinear(WndTitledMessage.GAP, this, comps);
     }
 
     protected final void layoutCompsInRectangles(Component... comps) {
+        height += WndTitledMessage.GAP;
         height = EditorUtilies.layoutStyledCompsInRectangles(WndTitledMessage.GAP, width, this, comps);
     }
 

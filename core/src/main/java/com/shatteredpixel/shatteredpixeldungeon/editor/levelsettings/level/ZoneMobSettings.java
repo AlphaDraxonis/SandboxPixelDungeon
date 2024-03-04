@@ -121,7 +121,7 @@ public class ZoneMobSettings extends Component {
 
     @Override
     protected void layout() {
-        height = 4;
+        height = 6;
         height = EditorUtilies.layoutStyledCompsInRectangles(GAP, width, this, spawningEnabled, respawnTime) + GAP * 3;
         changeMobRotation.setRect(x, y + height, width, -1);
         height = changeMobRotation.bottom() - y;

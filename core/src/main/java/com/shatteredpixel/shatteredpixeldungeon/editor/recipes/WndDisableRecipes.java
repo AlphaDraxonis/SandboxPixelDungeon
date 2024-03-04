@@ -58,9 +58,9 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
                 Messages.get(WndDisableRecipes.class, "desc"),
                 new Object[][]{{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}}, new String[]{
                         Messages.get(WndDisableRecipes.class, "cat_1"),
-                        Messages.get(WndDisableRecipes.class, "cat_2"),
-                        Messages.get(WndDisableRecipes.class, "cat_3"),
-                        Messages.get(WndDisableRecipes.class, "cat_4"),
+                        Messages.get(WndDisableRecipes.class, "cat_1"),
+                        Messages.get(WndDisableRecipes.class, "cat_1"),
+                        Messages.get(WndDisableRecipes.class, "cat_1"),
                         Messages.get(WndDisableRecipes.class, "cat_5"),
                         Messages.get(WndDisableRecipes.class, "specific_potions"),
                         Messages.get(WndDisableRecipes.class, "specific_runestones"),
@@ -176,7 +176,7 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
                 result.add(new RecipeInfo(ItemSpriteSheet.TELE_GRAB, 224, TelekineticGrab.class));
                 result.add(new RecipeInfo(ItemSpriteSheet.PHASE_SHIFT, 220, PhaseShift.class));
                 result.add(new RecipeInfo(ItemSpriteSheet.WILD_ENERGY, 223, WildEnergy.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.BEACON, 216, BeaconOfReturning.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.RETURN_BEACON, 216, BeaconOfReturning.class));
                 result.add(new RecipeInfo(ItemSpriteSheet.SUMMON_ELE, 225, SummonElemental.class));
                 result.add(new RecipeInfo(ItemSpriteSheet.AQUA_BLAST, 215, AquaBlast.class));
                 result.add(new RecipeInfo(ItemSpriteSheet.RECLAIM_TRAP, 221, ReclaimTrap.class));

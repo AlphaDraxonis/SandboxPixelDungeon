@@ -30,6 +30,7 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Callback;
 import com.watabou.utils.PointF;
 
 public class DM100Sprite extends MobSprite {
@@ -83,11 +84,19 @@ public class DM100Sprite extends MobSprite {
 			origin.y -= 8*sprite.scale.y;
 			origin.x += 1*sprite.scale.x;
 		}
-		if (enemy != null) {
-			parent.add(new Lightning(origin, enemy.sprite.destinationCenter(), ch::onZapComplete));
-		} else {
-			parent.add(new Lightning(origin, cell, ch::onZapComplete));
-		}
+
+		//idk, but using lambda expression and the all-in-one shattered version sometimes caused a freeze here...
+		Callback callback = new Callback() {
+			@Override
+			public void call() {
+				ch.onZapComplete();
+			}
+		};
+		Group lightning = enemy == null ?
+				new Lightning(origin, cell, callback)
+				: new Lightning(origin, enemy.sprite.destinationCenter(), callback);
+		parent.add(lightning);
+
 		Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 	}
 

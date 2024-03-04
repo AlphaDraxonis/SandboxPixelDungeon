@@ -211,10 +211,11 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                 info.maxWidth((int) width);
                 info.setPos(x, y);
 
-                height = info.height() + 2;
+                height = info.height();
 
                 for (int i = 0; i < challengeTitles.length; i++) {
-                    height = EditorUtilies.layoutCompsLinear(2, this, challengeTitles[i]);
+                    height += 5;
+                    height = EditorUtilies.layoutCompsLinear(2, this, challengeTitles[i]) + 3;
                     height = EditorUtilies.layoutStyledCompsInRectangles(
                             2, width, Math.min(checkBoxes[i].length, PixelScene.landscape() ? 3 : 2), this, checkBoxes[i]);
                 }
@@ -428,7 +429,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
         content.setSize(width, title.bottom() + 4 * MARGIN);
 
-        content.setSize(width, EditorUtilies.layoutStyledCompsInRectangles(MARGIN * 2, width, 2, content, seed, feelingSpinner));
+        content.setSize(width, EditorUtilies.layoutStyledCompsInRectangles(MARGIN * 2, width, 2, content, seed, feelingSpinner) + 2);
 
         content.setSize(width, EditorUtilies.layoutCompsLinear(MARGIN * 2, content, challengeSettings, sectionItems, sectionMobs, sectionRooms));
 

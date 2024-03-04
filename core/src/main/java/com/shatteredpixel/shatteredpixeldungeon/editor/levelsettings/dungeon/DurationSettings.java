@@ -165,7 +165,7 @@ public class DurationSettings extends Component {
             info.maxWidth((int) width);
             info.setPos(x, y + 1);
             if (elements != null) {
-                wrapper.setSize(width, -1);
+                wrapper.setSize(width, 0);
                 wrapper.setRect(x, info.bottom() + 4, width, EditorUtilies.layoutStyledCompsInRectangles(2, width, wrapper, elements));
                 height = wrapper.bottom() + 1;
             } else height = info.bottom() + 1;

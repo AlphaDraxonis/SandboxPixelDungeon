@@ -282,7 +282,7 @@ public class Blob extends Actor {
 		}
 
 		level.particles.put( particleID, particle );
-		particle.seed( level, cell, 1 );
+		particle.seed( level, cell, CustomParticle.CELL_ACTIVE );
 
 		return particle;
 	}

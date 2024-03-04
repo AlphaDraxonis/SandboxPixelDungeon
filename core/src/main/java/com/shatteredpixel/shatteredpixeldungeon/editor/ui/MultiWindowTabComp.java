@@ -101,7 +101,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
     }
 
     protected void layoutOwnContent() {
-        content.setSize(width, -1);
+        content.setSize(width, 0);
         content.setSize(width, EditorUtilies.layoutStyledCompsInRectangles(GAP, width, content, mainWindowComps));
     }
 

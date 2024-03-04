@@ -1857,7 +1857,7 @@ public abstract class Level implements Bundlable {
 		int setValue = ch == Dungeon.hero ? CustomParticle.HERO_JUST_ENTERED : CustomParticle.CHAR_JUST_ENTERED;
 		for (CustomParticle particle : Dungeon.level.particles.values()) {
 			if (particle != null && particle.cur != null
-					&& particle.cur[ch.pos] > CustomParticle.CELL_INACTIVE && particle.cur[ch.pos] != CustomParticle.HERO_JUST_ENTERED) {
+					&& particle.cur[ch.pos] >= CustomParticle.CELL_ACTIVE) {
 				particle.volume += setValue - particle.cur[ch.pos];
 				particle.cur[ch.pos] = setValue;
 			}
