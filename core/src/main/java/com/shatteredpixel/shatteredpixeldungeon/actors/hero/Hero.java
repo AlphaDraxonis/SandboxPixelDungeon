@@ -1043,11 +1043,16 @@ public class Hero extends Char {
 
 			damage(Random.NormalIntRange(3 + Dungeon.depth, 4 + 3 * Dungeon.depth), Mimic.class);
 			Sample.INSTANCE.play(Assets.Sounds.MIMIC);
-			GLog.w(Messages.get(this, "mimic_door"));
+			if (isAlive()) {
+				GLog.w(Messages.get(this, "mimic_door"));
+			} else {
+				Dungeon.fail( this );
+				GLog.n(Messages.get(this, "mimic_door_death"));
+			}
 
 			spend(TICK);
 
-			return false;
+			return true;
 
 		} else if (getCloser( dst )) {
 

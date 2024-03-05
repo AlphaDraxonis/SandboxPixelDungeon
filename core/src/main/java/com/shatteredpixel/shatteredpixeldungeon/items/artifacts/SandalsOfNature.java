@@ -180,15 +180,13 @@ public class SandalsOfNature extends Artifact {
 
     @Override
     public String name() {
-        if (customDesc != null) return customDesc;
-        if (level() == 0) return super.name();
+        if (level() == 0 || customName != null) return super.name();
         else return Messages.get(this, "name_" + level());
     }
 
     @Override
     public String desc() {
-        if (customDesc != null) return customDesc;
-        String desc = Messages.get(this, "desc_" + (level() + 1));
+        String desc = customDesc == null ? Messages.get(this, "desc_" + (level() + 1)) : super.desc();
 
         if (isEquipped(Dungeon.hero)) {
             desc += "\n\n";

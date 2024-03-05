@@ -57,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Fe
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.Customizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PropertyItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
@@ -114,7 +115,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
-public abstract class Mob extends Char {
+public abstract class Mob extends Char implements Customizable {
 
 	{
 		actPriority = MOB_PRIO;
@@ -145,7 +146,7 @@ public abstract class Mob extends Char {
 	public EnchantmentWeapon enchantWeapon = new EnchantmentWeapon();
 
 
-	public String customName, customDesc;
+	protected String customName, customDesc;
 	public List<String> dialogs = new ArrayList<>(5);
 	public boolean isBossMob;//only real value while playing, use level.bossmobAt instead!, not meant for shattered bosses except goo!
 	public boolean showBossBar = true;
@@ -167,7 +168,7 @@ public abstract class Mob extends Char {
 
 	protected static final float TIME_TO_WAKE_UP = 1f;
 
-	protected boolean firstAdded = true;
+	public boolean firstAdded = true;
 	protected void onAdd(){
 		if (firstAdded) {
 			//modify health for ascension challenge if applicable, only on first add
@@ -1417,6 +1418,26 @@ public abstract class Mob extends Char {
             ret += "\n" + Messages.get(Mob.class, "armor") + ": " + defaultStats.damageReductionMax + " -> _" + damageReductionMax + "_";
         return ret;
     }
+
+	@Override
+	public String getCustomName() {
+		return customName;
+	}
+
+	@Override
+	public void setCustomName(String name) {
+		customName = name;
+	}
+
+	@Override
+	public String getCustomDesc() {
+		return customDesc;
+	}
+
+	@Override
+	public void setCustomDesc(String desc) {
+		customDesc = desc;
+	}
 
     public void addBossProperty() {
         if (isBossMob) properties.add(Property.BOSS);

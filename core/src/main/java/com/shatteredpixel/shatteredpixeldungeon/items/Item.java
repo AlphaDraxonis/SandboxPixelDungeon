@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.Customizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
@@ -62,7 +63,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Item implements Bundlable {
+public class Item implements Bundlable, Customizable {
 
 	protected static final String TXT_TO_STRING_LVL		= "%s %+d";
 	protected static final String TXT_TO_STRING_X		= "%s x%d";
@@ -80,7 +81,8 @@ public class Item implements Bundlable {
 	//TODO should these be private and accessed through methods?
 	public int image = 0;
 	public int icon = -1; //used as an identifier for items with randomized images
-	public String customImage, customName, customDesc;
+	public String customImage;
+	protected String customName, customDesc;
 	
 	public boolean stackable = false;
 	protected int quantity = 1;
@@ -547,6 +549,26 @@ public class Item implements Bundlable {
 		String msg;
 		return customName == null ? Messages.get(this, "name") : Messages.NO_TEXT_FOUND.equals(msg = Messages.get(customName)) ? customName : msg;
 	}
+
+	@Override
+	public String getCustomName() {
+		return customName;
+	}
+
+	@Override
+	public void setCustomName(String name) {
+		customName = name;
+	}
+
+	@Override
+	public String getCustomDesc() {
+		return customDesc;
+	}
+
+	@Override
+	public void setCustomDesc(String desc) {
+		customDesc = desc;
+	}
 	
 	public int image() {
 		return image;
@@ -563,7 +585,8 @@ public class Item implements Bundlable {
 	}
 	
 	public String desc() {
-		return Messages.get(this, "desc");
+		String msg;
+		return customDesc == null ? Messages.get(this, "desc") : Messages.NO_TEXT_FOUND.equals(msg = Messages.get(customDesc)) ? customDesc : msg;
 	}
 	
 	public int quantity() {

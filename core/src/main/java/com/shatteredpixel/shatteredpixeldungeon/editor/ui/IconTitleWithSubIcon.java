@@ -52,8 +52,8 @@ public class IconTitleWithSubIcon extends IconTitle {
         super.layout();
 
         if (subIcon != null && imIcon != null) {
-            subIcon.x = x + Math.max(imIcon.width, 16) - (ItemSpriteSheet.Icons.SIZE + subIcon.width()) / 2f;
-            subIcon.y = y - 0.5f + (ItemSpriteSheet.Icons.SIZE - subIcon.height) / 2f;
+            subIcon.x = x + Math.max(imIcon.width(), 16) - (ItemSpriteSheet.Icons.SIZE + subIcon.width()) / 2f;
+            subIcon.y = y - 0.5f + (ItemSpriteSheet.Icons.SIZE - subIcon.height()) / 2f;
             PixelScene.align(subIcon);
         }
 

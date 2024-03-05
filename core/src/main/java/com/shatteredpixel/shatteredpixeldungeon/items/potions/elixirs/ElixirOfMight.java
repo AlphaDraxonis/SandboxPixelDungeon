@@ -63,7 +63,7 @@ public class ElixirOfMight extends Elixir {
 	}
 	
 	public String desc() {
-		if (customDesc != null) return customDesc;
+		if (customDesc != null) return super.desc();
 		return Messages.get(this, "desc", HTBoost.boost(Dungeon.hero.HT));
 	}
 	

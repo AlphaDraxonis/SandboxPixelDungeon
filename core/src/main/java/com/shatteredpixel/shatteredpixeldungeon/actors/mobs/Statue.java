@@ -64,7 +64,7 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 		HT = (int) (15 + depth * 5 * statsScale);
 		defenseSkill = 4 + depth;
 
-		if (HP == 0) HP = HT;
+		if (HP == 0 || firstAdded) HP = HT;
 	}
 
 	@Override
@@ -206,7 +206,8 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 
 	@Override
 	public String description() {
-		return customDesc == null ? Messages.get(this, "desc", weapon().name()) : customDesc;
+		if (customDesc != null) return super.description();
+		return Messages.get(this, "desc", weapon().name());
 	}
 
 	{

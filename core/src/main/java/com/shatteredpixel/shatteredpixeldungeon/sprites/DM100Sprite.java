@@ -62,6 +62,9 @@ public class DM100Sprite extends MobSprite {
 
 	@Override
 	public void zap(int cell) {
+
+		playZap(parent, this, cell, ch);
+
 		super.zap(cell);
 
 		flash();
@@ -69,7 +72,7 @@ public class DM100Sprite extends MobSprite {
 
 	@Override
 	protected void playZapAnim(int cell) {
-		playZap(parent, this, cell, ch);
+		//do nothing, already included in zap(cell)
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
@@ -85,7 +88,6 @@ public class DM100Sprite extends MobSprite {
 			origin.x += 1*sprite.scale.x;
 		}
 
-		//idk, but using lambda expression and the all-in-one shattered version sometimes caused a freeze here...
 		Callback callback = new Callback() {
 			@Override
 			public void call() {

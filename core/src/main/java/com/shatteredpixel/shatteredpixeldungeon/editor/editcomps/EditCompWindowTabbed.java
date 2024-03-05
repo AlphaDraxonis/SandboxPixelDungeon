@@ -63,9 +63,14 @@ public class EditCompWindowTabbed extends WndTabbed {
                 if (toSelect == null) toSelect = item;
                 initComp(new EditItemComp(item, heap) {
                     @Override
-                    protected void updateObj() {
+                    public void updateObj() {
                         super.updateObj();
                         if (comps.containsKey(item)) comps.get(item).tabBtn.setIcon(getIcon());
+
+                        //only required for custom item image
+                        if (comps.containsKey(heap)) {
+                            comps.get(heap).body.content.updateObj();
+                        }
                     }
                 });
             }
@@ -101,7 +106,7 @@ public class EditCompWindowTabbed extends WndTabbed {
                                 } else {
                                     initComp(new EditItemComp(item, heap) {
                                         @Override
-                                        protected void updateObj() {
+                                        public void updateObj() {
                                             super.updateObj();
                                             if (comps.containsKey(item))
                                                 comps.get(item).tabBtn.setIcon(getIcon());
@@ -233,7 +238,7 @@ public class EditCompWindowTabbed extends WndTabbed {
             if (index1 >= items.length) {
                 initComp(new EditItemComp(item1, heap) {
                     @Override
-                    protected void updateObj() {
+                    public void updateObj() {
                         super.updateObj();
                         if (comps.containsKey(item1)) comps.get(item1).tabBtn.setIcon(getIcon());
                     }
@@ -248,7 +253,7 @@ public class EditCompWindowTabbed extends WndTabbed {
             if (index2 >= items.length) {
                 initComp(new EditItemComp(item2, heap) {
                     @Override
-                    protected void updateObj() {
+                    public void updateObj() {
                         super.updateObj();
                         if (comps.containsKey(item2)) comps.get(item2).tabBtn.setIcon(getIcon());
                     }

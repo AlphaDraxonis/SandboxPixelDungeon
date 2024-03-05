@@ -199,7 +199,7 @@ public class DemonSpawner extends SpawnerMob implements MobBasedOnDepth {
 
 	@Override
 	public void setLevel(int depth) {
-		if (maxSpawnCooldown == 0) {
+		if (maxSpawnCooldown == 0 || firstAdded) {
 			//60/53.33/46.67/40 turns to spawn on floor 21/22/23/24
 			maxSpawnCooldown = 60 - Math.min(20, (depth % 5)*6.67f);
 		}

@@ -337,10 +337,10 @@ public class MagesStaff extends MeleeWeapon {
 
 	@Override
 	public String name() {
-		if (wand == null || customName != null) {
+		if (wand == null) {
 			return super.name();
 		} else {
-			String name = Messages.get(wand, "staff_name");
+			String name = customName == null ? Messages.get(wand, "staff_name") : super.name();
 			return enchantment != null && (cursedKnown() || !enchantment.curse()) ? enchantment.name( name ) : name;
 		}
 	}

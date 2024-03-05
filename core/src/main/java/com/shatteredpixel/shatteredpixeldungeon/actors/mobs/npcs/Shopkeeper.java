@@ -275,11 +275,6 @@ public class Shopkeeper extends NPC {
 					}
 
 					@Override
-					protected boolean hasIcon(int index) {
-						return index > 1;
-					}
-
-					@Override
 					protected Image getIcon(int index) {
 						if (index > 1){
 							return new ItemSprite(buybackItems.get(index-2));

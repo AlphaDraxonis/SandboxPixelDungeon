@@ -43,9 +43,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeMobCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffListContainer;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ChangeMobNameDesc;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.FistSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.HeroClassSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
@@ -88,6 +88,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -196,7 +197,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (mob instanceof ItemSelectables.WeaponSelectable) {
             mobWeapon = new StyledItemSelector(label("weapon"),
-                    Weapon.class, ((ItemSelectables.WeaponSelectable) mob).weapon(), ((ItemSelectables.WeaponSelectable) mob).useNullWeapon()) {
+                    MeleeWeapon.class, ((ItemSelectables.WeaponSelectable) mob).weapon(), ((ItemSelectables.WeaponSelectable) mob).useNullWeapon()) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -968,8 +969,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (a.turnToCell != b.turnToCell) return false;
 
-        if (!Objects.equals(a.customName, b.customName)) return false;
-        if (!Objects.equals(a.customDesc, b.customDesc)) return false;
+        if (!Objects.equals(a.getCustomName(), b.getCustomName())) return false;
+        if (!Objects.equals(a.getCustomDesc(), b.getCustomDesc())) return false;
 
         if (!(a.dialogs == null ? new HashSet<>() : new HashSet<>(a.dialogs)).equals(b.dialogs == null ? new HashSet<>() : new HashSet<>(b.dialogs))) return false;
 
@@ -1076,7 +1077,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                         }
                     };
                     w.offset(0, EditorUtilies.getMaxWindowOffsetYForVisibleToolbar());
-                    w.initComponents(ChangeMobNameDesc.createTitle(), new ChangeMobNameDesc(EditMobComp.this), null, 0f, 0.5f);
+                    ChangeMobCustomizable cc = new ChangeMobCustomizable(EditMobComp.this);
+                    w.initComponents(cc.createTitle(), cc, null, 0f, 0.5f);
                     EditorScene.show(w);
                 }
             };

@@ -301,7 +301,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 
         enemySeen = true;
 
-        if (HP == 0) {
+        if (HP == 0 || firstAdded) {
             HP = HT;
         }
     }

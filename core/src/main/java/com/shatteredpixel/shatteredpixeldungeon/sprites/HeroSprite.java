@@ -258,6 +258,12 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 		public void sprint( float speed ) {
 			run.delay = 1f / speed / RUN_FRAMERATE;
 		}
+
+		@Override
+		protected void playZapAnim(int cell) {
+			//do nothing
+		}
+
 	}
 
 

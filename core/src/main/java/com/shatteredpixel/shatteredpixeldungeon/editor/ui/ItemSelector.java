@@ -76,15 +76,7 @@ public class ItemSelector extends Component {
             @Override
             protected void onClick() {
                 super.onClick();
-                Window w = new EditCompWindow(selectedItem) {
-                    @Override
-                    protected void onUpdate() {
-                        super.onUpdate();
-                        updateItem();
-                    }
-                };
-                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                else Game.scene().addToFront(w);
+                onItemSlotClick();
             }
 
             @Override
@@ -125,6 +117,16 @@ public class ItemSelector extends Component {
         add(changeBtn);
 
         setSelectedItem(startItem);
+    }
+
+    protected void onItemSlotClick() {
+        EditorScene.show(new EditCompWindow(selectedItem) {
+            @Override
+            protected void onUpdate() {
+                super.onUpdate();
+                updateItem();
+            }
+        });
     }
 
     @Override

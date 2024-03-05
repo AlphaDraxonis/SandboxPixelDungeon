@@ -179,8 +179,9 @@ public class Pylon extends Mob {
 
 	@Override
 	public String description() {
-		if (customDesc != null) return customDesc;
-		if (alignment == Alignment.NEUTRAL){
+		if (customDesc != null) {
+			return super.description();
+		} else if (alignment == Alignment.NEUTRAL){
 			return Messages.get(this, "desc_inactive");
 		} else {
 			return Messages.get(this, "desc_active");

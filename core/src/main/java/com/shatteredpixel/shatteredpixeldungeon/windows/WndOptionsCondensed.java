@@ -40,7 +40,7 @@ public class WndOptionsCondensed extends WndOptions {
 	}
 
 	@Override
-	protected void layoutBody(String message, String... options) {
+	protected void layoutBody(String... options) {
 
 		float pos = 0;
 
@@ -55,12 +55,10 @@ public class WndOptionsCondensed extends WndOptions {
 
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
-		RenderedTextBlock tfMesage = PixelScene.renderTextBlock( 6 );
-		tfMesage.text(message, width);
-		tfMesage.setPos( 0, pos );
-		add( tfMesage );
+		tfMessage.maxWidth(width);
+		tfMessage.setPos( 0, pos );
 
-		pos = tfMesage.bottom() + 2*MARGIN;
+		pos = tfMessage.bottom() + 2*MARGIN;
 
 		ArrayList<RedButton> buttons = new ArrayList<>();
 
@@ -73,7 +71,8 @@ public class WndOptionsCondensed extends WndOptions {
 					onSelect( index );
 				}
 			};
-			if (hasIcon(i)) btn.icon(getIcon(i));
+			Image icon = getIcon(i);
+			if (icon != null) btn.icon(icon);
 			btn.enable(enabled(i));
 			btn.setSize(btn.reqWidth(), BUTTON_HEIGHT);
 			add( btn );

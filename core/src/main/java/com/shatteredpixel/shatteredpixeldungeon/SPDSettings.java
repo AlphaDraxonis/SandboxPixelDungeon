@@ -69,7 +69,7 @@ public class SPDSettings extends GameSettings {
 	}
 
 	public static boolean canUploadedToServer() {
-		return getLong( KEY_LAST_UPLOADED_TO_SERVER_TIMER, 0 ) < System.currentTimeMillis()||true;//tzz wicjtig
+		return getLong( KEY_LAST_UPLOADED_TO_SERVER_TIMER, 0 ) < System.currentTimeMillis();
 	}
 
 	public static void increaseUploadTimer() {
@@ -77,7 +77,7 @@ public class SPDSettings extends GameSettings {
 	}
 
 	public static boolean canUpdatedToServer() {
-		return getLong( KEY_LAST_UPDATED_TO_SERVER_TIMER, 0 ) < System.currentTimeMillis()||true;//tzz wicjtig
+		return getLong( KEY_LAST_UPDATED_TO_SERVER_TIMER, 0 ) < System.currentTimeMillis();
 	}
 
 	public static void increaseUpdateTimer() {

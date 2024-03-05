@@ -126,11 +126,6 @@ public class AlchemistsToolkit extends Artifact {
 					}
 
 					@Override
-					protected boolean hasIcon(int index) {
-						return true;
-					}
-
-					@Override
 					protected Image getIcon(int index) {
 						return new ItemSprite(ItemSpriteSheet.ENERGY);
 					}

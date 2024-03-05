@@ -55,7 +55,10 @@ public class WndOptions extends Window {
 			add(tfTitle);
 		}
 
-		layoutBody(message, options);
+		tfMessage = PixelScene.renderTextBlock( message, 6 );
+		add(tfMessage);
+
+		layoutBody(options);
 	}
 	
 	public WndOptions( String title, String message, String... options ) {
@@ -70,14 +73,14 @@ public class WndOptions extends Window {
 			add(tfTitle);
 			this.tfTitle = tfTitle;
 		}
-		
-		layoutBody(message, options);
-	}
-
-	protected void layoutBody(String message, String... options){
 
 		tfMessage = PixelScene.renderTextBlock( message, 6 );
 		add(tfMessage);
+		
+		layoutBody(options);
+	}
+
+	protected void layoutBody(String... options){
 
 		content = new Component();
 
@@ -93,7 +96,8 @@ public class WndOptions extends Window {
 					onSelect( index );
 				}
 			};
-			if (hasIcon(i)) buttons[i].icon(getIcon(i));
+			Image icon = getIcon(i);
+			if (icon != null) buttons[i].icon(icon);
 			buttons[i].enable(enabled(i));
 			content.add( buttons[i] );
 
@@ -165,10 +169,6 @@ public class WndOptions extends Window {
 	}
 
 	protected void onInfo( int index ) {}
-
-	protected boolean hasIcon( int index ) {
-		return false;
-	}
 
 	protected Image getIcon( int index ) {
 		return null;

@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MonkEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
@@ -160,12 +161,11 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
         } else {
 
+            shootMissile();
+
             if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-                sprite.zap( enemy.pos );
-                shootMissile();
                 return false;
             } else {
-                shootMissile();
                 return true;
             }
         }
@@ -177,16 +177,11 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             return;
         }
 
-//        Invisibility.dispel(this);
+        Invisibility.dispel(this);
 
         SpiritBow bow = (SpiritBow) internalHero.belongings.weapon();
 
         bow.knockArrow().cast(internalHero, target);
-    }
-
-    public void onZapComplete() {
-        shootMissile();
-        next();
     }
 
     @Override

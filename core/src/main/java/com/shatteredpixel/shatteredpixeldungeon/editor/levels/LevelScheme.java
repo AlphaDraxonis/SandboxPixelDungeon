@@ -90,7 +90,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     private Class<? extends Level> type;
     private Level level;
-    int region = REGION_NONE;//only for custom levels
+    int region = REGION_SEWERS;//only for custom levels
     private int numInRegion = 3;
     private Level.Feeling feeling = Level.Feeling.NONE;
     private float shopPriceMultiplier = 1f;

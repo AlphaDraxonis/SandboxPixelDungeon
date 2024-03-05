@@ -23,7 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ChangeMobNameDesc;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeMobCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -42,7 +42,7 @@ public class WndInfoMob extends WndTitledMessage {
     }
 
     public WndInfoMob(Mob mob, boolean includeHealthBar) {
-        super(new MobTitle(mob, includeHealthBar), mob.info() + (!mob.dialogs.isEmpty() ? "\n\n_" + Messages.get(ChangeMobNameDesc.class, "dialog_label") + ":_\n" + Random.element(mob.dialogs) : ""));
+        super(new MobTitle(mob, includeHealthBar), mob.info() + (!mob.dialogs.isEmpty() ? "\n\n_" + Messages.get(ChangeMobCustomizable.class, "dialog_label") + ":_\n" + Random.element(mob.dialogs) : ""));
     }
 
     public static class MobTitle extends Component {

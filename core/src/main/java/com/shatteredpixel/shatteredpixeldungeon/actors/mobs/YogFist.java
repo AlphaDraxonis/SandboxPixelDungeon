@@ -191,7 +191,7 @@ public abstract class YogFist extends Mob {
 
 	@Override
 	public String description() {
-		if (customDesc != null) return customDesc;
+		if (customDesc != null) return super.description();
 		return Messages.get(YogFist.class, "desc") + "\n\n" + Messages.get(this, "desc");
 	}
 

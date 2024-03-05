@@ -54,7 +54,7 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 		int loadedHP = HP;
 		super.setLevel(depth);
 		HT *= 2;//double HP
-		if (loadedHP == 0) HP = HT;
+		if (loadedHP == 0 || firstAdded) HP = HT;
 	}
 
 	@Override
@@ -168,7 +168,8 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 
 	@Override
 	public String description() {
-		return customDesc == null ? Messages.get(this, "desc", weapon().name(), armor().name()) : customDesc;
+		if (customDesc != null) return super.description();
+		return Messages.get(this, "desc", weapon().name(), armor().name());
 	}
 
 }

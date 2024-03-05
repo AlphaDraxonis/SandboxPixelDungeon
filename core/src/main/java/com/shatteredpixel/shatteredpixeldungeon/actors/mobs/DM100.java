@@ -106,12 +106,14 @@ public class DM100 extends DMMob {
 			
 		} else {
 			
-			zap();
-			
 			if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
+				if (sprite instanceof DM100Sprite) {
+					zap();
+				}
 				sprite.zap( enemy.pos );
 				return false;
 			} else {
+				zap();
 				return true;
 			}
 		}
@@ -134,7 +136,8 @@ public class DM100 extends DMMob {
 
 			if (enemy == Dungeon.hero) {
 
-				PixelScene.shake( 2, 0.3f );
+				if (sprite instanceof DM100Sprite)
+					PixelScene.shake( 2, 0.3f );
 
 				if (!enemy.isAlive()) {
 					Badges.validateDeathFromEnemyMagic();
@@ -149,6 +152,10 @@ public class DM100 extends DMMob {
 
 	@Override
 	public void onZapComplete() {
+		if (!(sprite instanceof DM100Sprite)) {
+			super.onZapComplete();
+			return;
+		}
 		next();
 	}
 }

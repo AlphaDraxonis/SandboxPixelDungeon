@@ -168,10 +168,8 @@ public class ChangeRegion extends Component {
                         Messages.get(ChangeRegion.class, "custom_music_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()),
                         options
                 ) {
-                    @Override
-                    protected boolean hasInfo(int index) {
+                    {
                         tfMessage.setHighlighting(false);
-                        return super.hasInfo(index);
                     }
 
                     @Override

@@ -1,7 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ChangePlantNameDesc;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PlantItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
@@ -72,7 +72,8 @@ public class EditPlantComp extends DefaultEditComp<Plant> {
                 updateObj();
             }
         };
-        w.initComponents(ChangePlantNameDesc.createTitle(), new ChangePlantNameDesc(EditPlantComp.this), null, 0f, 0.5f);
+        ChangeCustomizable<Plant> cc = new ChangeCustomizable<>(EditPlantComp.this);
+        w.initComponents(cc.createTitle(), cc, null, 0f, 0.5f);
         EditorScene.show(w);
     }
 
@@ -107,8 +108,8 @@ public class EditPlantComp extends DefaultEditComp<Plant> {
 
         if (a.activateOnTrigger != b.activateOnTrigger) return false;
 
-        if (!Objects.equals(a.customName, b.customName)) return false;
-        if (!Objects.equals(a.customDesc, b.customDesc)) return false;
+        if (!Objects.equals(a.getCustomName(), b.getCustomName())) return false;
+        if (!Objects.equals(a.getCustomDesc(), b.getCustomDesc())) return false;
 
         return true;
     }

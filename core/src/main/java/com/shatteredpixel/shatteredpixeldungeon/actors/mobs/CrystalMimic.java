@@ -65,7 +65,7 @@ public class CrystalMimic extends Mimic {
 
 	@Override
 	public String description() {
-		if (alignment == Alignment.NEUTRAL && customDesc != null){
+		if (alignment == Alignment.NEUTRAL && customDesc == null){
 			String desc = null;
 			if (items != null){
 				for (Item i : items){

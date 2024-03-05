@@ -88,7 +88,7 @@ public class Bee extends Mob implements MobBasedOnDepth {
 		HT = (2 + level) * 4;
 		defenseSkill = 9 + level;
 
-		if (HP == 0) {
+		if (HP == 0 || firstAdded) {
 			HP = HT;
 			if (potPos == 0) potPos = pos;
 			if (potHolder == 0) potHolder = -1;
@@ -205,7 +205,7 @@ public class Bee extends Mob implements MobBasedOnDepth {
 	
 	@Override
 	public String description() {
-		if (customDesc != null && alignment == Alignment.ALLY && buffs(AllyBuff.class).isEmpty()){
+		if (customDesc != null || alignment == Alignment.ALLY && buffs(AllyBuff.class).isEmpty()){
 			return Messages.get(this, "desc_honey");
 		} else {
 			return super.description();

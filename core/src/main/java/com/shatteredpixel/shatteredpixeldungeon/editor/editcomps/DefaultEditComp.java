@@ -112,8 +112,8 @@ public abstract class DefaultEditComp<T> extends Component {
             delete.setRect(posX, title.top() + (title.height() - delete.icon().height) * 0.5f, delete.icon().width, delete.icon().height);
         }
 
-        height = posY + 1 - y;
-        if (height == 1) height = 0;
+        height = posY + 2 - y;
+        if (height == 2) height = 0;
     }
 
     protected final void layoutCompsLinear(Component... comps) {

@@ -76,6 +76,8 @@ public class ItemSprite extends MovieClip {
     protected float shadowHeight = 0.25f;
     protected float shadowOffset = 0.5f;
 
+    private boolean usesItemSpriteSheet = true;
+
     public ItemSprite() {
         this(ItemSpriteSheet.SOMETHING, null);
     }
@@ -235,13 +237,24 @@ public class ItemSprite extends MovieClip {
 
         if (this.emitter != null) this.emitter.killAndErase();
         emitter = null;
+
+        boolean setOriginToCenter = origin.x == width / 2 && origin.y == height / 2;
+
+        usesItemSpriteSheet = false;
         texture(tx);
         scale.set(ItemSpriteSheet.SIZE / (float)(Math.max(tx.width, tx.height)));
+
+        if (setOriginToCenter) originToCenter();
+
         glow(glowing);
         return this;
     }
 
     public ItemSprite view(int image, Glowing glowing) {
+        if (!usesItemSpriteSheet) {
+            texture(Assets.Sprites.ITEMS);
+            scale.set(1f);
+        }
         if (this.emitter != null) this.emitter.killAndErase();
         emitter = null;
         frame(image);

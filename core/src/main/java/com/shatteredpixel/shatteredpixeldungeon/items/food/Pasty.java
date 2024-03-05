@@ -131,7 +131,7 @@ public class Pasty extends Food {
 
 	@Override
 	public String info() {
-		if (customDesc != null) return customDesc;
+		if (customDesc != null) return super.info();
 		switch(holiday){
 			case NONE: default:
 				return super.info();

@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ReorderHeapComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeItemCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugmentationSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.ChargeSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.CurseButton;
@@ -67,6 +68,7 @@ import com.watabou.noosa.ui.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class EditItemComp extends DefaultEditComp<Item> {
 
@@ -117,6 +119,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
     }
 
     private void initComps(Item item) {
+
+        rename.visible = rename.active = true;
 
         if (heap != null) {
             reorderHeapComp = new ReorderHeapComp(item, heap);
@@ -352,12 +356,13 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected void layout() {
         desc.maxWidth((int) width);
 
-        if (reorderHeapComp != null) reorderHeapComp.setRect(width - WndTitledMessage.GAP, y, -1, title.height());
+        rename.setRect(width - rename.icon().width() - WndTitledMessage.GAP, title.top() + (title.height() - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
+        if (reorderHeapComp != null) reorderHeapComp.setRect(rename.left() - WndTitledMessage.GAP, y, -1, title.height());
 
         title.setRect(x, y, reorderHeapComp == null ? width : reorderHeapComp.left() - WndTitledMessage.GAP * 2, title.height());
         desc.setRect(x, title.bottom() + WndTitledMessage.GAP * 2, desc.width(), desc.height());
 
-        height = desc.bottom() + 1;
+        height = desc.bottom() + 2;
 
         layoutCompsInRectangles(rectComps);
         layoutCompsLinear(linearComps);
@@ -371,6 +376,21 @@ public class EditItemComp extends DefaultEditComp<Item> {
             updateObj();
             updateStates();
         }
+    }
+
+    @Override
+    protected void onRenameClicked() {
+        Window parent = EditorUtilies.getParentWindow(this);
+        SimpleWindow w = new SimpleWindow(parent.camera().width - 10, parent.camera().height - 10) {
+            @Override
+            public void hide() {
+                super.hide();
+                updateObj();
+            }
+        };
+        ChangeItemCustomizable cc = new ChangeItemCustomizable(EditItemComp.this);
+        w.initComponents(cc.createTitle(), cc, null, 0f, 0.5f);
+        EditorScene.show(w);
     }
 
     static String label(String key) {
@@ -398,10 +418,10 @@ public class EditItemComp extends DefaultEditComp<Item> {
     }
 
     @Override
-    protected void updateObj() {
+    public void updateObj() {
         if (heap != null) {
-            heap.updateSubicon();
             EditorScene.updateHeapImage(heap);
+            heap.updateSubicon();
         }
 
         if (itemItem != null) {
@@ -483,6 +503,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (a.getCursedKnownVar() != b.getCursedKnownVar()) return false;
         if (a.levelKnown != b.levelKnown) return false;
         if (a.spreadIfLoot != b.spreadIfLoot) return false;
+
+        if (!Objects.equals(a.getCustomName(), b.getCustomName())) return false;
+        if (!Objects.equals(a.getCustomDesc(), b.getCustomDesc())) return false;
 
         if (a instanceof Weapon) {
             Weapon aa = (Weapon) a, bb = (Weapon) b;

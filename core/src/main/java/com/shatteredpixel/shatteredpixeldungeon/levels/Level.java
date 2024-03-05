@@ -432,7 +432,11 @@ public abstract class Level implements Bundlable {
 			z.initTransitions(this);
 		}
 		for (Mob m : mobs) {
-			if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
+			if (m instanceof MobBasedOnDepth) {
+				m.firstAdded = this instanceof CustomLevel;
+				((MobBasedOnDepth) m).setLevel(Dungeon.depth);
+				m.firstAdded = false;
+			}
 			if (m instanceof Blacksmith) ((Blacksmith) m).registerQuest();
 			else if (m instanceof Pylon && ((Pylon) m).alwaysActive && m.playerAlignment == Mob.NORMAL_ALIGNMENT) m.alignment = Char.Alignment.ENEMY;
 			else if (m instanceof Tengu && m.playerAlignment == Mob.NORMAL_ALIGNMENT) playSpecialMusic(Level.MUSIC_BOSS, m.id());

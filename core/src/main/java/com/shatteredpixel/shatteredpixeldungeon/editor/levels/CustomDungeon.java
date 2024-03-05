@@ -43,7 +43,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.ItemStatusHandler;
 import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
@@ -102,36 +101,14 @@ public class CustomDungeon implements Bundlable {
     //use Level#getPassableAndAvoid() or a variation instead!!!
     //And search for access of flying in Char.java, use isFlying() or avoidsHazards()  instead (the Hazard = die Gefahr, i.e. traps, blobs)
 
+    //AND check if sprite classes have changed, e.g. ZAPs()!!!
+    //search for onZapComplete() casted on called object
 
-    //TODO if dungeon list is empty, show button to be the first uploader, or generally a quick-upload btn
 
-    //FIXME after uploading a dungeon with own custom tiles, they disappperard from the map! and the tile tab was hidden! NOT VERIFIED
-
-    //ripper spawner room ct
-
-    //make custom tiles colourable
-
-    //Shrouding fog trap instantly crashes the game
-
-    //color walls
-
-    //Custom music
-
-    //What happens on death
-
-    //The option to edit the description of all items should be good, like editing plants, maybe making it so that when you touch an ice plant for example,
-    // it can drop an item, I don't already have it, But if not, it would be great!
-
-    //A couple visual effects:
-    //Water splash (when a mob or player steps over the tile, it makes a splash sound and shows the rings)
-    //Chasm Fog (those weird particles above the Chasm)
-
-    //add change-log
-
-    //Custom alchemy for specific pots
-    //Maybe even custom sprites for items
-
-    //wrong window layout of custom alchemy
+    //what event happened after an enemies dies !!!!
+    //First option: heal until it has 100% hp then back to live (same as cave guardians)
+    //second option: corrupted wraith. when killed, they will come back as corrupted wraith
+    //third option: same as 2nd, but this was corrupted enemies instead
 
     //Scroll of Debug with interface, reference table and commands, use reflection to access ALL methods
     //surround method calls with try-catch-block, say warning that some variables might have been modified if method not @pure
