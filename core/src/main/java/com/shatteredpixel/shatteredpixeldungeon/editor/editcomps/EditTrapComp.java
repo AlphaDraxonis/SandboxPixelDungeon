@@ -2,7 +2,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.FistSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
@@ -208,7 +207,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                 summonMobs = new ItemContainerWithLabel<MobItem>(FistSelector.createMobItems(((SummoningTrap) obj).spawnMobs), this, Messages.get(EditTrapComp.class, "summon_mobs")) {
                     @Override
                     public boolean itemSelectable(Item item) {
-                        return item instanceof MobItem && ((MobItem) item).mob() instanceof YogFist;
+                        return item instanceof MobItem;
                     }
 
                     @Override

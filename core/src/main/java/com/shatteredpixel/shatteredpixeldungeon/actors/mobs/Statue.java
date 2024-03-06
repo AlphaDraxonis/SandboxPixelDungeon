@@ -64,7 +64,10 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 		HT = (int) (15 + depth * 5 * statsScale);
 		defenseSkill = 4 + depth;
 
-		if (HP == 0 || firstAdded) HP = HT;
+		if (!hpSet) {
+			HP = HT;
+			hpSet = true;
+		}
 	}
 
 	@Override

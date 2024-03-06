@@ -34,8 +34,6 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     {
         spriteClass = null;
 
-        HP = HT = 20;
-
         maxLvl = 29;
     }
 
@@ -58,6 +56,12 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             internalHero.belongings.artifact.activate(internalHero);
         if (internalHero.belongings.misc != null)
             internalHero.belongings.misc.activate(internalHero);
+
+        if (!hpSet) {
+            HP = HT = internalHero.HP = internalHero.HT = (int) (internalHero.HT * statsScale);
+            hpSet = true;
+        }
+
         if (buff(Regeneration.class) == null) {
             Buff.affect(this, Regeneration.class);
             Buff.affect(this, Hunger.class);

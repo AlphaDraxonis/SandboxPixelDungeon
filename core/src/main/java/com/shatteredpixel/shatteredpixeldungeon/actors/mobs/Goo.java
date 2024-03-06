@@ -115,9 +115,11 @@ public class Goo extends Mob implements MobBasedOnDepth {
 	@Override
 	public void setLevel(int depth) {
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) {
-			boolean changeHP = HP == HT;
 			HT = (int) (HT * 1.2f);
-			if (changeHP) HP = HT;
+			if (!hpSet) {
+				HP = HT;
+				hpSet = true;
+			}
 		}
 	}
 

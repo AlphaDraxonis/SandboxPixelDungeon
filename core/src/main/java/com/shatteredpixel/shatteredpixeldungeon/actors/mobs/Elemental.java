@@ -401,7 +401,10 @@ public abstract class Elemental extends Mob {
 
 		@Override
 		public void setLevel(int depth) {//not based on depth, but this method is called when game is inited
-			HP = HT / 2;
+			if (!hpSet) {
+				HP = HT / 2;
+				hpSet = true;
+			}
 		}
 
 		@Override

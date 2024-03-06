@@ -137,19 +137,12 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	
 	@Override
 	public void setLevel(int depth) {
+		if (!hpSet && Dungeon.level instanceof PrisonBossLevel) phase = 0;
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) {
-			boolean changeHP = HP == HT;
 			HT = (int) (HT * 1.25f);
-			if (changeHP) HP = HT;
+			if (!hpSet) HP = HT;
 		}
-	}
-
-	@Override
-	protected void onAdd() {
-		super.onAdd();
-		if (firstAdded) {
-			if (Dungeon.level instanceof PrisonBossLevel) phase = 0;
-		}
+		hpSet = true;
 	}
 
 	//	@Override

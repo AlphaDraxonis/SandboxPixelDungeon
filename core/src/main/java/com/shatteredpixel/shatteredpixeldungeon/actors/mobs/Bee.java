@@ -88,7 +88,8 @@ public class Bee extends Mob implements MobBasedOnDepth {
 		HT = (2 + level) * 4;
 		defenseSkill = 9 + level;
 
-		if (HP == 0 || firstAdded) {
+		if (!hpSet) {
+			hpSet = true;
 			HP = HT;
 			if (potPos == 0) potPos = pos;
 			if (potHolder == 0) potHolder = -1;

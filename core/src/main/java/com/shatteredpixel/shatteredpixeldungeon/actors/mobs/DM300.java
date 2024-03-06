@@ -172,9 +172,11 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 	@Override
 	public void setLevel(int depth) {
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)) {
-			boolean changeHP = HP == HT;
 			HT = (int) (HT * 4 / 3f);
-			if (changeHP) HP = HT;
+			if (!hpSet) {
+				HP = HT;
+				hpSet = true;
+			}
 		}
 //		((DM300Sprite)sprite).updateChargeState(true);
 //		((DM300Sprite)sprite).charge();

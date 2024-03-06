@@ -66,8 +66,9 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 		HT = (int) (10 + depth * 5 * statsScale);
 		defenseSkill = 10 + depth * 2;
 
-		if (HP == 0 || firstAdded) {
+		if (!hpSet) {
 			HP = HT;
+			hpSet = true;
 		}
 	}
 

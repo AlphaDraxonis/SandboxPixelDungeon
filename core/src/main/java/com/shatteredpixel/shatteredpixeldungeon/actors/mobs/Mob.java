@@ -168,7 +168,9 @@ public abstract class Mob extends Char implements Customizable {
 
 	protected static final float TIME_TO_WAKE_UP = 1f;
 
-	public boolean firstAdded = true;
+	protected boolean firstAdded = true;
+	protected boolean hpSet = false;
+
 	protected void onAdd(){
 		if (firstAdded) {
 			//modify health for ascension challenge if applicable, only on first add
@@ -237,6 +239,7 @@ public abstract class Mob extends Char implements Customizable {
 	private static final String CUSTOM_DESC = "custom_desc";
 	private static final String DIALOGS = "dialogs";
 	public static final String SPRITE = "sprite";
+	public static final String HP_SET = "hp_set";
 
 	private static final String ENEMY_ID	= "enemy_id";
 	
@@ -277,6 +280,7 @@ public abstract class Mob extends Char implements Customizable {
         } else if (MobSpriteItem.canChangeSprite(this)) {
 			if (Reflection.newInstance(getClass()).spriteClass != spriteClass) bundle.put(SPRITE, spriteClass);
 		}
+		if (hpSet) bundle.put(HP_SET, hpSet);
 
         bundle.put(GLYPH_ARMOR, glyphArmor);
         bundle.put(ENCHANT_WEAPON, enchantWeapon);
@@ -337,6 +341,7 @@ public abstract class Mob extends Char implements Customizable {
 		if (bundle.contains(TILES_BEFORE_WAKING_UP)) tilesBeforeWakingUp = bundle.getInt(TILES_BEFORE_WAKING_UP);
 		if (bundle.contains(XP)) EXP = bundle.getInt(XP);
 		if (bundle.contains(STATS_SCALE)) statsScale = bundle.getFloat(STATS_SCALE);
+		hpSet = bundle.getBoolean(HP_SET);
 
 		if (bundle.contains(SPRITE)) spriteClass = bundle.getClass(SPRITE);
 
