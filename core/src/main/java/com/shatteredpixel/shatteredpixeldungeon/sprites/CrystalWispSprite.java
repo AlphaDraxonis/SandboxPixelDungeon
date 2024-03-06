@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.TorchHalo;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.utils.PointF;
@@ -68,12 +69,16 @@ public abstract class CrystalWispSprite extends MobSprite {
 			@Override
 			public void onComplete() {
 				light.alpha(0.3f);
-				ch.onZapComplete();
-				Beam ray = new Beam.LightRay(center(), DungeonTilemap.raisedTileCenterToWorld(cell));
-				ray.hardlight(blood() & 0x00FFFFFF);
-				parent.add( ray );
+				playZap(parent, CrystalWispSprite.this, cell, ch);
 			}
 		});
+	}
+
+	public static void playZap(Group parent, CharSprite sprite, int cell, Char ch) {
+		ch.onZapComplete();
+		Beam ray = new Beam.LightRay(sprite.center(), DungeonTilemap.raisedTileCenterToWorld(cell));
+		ray.hardlight(sprite.blood() & 0x00FFFFFF);
+		parent.add(ray);
 	}
 
 	@Override

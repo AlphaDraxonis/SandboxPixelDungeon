@@ -88,6 +88,20 @@ public class FungalSentry extends Mob {
 		return super.attackProc(enemy, damage);
 	}
 
+	@Override
+	protected boolean doAttack(Char enemy) {
+		if (sprite instanceof FungalSentrySprite || sprite == null || !sprite.visible && !enemy.sprite.visible)
+			return super.doAttack(enemy);
+
+		FungalSentrySprite.doRealAttack(sprite, enemy.pos);
+		return false;
+	}
+
+	@Override
+	public void onZapComplete() {
+		onAttackComplete();//Basically the same for FungalSentries
+	}
+
 //	@Override
 //	public int attackSkill( Char target ) {
 //		return 50;

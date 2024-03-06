@@ -23,14 +23,15 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.ParalyticDart;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.MovieClip;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.Visual;
 import com.watabou.utils.Callback;
 
 public class GnollTricksterSprite extends MobSprite {
-
-	private Animation cast;
 
 	public GnollTricksterSprite() {
 		super();
@@ -48,7 +49,7 @@ public class GnollTricksterSprite extends MobSprite {
 		attack = new MovieClip.Animation( 12, false );
 		attack.frames( frames, 23, 24, 21 );
 
-		cast = attack.clone();
+		zap = attack.clone();
 
 		die = new MovieClip.Animation( 12, false );
 		die.frames( frames, 29, 30, 31 );
@@ -58,23 +59,32 @@ public class GnollTricksterSprite extends MobSprite {
 
 	@Override
 	public void attack( int cell ) {
-		if (!Dungeon.level.adjacent(cell, ch.pos)) {
+		if (!doRealAttack(this, cell)) super.attack(cell);
+	}
 
-			((MissileSprite)parent.recycle( MissileSprite.class )).
-					reset( this, cell, new ParalyticDart(), new Callback() {
-						@Override
-						public void call() {
-							ch.onAttackComplete();
-						}
-					} );
-
-			play( cast );
-			turnTo( ch.pos , cell );
-
+	public static boolean doRealAttack( CharSprite sprite, int cell ) {
+		if (!Dungeon.level.adjacent( cell, sprite.ch.pos )) {
+			sprite.zap(cell);
+			sprite.turnTo( sprite.ch.pos , cell );
 		} else {
-
-			super.attack( cell );
-
+			if (sprite instanceof FungalSentrySprite) return false;
+			sprite.attack( cell );
 		}
+		return true;
+	}
+
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch);
+	}
+
+	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+		((MissileSprite) parent.recycle(MissileSprite.class)).
+				reset(sprite, cell, new ParalyticDart(), new Callback() {
+					@Override
+					public void call() {
+						ch.onAttackComplete();
+					}
+				});
 	}
 }

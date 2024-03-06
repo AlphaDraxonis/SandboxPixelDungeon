@@ -23,13 +23,14 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.Visual;
 import com.watabou.utils.Callback;
 
 public class ScorpioSprite extends MobSprite {
-	
-	private int cellToAttack;
 	
 	public ScorpioSprite() {
 		super();
@@ -62,36 +63,43 @@ public class ScorpioSprite extends MobSprite {
 	
 	@Override
 	public void attack( int cell ) {
-		if (!Dungeon.level.adjacent( cell, ch.pos )) {
-			
-			cellToAttack = cell;
-			zap(cell);
-			
-		} else {
-			
-			super.attack( cell );
-			
-		}
+		if (!doRealAttack(this, cell)) super.attack(cell);
 	}
-	
+
+	public static boolean doRealAttack( CharSprite sprite, int cell ) {
+		if (!Dungeon.level.adjacent( cell, sprite.ch.pos )) {
+			sprite.zap(cell);
+		} else {
+			if (sprite instanceof ScorpioSprite) return false;
+			sprite.attack( cell );
+		}
+		return true;
+	}
+
 	@Override
 	public void onComplete( Animation anim ) {
 		if (anim == zap) {
 			idle();
-			
-			((MissileSprite)parent.recycle( MissileSprite.class )).
-			reset( this, cellToAttack, new ScorpioShot(), new Callback() {
-				@Override
-				public void call() {
-					ch.onAttackComplete();
-				}
-			} );
-		} else {
-			super.onComplete( anim );
 		}
+		super.onComplete( anim );
+	}
+
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch);
+	}
+
+	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+		((MissileSprite) parent.recycle(MissileSprite.class)).
+				reset(sprite, cell, new ScorpioShot(), new Callback() {
+					@Override
+					public void call() {
+						ch.onZapComplete();
+					}
+				});
 	}
 	
-	public class ScorpioShot extends Item {
+	public static class ScorpioShot extends Item {
 		{
 			image = ItemSpriteSheet.FISHING_SPEAR;
 		}

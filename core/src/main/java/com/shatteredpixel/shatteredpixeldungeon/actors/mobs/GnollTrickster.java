@@ -108,6 +108,15 @@ public class GnollTrickster extends Gnoll {
 	}
 
 	@Override
+	protected boolean doAttack(Char enemy) {
+		if (sprite instanceof GnollTricksterSprite || sprite == null || !sprite.visible && !enemy.sprite.visible)
+			return super.doAttack(enemy);
+
+		GnollTricksterSprite.doRealAttack(sprite, enemy.pos);
+		return false;
+	}
+
+	@Override
 	protected boolean getCloser( int target ) {
 		combo = 0; //if he's moving, he isn't attacking, reset combo.
 		if (state == HUNTING) {

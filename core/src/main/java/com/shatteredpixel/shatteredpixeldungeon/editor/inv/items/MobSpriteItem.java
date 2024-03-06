@@ -81,12 +81,12 @@ public class MobSpriteItem extends EditorItem<Class<? extends CharSprite>> {
 
     public static boolean canChangeSprite(Mob mob) {
         return canSpriteBeUsedForOthers(mob)
-                && !(mob instanceof Ghoul || mob instanceof Golem || mob instanceof Eye
-                || mob instanceof Goo || mob instanceof RipperDemon || mob instanceof SentryRoom.Sentry || mob instanceof CrystalGuardian);
+                && !(mob instanceof Ghoul || mob instanceof Golem || mob instanceof Eye || mob instanceof DM300 || mob instanceof GnollGuard
+                || mob instanceof Goo || mob instanceof RipperDemon || mob instanceof SentryRoom.Sentry || mob instanceof CrystalGuardian || mob instanceof Pylon);
     }
 
     public static boolean canSpriteBeUsedForOthers(Mob mob) {
-        return !(mob instanceof Mimic || mob instanceof Statue || mob instanceof HeroMob || mob instanceof CrystalSpire || mob instanceof DM300
-                || mob instanceof SentryRoom.Sentry || mob instanceof GnollGeomancer || mob instanceof GnollGuard || mob instanceof Pylon);
+        return !(mob instanceof Mimic || mob instanceof Statue || mob instanceof HeroMob || mob instanceof CrystalSpire
+                || mob instanceof SentryRoom.Sentry || mob instanceof GnollGeomancer);
     }
 }

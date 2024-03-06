@@ -28,7 +28,7 @@ import com.watabou.noosa.audio.Sample;
 public class SpectralNecromancerSprite extends NecromancerSprite {
 
 	@Override
-	protected int offset() {
+	protected int texOffset() {
 		return 16;
 	}
 

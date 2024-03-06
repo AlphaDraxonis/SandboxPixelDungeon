@@ -267,16 +267,21 @@ public abstract class FistSprite extends MobSprite {
 		public void zap( int cell ) {
 			super.zap( cell, null );
 
-			ch.onZapComplete();
-			parent.add( new Beam.LightRay(center(), DungeonTilemap.raisedTileCenterToWorld(cell)));
+
 		}
 		@Override
 		public int blood() {
 			return 0xFFFFFFFF;
 		}
 
+		@Override
+		protected void playZapAnim(int cell) {
+			playZap(parent, this, cell, ch);
+		}
+
 		public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
-			playZap(parent, sprite, cell, ch, MagicMissile.RAINBOW);
+			parent.add( new Beam.LightRay(sprite.center(), DungeonTilemap.raisedTileCenterToWorld(cell)));
+			ch.onZapComplete();
 		}
 	}
 

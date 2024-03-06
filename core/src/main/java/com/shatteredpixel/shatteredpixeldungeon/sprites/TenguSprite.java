@@ -23,9 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 
 public class TenguSprite extends MobSprite {
@@ -90,25 +92,45 @@ public class TenguSprite extends MobSprite {
 
 	@Override
 	public void attack( int cell ) {
-		if (!Dungeon.level.adjacent( cell, ch.pos )) {
+		if (!doRealAttack(this, cell)) super.attack(cell);
+	}
 
-			((MissileSprite)parent.recycle( MissileSprite.class )).
-				reset( this, cell, new TenguShuriken(), new Callback() {
-					@Override
-					public void call() {
-						ch.onAttackComplete();
-					}
-				} );
-			
-			zap( ch.pos );
-			
+	public static boolean doRealAttack( CharSprite sprite, int cell ) {
+		if (!Dungeon.level.adjacent( cell, sprite.ch.pos )) {
+			((MissileSprite)sprite.parent.recycle( MissileSprite.class )).
+					reset( sprite, cell, new TenguShuriken(), new Callback() {
+						@Override
+						public void call() {
+							if (sprite.ch instanceof Tengu) {
+								sprite.ch.onAttackComplete();
+							} else {
+								sprite.ch.onZapComplete();
+							}
+						}
+					} );
+			sprite.zap( sprite.ch.pos );
 		} else {
-			
-			super.attack( cell );
-			
+			if (sprite instanceof TenguSprite) return false;
+			sprite.attack( cell );
+		}
+		return true;
+	}
+
+	@Override
+	protected void playZapAnim(int cell) {
+		//Zap animations are usually handled in Tengu.java
+		if (!(ch instanceof Tengu)) {
+			((MissileSprite)parent.recycle( MissileSprite.class )).
+					reset( this, cell, new TenguShuriken(), new Callback() {
+						@Override
+						public void call() {
+							ch.onZapComplete();
+						}
+					} );
+			Sample.INSTANCE.play(Assets.Sounds.HIT);
 		}
 	}
-	
+
 	@Override
 	public void onComplete( Animation anim ) {
 		if (anim == run) {

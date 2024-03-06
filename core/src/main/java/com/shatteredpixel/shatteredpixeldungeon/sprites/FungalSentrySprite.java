@@ -23,13 +23,14 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.Visual;
 import com.watabou.utils.Callback;
 
 public class FungalSentrySprite extends MobSprite {
-
-	private int cellToAttack;
 
 	public FungalSentrySprite(){
 		super();
@@ -58,32 +59,39 @@ public class FungalSentrySprite extends MobSprite {
 
 	@Override
 	public void attack( int cell ) {
-		if (!Dungeon.level.adjacent( cell, ch.pos )) {
+		if (!doRealAttack(this, cell)) super.attack(cell);
+	}
 
-			cellToAttack = cell;
-			zap(cell);
-
+	public static boolean doRealAttack( CharSprite sprite, int cell ) {
+		if (!Dungeon.level.adjacent( cell, sprite.ch.pos )) {
+			sprite.zap(cell);
 		} else {
-
-			super.attack( cell );
-
+			if (sprite instanceof FungalSentrySprite) return false;
+			sprite.attack( cell );
 		}
+		return true;
 	}
 
 	@Override
 	public void onComplete( Animation anim ) {
 		if (anim == zap) {
 			idle();
-
-			MagicMissile.boltFromChar(parent, MagicMissile.POISON, this, cellToAttack, new Callback() {
-						@Override
-						public void call() {
-							ch.onAttackComplete();
-						}
-					} );
-		} else {
-			super.onComplete( anim );
 		}
+		super.onComplete( anim );
+	}
+
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch);
+	}
+
+	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+		MagicMissile.boltFromChar(parent, MagicMissile.POISON, sprite, cell, new Callback() {
+			@Override
+			public void call() {
+				ch.onZapComplete();
+			}
+		} );
 	}
 
 	@Override

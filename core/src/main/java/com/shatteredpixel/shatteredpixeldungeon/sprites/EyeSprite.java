@@ -136,6 +136,7 @@ public class EyeSprite extends MobSprite {
 
 	@Override
 	protected void playZapAnim(int cell) {
+		//do nothing, already included in onComplete(anim)
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {

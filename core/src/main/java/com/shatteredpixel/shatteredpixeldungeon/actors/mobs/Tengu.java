@@ -113,6 +113,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	private int stepsToDo;//only if state is Wandering
 	private boolean attackedPlayer;
 
+	public boolean zapForAbility = false;//differentiate between normal attacks and abilities in sprite
+
 //	@Override
 //	public int damageRoll() {
 //		return Random.NormalIntRange( 6, 12 );
@@ -289,7 +291,16 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		Ballistica b = new Ballistica(pos, enemy.pos, Ballistica.REAL_PROJECTILE, null);
 		return b.collisionPos == enemy.pos && (Dungeon.level instanceof PrisonBossLevel || b.dist <= arenaRadius);
 	}
-	
+
+	@Override
+	protected boolean doAttack(Char enemy) {
+		if (sprite instanceof TenguSprite || sprite == null || !sprite.visible && !enemy.sprite.visible)
+			return super.doAttack(enemy);
+
+		TenguSprite.doRealAttack(sprite, enemy.pos);
+		return false;
+	}
+
 	private void jump(int targetPos, boolean insideArena) {
 		
 		//in case tengu hasn't had a chance to act yet
@@ -741,7 +752,9 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		throwingChar = thrower;
 		final BombAbility.BombItem item = new BombAbility.BombItem();
 		item.throwerId = thrower.id();
+		if (thrower instanceof Tengu) ((Tengu) thrower).zapForAbility = true;
 		thrower.sprite.zap(finalTargetCell);
+		if (thrower instanceof Tengu) ((Tengu) thrower).zapForAbility = false;
 		((MissileSprite) thrower.sprite.parent.recycle(MissileSprite.class)).
 				reset(thrower.sprite,
 						finalTargetCell,
@@ -926,7 +939,9 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		
 		for (int i = 0; i < PathFinder.CIRCLE8.length; i++){
 			if (aim.sourcePos+PathFinder.CIRCLE8[i] == aim.path.get(1)){
+				if (thrower instanceof Tengu) ((Tengu) thrower).zapForAbility = true;
 				thrower.sprite.zap(target.pos);
+				if (thrower instanceof Tengu) ((Tengu) thrower).zapForAbility = false;
 				Buff.append(thrower, Tengu.FireAbility.class).direction = i;
 				
 				thrower.sprite.emitter().start(Speck.factory(Speck.STEAM), .03f, 10);
@@ -1132,7 +1147,9 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		throwingChar = thrower;
 		final ShockerAbility.ShockerItem item = new ShockerAbility.ShockerItem();
 		item.throwerId = thrower.id();
+		if (thrower instanceof Tengu) ((Tengu) thrower).zapForAbility = true;
 		thrower.sprite.zap(finalTargetCell);
+		if (thrower instanceof Tengu) ((Tengu) thrower).zapForAbility = false;
 		((MissileSprite) thrower.sprite.parent.recycle(MissileSprite.class)).
 				reset(thrower.sprite,
 						finalTargetCell,

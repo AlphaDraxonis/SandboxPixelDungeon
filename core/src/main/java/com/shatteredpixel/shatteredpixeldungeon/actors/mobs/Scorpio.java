@@ -89,7 +89,21 @@ public class Scorpio extends Mob {
 		
 		return damage;
 	}
-	
+
+	@Override
+	protected boolean doAttack(Char enemy) {
+		if (sprite instanceof ScorpioSprite || sprite == null || !sprite.visible && !enemy.sprite.visible)
+			return super.doAttack(enemy);
+
+		ScorpioSprite.doRealAttack(sprite, enemy.pos);
+		return false;
+	}
+
+	@Override
+	public void onZapComplete() {
+		onAttackComplete();//Basically the same for scorpions
+	}
+
 	@Override
 	protected boolean getCloser( int target ) {
 		if (state == HUNTING) {

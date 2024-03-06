@@ -24,13 +24,17 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalWisp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM201;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollTrickster;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Scorpio;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shaman;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
@@ -313,6 +317,9 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		else if (ch instanceof Spinner) SpinnerSprite.playZap(parent, this, cell, ch);
 		else if (ch instanceof Golem) GolemSprite.playZap(parent, this, cell, ch);
 		else if (ch instanceof Eye) EyeSprite.playZap(parent, this, cell, ch);
+		else if (ch instanceof Scorpio) ScorpioSprite.playZap(parent, this, cell, ch);
+		else if (ch instanceof GnollTrickster) GnollTricksterSprite.playZap(parent, this, cell, ch);
+		else if (ch instanceof CrystalWisp) CrystalWispSprite.playZap(parent, this, cell, ch);
 
 		else if (ch instanceof Shaman.RedShaman) ShamanSprite.Red.playZap(parent, this, cell, ch);
 		else if (ch instanceof Shaman.BlueShaman) ShamanSprite.Blue.playZap(parent, this, cell, ch);
@@ -330,9 +337,11 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		else if (ch instanceof YogFist.RustedFist) FistSprite.Rusted.playZap(parent, this, cell, ch);
 		else if (ch instanceof YogFist.SoiledFist) FistSprite.Soiled.playZap(parent, this, cell, ch);
 
-		else ch.onZapComplete();
+		else if (ch instanceof DM300) DM300Sprite.playZap(parent, this, cell, ch);
 
-		//no crystal wisp, necromancer, sentry, etc
+//		else if (ch instanceof Tengu) Tengu has its own logic
+
+		else ch.onZapComplete();
 	}
 
 	protected static void playZap(Group parent, Visual sprite, int cell, Char ch, int boldType) {

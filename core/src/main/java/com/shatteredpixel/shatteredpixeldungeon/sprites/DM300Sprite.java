@@ -28,7 +28,9 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SparkParticle;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Callback;
@@ -82,13 +84,15 @@ public class DM300Sprite extends MobSprite {
 		if (curAnim != charge) play(idle);
 	}
 
-	public void zap( int cell ) {
+	@Override
+	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch);
+	}
 
-		super.zap( cell );
-
+	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
 		MagicMissile.boltFromChar( parent,
 				MagicMissile.TOXIC_VENT,
-				this,
+				sprite,
 				cell,
 				new Callback() {
 					@Override

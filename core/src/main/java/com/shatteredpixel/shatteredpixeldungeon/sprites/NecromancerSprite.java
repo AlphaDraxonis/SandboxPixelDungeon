@@ -42,7 +42,7 @@ public class NecromancerSprite extends MobSprite {
 		texture( Assets.Sprites.NECRO );
 		TextureFilm film = new TextureFilm( texture, 16, 16 );
 
-		int c = offset();
+		int c = texOffset();
 
 		idle = new Animation( 1, true );
 		idle.frames( film, c+0, c+0, c+0, c+1, c+0, c+0, c+0, c+0, c+1 );
@@ -64,7 +64,7 @@ public class NecromancerSprite extends MobSprite {
 		idle();
 	}
 
-	protected int offset() {
+	protected int texOffset() {
 		return 0;
 	}
 
