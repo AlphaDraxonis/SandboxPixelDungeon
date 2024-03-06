@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalGuardian;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGuard;
@@ -80,7 +81,7 @@ public class MobSpriteItem extends EditorItem<Class<? extends CharSprite>> {
 
     public static boolean canChangeSprite(Mob mob) {
         return canSpriteBeUsedForOthers(mob)
-                && !(mob instanceof Ghoul || mob instanceof Golem
+                && !(mob instanceof Ghoul || mob instanceof Golem || mob instanceof Eye
                 || mob instanceof Goo || mob instanceof RipperDemon || mob instanceof SentryRoom.Sentry || mob instanceof CrystalGuardian);
     }
 

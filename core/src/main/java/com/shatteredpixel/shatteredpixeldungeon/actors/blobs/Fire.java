@@ -68,7 +68,7 @@ public class Fire extends Blob {
 					burn( cell );
 
 					fire = cur[cell] - 1;
-					if (fire <= 0 && Dungeon.level.isFlamable(cell) || this instanceof PermaGas && fire >= 5) {
+					if ((fire <= 0 || this instanceof PermaGas && fire >= 5) && Dungeon.level.isFlamable(cell)) {
 
 						if (this instanceof PermaGas) cur[cell] = 7;
 

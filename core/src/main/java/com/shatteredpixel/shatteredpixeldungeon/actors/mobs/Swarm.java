@@ -128,6 +128,11 @@ public class Swarm extends Mob {
 		clone.setPlayerAlignment(playerAlignment);
 		clone.generation = generation + 1;
 		clone.EXP = 0;
+
+		clone.customName = customName;
+		clone.customDesc = customDesc;
+		clone.spriteClass = spriteClass;
+
 		if (buff( Burning.class ) != null) {
 			Buff.affect( clone, Burning.class ).reignite( clone );
 		}

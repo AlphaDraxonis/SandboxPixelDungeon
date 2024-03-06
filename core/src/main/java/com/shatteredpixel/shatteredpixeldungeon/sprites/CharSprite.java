@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM201;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shaman;
@@ -311,6 +312,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		else if (ch instanceof FungalSpinner) FungalSpinnerSprite.playZap(parent, this, cell, ch);
 		else if (ch instanceof Spinner) SpinnerSprite.playZap(parent, this, cell, ch);
 		else if (ch instanceof Golem) GolemSprite.playZap(parent, this, cell, ch);
+		else if (ch instanceof Eye) EyeSprite.playZap(parent, this, cell, ch);
 
 		else if (ch instanceof Shaman.RedShaman) ShamanSprite.Red.playZap(parent, this, cell, ch);
 		else if (ch instanceof Shaman.BlueShaman) ShamanSprite.Blue.playZap(parent, this, cell, ch);

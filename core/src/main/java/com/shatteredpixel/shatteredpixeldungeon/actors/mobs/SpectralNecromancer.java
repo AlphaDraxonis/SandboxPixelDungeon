@@ -149,11 +149,6 @@ public class SpectralNecromancer extends Necromancer {
 	}
 
 	@Override
-	protected void finishSummoning(){
-		((SpectralNecromancerSprite)sprite).finishSummoning();
-	}
-
-	@Override
 	protected Mob convertToSummonedMob(Mob mob) {
 		mob = super.convertToSummonedMob(mob);
 		mob.HP = mob.HT;

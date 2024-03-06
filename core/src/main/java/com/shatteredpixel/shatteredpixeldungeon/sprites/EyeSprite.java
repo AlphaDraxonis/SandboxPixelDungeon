@@ -28,7 +28,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 
@@ -126,15 +128,23 @@ public class EyeSprite extends MobSprite {
 		
 		if (anim == zap) {
 			idle();
-			if (Actor.findChar(zapPos) != null){
-				parent.add(new Beam.DeathRay(center(), Actor.findChar(zapPos).sprite.center()));
-			} else {
-				parent.add(new Beam.DeathRay(center(), DungeonTilemap.raisedTileCenterToWorld(zapPos)));
-			}
-			((Eye)ch).deathGaze();
-			ch.next();
+			playZap(parent, this, zapPos, ch);
 		} else if (anim == die){
 			chargeParticles.killAndErase();
 		}
+	}
+
+	@Override
+	protected void playZapAnim(int cell) {
+	}
+
+	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
+		Char enemy = Actor.findChar(cell);
+		if (enemy != null){
+			parent.add(new Beam.DeathRay(sprite.center(), enemy.sprite.center()));
+		} else {
+			parent.add(new Beam.DeathRay(sprite.center(), DungeonTilemap.raisedTileCenterToWorld(cell)));
+		}
+		ch.onZapComplete();
 	}
 }

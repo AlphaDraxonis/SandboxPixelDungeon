@@ -58,7 +58,7 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 
 		if (!flat) {
 			if ((DungeonTileSheet.doorTile(tile))) {
-				return DungeonTileSheet.getRaisedDoorTile(tile, map[pos - mapWidth]);
+				return DungeonTileSheet.getRaisedDoorTile(tile, pos - mapWidth < 0 ? Terrain.EMPTY : map[pos - mapWidth]);
 			} else if (DungeonTileSheet.wallStitcheable(tile)){
 				return DungeonTileSheet.getRaisedWallTile(
 						tile,

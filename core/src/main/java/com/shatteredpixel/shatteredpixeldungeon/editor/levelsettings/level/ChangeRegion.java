@@ -107,7 +107,6 @@ public class ChangeRegion extends Component {
                 return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) value - 1]);
             }
         }, Messages.get(ChangeRegion.class, "region"), 9);
-        region.addChangeListener(() -> newValues[0] = (int) region.getValue());
         region.setSpinnerHeight(21);
         add(region);
 
@@ -127,6 +126,11 @@ public class ChangeRegion extends Component {
         water.addChangeListener(() -> newValues[1] = (int) water.getValue());
         water.setSpinnerHeight(21);
         add(water);
+
+        region.addChangeListener(() -> {
+            newValues[0] = (int) region.getValue();
+            water.setValue(water.getValue());
+        });
 
         music = new StyledSpinner(new SpinnerTextModel(true, oldValues[2] < 0 ? 5 - oldValues[2] : oldValues[2], MUSIC_DATA) {
             @Override
@@ -264,6 +268,9 @@ public class ChangeRegion extends Component {
 
         public MusicVariantSpinner(int val) {
             super(new SpinnerIntegerModel(0, 3, val, 1, true, null) {
+                {
+                    setAbsoluteMaximum(3);
+                }
                 @Override
                 public String getDisplayString() {
                     switch ((int) getValue()) {

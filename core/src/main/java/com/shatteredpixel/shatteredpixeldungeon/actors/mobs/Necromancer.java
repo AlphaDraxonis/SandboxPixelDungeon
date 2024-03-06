@@ -246,7 +246,8 @@ public class Necromancer extends SpawnerMob {
 		mySummon.pos = summoningPos;
 		GameScene.add(mySummon);
 		Dungeon.level.occupyCell(mySummon);
-		finishSummoning();
+		if (sprite instanceof NecromancerSprite)
+			((NecromancerSprite)sprite).finishSummoning();
 
 		if (mySummon instanceof Wraith) {
 			Wraith.showSpawnParticle((Wraith) mySummon);
@@ -259,10 +260,6 @@ public class Necromancer extends SpawnerMob {
 			Buff.affect(mySummon, b.getClass());
 		}
 		return mySummon;
-	}
-
-	protected void finishSummoning(){
-		((NecromancerSprite)sprite).finishSummoning();
 	}
 
 	public static class SummoningBlockDamage{}

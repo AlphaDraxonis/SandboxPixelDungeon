@@ -187,6 +187,11 @@ public class Eye extends Mob {
 	//used so resistances can differentiate between melee and magical attacks
 	public static class DeathGaze{}
 
+	@Override
+	protected void zap() {
+		deathGaze();
+	}
+
 	public void deathGaze(){
 		if (!beamCharged || beamCooldown > 0 || beam == null)
 			return;
