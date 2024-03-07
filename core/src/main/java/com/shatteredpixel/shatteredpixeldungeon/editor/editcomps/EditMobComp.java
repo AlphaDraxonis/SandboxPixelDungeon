@@ -1093,7 +1093,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         protected String createTitle(Mob mob) {
             if (MobSpriteItem.canChangeSprite(mob)) {
                 Mob defaultMob = DefaultStatsCache.getDefaultObject(mob.getClass());
-                if (defaultMob != null && defaultMob.spriteClass != mob.spriteClass) {
+                if (defaultMob != null && defaultMob.spriteClass != mob.spriteClass
+                 && (mob.sprite.getClass().getEnclosingClass() == null || mob.sprite.getClass().getEnclosingClass() != defaultMob.spriteClass.getEnclosingClass())) {
                     return super.createTitle(mob) + " (" + super.createTitle(defaultMob) + ")" + EditorUtilies.appendCellToString(mob.pos);
                 }
             }

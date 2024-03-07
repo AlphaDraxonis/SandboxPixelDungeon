@@ -52,8 +52,8 @@ public class LotusSprite extends MobSprite {
 		run = new MovieClip.Animation( 1, true );
 		run.frames( frames, 0 );
 
-		attack = new MovieClip.Animation( 1, false );
-		attack.frames( frames, 0 );
+		attack = new MovieClip.Animation( 15, false );
+		attack.frames( frames, 0, 0 );
 
 		die = new MovieClip.Animation( 1, false );
 		die.frames( frames, 0 );

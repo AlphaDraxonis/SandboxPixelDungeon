@@ -47,6 +47,9 @@ public class WandmakerSprite extends MobSprite {
 		
 		die = new Animation( 20, false );
 		die.frames( frames, 0 );
+
+		attack = new Animation( 17, false );
+		attack.frames( frames, 2, 3, 3, 3, 3, 3, 2, 1 );
 		
 		play( idle );
 	}

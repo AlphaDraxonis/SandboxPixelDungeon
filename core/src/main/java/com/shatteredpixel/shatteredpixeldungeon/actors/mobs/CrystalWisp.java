@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -70,24 +69,6 @@ public class CrystalWisp extends Mob{
 				spriteClass = CrystalWispSprite.Red.class;
 				break;
 		}
-	}
-
-	@Override
-	public Actor getCopy() {
-		CrystalWisp copy = (CrystalWisp) super.getCopy();
-		//TODO remove this when sprite class can be changed
-		switch (Random.Int(3)){
-			case 0: default:
-				copy.spriteClass = CrystalWispSprite.Blue.class;
-				break;
-			case 1:
-				copy.spriteClass = CrystalWispSprite.Green.class;
-				break;
-			case 2:
-				copy.spriteClass = CrystalWispSprite.Red.class;
-				break;
-		}
-		return copy;
 	}
 
 	@Override

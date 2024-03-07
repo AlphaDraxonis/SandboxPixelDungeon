@@ -46,6 +46,9 @@ public class ImpSprite extends MobSprite {
 		
 		die = new Animation( 10, false );
 		die.frames( frames, 0, 3, 2, 1, 0, 3, 2, 1, 0 );
+
+		attack = new Animation(20, false);
+		attack.frames(frames, 4, 4, 2, 1);
 		
 		play( idle );
 	}

@@ -50,6 +50,9 @@ public class BlacksmithSprite extends MobSprite {
         die = new Animation(20, false);
         die.frames(frames, 0);
 
+        attack = new Animation(15, false);
+        attack.frames(frames,  2, 3, 3);
+
         play(idle);
     }
 

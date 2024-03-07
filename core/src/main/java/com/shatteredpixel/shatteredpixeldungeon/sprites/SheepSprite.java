@@ -38,12 +38,22 @@ public class SheepSprite extends MobSprite {
 		idle.frames( frames, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0 );
 		
 		run = idle.clone();
-		attack = idle.clone();
-		
+
+		attack = new Animation( 15, false );
+		attack.frames( frames, 0, 1, 2, 3, 0 );
+
 		die = new Animation( 20, false );
 		die.frames( frames, 0 );
 		
 		play( idle );
 		curFrame = Random.Int( curAnim.frames.length );
+	}
+
+	@Override
+	protected void updateFrame() {
+		//sprite is kind of flipped...
+		flipHorizontal = !flipHorizontal;
+		super.updateFrame();
+		flipHorizontal = !flipHorizontal;
 	}
 }
