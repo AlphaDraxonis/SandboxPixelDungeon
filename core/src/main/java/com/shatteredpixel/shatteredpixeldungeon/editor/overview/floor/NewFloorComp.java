@@ -59,6 +59,7 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
                 }
             }
         };
+        textBox.setTextFieldFilter(TextInput.FILE_NAME_INPUT);
         textBox.setMaxLength(50);
         add(textBox);
         Game.platform.setOnscreenKeyboardVisible(false);

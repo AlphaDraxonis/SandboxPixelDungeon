@@ -298,4 +298,11 @@ public class TextInput extends Component {
 	public TextField.TextFieldFilter getTextFieldFilter() {
 		return textField.getTextFieldFilter();
 	}
+
+	public static final TextField.TextFieldFilter FILE_NAME_INPUT = new TextField.TextFieldFilter() {
+		@Override
+		public boolean acceptChar(TextField textField, char c) {
+			return c != '/' && c != '\\' && c != ':' && c != '?' && c != '\"' && c != '<' && c != '>' && c != '|';
+		}
+	};
 }

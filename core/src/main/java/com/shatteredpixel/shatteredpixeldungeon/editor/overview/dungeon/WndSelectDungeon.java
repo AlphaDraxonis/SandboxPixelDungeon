@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndSupportPrompt;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.TextInput;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Consumer;
 import com.watabou.utils.DeviceCompat;
@@ -293,9 +294,13 @@ public class WndSelectDungeon extends Window {
                                 false,
                                 Messages.get(WndSelectDungeon.class, "rename_yes"),
                                 Messages.get(WndSelectDungeon.class, "export_no")) {
+                            {
+                                setTextFieldFilter(TextInput.FILE_NAME_INPUT);
+                            }
                             @Override
                             public void onSelect(boolean positive, String text) {
                                 if (positive && !text.isEmpty()) {
+                                    text = CustomDungeon.maybeFixIncorrectNameEnding(text);
                                     for (String dungeonN : dungeonNames) {
                                         if (!dungeonN.equals(info.name) && dungeonN.replace(' ', '_').equals(text.replace(' ', '_'))) {
                                             WndNewDungeon.showNameWarning();

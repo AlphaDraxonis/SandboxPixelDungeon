@@ -93,7 +93,7 @@ public class WndNewFloor extends WndTabbed {
     public void create(boolean positive) {
 
         if (positive) {
-            String name = newFloorComp.textBox.getText();
+            String name = CustomDungeon.maybeFixIncorrectNameEnding(newFloorComp.textBox.getText());
 
             for (String floors : owner.floorNames()) {
                 if (floors.replace(' ', '_').equals(name.replace(' ', '_'))) {
@@ -110,7 +110,7 @@ public class WndNewFloor extends WndTabbed {
             ExecutorService executor = Executors.newSingleThreadExecutor();
 
             // Create a Future object to track the generation task
-            // SET BREAKPOINT IN LINE 115 IF GENERATING IS NOT WORKING PROPERLY ggv
+            // SET BREAKPOINT IN LINE 115 (2 lines below, this is line 113) IF GENERATING IS NOT WORKING PROPERLY ggv
             Future<Boolean> generator = executor.submit(() -> {
                 newLevelScheme.initNewLevelScheme(name,
                         (Class<? extends Level>) newFloorComp.chooseTemplate.getObject());

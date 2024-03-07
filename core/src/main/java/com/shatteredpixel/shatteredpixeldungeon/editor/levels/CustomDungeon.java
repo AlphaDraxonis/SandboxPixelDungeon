@@ -104,6 +104,9 @@ public class CustomDungeon implements Bundlable {
     //AND check if sprite classes have changed, e.g. ZAPs()!!!
     //search for onZapComplete() casted on called object
 
+    //Tengu boss bar buggged / missing
+    //Crash when thiefs steal item?
+
 
     //what event happened after an enemies dies !!!!
     //First option: heal until it has 100% hp then back to live (same as cave guardians)
@@ -269,6 +272,22 @@ public class CustomDungeon implements Bundlable {
     public String getName() {
         return name;
     }
+
+    public boolean maybeFixIncorrectNameEnding() {
+        if (name.endsWith(".") || name.endsWith("/") || name.endsWith("\\")) {
+            name += " ";
+            return true;
+        }
+        return false;
+    }
+
+    public static String maybeFixIncorrectNameEnding(String s) {
+        if (s.endsWith(".")) {
+            s += " ";
+        }
+        return s;
+    }
+
 
     public String getLastEditedFloor() {
         if (lastEditedFloor == null || lastEditedFloor.isEmpty()) return getStart();

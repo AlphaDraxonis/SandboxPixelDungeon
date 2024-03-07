@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionCompRow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
@@ -33,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 
 import java.io.IOException;
@@ -145,9 +147,13 @@ public class WndEditFloorInOverview extends WndTabbed {
                             false,
                             Messages.get(WndSelectDungeon.class, "rename_yes"),
                             Messages.get(WndSelectDungeon.class, "export_no")) {
+                        {
+                            setTextFieldFilter(TextInput.FILE_NAME_INPUT);
+                        }
                         @Override
                         public void onSelect(boolean positive, String text) {
                             if (positive && !text.isEmpty()) {
+                                text = CustomDungeon.maybeFixIncorrectNameEnding(text);
                                 for (String floorN : levelScheme.getCustomDungeon().floorNames()) {
                                     if (!floorN.equals(levelScheme.getName()) && floorN.replace(' ', '_').equals(text.replace(' ', '_'))) {
                                         WndNewDungeon.showNameWarning();

@@ -92,6 +92,11 @@ public class ExportDungeonWrapper implements Bundlable {
     }
 
     public CustomDungeonSaves.Info doImport() {
+
+        if (dungeon.maybeFixIncorrectNameEnding()) {
+            dungeonInfo.name += " ";
+        }
+
         try {
             FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
 
