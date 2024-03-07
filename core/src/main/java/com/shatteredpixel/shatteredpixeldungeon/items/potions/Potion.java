@@ -85,8 +85,8 @@ public class Potion extends Item {
 			put("ivory",ItemSpriteSheet.POTION_IVORY);
 		}
 	};
-	
-	private static final HashSet<Class<?extends Potion>> mustThrowPots = new HashSet<>();
+
+	protected static final HashSet<Class<?extends Potion>> mustThrowPots = new HashSet<>();
 	static{
 		mustThrowPots.add(PotionOfToxicGas.class);
 		mustThrowPots.add(PotionOfLiquidFlame.class);
@@ -102,7 +102,7 @@ public class Potion extends Item {
 		//also all brews except unstable, hardcoded
 	}
 	
-	private static final HashSet<Class<?extends Potion>> canThrowPots = new HashSet<>();
+	protected static final HashSet<Class<?extends Potion>> canThrowPots = new HashSet<>();
 	static{
 		canThrowPots.add(PotionOfPurity.class);
 		canThrowPots.add(PotionOfLevitation.class);
