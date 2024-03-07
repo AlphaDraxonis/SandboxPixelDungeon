@@ -40,10 +40,10 @@ public class RatKingSprite extends MobSprite {
 
 	public void resetAnims(){
 
-		int c = Holiday.getCurrentHoliday() == Holiday.WINTER_HOLIDAYS ? 8 : 0;
+		int c = Holiday.getCurrentHoliday() == Holiday.WINTER_HOLIDAYS ? 16 : 0;
 
 		if (Dungeon.hero != null && Dungeon.hero.armorAbility instanceof Ratmogrify){
-			c += 16;
+			c += 32;
 			if (parent != null) aura(0xFFFF00);
 		}
 
@@ -58,10 +58,10 @@ public class RatKingSprite extends MobSprite {
 		run.frames( frames, c+2, c+3, c+4, c+5, c+6 );
 
 		attack = new Animation( 15, false );
-		attack.frames( frames, c+0 );
+		attack.frames( frames, c+7, c+8, c+9, c+10, c+0 );
 
 		die = new Animation( 10, false );
-		die.frames( frames, c+0 );
+		die.frames( frames, c+11, c+12, c+13, c+14 );
 
 		play( idle );
 
