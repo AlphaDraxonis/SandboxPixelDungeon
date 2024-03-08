@@ -98,8 +98,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuest;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
@@ -238,6 +237,7 @@ public abstract class Mob extends Char implements Customizable {
 	private static final String CUSTOM_NAME = "custom_name";
 	private static final String CUSTOM_DESC = "custom_desc";
 	private static final String DIALOGS = "dialogs";
+	private static final String NEXT_DIALOG = "next_dialog";
 	public static final String SPRITE = "sprite";
 	public static final String HP_SET = "hp_set";
 
@@ -294,6 +294,7 @@ public abstract class Mob extends Char implements Customizable {
 		if (customName != null) bundle.put(CUSTOM_NAME, customName);
 		if (customDesc != null) bundle.put(CUSTOM_DESC, customDesc);
 		bundle.put(DIALOGS, dialogs.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
+		bundle.put(NEXT_DIALOG, nextDialog);
 
         if (enemy != null) {
             bundle.put(ENEMY_ID, enemy.id());
@@ -349,6 +350,7 @@ public abstract class Mob extends Char implements Customizable {
 		if (bundle.contains(CUSTOM_DESC)) customDesc = bundle.getString(CUSTOM_DESC);
 		if (bundle.contains("dialog")) dialogs.add(bundle.getString("dialog"));
 		else if (bundle.contains(DIALOGS)) dialogs.addAll(Arrays.asList(bundle.getStringArray(DIALOGS)));
+		nextDialog = bundle.getInt(NEXT_DIALOG);
 
 		glyphArmor = (GlyphArmor) bundle.get(GLYPH_ARMOR);
 		enchantWeapon = (EnchantmentWeapon) bundle.get(ENCHANT_WEAPON);
@@ -448,18 +450,18 @@ public abstract class Mob extends Char implements Customizable {
 		return true;
 	}
 
+	public int nextDialog = 0;
 	protected void tellDialog() {
-		String tell;
-		if (dialogs.isEmpty()) tell = Messages.get(this, "what_is_it");
-		else {
-			String dialog = Random.element(dialogs);
-			tell = Messages.get(dialog);
-			if (tell == Messages.NO_TEXT_FOUND) tell = dialog;
+		if (dialogs.isEmpty()) {
+			yell(Messages.get(this, "what_is_it"));
+			return;
 		}
-		if (tell.length() > 100) {
-			final String finalTell = tell;
-			Game.runOnRenderThread(() -> GameScene.show(new WndTitledMessage(new WndInfoMob.MobTitle(Mob.this, false), finalTell)));
-		} else yell(tell);
+		String dialog = dialogs.get(nextDialog);
+		nextDialog = Math.min(nextDialog+1, dialogs.size()-1);
+		String tell = Messages.get(dialog);
+		if (tell == Messages.NO_TEXT_FOUND) tell = dialog;
+		final String finalTell = tell;
+		Game.runOnRenderThread(() -> GameScene.show(new WndQuest(this, finalTell)));
 	}
 
 	//FIXME this is sort of a band-aid correction for allies needing more intelligent behaviour

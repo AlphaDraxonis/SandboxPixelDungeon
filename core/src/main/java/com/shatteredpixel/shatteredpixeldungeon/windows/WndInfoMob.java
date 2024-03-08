@@ -33,7 +33,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.HealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.Random;
 
 public class WndInfoMob extends WndTitledMessage {
 
@@ -42,7 +41,7 @@ public class WndInfoMob extends WndTitledMessage {
     }
 
     public WndInfoMob(Mob mob, boolean includeHealthBar) {
-        super(new MobTitle(mob, includeHealthBar), mob.info() + (!mob.dialogs.isEmpty() ? "\n\n_" + Messages.get(ChangeMobCustomizable.class, "dialog_label") + ":_\n" + Random.element(mob.dialogs) : ""));
+        super(new MobTitle(mob, includeHealthBar), mob.info() + (!mob.dialogs.isEmpty() ? "\n\n_" + Messages.get(ChangeMobCustomizable.class, "dialog_label") + ":_\n" + mob.dialogs.get(mob.nextDialog) : ""));
     }
 
     public static class MobTitle extends Component {
