@@ -1268,8 +1268,7 @@ public class Hero extends Char {
 						}
 
 						//1 hunger spent total
-						if (Dungeon.level.map[action.dst] == Terrain.WALL_DECO
-								&& (Dungeon.level.levelScheme.getRegion() == LevelScheme.REGION_CAVES) || Dungeon.level instanceof MiningLevel){
+						if (Dungeon.level.map[action.dst] == Terrain.WALL_DECO && LevelScheme.getRegion(Dungeon.level) == LevelScheme.REGION_CAVES){
 							DarkGold gold = new DarkGold();
 							if (gold.doPickUp( Dungeon.hero )) {
 								DarkGold existing = Dungeon.hero.belongings.getItem(DarkGold.class);

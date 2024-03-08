@@ -946,6 +946,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     }
 
     public final int getRegion() {
+        if (Dungeon.branch == QuestLevels.MINING.ID) return REGION_CAVES;
         return region;
     }
 
