@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
+import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -100,9 +101,11 @@ public class Imp extends QuestNPC<ImpQuest> {
 				tell(Messages.get(this, quest.getMessageString()+"_2", Messages.titleCase(Dungeon.hero.name())));
 			}
 			
-		} else {
+		} else if (quest.type() > Quest.NONE){
 			tell(Messages.get(this, quest.getMessageString()+"_1"));
 			quest.start();
+		} else if (!dialogs.isEmpty()) {
+			tellDialog();
 		}
 
 		return true;

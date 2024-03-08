@@ -438,17 +438,7 @@ public abstract class Mob extends Char implements Customizable {
 					yell(Messages.get(RatKing.class, "not_sleeping"));
 					state = WANDERING;
 				} else {
-					String tell;
-					if (dialogs.isEmpty()) tell = Messages.get(this, "what_is_it");
-					else {
-						String dialog = Random.element(dialogs);
-						tell = Messages.get(dialog);
-						if (tell == Messages.NO_TEXT_FOUND) tell = dialog;
-					}
-					if (tell.length() > 100) {
-						final String finalTell = tell;
-						Game.runOnRenderThread(() -> GameScene.show(new WndTitledMessage(new WndInfoMob.MobTitle(Mob.this, false), finalTell)));
-					} else yell(tell);
+					tellDialog();
 				}
 			}
 		}
@@ -456,6 +446,20 @@ public abstract class Mob extends Char implements Customizable {
 			return super.interact(c);
 		}
 		return true;
+	}
+
+	protected void tellDialog() {
+		String tell;
+		if (dialogs.isEmpty()) tell = Messages.get(this, "what_is_it");
+		else {
+			String dialog = Random.element(dialogs);
+			tell = Messages.get(dialog);
+			if (tell == Messages.NO_TEXT_FOUND) tell = dialog;
+		}
+		if (tell.length() > 100) {
+			final String finalTell = tell;
+			Game.runOnRenderThread(() -> GameScene.show(new WndTitledMessage(new WndInfoMob.MobTitle(Mob.this, false), finalTell)));
+		} else yell(tell);
 	}
 
 	//FIXME this is sort of a band-aid correction for allies needing more intelligent behaviour
