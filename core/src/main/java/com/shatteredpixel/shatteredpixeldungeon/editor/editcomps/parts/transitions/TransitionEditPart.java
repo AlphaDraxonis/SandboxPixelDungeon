@@ -151,6 +151,8 @@ public abstract class TransitionEditPart extends Component {
                     else transition.type = LevelTransition.Type.REGULAR_ENTRANCE;
                 } else transition.type = LevelTransition.Type.REGULAR_EXIT;
             }
+            if (transition.type == LevelTransition.Type.REGULAR_ENTRANCE) transition.destType = LevelTransition.Type.REGULAR_EXIT;
+            if (transition.type == LevelTransition.Type.REGULAR_EXIT) transition.destType = LevelTransition.Type.REGULAR_ENTRANCE;
         }
     }
 
