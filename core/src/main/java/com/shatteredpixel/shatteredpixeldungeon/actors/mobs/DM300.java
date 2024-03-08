@@ -365,15 +365,18 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		if (!BossHealthBar.isAssigned(this)) {
 			BossHealthBar.addBoss(this);
 			turnsSinceLastAbility = 0;
-			yell(Messages.get(this, "notice"));
-			for (Char ch : Actor.chars()){
-				if (ch instanceof DriedRose.GhostHero){
-					((DriedRose.GhostHero) ch).sayBoss(DM300.class);
+			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT) {
+				if (!(Dungeon.level instanceof CavesBossLevel)) {
+					Dungeon.level.seal();
+					Dungeon.level.playSpecialMusic(Assets.Music.CAVES_BOSS, id());
+				}
+				yell(Messages.get(this, "notice"));
+				for (Char ch : Actor.chars()) {
+					if (ch instanceof DriedRose.GhostHero) {
+						((DriedRose.GhostHero) ch).sayBoss(DM300.class);
+					}
 				}
 			}
-		}
-		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof CavesBossLevel)) {
-			if (showBossBar) Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS, id());
 		}
 	}
 
@@ -582,8 +585,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 				});
 			} else {
 				if (playerAlignment == Mob.NORMAL_ALIGNMENT && showBossBar) {
-					Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
-					Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS_FINAL, id());
+					Dungeon.level.playSpecialMusic(Assets.Music.CAVES_BOSS_FINALE, id());
 				}
 			}
 
@@ -612,7 +614,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		yell( Messages.get(this, "defeated") );
 
 		if (!(Dungeon.level instanceof CavesBossLevel)) {
-			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS_FINAL, id());
+			Dungeon.level.stopSpecialMusic(id());
 		}
 	}
 

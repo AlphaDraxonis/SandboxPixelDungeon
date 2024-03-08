@@ -157,7 +157,7 @@ public class GnollTrickster extends Gnoll {
 		super.die( cause );
 
 		Actor c = Actor.findById(quest);
-		if (c instanceof Ghost) ((Ghost) c).quest.process();
+		if (c instanceof Ghost) ((Ghost) c).quest.process((Char) c);
 		else if (quest != 0) GLog.n("Rare error occurred so that the ghost couldn't be found.");
 	}
 

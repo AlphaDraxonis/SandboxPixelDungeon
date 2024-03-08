@@ -65,11 +65,11 @@ public class CavesLevel extends RegularLevel {
 
 	@Override
 	public void playLevelMusic() {
-		playLevelMusic(LevelScheme.REGION_CAVES, Level.MUSIC_NORMAL);
+		playLevelMusic(LevelScheme.REGION_CAVES);
 	}
 
 	public static void playCavesLevelMusic() {
-		if (Statistics.amuletObtained){
+		if (Statistics.amuletObtained || Dungeon.level instanceof MiningLevel){
 			Music.INSTANCE.play(Assets.Music.CAVES_TENSE, true);
 		} else {
 			Music.INSTANCE.playTracks(CAVES_TRACK_LIST, CAVES_TRACK_CHANCES, false);

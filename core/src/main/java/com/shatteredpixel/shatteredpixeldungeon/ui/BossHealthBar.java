@@ -87,7 +87,7 @@ public class BossHealthBar extends Component {
     public static void addBoss(Mob boss) {
         if (!bosses.contains(boss)) {
             bosses.add(boss);
-            if (instance != null) {
+            if (instance != null && boss.showBossBar) {
                 addBarCompToUI(boss);
                 instance.visible = instance.active = !bosses.isEmpty();
             }
@@ -306,7 +306,10 @@ public class BossHealthBar extends Component {
 
 
     public static boolean bossBarActive() {
-        return !bosses.isEmpty();
+        for (Mob boss : bosses) {
+            if (boss.showBossBar && boss.isAlive()) return true;
+        }
+        return false;
     }
 
     public static void doForEachBoss(Consumer<Mob> whatToDo) {
@@ -322,7 +325,7 @@ public class BossHealthBar extends Component {
     }
 
     public static boolean isAssigned(Mob boss) {
-        return !boss.showBossBar || bosses.contains(boss);
+        return bosses.contains(boss);
     }
 
     private static BossHealthBarComp findBoss(Mob boss) {

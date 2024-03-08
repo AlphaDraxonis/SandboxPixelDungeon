@@ -25,7 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.PrisonPainter;
@@ -66,19 +65,15 @@ public class PrisonLevel extends RegularLevel {
 
 	@Override
 	public void playLevelMusic() {
-		playLevelMusic(LevelScheme.REGION_PRISON, Level.MUSIC_NORMAL);
+		playLevelMusic(LevelScheme.REGION_PRISON);
 	}
 
-	public static boolean playingQuestMusic;
 	public static void playPrisonLevelMusic() {
-
-		boolean questActive = Statistics.amuletObtained || WandmakerQuest.active();
-		if (questActive){
-			Music.INSTANCE.play(Assets.Sounds.CURSED, true);
+		if (Statistics.amuletObtained){
+			Music.INSTANCE.play(Assets.Music.PRISON_TENSE, true);
 		} else {
 			Music.INSTANCE.playTracks(PRISON_TRACK_LIST, PRISON_TRACK_CHANCES, false);
 		}
-		WandmakerQuest.setMusicPlaying(questActive);
 	}
 
 	@Override

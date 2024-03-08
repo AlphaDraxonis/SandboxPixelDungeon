@@ -52,7 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
 import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -566,15 +566,18 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 		if (!BossHealthBar.isAssigned(this)) {
 			BossHealthBar.addBoss(this);
-			yell(Messages.get(this, "notice"));
-			for (Char ch : Actor.chars()){
-				if (ch instanceof DriedRose.GhostHero){
-					((DriedRose.GhostHero) ch).sayBoss(DwarfKing.class);
+			if (showBossBar && playerAlignment == Mob.NORMAL_ALIGNMENT) {
+				if (!(Dungeon.level instanceof CityBossLevel)) {
+					Dungeon.level.seal();
+					Dungeon.level.playSpecialMusic(Assets.Music.CITY_BOSS, id());
+				}
+				yell(Messages.get(this, "notice"));
+				for (Char ch : Actor.chars()) {
+					if (ch instanceof DriedRose.GhostHero) {
+						((DriedRose.GhostHero) ch).sayBoss(DwarfKing.class);
+					}
 				}
 			}
-		}
-		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof CityBossLevel)) {
-			if (showBossBar) Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS, id());
 		}
 	}
 
@@ -589,6 +592,15 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 	@Override
 	public void damage(int dmg, Object src) {
+
+		if (!BossHealthBar.isAssigned(this)) {
+			BossHealthBar.addBoss(this);
+			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
+				Dungeon.level.seal();
+				Dungeon.level.playSpecialMusic(Assets.Music.CITY_BOSS, id());
+			}
+		}
+
 		phase = Math.max(phase, 1);
 
 		//hero counts as unarmed if they aren't attacking with a weapon and aren't benefiting from force
@@ -667,8 +679,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 					}
 				});
 			} else if (playerAlignment == Mob.NORMAL_ALIGNMENT && showBossBar) {
-				Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
-				Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS_FINAL, id());
+				Dungeon.level.playSpecialMusic(Assets.Music.CITY_BOSS_FINALE, id());
 			}
 		} else if (phase == 3 && preHP > 20 && HP < 20){
 			yell( Messages.get(this, "losing") );
@@ -711,9 +722,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 		yell( Messages.get(this, "defeated") );
 
-		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof CityBossLevel)) {
-			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS_FINAL, id());
-		}
+		Dungeon.level.stopSpecialMusic(id());
 	}
 
 	@Override

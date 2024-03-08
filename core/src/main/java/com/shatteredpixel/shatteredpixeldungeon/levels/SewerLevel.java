@@ -66,7 +66,7 @@ public class SewerLevel extends RegularLevel {
 
 	@Override
 	public void playLevelMusic(){
-		playLevelMusic(LevelScheme.REGION_SEWERS, Level.MUSIC_NORMAL);
+		playLevelMusic(LevelScheme.REGION_SEWERS);
 	}
 
 	public static boolean playingQuestMusic;

@@ -7,12 +7,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -22,12 +18,10 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
-import java.util.List;
 import java.util.Objects;
 
 public class ChangeRegion extends Component {
@@ -63,19 +57,16 @@ public class ChangeRegion extends Component {
             LevelScheme.REGION_PRISON,
             LevelScheme.REGION_CAVES,
             LevelScheme.REGION_CITY,
-            LevelScheme.REGION_HALLS,
-            -1,//theme final
-            -2,//none
-            -3//vanilla game
+            LevelScheme.REGION_HALLS
     };
 
-    protected StyledSpinner region, water, music;
-    protected MusicVariantSpinner musicVariantSpinner;
-    protected StyledButton customMusic;
+    protected StyledSpinner region, water;
+
+    protected StyledButton music;
 
     private final Component outsideSp;
 
-    private String newCustomMusic;
+    private String newMusicFile;
 
     public ChangeRegion(Runnable onClose) {
         super();
@@ -85,16 +76,15 @@ public class ChangeRegion extends Component {
         int[] oldValues = {
                 f.getRegionValue(),
                 f.getWaterTextureValue(),
-                f.getMusicValue()
+                f.musicRegion,
         };
-        int oldMusicVariant = f.musicVariant;
-        String oldCustomMusic = f.customMusic;
+        String oldMusic = f.musicFile;
         int[] newValues = {
                 oldValues[0],
                 oldValues[1],
                 oldValues[2]
         };
-        newCustomMusic = oldCustomMusic;
+        newMusicFile = oldMusic;
 
         region = new StyledSpinner(new SpinnerTextIconModel(true, oldValues[0] - 1, REGION_DATA) {
             @Override
@@ -132,66 +122,31 @@ public class ChangeRegion extends Component {
             water.setValue(water.getValue());
         });
 
-        music = new StyledSpinner(new SpinnerTextModel(true, oldValues[2] < 0 ? 5 - oldValues[2] : oldValues[2], MUSIC_DATA) {
-            @Override
-            protected String getAsString(Object value) {
-                switch ((int)value) {
-                    case LevelScheme.REGION_NONE:
-                        return Messages.get(ChangeRegion.class, "same");
-                    case -1:
-                        return Messages.get(ChangeRegion.class, "theme_final");
-                    case -2:
-                        return Messages.get(ChangeRegion.class, "none");
-                    case -3:
-                        return Messages.get(ChangeRegion.class, "vanilla");
-                    default:
-                        return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) value - 1]);
-                }
-            }
-        }, Messages.get(ChangeRegion.class, "music"), 9);
-        music.addChangeListener(() -> newValues[2] = (int) music.getValue());
-        music.setSpinnerHeight(21);
-        add(music);
-
-        String customMusicLabel = Messages.get(ChangeRegion.class, "custom_music");
-        customMusic = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, customMusicLabel) {
+        String musicLabel = Messages.get(ChangeRegion.class, "music");
+        music = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, musicLabel) {
             {
                 text.setHighlighting(false);
             }
             @Override
             protected void onClick() {
-                List<String> audioFiles = CustomDungeonSaves.findAllFiles("ogg", "mp3", "wav");
-                String[] options = new String[audioFiles.size() + 1];
-                options[0] = Messages.get(ChangeRegion.class, "no_custom_music");
-                int i = 1;
-                for (String m : audioFiles) {
-                    options[i++] = m;
-                }
-                EditorScene.show(new WndOptions(
-                        Messages.get(ChangeRegion.class, "custom_music"),
-                        Messages.get(ChangeRegion.class, "custom_music_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()),
-                        options
-                ) {
-                    {
-                        tfMessage.setHighlighting(false);
-                    }
-
+                EditorScene.show(new WndSelectMusic() {
                     @Override
-                    protected void onSelect(int index) {
-                        super.onSelect(index);
-                        if (index == 0) {
-                            newCustomMusic = null;
-                        } else {
-                            newCustomMusic = options[index];
+                    protected void onSelect(Object music) {
+                        super.onSelect(music);
+                        if (music instanceof Integer) {
+                            newValues[2] = (int) music;
+                            newMusicFile = null;
                         }
-                        customMusic.text(customMusicLabel + "\n" + options[index]);
+                        if (music instanceof String) {
+                            newMusicFile = (String) music;
+                        }
+                        text(musicLabel + "\n" + WndSelectMusic.getDisplayName(newMusicFile == null ? newValues[2] : newMusicFile));
                     }
                 });
             }
         };
-        add(customMusic);
-        if (oldCustomMusic != null) customMusic.text(customMusicLabel + "\n" + oldCustomMusic);
-        else customMusic.text(customMusicLabel + "\n" + Messages.get(ChangeRegion.class, "no_custom_music"));
+        add(music);
+        music.text(musicLabel + "\n" + WndSelectMusic.getDisplayName(newMusicFile == null ? newValues[2] : newMusicFile));
 
         outsideSp = new Component() {
             RedButton save, cancel;
@@ -202,16 +157,14 @@ public class ChangeRegion extends Component {
                 save = new RedButton(Messages.get(ChangeRegion.class, "close")) {
                     @Override
                     protected void onClick() {
-                        int newMusicVariant = (int) musicVariantSpinner.getValue();
 
                         onClose.run();
                         for (int i = 0; i < newValues.length; i++) {
-                            if (newValues[i] != oldValues[i] || newMusicVariant != oldMusicVariant || !Objects.equals(oldCustomMusic, newCustomMusic)) {
+                            if (newValues[i] != oldValues[i] || !Objects.equals(oldMusic, newMusicFile)) {
                                 f.setRegion(newValues[0]);
                                 f.setWaterTexture(newValues[1]);
-                                f.setMusic(newValues[2]);
-                                f.musicVariant = newMusicVariant;
-                                f.customMusic = newCustomMusic;
+                                f.musicRegion = newValues[2];
+                                f.musicFile = newMusicFile;
                                 Game.switchScene(EditorScene.class);
                                 return;
                             }
@@ -240,17 +193,13 @@ public class ChangeRegion extends Component {
                 height = ChooseOneInCategoriesBody.BUTTON_HEIGHT;
             }
         };
-
-        musicVariantSpinner = new MusicVariantSpinner(oldMusicVariant);
-        musicVariantSpinner.setSpinnerHeight(21);
-        add(musicVariantSpinner);
     }
 
     @Override
     protected void layout() {
         height = 0;
-        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, region, water, music, musicVariantSpinner) + 2;
-        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, 24, 1, this, customMusic);
+        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, PixelScene.landscape() ? 2 : 1, this, region, water) + 2;
+        height = EditorUtilies.layoutStyledCompsInRectangles(2, width, 24, 1, this, music);
     }
 
     public static Component createTitle() {
@@ -261,32 +210,5 @@ public class ChangeRegion extends Component {
 
     public Component getOutsideSp() {
         return outsideSp;
-    }
-
-    public static class MusicVariantSpinner extends StyledSpinner {
-
-
-        public MusicVariantSpinner(int val) {
-            super(new SpinnerIntegerModel(0, 3, val, 1, true, null) {
-                {
-                    setAbsoluteMaximum(3);
-                }
-                @Override
-                public String getDisplayString() {
-                    switch ((int) getValue()) {
-                        case 0: return Messages.get(ChangeRegion.class, "normal");
-                        case 1: return Messages.get(ChangeRegion.class, "tense");
-                        case 2: return Messages.get(ChangeRegion.class, "boss");
-                        case 3: return Messages.get(ChangeRegion.class, "boss_final");
-                    }
-                    return super.getDisplayString();
-                }
-
-                @Override
-                public float getInputFieldWidth(float height) {
-                    return Spinner.FILL;
-                }
-            }, Messages.get(MusicVariantSpinner.class, "label"), 9);
-        }
     }
 }

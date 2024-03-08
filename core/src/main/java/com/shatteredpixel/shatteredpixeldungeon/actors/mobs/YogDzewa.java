@@ -219,8 +219,7 @@ public class YogDzewa extends Mob {
 					}
 				});
 			} else if (playerAlignment == Mob.NORMAL_ALIGNMENT && showBossBar) {
-				Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
-				Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS_FINAL, id());
+				Dungeon.level.playSpecialMusic(Assets.Music.HALLS_BOSS_FINALE, id());
 			}
 		}
 
@@ -404,6 +403,11 @@ public class YogDzewa extends Mob {
 
 	@Override
 	public void damage( int dmg, Object src ) {
+
+		if (!BossHealthBar.isAssigned(this)) {
+			BossHealthBar.addBoss(this);
+			if (showBossBar && !(Dungeon.level instanceof HallsBossLevel)) Dungeon.level.seal();
+		}
 
 		int preHP = HP;
 		super.damage( dmg, src );
@@ -602,7 +606,7 @@ public class YogDzewa extends Mob {
 
 		yell( Messages.get(this, "defeated") );
 
-		Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS_FINAL, id());
+		Dungeon.level.stopSpecialMusic(id());
 	}
 
 	@Override
@@ -611,10 +615,16 @@ public class YogDzewa extends Mob {
 
 		if (!BossHealthBar.isAssigned(this)) {
 			BossHealthBar.addBoss(this);
-			yell(Messages.get(this, "notice"));
-			for (Char ch : Actor.chars()){
-				if (ch instanceof DriedRose.GhostHero){
-					((DriedRose.GhostHero) ch).sayBoss(YogDzewa.class);
+			if (showBossBar) {
+				if (!(Dungeon.level instanceof HallsBossLevel)) {
+					Dungeon.level.seal();
+					Dungeon.level.playSpecialMusic(Assets.Music.HALLS_BOSS, id());
+				}
+				yell(Messages.get(this, "notice"));
+				for (Char ch : Actor.chars()) {
+					if (ch instanceof DriedRose.GhostHero) {
+						((DriedRose.GhostHero) ch).sayBoss(YogDzewa.class);
+					}
 				}
 			}
 			if (Dungeon.level instanceof HallsBossLevel) {
@@ -630,10 +640,6 @@ public class YogDzewa extends Mob {
 				summonCooldown = Random.NormalFloat(MIN_SUMMON_CD, MAX_SUMMON_CD);
 				abilityCooldown = Random.NormalFloat(MIN_ABILITY_CD, MAX_ABILITY_CD);
 			}
-		}
-		if (playerAlignment == Mob.NORMAL_ALIGNMENT && !(Dungeon.level instanceof HallsBossLevel)) {
-			Dungeon.level.seal();
-			if (showBossBar) Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS, id());
 		}
 	}
 

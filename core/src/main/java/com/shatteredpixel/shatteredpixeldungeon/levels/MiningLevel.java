@@ -119,7 +119,7 @@ public class MiningLevel extends CavesLevel {
 
 	@Override
 	public void playLevelMusic() {
-		playLevelMusic(LevelScheme.REGION_CAVES, Level.MUSIC_TENSE);
+		playLevelMusic(LevelScheme.REGION_CAVES);//tense, see CavesLevel.playLevelMusic()
 	}
 
 	@Override

@@ -1021,7 +1021,7 @@ public abstract class Mob extends Char implements Customizable {
 			bleedingCheck = (HP*2 <= HT);
 			if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
 				Dungeon.level.seal();
-				Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS, id());
+				Dungeon.level.playSpecialMusic(Level.SPECIAL_MUSIC[Dungeon.level.levelScheme.getRegion()-1][Level.MUSIC_BOSS-1], id());
 			}
 		} else bleedingCheck = false;
 
@@ -1144,7 +1144,7 @@ public abstract class Mob extends Char implements Customizable {
 			}
 		}
 
-		Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
+		Dungeon.level.stopSpecialMusic(id());
 		if (isBossMob && playerAlignment == Mob.NORMAL_ALIGNMENT) {
 			Dungeon.level.unseal();
 			GameScene.bossSlain();
@@ -1463,7 +1463,7 @@ public abstract class Mob extends Char implements Customizable {
                 BossHealthBar.addBoss(this);
 				if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
 					Dungeon.level.seal();
-					Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS, id());
+					Dungeon.level.playSpecialMusic(Level.SPECIAL_MUSIC[Dungeon.level.levelScheme.getRegion()-1][Level.MUSIC_BOSS-1], id());
 				}
 //                yell(Messages.get(this, "notice"));
 //                for (Char ch : Actor.chars()) {

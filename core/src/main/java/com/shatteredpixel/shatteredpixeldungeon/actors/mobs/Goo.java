@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -37,7 +38,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.GooBlob;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -283,7 +283,10 @@ public class Goo extends Mob implements MobBasedOnDepth {
 	public void damage(int dmg, Object src) {
 		if (!BossHealthBar.isAssigned(this)){
 			BossHealthBar.addBoss( this );
-			Dungeon.level.seal();
+			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT) {
+				Dungeon.level.seal();
+				Dungeon.level.playSpecialMusic(Assets.Music.SEWERS_BOSS, id());
+			}
 		}
 		boolean bleedingCheck = (HP*2 <= HT);
 		super.damage(dmg, src);
@@ -317,7 +320,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 		
 		yell( Messages.get(this, "defeated") );
 
-		Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
+		Dungeon.level.stopSpecialMusic(id());
 	}
 	
 	@Override
@@ -327,16 +330,17 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 		if (!BossHealthBar.isAssigned(this)) {
 			BossHealthBar.addBoss(this);
-			Dungeon.level.seal();
-			yell(Messages.get(this, "notice"));
-			for (Char ch : Actor.chars()){
-				if (ch instanceof DriedRose.GhostHero){
-					((DriedRose.GhostHero) ch).sayBoss(Goo.class);
+			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT) {
+				Dungeon.level.seal();
+				Dungeon.level.playSpecialMusic(Assets.Music.SEWERS_BOSS, id());
+				yell(Messages.get(this, "notice"));
+				for (Char ch : Actor.chars()) {
+					if (ch instanceof DriedRose.GhostHero) {
+						((DriedRose.GhostHero) ch).sayBoss(Goo.class);
+					}
 				}
 			}
 		}
-
-		if (showBossBar) Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS, id());
 	}
 
 	private final String PUMPEDUP = "pumpedup";

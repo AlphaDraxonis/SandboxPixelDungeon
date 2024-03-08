@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -19,12 +20,9 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.FetidRatSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollTricksterSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GreatCrabSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -122,7 +120,7 @@ public class GhostQuest extends Quest {
         return completedOnce;
     }
 
-    public void process() {
+    public void process(Char questGiver) {
         if (given() && !completed()) {
             GLog.n(Messages.get(Ghost.class, "find_me"));
             Sample.INSTANCE.play(Assets.Sounds.GHOST);
@@ -130,21 +128,7 @@ public class GhostQuest extends Quest {
             addScore(0, 1000);
             questsActive.remove(Dungeon.levelName);
 
-            if (Dungeon.level.playsMusicFromRegion() == LevelScheme.REGION_SEWERS) {
-                Game.runOnRenderThread(new Callback() {
-                    @Override
-                    public void call() {
-                        Music.INSTANCE.fadeOut(1f, new Callback() {
-                            @Override
-                            public void call() {
-                                if (Dungeon.level != null) {
-                                    Dungeon.level.playLevelMusic();
-                                }
-                            }
-                        });
-                    }
-                });
-            }
+            Dungeon.level.stopSpecialMusic(questGiver.id());
         }
     }
 

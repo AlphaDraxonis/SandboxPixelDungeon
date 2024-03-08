@@ -78,7 +78,7 @@ public class HallsLevel extends RegularLevel {
 
 	@Override
 	public void playLevelMusic() {
-		playLevelMusic(LevelScheme.REGION_HALLS, Level.MUSIC_NORMAL);
+		playLevelMusic(LevelScheme.REGION_HALLS);
 	}
 
 	public static void playHallsLevelMusic() {

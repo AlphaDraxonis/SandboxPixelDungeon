@@ -24,6 +24,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.WndSelectMusic;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ZoneMobSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndZones;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
@@ -36,7 +37,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIco
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -160,23 +160,29 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
 
         Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_LULLABY);
         icon.scale.set(1.8f);
-        StyledSpinner music = new StyledSpinner(new SpinnerTextModel(true, zone.musicVariant < 0 ? 0 : zone.musicVariant + 1, new Object[] {
-                -3, Level.MUSIC_NORMAL, Level.MUSIC_TENSE, Level.MUSIC_BOSS, Level.MUSIC_BOSS_FINAL
-        }) {
-            @Override
-            protected String getAsString(Object value) {
-                switch ((int)value) {
-                    default:
-                    case -3: return Messages.get(EditZoneComp.class, "no_change");
-                    case 0: return Messages.get(ChangeRegion.class, "normal");
-                    case 1: return Messages.get(ChangeRegion.class, "tense");
-                    case 2: return Messages.get(ChangeRegion.class, "boss");
-                    case 3: return Messages.get(ChangeRegion.class, "boss_final");
-                }
+        String musicLabel = Messages.get(ChangeRegion.class, "music");
+        StyledButton music = new StyledButton(Chrome.Type.GREY_BUTTON_TR, musicLabel) {
+            {
+                text.align(RenderedTextBlock.CENTER_ALIGN);
+                text.setHighlighting(false);
             }
-        }, Messages.get(ChangeRegion.MusicVariantSpinner.class, "label"), 7, icon);
-        music.addChangeListener(() -> zone.musicVariant = (int) music.getValue());
-        music.setButtonWidth(8f);
+            @Override
+            protected void onClick() {
+                EditorScene.show(new WndSelectMusic() {
+                    @Override
+                    protected void onSelect(Object music) {
+                        super.onSelect(music);
+
+                        if (music instanceof Integer) zone.music = null;
+                        if (music instanceof String) zone.music = (String) music;
+
+                        text(musicLabel + "\n" + (zone.music == null ? Messages.get(EditZoneComp.class, "no_change") : WndSelectMusic.getDisplayName(zone.music)));
+                    }
+                });
+            }
+        };
+        music.text(musicLabel + "\n" + (zone.music == null ? Messages.get(EditZoneComp.class, "no_change") : WndSelectMusic.getDisplayName(zone.music)));
+        music.icon(icon);
         add(music);
 
         LevelScheme chasm = Dungeon.customDungeon.getFloor(Dungeon.level.levelScheme.getChasm());

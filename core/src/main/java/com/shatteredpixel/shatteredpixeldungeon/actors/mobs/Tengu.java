@@ -109,7 +109,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	}
 
 	public int phase = 1;//1 or 2, ONLY used for non PrisonBossLevels
-	public int arenaRadius = 10;//ONLY used for non PrisonBossLevels
+	public int arenaRadius = 7;//ONLY used for non PrisonBossLevels
 	private int stepsToDo;//only if state is Wandering
 	private boolean attackedPlayer;
 
@@ -165,6 +165,14 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	public void damage(int dmg, Object src) {
 		if (!Dungeon.level.mobs.contains(this)){
 			return;
+		}
+
+		if (!BossHealthBar.isAssigned(this)) {
+			BossHealthBar.addBoss(this);
+			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
+				Dungeon.level.seal();
+				Dungeon.level.playSpecialMusic(Assets.Music.PRISON_BOSS, id());
+			}
 		}
 
 		PrisonBossLevel.State state;
@@ -275,7 +283,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 					}
 				}
 			}
-			Dungeon.level.stopSpecialMusic(Level.MUSIC_BOSS, id());
+			Dungeon.level.stopSpecialMusic(id());
 		}
 	}
 	
@@ -287,6 +295,15 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 	@Override
 	protected boolean doAttack(Char enemy) {
+
+		if (!BossHealthBar.isAssigned(this)) {
+			BossHealthBar.addBoss(this);
+			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
+				Dungeon.level.seal();
+				Dungeon.level.playSpecialMusic(Assets.Music.PRISON_BOSS, id());
+			}
+		}
+
 		if (sprite instanceof TenguSprite || sprite == null || !sprite.visible && !enemy.sprite.visible)
 			return super.doAttack(enemy);
 
@@ -408,20 +425,24 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		if (!BossHealthBar.isAssigned(this)) {
 			BossHealthBar.addBoss(this);
 			if (HP <= HT/2) bleeding = true;
-			if (HP == HT) {
-				yell(Messages.get(this, "notice_gotcha", Dungeon.hero.name()));
-				for (Char ch : Actor.chars()){
-					if (ch instanceof DriedRose.GhostHero){
-						((DriedRose.GhostHero) ch).sayBoss(Tengu.class);
+			if (showBossBar) {
+				if (!(Dungeon.level instanceof PrisonBossLevel)) Dungeon.level.seal();
+				if (HP == HT) {
+					yell(Messages.get(this, "notice_gotcha", Dungeon.hero.name()));
+					for (Char ch : Actor.chars()) {
+						if (ch instanceof DriedRose.GhostHero) {
+							((DriedRose.GhostHero) ch).sayBoss(Tengu.class);
+						}
 					}
+				} else {
+					yell(Messages.get(this, "notice_have", Dungeon.hero.name()));
 				}
-			} else {
-				yell(Messages.get(this, "notice_have", Dungeon.hero.name()));
 			}
 		}
-		if (!(Dungeon.level instanceof PrisonBossLevel)) {
+
+		if (showBossBar && playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
 			Dungeon.level.seal();
-			if (showBossBar) Dungeon.level.playSpecialMusic(Level.MUSIC_BOSS, id());
+			Dungeon.level.playSpecialMusic(Assets.Music.PRISON_BOSS, id());
 		}
 	}
 	

@@ -260,13 +260,16 @@ public abstract class ChooseOneInCategoriesBody extends Component {
             };
             if (icon != null) btn.icon(icon);
             add(btn);
-            infoBtn = new IconButton(Icons.get(Icons.INFO)) {
-                @Override
-                protected void onClick() {
-                    onInfo();
-                }
-            };
-            add(infoBtn);
+
+            if (info != null) {
+                infoBtn = new IconButton(Icons.get(Icons.INFO)) {
+                    @Override
+                    protected void onClick() {
+                        onInfo();
+                    }
+                };
+                add(infoBtn);
+            }
         }
 
         protected void onClick() {
@@ -300,8 +303,8 @@ public abstract class ChooseOneInCategoriesBody extends Component {
 
         @Override
         protected void layout() {
-            btn.setRect(x, y, width - BUTTON_HEIGHT, BUTTON_HEIGHT);
-            infoBtn.setRect(width - BUTTON_HEIGHT, y, BUTTON_HEIGHT, BUTTON_HEIGHT);
+            btn.setRect(x, y, width - (infoBtn == null ? 0 : BUTTON_HEIGHT), BUTTON_HEIGHT);
+            if (infoBtn != null) infoBtn.setRect(width - BUTTON_HEIGHT, y, BUTTON_HEIGHT, BUTTON_HEIGHT);
         }
 
         protected String info() {

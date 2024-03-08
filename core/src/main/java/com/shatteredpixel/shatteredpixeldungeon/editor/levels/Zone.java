@@ -54,7 +54,7 @@ public class Zone implements Bundlable {
     public boolean canDestroyWalls = true;//If Pickaxe/DM300 can destroy walls
     public GrassType grassType = GrassType.NONE;
     public boolean blocksVision = false;
-    public int musicVariant = -3;
+    public String music = null;
 
     public String chasmDestZone;
     public LevelTransition zoneTransition;
@@ -85,7 +85,7 @@ public class Zone implements Bundlable {
     public static final String CAN_DESTROY_WALLS = "can_destroy_walls";
     public static final String GRASS_TYPE = "grass_type";
     public static final String BLOCKS_VISION = "blocks_vision";
-    public static final String MUSIC_VARIANT = "music_variant";
+    public static final String MUSIC = "music";
     public static final String CHASM_DEST_ZONE = "chasm_dest_zone";
     public static final String ZONE_TRANSITION = "zone_transition";
     public static final String RESPAWN_COOLDOWN = "respawn_cooldown";
@@ -106,12 +106,15 @@ public class Zone implements Bundlable {
         canDestroyWalls = bundle.getBoolean(CAN_DESTROY_WALLS);
         grassType = bundle.getEnum(GRASS_TYPE, GrassType.class);
         blocksVision = bundle.getBoolean(BLOCKS_VISION);
-        musicVariant = bundle.contains(MUSIC_VARIANT) ? bundle.getInt(MUSIC_VARIANT) : -3;
         chasmDestZone = bundle.getString(CHASM_DEST_ZONE);
         zoneTransition = (LevelTransition) bundle.get(ZONE_TRANSITION);
         respawnCooldown = bundle.getFloat(RESPAWN_COOLDOWN);
         ownMobRotationEnabled = bundle.getBoolean(OWN_MOB_ROTATION_ENABLED);
         if (bundle.contains(MOB_ROTATION)) mobRotation = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(MOB_ROTATION);
+
+        if (bundle.contains("music_variant"))
+            music = Level.SPECIAL_MUSIC[0][bundle.getInt("music_variant")];
+        else music = bundle.getString(MUSIC);
 
         if (bundle.contains(HERO_BUFFS))
             for (Class c : bundle.getClassArray(HERO_BUFFS)) heroBuffs.add(c);
@@ -139,7 +142,7 @@ public class Zone implements Bundlable {
         bundle.put(CAN_DESTROY_WALLS, canDestroyWalls);
         bundle.put(GRASS_TYPE, grassType);
         bundle.put(BLOCKS_VISION, blocksVision);
-        bundle.put(MUSIC_VARIANT, musicVariant);
+        bundle.put(MUSIC, music);
         bundle.put(CHASM_DEST_ZONE, chasmDestZone);
         bundle.put(ZONE_TRANSITION, zoneTransition);
         bundle.put(RESPAWN_COOLDOWN, respawnCooldown);
@@ -299,9 +302,9 @@ public class Zone implements Bundlable {
         return z == null ? GrassType.NONE : z.grassType;
     }
 
-    public static int getMusicVariant(Level level, int cell) {
+    public static String getMusic(Level level, int cell) {
         Zone z = level.zone[cell];
-        return z == null ? -3 : z.musicVariant;
+        return z == null ? null : z.music;
     }
 
     public Mob createMob() {
