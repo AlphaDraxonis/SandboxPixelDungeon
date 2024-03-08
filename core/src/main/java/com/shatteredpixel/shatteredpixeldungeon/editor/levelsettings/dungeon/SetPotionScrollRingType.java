@@ -98,8 +98,8 @@ public class SetPotionScrollRingType extends Component {
 
     protected void layout() {
 
-        float spY = 0;
-        float spX = 0;
+        float spY = y;
+        float spX = x;
         if (PixelScene.landscape()) {
             width = WndTitledMessage.WIDTH_MAX;
             float w = (float) (width - GAP * 2) / 3;
@@ -108,7 +108,7 @@ public class SetPotionScrollRingType extends Component {
                 if (i % 3 != 2) {
                     spX = spinners[i].right() + GAP;
                 } else {
-                    spX = 0;
+                    spX = x;
                     spY = spinners[i].bottom() + LevelTab.GAP;
                 }
             }
@@ -117,15 +117,19 @@ public class SetPotionScrollRingType extends Component {
             float w = (float) (width - GAP) / 2;
             for (int i = 0; i < spinners.length; i++) {
                 spinners[i].setRect(spX, spY, w, BH);
-                if (i % 2 == 0) {
+                if (i % 2 != 1) {
                     spX = spinners[i].right() + GAP;
                 } else {
-                    spX = 0;
+                    spX = x;
                     spY = spinners[i].bottom() + LevelTab.GAP;
                 }
             }
         }
-        height = spY;
+        if (spX != x) {
+            spY = spinners[spinners.length - 1].bottom() + LevelTab.GAP;
+        }
+        spY -= LevelTab.GAP;
+        height = spY - y;
     }
 
     public static SetPotionScrollRingType createScrollWnd(Runnable onClose) {

@@ -50,9 +50,10 @@ public class RingOfFuror extends Ring {
 	protected RingBuff buff( ) {
 		return new Furor();
 	}
-	
+
+	static final double POWER_BASE = 0.09051;
 	public static float attackSpeedMultiplier(Char target ){
-		return (float)Math.pow(1.09051, getBuffedBonus(target, Furor.class));
+		return (float)(Math.pow(1 + POWER_BASE, getBuffedBonus(target, Furor.class)) * RingOfTime.attackSpeedMultiplier(target));
 	}
 
 	public class Furor extends RingBuff {

@@ -26,19 +26,21 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
-public class RingOfHaste extends Ring {
+public class RingOfTime extends Ring {
 
 	{
-		icon = ItemSpriteSheet.Icons.RING_HASTE;
+		icon = ItemSpriteSheet.Icons.RING_TIME;
 	}
 
 	public String statsInfo() {
 		if (isIdentified()){
 			String info = Messages.get(this, "stats",
-					Messages.decimalFormat("#.##", 100f * (Math.pow(1.2f, soloBuffedBonus()) - 1f)));
+					Messages.decimalFormat("#.##", 100f * (Math.pow(1 + RingOfHaste.POWER_BASE * 0.4, soloBuffedBonus()) - 1f)),
+					Messages.decimalFormat("#.##", 100f * (Math.pow(1 + RingOfFuror.POWER_BASE * 0.4, soloBuffedBonus()) - 1f)));
 			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)){
 				info += "\n\n" + Messages.get(this, "combined_stats",
-						Messages.decimalFormat("#.##", 100f * (Math.pow(1.2f, combinedBuffedBonus(Dungeon.hero)) - 1f)));
+						Messages.decimalFormat("#.##", 100f * (Math.pow(1 + RingOfHaste.POWER_BASE * 0.4, combinedBuffedBonus(Dungeon.hero)) - 1f)),
+						Messages.decimalFormat("#.##", 100f * (Math.pow(1 + RingOfFuror.POWER_BASE * 0.4, combinedBuffedBonus(Dungeon.hero)) - 1f)));
 			}
 			return info;
 		} else {
@@ -48,14 +50,17 @@ public class RingOfHaste extends Ring {
 	
 	@Override
 	protected RingBuff buff( ) {
-		return new Haste();
-	}
-
-	static final double POWER_BASE = 0.2;
-	public static float speedMultiplier( Char target ){
-		return (float)(Math.pow(1 + POWER_BASE, getBuffedBonus(target, Haste.class)) * RingOfTime.speedMultiplier(target));
+		return new HasteAndFuror();
 	}
 	
-	public class Haste extends RingBuff {
+	public static float speedMultiplier( Char target ){
+		return (float)Math.pow(1 + RingOfHaste.POWER_BASE * 0.4, getBuffedBonus(target, HasteAndFuror.class));
+	}
+
+	public static float attackSpeedMultiplier( Char target ){
+		return (float)Math.pow(1 + RingOfFuror.POWER_BASE * 0.4, getBuffedBonus(target, HasteAndFuror.class));
+	}
+
+	public class HasteAndFuror extends RingBuff {
 	}
 }

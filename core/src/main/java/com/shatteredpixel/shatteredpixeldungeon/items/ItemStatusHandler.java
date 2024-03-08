@@ -51,7 +51,7 @@ public class ItemStatusHandler<T extends Item> {
         this.itemLabels = assignLabels(new LinkedHashSet<>(Arrays.asList(items)), new ArrayList<>(labelImages.keySet()), new LinkedHashMap<>());
     }
 
-    //default implementation: random; but can be overriden
+    //default implementation: random; but can be overridden
     protected LinkedHashMap<Class<? extends T>, String> assignLabels(Set<Class<? extends T>> items, List<String> labelsLeft, LinkedHashMap<Class<? extends T>, String> itemLabels) {
 
         for (Class<? extends T> item : items) {
