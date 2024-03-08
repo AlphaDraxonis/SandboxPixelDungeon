@@ -118,6 +118,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -1045,7 +1046,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     public static boolean isMobListEqual(List<? extends Mob> a, List<? extends Mob> b) {
         int sizeA = a == null ? 0 : a.size();
         int sizeB = b == null ? 0 : b.size();
-        if (sizeA != sizeB || sizeA == 0) return false;
+        if (sizeA != sizeB) return false;
+        if (a == null) return true;
         int index = 0;
         for (Mob m : a) {
             if (!EditMobComp.areEqual(m, b.get(index))) return false;
@@ -1093,8 +1095,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         protected String createTitle(Mob mob) {
             if (MobSpriteItem.canChangeSprite(mob)) {
                 Mob defaultMob = DefaultStatsCache.getDefaultObject(mob.getClass());
-                if (defaultMob != null && defaultMob.spriteClass != mob.spriteClass
-                 && (mob.sprite.getClass().getEnclosingClass() == null || mob.sprite.getClass().getEnclosingClass() != defaultMob.spriteClass.getEnclosingClass())) {
+                if (defaultMob == null && MobSpriteItem.canChangeSprite(mob)) defaultMob = Reflection.newInstance(mob.getClass());
+                if (MobSpriteItem.isSpriteChanged(mob)) {
                     return super.createTitle(mob) + " (" + super.createTitle(defaultMob) + ")" + EditorUtilies.appendCellToString(mob.pos);
                 }
             }

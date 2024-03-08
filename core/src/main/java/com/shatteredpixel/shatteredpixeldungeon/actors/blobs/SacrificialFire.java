@@ -189,7 +189,7 @@ public class SacrificialFire extends Blob {
 		boolean changedSth = false;
 		for (Integer cell : prizes.keySet()) {
 			Item i = prizes.get(cell);
-			if (i.onRenameLevelScheme(oldName, newName)) {
+			if (i != null && i.onRenameLevelScheme(oldName, newName)) {
 				changedSth = true;
 			}
 		}

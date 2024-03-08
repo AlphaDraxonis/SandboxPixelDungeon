@@ -213,6 +213,11 @@ public class MagicalFireRoom extends SpecialRoom {
 							}
 						}
 
+						if (Dungeon.level.isFlamable(cell)) {
+							Dungeon.level.destroy( cell );
+							GameScene.updateMap( cell );
+						}
+
 						l.setPassableLater(cell,cur[cell] == 0 && (Terrain.flags[l.map[cell]] & Terrain.PASSABLE) != 0);
 					}
 

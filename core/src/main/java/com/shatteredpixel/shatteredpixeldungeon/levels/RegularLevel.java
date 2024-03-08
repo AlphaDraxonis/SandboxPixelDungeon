@@ -181,7 +181,7 @@ public abstract class RegularLevel extends Level {
 		}
 
 		if (levelScheme.spawnSecretRooms) {
-			int secrets = SecretRoom.secretsForFloor(Dungeon.levelName);
+			int secrets = SecretRoom.secretsForFloor(name);
 			//one additional secret for secret levels
 			if (feeling == Feeling.SECRETS) secrets++;
 			for (int i = 0; i < secrets; i++) {
@@ -191,7 +191,7 @@ public abstract class RegularLevel extends Level {
 
 		initRooms.addAll(levelScheme.roomsToSpawn);
 
-		if (!Dungeon.levelName.equals(Level.NONE)) {
+		if (!name.equals(Level.NONE)) {
 			for (Room r : initRooms) {
 				if (r instanceof WeakFloorRoom) {
 					SpecialRoom.increasePitNeededCount();
@@ -228,7 +228,7 @@ public abstract class RegularLevel extends Level {
 	protected abstract Painter painter();
 	
 	protected int nTraps() {
-		return Random.NormalIntRange( 2, 3 + Dungeon.customDungeon.getFloor(Dungeon.levelName).getRegion()-1 );
+		return Random.NormalIntRange( 2, 3 + levelScheme.getRegion()-1 );
 	}
 	
 	protected Class<?>[] trapClasses(){
@@ -246,7 +246,7 @@ public abstract class RegularLevel extends Level {
 			else                            return 10;
 		}
 
-		int mobs = 3 + Dungeon.level.levelScheme.getNumInRegion()+ Random.Int(3);
+		int mobs = 3 + levelScheme.getNumInRegion() + Random.Int(3);
 		if (feeling == Feeling.LARGE){
 			mobs = (int)Math.ceil(mobs * 1.33f);
 		}

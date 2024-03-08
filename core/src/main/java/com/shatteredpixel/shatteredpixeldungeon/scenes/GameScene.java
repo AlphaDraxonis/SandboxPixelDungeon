@@ -949,9 +949,9 @@ public class GameScene extends PixelScene {
 	
 	private synchronized void addMobSprite( Mob mob ) {
 		CharSprite sprite = mob.sprite();
-		mob.updateSpriteVisibility();
 		mobs.add( sprite );
 		sprite.link( mob );
+		mob.updateSpriteVisibility();
 		sortMobSprites();
 	}
 

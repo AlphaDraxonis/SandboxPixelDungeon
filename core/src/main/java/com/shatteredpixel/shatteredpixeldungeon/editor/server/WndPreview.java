@@ -47,7 +47,6 @@ public class WndPreview extends Component {
         add(desc);
 
         creator = PixelScene.renderTextBlock(Messages.get(WndPreview.class, "creator") + ": " + preview.uploader, 6);
-        creator.setHighlighting(false);
         add(creator);
 
         difficulty = PixelScene.renderTextBlock(Messages.get(UploadDungeon.class, "difficulty") + ": "

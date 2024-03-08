@@ -438,7 +438,7 @@ public class CustomLevel extends Level {
             zoneWithPlayedMusic = zone[Dungeon.hero.pos];
             playLevelMusic(music == REGION_NONE ? getRegionValue() : music, Zone.getMusicVariant(this, Dungeon.hero.pos));
         }
-        else if (customMusic != null) {
+        else if (musicVariant == Level.MUSIC_NORMAL && musicRequests.isEmpty() && customMusic != null) {
             Music.INSTANCE.play(customMusic, true);
         }
         else {
@@ -1051,7 +1051,7 @@ public class CustomLevel extends Level {
 
     private static Boolean checkLevelTransitionsDestCell(LevelTransition transition, Level level,
                                                      IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-        if (transition != null && Objects.equals(transition.destLevel, level.name)) {
+        if (transition != null && Objects.equals(transition.destLevel, level.name) && transition.destCell >= 0) {
             int dest = newPosition.get(transition.destCell);
             if (isPositionValid.test(transition.destCell, dest)) {
                 if (dest != transition.destCell) {

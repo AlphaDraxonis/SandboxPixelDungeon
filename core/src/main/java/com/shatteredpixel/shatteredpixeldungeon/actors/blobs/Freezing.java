@@ -50,6 +50,7 @@ public class Freezing extends Blob {
 
 					boolean foundFire = false;
 					for (int k = 0; k < fires.length; k++) {
+						if (fires[k].cur == null) continue;
 						if (fires[k].volume > 0 && fires[k].cur[cell] > 0){
 							fires[k].clear(cell);
 							off[cell] = cur[cell] = 0;

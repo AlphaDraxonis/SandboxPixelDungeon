@@ -60,6 +60,7 @@ public class DefaultStatsCache {
 
             //Acthung Brute kann manche stats setzten, auch speed ändern!
             if (Mob.class.isAssignableFrom(clazz) &&
+                    //if you change this, also check out Dungeon.java line 1078 (findPassable())
                     (NPC.class.isAssignableFrom(clazz) && !SentryRoom.Sentry.class.isAssignableFrom(clazz) && !Ghost.class.isAssignableFrom(clazz)
                             || Pylon.class.isAssignableFrom(clazz)))
                 return null;

@@ -49,7 +49,6 @@ public class WndEditStats extends MultiWindowTabComp {
             }
         };
 
-        final int offset = offsetY;
         WndEditStats wndEditStats = new WndEditStats(width - 10, defaultStats, editStats) {
             @Override
             public void layout() {
@@ -250,6 +249,8 @@ public class WndEditStats extends MultiWindowTabComp {
             }
             mainWindowComps = new Component[] {};
         }
+
+        sp.givePointerPriority();
     }
 
     @Override

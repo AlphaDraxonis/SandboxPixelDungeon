@@ -551,7 +551,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
     public static boolean isItemListEqual(List<Item> a, List<Item> b) {
         int sizeA = a == null ? 0 : a.size();
         int sizeB = b == null ? 0 : b.size();
-        if (sizeA != sizeB || sizeA == 0) return false;
+        if (sizeA != sizeB) return false;
+        if (a == null) return true;
         int index = 0;
         for (Item i : a) {
             if (!EditItemComp.areEqual(i, b.get(index))) return false;

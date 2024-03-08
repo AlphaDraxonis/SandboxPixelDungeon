@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActio
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Reflection;
 
 public class MobItem extends EditorItem<Mob> {
 
@@ -32,7 +33,8 @@ public class MobItem extends EditorItem<Mob> {
         Mob mob = getObject();
         if (MobSpriteItem.canChangeSprite(mob)) {
             Mob defaultMob = DefaultStatsCache.getDefaultObject(mob.getClass());
-            if (defaultMob != null && defaultMob.spriteClass != mob.spriteClass) {
+            if (defaultMob == null && MobSpriteItem.canChangeSprite(mob)) defaultMob = Reflection.newInstance(mob.getClass());
+            if (MobSpriteItem.isSpriteChanged(mob)) {
                     return mob.name() + " (" + defaultMob.name() + ")";
             }
         }

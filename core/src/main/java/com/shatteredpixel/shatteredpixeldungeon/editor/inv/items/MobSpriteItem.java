@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalGuardian;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
@@ -77,6 +78,19 @@ public class MobSpriteItem extends EditorItem<Class<? extends CharSprite>> {
 
     public Mob mob() {
         return mob;
+    }
+
+    public static boolean isSpriteChanged(Mob mob) {
+        return isSpriteChanged(mob, mob.sprite);
+    }
+
+    public static boolean isSpriteChanged(Mob mob, CharSprite mobSprite) {
+        Mob defMob = DefaultStatsCache.getDefaultObject(mob.getClass());
+        if (defMob == null && MobSpriteItem.canChangeSprite(mob)) defMob = Reflection.newInstance(mob.getClass());
+        return mobSprite != null && defMob != null && defMob.spriteClass != mob.spriteClass
+                && (mobSprite.getClass().getEnclosingClass() == null ||
+                mobSprite.getClass().getEnclosingClass() != defMob.spriteClass.getEnclosingClass()
+                || mob.getClass().getEnclosingClass() != null);
     }
 
     public static boolean canChangeSprite(Mob mob) {

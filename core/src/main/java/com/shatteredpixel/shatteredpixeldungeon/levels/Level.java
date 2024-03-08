@@ -210,7 +210,7 @@ public abstract class Level implements Bundlable {
 	//when a boss level has become locked.
 	public int lockedCount = 0;//  <= 0 -> not locked
 	public int musicVariant = 0;//so bosses can play boss music while they are alive
-	private final LinkedList<Integer> musicRequests = new LinkedList<>();//bosses can add their music request in notice(), and remove it in die(), always the last element is played
+	protected final LinkedList<Integer> musicRequests = new LinkedList<>();//bosses can add their music request in notice(), and remove it in die(), always the last element is played
 	private final LinkedList<Integer> musicRequestsMobIDs = new LinkedList<>();//keeps track which mobs have changed the music
 
 	public HashSet<Mob> mobs;

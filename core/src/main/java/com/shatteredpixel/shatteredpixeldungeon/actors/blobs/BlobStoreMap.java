@@ -22,7 +22,7 @@ public class BlobStoreMap {
     public Blob[] get(Class<? extends Blob> clazz) {
         List<Blob> result = new ArrayList<>(3);
         for (Blob b : blobs.values()) {
-            if (clazz.isAssignableFrom(b.getClass()) && b.volume > 0) {
+            if (b != null && clazz.isAssignableFrom(b.getClass()) && b.volume > 0) {
                 result.add(b);
             }
         }
