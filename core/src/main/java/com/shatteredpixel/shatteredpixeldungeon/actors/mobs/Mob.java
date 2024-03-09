@@ -55,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Feint;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.Customizable;
@@ -490,7 +491,7 @@ public abstract class Mob extends Char implements Customizable {
 		}
 
 		if (following) {
-			if (playerAlignment == NORMAL_ALIGNMENT) return Dungeon.hero;
+			if (playerAlignment == NORMAL_ALIGNMENT && !(this instanceof NPC)) return Dungeon.hero;
 		}
 
 		//if we are an alert enemy, auto-hunt a target that is affected by aggression, even another enemy

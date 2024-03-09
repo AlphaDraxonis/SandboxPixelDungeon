@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 
 import java.io.IOException;
@@ -38,6 +39,10 @@ public final class ServerCommunication {
         if (URL == null) {
 
             if (!force && SPDSettings.WiFi() && !Game.platform.connectedToUnmeteredNetwork()) {
+                return false;
+            }
+
+            if (DeviceCompat.isDebug()) {
                 return false;
             }
 
@@ -68,7 +73,7 @@ public final class ServerCommunication {
     }
 
     public static String getURL() {
-        if (URL == null) {
+        if (URL == null && !DeviceCompat.isDebug()) {
             if (loadURL(true)) {
                 new Thread(() -> {
                     try {

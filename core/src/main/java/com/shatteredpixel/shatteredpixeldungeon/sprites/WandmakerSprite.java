@@ -72,4 +72,9 @@ public class WandmakerSprite extends MobSprite {
 		}
 	}
 
+	@Override
+	public void turnTo(int from, int to) {
+		super.turnTo(from, to);
+		updateFrame();
+	}
 }

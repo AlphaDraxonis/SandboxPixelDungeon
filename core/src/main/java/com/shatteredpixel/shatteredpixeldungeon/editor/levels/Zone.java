@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -112,9 +113,13 @@ public class Zone implements Bundlable {
         ownMobRotationEnabled = bundle.getBoolean(OWN_MOB_ROTATION_ENABLED);
         if (bundle.contains(MOB_ROTATION)) mobRotation = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(MOB_ROTATION);
 
-        if (bundle.contains("music_variant"))
-            music = Level.SPECIAL_MUSIC[0][bundle.getInt("music_variant")];
-        else if (bundle.contains(MUSIC)) music = bundle.getString(MUSIC);
+        if (bundle.contains("music_variant")) {
+            int variant = bundle.getInt("music_variant");
+            if (variant == -1) music = Assets.Music.THEME_FINALE;
+            else if (variant == -2) music = "";
+            else if (variant == -3) music = Assets.Music.VANILLA_GAME;
+            else music = Level.SPECIAL_MUSIC[0][variant];
+        } else if (bundle.contains(MUSIC)) music = bundle.getString(MUSIC);
 
         if (bundle.contains(HERO_BUFFS))
             for (Class c : bundle.getClassArray(HERO_BUFFS)) heroBuffs.add(c);

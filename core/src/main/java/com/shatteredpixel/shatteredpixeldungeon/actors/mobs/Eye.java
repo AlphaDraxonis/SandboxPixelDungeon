@@ -337,6 +337,8 @@ public class Eye extends Mob {
 			beamTarget = bundle.getInt(BEAM_TARGET);
 		beamCooldown = bundle.getInt(BEAM_COOLDOWN);
 		beamCharged = bundle.getBoolean(BEAM_CHARGED);
+
+		spriteClass = EyeSprite.class;
 	}
 
 	{

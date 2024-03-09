@@ -104,7 +104,6 @@ public class CustomDungeon implements Bundlable {
     //AND check if sprite classes have changed, e.g. ZAPs()!!!
     //search for onZapComplete() casted on called object
 
-    //Tengu boss bar buggged / missing
     //Crash when thiefs steal item?
 
 

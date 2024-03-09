@@ -230,7 +230,7 @@ public class WndSelectMusic extends WndChooseOneInCategories {
                 if (i == -3) return Messages.get(WndSelectMusic.class, "music_change_disabled");
             }
 
-            if (i > 0) Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[i-1]);
+            if (i > 0) return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[i-1]);
             else return Messages.get(ChangeRegion.class, "same");
         }
 
