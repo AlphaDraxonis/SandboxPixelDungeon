@@ -569,7 +569,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			if (showBossBar && playerAlignment == Mob.NORMAL_ALIGNMENT) {
 				if (!(Dungeon.level instanceof CityBossLevel)) {
 					Dungeon.level.seal();
-					Dungeon.level.playSpecialMusic(Assets.Music.CITY_BOSS, id());
+					playBossMusic(Assets.Music.CITY_BOSS);
 				}
 				yell(Messages.get(this, "notice"));
 				for (Char ch : Actor.chars()) {
@@ -597,7 +597,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			BossHealthBar.addBoss(this);
 			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
 				Dungeon.level.seal();
-				Dungeon.level.playSpecialMusic(Assets.Music.CITY_BOSS, id());
+				playBossMusic(Assets.Music.CITY_BOSS);
 			}
 		}
 
@@ -679,7 +679,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 					}
 				});
 			} else if (playerAlignment == Mob.NORMAL_ALIGNMENT && showBossBar) {
-				Dungeon.level.playSpecialMusic(Assets.Music.CITY_BOSS_FINALE, id());
+				if (bossMusic == null) Dungeon.level.playSpecialMusic(Assets.Music.CITY_BOSS_FINALE, id());
 			}
 		} else if (phase == 3 && preHP > 20 && HP < 20){
 			yell( Messages.get(this, "losing") );

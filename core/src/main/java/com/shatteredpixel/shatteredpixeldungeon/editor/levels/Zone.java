@@ -114,7 +114,7 @@ public class Zone implements Bundlable {
 
         if (bundle.contains("music_variant"))
             music = Level.SPECIAL_MUSIC[0][bundle.getInt("music_variant")];
-        else music = bundle.getString(MUSIC);
+        else if (bundle.contains(MUSIC)) music = bundle.getString(MUSIC);
 
         if (bundle.contains(HERO_BUFFS))
             for (Class c : bundle.getClassArray(HERO_BUFFS)) heroBuffs.add(c);
@@ -142,7 +142,7 @@ public class Zone implements Bundlable {
         bundle.put(CAN_DESTROY_WALLS, canDestroyWalls);
         bundle.put(GRASS_TYPE, grassType);
         bundle.put(BLOCKS_VISION, blocksVision);
-        bundle.put(MUSIC, music);
+        if (music != null) bundle.put(MUSIC, music);
         bundle.put(CHASM_DEST_ZONE, chasmDestZone);
         bundle.put(ZONE_TRANSITION, zoneTransition);
         bundle.put(RESPAWN_COOLDOWN, respawnCooldown);

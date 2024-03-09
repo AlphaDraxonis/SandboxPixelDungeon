@@ -368,7 +368,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT) {
 				if (!(Dungeon.level instanceof CavesBossLevel)) {
 					Dungeon.level.seal();
-					Dungeon.level.playSpecialMusic(Assets.Music.CAVES_BOSS, id());
+					playBossMusic(Assets.Music.CAVES_BOSS);
 				}
 				yell(Messages.get(this, "notice"));
 				for (Char ch : Actor.chars()) {
@@ -585,7 +585,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 				});
 			} else {
 				if (playerAlignment == Mob.NORMAL_ALIGNMENT && showBossBar) {
-					Dungeon.level.playSpecialMusic(Assets.Music.CAVES_BOSS_FINALE, id());
+					if (bossMusic == null) Dungeon.level.playSpecialMusic(Assets.Music.CAVES_BOSS_FINALE, id());
 				}
 			}
 

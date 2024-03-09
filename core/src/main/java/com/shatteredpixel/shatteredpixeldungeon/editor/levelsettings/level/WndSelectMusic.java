@@ -14,27 +14,40 @@ import java.util.List;
 
 public class WndSelectMusic extends WndChooseOneInCategories {
 
-    public WndSelectMusic() {
+    public enum TypeOfFirstCategory {
+        REGION_MUSIC("region_music", LevelScheme.REGION_NONE, LevelScheme.REGION_SEWERS, LevelScheme.REGION_PRISON,
+                LevelScheme.REGION_CAVES, LevelScheme.REGION_CITY, LevelScheme.REGION_HALLS),
+        FOR_ZONES("no_change", -1),
+        FOR_BOSSES("no_change", -2, -3);
+
+        private final String msgKey;
+        private final Object[] data;
+
+        TypeOfFirstCategory(String msgKey, Object... data) {
+            this.msgKey = msgKey;
+            this.data = data;
+        }
+
+        private String title() {
+            return Messages.get(WndSelectMusic.class, msgKey);
+        }
+    }
+
+    public WndSelectMusic(TypeOfFirstCategory typeOfFirstCategory) {
 
         super(
                 Messages.get(WndSelectMusic.class, "title"), "",
-                createCategories(),
-                getCategoryNames()
+                createCategories(typeOfFirstCategory),
+                getCategoryNames(typeOfFirstCategory)
         );
     }
 
-    private static Object[][] createCategories() {
+    private static Object[][] createCategories(TypeOfFirstCategory typeOfFirstCategory) {
 
         Object[][] cats = new Object[8][];
 
         //imitate region aka normal music
-        cats[0] = new Object[6];
-        cats[0][0] = LevelScheme.REGION_NONE;
-        cats[0][1] = LevelScheme.REGION_SEWERS;
-        cats[0][2] = LevelScheme.REGION_PRISON;
-        cats[0][3] = LevelScheme.REGION_CAVES;
-        cats[0][4] = LevelScheme.REGION_CITY;
-        cats[0][5] = LevelScheme.REGION_HALLS;
+        cats[0] = typeOfFirstCategory.data;
 
         //button for custom music
         cats[1] = new Object[]{null};
@@ -97,9 +110,9 @@ public class WndSelectMusic extends WndChooseOneInCategories {
         return cats;
     }
 
-    private static String[] getCategoryNames() {
+    private static String[] getCategoryNames(TypeOfFirstCategory typeOfFirstCategory) {
         return new String[]{
-                Messages.get(WndSelectMusic.class, "region_music"),
+                typeOfFirstCategory.title(),
                 Messages.get(WndSelectMusic.class, "custom_music"),
                 Messages.get(WndSelectMusic.class, "special"),
                 Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[0]),
@@ -129,7 +142,8 @@ public class WndSelectMusic extends WndChooseOneInCategories {
         }
 
         if (cat[0] == null) {
-            ret[0] = new ChooseOneInCategoriesBody.BtnRow(Messages.get(WndSelectMusic.class, "custom_music"), Messages.get(WndSelectMusic.class, "custom_music_info")) {
+            ret[0] = new ChooseOneInCategoriesBody.BtnRow(Messages.get(WndSelectMusic.class, "custom_music"),
+                    Messages.get(WndSelectMusic.class, "custom_music_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath())) {
                 @Override
                 protected void onClick() {
                     onSelect(null);
@@ -209,13 +223,21 @@ public class WndSelectMusic extends WndChooseOneInCategories {
 
         if (music instanceof Integer) {
             int i = (int) music;
-            if (i == 0) return Messages.get(ChangeRegion.class, "same");
-            else return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[i-1]);
+
+            if (i < 0) {
+                if (i == -1) return Messages.get(WndSelectMusic.class, "no_change");
+                if (i == -2) return Messages.get(WndSelectMusic.class, "default_music");
+                if (i == -3) return Messages.get(WndSelectMusic.class, "music_change_disabled");
+            }
+
+            if (i > 0) Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[i-1]);
+            else return Messages.get(ChangeRegion.class, "same");
         }
 
         if (music instanceof String) {
             switch (((String) music)) {
                 case "": return Messages.get(WndSelectMusic.class, "none");
+                case "/": return Messages.get(WndSelectMusic.class, "music_change_disabled");
                 case Assets.Music.THEME_FINALE: return Messages.get(WndSelectMusic.class, "theme_final");
                 case Assets.Music.VANILLA_GAME: return Messages.get(WndSelectMusic.class, "vanilla");
             }

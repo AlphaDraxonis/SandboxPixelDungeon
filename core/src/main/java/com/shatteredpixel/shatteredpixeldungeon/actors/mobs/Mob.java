@@ -150,6 +150,7 @@ public abstract class Mob extends Char implements Customizable {
 	public boolean isBossMob;//only real value while playing, use level.bossmobAt instead!, not meant for shattered bosses except goo!
 	public boolean showBossBar = true;
 	public boolean bleeding;
+	public String bossMusic;
 
 	//Normal, Neutral, or Friedly; Neutral enemies behave similar as RatKing, cannot have boss bars
 	public static final int NORMAL_ALIGNMENT   = 0;
@@ -231,6 +232,7 @@ public abstract class Mob extends Char implements Customizable {
 	private static final String IS_BOSS_MOB = "is_boss_mob";
 	private static final String SHOW_BOSS_BAR = "show_boss_bar";
 	private static final String BLEEDING = "bleeding";
+	private static final String BOSS_MUSIC = "boss_music";
 	private static final String PLAYER_ALIGNMENT = "player_alignment";
 	private static final String FOLLOWING = "following";
 	private static final String LOOT = "loot";
@@ -287,6 +289,7 @@ public abstract class Mob extends Char implements Customizable {
         bundle.put(IS_BOSS_MOB, isBossMob);
         bundle.put(SHOW_BOSS_BAR, showBossBar);
         bundle.put(BLEEDING, bleeding);
+        if (bossMusic != null) bundle.put(BOSS_MUSIC, bossMusic);
         bundle.put(PLAYER_ALIGNMENT, playerAlignment);
 
         if (loot instanceof ItemsWithChanceDistrComp.RandomItemData) bundle.put(LOOT, (Bundlable) loot);
@@ -358,6 +361,7 @@ public abstract class Mob extends Char implements Customizable {
 		if (enchantWeapon == null) enchantWeapon = new EnchantmentWeapon();
 
 		if (bundle.contains(SHOW_BOSS_BAR)) showBossBar = bundle.getBoolean(SHOW_BOSS_BAR);
+		if (bundle.contains(BOSS_MUSIC)) bossMusic = bundle.getString(BOSS_MUSIC);
 		bleeding = bundle.getBoolean(BLEEDING);
 
 		if (bundle.contains(IS_BOSS_MOB)) isBossMob = bundle.getBoolean(IS_BOSS_MOB);
@@ -1021,7 +1025,7 @@ public abstract class Mob extends Char implements Customizable {
 			bleedingCheck = (HP*2 <= HT);
 			if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
 				Dungeon.level.seal();
-				Dungeon.level.playSpecialMusic(Level.SPECIAL_MUSIC[Dungeon.level.levelScheme.getRegion()-1][Level.MUSIC_BOSS-1], id());
+				playBossMusic(Level.SPECIAL_MUSIC[Dungeon.level.levelScheme.getRegion()-1][Level.MUSIC_BOSS-1]);
 			}
 		} else bleedingCheck = false;
 
@@ -1463,7 +1467,7 @@ public abstract class Mob extends Char implements Customizable {
                 BossHealthBar.addBoss(this);
 				if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
 					Dungeon.level.seal();
-					Dungeon.level.playSpecialMusic(Level.SPECIAL_MUSIC[Dungeon.level.levelScheme.getRegion()-1][Level.MUSIC_BOSS-1], id());
+					playBossMusic(Level.SPECIAL_MUSIC[Dungeon.level.levelScheme.getRegion()-1][Level.MUSIC_BOSS-1]);
 				}
 //                yell(Messages.get(this, "notice"));
 //                for (Char ch : Actor.chars()) {
@@ -1479,6 +1483,12 @@ public abstract class Mob extends Char implements Customizable {
         GLog.newLine();
         GLog.n("%s: \"%s\" ", Messages.titleCase(name()), str);
     }
+
+	protected void playBossMusic(String defaultMusic) {
+		String play = bossMusic == null ? defaultMusic : bossMusic;
+		if (!play.equals("/"))
+			Dungeon.level.playSpecialMusic(play, id());
+	}
 
 	public interface AiState {
 		boolean act( boolean enemyInFOV, boolean justAlerted );

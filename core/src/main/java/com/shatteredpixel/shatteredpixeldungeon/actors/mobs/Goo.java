@@ -285,7 +285,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 			BossHealthBar.addBoss( this );
 			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT) {
 				Dungeon.level.seal();
-				Dungeon.level.playSpecialMusic(Assets.Music.SEWERS_BOSS, id());
+				playBossMusic(Assets.Music.SEWERS_BOSS);
 			}
 		}
 		boolean bleedingCheck = (HP*2 <= HT);
@@ -332,7 +332,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 			BossHealthBar.addBoss(this);
 			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT) {
 				Dungeon.level.seal();
-				Dungeon.level.playSpecialMusic(Assets.Music.SEWERS_BOSS, id());
+				playBossMusic(Assets.Music.SEWERS_BOSS);
 				yell(Messages.get(this, "notice"));
 				for (Char ch : Actor.chars()) {
 					if (ch instanceof DriedRose.GhostHero) {

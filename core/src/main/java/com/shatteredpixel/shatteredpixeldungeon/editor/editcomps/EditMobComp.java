@@ -64,6 +64,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.WndSelectMusic;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
@@ -71,6 +73,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelectorList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
@@ -153,6 +156,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private StyledSpinner tenguPhase, tenguRange, dm300pylonsNeeded, yogSpawnersAlive;
     private ItemSelectorList<MobItem> yogNormalFists, yogChallengeFists;
     private StyledCheckBox dm300destroyWalls, pylonAlwaysActive, showBossBar;
+    private StyledButton bossMusic;
 
     private StyledSpinner heroMobLvl, heroMobStr;
     private HeroClassSpinner heroClassSpinner;
@@ -674,6 +678,39 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             };
             showBossBar.checked(mob.showBossBar);
             add(showBossBar);
+
+            if (!(mob instanceof CrystalSpire || mob instanceof GnollGeomancer || mob instanceof FungalCore)) {
+                Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_LULLABY);
+                icon.scale.set(1.3f);
+                String musicLabel = Messages.get(ChangeRegion.class, "music");
+                bossMusic = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, musicLabel) {
+                    {
+                        text.align(RenderedTextBlock.CENTER_ALIGN);
+                        text.setHighlighting(false);
+                    }
+
+                    @Override
+                    protected void onClick() {
+                        EditorScene.show(new WndSelectMusic(WndSelectMusic.TypeOfFirstCategory.FOR_BOSSES) {
+                            @Override
+                            protected void onSelect(Object music) {
+                                super.onSelect(music);
+
+                                if (music instanceof Integer) {
+                                    mob.bossMusic = ((int) music) == -3 ? "/" : null;
+                                }
+                                if (music instanceof String) mob.bossMusic = (String) music;
+
+                                text(musicLabel + "\n" + (mob.bossMusic == null ? Messages.get(WndSelectMusic.class, "default_music") : WndSelectMusic.getDisplayName(mob.bossMusic)));
+                                EditMobComp.this.updateObj();
+                            }
+                        });
+                    }
+                };
+                bossMusic.text(musicLabel + "\n" + (mob.bossMusic == null ? Messages.get(WndSelectMusic.class, "default_music") : WndSelectMusic.getDisplayName(mob.bossMusic)));
+                bossMusic.icon(icon);
+                add(bossMusic);
+            }
         }
 
         if (!(mob instanceof QuestNPC || mob instanceof RatKing || mob instanceof Sheep ||
@@ -819,7 +856,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
 //                mob instanceof SentryRoom.Sentry ? EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE : null,
 
-                showBossBar,
+                showBossBar, bossMusic,
 
                 mobWeapon, mobArmor, mobRing, mobArti, mobMisc, thiefItem, tormentedSpiritPrize,
                 lotusLevelSpinner, sheepLifespan, sentryRange, sentryDelay,
@@ -972,6 +1009,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (!Objects.equals(a.getCustomName(), b.getCustomName())) return false;
         if (!Objects.equals(a.getCustomDesc(), b.getCustomDesc())) return false;
+        if (!Objects.equals(a.bossMusic, b.bossMusic)) return false;
 
         if (!(a.dialogs == null ? new HashSet<>() : new HashSet<>(a.dialogs)).equals(b.dialogs == null ? new HashSet<>() : new HashSet<>(b.dialogs))) return false;
 

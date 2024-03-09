@@ -161,14 +161,14 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_LULLABY);
         icon.scale.set(1.8f);
         String musicLabel = Messages.get(ChangeRegion.class, "music");
-        StyledButton music = new StyledButton(Chrome.Type.GREY_BUTTON_TR, musicLabel) {
+        StyledButton music = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, musicLabel) {
             {
                 text.align(RenderedTextBlock.CENTER_ALIGN);
                 text.setHighlighting(false);
             }
             @Override
             protected void onClick() {
-                EditorScene.show(new WndSelectMusic() {
+                EditorScene.show(new WndSelectMusic(WndSelectMusic.TypeOfFirstCategory.FOR_ZONES) {
                     @Override
                     protected void onSelect(Object music) {
                         super.onSelect(music);

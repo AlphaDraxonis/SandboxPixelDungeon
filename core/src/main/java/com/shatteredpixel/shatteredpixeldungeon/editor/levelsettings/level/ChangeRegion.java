@@ -129,7 +129,7 @@ public class ChangeRegion extends Component {
             }
             @Override
             protected void onClick() {
-                EditorScene.show(new WndSelectMusic() {
+                EditorScene.show(new WndSelectMusic(WndSelectMusic.TypeOfFirstCategory.REGION_MUSIC) {
                     @Override
                     protected void onSelect(Object music) {
                         super.onSelect(music);

@@ -171,7 +171,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			BossHealthBar.addBoss(this);
 			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
 				Dungeon.level.seal();
-				Dungeon.level.playSpecialMusic(Assets.Music.PRISON_BOSS, id());
+				playBossMusic(Assets.Music.PRISON_BOSS);
 			}
 		}
 
@@ -300,7 +300,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			BossHealthBar.addBoss(this);
 			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
 				Dungeon.level.seal();
-				Dungeon.level.playSpecialMusic(Assets.Music.PRISON_BOSS, id());
+				playBossMusic(Assets.Music.PRISON_BOSS);
 			}
 		}
 
