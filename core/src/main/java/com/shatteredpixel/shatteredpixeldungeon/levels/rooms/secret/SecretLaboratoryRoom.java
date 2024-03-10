@@ -25,18 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHaste;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLevitation;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfParalyticGas;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfToxicGas;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -80,12 +69,12 @@ public class SecretLaboratoryRoom extends SecretRoom {
 		do {
 			pos = level.pointToCell(random());
 		} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get( pos ) != null);
-		level.drop( new EnergyCrystal().random(), pos );
+		level.drop( new EnergyCrystal().quantity(Random.IntRange(3, 5)), pos );
 
 		do {
 			pos = level.pointToCell(random());
 		} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get( pos ) != null);
-		level.drop( new EnergyCrystal().random(), pos );
+		level.drop( new EnergyCrystal().quantity(Random.IntRange(3, 5)), pos );
 
 		int n = Random.IntRange( 2, 3 );
 		HashMap<Class<? extends Potion>, Float> chances = new HashMap<>(potionChances);
