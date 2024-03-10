@@ -57,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
@@ -653,7 +654,7 @@ public abstract class Level implements Bundlable {
 			CoinDoor cost = (CoinDoor) c;
 			coinDoors.put(cost.pos, cost);
 		}
-		
+
 		collection = bundle.getCollection( MOBS );
 		for (Bundlable m : collection) {
 			Mob mob = (Mob)m;
@@ -1358,7 +1359,7 @@ public abstract class Level implements Bundlable {
 				|| findMob(cell) != null
 				|| (!Zone.canSpawnMobs(this, cell) && !(ch == null || ch instanceof Hero || ch instanceof NPC)) );
 	}
-	
+
 	public int randomDestination( Char ch ) {
 		int cell;
 		do {
@@ -1381,6 +1382,14 @@ public abstract class Level implements Bundlable {
 			return null;
 
 		if (match == null){
+			//if we have a trinket catalyst, always return that
+			for (Item i : itemsToSpawn){
+				if (i instanceof TrinketCatalyst){
+					itemsToSpawn.remove(i);
+					return i;
+				}
+			}
+
 			Item item = Random.element(itemsToSpawn);
 			itemsToSpawn.remove(item);
 			return item;
@@ -1624,7 +1633,7 @@ public abstract class Level implements Bundlable {
 	public void setTerrain( int cell, int terrain ){//used for Lua
 		set( cell, terrain, this );
 	}
-	
+
 	public static void set( int cell, int terrain ){
 		set( cell, terrain, Dungeon.level );
 	}

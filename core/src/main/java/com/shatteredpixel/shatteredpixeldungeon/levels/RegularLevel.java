@@ -53,6 +53,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.journal.GuidePage;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.RegionLorePage;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
@@ -301,7 +302,7 @@ public abstract class RegularLevel extends Level {
 					mobs.add(mob);
 
 					//chance to add a second mob to this room, except on floor 1
-					if (Dungeon.getSimulatedDepth(levelScheme) > 1 && mobsToSpawn > 0 && Random.Int(4) == 0) {
+					if (Dungeon.getSimulatedDepth(levelScheme) > 1 && mobsToSpawn > 0 && Random.Int(4) == 0){
 						mob = createMob();
 
 						tries = 30;
@@ -474,7 +475,17 @@ public abstract class RegularLevel extends Level {
 				map[cell] = Terrain.GRASS;
 				losBlocking[cell] = false;
 			}
-			drop( item, cell ).type = Heap.Type.HEAP;
+			if (item instanceof TrinketCatalyst){
+				drop( item, cell ).type = Heap.Type.LOCKED_CHEST;
+				int keyCell = randomDropCell();
+				drop( new GoldenKey(), keyCell ).type = Heap.Type.HEAP;
+				if (map[keyCell] == Terrain.HIGH_GRASS || map[keyCell] == Terrain.FURROWED_GRASS) {
+					map[keyCell] = Terrain.GRASS;
+					losBlocking[keyCell] = false;
+				}
+			} else {
+				drop( item, cell ).type = Heap.Type.HEAP;
+			}
 		}
 
 		//use separate generator(s) for this to prevent held items, meta progress, and talents from affecting levelgen
