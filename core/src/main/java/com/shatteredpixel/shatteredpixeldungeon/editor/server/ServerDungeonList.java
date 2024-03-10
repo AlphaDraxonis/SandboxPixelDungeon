@@ -29,7 +29,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
     private final DungeonPreview[] dungeons;
 
     private Spinner outsideSp;
-    private RedButton upload;
+    protected RedButton upload;
 
     private int page = 0;
     private static final int PREVIEWS_PER_PAGE = 20;
@@ -111,8 +111,6 @@ public class ServerDungeonList extends MultiWindowTabComp {
             mainWindowComps[i - pageMultiply] = createListItem(dungeons[i]);
             content.add(mainWindowComps[i - pageMultiply]);
         }
-
-        upload.givePointerPriority();
     }
 
     public static void updatePage() {
@@ -142,10 +140,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
     }
 
     public Component createTitle() {
-//        RenderedTextBlock title = PixelScene.renderTextBlock(Messages.titleCase(Messages.get(ServerDungeonList.class, "title")), 12);
-//        title.hardlight(Window.TITLE_COLOR);
-        IconTitle title = new IconTitle(null, Messages.titleCase(Messages.get(ServerDungeonList.class, "title")));
-        return title;
+        return new IconTitle(null, Messages.titleCase(Messages.get(ServerDungeonList.class, "title")));
     }
 
     public Component getOutsideSp() {
@@ -270,6 +265,8 @@ public class ServerDungeonList extends MultiWindowTabComp {
                                 = WndServerDungeonList.this.outsideSp.active = false;
                         serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - 2);
                     }
+                    sp.givePointerPriority();
+                    upload.givePointerPriority();
                 }
 
                 @Override
@@ -290,6 +287,8 @@ public class ServerDungeonList extends MultiWindowTabComp {
             } else {
                 serverDungeonList.setRect(0, 2, width, height - 2);
             }
+            serverDungeonList.sp.givePointerPriority();
+            serverDungeonList.upload.givePointerPriority();
         }
     }
 

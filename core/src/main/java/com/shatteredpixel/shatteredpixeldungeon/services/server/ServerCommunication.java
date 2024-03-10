@@ -217,7 +217,7 @@ public final class ServerCommunication {
                     Game.runOnRenderThread(() -> callback.failed(e.getMessage() == null ? new IOException(String.valueOf(httpResponse.getStatus().getStatusCode())) : e));
                     return;
                 }
-                Collections.sort(dungeons, (o1, o2) -> new Date(o1.uploadTime).compareTo(new Date(o2.uploadTime)));
+                Collections.sort(dungeons, (o1, o2) -> new Date(o2.uploadTime).compareTo(new Date(o1.uploadTime)));
                 callback.accept(dungeons.toArray(new DungeonPreview[0]));
             }
 
