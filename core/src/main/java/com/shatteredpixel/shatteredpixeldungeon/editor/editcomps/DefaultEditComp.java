@@ -117,14 +117,14 @@ public abstract class DefaultEditComp<T> extends Component {
     }
 
     protected final void layoutCompsLinear(Component... comps) {
-        height += WndTitledMessage.GAP;
+        if (height > 0) height += WndTitledMessage.GAP;
         float newHeight = EditorUtilies.layoutCompsLinear(WndTitledMessage.GAP, this, comps);
-        if (newHeight == height) height -= WndTitledMessage.GAP;
+        if (newHeight == height && height > WndTitledMessage.GAP) height -= WndTitledMessage.GAP;
         else height = newHeight;
     }
 
     protected final void layoutCompsInRectangles(Component... comps) {
-        height += WndTitledMessage.GAP;
+        if (height > 0) height += WndTitledMessage.GAP;
         float newHeight = EditorUtilies.layoutStyledCompsInRectangles(WndTitledMessage.GAP, width, this, comps);
         if (newHeight == height) height -= WndTitledMessage.GAP;
         else height = newHeight;

@@ -8,7 +8,7 @@ import java.util.Objects;
 public class SignActionPart {
 
     public static boolean areEqual(Sign a, Sign b) {
-        if (a == null && b == null) return true;
+        if (a == b) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.pos != b.pos) return false;

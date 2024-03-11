@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
@@ -779,6 +780,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                         buffsToIgnore.add(Foresight.class);
                         buffsToIgnore.add(Light.class);
                         buffsToIgnore.add(Blindness.class);
+                        buffsToIgnore.add(Recharging.class);
                         return buffsToIgnore;
                     }
 
@@ -996,7 +998,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     }
 
     public static boolean areEqual(Mob a, Mob b) {
-        if (a == null && b == null) return true;
+        if (a == b) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.state.getClass() != b.state.getClass()) return false;

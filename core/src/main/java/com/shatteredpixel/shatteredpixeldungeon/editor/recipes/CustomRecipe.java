@@ -3,11 +3,15 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.recipes;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class CustomRecipe extends Recipe implements Bundlable {
 
@@ -92,6 +96,9 @@ public class CustomRecipe extends Recipe implements Bundlable {
     public Item brew(ArrayList<Item> ingredients) {
         if (!testIngredients(ingredients)) return null;
 
+        List<Recipe> otherRecipes = Recipe.findRecipes(ingredients);
+        otherRecipes.remove(this);
+
         int[] neededQuantity = getNeededQuantities();
 
         for (Item ingredient : ingredients) {
@@ -108,12 +115,32 @@ public class CustomRecipe extends Recipe implements Bundlable {
             }
         }
 
-        return sampleOutput(null);
+        Item result = itemOutput.getCopy();
+        boolean identifyResult = true;
+        for (Recipe recipe : otherRecipes) {
+            Class<? extends Item> outputClass;
+            if (recipe instanceof CustomRecipe) outputClass = ((CustomRecipe) recipe).itemOutput.getClass();
+            else outputClass = recipe.sampleOutput(ingredients).getClass();
+            if (outputClass == result.getClass()) {
+                identifyResult = false;
+                break;
+            }
+        }
+        if (identifyResult)
+            result.identify();
+
+        return result;
     }
 
     @Override
     public Item sampleOutput(ArrayList<Item> ingredients) {
-        return itemOutput.getCopy();
+        Item sample = itemOutput.getCopy();
+        if (!sample.isIdentified()) {
+            if (sample instanceof Potion) ((Potion) sample).anonymize();
+            else if (sample instanceof Scroll) ((Scroll) sample).anonymize();
+            else if (sample instanceof Ring) ((Ring) sample).anonymize();
+        }
+        return sample;
     }
 
     private int[] getNeededQuantities() {

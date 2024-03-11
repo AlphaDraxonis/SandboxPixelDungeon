@@ -88,7 +88,7 @@ public class BlobActionPart {
         }
 
         public static boolean areEqual(BlobData a, BlobData b) {
-            if (a == null && b == null) return true;
+            if (a == b) return true;
             if (a == null || b == null) return false;
             for (int i = 0; i < a.blobs.length; i++) {
                 if (a.blobs[i] != b.blobs[i]) return false;

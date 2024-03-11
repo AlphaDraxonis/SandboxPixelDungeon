@@ -102,7 +102,7 @@ public class EditPlantComp extends DefaultEditComp<Plant> {
 
 
     public static boolean areEqual(Plant a, Plant b) {
-        if (a == null && b == null) return true;
+        if (a == b) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
 

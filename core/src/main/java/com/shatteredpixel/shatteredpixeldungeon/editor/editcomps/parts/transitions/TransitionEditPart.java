@@ -159,7 +159,7 @@ public abstract class TransitionEditPart extends Component {
     protected abstract void deleteTransition(LevelTransition transition);
 
     public static boolean areEqual(LevelTransition a, LevelTransition b) {
-        if (a == null && b == null) return true;
+        if (a == b) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.destCell != b.destCell) return false;

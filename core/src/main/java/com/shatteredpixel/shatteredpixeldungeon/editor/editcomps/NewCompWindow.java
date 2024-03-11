@@ -91,18 +91,18 @@ public abstract class NewCompWindow<T> extends Window {
 
         float posY = MARGIN;
         title.setRect(MARGIN, posY, width, title.height());
-        posY = title.bottom() + MARGIN * 2;
+        posY = title.bottom() + MARGIN;
 
         final float textBoxPos = posY;
-        posY = textBoxPos + 16;
+        posY = textBoxPos + 16 + MARGIN;
 
         spContent.setSize(width, -1);
         final float spPos = posY;
         final float spHeight = Math.min((int) (PixelScene.uiCamera.height * 0.8f) - posY - BUTTON_HEIGHT - 1, spContent.height());
         posY += spHeight + MARGIN * 2;
 
-        create.setRect(MARGIN, posY, (width - MARGIN * 2) / 2, BUTTON_HEIGHT + 1);
-        cancel.setRect(create.right() + MARGIN * 2, posY, (width - MARGIN * 2) / 2, BUTTON_HEIGHT + 1);
+        create.setRect(MARGIN, posY, (width - MARGIN * 3) / 2, BUTTON_HEIGHT + 1);
+        cancel.setRect(create.right() + MARGIN * 2, posY, (width - MARGIN * 3) / 2, BUTTON_HEIGHT + 1);
         posY = create.bottom() + MARGIN;
 
         resize(width, (int) Math.ceil(posY));

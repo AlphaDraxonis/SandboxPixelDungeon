@@ -47,7 +47,7 @@ public class EditRoomComp extends DefaultEditComp<Room> {
 
 
     public static boolean areEqual(Room a, Room b) {
-        if (a == null && b == null) return true;
+        if (a == b) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         return true;

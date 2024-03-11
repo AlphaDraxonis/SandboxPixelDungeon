@@ -72,23 +72,19 @@ public class Dewdrop extends Item {
 
 			int terr = Dungeon.level.map[pos];
 			boolean force = terr == Terrain.ENTRANCE|| terr == Terrain.EXIT || terr == Terrain.UNLOCKED_EXIT;
-			int result = 0;
 			int[] lastResult = new int[1];
 			int totalHealing = 0, totalShield = 0;
 			while (quantity > 0 && (lastResult = consumeDew(1, hero, force))[0] > 0){
 				quantity--;
-				result |= lastResult[0];
 				totalHealing += lastResult[1];
 				totalShield += lastResult[2];
 			}
-			if (result > 0 || lastResult[0] == -1) {
-				if (result == 3) hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "both", totalHealing, totalShield) );
-				else if (result == 2) hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "heal", totalHealing) );
-				else if (result == 1) hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "shield", totalShield) );
+			if (totalHealing > 0 || totalShield > 0 || lastResult[0] == -1) {
 
 				if (totalHealing > 0){
 					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalHealing), FloatingText.HEALING);
 				}
+
 				if (totalShield > 0) {
 					Buff.affect(hero, Barrier.class).incShield(totalShield);
 					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalShield), FloatingText.SHIELDING );

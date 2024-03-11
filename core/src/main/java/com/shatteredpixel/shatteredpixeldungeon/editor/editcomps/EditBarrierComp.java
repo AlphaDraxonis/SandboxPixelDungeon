@@ -114,7 +114,7 @@ public class EditBarrierComp extends DefaultEditComp<Barrier> {
 
 
     public static boolean areEqual(Barrier a, Barrier b) {
-        if (a == null && b == null) return true;
+        if (a == b) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.pos != b.pos) return false;

@@ -216,6 +216,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
     }
 
     public static boolean areEqual(Heap a, Heap b) {
+        if (a == b) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.autoExplored != b.autoExplored) return false;

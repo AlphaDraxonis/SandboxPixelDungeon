@@ -259,7 +259,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 blessed = new StyledCheckBox(label("blessed"));
                 blessed.icon(Icons.TALENT.get());
                 blessed.checked(((Ankh) item).blessed);
-                spreadIfLoot.addChangeListener(v -> {
+                blessed.addChangeListener(v -> {
                     ((Ankh) item).blessed = v;
                     updateObj();
                 });
@@ -493,7 +493,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     }
 
     public static boolean areEqual(Item a, Item b, boolean ignoreQuantity) {
-        if (a == null && b == null) return true;
+        if (a == b) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
 
@@ -532,7 +532,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             if (((Key) a).cell != ((Key) b).cell) return false;
         }
         if (a instanceof Ankh) {
-            if (((Ankh) a).blessed == ((Ankh) a).blessed) return false;
+            if (((Ankh) a).blessed != ((Ankh) b).blessed) return false;
         }
         if (a instanceof Bomb) {
             if (((Bomb) a).igniteOnDrop != ((Bomb) b).igniteOnDrop) return false;

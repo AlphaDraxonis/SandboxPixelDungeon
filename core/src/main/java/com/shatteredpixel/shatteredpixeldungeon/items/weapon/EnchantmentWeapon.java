@@ -81,7 +81,8 @@ public class EnchantmentWeapon extends MeleeWeapon {
     public static boolean areEqual(EnchantmentWeapon a, EnchantmentWeapon b) {
         int sizeA = a == null ? 0 : a.enchantments.size();
         int sizeB = b == null ? 0 : b.enchantments.size();
-        if (sizeA != sizeB || sizeA == 0) return false;
+        if (sizeA != sizeB) return false;
+        if (a == null) return true;
         int index = 0;
         for (Enchantment ench : a.enchantments) {
             if (b.enchantments.get(index).getClass() != ench.getClass()) return false;

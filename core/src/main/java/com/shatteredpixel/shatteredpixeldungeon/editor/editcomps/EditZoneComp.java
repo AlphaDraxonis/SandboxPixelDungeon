@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
@@ -281,6 +282,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
                 buffsToIgnore.add(Foresight.class);
                 buffsToIgnore.add(Light.class);
                 buffsToIgnore.add(Blindness.class);
+                buffsToIgnore.add(Recharging.class);
                 return buffsToIgnore;
             }
 

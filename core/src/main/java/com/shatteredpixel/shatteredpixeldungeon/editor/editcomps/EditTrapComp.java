@@ -293,7 +293,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
 
     public static boolean areEqual(Trap a, Trap b) {
-        if (a == null && b == null) return true;
+        if (a == b) return true;
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
 
