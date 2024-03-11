@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -33,11 +34,12 @@ public class ZonePrompt extends ToastWithButtons {
     }
 
     private ColorBlock zoneColor;
+    private SelectZoneButton selectZoneButton;
 
     public ZonePrompt() {
-        super(createComponents());
+
         instance = this;
-        updateColors();
+        updateButtonColors();
 
         zoneColor = new ColorBlock(1, 1, 0x8FD8D8D8) {
             @Override
@@ -49,6 +51,7 @@ public class ZonePrompt extends ToastWithButtons {
         add(zoneColor);
         sendToBack(zoneColor);
         sendToBack(bg);
+
         zoneColor.resetColor();
     }
 
@@ -58,49 +61,55 @@ public class ZonePrompt extends ToastWithButtons {
         instance = null;
     }
 
-    private static Component[] createComponents() {
+    @Override
+    protected void createChildren(Object... params) {
+        super.createChildren(params);
 
         //Think before changing order!
         IconButton placeZone = new IconButton(Icons.PLUS.get()) {
             @Override
             protected void onClick() {
                 mode = Mode.ADD;
-                updateColors();
+                updateButtonColors();
             }
 
             @Override
             protected void onPointerUp() {
                 super.onPointerUp();
-                updateColors();
+                updateButtonColors();
             }
         };
+        add(placeZone);
         IconButton removeZone = new IconButton(Icons.CLOSE.get()) {
             @Override
             protected void onClick() {
                 mode = Mode.REMOVE;
-                updateColors();
+                updateButtonColors();
             }
 
             @Override
             protected void onPointerUp() {
                 super.onPointerUp();
-                updateColors();
+                updateButtonColors();
             }
         };
+        add(removeZone);
         IconButton editZone = new IconButton(Icons.EDIT.get()) {
             @Override
             protected void onClick() {
                 mode = Mode.EDIT;
-                updateColors();
+                updateButtonColors();
             }
 
             @Override
             protected void onPointerUp() {
                 super.onPointerUp();
-                updateColors();
+                updateButtonColors();
             }
         };
-        SelectZoneButton selectZoneButton = new SelectZoneButton();
+        add(editZone);
+        selectZoneButton = new SelectZoneButton();
+        add(selectZoneButton);
 
 
         placeZone.setSize(16, 16);
@@ -108,10 +117,10 @@ public class ZonePrompt extends ToastWithButtons {
         editZone.setSize(16, 16);
         selectZoneButton.setSize(16, 16);
 
-        return new Component[]{placeZone, removeZone, editZone, selectZoneButton};
+        comps = new Component[]{placeZone, removeZone, editZone, selectZoneButton};
     }
 
-    private static void updateColors() {
+    private static void updateButtonColors() {
 
         Component[] comps = instance.comps;
         if (mode == Mode.ADD) ((IconButton) comps[0]).icon().brightness(1.5f);
@@ -137,8 +146,10 @@ public class ZonePrompt extends ToastWithButtons {
     public static void setSelectedZone(Zone selectedZone) {
         ZonePrompt.selectedZone = selectedZone;
         if (instance != null) {
-            instance.destroy();
-            EditorScene.promptStatic(new ZonePrompt());//changing coordinates didn't work...
+            ZonePrompt.updateSelectedZoneColor();
+            instance.selectZoneButton.setSelectedZoneVisually(selectedZone);
+            instance.layout();
+            Toast.placeToastOnScreen(instance);
         }
     }
 

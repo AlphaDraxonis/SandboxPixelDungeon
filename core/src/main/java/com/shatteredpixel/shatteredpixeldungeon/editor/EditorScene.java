@@ -456,7 +456,7 @@ public class EditorScene extends PixelScene {
         if (newPrompt != null) {
             prompt = newPrompt;
             prompt.camera = uiCamera;
-            prompt.setPos((uiCamera.width - prompt.width()) / 2, uiCamera.height - 60);
+            Toast.placeToastOnScreen(prompt);
 
             add(prompt);
         }

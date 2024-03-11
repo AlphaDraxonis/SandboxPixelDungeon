@@ -4,24 +4,19 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
 import com.watabou.noosa.NinePatch;
+import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 
 public class ToastWithButtons extends Component {
 
     protected NinePatch bg;
-    protected final Component[] comps;
+    protected Component[] comps;
 
-    public ToastWithButtons(Component... comps) {
+    private PointerArea blocker;
 
+    public ToastWithButtons() {
         super();
-
-        this.comps = comps;
-        for (Component c : comps) {
-            add(c);
-        }
-
         layout();
-
     }
 
 
@@ -31,6 +26,9 @@ public class ToastWithButtons extends Component {
 
         bg = Chrome.get(Chrome.Type.TOAST_TR);
         add(bg);
+
+        blocker = new PointerArea(bg);
+        add(blocker);
     }
 
     @Override
@@ -66,6 +64,11 @@ public class ToastWithButtons extends Component {
         bg.x = x;
         bg.y = y;
         bg.size(width, height);
+
+        blocker.x = bg.x;
+        blocker.y = bg.y;
+        blocker.width = bg.width;
+        blocker.height = bg.height;
 
     }
 

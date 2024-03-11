@@ -110,4 +110,8 @@ public class Toast extends Component {
 	}
 	
 	protected void onClose() {}
+
+	public static void placeToastOnScreen(Component toast) {
+		toast.setPos( (PixelScene.uiCamera.width - toast.width()) / 2, PixelScene.uiCamera.height - 60 );
+	}
 }
