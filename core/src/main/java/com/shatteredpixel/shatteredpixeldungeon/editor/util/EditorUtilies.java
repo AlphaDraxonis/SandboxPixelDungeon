@@ -352,7 +352,7 @@ public final class EditorUtilies {
     }
 
     public static float layoutStyledCompsInRectangles(int gap, float width, float minCompHeight, int numColumns, Component parent, Component... comps) {
-        if (comps == null) return parent.height();
+        if (comps == null || comps.length == 0) return parent.height();
 
         final int compsPerRow = numColumns;
 
@@ -363,37 +363,65 @@ public final class EditorUtilies {
         for (Component c : comps) {
             if (c != null && c.visible) c.setSize(widthOnePart, -1);
         }
-        float maxCompHeight = minCompHeight;
+        float[] rowHeights = new float[comps.length];
+        int row = 0;
+        int column = 0;
+        rowHeights[0] = minCompHeight;
         for (Component c : comps) {
-            if (c != null && c.visible && c.height() > maxCompHeight) maxCompHeight = c.height();
+            if (c != null && c.visible) {
+                rowHeights[row] = Math.max(c.height(), rowHeights[row]);
+                column++;
+                if (column == compsPerRow || c instanceof ParagraphIndicator) {
+                    column = 0;
+                    row++;
+                    if (row < rowHeights.length) rowHeights[row] = minCompHeight;
+                }
+            }
         }
+        row = column = 0;
         for (Component c : comps) {
-            if (c != null && c.visible) c.setSize(widthOnePart, maxCompHeight);
+            if (c != null && c.visible) {
+                if (c instanceof ParagraphIndicator) {
+                    column = compsPerRow;
+                } else {
+                    c.setSize(widthOnePart, rowHeights[row]);
+                    column++;
+                }
+                if (column == compsPerRow) {
+                    column = 0;
+                    row++;
+                }
+            }
         }
 
         float posY = parent.top() + parent.height();
         float posX = parent.left();
-        int indexInRow = 0;
+        row = column = 0;
         for (Component c : comps) {
             if (c != null && c.visible) {
 
                 if (c instanceof ParagraphIndicator) {
-                    if (indexInRow == 0) continue;
-                    indexInRow = compsPerRow;
+                    if (column == 0) {
+                        posY -= rowHeights[row];
+                        row++;
+                        continue;
+                    }
+                    column = compsPerRow;
                 } else {
                     c.setPos(posX, posY);
-                    indexInRow++;
+                    column++;
                 }
 
-                if (indexInRow == compsPerRow) {
-                    posY += gap + maxCompHeight;
+                if (column == compsPerRow) {
+                    posY += gap + rowHeights[row];
                     posX = parent.left();
-                    indexInRow = 0;
+                    column = 0;
+                    row++;
                 } else posX += widthOnePart + gap;
             }
         }
 
-        return posY + (indexInRow == 0 ? -gap : maxCompHeight) - parent.top();
+        return posY + (column == 0 ? -gap : rowHeights[row]) - parent.top();
     }
 
     public static class ParagraphIndicator extends Component {
