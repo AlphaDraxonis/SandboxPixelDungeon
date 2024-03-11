@@ -68,7 +68,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 
 		if (!hpSet) {
 			HP = HT;
-			hpSet = true;
+			hpSet = Dungeon.hero != null;
 		}
 	}
 

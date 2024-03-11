@@ -175,7 +175,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 			HT = (int) (HT * 4 / 3f);
 			if (!hpSet) {
 				HP = HT;
-				hpSet = true;
+				hpSet = Dungeon.hero != null;
 			}
 		}
 //		((DM300Sprite)sprite).updateChargeState(true);

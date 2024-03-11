@@ -202,7 +202,7 @@ public class DemonSpawner extends SpawnerMob implements MobBasedOnDepth {
 		if (!hpSet) {
 			//60/53.33/46.67/40 turns to spawn on floor 21/22/23/24
 			maxSpawnCooldown = 60 - Math.min(20, (depth % 5)*6.67f);
-			hpSet = true;
+			hpSet = Dungeon.hero != null;
 		}
 	}
 }

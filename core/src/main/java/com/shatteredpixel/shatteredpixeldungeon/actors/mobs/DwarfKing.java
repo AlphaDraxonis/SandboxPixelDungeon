@@ -169,7 +169,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 			HT = (int) (HT * 1.5f);
 			if (!hpSet) {
 				HP = HT;
-				hpSet = true;
+				hpSet = Dungeon.hero != null;
 			}
 		}
 	}

@@ -73,6 +73,14 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 	}
 
 	@Override
+	protected void onAdd() {
+		super.onAdd();
+		if (Dungeon.hero != null) {
+			registerQuest();
+		}
+	}
+
+	@Override
 	protected boolean act() {
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null) {
 			die(null);
@@ -341,7 +349,8 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 	}
 
 	public void registerQuest(){
-		questId = quest.registerQuest();
+		int id = quest.registerQuest();
+		if (id != -1) questId = id;
 	}
 
 	@Override

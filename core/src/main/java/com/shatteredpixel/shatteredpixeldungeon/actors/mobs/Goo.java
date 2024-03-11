@@ -118,7 +118,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 			HT = (int) (HT * 1.2f);
 			if (!hpSet) {
 				HP = HT;
-				hpSet = true;
+				hpSet = Dungeon.hero != null;
 			}
 		}
 	}

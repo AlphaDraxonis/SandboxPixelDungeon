@@ -533,6 +533,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             customDungeon.removeEverySecondSoU(level);
         }
         Dungeon.hero.pos = oldHeroPos;
+        for (Mob m : level.mobs) {
+            m.setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME();
+        }
         level.initForPlay();
         return level;
     }

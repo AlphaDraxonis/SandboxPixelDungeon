@@ -61,7 +61,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
         if (!hpSet) {
             HP = HT = internalHero.HP = internalHero.HT = (int) (internalHero.HT * statsScale);
-            hpSet = true;
+            hpSet = Dungeon.hero != null;
         }
 
         if (buff(Regeneration.class) == null) {

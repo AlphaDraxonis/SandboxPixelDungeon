@@ -78,6 +78,12 @@ public class Pylon extends Mob {
 	public int dm300id;
 
 	@Override
+	protected void onAdd() {
+		super.onAdd();
+		if (alwaysActive && playerAlignment == Mob.NORMAL_ALIGNMENT) alignment = Char.Alignment.ENEMY;
+	}
+
+	@Override
 	protected boolean act() {
 		//char logic
 		if (fieldOfView == null || fieldOfView.length != Dungeon.level.length()){

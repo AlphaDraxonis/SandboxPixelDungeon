@@ -172,15 +172,30 @@ public abstract class Mob extends Char implements Customizable {
 	protected boolean firstAdded = true;
 	protected boolean hpSet = false;
 
+	public void setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME() {
+		firstAdded = true;
+	}
+
+	@Override
 	protected void onAdd(){
+		if (this instanceof MobBasedOnDepth) {
+			((MobBasedOnDepth) this).setLevel(Dungeon.depth);
+		}
+		super.onAdd();
 		initRandoms();
 		if (firstAdded) {
 			//modify health for ascension challenge if applicable, only on first add
 			float percent = HP / (float) HT;
 			HT = Math.round(HT * AscensionChallenge.statModifier(this));
 			HP = Math.round(HT * percent);
-			firstAdded = false;
+			firstAdded = Dungeon.hero != null;
+
+			Dungeon.level.applyZoneBuffs(this);
 		}
+		if (playerAlignment == Mob.NEUTRAL_ALIGNMENT) {
+			if (state == HUNTING) state = WANDERING;
+			immunities.add(Amok.class);
+		} else if (following && playerAlignment == Mob.FRIENDLY_ALIGNMENT) intelligentAlly = true;
 	}
 
 	public boolean onDeleteLevelScheme(String name) {
@@ -353,6 +368,7 @@ public abstract class Mob extends Char implements Customizable {
 		if (bundle.contains(XP)) EXP = bundle.getInt(XP);
 		if (bundle.contains(STATS_SCALE)) statsScale = bundle.getFloat(STATS_SCALE);
 		hpSet = bundle.getBoolean(HP_SET);
+		if (hpSet) hpSet = Dungeon.hero != null;
 
 		if (bundle.contains(SPRITE)) spriteClass = bundle.getClass(SPRITE);
 
@@ -385,6 +401,13 @@ public abstract class Mob extends Char implements Customizable {
 		else if (playerAlignment == FRIENDLY_ALIGNMENT) alignment = Alignment.ALLY;
 		else if (alignment == Alignment.NEUTRAL || alignment == Alignment.ALLY)
 			alignment = Reflection.newInstance(getClass()).alignment;//only works if alignment can't be changed otherwise
+	}
+
+	@Override
+	public Actor getCopy() {
+		Mob mob = (Mob) super.getCopy();
+		mob.firstAdded = true;
+		return mob;
 	}
 
 	//mobs need to remember their targets after every actor is added

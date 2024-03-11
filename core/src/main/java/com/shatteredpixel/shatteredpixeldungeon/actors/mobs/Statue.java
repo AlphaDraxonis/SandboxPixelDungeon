@@ -75,7 +75,7 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 
 		if (!hpSet) {
 			HP = HT;
-			hpSet = true;
+			hpSet = Dungeon.hero != null;
 		}
 	}
 

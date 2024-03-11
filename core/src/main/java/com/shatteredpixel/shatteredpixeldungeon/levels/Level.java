@@ -41,7 +41,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.BlobStoreMap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SmokeScreen;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Web;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
@@ -65,9 +64,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobBasedOnDepth;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
@@ -431,19 +428,12 @@ public abstract class Level implements Bundlable {
 			z.initTransitions(this);
 		}
 		for (Mob m : mobs) {
-			if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
-			if (m instanceof Blacksmith) ((Blacksmith) m).registerQuest();
-			else if (m instanceof Pylon && ((Pylon) m).alwaysActive && m.playerAlignment == Mob.NORMAL_ALIGNMENT) m.alignment = Char.Alignment.ENEMY;
+//			if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
 			if (m.pos == bossmobAt) {
 				bossMob = m;
 				bossMob.isBossMob = !(m instanceof Goo || m instanceof DwarfKing);
 				bossMob.addBossProperty();
 			}
-			if (m.playerAlignment == Mob.NEUTRAL_ALIGNMENT) {
-				if (m.state == m.HUNTING) m.state = m.WANDERING;
-				m.immunities.add(Amok.class);
-			} else if (m.following && m.playerAlignment == Mob.FRIENDLY_ALIGNMENT) m.intelligentAlly = true;
-			applyZoneBuffs(m);
 		}
 		for (Heap h : heaps.valueList()) {
 			h.seen = false;

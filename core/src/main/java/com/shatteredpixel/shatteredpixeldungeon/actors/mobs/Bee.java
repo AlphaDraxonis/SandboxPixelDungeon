@@ -75,9 +75,9 @@ public class Bee extends Mob implements MobBasedOnDepth {
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
-		setLevel( bundle.getInt( LEVEL ) );
 		potPos = bundle.getInt( POTPOS );
 		potHolder = bundle.getInt( POTHOLDER );
+		setLevel( bundle.getInt( LEVEL ) );
 		if (bundle.contains(ALIGMNENT)) alignment = bundle.getEnum( ALIGMNENT, Alignment.class);
 	}
 
@@ -89,10 +89,12 @@ public class Bee extends Mob implements MobBasedOnDepth {
 		defenseSkill = 9 + level;
 
 		if (!hpSet) {
-			hpSet = true;
+			hpSet = Dungeon.hero != null;
 			HP = HT;
-			if (potPos == 0) potPos = pos;
-			if (potHolder == 0) potHolder = -1;
+			if (hpSet) {
+				if (potPos == 0) potPos = pos;
+				if (potHolder == 0) potHolder = -1;
+			}
 		}
 	}
 
