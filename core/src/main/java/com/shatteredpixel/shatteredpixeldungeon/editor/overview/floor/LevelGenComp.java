@@ -18,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.Feeli
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableCompWithAdd;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -28,6 +29,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoo
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -77,7 +80,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         content.add(title);
 
         if (newLevelScheme.isSeedSet()) currentSeed = DungeonSeed.convertToCode(newLevelScheme.getSeed());
-        seed = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "") {
+        seed = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, "") {
             {
                 text.align(RenderedTextBlock.CENTER_ALIGN);
             }
@@ -106,6 +109,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                 } );
             }
         };
+        seed.icon(new ItemSprite(ItemSpriteSheet.SEED_SUNGRASS));
         updateSeedText();
         content.add(seed);
 

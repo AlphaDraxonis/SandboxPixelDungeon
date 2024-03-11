@@ -809,7 +809,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob.pos != -1) {
-            turnTo = new StyledButton(Chrome.Type.GREY_BUTTON_TR,
+            turnTo = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR,
                     Messages.get(this, "turn_to", mob.turnToCell == -1 ? label("turn_to_random") : EditorUtilies.cellToString(mob.turnToCell))) {
                 {
                     text.align(RenderedTextBlock.CENTER_ALIGN);
@@ -824,13 +824,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     Game.scene().remove(windowInstance);
                 }
             };
-            turnTo.leftJustify = false;
             add(turnTo);
         }
 
         Mob defaultStats = DefaultStatsCache.getDefaultObject(mob.getClass());
         if (defaultStats != null) {
-            editStats = new StyledButton(Chrome.Type.GREY_BUTTON_TR, label("edit_stats")) {
+            editStats = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, label("edit_stats")) {
                 {
                     text.align(RenderedTextBlock.CENTER_ALIGN);
                 }
@@ -840,6 +839,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                             EditorUtilies.getParentWindow(EditMobComp.this).getOffset().y, defaultStats, mob, () -> updateObj()));
                 }
             };
+            editStats.icon(Icons.EDIT.get());
             add(editStats);
         }
 

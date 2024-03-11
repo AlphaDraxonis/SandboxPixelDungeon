@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItemDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -154,7 +155,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
 
             if (obj instanceof GatewayTrap && obj.pos != -1) {
                 int telePos = ((GatewayTrap) obj).telePos;
-                gatewayTelePos = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "") {
+                gatewayTelePos = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, "") {
                     {
                         text.align(RenderedTextBlock.CENTER_ALIGN);
                     }
@@ -168,9 +169,11 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                         Game.scene().remove(windowInstance);
                     }
                 };
-                gatewayTelePos.multiline = true;
                 if (telePos == -1) gatewayTelePos.text(Messages.get(this, "gateway_trap_random"));
                 else gatewayTelePos.text(Messages.get(this, "gateway_trap_pos", EditorUtilies.cellToString(telePos)));
+                Image teleIcon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_TELEPORT);
+                teleIcon.scale.set(12 / Math.max(teleIcon.width(), teleIcon.height()));
+                gatewayTelePos.icon(teleIcon);
                 add(gatewayTelePos);
 
             }

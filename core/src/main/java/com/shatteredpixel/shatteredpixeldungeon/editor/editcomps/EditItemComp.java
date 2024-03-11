@@ -20,6 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
@@ -226,7 +227,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             }
 
             if (item instanceof Weapon || item instanceof Armor) {//Missiles support enchantments too
-                enchantBtn = new StyledButton(Chrome.Type.GREY_BUTTON_TR, label("enchant"), PixelScene.landscape() ? 9 : 8) {
+                enchantBtn = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, label("enchant"), PixelScene.landscape() ? 9 : 8) {
                     {
                         text.align(RenderedTextBlock.CENTER_ALIGN);
                     }
@@ -241,7 +242,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                         });
                     }
                 };
-                enchantBtn.icon(new ItemSprite(ItemSpriteSheet.STYLUS));
+                enchantBtn.icon(new ItemSprite(ItemSpriteSheet.STONE_ENCHANT));
                 add(enchantBtn);
             }
 

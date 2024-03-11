@@ -145,7 +145,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         }, Messages.get(EditZoneComp.class, "grass_label"), 9, new TileSprite(Terrain.HIGH_GRASS));
         grassVisuals.addChangeListener(() -> zone.setGrassType((Zone.GrassType) grassVisuals.getValue()));
 
-        StyledButton mobRotation = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditZoneComp.class, "custom_mob_cycle"), 9) {
+        StyledButton mobRotation = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditZoneComp.class, "custom_mob_cycle"), 9) {
             {
                 text.align(RenderedTextBlock.CENTER_ALIGN);
             }
@@ -215,7 +215,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         chasmDest.addChangeListener(() -> zone.chasmDestZone = (String) chasmDest.getValue());
         chasmDest.enable(chasm != null);
 
-        addTransition = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditTileComp.class, "add_transition"), 9) {
+        addTransition = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditTileComp.class, "add_transition"), 9) {
             {
                 text.align(RenderedTextBlock.CENTER_ALIGN);
             }
