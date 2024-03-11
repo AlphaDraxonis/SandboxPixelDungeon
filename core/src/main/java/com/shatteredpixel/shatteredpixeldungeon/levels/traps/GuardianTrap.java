@@ -80,11 +80,13 @@ public class GuardianTrap extends Trap {
 		}
 
 		@Override
-		public void createWeapon( boolean useDecks ) {
-			weapon = (MeleeWeapon) Generator.randomUsingDefaults(Generator.Category.WEAPON);
-			weapon.cursed = false;
-			weapon.enchant(null);
-			weapon.level(0);
+		public void createItems(boolean useDecks ) {
+			if (weapon == null) {
+				weapon = (MeleeWeapon) Generator.randomUsingDefaults(Generator.Category.WEAPON);
+				weapon.cursed = false;
+				weapon.enchant(null);
+				weapon.level(0);
+			}
 		}
 
 		@Override

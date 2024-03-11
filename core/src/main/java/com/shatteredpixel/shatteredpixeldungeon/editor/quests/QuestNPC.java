@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
@@ -25,6 +26,12 @@ public abstract class QuestNPC<T extends Quest> extends NPC {
         if (quest != null) {
             quest.initRandom(levelScheme);
         }
+    }
+
+    @Override
+    public void initRandoms() {
+        super.initRandoms();
+        initQuest(Dungeon.level.levelScheme);
     }
 
     public abstract void createNewQuest();

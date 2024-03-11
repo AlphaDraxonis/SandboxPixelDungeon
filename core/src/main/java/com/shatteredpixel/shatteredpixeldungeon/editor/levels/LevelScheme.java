@@ -5,14 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.TormentedSpirit;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
@@ -20,7 +13,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
-import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
@@ -549,12 +541,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         Random.pushGenerator(seed);
 
         for (Mob m : mobsToSpawn) {
-            initRandStatsForMob(m);
+            m.initRandoms();
         }
         RandomItem.replaceRandomItemsInList(itemsToSpawn);
         if (type == CustomLevel.class) {
             for (Mob m : level.mobs) {
-                initRandStatsForMob(m);
+                m.initRandoms();
             }
             for (Heap h : level.heaps.valueList()) {
                 RandomItem.replaceRandomItemsInList(h.items);
@@ -576,34 +568,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             }
         }
         Random.popGenerator();
-    }
-
-    private void initRandStatsForMob(Mob m){
-        if (m instanceof QuestNPC) ((QuestNPC<?>) m).initQuest(this);
-        if (m instanceof Mimic) {
-            if (((Mimic) m).items != null) {
-                RandomItem.replaceRandomItemsInList(((Mimic) m).items);
-            }
-        } else if (m instanceof Thief) {
-            ((Thief) m).item = RandomItem.initRandomStatsForItemSubclasses(((Thief) m).item);
-        } else if (m instanceof TormentedSpirit) {
-            ((TormentedSpirit) m).prize = RandomItem.initRandomStatsForItemSubclasses(((TormentedSpirit) m).prize);
-        } else if (m instanceof Statue) {
-            ((Statue) m).weapon(RandomItem.initRandomStatsForItemSubclasses(((Statue) m).weapon()));
-            if (m instanceof ArmoredStatue) {
-                ((ArmoredStatue) m).armor(RandomItem.initRandomStatsForItemSubclasses(((ArmoredStatue) m).armor()));
-            }
-        } else if (m instanceof HeroMob) {
-            Belongings belongings = ((HeroMob) m).hero().belongings;
-            belongings.weapon = RandomItem.initRandomStatsForItemSubclasses(belongings.weapon);
-            belongings.armor = RandomItem.initRandomStatsForItemSubclasses(belongings.armor);
-            belongings.ring = RandomItem.initRandomStatsForItemSubclasses(belongings.ring);
-            belongings.artifact = RandomItem.initRandomStatsForItemSubclasses(belongings.artifact);
-            belongings.misc = RandomItem.initRandomStatsForItemSubclasses(belongings.misc);
-        }
-
-        m.glyphArmor.replaceRandom();
-        m.enchantWeapon.replaceRandom();
     }
 
     private void spawnItemsAndMobs(long seed) {

@@ -25,7 +25,9 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon.Enchantment;
@@ -56,7 +58,14 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 	public Statue() {
 		super();
 		setLevel(Dungeon.depth);
-		createWeapon(false);
+		createItems(false);
+	}
+
+	@Override
+	public void initRandoms() {
+		super.initRandoms();
+		createItems(false);
+		weapon(RandomItem.initRandomStatsForItemSubclasses(weapon()));
 	}
 
 	@Override
@@ -68,6 +77,11 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 			HP = HT;
 			hpSet = true;
 		}
+	}
+
+	@Override
+	public ItemSelector.NullTypeSelector useNullWeapon() {
+		return ItemSelector.NullTypeSelector.RANDOM;
 	}
 
 	@Override
@@ -86,15 +100,17 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 		return weapon;
 	}
 
-	public void createWeapon(boolean useDecks ){
-		if (useDecks) {
-			weapon = (MeleeWeapon) Generator.random(Generator.Category.WEAPON);
-		} else {
-			weapon = (MeleeWeapon) Generator.randomUsingDefaults(Generator.Category.WEAPON);
+	public void createItems(boolean useDecks ){
+		if (weapon == null) {
+			if (useDecks) {
+				weapon = (MeleeWeapon) Generator.random(Generator.Category.WEAPON);
+			} else {
+				weapon = (MeleeWeapon) Generator.randomUsingDefaults(Generator.Category.WEAPON);
+			}
+			levelGenStatue = useDecks;
+			weapon.cursed = false;
+			weapon.enchant(Enchantment.random());
 		}
-		levelGenStatue = useDecks;
-		weapon.cursed = false;
-		weapon.enchant( Enchantment.random() );
 	}
 
 	private static final String WEAPON	= "weapon";
@@ -210,7 +226,7 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 	@Override
 	public String description() {
 		if (customDesc != null) return super.description();
-		return Messages.get(this, "desc", weapon().name());
+		return Messages.get(this, "desc", weapon == null ? "___" : weapon().name());
 	}
 
 	{
@@ -228,7 +244,7 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 		} else {
 			statue = new Statue();
 		}
-		statue.createWeapon(useDecks);
+		statue.createItems(useDecks);
 		return statue;
 	}
 

@@ -130,4 +130,10 @@ public class TormentedSpirit extends Wraith {
 		super.onMapSizeChange(newPosition, isPositionValid);
 		if (prize != null) prize.onMapSizeChange(newPosition, isPositionValid);
 	}
+
+	@Override
+	public void initRandoms() {
+		super.initRandoms();
+		prize = RandomItem.initRandomStatsForItemSubclasses(prize);
+	}
 }

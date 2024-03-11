@@ -11,9 +11,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MonkEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -67,6 +69,17 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             Buff.affect(this, Hunger.class);
         }
         updateEXP();
+    }
+
+    @Override
+    public void initRandoms() {
+        super.initRandoms();
+        Belongings belongings = hero().belongings;
+        belongings.weapon = RandomItem.initRandomStatsForItemSubclasses(belongings.weapon);
+        belongings.armor = RandomItem.initRandomStatsForItemSubclasses(belongings.armor);
+        belongings.ring = RandomItem.initRandomStatsForItemSubclasses(belongings.ring);
+        belongings.artifact = RandomItem.initRandomStatsForItemSubclasses(belongings.artifact);
+        belongings.misc = RandomItem.initRandomStatsForItemSubclasses(belongings.misc);
     }
 
     @Override

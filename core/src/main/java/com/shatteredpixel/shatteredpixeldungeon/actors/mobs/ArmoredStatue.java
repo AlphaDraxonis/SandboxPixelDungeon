@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -58,6 +59,12 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	}
 
 	@Override
+	public void initRandoms() {
+		super.initRandoms();
+		armor(RandomItem.initRandomStatsForItemSubclasses(armor()));
+	}
+
+	@Override
 	public void armor(Armor armor) {
 		this.armor = armor;
 	}
@@ -70,21 +77,18 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 
 	@Override
 	public ItemSelector.NullTypeSelector useNullArmor() {
-		return ItemSelector.NullTypeSelector.DISABLED;
+		return ItemSelector.NullTypeSelector.RANDOM;
 	}
 
 	@Override
-	public ItemSelector.NullTypeSelector useNullWeapon() {
-		return ItemSelector.NullTypeSelector.DISABLED;
-	}
+	public void createItems(boolean useDecks) {
+		super.createItems(useDecks);
 
-	@Override
-	public void createWeapon(boolean useDecks) {
-		super.createWeapon(useDecks);
-
-		armor = Generator.randomArmor();
-		armor.cursed = false;
-		armor.inscribe(Armor.Glyph.random());
+		if (armor == null) {
+			armor = Generator.randomArmor();
+			armor.cursed = false;
+			armor.inscribe(Armor.Glyph.random());
+		}
 	}
 
 	private static final String ARMOR	= "armor";
@@ -103,6 +107,7 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 
 	@Override
 	public int drRoll() {
+		if (armor == null) return super.drRoll();
 		return super.drRoll() + Random.NormalIntRange( armor.DRMin(), armor.DRMax());
 	}
 
@@ -118,7 +123,7 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 
 	@Override
 	public int defenseProc(Char enemy, int damage) {
-		damage = armor.proc(enemy, this, damage);
+		if (armor != null) damage = armor.proc(enemy, this, damage);
 		return super.defenseProc(enemy, damage);
 	}
 
@@ -140,36 +145,41 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	@Override
 	public CharSprite sprite() {
 		CharSprite sprite = super.sprite();
-		((StatueSprite)sprite).setArmor(armor.tier);
+		((StatueSprite)sprite).setArmor(armor == null ? 0 : armor.tier);
 		return sprite;
 	}
 
 	@Override
 	public float speed() {
+		if (armor == null) return super.speed();
 		return armor.speedFactor(this, super.speed());
 	}
 
 	@Override
 	public float stealth() {
+		if (armor == null) return super.stealth();
 		return armor.stealthFactor(this, super.stealth());
 	}
 
 	@Override
 	public int defenseSkill(Char enemy) {
+		if (armor == null) return super.defenseSkill(enemy);
 		return Math.round(armor.evasionFactor(this, super.defenseSkill(enemy)));
 	}
 
 	@Override
 	public void die( Object cause ) {
-		armor.identify(false);
-		Dungeon.level.drop( armor, pos ).sprite.drop();
+		if (armor != null) {
+			armor.identify(false);
+			Dungeon.level.drop(armor, pos).sprite.drop();
+		}
 		super.die( cause );
 	}
 
 	@Override
 	public String description() {
-		if (customDesc != null) return super.description();
-		return Messages.get(this, "desc", weapon().name(), armor().name());
+		if (customDesc != null || armor == null && Dungeon.hero != null) return super.description();
+		return Messages.get(this, "desc", weapon == null ? "___" : weapon().name(), armor == null ? "___" : armor().name());
 	}
 
 }

@@ -173,6 +173,7 @@ public abstract class Mob extends Char implements Customizable {
 	protected boolean hpSet = false;
 
 	protected void onAdd(){
+		initRandoms();
 		if (firstAdded) {
 			//modify health for ascension challenge if applicable, only on first add
 			float percent = HP / (float) HT;
@@ -213,6 +214,11 @@ public abstract class Mob extends Char implements Customizable {
 			int nTurn = newPosition.get(turnToCell);
 			turnToCell = isPositionValid.test(turnToCell, nTurn) ? nTurn : -1;
 		}
+	}
+
+	public void initRandoms() {
+		glyphArmor.replaceRandom();
+		enchantWeapon.replaceRandom();
 	}
 
 	private static final String STATE	= "state";

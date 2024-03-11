@@ -110,6 +110,12 @@ public class Thief extends Mob {
 		if (item != null) item.onMapSizeChange(newPosition, isPositionValid);
 	}
 
+	@Override
+	public void initRandoms() {
+		super.initRandoms();
+		item = RandomItem.initRandomStatsForItemSubclasses(item);
+	}
+
 	//    @Override
 //    public int damageRoll() {
 //        return Random.NormalIntRange(1, 10);

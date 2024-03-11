@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
@@ -287,6 +288,12 @@ public class Mimic extends Mob implements MobBasedOnDepth {
             }
         }
         super.onMapSizeChange(newPosition, isPositionValid);
+    }
+
+    @Override
+    public void initRandoms() {
+        super.initRandoms();
+        if (items != null) RandomItem.replaceRandomItemsInList(items);
     }
 
     @Override
