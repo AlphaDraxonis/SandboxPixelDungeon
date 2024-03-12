@@ -24,6 +24,7 @@ public class ExportDungeonWrapper implements Bundlable {
     public CustomDungeonSaves.Info dungeonInfo;
     private Set<Level> customLevels;
     private AdditionalFileInfo customTiles;
+    private List<AdditionalFileInfo> buggedFiles = new ArrayList<>(4);
 
     public ExportDungeonWrapper() {
     }
@@ -35,6 +36,7 @@ public class ExportDungeonWrapper implements Bundlable {
     private static final String DUNGEON = "dungeon";
     private static final String LEVEL = "level";
     private static final String FILES = "files";
+    private static final String BUGGED_FILES = "bugged_files";
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
@@ -53,6 +55,12 @@ public class ExportDungeonWrapper implements Bundlable {
             i++;
         }
 
+        i = 0;
+        while (bundle.contains(BUGGED_FILES + "_" + i)) {
+            buggedFiles.add((AdditionalFileInfo) bundle.get(BUGGED_FILES + "_" + i));
+            i++;
+        }
+
         if (bundle.contains(FILES)) {
             customTiles = (AdditionalFileInfo) bundle.get(FILES);
         }
@@ -64,15 +72,31 @@ public class ExportDungeonWrapper implements Bundlable {
 
         Dungeon.customDungeon = dungeon;//for level loading
 
+        List<FileHandle> buggedFiles = new ArrayList<>(5);
+
         int i = 0;
         for (LevelScheme levelScheme : dungeon.levelSchemes()) {
             if (levelScheme.getType() == CustomLevel.class) {
-                Level l = levelScheme.loadLevel();
-                if (l == null) continue;
-                Dungeon.level = l;
-                bundle.put(LEVEL + "_" + i, l);
-                i++;
+                try {
+                    Level l = levelScheme.loadLevel();
+                    if (levelScheme.levelLoadingException != null) {
+                        buggedFiles.add(CustomDungeonSaves.getLevelFile(levelScheme.getName()));
+                        continue;
+                    }
+                    if (l == null) continue;
+                    Dungeon.level = l;
+                    bundle.put(LEVEL + "_" + i, l);
+                    i++;
+                } catch (Exception ex) {
+                    buggedFiles.add(CustomDungeonSaves.getLevelFile(levelScheme.getName()));
+                }
             }
+        }
+
+        i = 0;
+        for (FileHandle file : buggedFiles) {
+            bundle.put(BUGGED_FILES + "_" + i, new AdditionalFileInfo(file));
+            i++;
         }
 
         FileHandle customTiles = FileUtils.getFileHandle(
@@ -84,7 +108,13 @@ public class ExportDungeonWrapper implements Bundlable {
 
     public static CustomDungeonSaves.Info doImport(FileHandle file) {
         try {
-            return ((ExportDungeonWrapper) FileUtils.bundleFromStream(file.read()).get(CustomDungeonSaves.EXPORT)).doImport();
+            Bundle b = FileUtils.bundleFromStream(file.read());
+            if (b.contains(CustomDungeonSaves.EXPORT)) return ((ExportDungeonWrapper) b.get(CustomDungeonSaves.EXPORT)).doImport();
+            else if (b.contains(CustomDungeonSaves.BUGGED)) {
+                AdditionalFileInfo mainFile = (AdditionalFileInfo) b.get(CustomDungeonSaves.BUGGED);
+                mainFile.doImport(CustomDungeonSaves.DUNGEON_FOLDER);
+            }
+            return null;
         } catch (IOException ex) {
             SandboxPixelDungeon.reportException(ex);
             return null;
@@ -106,6 +136,10 @@ public class ExportDungeonWrapper implements Bundlable {
 
             for (Level l : customLevels) {
                 CustomDungeonSaves.saveLevel(l);
+            }
+
+            for (AdditionalFileInfo buggedFile : buggedFiles) {
+                buggedFile.doImport(CustomDungeonSaves.DUNGEON_FOLDER + dungeon.getName().replace(' ', '_') + "/bugged_levels/");
             }
 
             if (customTiles != null) {

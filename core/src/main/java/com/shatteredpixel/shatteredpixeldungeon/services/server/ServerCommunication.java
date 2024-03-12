@@ -392,7 +392,19 @@ public final class ServerCommunication {
 
     public static void reportBug(String dungeonName, String description, UploadCallback callback) {
         try {
-            Bundle dungeonAsBundle = dungeonName == null ? null : CustomDungeonSaves.getExportDungeonBundle(dungeonName);
+            Bundle dungeonAsBundle;
+            if (dungeonName == null) dungeonAsBundle = null;
+            else {
+                try {
+                    dungeonAsBundle = CustomDungeonSaves.getExportDungeonBundle(dungeonName);
+                } catch (Exception ex) {
+                    ExportDungeonWrapper.AdditionalFileInfo dungeonFiles = new ExportDungeonWrapper.AdditionalFileInfo(
+                            FileUtils.getFileHandle(CustomDungeonSaves.DUNGEON_FOLDER + dungeonName.replace(' ', '_'))
+                    );
+                    dungeonAsBundle = new Bundle();
+                    dungeonAsBundle.put(CustomDungeonSaves.BUGGED, dungeonFiles);
+                }
+            }
             String fileName = URLEncoder.encode(description.substring(0, Math.min(20, description.length())), "UTF-8");
 
             DungeonPreview uploadPreview = new DungeonPreview();
@@ -412,11 +424,6 @@ public final class ServerCommunication {
             Gdx.net.sendHttpRequest(httpRequest, new UploadDataListener(callback));
         } catch (IOException e) {
             Game.runOnRenderThread(() -> callback.failed(e));
-        } catch (CustomDungeonSaves.RenameRequiredException e) {
-            Game.runOnRenderThread(() -> {
-                callback.hideWindow();
-                e.showExceptionWindow();
-            });
         }
     }
 

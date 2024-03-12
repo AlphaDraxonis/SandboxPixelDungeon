@@ -46,6 +46,7 @@ public class CustomDungeonSaves {
     private static final String INFO = "info";
     private static final String FLOOR = "floor";
     public static final String EXPORT = "export";
+    public static final String BUGGED = "bugged";
 
     static String curDirectory;
 
@@ -142,6 +143,13 @@ public class CustomDungeonSaves {
         }
 
         return customLevel;
+    }
+
+    public static FileHandle getLevelFile(String levelName) {
+        FileHandle file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, levelName));
+        if (!file.exists())//Still: it is important to rename old ones properly before or they might override other files
+            file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, levelName.replace(' ', '_')));
+        return file;
     }
 
     public static CustomLevel loadLevelWithOgName(String name) throws IOException {
