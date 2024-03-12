@@ -133,7 +133,7 @@ public class UnstableSpell extends Spell {
 		
 		@Override
 		public int cost(ArrayList<Item> ingredients) {
-			return 2;
+			return 1;
 		}
 
 		@Override
