@@ -175,16 +175,38 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
         protected RenderedTextBlock desc;
 
+        protected RenderedTextBlock label2, label3;
+
         private DungeonPreviewItem(String error) {
             super(new Image(), Messages.get(ServerCommunication.class, "error") + ": " + error);
             preview = null;
         }
 
         private DungeonPreviewItem(DungeonPreview preview) {
-            super(new Image(), null, Messages.get(ServerDungeonList.class, "title_entry", preview.title, preview.uploader));
+            super(new Image(), null, preview.title);
             this.preview = preview;
 
-            desc = PixelScene.renderTextBlock(preview.description, 6);
+            desc.text(preview.description);
+
+            label2.text(Messages.get(ServerDungeonList.class, "title_entry"));
+            label3.text("_" + preview.uploader + "_");
+        }
+
+        @Override
+        protected void createChildren(Object... params) {
+            super.createChildren(params);
+
+            label.setHighlighting(false);
+            label.hardlight(Window.TITLE_COLOR);
+
+            label2 = PixelScene.renderTextBlock(7);
+            label2.setHighlighting(false);
+            add(label2);
+
+            label3 = PixelScene.renderTextBlock(7);
+            add(label3);
+
+            desc = PixelScene.renderTextBlock(6);
             desc.maxNumLines = 3;
             add(desc);
         }
@@ -200,6 +222,9 @@ public class ServerDungeonList extends MultiWindowTabComp {
                 label.setPos(label.left(), y + 3);
                 desc.setPos(label.left() + 3, label.bottom() + 4);
             }
+
+            label2.setPos(label.right(), label.top());
+            label3.setPos(label2.right(), label2.top());
         }
 
         @Override
