@@ -401,6 +401,11 @@ public abstract class Mob extends Char implements Customizable {
 		else if (playerAlignment == FRIENDLY_ALIGNMENT) alignment = Alignment.ALLY;
 		else if (alignment == Alignment.NEUTRAL || alignment == Alignment.ALLY)
 			alignment = Reflection.newInstance(getClass()).alignment;//only works if alignment can't be changed otherwise
+
+		//AllyBuffs always override this
+		for (Buff b : buffs(AllyBuff.class)) {
+			alignment = Alignment.ALLY;
+		}
 	}
 
 	@Override
@@ -1405,15 +1410,18 @@ public abstract class Mob extends Char implements Customizable {
 						desc.append('\n').append(Messages.get(StoneOfAugmentation.WndAugment.class, "speed")).append(": ").append(defaultStats.baseSpeed).append(" -> _").append(baseSpeed).append('_');
 					if (defaultStats.viewDistance != viewDistance)
 						desc.append('\n').append(Messages.get(Mob.class, "view_distance")).append(": ").append(defaultStats.viewDistance).append(" -> _").append(viewDistance).append('_');
-					desc.append(infoStatsChangedHPAccuracyEvasionArmor(defaultStats));
-                    if (defaultStats.damageRollMin != damageRollMin)
-                        desc.append('\n').append(Messages.get(Mob.class, "dmg_min")).append(": ").append(defaultStats.damageRollMin).append(" -> _").append(damageRollMin).append('_');
-                    if (defaultStats.damageRollMax != damageRollMax)
-                        desc.append('\n').append(Messages.get(Mob.class, "dmg_max")).append(": ").append(defaultStats.damageRollMax).append(" -> _").append(damageRollMax).append('_');
-                    if (defaultStats.specialDamageRollMin != specialDamageRollMin)
-                        desc.append('\n').append(Messages.get(Mob.class, "special_dmg_min")).append(": ").append(defaultStats.specialDamageRollMin).append(" -> _").append(specialDamageRollMin).append('_');
-                    if (defaultStats.specialDamageRollMax != specialDamageRollMax)
-						desc.append('\n').append(Messages.get(Mob.class, "special_dmg_max")).append(": ").append(defaultStats.specialDamageRollMax).append(" -> _").append(specialDamageRollMax).append('_');
+
+					if (!(this instanceof Elemental) || !((Elemental) this).summonedALly) {
+						desc.append(infoStatsChangedHPAccuracyEvasionArmor(defaultStats));
+						if (defaultStats.damageRollMin != damageRollMin)
+							desc.append('\n').append(Messages.get(Mob.class, "dmg_min")).append(": ").append(defaultStats.damageRollMin).append(" -> _").append(damageRollMin).append('_');
+						if (defaultStats.damageRollMax != damageRollMax)
+							desc.append('\n').append(Messages.get(Mob.class, "dmg_max")).append(": ").append(defaultStats.damageRollMax).append(" -> _").append(damageRollMax).append('_');
+						if (defaultStats.specialDamageRollMin != specialDamageRollMin)
+							desc.append('\n').append(Messages.get(Mob.class, "special_dmg_min")).append(": ").append(defaultStats.specialDamageRollMin).append(" -> _").append(specialDamageRollMin).append('_');
+						if (defaultStats.specialDamageRollMax != specialDamageRollMax)
+							desc.append('\n').append(Messages.get(Mob.class, "special_dmg_max")).append(": ").append(defaultStats.specialDamageRollMax).append(" -> _").append(specialDamageRollMax).append('_');
+					}
 
 					if (defaultStats.tilesBeforeWakingUp != tilesBeforeWakingUp)
                         desc.append('\n').append(Messages.get(Mob.class, "tiles_before_waking_up")).append(": ").append(defaultStats.tilesBeforeWakingUp).append(" -> _").append(tilesBeforeWakingUp).append('_');
@@ -1463,6 +1471,24 @@ public abstract class Mob extends Char implements Customizable {
             ret += "\n" + Messages.get(Mob.class, "armor") + ": " + defaultStats.damageReductionMax + " -> _" + damageReductionMax + "_";
         return ret;
     }
+
+	public boolean areStatsEqual(Mob other) {
+		return statsScale == other.statsScale
+				&& baseSpeed == other.baseSpeed
+				&& HT == other.HT
+				&& viewDistance == other.viewDistance
+				&& attackSkill == other.attackSkill
+				&& defenseSkill == other.defenseSkill
+				&& damageRollMin == other.damageRollMin
+				&& damageRollMax == other.damageRollMax
+				&& damageReductionMax == other.damageReductionMax
+				&& EXP == other.EXP
+				&& maxLvl == other.maxLvl
+				&& specialDamageRollMin == other.specialDamageRollMin
+				&& specialDamageRollMax == other.specialDamageRollMax
+				&& tilesBeforeWakingUp == other.tilesBeforeWakingUp
+				&& properties.equals(other.properties);
+	}
 
 	@Override
 	public String getCustomName() {

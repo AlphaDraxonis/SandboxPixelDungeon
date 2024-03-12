@@ -83,21 +83,7 @@ public class DefaultStatsCache {
     }
 
     public static boolean areStatsEqual(Mob a, Mob b){
-        return a.statsScale == b.statsScale
-                && a.baseSpeed == b.baseSpeed
-                && a.HT == b.HT
-                && a.viewDistance == b.viewDistance
-                && a.attackSkill == b.attackSkill
-                && a.defenseSkill == b.defenseSkill
-                && a.damageRollMin == b.damageRollMin
-                && a.damageRollMax == b.damageRollMax
-                && a.damageReductionMax == b.damageReductionMax
-                && a.EXP == b.EXP
-                && a.maxLvl == b.maxLvl
-                && a.specialDamageRollMin == b.specialDamageRollMin
-                && a.specialDamageRollMax == b.specialDamageRollMax
-                && a.tilesBeforeWakingUp == b.tilesBeforeWakingUp
-                && a.properties.equals(b.properties);
+        return a.areStatsEqual(b);
     }
 
     public static boolean canModifyStats(Object obj) {

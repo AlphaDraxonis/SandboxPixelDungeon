@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
@@ -78,33 +79,56 @@ public abstract class Elemental extends Mob {
 	}
 
 	protected boolean summonedALly;
-	
-	@Override
-	public int damageRoll() {
-		if (!summonedALly) {
-			return super.damageRoll();
-		} else {
-			int regionScale = Math.max(2, (1 + Dungeon.scalingDepth()/5));
-			return Random.NormalIntRange(5*regionScale, 5 + 5*regionScale);
-		}
-	}
-	
-	@Override
-	public int attackSkill( Char target ) {
-		if (!summonedALly) {
-			return super.attackSkill(target);
-		} else {
-			int regionScale = Math.max(2, (1 + Dungeon.scalingDepth()/5));
-			return 5 + 5*regionScale;
-		}
-	}
 
 	public void setSummonedALly(){
 		summonedALly = true;
-		//sewers are prison are equivalent, otherwise scales as normal (2/2/3/4/5)
-		int regionScale = Math.max(2, (1 + Dungeon.scalingDepth()/5));
+		//sewers and prison are equivalent, otherwise scales as normal (2/2/3/4/5)
+		int regionScale = Math.max(2, LevelScheme.getRegion(Dungeon.level));
 		defenseSkill = 5*regionScale;
+		attackSkill = 5 + 5*regionScale;
+		damageRollMin = 5*regionScale;
+		damageRollMax = 5 + 5*regionScale;
 		HT = 15*regionScale;
+
+		hpSet = true;
+	}
+
+	@Override
+	public boolean areStatsEqual(Mob other) {
+
+		if (!( summonedALly || other instanceof Elemental && ((Elemental) other).summonedALly) )
+			return super.areStatsEqual(other);
+
+		int otherAttackSkill = other.attackSkill;
+		int otherDefenseSkill = other.defenseSkill;
+		int otherDamageRollMin = other.damageRollMin;
+		int otherDamageRollMax = other.specialDamageRollMin;
+		int otherSpecialDamageRollMin = other.specialDamageRollMax;
+		int otherSpecialDamageRollMax = other.damageRollMax;
+		int otherDamageReductionMax = other.damageReductionMax;
+		int otherHT = other.HT;
+
+		other.attackSkill = attackSkill;
+		other.defenseSkill = defenseSkill;
+		other.damageRollMin = damageRollMin;
+		other.damageRollMax = damageRollMax;
+		other.specialDamageRollMin = specialDamageRollMin;
+		other.specialDamageRollMax = specialDamageRollMax;
+		other.damageReductionMax = damageReductionMax;
+		other.HT = HT;
+
+		boolean equal = super.areStatsEqual(other);
+
+		other.attackSkill = otherAttackSkill;
+		other.defenseSkill = otherDefenseSkill;
+		other.damageRollMin = otherDamageRollMin;
+		other.damageRollMax = otherDamageRollMax;
+		other.specialDamageRollMin = otherSpecialDamageRollMin;
+		other.specialDamageRollMax = otherSpecialDamageRollMax;
+		other.damageReductionMax = otherDamageReductionMax;
+		other.HT = otherHT;
+
+		return equal;
 	}
 	
 //	@Override
@@ -253,6 +277,10 @@ public abstract class Elemental extends Mob {
 			spriteClass = ElementalSprite.NewbornFire.class;
 
 			defenseSkill = 12;
+
+			attackSkill = 15;
+			damageRollMin = 10;
+			damageRollMax = 12;
 			
 			properties.add(Property.MINIBOSS);
 		}
@@ -356,24 +384,6 @@ public abstract class Elemental extends Mob {
 
 			targetingPos = -1;
 			rangedCooldown = Random.NormalIntRange( 3, 5 );
-		}
-
-		@Override
-		public int attackSkill(Char target) {
-			if (!summonedALly) {
-				return 15;
-			} else {
-				return super.attackSkill(target);
-			}
-		}
-
-		@Override
-		public int damageRoll() {
-			if (!summonedALly) {
-				return Random.NormalIntRange(10, 12);
-			} else {
-				return super.damageRoll();
-			}
 		}
 
 		@Override
