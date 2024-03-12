@@ -3,7 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.server;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -17,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndChooseSubclass;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
@@ -46,7 +47,7 @@ public class WndPreview extends Component {
         desc = PixelScene.renderTextBlock(preview.description, 7);
         add(desc);
 
-        creator = PixelScene.renderTextBlock(Messages.get(WndPreview.class, "creator") + ": " + preview.uploader, 6);
+        creator = PixelScene.renderTextBlock(Messages.get(WndPreview.class, "creator") + ": _" + preview.uploader + "_", 6);
         add(creator);
 
         difficulty = PixelScene.renderTextBlock(Messages.get(UploadDungeon.class, "difficulty") + ": "
@@ -69,46 +70,17 @@ public class WndPreview extends Component {
                 List<CustomDungeonSaves.Info> allInfos = CustomDungeonSaves.getAllInfos();
                 if (allInfos == null) return;
 
+                String name = preview.title;
+                if (CustomDungeon.illegalNameEnding(name)) name += " ";
+                name = name.replace(' ', '_');
                 for (CustomDungeonSaves.Info info : allInfos) {
-                    if (preview.title.replace(' ', '_').equals(info.name.replace(' ', '_'))) {
-                        WndNewDungeon.showNameWarning();
+                    if (name.equals(info.name.replace(' ', '_'))) {
+                        confirmOverride();
                         return;
                     }
                 }
 
-                ServerCommunication.downloadDungeon(preview.dungeonFileID, new ServerCommunication.OnDungeonReceive() {
-                    @Override
-                    protected void onSuccessful(CustomDungeonSaves.Info info) {
-                        Game.scene().addToFront(new WndOptions(
-                                Messages.get(WndPreview.class, "successful_title"),
-                                Messages.get(WndPreview.class, "successful_body", info.name),
-                                Messages.get(WndPreview.class, "successful_play"),
-                                Messages.get(WndSupportPrompt.class, "close")
-                        ) {
-                            @Override
-                            protected void onSelect(int index) {
-                                if (index == 0) {
-                                    try {
-                                        Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(info.name);
-
-                                        FileUtils.resetDefaultFileType();
-                                        GamesInProgress.curSlot = GamesInProgress.firstEmpty();
-                                        if (GamesInProgress.curSlot == -1) {
-                                            StartScene.skipDungeonSelection = true;
-                                            SandboxPixelDungeon.switchNoFade(StartScene.class);
-                                        } else {
-                                            SandboxPixelDungeon.switchScene(HeroSelectScene.class);
-                                        }
-
-                                    } catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
-                                        SandboxPixelDungeon.reportException(e);
-                                    }
-
-                                }
-                            }
-                        });
-                    }
-                });
+                startDownload();
             }
         };
         download.icon(Icons.DOWNLOAD.get());
@@ -218,6 +190,70 @@ public class WndPreview extends Component {
                         Game.scene().addToFront(new WndError(Messages.get(WndPreview.class, "no_ownership")));
                     }
                 }
+            }
+        });
+    }
+
+    private void confirmOverride() {
+        Game.scene().addToFront(new WndOptions(Icons.WARNING.get(),
+                Messages.get(WndPreview.class, "override_title"),
+                Messages.get(WndPreview.class, "override_body"),
+                Messages.get(WndPreview.class, "override_confirm"),
+                Messages.get(WndChooseSubclass.class, "no")) {
+            private float timer;
+
+            @Override
+            public void hide() {
+               if (timer > 0.6f) super.hide();
+            }
+
+            @Override
+            protected void onSelect(int index) {
+                if (index == 0 && timer > 0.6f) {
+                    startDownload();
+                }
+            }
+
+            @Override
+            public synchronized void update() {
+                super.update();
+                timer += Game.elapsed;
+            }
+        });
+    }
+
+    private void startDownload() {
+        ServerCommunication.downloadDungeon(preview.dungeonFileID, new ServerCommunication.OnDungeonReceive() {
+            @Override
+            protected void onSuccessful(CustomDungeonSaves.Info info) {
+                Game.scene().addToFront(new WndOptions(
+                        Messages.get(WndPreview.class, "successful_title"),
+                        Messages.get(WndPreview.class, "successful_body", info.name),
+                        Messages.get(WndPreview.class, "successful_play"),
+                        Messages.get(WndSupportPrompt.class, "close")
+                ) {
+                    @Override
+                    protected void onSelect(int index) {
+                        if (index == 0) {
+                            try {
+                                Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(info.name);
+
+                                FileUtils.resetDefaultFileType();
+                                GamesInProgress.curSlot = GamesInProgress.firstEmpty();
+                                if (GamesInProgress.curSlot == -1) {
+                                    StartScene.skipDungeonSelection = true;
+                                    SandboxPixelDungeon.switchNoFade(StartScene.class);
+                                } else {
+                                    SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+                                }
+
+                            } catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
+                                SandboxPixelDungeon.reportException(e);
+                            }
+
+                        }
+                    }
+                });
             }
         });
     }

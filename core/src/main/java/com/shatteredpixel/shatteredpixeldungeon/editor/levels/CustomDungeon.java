@@ -273,11 +273,15 @@ public class CustomDungeon implements Bundlable {
     }
 
     public boolean maybeFixIncorrectNameEnding() {
-        if (name.endsWith(".") || name.endsWith("/") || name.endsWith("\\")) {
+        if (illegalNameEnding(name)) {
             name += " ";
             return true;
         }
         return false;
+    }
+
+    public static boolean illegalNameEnding(String s) {
+        return s.endsWith(".") || s.endsWith("/") || s.endsWith("\\");
     }
 
     public static String maybeFixIncorrectNameEnding(String s) {
