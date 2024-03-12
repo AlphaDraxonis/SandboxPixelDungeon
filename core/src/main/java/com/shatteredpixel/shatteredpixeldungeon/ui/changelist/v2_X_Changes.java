@@ -27,14 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Whip;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.ChangesScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollGuardSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ShopkeeperSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.TormentedSpiritSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.WandmakerSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TalentIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -63,7 +56,7 @@ public class v2_X_Changes {
 				"\n" +
 				"I'd like to try and release v2.4.0 fairly quickly to put us onto a good pace for 2024, but we'll see how well that actually turns out. Expect to hear something from me one way or another later in early to mid March. Please keep in mind that while I always try to keep to the ETAs I provide, they are just estimates. If you don't hear from me by the ETA, it means I'm still busy with the update!"));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.SKULL), "Trinkets",
+		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.RAT_SKULL), "Trinkets",
 				"Trinkets are a new item type that are more about tweaking gameplay variables than giving direct power or utility. You'll be able to get one trinket per run (with some choice), which will change up the game slightly with effects such as increasing rare enemy spawn rates or making enchantments and curses more likely. Trinkets will be upgradeable via alchemical energy, increasing the strength of their effect."));
 
 		changes.addButton( new ChangeButton(Icons.get(Icons.PREFS), "Smaller Changes/Fixes",

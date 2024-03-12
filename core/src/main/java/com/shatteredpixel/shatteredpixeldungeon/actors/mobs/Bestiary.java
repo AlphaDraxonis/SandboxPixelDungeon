@@ -27,14 +27,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Supplier;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Bestiary {
 	
@@ -157,7 +154,7 @@ public class Bestiary {
 		if (m instanceof MobBasedOnDepth) ((MobBasedOnDepth) m).setLevel(Dungeon.depth);
 		return m;
 	}
-	
+
 	//returns a rotation of standard mobs, unshuffled.
 	public static ArrayList<Class<? extends Mob>> standardMobRotation( int depth ){
 		switch(depth){
@@ -333,8 +330,9 @@ public class Bestiary {
 	
 	//switches out regular mobs for their alt versions when appropriate
 	private static void swapMobAlts(ArrayList<Class<?extends Mob>> rotation){
+		float altChance = 1/50f * RatSkull.exoticChanceMultiplier();
 		for (int i = 0; i < rotation.size(); i++){
-			if (Random.Int( 50 ) == 0) {
+			if (Random.Float() < altChance) {
 				Class<? extends Mob> cl = rotation.get(i);
 				if (cl == Rat.class) {
 					cl = Albino.class;

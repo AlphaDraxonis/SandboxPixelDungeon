@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon.Enchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Grim;
@@ -239,7 +240,9 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 
 	public static Statue random( boolean useDecks ){
 		Statue statue;
-		if (Random.Int(10) == 0){
+		float altChance = 1/10f * RatSkull.exoticChanceMultiplier();
+		if (altChance > 0.1f) altChance = (altChance+0.1f)/2f; //rat skull is 1/2 as effective here
+		if (Random.Float() < altChance){
 			statue = new ArmoredStatue();
 		} else {
 			statue = new Statue();
