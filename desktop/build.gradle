@@ -106,6 +106,7 @@ runtime {
 
 dependencies {
     implementation project(':core')
+    implementation fileTree(dir: project(":core").file("libs"), include: ['*.jar'])
 
     implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"

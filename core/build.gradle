@@ -4,6 +4,7 @@ apply plugin: 'java-library'
 sourceCompatibility = targetCompatibility = appJavaCompatibility
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     api project(':SPD-classes')
     implementation project(':services')
 }

@@ -40,6 +40,7 @@ createIPA.dependsOn build
 
 dependencies {
     implementation project(':core')
+    implementation fileTree(dir: project(":core").file("libs"), include: ['*.jar'])
     implementation project(':services:updates:debugUpdates')
     implementation project(':services:news:shatteredNews')
 

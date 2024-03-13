@@ -58,6 +58,7 @@ configurations { natives }
 
 dependencies {
     implementation project(':core')
+    implementation fileTree(dir: project(":core").file("libs"), include: ['*.jar'])
 
     // We are using the natives from 1.11.0 to maintain compatibility with Android 4.0-4.3 for now
     // The 1.12.0+ natives are compiled with a version of the NDK which drops 4.3- support
