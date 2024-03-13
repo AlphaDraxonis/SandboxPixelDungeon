@@ -1075,7 +1075,7 @@ public class Dungeon {
 
 	public static boolean[] findPassable(Char ch, boolean[] pass, boolean[] vis, boolean chars, boolean considerLarge){
 		setupPassable();
-        if (Char.hasProp(ch, Char.Property.IMMOVABLE) && (!(ch instanceof NPC) || ch instanceof Ghost || ch instanceof SentryRoom.Sentry)) {
+        if (Char.hasProp(ch, Char.Property.IMMOVABLE) && (!(ch instanceof NPC) || ch instanceof Ghost || ch instanceof SentryRoom.Sentry)) {//also in Mob.java line 731 (cellIsPathable())
             BArray.setFalse(passable);
         } else {
 
