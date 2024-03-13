@@ -378,6 +378,16 @@ public class EditorScene extends PixelScene {
         }
     }
 
+    @Override
+    public void update() {
+        super.update();
+
+        for (Gizmo g : toDestroy){
+            g.destroy();
+        }
+        toDestroy.clear();
+    }
+
     public static void setDisplayZoneState(boolean enable) {
 
         if (scene == null) {
@@ -441,13 +451,9 @@ public class EditorScene extends PixelScene {
         });
     }
 
-    public static synchronized void promptStatic(Component newPrompt) {
-        if (scene != null) scene.prompt(newPrompt);
-    }
-
     private synchronized void prompt(Component newPrompt) {
 
-        if (prompt != null && prompt != newPrompt) {
+        if (prompt != null) {
             prompt.killAndErase();
             toDestroy.add(prompt);
             prompt = null;
