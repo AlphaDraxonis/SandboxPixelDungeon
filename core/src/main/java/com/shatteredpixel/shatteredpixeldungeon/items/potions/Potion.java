@@ -543,6 +543,19 @@ public class Potion extends Item {
 		
 		@Override
 		public Item sampleOutput(ArrayList<Item> ingredients) {
+			ArrayList<Class<?extends Plant.Seed>> seeds = new ArrayList<>();
+			for (Item i : ingredients) {
+				if (!seeds.contains(i.getClass())) {
+					seeds.add((Class<? extends Plant.Seed>) i.getClass());
+				}
+			}
+			if (seeds.size() == 1) {
+				//this potion is automatically identified
+				Potion output = Reflection.newInstance(types.get(seeds.get(0)));
+				output.anonymize();
+				return output;
+			}
+
 			return new WndBag.Placeholder(ItemSpriteSheet.POTION_HOLDER){
 
 				@Override

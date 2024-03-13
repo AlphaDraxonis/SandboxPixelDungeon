@@ -194,7 +194,7 @@ public class WndSelectMusic extends WndChooseOneInCategories {
         List<String> audioFiles = CustomDungeonSaves.findAllFiles("ogg", "mp3", "wav");
         String[] options = new String[audioFiles.size()];
         int i = 0;
-        for (String m : audioFiles) {//tzz removed: no custom music
+        for (String m : audioFiles) {
             options[i++] = m;
         }
         EditorScene.show(new WndOptions(

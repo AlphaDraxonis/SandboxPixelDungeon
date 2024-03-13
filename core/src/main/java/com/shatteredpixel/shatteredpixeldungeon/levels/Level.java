@@ -590,7 +590,8 @@ public abstract class Level implements Bundlable {
 					musicRequests.add(SPECIAL_MUSIC[region - 1][i - 1]);
 			}
 		} else {
-			musicRequests.addAll(Arrays.asList(bundle.getStringArray(MUSIC_REQUESTS)));
+			String[] stringArray = bundle.getStringArray(MUSIC_REQUESTS);
+			if (stringArray != null) musicRequests.addAll(Arrays.asList(stringArray));
 		}
 
 		int[] intArray = bundle.getIntArray(MUSIC_REQUESTS_MOB_IDS);

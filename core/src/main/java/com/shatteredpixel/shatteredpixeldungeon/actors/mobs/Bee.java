@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.BeeSprite;
 import com.watabou.utils.Bundle;
@@ -66,7 +67,7 @@ public class Bee extends Mob implements MobBasedOnDepth {
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
-		bundle.put( LEVEL, level );
+		bundle.put( LEVEL, CustomDungeon.isEditing() ? -1 : level );
 		bundle.put( POTPOS, potPos );
 		bundle.put( POTHOLDER, potHolder );
 		bundle.put( ALIGMNENT, alignment);
@@ -89,7 +90,7 @@ public class Bee extends Mob implements MobBasedOnDepth {
 		defenseSkill = 9 + level;
 
 		if (!hpSet) {
-			hpSet = Dungeon.hero != null;
+			hpSet = Dungeon.hero != null && level != -1;
 			HP = HT;
 			if (hpSet) {
 				if (potPos == 0) potPos = pos;

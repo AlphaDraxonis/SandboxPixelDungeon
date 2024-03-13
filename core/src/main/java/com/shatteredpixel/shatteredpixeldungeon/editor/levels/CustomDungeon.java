@@ -512,7 +512,7 @@ public class CustomDungeon implements Bundlable {
 
     //if is in edit mode -> identify all items
     public static boolean isEditing() {
-        return Game.scene() instanceof EditorScene || Game.scene() instanceof FloorOverviewScene;
+        return Dungeon.hero == null;
     }
 
     public static boolean showHiddenDoors() {

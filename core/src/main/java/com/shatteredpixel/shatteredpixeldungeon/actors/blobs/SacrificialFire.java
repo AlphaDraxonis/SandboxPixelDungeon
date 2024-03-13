@@ -177,7 +177,7 @@ public class SacrificialFire extends Blob {
 		boolean changedSth = false;
 		for (Integer cell : prizes.keySet()) {
 			Item i = prizes.get(cell);
-			if (i.onDeleteLevelScheme(name)) {
+			if (i != null && i.onDeleteLevelScheme(name)) {
 				if (!(i instanceof RandomItem)) prizes.remove(cell);
 				changedSth = true;
 			}

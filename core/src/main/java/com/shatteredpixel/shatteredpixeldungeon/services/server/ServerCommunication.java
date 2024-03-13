@@ -411,6 +411,7 @@ public final class ServerCommunication {
             uploadPreview.title = fileName;
             uploadPreview.description = description;
             uploadPreview.version = Game.version;
+            uploadPreview.intVersion = Game.versionCode;
             uploadPreview.uploader = "null";
 
             Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);

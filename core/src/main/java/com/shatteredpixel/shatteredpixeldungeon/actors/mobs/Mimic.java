@@ -80,7 +80,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         if (items != null) bundle.put(ITEMS, items);
-        bundle.put(LEVEL, level);
+        bundle.put(LEVEL, CustomDungeon.isEditing() ? -1 : level);
         bundle.put(SUPER_HIDDEN, superHidden);
     }
 
@@ -310,7 +310,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 
         if (!hpSet) {
             HP = HT;
-            hpSet = Dungeon.hero != null;
+            hpSet = Dungeon.hero != null && level != -1;
         }
     }
 
