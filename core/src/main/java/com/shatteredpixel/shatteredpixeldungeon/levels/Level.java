@@ -1885,6 +1885,7 @@ public abstract class Level implements Bundlable {
 
 		if (!CustomDungeon.isEditing()) {
 			applyZoneBuffs(ch);
+			if (zone[ch.pos] != null) zone[ch.pos].onZoneEntered(ch);
 		}
 
 		if (!ch.isFlying() && pit[ch.pos]) {

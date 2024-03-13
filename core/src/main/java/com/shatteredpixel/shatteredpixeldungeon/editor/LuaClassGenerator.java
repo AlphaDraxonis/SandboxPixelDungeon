@@ -24,6 +24,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
@@ -33,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.lang.reflect.Method;
@@ -61,6 +63,7 @@ public final class LuaClassGenerator {
     //button insert template: will override affected methods, show info which methods are changed
 
     //add utilies wrapper to use certain STATIC methods from items or traps, and to show windows?
+    //show window: only message, wndtitledmsg, wndscroll, wndquest, wandmaker quest window with varargs num rewards, open journal(int page)
 
     private static Globals globals;
     public static LuaValue luaScript ;
@@ -81,7 +84,7 @@ public final class LuaClassGenerator {
 
     public static void initStatic() {
 
-        luaScript = LuaClassGenerator.globals.load(
+        LuaClassGenerator.luaScript = LuaClassGenerator.globals.load(
                 "function attackSkill() " +
                         "return 999999" +
                   " end  " +
@@ -89,8 +92,29 @@ public final class LuaClassGenerator {
                         "this:die()" +
                         "return damage" +
                   " end  " +
-                        "local methods = {attackSkill = attackSkill; attackProc = attackProc} return methods").call();
+                "function die(this, cause) " +
+                        "local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
+                        "level:drop(item, this.pos + level:width()).sprite:drop()" +
+                        //TODO: call super!
+                  " end  " +
+                        "return {attackSkill = attackSkill; attackProc = attackProc; die = die}").call();
 
+    }
+
+    public static void updateGlobalVars() {
+        globals.set("hero", CoerceJavaToLua.coerce(Dungeon.hero));
+        globals.set("dungeon", CoerceJavaToLua.coerce(Dungeon.customDungeon));
+        globals.set("customDungeon", CoerceJavaToLua.coerce(Dungeon.customDungeon));
+        globals.set("level", CoerceJavaToLua.coerce(Dungeon.level));
+        globals.set("depth", LuaValue.valueOf(Dungeon.depth));
+        globals.set("limitedDrops", CoerceJavaToLua.coerce(Dungeon.LimitedDrops.values()));
+        updateGlobalPrimitives();
+    }
+
+    public static void updateGlobalPrimitives() {
+        globals.set("branch", LuaValue.valueOf(Dungeon.branch));
+        globals.set("gold", LuaValue.valueOf(Dungeon.gold));
+        globals.set("energy", LuaValue.valueOf(Dungeon.energy));
     }
 
 
@@ -117,7 +141,6 @@ public final class LuaClassGenerator {
 //        String path =
     }
 
-    //TODO tzz don't forget Methods from Bundlable!
     private static String generateSourceCode(Class<?> inputClass) {
         String pckge = "package " + inputClass.getPackage().getName() + ";\n\n";
         String imprt = "import com.shatteredpixel.shatteredpixeldungeon.editor.LuaClass;\n" +
@@ -137,6 +160,8 @@ public final class LuaClassGenerator {
                         "    public String getIdentifier() {\n" +
                         "        return this.identifier;\n" +
                         "    }\n";
+        //TODO tzz don't forget Methods from Bundlable!
+        //And tell: if you want to store sth like the currently targeted enemy, store the id and ...
 
         StringBuilder overrideMethods = new StringBuilder();
 

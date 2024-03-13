@@ -277,6 +277,10 @@ public class Zone implements Bundlable {
         return false;
     }
 
+    public void onZoneEntered(Char ch) {
+        //use Dungeon.level to get the level, and ch.pos to get the cell
+    }
+
     public static boolean isFlamable(Level level, int cell) {
         Zone z;
         return (z = level.zone[cell]) == null || z.flamable;

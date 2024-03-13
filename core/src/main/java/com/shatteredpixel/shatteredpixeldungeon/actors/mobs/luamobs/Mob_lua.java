@@ -17,6 +17,7 @@ import com.watabou.utils.Bundle;
 
 import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaInteger;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
@@ -27,6 +28,28 @@ import java.util.List;
 public class Mob_lua extends Rat implements LuaClass {
 
     private String identifier;
+    private LuaValue luaVars;//LuaTable mit variablen, wird gespeichert,  bei restoreFromBundle() werden nur die Werte übernommen, die tatsächlich noch vorhanden sind
+
+    {
+        //TODO tzz find better way of copying, extract methods and make static
+        LuaTable originalVars = LuaClassGenerator.luaScript.get("vars").checktable();
+        luaVars = new LuaTable();
+        for (LuaValue key : originalVars.keys()) {
+            LuaValue value = originalVars.get(key);
+            if (value.isuserdata()) {
+                Object obj = value.touserdata();
+                if (obj instanceof Copyable) obj = ((Copyable) obj).getCopy();
+                luaVars.set(key, obj);
+            } else {
+                luaVars.set(key, value);
+            }
+        }
+
+        //in restoreFromBundle: check what has been saved, and only override those vars that are still present
+        //in storeInBundle: find a way to properly store all of that automatically
+        //test if they are separate
+    }
+
 
     @Override
     public void setIdentifier(String identifier) {
