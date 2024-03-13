@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -413,7 +414,7 @@ public abstract class Elemental extends Mob {
 		public void setLevel(int depth) {//not based on depth, but this method is called when game is inited
 			if (!hpSet) {
 				HP = HT / 2;
-				hpSet = Dungeon.hero != null;
+				hpSet = !CustomDungeon.isEditing();
 			}
 		}
 

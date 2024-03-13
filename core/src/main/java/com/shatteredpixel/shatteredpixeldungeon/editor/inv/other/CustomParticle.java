@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ParticleActionPart;
@@ -251,8 +252,8 @@ public class CustomParticle extends Blob {
 
         protected void updateCell(int cell) {
             if (cell < Dungeon.level.heroFOV.length
-                    && (Dungeon.level.heroFOV[cell] || particle.alwaysVisible || Dungeon.hero == null)
-                    && particle.cur[cell] > (particle.alwaysEmitting() || Dungeon.hero == null ? CELL_INACTIVE : CELL_ACTIVE)) {
+                    && (Dungeon.level.heroFOV[cell] || particle.alwaysVisible || CustomDungeon.isEditing())
+                    && particle.cur[cell] > (particle.alwaysEmitting() || CustomDungeon.isEditing() ? CELL_INACTIVE : CELL_ACTIVE)) {
 
                 boolean heroJustEnteredCell = particle.cur[cell] == HERO_JUST_ENTERED;
                 boolean charJustEnteredCell = particle.cur[cell] >= HERO_JUST_ENTERED;
@@ -328,7 +329,7 @@ public class CustomParticle extends Blob {
             @Override
             protected void emit(int index) {
                 if (pos < particle.cur.length && particle.cur[pos] > CELL_INACTIVE) {
-                    if (Dungeon.level.heroFOV[pos] || Dungeon.hero == null) {
+                    if (Dungeon.level.heroFOV[pos] || CustomDungeon.isEditing()) {
                         float x = Random.Float(BlobEmitter.bound.left, BlobEmitter.bound.right) * DungeonTilemap.SIZE;
                         float y = Random.Float(BlobEmitter.bound.top, BlobEmitter.bound.bottom) * DungeonTilemap.SIZE;
                         factory.emit(this, index, x + this.x, y + this.y);

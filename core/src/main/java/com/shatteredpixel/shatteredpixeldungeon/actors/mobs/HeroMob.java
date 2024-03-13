@@ -16,6 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -61,7 +62,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
         if (!hpSet) {
             HP = HT = internalHero.HP = internalHero.HT = (int) (internalHero.HT * statsScale);
-            hpSet = Dungeon.hero != null;
+            hpSet = !CustomDungeon.isEditing();
         }
 
         if (buff(Regeneration.class) == null) {

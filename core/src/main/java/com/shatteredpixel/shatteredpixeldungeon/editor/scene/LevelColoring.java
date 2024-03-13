@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.scene;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -95,7 +96,7 @@ public class LevelColoring extends Group {
 
                     @Override
                     protected void updateColor(ColorBlock img, int cell) {
-                        if (Dungeon.hero == null || Dungeon.customDungeon.view2d) {
+                        if (CustomDungeon.isEditing() || Dungeon.customDungeon.view2d) {
                             if (Dungeon.level.solid[cell] && DungeonTileSheet.wallStitcheable(Dungeon.level.map[cell])) super.updateColor(img, cell);
                             else img.alpha(0f);
                         } else {

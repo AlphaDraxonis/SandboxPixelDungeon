@@ -90,7 +90,7 @@ public class Bee extends Mob implements MobBasedOnDepth {
 		defenseSkill = 9 + level;
 
 		if (!hpSet) {
-			hpSet = Dungeon.hero != null && level != -1;
+			hpSet = level != -1 && !CustomDungeon.isEditing();
 			HP = HT;
 			if (hpSet) {
 				if (potPos == 0) potPos = pos;

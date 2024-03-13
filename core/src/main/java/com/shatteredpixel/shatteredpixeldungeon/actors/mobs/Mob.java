@@ -188,7 +188,7 @@ public abstract class Mob extends Char implements Customizable {
 			float percent = HP / (float) HT;
 			HT = Math.round(HT * AscensionChallenge.statModifier(this));
 			HP = Math.round(HT * percent);
-			firstAdded = Dungeon.hero != null;
+			firstAdded = !CustomDungeon.isEditing();
 
 			Dungeon.level.applyZoneBuffs(this);
 		}
@@ -368,7 +368,7 @@ public abstract class Mob extends Char implements Customizable {
 		if (bundle.contains(XP)) EXP = bundle.getInt(XP);
 		if (bundle.contains(STATS_SCALE)) statsScale = bundle.getFloat(STATS_SCALE);
 		hpSet = bundle.getBoolean(HP_SET);
-		if (hpSet) hpSet = Dungeon.hero != null;
+		if (hpSet) hpSet = !CustomDungeon.isEditing();
 
 		if (bundle.contains(SPRITE)) spriteClass = bundle.getClass(SPRITE);
 

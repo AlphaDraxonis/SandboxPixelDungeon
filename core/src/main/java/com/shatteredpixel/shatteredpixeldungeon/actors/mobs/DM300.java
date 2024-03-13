@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.effects.TargetedCell;
@@ -175,7 +176,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 			HT = (int) (HT * 4 / 3f);
 			if (!hpSet) {
 				HP = HT;
-				hpSet = Dungeon.hero != null;
+				hpSet = !CustomDungeon.isEditing();
 			}
 		}
 //		((DM300Sprite)sprite).updateChargeState(true);

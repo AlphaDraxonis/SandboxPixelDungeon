@@ -62,7 +62,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -84,43 +83,7 @@ import java.util.Set;
 
 public class CustomDungeon implements Bundlable {
 
-    public boolean damageImmune, seeSecrets, permaMindVision, permaInvis, permaKey, extraSpeed;// maybe add ScrollOfDebug?
-
-    //FIXME: Was noch zu tun ist  FIXME FIXME TODO System.err.println()
-    //general floor overview stuff
-    //settings für EditorScene
-    //select builder and painter
-
-    //Custom mob attacks: externalise
-    //and search: used so resistances can differentiate between melee and magical attacks
-
-    //maybe ability to randomize loot drops between some amounts like 1-9 quantity for example
-
-
-    //WARNING;;;;!! It Is important that after each Shattered Update, BArray.or is searched everywhere, because the result should NEVER be used for passable
-    //use Level#getPassableAndAvoid() or a variation instead!!!
-    //And search for access of flying in Char.java, use isFlying() or avoidsHazards()  instead (the Hazard = die Gefahr, i.e. traps, blobs)
-
-    //AND check if sprite classes have changed, e.g. ZAPs()!!!
-    //search for onZapComplete() casted on called object
-
-    //Crash when thiefs steal item?
-
-
-    //what event happened after an enemies dies !!!!
-    //First option: heal until it has 100% hp then back to live (same as cave guardians)
-    //second option: corrupted wraith. when killed, they will come back as corrupted wraith
-    //third option: same as 2nd, but this was corrupted enemies instead
-
-    //Scroll of Debug with interface, reference table and commands, use reflection to access ALL methods
-    //surround method calls with try-catch-block, say warning that some variables might have been modified if method not @pure
-    //add simple ways to add new enemies to map, or find one
-
-    //if possible make a release that can be downloaded in this format (taken ShPD for example) -> as .exe  no
-
-    //"Hero creator" chocked with a pixel editor for the hero, basic starting equipment, abilities, talents, and subclasses
-    //Alternative talents would be pretty neat
-    //Subclasses tho will not work properly, it requires a lot of work around the code ig
+    public boolean damageImmune, seeSecrets, permaMindVision, permaInvis, permaKey, extraSpeed;
 
     private String name;
     private String lastEditedFloor;

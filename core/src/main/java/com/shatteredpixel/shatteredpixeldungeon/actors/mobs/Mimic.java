@@ -310,7 +310,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 
         if (!hpSet) {
             HP = HT;
-            hpSet = Dungeon.hero != null && level != -1;
+            hpSet = level != -1 && !CustomDungeon.isEditing();
         }
     }
 

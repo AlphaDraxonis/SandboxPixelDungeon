@@ -142,7 +142,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 			HT = (int) (HT * 1.25f);
 			if (!hpSet) HP = HT;
 		}
-		hpSet = Dungeon.hero != null && depth != -1;
+		hpSet = !CustomDungeon.isEditing();
 	}
 
 	//	@Override

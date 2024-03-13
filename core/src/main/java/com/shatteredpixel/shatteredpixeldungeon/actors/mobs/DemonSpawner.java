@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Sleep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -202,7 +203,7 @@ public class DemonSpawner extends SpawnerMob implements MobBasedOnDepth {
 		if (!hpSet) {
 			//60/53.33/46.67/40 turns to spawn on floor 21/22/23/24
 			maxSpawnCooldown = 60 - Math.min(20, (depth % 5)*6.67f);
-			hpSet = Dungeon.hero != null;
+			hpSet = !CustomDungeon.isEditing();
 		}
 	}
 }
