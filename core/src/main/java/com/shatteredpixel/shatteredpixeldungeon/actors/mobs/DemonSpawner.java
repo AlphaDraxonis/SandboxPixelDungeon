@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
@@ -149,6 +150,11 @@ public class DemonSpawner extends SpawnerMob implements MobBasedOnDepth {
 	}
 
 	@Override
+	protected boolean canAttack(Char enemy) {
+		return false;
+	}
+
+	@Override
 	public void damage(int dmg, Object src) {
 		if (dmg >= 20){
 			//takes 20/21/22/23/24/25/26/27/28/29/30 dmg
@@ -201,8 +207,10 @@ public class DemonSpawner extends SpawnerMob implements MobBasedOnDepth {
 	@Override
 	public void setLevel(int depth) {
 		if (!hpSet) {
-			//60/53.33/46.67/40 turns to spawn on floor 21/22/23/24
-			maxSpawnCooldown = 60 - Math.min(20, (depth % 5)*6.67f);
+			if (maxSpawnCooldown == 0) {
+				//60/53.33/46.67/40 turns to spawn on floor 21/22/23/24
+				maxSpawnCooldown = 60 - Math.min(20, (depth % 5) * 6.67f);
+			}
 			hpSet = !CustomDungeon.isEditing();
 		}
 	}

@@ -556,7 +556,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             abilityCooldown.addChangeListener(() -> ((DemonSpawner) mob).maxSpawnCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
         }
-        ;
 
         if (mob instanceof SpawnerMob) {
             List<MobItem> asMobItems = new ArrayList<>();

@@ -203,6 +203,9 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     public int getClicksPerSecondWhileHolding() {
         int diff = getMaximum() - getMinimum();
         if (diff < 20) return 40;
+        if (diff > 10_000) {
+            diff = diff > 2_000_000_000 ? 100 : 10_000;
+        }
         return (int) Math.ceil(diff / (float) getStepSize() / 2);
     }
 
