@@ -17,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.LarvaSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.RipperSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SwarmSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.WandmakerSprite;
 import com.watabou.noosa.Image;
 
@@ -92,6 +93,7 @@ public class PropertyItem extends EditorItem<Char.Property> {
             case PERMEABLE: return new GhostSprite();
             case LARGE: return new GolemSprite();
             case IMMOVABLE: return new WandmakerSprite();
+            case FLYING: return new SwarmSprite();
         }
 
         return new ItemSprite(ItemSpriteSheet.SOMETHING);

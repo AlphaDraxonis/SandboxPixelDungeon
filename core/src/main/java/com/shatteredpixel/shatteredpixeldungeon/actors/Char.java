@@ -215,7 +215,7 @@ public abstract class Char extends Actor {
 	}
 
 	public boolean isFlying() {
-		return flying;
+		return flying || Char.hasProp(this, Property.FLYING);
 	}
 
 	public void setFlying(boolean flying) {
@@ -223,7 +223,7 @@ public abstract class Char extends Actor {
 	}
 
 	public boolean avoidsHazards() {//if affected by traps and other effects
-		return flying;
+		return isFlying();
 	}
 
 	public boolean canInteract(Char c){
@@ -1285,11 +1285,12 @@ public abstract class Char extends Actor {
 		ACIDIC ( new HashSet<Class>( Arrays.asList(Corrosion.class)),
 				new HashSet<Class>( Arrays.asList(Ooze.class))),
 		ELECTRIC ( new HashSet<Class>( Arrays.asList(WandOfLightning.class, Shocking.class, Potential.class, Electricity.class, ShockingDart.class, Elemental.ShockElemental.class )),
-				new HashSet<Class>());
+				new HashSet<Class>()),
+        FLYING;//just like normal flying attribute
 
 		static {
 			//WARNING keeping the same ordinal order is very important for bundling
-			if (ELECTRIC.ordinal() != 12) throw new RuntimeException("Char.Property: PLEASE MAKE SURE THAT THE ORDINALS ARE ALWAYS IN THE CORRECT ORDER!!!");
+			if (FLYING.ordinal() != 13) throw new RuntimeException("Char.Property: PLEASE MAKE SURE THAT THE ORDINALS ARE ALWAYS IN THE CORRECT ORDER!!!");
 		}
 
 		private HashSet<Class> resistances;
