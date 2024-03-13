@@ -1350,17 +1350,20 @@ public abstract class Level implements Bundlable {
 
 			cell = Random.Int( length() );
 
-		} while ((Dungeon.level == this && heroFOV[cell])
+		} while (!isValidSpawnCell(ch, cell) || (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE));
+
+		return cell;
+	}
+
+	protected boolean isValidSpawnCell(Char ch, int cell) {
+		return !( (Dungeon.level == this && heroFOV[cell])
 				|| !isPassable(cell, ch)
 				|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
 				|| Actor.findChar( cell ) != null
 				|| (ch instanceof Piranha && map[cell] != Terrain.WATER)
 				|| (ch instanceof SentryRoom.Sentry && map[cell] != Terrain.PEDESTAL)
 				|| findMob(cell) != null
-				|| (checkPath && PathFinder.distance[cell] == Integer.MAX_VALUE)
-				|| (!Zone.canSpawnMobs(this, cell) && !(ch == null || ch instanceof Hero || ch instanceof NPC)));
-
-		return cell;
+				|| (!Zone.canSpawnMobs(this, cell) && !(ch == null || ch instanceof Hero || ch instanceof NPC)) );
 	}
 	
 	public int randomDestination( Char ch ) {
@@ -1802,14 +1805,20 @@ public abstract class Level implements Bundlable {
 	
 	public int fallCell( boolean fallIntoPit, String destZone ) {
 		Dungeon.hero.pos = -1;
-		int tries = 100;
+		int tries = length;
 		int result;
 		do {
 			result = randomRespawnCell(null);
 			if (tries-- < 0) {
 				if (destZone != null) {
+
+					for (int i = 0; i < length; i++) {
+						if (zone[i] != null && destZone.equals(zone[i].getName()) && isValidSpawnCell(null, i))
+							return i;
+					}
+
 					destZone = null;
-					tries = 100;
+					tries = length / 3;
 				} else return -1;
 			}
 		} while (result == -1
