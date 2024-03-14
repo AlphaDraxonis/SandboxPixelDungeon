@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.other;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
@@ -83,7 +84,7 @@ public class CustomParticle extends Blob {
         properties = Dungeon.customDungeon.particles.get(particleID);
     }
 
-    public static class ParticleProperty implements Bundlable {
+    public static class ParticleProperty implements Bundlable, Copyable<ParticleProperty> {
 
         public String name;
 
@@ -135,7 +136,8 @@ public class CustomParticle extends Blob {
             return id;
         }
 
-        private ParticleProperty getCopy() {
+        @Override
+        public ParticleProperty getCopy() {
             Bundle bundle = new Bundle();
             bundle.put("PARTICLE", this);
             return (ParticleProperty) bundle.get("PARTICLE");

@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.items;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -8,7 +9,7 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
 //just holds enchantments for a mob
-public interface EnchantmentLike extends Bundlable {
+public interface EnchantmentLike extends Bundlable, Copyable<EnchantmentLike> {
 
     default String name() {
         if (curse())
@@ -39,6 +40,7 @@ public interface EnchantmentLike extends Bundlable {
 
     void doApply(Item item);
 
+    @Override
     default EnchantmentLike getCopy() {
         Bundle bundle = new Bundle();
         bundle.put("ENCHANTMENT_LIKE",this);

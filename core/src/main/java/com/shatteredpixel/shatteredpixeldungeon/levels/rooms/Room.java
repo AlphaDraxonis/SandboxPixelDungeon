@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Bundlable;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
-public abstract class Room extends Rect implements Graph.Node, Bundlable {
+public abstract class Room extends Rect implements Graph.Node, Bundlable, Copyable<Room> {
 	
 	public ArrayList<Room> neigbours = new ArrayList<>();
 	public LinkedHashMap<Room, Door> connected = new LinkedHashMap<>();
@@ -420,6 +421,7 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable {
 		bottom = bundle.getInt( "bottom" );
 	}
 
+	@Override
 	public Room getCopy(){
 		Bundle b = new Bundle();
 		b.put("ROOM",this);

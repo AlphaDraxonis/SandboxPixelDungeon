@@ -31,8 +31,13 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
+import com.watabou.noosa.Game;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
 
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaUserdata;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
@@ -43,6 +48,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class LuaClassGenerator {
+
+    public static void enterClass(){
+        int i = 0;
+    }
 
     //TODO list
     //write tutorial (should mention most important stuff for common classes)
@@ -65,6 +74,10 @@ public final class LuaClassGenerator {
     //add utilies wrapper to use certain STATIC methods from items or traps, and to show windows?
     //show window: only message, wndtitledmsg, wndscroll, wndquest, wandmaker quest window with varargs num rewards, open journal(int page)
 
+    //ACHTUNG variable names cannot start with "__type" !!! tzz TODO very important!
+
+    //TODO: implement static: for this mob type, and super_static for ALL custom mobs
+
     private static Globals globals;
     public static LuaValue luaScript ;
 
@@ -82,24 +95,59 @@ public final class LuaClassGenerator {
         //LuaClassGenerator.globals.load("function canAttack() return true end  local aaa = {canAttack = canAttack} return aaa").call().get("canAttack").call()
     }
 
+    private static final String funAttackSkill =
+            "function attackSkill(this) " +
+                    "    return 999999" +
+                    " end  ";
+    private static final String funAttackProc =
+            "function attackProc(this, enemy, damage) " +
+                    "    this:die()" +
+                    "    return damage" +
+                    " end  ";
+    private static final String funAttackProc2 =
+            "function attackProc(this, enemy, damage) " +
+                    "    test = test + 1" +
+                    "    return test" +
+                    " end  ";
+    private static final String funDie =
+            "function die(this, cause) " +
+                    "local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
+                    "level:drop(item, this.pos + level:width()).sprite:drop()" +
+                    //TODO: call super!
+                    " end  ";
+
+    private static final String vars =
+            "vars = { " +
+//                    "local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
+                    "item = nil;" +
+                    "test = 11" +
+                    " }  ";
+
     public static void initStatic() {
 
         LuaClassGenerator.luaScript = LuaClassGenerator.globals.load(
-                "function attackSkill() " +
-                        "return 999999" +
-                  " end  " +
-                "function attackProc(this, enemy, damage) " +
-                        "this:die()" +
-                        "return damage" +
-                  " end  " +
-                "function die(this, cause) " +
-                        "local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
-                        "level:drop(item, this.pos + level:width()).sprite:drop()" +
-                        //TODO: call super!
-                  " end  " +
-                        "return {attackSkill = attackSkill; attackProc = attackProc; die = die}").call();
+                 vars +
+                         "function attackSkill(this, vars) " +
+                         "if vars.item == nil then" +
+                         "   vars.item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
+                         " else  level:drop(luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing\"), this.pos + level:width()).sprite:drop()" +
+                         " end   return vars.test" +
+                         " end " +
+
+                        "return {" +
+                         "attackSkill = attackSkill; " +
+//                         "attackProc = attackProc; " +
+//                         "die = die;" +
+                         "vars = vars " +
+                         "}").call();
 
     }
+
+    //LuaClassGenerator.globals.load(
+    //       " vars = { item = nil; test = 66 }       function attackSkill(this, vars) " + " local item = nil if item==nil then return luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\") else  return level end end" + "   " + "return {" +
+    //    "attackSkill = attackSkill; " +      "vars = vars " + "}").call().get("attackSkill").call()
+
+    private static LuaValue tempLuaV1, tempLuaV2, tempLuaV3;
 
     public static void updateGlobalVars() {
         globals.set("hero", CoerceJavaToLua.coerce(Dungeon.hero));
@@ -107,6 +155,7 @@ public final class LuaClassGenerator {
         globals.set("customDungeon", CoerceJavaToLua.coerce(Dungeon.customDungeon));
         globals.set("level", CoerceJavaToLua.coerce(Dungeon.level));
         globals.set("depth", LuaValue.valueOf(Dungeon.depth));
+        globals.set("version", LuaValue.valueOf(Game.version));
         globals.set("limitedDrops", CoerceJavaToLua.coerce(Dungeon.LimitedDrops.values()));
         updateGlobalPrimitives();
     }
@@ -138,17 +187,37 @@ public final class LuaClassGenerator {
     private static void generateFile(Class<?> inputClass) {
         String source = generateSourceCode(inputClass);
 
-//        String path =
+//        String path = TODO tzz need to override bundlabe in generateCode!!!!!
     }
+
+    //private LuaValue luaVars;//LuaTable mit variablen, wird gespeichert,  bei restoreFromBundle() werden nur die Werte übernommen, die tatsächlich noch vorhanden sind
+    //
+    //    {
+    //
+    ////        //TODO tzz find better way of copying, extract methods and make static
+    ////        LuaTable originalVars = LuaClassGenerator.luaScript.get("vars").checktable();
+    ////        luaVars = LuaClassGenerator.deepCopyLuaValue(originalVars);
+    //
+    //        //in restoreFromBundle: check what has been saved, and only override those vars that are still present
+    //        //in storeInBundle: find a way to properly store all of that automatically
+    //        //test if they are separate
 
     private static String generateSourceCode(Class<?> inputClass) {
         String pckge = "package " + inputClass.getPackage().getName() + ";\n\n";
         String imprt = "import com.shatteredpixel.shatteredpixeldungeon.editor.LuaClass;\n" +
                 "import com.shatteredpixel.shatteredpixeldungeon.editor.LuaClassGenerator;\n" +
-                "import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;\n" +
+                "import com.shatteredpixel.shatteredpixeldungeon.actors.*;\n" +
+                "import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;\n" +
+                "import org.luaj.vm2.*;\n" +
                 "import java.util.*;\n\n";
         String classHead = "public class " + inputClass.getSimpleName() + "_lua extends " + inputClass.getSimpleName() +" implements LuaClass {\n\n";
-        String declaringVars = "    private String identifier;\n";
+        String declaringVars = "    private String identifier;\n"
+                + "    private LuaTable vars;\n";
+        String initializers = "\n{\n" +
+                "        if (LuaClassGenerator.luaScript != null && LuaClassGenerator.luaScript.get(\"vars\").istable()) {\n" +
+                "            vars = LuaClassGenerator.deepCopyLuaValue(LuaClassGenerator.luaScript.get(\"vars\")).checktable();\n" +
+                "        }\n" +
+                "    }\n";
         String implementLuaClassStuff =
                 "\n" +
                         "    @Override\n" +
@@ -193,14 +262,18 @@ public final class LuaClassGenerator {
             else if (returnType.isPrimitive()) returnTypeString = ".to" + returnType + "()";
             else returnTypeString = ".touserdata()";
 
+            boolean useInvoke = paramTypes.length >= 2;
+
             overrideMethods.append(") {\n");
             overrideMethods.append("        LuaValue luaScript = LuaClassGenerator.luaScript;\n");
             overrideMethods.append("        if (luaScript != null && !luaScript.get(\"").append(m.getName()).append("\").isnil()) {\n");
             overrideMethods.append("            LuaClassGenerator.scriptsRunning++;\n");
             overrideMethods.append("           ").append(returnString).append("luaScript.get(\"")
-                    .append(m.getName()).append("\").call(");
+                    .append(m.getName()).append("\").").append(useInvoke ? "invoke" : "call").append('(');
 
-            overrideMethods.append("CoerceJavaToLua.coerce(this)");
+            if (useInvoke) overrideMethods.append("new LuaValue[]{");
+            overrideMethods.append("CoerceJavaToLua.coerce(this), ");
+            overrideMethods.append("vars");
             if (paramTypes.length > 0) overrideMethods.append(", ");
 
             for (int i = 0; i < paramTypes.length; i++) {
@@ -215,7 +288,10 @@ public final class LuaClassGenerator {
                     overrideMethods.append(", ");
             }
 
-            overrideMethods.append(")").append(returnTypeString).append(";\n");
+            if (useInvoke) overrideMethods.append('}');
+            overrideMethods.append(')');
+            if (useInvoke) overrideMethods.append(".arg1()");
+            overrideMethods.append(returnTypeString).append(";\n");
             overrideMethods.append("            LuaClassGenerator.scriptsRunning--;\n");
             if (!returnString.isEmpty())
                 overrideMethods.append("            return ret;\n");
@@ -242,6 +318,7 @@ public final class LuaClassGenerator {
                 + imprt
                 + classHead
                 + declaringVars
+                + initializers
                 + implementLuaClassStuff
                 + overrideMethods
                 + "}";
@@ -261,6 +338,162 @@ public final class LuaClassGenerator {
             findAllMethodsToOverride(currentClass.getSuperclass(), highestClass, currentMethods);
         }
     }
+
+    private static final String TYPE_OF_PREFIX = "__type";
+    private static final int TYPE_BUNDLABLE = 1, TYPE_INT = 2, TYPE_BOOLEAN = 3, TYPE_STRING = 4, TYPE_LONG = 5, TYPE_FLOAT = 6, TYPE_TABLE = 100;
+    public static void storeVarInBundle(Bundle bundle, LuaValue value, String key) {
+
+        String keyType = TYPE_OF_PREFIX + key;
+
+        if (value.isuserdata()) {
+
+            Object obj = value.touserdata();
+            if (obj instanceof Bundlable) bundle.put(key, ((Bundlable) obj));
+            else if (obj == null) bundle.put(key, ((Bundlable) null));
+            else ;//cannot be stored! (this would also include classes ig)
+            bundle.put(keyType, TYPE_BUNDLABLE);
+
+        } else if (value.istable()) {
+
+            bundle.put(key, new LuaTableBundlable(value.checktable()));
+            bundle.put(keyType, TYPE_TABLE);
+
+        } else {
+            if (value.isint()) {
+                bundle.put(key, value.toint());
+                bundle.put(keyType, TYPE_INT);
+            }
+            else if (value.isboolean()) {
+                bundle.put(key, value.toboolean());
+                bundle.put(keyType, TYPE_BOOLEAN);
+            }
+            else if (value.isstring()) {
+                bundle.put(key, value.toString());
+                bundle.put(keyType, TYPE_STRING);
+            }
+            else if (value.islong()) {
+                bundle.put(key, value.tolong());
+                bundle.put(keyType, TYPE_LONG);
+            }
+            else if (value.isnumber()){
+                bundle.put(key, value.tofloat());
+                bundle.put(keyType, TYPE_FLOAT);
+            }
+            else if (value.isnil()) {
+                bundle.put(key, ((Bundlable) null));
+                bundle.put(keyType, TYPE_BUNDLABLE);
+            }
+        }
+    }
+
+    public static LuaValue restoreVarFromBundle(Bundle bundle, String key) {
+
+        switch (bundle.getInt(TYPE_OF_PREFIX + key)) {
+            default:
+            case 0: return null;
+            case TYPE_BUNDLABLE: return CoerceJavaToLua.coerce(bundle.get(key));
+            case TYPE_INT: return LuaValue.valueOf(bundle.getInt(key));
+            case TYPE_BOOLEAN: return LuaValue.valueOf(bundle.getBoolean(key));
+            case TYPE_STRING: return LuaValue.valueOf(bundle.getString(key));
+            case TYPE_LONG: return LuaValue.valueOf(bundle.getLong(key));
+            case TYPE_FLOAT: return LuaValue.valueOf(bundle.getFloat(key));
+            case TYPE_TABLE: return ((LuaTableBundlable) bundle.get(key)).luaTable;
+        }
+    }
+
+    public static class LuaTableBundlable implements Bundlable {
+
+        private LuaTable luaTable;
+
+        public LuaTableBundlable() {
+        }
+
+        public LuaTableBundlable(LuaTable luaTable) {
+            this.luaTable = luaTable;
+        }
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            luaTable = new LuaTable();
+            for (String key : bundle.getKeys()) {
+                if (!key.startsWith(TYPE_OF_PREFIX)) {
+                    LuaValue v = restoreVarFromBundle(bundle, key);
+                    if (v != null) luaTable.set(key, v);
+                }
+
+            }
+        }
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            for (LuaValue k : luaTable.keys()) {
+                storeVarInBundle(bundle, luaTable.get(k), k.toString());
+            }
+        }
+    }
+
+    public static LuaValue deepCopyLuaValue(LuaValue value) {
+        if (value.isuserdata()) {
+
+            Object obj = value.touserdata();
+            if (obj instanceof Copyable) obj = ((Copyable<?>) obj).getCopy();
+            return new LuaUserdata(obj);
+
+        } else if (value.istable()) {
+
+            LuaTable originalTable = value.checktable();
+
+            LuaTable copiedTable = new LuaTable();
+            LuaValue[] keys = originalTable.keys();
+            for (LuaValue key : keys) {
+                LuaValue copiedValue = deepCopyLuaValue(originalTable.get(key));
+                copiedTable.set(key, copiedValue);
+            }
+            return copiedTable;
+
+        } else {
+            return value;
+        }
+    }
+
+    public static LuaTable updateTable(LuaTable returnTable, LuaTable dataSupplier) {
+        if (returnTable != null && dataSupplier != null) {
+            for (LuaValue k : dataSupplier.keys()) {
+                String keyAsString = k.toString();
+                LuaValue v = returnTable.get(keyAsString);
+                if (!v.isnil()) {
+                    returnTable.set(keyAsString, dataSupplier.get(keyAsString));
+                } else {
+
+                }
+            }
+        }
+        return returnTable;
+    }
+
+
+
+
+//    private static final String VARS = "vars";
+//
+//    @Override
+//    public void storeInBundle(Bundle bundle) {
+//        super.storeInBundle(bundle);
+//        if (vars != null) {
+//            LuaClassGenerator.storeVarInBundle(bundle, vars, VARS);
+//        }
+//    }
+//
+//    //TODO tzz test: what happens if a bundlable is NOT stored as null in bundle, but IS in default script???
+//    @Override
+//    public void restoreFromBundle(Bundle bundle) {
+//        super.restoreFromBundle(bundle);
+//        LuaValue loaded = LuaClassGenerator.restoreVarFromBundle(bundle, VARS);
+//        if (loaded != null && loaded.istable()) {
+//            vars = LuaClassGenerator.updateTable(loaded.checktable(), vars);
+//        }
+//    }
+
 }
 
 //    private static Map<String, Class<? extends LuaClass>> luaClassesCache = new HashMap<>();

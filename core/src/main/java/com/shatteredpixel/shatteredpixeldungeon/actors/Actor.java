@@ -26,13 +26,14 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.SparseArray;
 
 import java.util.HashSet;
 
-public abstract class Actor implements Bundlable {
+public abstract class Actor implements Bundlable, Copyable<Actor> {
 	
 	public static final float TICK	= 1f;
 
@@ -129,6 +130,7 @@ public abstract class Actor implements Bundlable {
 		}
 	}
 
+	@Override
 	public Actor getCopy(){
 		Bundle bundle = new Bundle();
 		bundle.put("ACTOR",this);

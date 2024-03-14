@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.watabou.noosa.Image;
@@ -31,7 +32,7 @@ import com.watabou.noosa.Tilemap;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
-public abstract class CustomTilemap implements Bundlable {
+public abstract class CustomTilemap implements Bundlable, Copyable<CustomTilemap> {
 
 	protected static final int SIZE = DungeonTilemap.SIZE;
 
@@ -161,6 +162,7 @@ public abstract class CustomTilemap implements Bundlable {
 		bundle.put(TILE_H, tileH);
 	}
 
+	@Override
 	public CustomTilemap getCopy(){
 		Bundle bundle = new Bundle();
 		bundle.put("CustomTilemap", this);

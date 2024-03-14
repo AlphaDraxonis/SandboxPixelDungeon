@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.Customizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
@@ -58,7 +59,7 @@ import com.watabou.utils.Reflection;
 
 import java.util.*;
 
-public class Item implements Bundlable, Customizable {
+public class Item implements Bundlable, Customizable, Copyable<Item> {
 
 	protected static final String TXT_TO_STRING_LVL		= "%s %+d";
 	protected static final String TXT_TO_STRING_X		= "%s x%d";
@@ -704,6 +705,7 @@ public class Item implements Bundlable, Customizable {
         spreadIfLoot = bundle.getBoolean(SPREAD_IF_LOOT);
     }
 
+	@Override
     public Item getCopy(){
         Bundle bundle = new Bundle();
         bundle.put("ITEM",this);
