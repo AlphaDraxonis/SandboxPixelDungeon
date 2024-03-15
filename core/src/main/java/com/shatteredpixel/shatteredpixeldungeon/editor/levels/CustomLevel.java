@@ -19,7 +19,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -201,9 +200,7 @@ public class CustomLevel extends Level {
             }
             Random.popGenerator();
 
-            Dungeon.hero = new Hero();//Dried rose for example checks hero
             level.create();
-            Dungeon.hero = null;
             tempDungeonNameForKey = null;
 
             Random.pushGenerator(seed + 229203);
@@ -679,6 +676,10 @@ public class CustomLevel extends Level {
         if (bundle.contains("custom_music")) musicFile = bundle.getString("custom_music");
         else musicFile = bundle.getString(MUSIC_FILE);
         if ("".equals(musicFile)) musicFile = null;
+
+        if (bundle.contains("init_for_play_called") && !bundle.getBoolean("init_for_play_called")) {//TODO remove in 1.2
+            blobs.remove(Alchemy.class);
+        }
     }
     //----------------------
 

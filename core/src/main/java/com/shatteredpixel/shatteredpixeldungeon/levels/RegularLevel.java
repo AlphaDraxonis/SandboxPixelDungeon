@@ -518,6 +518,7 @@ public abstract class RegularLevel extends Level {
 		Random.popGenerator();
 
 		Random.pushGenerator( Random.Long() );
+		if (!CustomDungeon.isEditing()) {
 			ArrayList<Item> bonesItems = Bones.get();
 			if (bonesItems != null) {
 				int cell = randomDropCell();
@@ -529,10 +530,11 @@ public abstract class RegularLevel extends Level {
 					drop(i, cell).setHauntedIfCursed().type = Heap.Type.REMAINS;
 				}
 			}
+		}
 		Random.popGenerator();
 
 		Random.pushGenerator( Random.Long() );
-			DriedRose rose = Dungeon.hero.belongings.getItem( DriedRose.class );
+			DriedRose rose = Dungeon.hero == null ? null : Dungeon.hero.belongings.getItem( DriedRose.class );
 			if (rose != null && rose.isIdentified() && !rose.cursed && GhostQuest.completedOnce()){
 				//aim to drop 1 petal every 2 floors
 				int petalsNeeded = (int) Math.ceil((float)((Dungeon.depth / 2) - rose.droppedPetals) / 3);
@@ -555,7 +557,7 @@ public abstract class RegularLevel extends Level {
 
 		//cached rations try to drop in a special room on floors 2/3/4/6/7/8, to a max of 4/6
 		Random.pushGenerator( Random.Long() );
-			if (Dungeon.hero.hasTalent(Talent.CACHED_RATIONS)){
+			if (Dungeon.hero != null && Dungeon.hero.hasTalent(Talent.CACHED_RATIONS)){
 				Talent.CachedRationsDropped dropped = Buff.affect(Dungeon.hero, Talent.CachedRationsDropped.class);
 				if (dropped.count() < 2 + 2*Dungeon.hero.pointsInTalent(Talent.CACHED_RATIONS)){
 					int cell;

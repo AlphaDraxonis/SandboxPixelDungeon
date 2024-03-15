@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -62,7 +63,9 @@ public class LaboratoryRoom extends SpecialRoom {
 		Painter.set( level, pot, Terrain.ALCHEMY );
 		
 		int chapter = Dungeon.level.levelScheme.getRegion();
-		Blob.seed( pot.x + level.width() * pot.y, 1, Alchemy.class, level );
+
+		if (!CustomDungeon.isEditing())
+			Blob.seed( pot.x + level.width() * pot.y, 1, Alchemy.class, level );
 
 		int pos;
 		do {
