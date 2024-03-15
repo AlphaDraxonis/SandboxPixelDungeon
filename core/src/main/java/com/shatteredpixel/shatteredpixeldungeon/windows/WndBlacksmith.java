@@ -485,6 +485,13 @@ public class WndBlacksmith extends Window {
 					@Override
 					protected void onClick() {
 						GameScene.show(new WndConfirmReward(item(), item ->  {
+
+							if (item instanceof Weapon && troll.quest.smithEnchant != null){
+								((Weapon) item).enchant(troll.quest.smithEnchant);
+							} else if (item instanceof Armor && troll.quest.smithGlyph != null){
+								((Armor) item).inscribe(troll.quest.smithGlyph);
+							}
+
 							item.identify(false);
 							Sample.INSTANCE.play(Assets.Sounds.EVOKE);
 							Item.evoke( Dungeon.hero );
