@@ -22,13 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.editor;
+package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.watabou.noosa.Game;
@@ -77,6 +78,9 @@ public final class LuaClassGenerator {
     //ACHTUNG variable names cannot start with "__type" !!! tzz TODO very important!
 
     //TODO: implement static: for this mob type, and super_static for ALL custom mobs
+    //These ("static" and "globals") are seserverd names and cannot be used as names for vaiables!
+
+    //Whenever a game is started or loaded / it should also load all scripts of all custom mob types, and
 
     private static Globals globals;
     public static LuaValue luaScript ;
@@ -110,34 +114,42 @@ public final class LuaClassGenerator {
                     "    return test" +
                     " end  ";
     private static final String funDie =
-            "function die(this, cause) " +
+            "function die(this, vars, super, cause) " +
                     "local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
                     "level:drop(item, this.pos + level:width()).sprite:drop()" +
-                    //TODO: call super!
+                    "super:call({cause})" +
                     " end  ";
 
     private static final String vars =
             "vars = { " +
 //                    "local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
                     "item = nil;" +
-                    "test = 11" +
+                    "test = 11;" +
+                    "static = {" +
+                    "aNumber = 17" +
+                    "};" +
+                    "globals = {" +
+                    "globalValue = 99" +
+                    "}" +
                     " }  ";
 
     public static void initStatic() {
 
         LuaClassGenerator.luaScript = LuaClassGenerator.globals.load(
                  vars +
-                         "function attackSkill(this, vars) " +
-                         "if vars.item == nil then" +
-                         "   vars.item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
-                         " else  level:drop(luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing\"), this.pos + level:width()).sprite:drop()" +
-                         " end   return vars.test" +
-                         " end " +
+//                         "function attackSkill(this, vars) " +
+//                         "if vars.item == nil then" +
+//                         "   vars.item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
+//                         " else  level:drop(luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing\"), this.pos + level:width()).sprite:drop()" +
+//                         " end  vars.static.aNumber = vars.static.aNumber + 1 return vars.static.aNumber" +
+//                         " end " +
+
+                         funDie +
 
                         "return {" +
                          "attackSkill = attackSkill; " +
 //                         "attackProc = attackProc; " +
-//                         "die = die;" +
+                         "die = die;" +
                          "vars = vars " +
                          "}").call();
 
@@ -204,8 +216,7 @@ public final class LuaClassGenerator {
 
     private static String generateSourceCode(Class<?> inputClass) {
         String pckge = "package " + inputClass.getPackage().getName() + ";\n\n";
-        String imprt = "import com.shatteredpixel.shatteredpixeldungeon.editor.LuaClass;\n" +
-                "import com.shatteredpixel.shatteredpixeldungeon.editor.LuaClassGenerator;\n" +
+        String imprt = "import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;\n" +
                 "import com.shatteredpixel.shatteredpixeldungeon.actors.*;\n" +
                 "import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;\n" +
                 "import org.luaj.vm2.*;\n" +
@@ -216,6 +227,8 @@ public final class LuaClassGenerator {
         String initializers = "\n{\n" +
                 "        if (LuaClassGenerator.luaScript != null && LuaClassGenerator.luaScript.get(\"vars\").istable()) {\n" +
                 "            vars = LuaClassGenerator.deepCopyLuaValue(LuaClassGenerator.luaScript.get(\"vars\")).checktable();\n" +
+                "            vars.set(\"static\", LuaClassGenerator.luaScript.get(\"vars\").get(\"static\"));\n" +
+                "            vars.set(\"globals\", LuaClassGenerator.luaScript.get(\"vars\").get(\"globals\"));\n" +
                 "        }\n" +
                 "    }\n";
         String implementLuaClassStuff =
@@ -229,6 +242,27 @@ public final class LuaClassGenerator {
                         "    public String getIdentifier() {\n" +
                         "        return this.identifier;\n" +
                         "    }\n";
+        String bundlingMethods =
+                "@Override\n" +
+                        "    public void storeInBundle(Bundle bundle) {\n" +
+                        "        super.storeInBundle(bundle);\n" +
+                        "        if (vars != null && !CustomDungeon.isEditing()) {\n" +
+                        "            LuaClassGenerator.storeVarInBundle(bundle, vars, VARS);\n" +
+                        "        }\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public void restoreFromBundle(Bundle bundle) {\n" +
+                        "        super.restoreFromBundle(bundle);\n" +
+                        "        LuaValue loaded = LuaClassGenerator.restoreVarFromBundle(bundle, VARS);\n" +
+                        "        if (loaded != null && loaded.istable()) {\n" +
+                        "            vars = loaded.checktable();\n" +
+                        "            if (LuaClassGenerator.luaScript != null && LuaClassGenerator.luaScript.get(\"vars\").istable()) {\n" +
+                        "                vars.set(\"static\", LuaClassGenerator.luaScript.get(\"vars\").get(\"static\"));\n" +
+                        "                vars.set(\"globals\", LuaClassGenerator.luaScript.get(\"vars\").get(\"globals\"));\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "    }\n\n";
         //TODO tzz don't forget Methods from Bundlable!
         //And tell: if you want to store sth like the currently targeted enemy, store the id and ...
 
@@ -236,6 +270,17 @@ public final class LuaClassGenerator {
 
         Map<String, Method> methods = new HashMap<>();
         findAllMethodsToOverride(inputClass, Actor.class, methods);
+        methods.remove("storeInBundle");
+        methods.remove("restoreFromBundle");
+
+        methods.remove("getCopy");
+        methods.remove("onRenameLevelScheme");
+        methods.remove("onDeleteLevelScheme");
+        methods.remove("setDurationForBuff");
+        methods.remove("moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob");
+        methods.remove("spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY");
+        methods.remove("setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME");
+
         for (Method m : methods.values()) {
 
             overrideMethods.append('\n');
@@ -262,18 +307,33 @@ public final class LuaClassGenerator {
             else if (returnType.isPrimitive()) returnTypeString = ".to" + returnType + "()";
             else returnTypeString = ".touserdata()";
 
-            boolean useInvoke = paramTypes.length >= 2;
+            boolean useInvoke = paramTypes.length >= 1;
 
             overrideMethods.append(") {\n");
             overrideMethods.append("        LuaValue luaScript = LuaClassGenerator.luaScript;\n");
             overrideMethods.append("        if (luaScript != null && !luaScript.get(\"").append(m.getName()).append("\").isnil()) {\n");
             overrideMethods.append("            LuaClassGenerator.scriptsRunning++;\n");
+
+            overrideMethods.append("            MethodOverride");
+            if (returnType == void.class) overrideMethods.append("Void");
+            overrideMethods.append(" superMethod = args -> super.");
+            overrideMethods.append(m.getName()).append('(');
+            for (int i = 0; i < paramTypes.length; i++) {
+                overrideMethods.append("args[");
+                overrideMethods.append(i);
+                overrideMethods.append(']');
+                if (i < paramTypes.length - 1)
+                    overrideMethods.append(", ");
+            }
+            overrideMethods.append(");\n");
+
             overrideMethods.append("           ").append(returnString).append("luaScript.get(\"")
                     .append(m.getName()).append("\").").append(useInvoke ? "invoke" : "call").append('(');
 
             if (useInvoke) overrideMethods.append("new LuaValue[]{");
             overrideMethods.append("CoerceJavaToLua.coerce(this), ");
-            overrideMethods.append("vars");
+            overrideMethods.append("vars, ");
+            overrideMethods.append("CoerceJavaToLua.coerce(superMethod), ");
             if (paramTypes.length > 0) overrideMethods.append(", ");
 
             for (int i = 0; i < paramTypes.length; i++) {
@@ -320,6 +380,7 @@ public final class LuaClassGenerator {
                 + declaringVars
                 + initializers
                 + implementLuaClassStuff
+                + bundlingMethods
                 + overrideMethods
                 + "}";
     }
@@ -491,6 +552,10 @@ public final class LuaClassGenerator {
 //        LuaValue loaded = LuaClassGenerator.restoreVarFromBundle(bundle, VARS);
 //        if (loaded != null && loaded.istable()) {
 //            vars = LuaClassGenerator.updateTable(loaded.checktable(), vars);
+//            if (LuaClassGenerator.luaScript != null && LuaClassGenerator.luaScript.get("vars").istable()) {
+//              vars.set("static", LuaClassGenerator.luaScript.get("vars").get("static"));
+//              vars.set("globals", LuaClassGenerator.luaScript.get("vars").get("globals"));
+//          }
 //        }
 //    }
 
@@ -521,7 +586,7 @@ public final class LuaClassGenerator {
 //        String package2 = inputClass.getPackage().getName();
 //        package2 = "com.watabou.utils";
 //        String source = "package " + package2 + ";\n" +
-//                "public class " + inputClass.getSimpleName() + "_lua implements com.shatteredpixel.shatteredpixeldungeon.editor.LuaClass {\n" +
+//                "public class " + inputClass.getSimpleName() + "_lua implements com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass {\n" +
 //                "    private String identifier;\n" +
 //                "\n" +
 //                "    public void setIdentifier(String identifier) {\n" +

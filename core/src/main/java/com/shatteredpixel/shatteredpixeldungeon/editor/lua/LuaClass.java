@@ -22,9 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.editor;
+package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 public interface LuaClass {
+
+    String VARS = "vars";
 
     void setIdentifier(String identifier);
     String getIdentifier();

@@ -1,13 +1,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
-import com.shatteredpixel.shatteredpixeldungeon.editor.LuaClass;
-import com.shatteredpixel.shatteredpixeldungeon.editor.LuaClassGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClassGenerator;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.MethodOverrideVoid;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
@@ -32,10 +32,10 @@ public class Mob_lua extends Rat implements LuaClass {
     {
         if (LuaClassGenerator.luaScript != null && LuaClassGenerator.luaScript.get("vars").istable()) {
             vars = LuaClassGenerator.deepCopyLuaValue(LuaClassGenerator.luaScript.get("vars")).checktable();
+            vars.set("static", LuaClassGenerator.luaScript.get("vars").get("static"));
+            vars.set("globals", LuaClassGenerator.luaScript.get("vars").get("globals"));
         }
     }
-
-    private static final String VARS = "vars";
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -45,13 +45,16 @@ public class Mob_lua extends Rat implements LuaClass {
         }
     }
 
-    //TODO tzz test: what happens if a bundlable is NOT stored as null in bundle, but IS in default script???
     @Override
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         LuaValue loaded = LuaClassGenerator.restoreVarFromBundle(bundle, VARS);
         if (loaded != null && loaded.istable()) {
             vars = loaded.checktable();
+            if (LuaClassGenerator.luaScript != null && LuaClassGenerator.luaScript.get("vars").istable()) {
+                vars.set("static", LuaClassGenerator.luaScript.get("vars").get("static"));
+                vars.set("globals", LuaClassGenerator.luaScript.get("vars").get("globals"));
+            }
         }
     }
 
@@ -63,6 +66,32 @@ public class Mob_lua extends Rat implements LuaClass {
     @Override
     public String getIdentifier() {
         return this.identifier;
+    }
+
+    @Override
+    public int attackSkill(Char arg0) {
+        LuaValue luaScript = LuaClassGenerator.luaScript;
+        if (luaScript != null && !luaScript.get("attackSkill").isnil()) {
+            LuaClassGenerator.scriptsRunning++;
+            int ret = luaScript.get("attackSkill").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
+            LuaClassGenerator.scriptsRunning--;
+            return ret;
+        } else {
+            return super.attackSkill(arg0);
+        }
+    }
+
+    @Override
+    public void die(Object arg0) {
+        LuaValue luaScript = LuaClassGenerator.luaScript;
+        if (luaScript != null && !luaScript.get("die").isnil()) {
+            LuaClassGenerator.scriptsRunning++;
+            MethodOverrideVoid superMethod = args -> super.die(args[0]);
+            luaScript.get("die").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)});
+            LuaClassGenerator.scriptsRunning--;
+        } else {
+            super.die(arg0);
+        }
     }
 
     @Override
@@ -162,19 +191,6 @@ public class Mob_lua extends Rat implements LuaClass {
             LuaClassGenerator.scriptsRunning--;
         } else {
             super.setFlying(arg0);
-        }
-    }
-
-    @Override
-    public boolean onDeleteLevelScheme(String arg0) {
-        LuaValue luaScript = LuaClassGenerator.luaScript;
-        if (luaScript != null && !luaScript.get("onDeleteLevelScheme").isnil()) {
-            LuaClassGenerator.scriptsRunning++;
-            boolean ret = luaScript.get("onDeleteLevelScheme").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaClassGenerator.scriptsRunning--;
-            return ret;
-        } else {
-            return super.onDeleteLevelScheme(arg0);
         }
     }
 
@@ -280,18 +296,6 @@ public class Mob_lua extends Rat implements LuaClass {
     }
 
     @Override
-    public void setDurationForBuff(int arg0) {
-        LuaValue luaScript = LuaClassGenerator.luaScript;
-        if (luaScript != null && !luaScript.get("setDurationForBuff").isnil()) {
-            LuaClassGenerator.scriptsRunning++;
-            luaScript.get("setDurationForBuff").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-            LuaClassGenerator.scriptsRunning--;
-        } else {
-            super.setDurationForBuff(arg0);
-        }
-    }
-
-    @Override
     public float lootChance() {
         LuaValue luaScript = LuaClassGenerator.luaScript;
         if (luaScript != null && !luaScript.get("lootChance").isnil()) {
@@ -338,18 +342,6 @@ public class Mob_lua extends Rat implements LuaClass {
             return ret;
         } else {
             return super.defenseVerb();
-        }
-    }
-
-    @Override
-    public void spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY(float arg0) {
-        LuaValue luaScript = LuaClassGenerator.luaScript;
-        if (luaScript != null && !luaScript.get("spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY").isnil()) {
-            LuaClassGenerator.scriptsRunning++;
-            luaScript.get("spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-            LuaClassGenerator.scriptsRunning--;
-        } else {
-            super.spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY(arg0);
         }
     }
 
@@ -514,32 +506,6 @@ public class Mob_lua extends Rat implements LuaClass {
             return ret;
         } else {
             return super.convertLootToRandomItemData();
-        }
-    }
-
-    @Override
-    public int attackSkill(Char arg0) {
-        LuaValue luaScript = LuaClassGenerator.luaScript;
-        if (luaScript != null && !luaScript.get("attackSkill").isnil()) {
-            LuaClassGenerator.scriptsRunning++;
-            int ret = luaScript.get("attackSkill").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
-            LuaClassGenerator.scriptsRunning--;
-            return ret;
-        } else {
-            return super.attackSkill(arg0);
-        }
-    }
-
-    @Override
-    public boolean onRenameLevelScheme(String arg0, String arg1) {
-        LuaValue luaScript = LuaClassGenerator.luaScript;
-        if (luaScript != null && !luaScript.get("onRenameLevelScheme").isnil()) {
-            LuaClassGenerator.scriptsRunning++;
-            boolean ret = luaScript.get("onRenameLevelScheme").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)}).arg1().toboolean();
-            LuaClassGenerator.scriptsRunning--;
-            return ret;
-        } else {
-            return super.onRenameLevelScheme(arg0, arg1);
         }
     }
 
@@ -732,18 +698,6 @@ public class Mob_lua extends Rat implements LuaClass {
     }
 
     @Override
-    public void die(Object arg0) {
-        LuaValue luaScript = LuaClassGenerator.luaScript;
-        if (luaScript != null && !luaScript.get("die").isnil()) {
-            LuaClassGenerator.scriptsRunning++;
-            luaScript.get("die").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
-            LuaClassGenerator.scriptsRunning--;
-        } else {
-            super.die(arg0);
-        }
-    }
-
-    @Override
     public boolean blockSound(float arg0) {
         LuaValue luaScript = LuaClassGenerator.luaScript;
         if (luaScript != null && !luaScript.get("blockSound").isnil()) {
@@ -841,19 +795,6 @@ public class Mob_lua extends Rat implements LuaClass {
             return ret;
         } else {
             return super.act();
-        }
-    }
-
-    @Override
-    public Actor getCopy() {
-        LuaValue luaScript = LuaClassGenerator.luaScript;
-        if (luaScript != null && !luaScript.get("getCopy").isnil()) {
-            LuaClassGenerator.scriptsRunning++;
-            Actor ret = (Actor) luaScript.get("getCopy").call(CoerceJavaToLua.coerce(this), vars).touserdata();
-            LuaClassGenerator.scriptsRunning--;
-            return ret;
-        } else {
-            return super.getCopy();
         }
     }
 
@@ -1223,18 +1164,6 @@ public class Mob_lua extends Rat implements LuaClass {
     }
 
     @Override
-    protected void moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob(Buff arg0, Char arg1) {
-        LuaValue luaScript = LuaClassGenerator.luaScript;
-        if (luaScript != null && !luaScript.get("moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob").isnil()) {
-            LuaClassGenerator.scriptsRunning++;
-            luaScript.get("moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)});
-            LuaClassGenerator.scriptsRunning--;
-        } else {
-            super.moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob(arg0, arg1);
-        }
-    }
-
-    @Override
     public void move(int arg0, boolean arg1) {
         LuaValue luaScript = LuaClassGenerator.luaScript;
         if (luaScript != null && !luaScript.get("move").isnil()) {
@@ -1356,18 +1285,6 @@ public class Mob_lua extends Rat implements LuaClass {
             LuaClassGenerator.scriptsRunning--;
         } else {
             super.rollToDropLoot();
-        }
-    }
-
-    @Override
-    public void setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME() {
-        LuaValue luaScript = LuaClassGenerator.luaScript;
-        if (luaScript != null && !luaScript.get("setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME").isnil()) {
-            LuaClassGenerator.scriptsRunning++;
-            luaScript.get("setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME").call(CoerceJavaToLua.coerce(this), vars);
-            LuaClassGenerator.scriptsRunning--;
-        } else {
-            super.setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME();
         }
     }
 
