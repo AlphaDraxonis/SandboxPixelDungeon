@@ -48,13 +48,13 @@ public class ChangeLevelColoring extends Component {
             @Override
             protected void setColor(int rgbColor) {
                 super.setColor(rgbColor);
-                LevelColoring.getWall().setColor(rgbColor);
+                LevelColoring.getWall(true).setColor(rgbColor);
             }
 
             @Override
             protected void setAlpha(float alphaZeroToOne) {
                 super.setAlpha(alphaZeroToOne);
-                LevelColoring.getWall().setAlpha(alphaZeroToOne);
+                LevelColoring.getWall(true).setAlpha(alphaZeroToOne);
             }
         };
         add(wall);

@@ -278,7 +278,7 @@ public class EditorScene extends PixelScene {
         terrain.add(barriers);
 
         terrain.add(LevelColoring.getFloor());
-        terrain.add(LevelColoring.getWall());
+        terrain.add(LevelColoring.getWall(true));
 
         transitionIndicators = new Group();
         add(transitionIndicators);
