@@ -201,6 +201,8 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
                 Speck.RATTLE,
                 Speck.BONE,
 
+                CustomParticle.FLAMES_PARTICLE,
+                CustomParticle.ETERNAL_FLAMES_PARTICLE,
                 CustomParticle.WIND_PARTICLE,
                 Speck.WOOL,
                 Speck.ROCK,

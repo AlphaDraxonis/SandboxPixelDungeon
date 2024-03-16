@@ -168,9 +168,11 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                                 particleItem, null, particleItem.name(), particleItem.getSprite()) {
                             @Override
                             protected void onRemove() {
-                                ParticleItem.remove(cell);
-                                remove();
+                                Undo.startAction();
+                                Undo.addActionPart(ParticleItem.remove(cell));
+                                Undo.endAction();
                                 customParticles.remove(this);
+                                remove();
                                 destroy();
                                 killAndErase();
                                 updateObj();

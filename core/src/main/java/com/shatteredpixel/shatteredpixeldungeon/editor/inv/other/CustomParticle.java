@@ -5,15 +5,19 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ParticleActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
+import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.WindParticle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
@@ -29,6 +33,10 @@ public class CustomParticle extends Blob {
     public static final int WIND_PARTICLE = 1001;
     public static final int FLOW_PARTICLE = 1002;
     public static final int WATER_SPLASH_PARTICLE = 1003;
+    public static final int FLAMES_PARTICLE = 1004;
+    public static final int ETERNAL_FLAMES_PARTICLE = 1005;
+//    public static final int LIGHT_HALO = 2001;
+//    public static final int FLARE = 2002;
 
 
     public int particleID;
@@ -136,12 +144,15 @@ public class CustomParticle extends Blob {
         public Image getSprite() {
             if (type > 1000) {
                 if (type == WATER_SPLASH_PARTICLE) return new TileSprite(Assets.Environment.WATER_SEWERS, Terrain.WATER);
+                if (type == FLAMES_PARTICLE) return BlobItem.createIcon(PermaGas.PFire.class);
+                if (type == ETERNAL_FLAMES_PARTICLE) return BlobItem.createIcon(MagicalFireRoom.EternalFire.class);
+                //tzz flare and halo
                 return new ItemSprite();
             }
             Speck icon = new Speck();
             icon.image(type);
             if (type == Speck.DISCOVER) icon.resetColor();
-            icon.scale.set(1.5f);//16/7=2.28
+            icon.scale.set(1.5f);
             return icon;
         }
 
@@ -157,6 +168,8 @@ public class CustomParticle extends Blob {
                     case WIND_PARTICLE: return WindParticle.FACTORY;
                     case FLOW_PARTICLE: return FlowParticle.FACTORY;
                     case WATER_SPLASH_PARTICLE: return SPLASH_FACTORY;
+                    case FLAMES_PARTICLE: return FlameParticle.FACTORY;
+                    case ETERNAL_FLAMES_PARTICLE: return ElmoParticle.FACTORY;
                 }
                 return Speck.factory(0);
             } else return Speck.factory(type);
