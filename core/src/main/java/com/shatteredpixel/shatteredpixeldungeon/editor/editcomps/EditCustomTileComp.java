@@ -110,6 +110,7 @@ public class EditCustomTileComp extends EditTileComp {
 
                 Terrain.ENTRANCE,
                 Terrain.EXIT,
+                Terrain.LOCKED_EXIT,
                 Terrain.UNLOCKED_EXIT,
                 Terrain.EMPTY_WELL,
                 Terrain.WELL,
@@ -123,6 +124,15 @@ public class EditCustomTileComp extends EditTileComp {
                 Terrain.WALL_DECO,
                 Terrain.BOOKSHELF,
                 Terrain.BARRICADE,
+
+                Terrain.DOOR,
+                Terrain.OPEN_DOOR,
+                Terrain.SECRET_DOOR,
+                Terrain.LOCKED_DOOR,
+                Terrain.SECRET_CRYSTAL_DOOR,
+                Terrain.COIN_DOOR,
+                Terrain.MIMIC_DOOR,
+
                 Terrain.STATUE,
                 Terrain.STATUE_SP,
         };

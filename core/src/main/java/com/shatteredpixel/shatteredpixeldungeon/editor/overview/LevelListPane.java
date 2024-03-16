@@ -15,6 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSwitchF
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
+import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -170,6 +171,7 @@ public abstract class LevelListPane extends ScrollingListPane {
                 else if (type == MiningLevel.CrystalMiningLevel.class) newForegroundImg = new TileSprite(CustomLevel.tilesTex(region, false), Terrain.MINE_CRYSTAL);
                 else if (type == MiningLevel.GnollMiningLevel.class) newForegroundImg = new GnollGuardSprite();
                 else if (type == MiningLevel.FungiMiningLevel.class) newForegroundImg = new FungalSentrySprite();
+                else if (type == LastLevel.class) newForegroundImg = new ItemSprite(ItemSpriteSheet.AMULET);
                 else {
                     switch (ls.getBoss()) {
                         default:

@@ -127,6 +127,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         roomsToSpawn = new ArrayList<>(4);
         itemsToSpawn = new ArrayList<>(4);
         prizeItemsToSpawn = new ArrayList<>(4);
+
+        exitCells = new ArrayList<>(3);
+        entranceCells = new ArrayList<>(3);
     }
 
     public void initNewLevelScheme(String name, Class<? extends Level> levelTemplate) {

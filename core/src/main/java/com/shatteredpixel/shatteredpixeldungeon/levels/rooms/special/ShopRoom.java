@@ -246,9 +246,11 @@ public class ShopRoom extends SpecialRoom {
 
 		itemsToSpawn.add( new Alchemize().quantity(Random.IntRange(2, 3)));
 
-		Bag bag = ChooseBag(Dungeon.hero.belongings);
-		if (bag != null) {
-			itemsToSpawn.add(bag);
+		if (Dungeon.hero != null) {
+			Bag bag = ChooseBag(Dungeon.hero.belongings);
+			if (bag != null) {
+				itemsToSpawn.add(bag);
+			}
 		}
 
 		itemsToSpawn.add( new PotionOfHealing() );
@@ -284,7 +286,7 @@ public class ShopRoom extends SpecialRoom {
 		itemsToSpawn.add( new Ankh() );
 		itemsToSpawn.add( new StoneOfAugmentation() );
 
-		TimekeepersHourglass hourglass = Dungeon.hero.belongings.getItem(TimekeepersHourglass.class);
+		TimekeepersHourglass hourglass = Dungeon.hero == null ? null : Dungeon.hero.belongings.getItem(TimekeepersHourglass.class);
 		if (hourglass != null && hourglass.isIdentified() && !hourglass.cursed){
 			int bags = 0;
 			//creates the given float percent of the remaining bags to be dropped.

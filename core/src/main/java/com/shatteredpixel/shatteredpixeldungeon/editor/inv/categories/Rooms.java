@@ -88,7 +88,7 @@ public enum Rooms {
     CAVES,
     CITY,
     HALLS,
-    STANDART,
+    STANDARD,
     SPECIAL,
     SECRET;
 
@@ -104,8 +104,8 @@ public enum Rooms {
                 return Document.INTROS.pageTitle("City");
             case HALLS:
                 return Document.INTROS.pageTitle("Halls");
-            case STANDART:
-                return Messages.get(Rooms.class, "standart");
+            case STANDARD:
+                return Messages.get(Rooms.class, "standard");
             case SPECIAL:
                 return Messages.get(Rooms.class, "special");
             case SECRET:
@@ -126,7 +126,7 @@ public enum Rooms {
                 return new TileSprite(Assets.Environment.TILES_CITY, Terrain.EMPTY_SP);
             case HALLS:
                 return new TileSprite(Assets.Environment.TILES_HALLS, Terrain.EMPTY_SP);
-            case STANDART:
+            case STANDARD:
                 return new ItemSprite();
             case SPECIAL:
                 return Icons.get(Icons.TALENT);
@@ -219,7 +219,7 @@ public enum Rooms {
 
         };
 
-        STANDART.classes = new Class[]{
+        STANDARD.classes = new Class[]{
                 EmptyRoom.class,
                 PlantsRoom.class,
                 AquariumRoom.class,

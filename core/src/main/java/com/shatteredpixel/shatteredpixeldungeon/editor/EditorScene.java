@@ -195,6 +195,10 @@ public class EditorScene extends PixelScene {
         }
     }
 
+    public static void resetCameraPos() {
+        mainCameraPos = null;
+    }
+
     @Override
     public void create() {
 
