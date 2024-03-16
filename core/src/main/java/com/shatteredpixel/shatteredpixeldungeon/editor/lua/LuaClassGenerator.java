@@ -162,20 +162,30 @@ public final class LuaClassGenerator {
     private static LuaValue tempLuaV1, tempLuaV2, tempLuaV3;
 
     public static void updateGlobalVars() {
-        globals.set("hero", CoerceJavaToLua.coerce(Dungeon.hero));
-        globals.set("dungeon", CoerceJavaToLua.coerce(Dungeon.customDungeon));
+        if (Dungeon.hero != null) {
+            globals.set("hero", CoerceJavaToLua.coerce(Dungeon.hero));
+        } else {
+            globals.set("hero", ((LuaValue) null));
+        }
         globals.set("customDungeon", CoerceJavaToLua.coerce(Dungeon.customDungeon));
         globals.set("level", CoerceJavaToLua.coerce(Dungeon.level));
         globals.set("depth", LuaValue.valueOf(Dungeon.depth));
+        globals.set("branch", LuaValue.valueOf(Dungeon.branch));
         globals.set("version", LuaValue.valueOf(Game.version));
-        globals.set("limitedDrops", CoerceJavaToLua.coerce(Dungeon.LimitedDrops.values()));
-        updateGlobalPrimitives();
+
+        updateStatistics();
     }
 
-    public static void updateGlobalPrimitives() {
-        globals.set("branch", LuaValue.valueOf(Dungeon.branch));
-        globals.set("gold", LuaValue.valueOf(Dungeon.gold));
-        globals.set("energy", LuaValue.valueOf(Dungeon.energy));
+    public static void updateStatistics() {
+        if (Dungeon.hero != null) {
+            globals.set("limitedDrops", CoerceJavaToLua.coerce(Dungeon.LimitedDrops.values()));
+            globals.set("gold", LuaValue.valueOf(Dungeon.gold));
+            globals.set("energy", LuaValue.valueOf(Dungeon.energy));
+        } else {
+            globals.set("limitedDrops", ((LuaValue) null));
+            globals.set("gold", LuaValue.valueOf(0));
+            globals.set("energy", LuaValue.valueOf(0));
+        }
     }
 
 
