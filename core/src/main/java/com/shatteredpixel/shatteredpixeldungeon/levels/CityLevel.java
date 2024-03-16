@@ -168,8 +168,9 @@ public class CityLevel extends RegularLevel {
 	}
 
 	public static void addCityVisuals( Level level, Group group ) {
+		boolean isCityLevel = LevelScheme.getRegion(level) == LevelScheme.REGION_CITY;
 		for (int i=0; i < level.length(); i++) {
-			if (level.map[i] == Terrain.WALL_DECO) {
+			if (level.visualMap[i] == Terrain.WALL_DECO && (isCityLevel || level.visualRegions[i] == LevelScheme.REGION_CITY)) {
 				group.add( new Smoke( i ) );
 			}
 		}

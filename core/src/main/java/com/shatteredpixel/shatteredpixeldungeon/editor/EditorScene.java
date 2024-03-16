@@ -257,7 +257,7 @@ public class EditorScene extends PixelScene {
         ripples = new Group();
         terrain.add( ripples );
 
-        tiles = new DungeonTerrainTilemap();
+        tiles = new DungeonTerrainTilemap(0);
         terrain.add(tiles);
 
         customTiles = new Group();
@@ -519,12 +519,26 @@ public class EditorScene extends PixelScene {
         customTiles.add(visual.create());
         if (visual instanceof CustomTilemap.BossLevelVisuals)
             customBossTilemap = (CustomTilemap.BossLevelVisuals) visual;
+
+        if (visual instanceof CustomTileLoader.SimpleCustomTile) {
+            ((CustomTileLoader.SimpleCustomTile) visual).placed = true;
+            int pos = visual.tileX + visual.tileY * customLevel.width();
+            customLevel.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
+            customLevel.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
+        }
     }
 
     public void addCustomWall(CustomTilemap visual) {
         customWalls.add(visual.create());
         if (visual instanceof CustomTilemap.BossLevelVisuals)
             customBossWallsTilemap = (CustomTilemap.BossLevelVisuals) visual;
+
+        if (visual instanceof CustomTileLoader.SimpleCustomTile) {
+            ((CustomTileLoader.SimpleCustomTile) visual).placed = true;
+            int pos = visual.tileX + visual.tileY * customLevel.width();
+            customLevel.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
+            customLevel.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
+        }
     }
 
     public static void revalidateCustomTiles(){
@@ -573,8 +587,6 @@ public class EditorScene extends PixelScene {
 
     public static void add(CustomTilemap t) {
         if (scene == null) return;
-        if (t instanceof CustomTileLoader.SimpleCustomTile)
-            ((CustomTileLoader.SimpleCustomTile) t).placed = true;
         if (t.wallVisual) {
             scene.addCustomWall(t);
         } else {
@@ -584,6 +596,11 @@ public class EditorScene extends PixelScene {
 
     public static void remove(CustomTilemap t) {
         if (scene == null) return;
+        if (t instanceof CustomTileLoader.SimpleCustomTile) {
+            int pos = t.tileX + t.tileY * customLevel.width();
+            customLevel.visualMap[pos] = customLevel.map[pos];
+            customLevel.visualRegions[pos] = 0;
+        }
         if (t.wallVisual) scene.customWalls.remove(t.killVisual());
         else scene.customTiles.remove(t.killVisual());
     }

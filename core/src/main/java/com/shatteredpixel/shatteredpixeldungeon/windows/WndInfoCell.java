@@ -24,6 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -41,12 +43,6 @@ public class WndInfoCell extends Window {
 	private static final int WIDTH = 120;
 
 	public static Image cellImage( int cell ){
-		int tile = Dungeon.level.map[cell];
-		if (Dungeon.level.water[cell]) {
-			tile = Terrain.WATER;
-		} else if (Dungeon.level.pit[cell]) {
-			tile = Terrain.CHASM;
-		}
 
 		Image customImage = null;
 		int x = cell % Dungeon.level.width();
@@ -55,7 +51,8 @@ public class WndInfoCell extends Window {
 			if ((x >= i.tileX && x < i.tileX+i.tileW) &&
 					(y >= i.tileY && y < i.tileY+i.tileH)){
 				if ((customImage = i.image(x - i.tileX, y - i.tileY)) != null) {
-					break;
+					if (!Dungeon.customDungeon.view2d && i instanceof CustomTileLoader.SimpleCustomTile) customImage = null;
+					else break;
 				}
 			}
 		}
@@ -63,13 +60,21 @@ public class WndInfoCell extends Window {
 		if (customImage != null){
 			return customImage;
 		} else {
+			int tile = Dungeon.level.visualMap[cell];
+			if (Dungeon.level.visualRegions[cell] == LevelScheme.REGION_NONE) {
+				if (Dungeon.level.water[cell]) {
+					tile = Terrain.WATER;
+				} else if (Dungeon.level.pit[cell]) {
+					tile = Terrain.CHASM;
+				}
+			}
 
 			if (tile == Terrain.WATER) {
 				Image water = new Image(Dungeon.level.waterTex());
 				water.frame(0, 0, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
 				return water;
 			} else {
-				return DungeonTerrainTilemap.tile(cell, tile);
+				return DungeonTerrainTilemap.tile(cell, tile, Dungeon.level.visualRegions[cell]);
 			}
 		}
 	}

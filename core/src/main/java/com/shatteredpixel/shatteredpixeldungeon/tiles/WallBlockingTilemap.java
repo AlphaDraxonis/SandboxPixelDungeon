@@ -200,15 +200,15 @@ public class WallBlockingTilemap extends Tilemap {
 	}
 
 	private boolean wall(int cell) {
-		return DungeonTileSheet.wallStitcheable(Dungeon.level.map[cell]);
+		return DungeonTileSheet.wallStitcheable(Dungeon.level.visualMap[cell]);
 	}
 
 	private boolean shelf(int cell) {
-		return Dungeon.level.map[cell] == Terrain.BOOKSHELF;
+		return Dungeon.level.visualMap[cell] == Terrain.BOOKSHELF;
 	}
 
 	private boolean door(int cell) {
-		return DungeonTileSheet.doorTile(Dungeon.level.map[cell]);
+		return DungeonTileSheet.doorTile(Dungeon.level.visualMap[cell]);
 	}
 	
 	public synchronized void updateArea(int cell, int radius){

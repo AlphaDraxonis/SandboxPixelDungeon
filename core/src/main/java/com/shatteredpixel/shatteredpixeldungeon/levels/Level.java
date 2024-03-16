@@ -174,6 +174,8 @@ public abstract class Level implements Bundlable {
 	public int version;
 	
 	public int[] map;
+	public int[] visualMap;
+	public int[] visualRegions;
 	public boolean[] visited;
 	public boolean[] mapped;
 	public boolean[] discoverable;
@@ -378,6 +380,9 @@ public abstract class Level implements Bundlable {
 		createItems();
 
 		Random.popGenerator();
+
+		visualMap = map.clone();
+		visualRegions = new int[map.length];
 	}
 	
 	public void setSize(int w, int h){
@@ -387,6 +392,8 @@ public abstract class Level implements Bundlable {
 		length = w * h;
 		
 		map = new int[length];
+		visualMap = new int[length];
+		visualRegions = new int[length];
 		Arrays.fill( map, feeling == Level.Feeling.CHASM ? Terrain.CHASM : Terrain.WALL );
 		
 		visited     = new boolean[length];
@@ -658,11 +665,21 @@ public abstract class Level implements Bundlable {
 			barriers.put(barrier.pos, barrier);
 		}
 
+		visualMap = map.clone();
+		visualRegions = new int[map.length];
 		collection = bundle.getCollection( CUSTOM_TILES );
 		for (Bundlable p : collection) {
 			CustomTilemap vis = (CustomTilemap)p;
-			if(!(vis instanceof CustomTileLoader.UserCustomTile) || ((CustomTileLoader.UserCustomTile) vis).identifier != null)
-				customTiles.add(vis);
+			if (vis instanceof CustomTileLoader.UserCustomTile) {
+				if (((CustomTileLoader.UserCustomTile) vis).identifier != null) {
+					if (vis instanceof CustomTileLoader.SimpleCustomTile) {
+						int cell = vis.tileX + vis.tileY * width;
+						visualMap[cell] = ((CustomTileLoader.SimpleCustomTile) vis).imageTerrain;
+						visualRegions[cell] = ((CustomTileLoader.SimpleCustomTile) vis).region;
+					}
+					customTiles.add(vis);
+				}
+			} else customTiles.add(vis);
 		}
 
 		collection = bundle.getCollection( CUSTOM_WALLS );
@@ -1585,9 +1602,33 @@ public abstract class Level implements Bundlable {
 		int terr = map[pos];
 		if (terr == Terrain.EMPTY || terr == Terrain.EMPTY_DECO
 				|| (Terrain.flags[map[pos]] & Terrain.FLAMABLE) != 0) {
+			removeSimpleCustomTile(pos);
 			set(pos, Terrain.EMBERS);
 		}
 		blobs.doOnEach(Web.class, b -> b.clear(pos));
+	}
+
+	public void removeSimpleCustomTile(int cell) {
+		visualRegions[cell] = LevelScheme.REGION_NONE;
+		//expected to call GameScene.updateMapCell(cell) later!
+		CustomTilemap remove = null;
+		for (CustomTilemap ct : customTiles) {
+			if (ct instanceof CustomTileLoader.SimpleCustomTile
+					&& ct.tileX + ct.tileY * width() == cell) {
+				remove = ct;
+				break;
+			}
+		}
+		if (remove != null) customTiles.remove(remove);
+		remove = null;
+		for (CustomTilemap ct : customWalls) {
+			if (ct instanceof CustomTileLoader.SimpleCustomTile
+					&& ct.tileX + ct.tileY * width() == cell) {
+				remove = ct;
+				break;
+			}
+		}
+		if (remove != null) customWalls.remove(remove);
 	}
 
 	public void cleanWalls() {
@@ -1769,6 +1810,7 @@ public abstract class Level implements Bundlable {
 	}
 
 	public void discover( int cell ) {
+		removeSimpleCustomTile(cell);
 		set( cell, Terrain.discover( map[cell] ) );
 		Trap trap = traps.get( cell );
 		if (trap != null)

@@ -35,7 +35,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
@@ -84,7 +83,7 @@ public abstract class Elemental extends Mob {
 	public void setSummonedALly(){
 		summonedALly = true;
 		//sewers and prison are equivalent, otherwise scales as normal (2/2/3/4/5)
-		int regionScale = Math.max(2, LevelScheme.getRegion(Dungeon.level));
+		int regionScale = Math.max(2, Dungeon.region());
 		defenseSkill = 5*regionScale;
 		attackSkill = 5 + 5*regionScale;
 		damageRollMin = 5*regionScale;

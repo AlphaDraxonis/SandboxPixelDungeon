@@ -168,8 +168,9 @@ public class CavesLevel extends RegularLevel {
 	}
 	
 	public static void addCavesVisuals( Level level, Group group, boolean overHang ) {
+		boolean isCavesLevel = LevelScheme.getRegion(level) == LevelScheme.REGION_CAVES;
 		for (int i=0; i < level.length(); i++) {
-			if (level.map[i] == Terrain.WALL_DECO) {
+			if (level.visualMap[i] == Terrain.WALL_DECO && (isCavesLevel || level.visualRegions[i] == LevelScheme.REGION_CAVES)) {
 				group.add( new Vein( i, overHang ) );
 			}
 		}
@@ -206,7 +207,7 @@ public class CavesLevel extends RegularLevel {
 				if ((delay -= Game.elapsed) <= 0) {
 
 					//pickaxe can remove the ore, should remove the sparkling too.
-					if (Dungeon.level.map[pos] != Terrain.WALL_DECO){
+					if (Dungeon.level.visualMap[pos] != Terrain.WALL_DECO){
 						kill();
 						return;
 					}
@@ -214,7 +215,7 @@ public class CavesLevel extends RegularLevel {
 					delay = Random.Float();
 
 					PointF p = DungeonTilemap.tileToWorld( pos );
-					if (includeOverhang && !DungeonTileSheet.wallStitcheable(Dungeon.level.map[pos-Dungeon.level.width()])){
+					if (includeOverhang && !DungeonTileSheet.wallStitcheable(Dungeon.level.visualMap[pos-Dungeon.level.width()])){
 						//also sparkles in the bottom 1/2 of the upper tile. Increases particle frequency by 50% accordingly.
 						delay *= 0.67f;
 						p.y -= DungeonTilemap.SIZE/2f;

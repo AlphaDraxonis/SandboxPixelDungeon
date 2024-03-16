@@ -22,20 +22,32 @@
 package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 
 public class RaisedTerrainTilemap extends DungeonTilemap {
-	
-	public RaisedTerrainTilemap() {
-		super(Dungeon.level.tilesTex());
-		map( Dungeon.level.map, Dungeon.level.width() );
+
+	private final int region;
+
+	public RaisedTerrainTilemap(int region) {
+		super(CustomLevel.tilesTex(region == LevelScheme.REGION_NONE ? Dungeon.region() : region, false));
+
+		this.region = region;
+
+		map( CustomDungeon.isEditing() ? Dungeon.level.map : Dungeon.level.visualMap, Dungeon.level.width() );
 	}
 	
 	@Override
 	protected int getTileVisual(int pos, int tile, boolean flat) {
 		
 		if (flat) return -1;
+
+		int region = Dungeon.level.visualRegions[pos];
+		if (region != this.region && !(this.region == 0 && region == Dungeon.region()))
+			return -1;
 
 		if (DungeonWallsTilemap.skipCells.contains(pos)){
 			return -1;

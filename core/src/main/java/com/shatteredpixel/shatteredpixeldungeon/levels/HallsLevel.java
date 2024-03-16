@@ -193,8 +193,9 @@ public class HallsLevel extends RegularLevel {
 	}
 	
 	public static void addHallsVisuals( Level level, Group group ) {
+		boolean isHallsLevel = LevelScheme.getRegion(level) == LevelScheme.REGION_HALLS;
 		for (int i=0; i < level.length(); i++) {
-			if (level.map[i] == Terrain.WATER) {
+			if (level.visualMap[i] == Terrain.WATER && (isHallsLevel || level.visualRegions[i] == LevelScheme.REGION_HALLS)) {
 				group.add( new Stream( i ) );
 			}
 		}

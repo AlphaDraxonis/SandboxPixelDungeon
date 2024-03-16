@@ -23,24 +23,35 @@ package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.watabou.noosa.Image;
 import com.watabou.utils.PathFinder;
 
 public class DungeonTerrainTilemap extends DungeonTilemap {
 
-	static DungeonTerrainTilemap instance;
+	static DungeonTerrainTilemap[] instances = new DungeonTerrainTilemap[6];
+	final int region;
 
-	public DungeonTerrainTilemap(){
-		super(Dungeon.level.tilesTex());
+	public DungeonTerrainTilemap(int region){
+		super(CustomLevel.tilesTex(region == LevelScheme.REGION_NONE ? Dungeon.region() : region, false));
 
-		map( Dungeon.level.map, Dungeon.level.width() );
+		this.region = region;
 
-		instance = this;
+		map( CustomDungeon.isEditing() ? Dungeon.level.map : Dungeon.level.visualMap, Dungeon.level.width() );
+
+		instances[region] = this;
+		if (region == 0) instances[Dungeon.region()] = this;
 	}
 
 	@Override
 	protected int getTileVisual(int pos, int tile, boolean flat) {
+
+		int region = pos >= 0 ? Dungeon.level.visualRegions[pos] : 0;
+		if (region != this.region && !(this.region == 0 && region == Dungeon.region()))
+			return DungeonTileSheet.NULL_TILE;
+
 		int visual = DungeonTileSheet.directVisuals.get(tile, -1);
 		if (visual != -1) return DungeonTileSheet.getVisualWithAlts(visual, pos);
 
@@ -109,14 +120,14 @@ public class DungeonTerrainTilemap extends DungeonTilemap {
 
 	}
 
-	public static Image tile(int pos, int tile ) {
-		Image img = new Image( instance.texture );
-		img.frame( instance.tileset.get( tileSlot(pos, tile) ) );
+	public static Image tile(int pos, int tile, int region ) {
+		Image img = new Image( instances[region].texture );
+		img.frame( instances[region].tileset.get( tileSlot(pos, tile, region) ) );
 		return img;
 	}
 
-	public static int tileSlot(int pos, int tile) {
-		return instance.getTileVisual( pos == -1 ? -PathFinder.CIRCLE4[2] - 1 : pos, tile, true);
+	public static int tileSlot(int pos, int tile, int region) {
+		return instances[region].getTileVisual( pos == -1 ? -PathFinder.CIRCLE4[2] - 1 : pos, tile, true);
 	}
 
 	@Override

@@ -1268,7 +1268,7 @@ public class Hero extends Char {
 						}
 
 						//1 hunger spent total
-						if (Dungeon.level.map[action.dst] == Terrain.WALL_DECO && LevelScheme.getRegion(Dungeon.level) == LevelScheme.REGION_CAVES){
+						if (Dungeon.level.map[action.dst] == Terrain.WALL_DECO && Dungeon.region() == LevelScheme.REGION_CAVES){
 							DarkGold gold = new DarkGold();
 							if (gold.doPickUp( Dungeon.hero )) {
 								DarkGold existing = Dungeon.hero.belongings.getItem(DarkGold.class);
@@ -2318,6 +2318,7 @@ public class Hero extends Char {
 				}
 				
 				if (hasKey) {
+					Dungeon.level.removeSimpleCustomTile(doorCell);
 					GameScene.updateKeyDisplay();
 					GameScene.updateMap(doorCell);
 					spend(Key.TIME_TO_UNLOCK);

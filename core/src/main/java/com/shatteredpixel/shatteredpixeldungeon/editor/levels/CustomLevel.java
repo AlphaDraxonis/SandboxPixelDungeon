@@ -6,7 +6,6 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_HALLS;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_NONE;
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_PRISON;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_SEWERS;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ENTRANCE;
 import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EXIT;
@@ -26,12 +25,14 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -220,6 +221,8 @@ public class CustomLevel extends Level {
 //                maxW = Math.max(maxW, level.width());
 //                maxH = Math.max(maxH, level.height());
             map = level.map;
+            visualMap = level.visualMap;
+            visualRegions = level.visualRegions;
 
             for (int i = 0; i < map.length; i++) {
                 if (map[i] == ENTRANCE) levelScheme.entranceCells.add(i);
@@ -334,7 +337,7 @@ public class CustomLevel extends Level {
     public void initForPlay() {
         super.initForPlay();
         for (int i = 0; i < map.length; i++) {
-            if (map[i] == Terrain.ALCHEMY)
+            if (visualMap[i] == Terrain.ALCHEMY)
                 Blob.seed( i, 1, Alchemy.class, this );
         }
     }
@@ -440,26 +443,12 @@ public class CustomLevel extends Level {
     @Override
     public Group addVisuals() {
         Group g = super.addVisuals();
-        switch (levelScheme.region) {
-            case REGION_SEWERS:
-                SewerLevel.addSewerVisuals(this, g);
-                break;
-            case REGION_PRISON:
-                PrisonLevel.addPrisonVisuals(this, g);
-                break;
-            case REGION_CAVES:
-                CavesLevel.addCavesVisuals(this, g);
-                break;
-            case REGION_CITY:
-                CityLevel.addCityVisuals(this, g);
-                break;
+        SewerLevel  .addSewerVisuals( this, g);
+        PrisonLevel .addPrisonVisuals(this, g);
+        CavesLevel  .addCavesVisuals( this, g);
+        CityLevel   .addCityVisuals(  this, g);
+        HallsLevel  .addHallsVisuals( this, g);
 
-            default:
-                break;
-        }
-        if (waterTexture == REGION_HALLS) {
-            HallsLevel.addHallsVisuals(this, g);//(only) HallsLevel adds WaterVisuals
-        }
         SewerBossLevel.addSewerBossVisuals(this, g);
         return g;
     }
@@ -703,17 +692,6 @@ public class CustomLevel extends Level {
 //        return new CustomLevel(this);
 //    }
 
-
-    public static void changeMapSize(Level level, int newWidth, int newHeight) {
-        int diffH = newHeight - level.height();
-        int diffW = newWidth - level.width();
-//        int newLenght = newWidth * newHeight;
-
-        int addLeft = diffW / 2;
-        int addTop = diffH / 2;
-        changeMapSize(level, newWidth, newHeight, addTop, addLeft);
-    }
-
     public static void changeMapSize(Level level, int newWidth, int newHeight, int addTop, int addLeft) {
         if (level.width() == newWidth && level.height() == newHeight) return;
 
@@ -739,6 +717,18 @@ public class CustomLevel extends Level {
 
         level.buildFlagMaps();
         Zone.setupZoneArray(level);
+
+        System.arraycopy(Dungeon.level.map, 0, Dungeon.level.visualMap, 0, Dungeon.level.map.length);
+        Arrays.fill(Dungeon.level.visualRegions, LevelScheme.REGION_NONE);
+        for (CustomTilemap vis : Dungeon.level.customTiles) {
+            if (vis instanceof CustomTileLoader.SimpleCustomTile) {
+                int cell = vis.tileX + vis.tileY * Dungeon.level.width();
+                Dungeon.level.visualMap[cell] = ((CustomTileLoader.SimpleCustomTile) vis).imageTerrain;
+                Dungeon.level.visualRegions[cell] = ((CustomTileLoader.SimpleCustomTile) vis).region;
+            }
+        }
+
+        EditorScene.resetCameraPos();
     }
 
     private static void changeMapHeight(Level level, int newHeight, int addTop) {

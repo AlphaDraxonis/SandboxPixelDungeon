@@ -48,11 +48,12 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 		this.plants = plants;
 		this.traps = traps;
 
-		map( Dungeon.level.map, Dungeon.level.width() );
+		map( CustomDungeon.isEditing() ? Dungeon.level.map : Dungeon.level.visualMap, Dungeon.level.width() );
 
 		instance = this;
 	}
 
+	@Override
 	protected int getTileVisual(int pos, int tile, boolean flat){
 		if (traps.get(pos) != null){
 			Trap trap = traps.get(pos);
@@ -75,7 +76,9 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 				&& CustomDungeon.isEditing()
 				&& CustomTileItem.findAnyCustomTileAt(pos) == null) return -1;
 
-		int stage = Dungeon.curLvlScheme().getRegion() - 1;
+		int stage = Dungeon.level.visualRegions[pos];
+		if(stage == 0) stage = Dungeon.curLvlScheme().getRegion() - 1;
+		else stage--;
 		if (tile == Terrain.HIGH_GRASS || grassType == Zone.GrassType.HIGH_GRASS){
 			return 9 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);
 		} else if (tile == Terrain.FURROWED_GRASS || grassType == Zone.GrassType.FURROWED_GRASS){

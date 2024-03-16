@@ -150,7 +150,7 @@ public class WandmakerQuest extends Quest {
 
     public static boolean updateMusic() {
 
-        if (LevelScheme.getRegion(Dungeon.level) != LevelScheme.REGION_PRISON) {
+        if (Dungeon.region() != LevelScheme.REGION_PRISON) {
             return false;
         }
 

@@ -47,9 +47,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.LevelColoring;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.SideControlPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
@@ -151,6 +153,7 @@ import com.watabou.utils.RectF;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -160,12 +163,12 @@ public class GameScene extends PixelScene {
 	static GameScene scene;
 
 	private SkinnedBlock water;
-	private DungeonTerrainTilemap tiles;
+	private DungeonTerrainTilemap[] tiles;
 	private GridTileMap visualGrid;
 	private TerrainFeaturesTilemap terrainFeatures;
 	private BarrierTilemap barriers;
-	private RaisedTerrainTilemap raisedTerrain;
-	private DungeonWallsTilemap walls;
+	private RaisedTerrainTilemap[] raisedTerrain;
+	private DungeonWallsTilemap[] walls;
 	private WallBlockingTilemap wallBlocking;
 	private FogOfWar fog;
 	private HeroSprite hero;
@@ -271,9 +274,14 @@ public class GameScene extends PixelScene {
 		terrain.add( ripples );
 
 		DungeonTileSheet.setupVariance(Dungeon.level.map.length, Dungeon.seedCurLevel());
-		
-		tiles = new DungeonTerrainTilemap();
-		terrain.add( tiles );
+
+		tiles = new DungeonTerrainTilemap[6];
+		for (int i = 0; i < tiles.length; i++) {
+			if (i == Dungeon.region()) continue;
+			tiles[i] = new DungeonTerrainTilemap(i);
+			terrain.add(tiles[i]);
+		}
+		tiles[Dungeon.region()] = tiles[0];
 
 		customTiles = new Group();
 		terrain.add(customTiles);
@@ -323,12 +331,25 @@ public class GameScene extends PixelScene {
 		for (Mob mob : Dungeon.level.mobs) {
 			addMobSprite( mob );
 		}
-		
-		raisedTerrain = new RaisedTerrainTilemap();
-		add( raisedTerrain );
 
-		walls = new DungeonWallsTilemap();
-		add(walls);
+		if (!Dungeon.customDungeon.view2d) {
+
+			raisedTerrain = new RaisedTerrainTilemap[6];
+			for (int i = 0; i < raisedTerrain.length; i++) {
+				if (i == Dungeon.region()) continue;
+				raisedTerrain[i] = new RaisedTerrainTilemap(i);
+				add(raisedTerrain[i]);
+			}
+			raisedTerrain[Dungeon.region()] = raisedTerrain[0];
+
+			walls = new DungeonWallsTilemap[6];
+			for (int i = 0; i < walls.length; i++) {
+				if (i == Dungeon.region()) continue;
+				walls[i] = new DungeonWallsTilemap(i);
+				add(walls[i]);
+			}
+			walls[Dungeon.region()] = walls[0];
+		}
 
 		customWalls = new Group();
 		add(customWalls);
@@ -383,7 +404,7 @@ public class GameScene extends PixelScene {
 		
 		add( emoicons );
 		
-		add( cellSelector = new CellSelector( tiles ) );
+		add( cellSelector = new CellSelector( tiles[0] ) );
 
 		int uiSize = SPDSettings.interfaceSize();
 
@@ -908,10 +929,24 @@ public class GameScene extends PixelScene {
 
 	public void addCustomTile( CustomTilemap visual){
 		customTiles.add( visual.create() );
+
+		if (visual instanceof CustomTileLoader.SimpleCustomTile) {
+			((CustomTileLoader.SimpleCustomTile) visual).placed = true;
+			int pos = visual.tileX + visual.tileY * Dungeon.level.width();
+			Dungeon.level.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
+			Dungeon.level.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
+		}
 	}
 
 	public void addCustomWall( CustomTilemap visual){
 		customWalls.add( visual.create() );
+
+		if (visual instanceof CustomTileLoader.SimpleCustomTile) {
+			((CustomTileLoader.SimpleCustomTile) visual).placed = true;
+			int pos = visual.tileX + visual.tileY * Dungeon.level.width();
+			Dungeon.level.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
+			Dungeon.level.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
+		}
 	}
 	
 	private void addHeapSprite( Heap heap ) {
@@ -1208,38 +1243,71 @@ public class GameScene extends PixelScene {
 
 	public static void resetMap() {
 		if (scene != null) {
-			scene.tiles.map(Dungeon.level.map, Dungeon.level.width() );
-			scene.visualGrid.map(Dungeon.level.map, Dungeon.level.width() );
-			scene.terrainFeatures.map(Dungeon.level.map, Dungeon.level.width() );
-			scene.barriers.map(Dungeon.level.map, Dungeon.level.width() );
-			scene.raisedTerrain.map(Dungeon.level.map, Dungeon.level.width() );
-			scene.walls.map(Dungeon.level.map, Dungeon.level.width() );
+			for (int i = 1; i < scene.tiles.length; i++) {
+				scene.tiles[i].map(Dungeon.level.visualMap, Dungeon.level.width() );
+			}
+			scene.visualGrid.map(Dungeon.level.visualMap, Dungeon.level.width() );
+			scene.terrainFeatures.map(Dungeon.level.visualMap, Dungeon.level.width() );
+			scene.barriers.map(Dungeon.level.visualMap, Dungeon.level.width() );
+			if (!Dungeon.customDungeon.view2d) {
+			    for (int i = 1; i < scene.walls.length; i++) {
+					scene.raisedTerrain[i].map(Dungeon.level.visualMap, Dungeon.level.width() );
+					scene.walls[i].map(Dungeon.level.visualMap, Dungeon.level.width());
+				}
+			}
 		}
 		updateFog();
 	}
 
 	//updates the whole map
 	public static void updateMap() {
+		if (Dungeon.level != null) {
+			System.arraycopy(Dungeon.level.map, 0, Dungeon.level.visualMap, 0, Dungeon.level.map.length);
+			Arrays.fill(Dungeon.level.visualRegions, LevelScheme.REGION_NONE);
+			for (CustomTilemap vis : Dungeon.level.customTiles) {
+				if (vis instanceof CustomTileLoader.SimpleCustomTile) {
+					int cell = vis.tileX + vis.tileY * Dungeon.level.width();
+					Dungeon.level.visualMap[cell] = ((CustomTileLoader.SimpleCustomTile) vis).imageTerrain;
+					Dungeon.level.visualRegions[cell] = ((CustomTileLoader.SimpleCustomTile) vis).region;
+				}
+			}
+		}
+
 		if (scene != null) {
-			scene.tiles.updateMap();
+			for (int i = 1; i < scene.tiles.length; i++) {
+				scene.tiles[i].updateMap();
+			}
 			scene.visualGrid.updateMap();
 			scene.terrainFeatures.updateMap();
 			scene.barriers.updateMap();
-			scene.raisedTerrain.updateMap();
-			scene.walls.updateMap();
+			if (!Dungeon.customDungeon.view2d) {
+				for (int i = 1; i < scene.walls.length; i++) {
+					scene.raisedTerrain[i].updateMap();
+					scene.walls[i].updateMap();
+				}
+			}
 			LevelColoring.allUpdateMap();
 			updateFog();
 		}
 	}
 	
 	public static void updateMap( int cell ) {
+		if (Dungeon.level != null && Dungeon.level.visualRegions[cell] == LevelScheme.REGION_NONE)
+			Dungeon.level.visualMap[cell] = Dungeon.level.map[cell];
+
 		if (scene != null) {
-			scene.tiles.updateMapCell( cell );
+			for (int i = 1; i < scene.tiles.length; i++) {
+				scene.tiles[i].updateMapCell( cell );
+			}
 			scene.visualGrid.updateMapCell( cell );
 			scene.terrainFeatures.updateMapCell( cell );
 			scene.barriers.updateMapCell( cell );
-			scene.raisedTerrain.updateMapCell( cell );
-			scene.walls.updateMapCell( cell );
+			if (!Dungeon.customDungeon.view2d) {
+				for (int i = 1; i < scene.walls.length; i++) {
+					scene.raisedTerrain[i].updateMapCell(cell);
+					scene.walls[i].updateMapCell(cell);
+				}
+			}
 			LevelColoring.allUpdateMapCell( cell );
 			//update adjacent cells too
 			updateFog( cell, 1 );
@@ -1254,7 +1322,9 @@ public class GameScene extends PixelScene {
 	
 	public static void discoverTile( int pos, int oldValue ) {
 		if (scene != null) {
-			scene.tiles.discover( pos, oldValue );
+			for (int i = 1; i < 6; i++) {
+				scene.tiles[i].discover( pos, oldValue );
+			}
 		}
 	}
 	
@@ -1654,10 +1724,10 @@ public class GameScene extends PixelScene {
 				image = new ItemSprite((Heap) objects.get(0));
 			} else if (objects.get(0) instanceof Plant) {
 				title = textLines.remove(0);
-				image = TerrainFeaturesTilemap.tile(cell, Dungeon.level.map[cell]);
+				image = TerrainFeaturesTilemap.tile(cell, Dungeon.level.visualMap[cell]);
 			} else if (objects.get(0) instanceof Trap) {
 				title = textLines.remove(0);
-				image = TerrainFeaturesTilemap.tile(cell, Dungeon.level.map[cell]);
+				image = TerrainFeaturesTilemap.tile(cell, Dungeon.level.visualMap[cell]);
 			} else if (objects.get(0) instanceof Barrier) {
 				title = textLines.remove(0);
 				image = ((Barrier) objects.get(0)).getSprite();

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -290,11 +291,13 @@ public final class CustomTileLoader {
         public Tilemap create() {
             Tilemap v = super.create();
             int[] data = new int[tileW * tileH];
-            if (imageTerrain == Terrain.WATER) {
+            if (!CustomDungeon.isEditing()) {
+                Arrays.fill(data, 5);
+            } else if (imageTerrain == Terrain.WATER) {
                 Arrays.fill(data, 0);
             } else {
                 for (int i = 0; i < data.length; i++) {
-                    data[i] = DungeonTerrainTilemap.tileSlot(-1, imageTerrain);
+                    data[i] = DungeonTerrainTilemap.tileSlot(-1, imageTerrain, 0);
                 }
             }
             v.map(data, tileW);

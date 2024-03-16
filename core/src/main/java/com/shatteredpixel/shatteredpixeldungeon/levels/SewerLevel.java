@@ -142,8 +142,9 @@ public class SewerLevel extends RegularLevel {
 	}
 	
 	public static void addSewerVisuals( Level level, Group group ) {
+		boolean isSewerLevel = LevelScheme.getRegion(level) == LevelScheme.REGION_SEWERS;
 		for (int i=0; i < level.length(); i++) {
-			if (level.map[i] == Terrain.WALL_DECO) {
+			if (level.visualMap[i] == Terrain.WALL_DECO && (isSewerLevel || level.visualRegions[i] == LevelScheme.REGION_SEWERS)) {
 				group.add( new Sink( i ) );
 			}
 		}

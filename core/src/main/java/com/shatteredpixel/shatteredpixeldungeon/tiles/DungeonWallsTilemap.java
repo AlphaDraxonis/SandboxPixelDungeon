@@ -23,6 +23,9 @@ package com.shatteredpixel.shatteredpixeldungeon.tiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 
 import java.util.HashSet;
@@ -30,17 +33,29 @@ import java.util.HashSet;
 public class DungeonWallsTilemap extends DungeonTilemap {
 
 	public static HashSet<Integer> skipCells = new HashSet<>();
+	private final int region;
 
-	public DungeonWallsTilemap(){
-		super(Dungeon.level.tilesTex());
+	public DungeonWallsTilemap(int region){
+		super(CustomLevel.tilesTex(region == LevelScheme.REGION_NONE ? Dungeon.region() : region, false));
+
+		this.region = region;
+
 		skipCells.clear();
-		map( Dungeon.level.map, Dungeon.level.width() );
+		map( CustomDungeon.isEditing() ? Dungeon.level.map : Dungeon.level.visualMap, Dungeon.level.width() );
 	}
 
 	@Override
 	protected int getTileVisual(int pos, int tile, boolean flat){
 
 		if (flat) return -1;
+
+		int region;
+		int posBelow = pos + Dungeon.level.width();
+		if (!DungeonTileSheet.wallStitcheable(tile) || posBelow < map.length && !DungeonTileSheet.wallStitcheable(map[posBelow]))
+			region = posBelow < Dungeon.level.visualRegions.length ? Dungeon.level.visualRegions[posBelow] : 0;
+		else region = Dungeon.level.visualRegions[pos];
+		if (region != this.region && !(this.region == 0 && region == Dungeon.region()))
+			return -1;
 
 		if (DungeonTileSheet.wallStitcheable(tile)) {
 			if (pos + mapWidth < size && !DungeonTileSheet.wallStitcheable(map[pos + mapWidth])){

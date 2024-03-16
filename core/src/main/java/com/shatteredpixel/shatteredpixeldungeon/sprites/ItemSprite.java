@@ -363,13 +363,13 @@ public class ItemSprite extends MovieClip {
 
                     if (Dungeon.level.water[heap.pos]) {
                         Sample.INSTANCE.play(Assets.Sounds.WATER, 0.8f, Random.Float(1f, 1.45f));
-                    } else if (Dungeon.level.map[heap.pos] == Terrain.EMPTY_SP) {
+                    } else if (Dungeon.level.visualMap[heap.pos] == Terrain.EMPTY_SP) {
                         Sample.INSTANCE.play(Assets.Sounds.STURDY, 0.8f, Random.Float(1.16f, 1.25f));
-                    } else if (Dungeon.level.map[heap.pos] == Terrain.GRASS
-                            || Dungeon.level.map[heap.pos] == Terrain.EMBERS
-                            || Dungeon.level.map[heap.pos] == Terrain.FURROWED_GRASS) {
+                    } else if (Dungeon.level.visualMap[heap.pos] == Terrain.GRASS
+                            || Dungeon.level.visualMap[heap.pos] == Terrain.EMBERS
+                            || Dungeon.level.visualMap[heap.pos] == Terrain.FURROWED_GRASS) {
                         Sample.INSTANCE.play(Assets.Sounds.GRASS, 0.8f, Random.Float(1.16f, 1.25f));
-                    } else if (Dungeon.level.map[heap.pos] == Terrain.HIGH_GRASS) {
+                    } else if (Dungeon.level.visualMap[heap.pos] == Terrain.HIGH_GRASS) {
                         Sample.INSTANCE.play(Assets.Sounds.STEP, 0.8f, Random.Float(1.16f, 1.25f));
                     } else {
                         Sample.INSTANCE.play(Assets.Sounds.STEP, 0.8f, Random.Float(1.16f, 1.25f));

@@ -154,8 +154,9 @@ public class PrisonLevel extends RegularLevel {
 	}
 
 	public static void addPrisonVisuals(Level level, Group group){
+		boolean isPrisonLevel = LevelScheme.getRegion(level) == LevelScheme.REGION_PRISON;
 		for (int i=0; i < level.length(); i++) {
-			if (level.map[i] == Terrain.WALL_DECO) {
+			if (level.visualMap[i] == Terrain.WALL_DECO && (isPrisonLevel || level.visualRegions[i] == LevelScheme.REGION_PRISON)) {
 				group.add( new Torch( i ) );
 			}
 		}

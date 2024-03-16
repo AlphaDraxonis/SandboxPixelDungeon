@@ -402,7 +402,7 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 		ArrayList<Integer> exteriorCells = spreadDiamondAOE(cells);
 
 		for (int i : cells){
-			if (Dungeon.level.map[i] == Terrain.WALL_DECO && LevelScheme.getRegion(Dungeon.level) == LevelScheme.REGION_CAVES){
+			if (Dungeon.level.map[i] == Terrain.WALL_DECO && Dungeon.region() == LevelScheme.REGION_CAVES){
 				Dungeon.level.drop(new DarkGold(), i).sprite.drop();
 				Dungeon.level.map[i] = Terrain.EMPTY_DECO;
 			} else if (Dungeon.level.solid[i] && Dungeon.level.insideMap(i)

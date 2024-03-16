@@ -441,6 +441,11 @@ public enum Tiles {
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
+
+                @Override
+                public void displayInputAnyNumberDialog() {
+                    //do nothing
+                }
             }, Messages.get(WndCreateCustomTile.class, "image_region"), 8);
             add(region);
 
@@ -448,7 +453,7 @@ public enum Tiles {
                 String texture = CustomLevel.tilesTex((int) region.getValue(), (Integer) value == WATER);
                 Image img = new Image(texture);
                 if ((Integer) value == WATER) img.frame(0, 0, DungeonTerrainTilemap.SIZE, DungeonTerrainTilemap.SIZE);
-                else img.frame(CustomLevel.getTextureFilm(texture).get(DungeonTerrainTilemap.tileSlot(-1, (Integer) value)));
+                else img.frame(CustomLevel.getTextureFilm(texture).get(DungeonTerrainTilemap.tileSlot(-1, (Integer) value, 0)));
                 if (!nameSet) name.setText(Level.getFullMessageKey((int) region.getValue(), (int) value, false));
                 if (!descSet) desc.setText(Level.getFullMessageKey((int) region.getValue(), (int) value, true));
                 return img;
@@ -459,7 +464,7 @@ public enum Tiles {
                 String texture = CustomLevel.tilesTex((int) region.getValue(), (Integer) value == WATER);
                 Image img = new Image(texture);
                 if ((Integer) value == WATER) img.frame(0, 0, DungeonTerrainTilemap.SIZE, DungeonTerrainTilemap.SIZE);
-                else img.frame(CustomLevel.getTextureFilm(texture).get(DungeonTerrainTilemap.tileSlot(-1, (Integer) value)));
+                else img.frame(CustomLevel.getTextureFilm(texture).get(DungeonTerrainTilemap.tileSlot(-1, (Integer) value, 0)));
                 return img;
             });
             add(realTerrain);

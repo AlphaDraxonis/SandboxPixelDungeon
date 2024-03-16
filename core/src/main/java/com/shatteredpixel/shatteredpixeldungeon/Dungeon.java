@@ -371,6 +371,10 @@ public class Dungeon {
         return (levelScheme.getRegion() - 1) * 5 + levelScheme.getNumInRegion();
     }
 
+    public static int region() {
+        return LevelScheme.getRegion(Dungeon.level);
+    }
+
     public static boolean isChallenged(int mask) {
         if (CustomDungeon.isEditing()) return false;
         return (challenges & mask) != 0;

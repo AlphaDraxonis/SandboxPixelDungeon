@@ -16,11 +16,12 @@ public class BarrierTilemap extends DungeonTilemap {
 
         this.barriers = barriers;
 
-        map( Dungeon.level.map, Dungeon.level.width() );
+        map( CustomDungeon.isEditing() ? Dungeon.level.map : Dungeon.level.visualMap, Dungeon.level.width() );
 
         instance = this;
     }
 
+    @Override
     protected int getTileVisual(int pos, int tile, boolean flat){
         if (barriers.get(pos) != null) {
             Barrier barrier = barriers.get(pos);

@@ -54,11 +54,16 @@ public class LevelColoring extends Group {
             @Override
             protected void updateColor(ColorBlock img, int cell) {
                 if (CustomDungeon.isEditing() || Dungeon.customDungeon.view2d) {
-                    if (Dungeon.level.solid[cell] && DungeonTileSheet.wallStitcheable(Dungeon.level.map[cell])) super.updateColor(img, cell);
+                    if ((Terrain.SOLID & Terrain.flags[Dungeon.level.visualMap[cell]]) != 0 && DungeonTileSheet.wallStitcheable(Dungeon.level.visualMap[cell])) super.updateColor(img, cell);
                     else img.alpha(0f);
                 } else {
+
                     int mapWidth = Dungeon.level.width();
-                    int[] map = Dungeon.level.map;
+                    int[] map = Dungeon.level.visualMap;
+
+                    img.size(DungeonTilemap.SIZE, DungeonTilemap.SIZE);
+                    img.origin.set(0, 0);
+
                     int result = 0;
                     if (DungeonTileSheet.wallStitcheable((cell + 1) % mapWidth != 0 ? map[cell + 1] : -1)) result += RIGHT;//right
                     if (DungeonTileSheet.wallStitcheable(cell % mapWidth != 0 ? map[cell - 1] : -1)) result += LEFT;//left
@@ -69,13 +74,35 @@ public class LevelColoring extends Group {
                     if (DungeonTileSheet.wallStitcheable(cell % mapWidth != 0 && cell + mapWidth < map.length ? map[cell - 1 + mapWidth] : -1))//bottom left
                         result += BOTTOM_LEFT;
 
-                    if ((result & BOTTOM) == 0 && DungeonTileSheet.wallStitcheable(map[cell])) {
-                        super.updateColor(img, cell);
+                    if (cell + mapWidth < map.length) {
+
+                        if ((result & BOTTOM) == 0 && DungeonTileSheet.wallStitcheable(map[cell])) {
+                            if (TileItem.isDoor(map[cell + mapWidth]) && map[cell + mapWidth] != Terrain.OPEN_DOOR)
+                                img.alpha(0f);
+                            else super.updateColor(img, cell);
+                        } else if ((result & BOTTOM) == BOTTOM && map[cell] == Terrain.OPEN_DOOR) {
+                            super.updateColor(img, cell);
+                            img.size(6 * TILE_SCALE, 3 * TILE_SCALE);
+                            img.origin.set(5 * TILE_SCALE, 0);
+                        }
+                        else img.alpha(0f);
+
                     } else {
                         img.alpha(0f);
                     }
 
                 }
+            }
+
+            @Override
+            public ColorBlock updateMapCell(int cell) {
+                ColorBlock comp = super.updateMapCell(cell);
+                if (comp != null) {
+                    placeComp(comp, cell,
+                            PixelScene.align(Camera.main, (cell % Dungeon.level.width()) * DungeonTilemap.SIZE),
+                            PixelScene.align(Camera.main, (cell / Dungeon.level.width()) * DungeonTilemap.SIZE));
+                }
+                return comp;
             }
 
             @Override
@@ -94,7 +121,7 @@ public class LevelColoring extends Group {
             wall.secondColorLevel = new LevelColoring(Dungeon.level.levelScheme.wallColor, Dungeon.level.levelScheme.wallAlpha) {
                 private SparseArray<ColorBlock> altComps1, altComps2, altComps3;
 
-                private int verticalWallWidth, horizontalWallHeight, horizontalDoorWidth;
+                private int verticalWallWidth, horizontalWallHeight, horizontalDoorWidth, horizontalDoorOverhangWidth;
 
                 @Override
                 protected void makeExistent() {
@@ -103,46 +130,54 @@ public class LevelColoring extends Group {
                         altComps2 = new SparseArray<>();
                         altComps3 = new SparseArray<>();
 
-                        switch (LevelScheme.getRegion(Dungeon.level)) {
-                            default:
-                            case LevelScheme.REGION_SEWERS:
-                                verticalWallWidth = 5;
-                                horizontalWallHeight = 5;
-                                horizontalDoorWidth = 2;
-                                break;
-                            case LevelScheme.REGION_PRISON:
-                                verticalWallWidth = 5;
-                                horizontalWallHeight = 5;
-                                horizontalDoorWidth = 1;
-                                break;
-                            case LevelScheme.REGION_CAVES:
-                                verticalWallWidth = 5;
-                                horizontalWallHeight = 4;
-                                horizontalDoorWidth = 1;
-                                break;
-                            case LevelScheme.REGION_CITY:
-                                verticalWallWidth = 4;
-                                horizontalWallHeight = 4;
-                                horizontalDoorWidth = 1;
-                                break;
-                            case LevelScheme.REGION_HALLS:
-                                verticalWallWidth = 4;
-                                horizontalWallHeight = 7;
-                                horizontalWallHeight = 4;
-                                horizontalDoorWidth = 2;
-                                break;
-                        }
+                        initRegion(Dungeon.region());
                     }
                     super.makeExistent();
+                }
+
+                private void initRegion(int region) {
+                    switch (region) {
+                        default:
+                        case LevelScheme.REGION_SEWERS:
+                            verticalWallWidth = 5;
+                            horizontalWallHeight = 5;
+                            horizontalDoorWidth = 2;
+                            horizontalDoorOverhangWidth = 2;
+                            break;
+                        case LevelScheme.REGION_PRISON:
+                            verticalWallWidth = 5;
+                            horizontalWallHeight = 5;
+                            horizontalDoorWidth = 1;
+                            horizontalDoorOverhangWidth = 3;
+                            break;
+                        case LevelScheme.REGION_CAVES:
+                            verticalWallWidth = 5;
+                            horizontalWallHeight = 4;
+                            horizontalDoorWidth = 1;
+                            horizontalDoorOverhangWidth = 1;
+                            break;
+                        case LevelScheme.REGION_CITY:
+                            verticalWallWidth = 4;
+                            horizontalWallHeight = 4;
+                            horizontalDoorWidth = 1;
+                            horizontalDoorOverhangWidth = 1;
+                            break;
+                        case LevelScheme.REGION_HALLS:
+                            verticalWallWidth = 4;
+                            horizontalWallHeight = 7;
+                            horizontalWallHeight = 4;
+                            horizontalDoorWidth = 2;
+                            horizontalDoorOverhangWidth = 2;
+                            break;
+                    }
                 }
 
                 @Override
                 protected void updateColor(ColorBlock img, int cell) {
                     int mapWidth = Dungeon.level.width();
-                    int[] map = Dungeon.level.map;
+                    int[] map = Dungeon.level.visualMap;
 
                     img.size(DungeonTilemap.SIZE, DungeonTilemap.SIZE);
-                    img.origin.set(0, 0);
 
                     boolean destroyAlt1 = true, destroyAlt2 = true, destroyAlt3 = true;
 
@@ -155,6 +190,8 @@ public class LevelColoring extends Group {
                         result += BOTTOM_RIGHT;
                     if (DungeonTileSheet.wallStitcheable(cell % mapWidth != 0 && cell + mapWidth < map.length ? map[cell - 1 + mapWidth] : -1))//bottom left
                         result += BOTTOM_LEFT;
+
+//                    if (Dungeon.level.visualRegions[cell] != 0) initRegion(Dungeon.level.visualRegions[cell]);
 
                     if ((result & BOTTOM) == 0 && DungeonTileSheet.wallStitcheable(map[cell])) {
 
@@ -220,7 +257,7 @@ public class LevelColoring extends Group {
                                 altComps1.put(cell, alt);
                             }
                             super.updateColor(alt, cell);
-                            alt.size(verticalWallWidth * TILE_SCALE, horizontalWallHeight * TILE_SCALE);
+                            alt.size(verticalWallWidth * TILE_SCALE, (8 - horizontalWallHeight) * TILE_SCALE);
                             alt.origin.set((result & BOTTOM_LEFT) == 0 ? 0 : (16 - verticalWallWidth) * TILE_SCALE, (8 + horizontalWallHeight) * TILE_SCALE);
                             destroyAlt1 = false;
 
@@ -231,7 +268,7 @@ public class LevelColoring extends Group {
                                     altComps2.put(cell, alt);
                                 }
                                 super.updateColor(alt, cell);
-                                alt.size(verticalWallWidth * TILE_SCALE, horizontalWallHeight * TILE_SCALE);
+                                alt.size(verticalWallWidth * TILE_SCALE, (8 - horizontalWallHeight) * TILE_SCALE);
                                 alt.origin.set((16 - verticalWallWidth) * TILE_SCALE, (8 + horizontalWallHeight) * TILE_SCALE);
                                 destroyAlt2 = false;
                             }
@@ -266,16 +303,16 @@ public class LevelColoring extends Group {
                     } else if (cell + mapWidth < map.length && TileItem.isDoor(map[cell + mapWidth])) {
                         super.updateColor(img, cell);
 
-                        img.size(horizontalDoorWidth * TILE_SCALE, 4 * TILE_SCALE);
-                        img.origin.set(0, (8 + horizontalWallHeight) * TILE_SCALE);
+                        img.size(horizontalDoorOverhangWidth * TILE_SCALE, 4 * TILE_SCALE);
+                        img.origin.set(0, 12 * TILE_SCALE);
                         ColorBlock alt = altComps1.get(cell);
                         if (alt == null) {
                             alt = initNewColorblock(cell, false);
                             altComps1.put(cell, alt);
                         }
                         super.updateColor(alt, cell);
-                        alt.size(img.width(), img.height());
-                        alt.origin.set((8 + horizontalWallHeight) * TILE_SCALE - img.width(), img.origin.y);
+                        alt.size(horizontalDoorOverhangWidth * TILE_SCALE, img.height());
+                        alt.origin.set((16 - horizontalDoorOverhangWidth) * TILE_SCALE, img.origin.y);
                         destroyAlt1 = false;
 
                     } else {
@@ -291,6 +328,8 @@ public class LevelColoring extends Group {
                     if (destroyAlt3) {
                         makeNonExistent(cell, altComps3);
                     }
+
+//                    if (Dungeon.level.visualRegions[cell] != 0) initRegion(Dungeon.region());
                 }
 
                 @Override
@@ -460,6 +499,7 @@ public class LevelColoring extends Group {
     public ColorBlock updateMapCell(int cell) {
         ColorBlock comp = comps.get(cell);
         if (comp != null) updateColor(comp, cell);
+        if (getSecondColorLevel() != null) getSecondColorLevel().updateMapCell(cell);
         return comp;
     }
 
