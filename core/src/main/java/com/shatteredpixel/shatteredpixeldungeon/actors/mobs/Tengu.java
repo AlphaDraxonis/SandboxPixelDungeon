@@ -169,8 +169,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 		if (!BossHealthBar.isAssigned(this)) {
 			BossHealthBar.addBoss(this);
-			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
-				Dungeon.level.seal();
+			if (playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
+				if (showBossBar) Dungeon.level.seal();
 				playBossMusic(Assets.Music.PRISON_BOSS);
 			}
 		}
@@ -298,8 +298,8 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 		if (!BossHealthBar.isAssigned(this)) {
 			BossHealthBar.addBoss(this);
-			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
-				Dungeon.level.seal();
+			if (playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
+				if (showBossBar) Dungeon.level.seal();
 				playBossMusic(Assets.Music.PRISON_BOSS);
 			}
 		}
@@ -425,23 +425,21 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		if (!BossHealthBar.isAssigned(this)) {
 			BossHealthBar.addBoss(this);
 			if (HP <= HT/2) bleeding = true;
-			if (showBossBar) {
-				if (!(Dungeon.level instanceof PrisonBossLevel)) Dungeon.level.seal();
-				if (HP == HT) {
-					yell(Messages.get(this, "notice_gotcha", Dungeon.hero.name()));
-					for (Char ch : Actor.chars()) {
-						if (ch instanceof DriedRose.GhostHero) {
-							((DriedRose.GhostHero) ch).sayBoss(Tengu.class);
-						}
+			if (showBossBar && !(Dungeon.level instanceof PrisonBossLevel)) Dungeon.level.seal();
+			if (HP == HT) {
+				yell(Messages.get(this, "notice_gotcha", Dungeon.hero.name()));
+				for (Char ch : Actor.chars()) {
+					if (ch instanceof DriedRose.GhostHero) {
+						((DriedRose.GhostHero) ch).sayBoss(Tengu.class);
 					}
-				} else {
-					yell(Messages.get(this, "notice_have", Dungeon.hero.name()));
 				}
+			} else {
+				yell(Messages.get(this, "notice_have", Dungeon.hero.name()));
 			}
 		}
 
-		if (showBossBar && playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
-			Dungeon.level.seal();
+		if (playerAlignment == NORMAL_ALIGNMENT && !(Dungeon.level instanceof PrisonBossLevel)) {
+			if (showBossBar) Dungeon.level.seal();
 			Dungeon.level.playSpecialMusic(Assets.Music.PRISON_BOSS, id());
 		}
 	}

@@ -284,7 +284,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 	public void damage(int dmg, Object src) {
 		if (!BossHealthBar.isAssigned(this)){
 			BossHealthBar.addBoss( this );
-			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT) {
+			if (playerAlignment == NORMAL_ALIGNMENT) {
 				Dungeon.level.seal();
 				playBossMusic(Assets.Music.SEWERS_BOSS);
 			}
@@ -331,8 +331,8 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 		if (!BossHealthBar.isAssigned(this)) {
 			BossHealthBar.addBoss(this);
-			if (showBossBar && playerAlignment == NORMAL_ALIGNMENT) {
-				Dungeon.level.seal();
+			if (playerAlignment == NORMAL_ALIGNMENT) {
+				if (showBossBar) Dungeon.level.seal();
 				playBossMusic(Assets.Music.SEWERS_BOSS);
 				yell(Messages.get(this, "notice"));
 				for (Char ch : Actor.chars()) {

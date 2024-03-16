@@ -106,7 +106,6 @@ public class BossHealthBar extends Component {
         if (bossBar != null) {
             instance.remove(bossBar);
             bars.remove(bossBar);
-            boss.destroy();
             bossBar.killAndErase();
             updateLayout();
         }

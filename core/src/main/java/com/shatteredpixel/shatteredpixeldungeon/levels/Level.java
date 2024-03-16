@@ -236,6 +236,7 @@ public abstract class Level implements Bundlable {
 
 	public static final int NO_BOSS_MOB = -2;//need to be -2 bc -1 is pos of mobs in inv
 	public int bossmobAt = -2;//store as pos so we don't have problems with undo, only for CustomLevel
+	public String bossmobMusic = null;//boss music of bossMob
 	public Mob bossMob;//after initForPlay
 
 	//For loading
@@ -263,6 +264,7 @@ public abstract class Level implements Bundlable {
 	private static final String PARTICLES	= "particles";
 	private static final String FEELING		= "feeling";
 	private static final String VIEW_DISTANCE = "view_distance";
+	private static final String BOSS_MOB_MUSIC = "boss_mob_music";
 	private static final String BOSS_MOB_AT = "boss_mob_at";
 	private static final String ZONES       = "zones";
 	private static final String MUSIC_REQUESTS = "full_music_requests";
@@ -600,6 +602,10 @@ public abstract class Level implements Bundlable {
 				musicRequestsMobIDs.add(i);
 		}
 
+		if (bundle.contains(BOSS_MOB_MUSIC)) {
+			bossmobMusic = bundle.getString(BOSS_MOB_MUSIC);
+		}
+
 		Dungeon.customDungeon.getFloor(name).setLevel(this);
 
 		if (bundle.contains(BOSS_MOB_AT)) {
@@ -753,6 +759,7 @@ public abstract class Level implements Bundlable {
 			index++;
 		}
 		bundle.put(MUSIC_REQUESTS_MOB_IDS, intArray);
+		if (bossmobMusic != null) bundle.put(BOSS_MOB_MUSIC, bossmobMusic);
 	}
 	
 	public int tunnelTile() {

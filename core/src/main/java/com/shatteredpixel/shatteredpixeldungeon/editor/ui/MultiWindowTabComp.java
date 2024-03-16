@@ -307,7 +307,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
             private final int index;
 
             public TabControlButton(int index) {
-                super(Chrome.Type.GREY_BUTTON_TR, "");
+                super(Chrome.Type.GREY_BUTTON_TR, "", 7);
                 this.index = index;
 
                 bg.remove();

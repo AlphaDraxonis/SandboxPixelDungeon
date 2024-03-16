@@ -45,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeMobCustomizable;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BtnSelectBossMusic;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffListContainer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.FistSelector;
@@ -65,8 +66,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.WndSelectMusic;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
@@ -680,35 +679,14 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(showBossBar);
 
             if (!(mob instanceof CrystalSpire || mob instanceof GnollGeomancer || mob instanceof FungalCore)) {
-                Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_LULLABY);
-                icon.scale.set(1.3f);
-                String musicLabel = Messages.get(ChangeRegion.class, "music");
-                bossMusic = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, musicLabel) {
-                    {
-                        text.align(RenderedTextBlock.CENTER_ALIGN);
-                        text.setHighlighting(false);
-                    }
-
+                bossMusic = new BtnSelectBossMusic(mob.bossMusic) {
                     @Override
-                    protected void onClick() {
-                        EditorScene.show(new WndSelectMusic(WndSelectMusic.TypeOfFirstCategory.FOR_BOSSES) {
-                            @Override
-                            protected void onSelect(Object music) {
-                                super.onSelect(music);
-
-                                if (music instanceof Integer) {
-                                    mob.bossMusic = ((int) music) == -3 ? "/" : null;
-                                }
-                                if (music instanceof String) mob.bossMusic = (String) music;
-
-                                text(musicLabel + "\n" + (mob.bossMusic == null ? Messages.get(WndSelectMusic.class, "default_music") : WndSelectMusic.getDisplayName(mob.bossMusic)));
-                                EditMobComp.this.updateObj();
-                            }
-                        });
+                    protected void setBossMusic(String music) {
+                        super.setBossMusic(music);
+                        mob.bossMusic = music;
+                        updateObj();
                     }
                 };
-                bossMusic.text(musicLabel + "\n" + (mob.bossMusic == null ? Messages.get(WndSelectMusic.class, "default_music") : WndSelectMusic.getDisplayName(mob.bossMusic)));
-                bossMusic.icon(icon);
                 add(bossMusic);
             }
         }

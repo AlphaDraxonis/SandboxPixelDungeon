@@ -5,9 +5,12 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.leve
 import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab.GAP;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BtnSelectBossMusic;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -20,8 +23,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -36,8 +40,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
@@ -117,7 +121,9 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
                 Image image0 = new ItemSprite(ItemSpriteSheet.ANKH, new ItemSprite.Glowing( 0xFFFFCC ));
                 image0.scale.set(0.8f);
                 tabs[0].icon(image0);
+                tabs[0].text(getTabName(0));
                 tabs[1].icon(new SkeletonSprite());
+                tabs[1].text(getTabName(1));
 
                 super.createChildren(params);
 
@@ -276,44 +282,33 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
 
     private class MobSpawningComp extends Component {
 
-        private final Spinner moblimit, respawnTime;
-        private final RedButton openMobCycle;
-        private final CheckBox disableSpawning;
+        protected final CheckBox disableSpawning;
+        protected final StyledSpinner moblimit, respawnTime;
+        protected final StyledButton openMobCycle;
 
-        private ItemSelector boss;
+        protected ItemSelector boss;
+        protected BtnSelectBossMusic bossMusic;
 
         public MobSpawningComp() {
             CustomLevel l = EditorScene.customLevel();
 
-            moblimit = new Spinner(new SpinnerIntegerModel(0, 100, l.mobLimit(), 1, false, null) {
-                @Override
-                public float getInputFieldWidth(float height) {
-                    return height * 1.1f;
-                }
-            }, " " + Messages.get(MobSettings.class, "limit") + ":", 9);
+            moblimit = new StyledSpinner(new SpinnerIntegerModel(0, 100, l.mobLimit(), 1, false, null),
+                    Messages.get(MobSettings.class, "limit"));
             moblimit.addChangeListener(() -> l.mobLimit = (int) moblimit.getValue());
             add(moblimit);
-            respawnTime = new Spinner(new SpinnerIntegerModel(1, 100, (int) l.respawnCooldown(), 1, false, null) {
-                @Override
-                public float getInputFieldWidth(float height) {
-                    return height * 1.1f;
-                }
 
-                @Override
-                public void displayInputAnyNumberDialog() {
-                    displayInputAnyNumberDialog(1, Integer.MAX_VALUE);
-                }
-            }, " " + Messages.get(MobSettings.class, "respawn_time") + ":", 9);
-            ((SpinnerIntegerModel) respawnTime.getModel()).setAbsoluteMinimum(1f);
+            respawnTime = new StyledSpinner(new SpinnerIntegerModel(1, 100, (int) l.respawnCooldown(), 1, false, null),
+                    Messages.get(MobSettings.class, "respawn_time"));
             respawnTime.addChangeListener(() -> l.respawnCooldown((int) respawnTime.getValue()));
             add(respawnTime);
 
-            openMobCycle = new RedButton(Messages.get(MobSettings.class, "edit_cycle")) {
+            openMobCycle = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(MobSettings.class, "edit_cycle")) {
                 @Override
                 protected void onClick() {
                     select(2);
                 }
             };
+            openMobCycle.icon(Icons.EDIT.get());
             add(openMobCycle);
 
             disableSpawning = new CheckBox(Messages.get(MobSettings.class, "enable_respawn")) {
@@ -351,33 +346,29 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
 
             };
             add(boss);
+
+            bossMusic = new BtnSelectBossMusic(Dungeon.level.bossmobMusic) {
+                @Override
+                protected void setBossMusic(String music) {
+                    super.setBossMusic(music);
+                    Dungeon.level.bossmobMusic = music;
+                }
+            };
+            add(bossMusic);
         }
 
         @Override
         protected void layout() {
-            float posY = y;
 
-            disableSpawning.setRect(x, posY, width, BUTTON_HEIGHT);
-            PixelScene.align(disableSpawning);
-            posY = disableSpawning.bottom() + LevelTab.GAP;
+            height += GAP;
 
-            respawnTime.setRect(x, posY, width, BUTTON_HEIGHT);
-            PixelScene.align(respawnTime);
-            posY = respawnTime.bottom() + LevelTab.GAP;
+            height = EditorUtilies.layoutCompsLinear(GAP, BUTTON_HEIGHT, this, disableSpawning);
+            height += GAP;
 
-            moblimit.setRect(x, posY, width, BUTTON_HEIGHT);
-            PixelScene.align(moblimit);
-            posY = moblimit.bottom() + LevelTab.GAP;
+            height = EditorUtilies.layoutStyledCompsInRectangles(GAP, width, this, respawnTime, moblimit, openMobCycle);
+            height += GAP * 3;
 
-            openMobCycle.setRect(x, posY, width, BUTTON_HEIGHT);
-            PixelScene.align(openMobCycle);
-            posY = openMobCycle.bottom() + LevelTab.GAP * 3;
-
-            boss.setRect(x, posY, width, BUTTON_HEIGHT);
-            PixelScene.align(boss);
-            posY = boss.bottom() + LevelTab.GAP;
-
-            height = (int) (posY - LevelTab.GAP);
+            height = EditorUtilies.layoutCompsLinear(GAP, BUTTON_HEIGHT, this, boss, bossMusic);
         }
 
         private void selectBoss(Consumer<Mob> callBack) {

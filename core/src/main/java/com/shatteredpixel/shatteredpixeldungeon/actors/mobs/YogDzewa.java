@@ -218,7 +218,7 @@ public class YogDzewa extends Mob {
 						});
 					}
 				});
-			} else if (playerAlignment == Mob.NORMAL_ALIGNMENT && showBossBar) {
+			} else if (playerAlignment == Mob.NORMAL_ALIGNMENT) {
 				if (bossMusic == null) Dungeon.level.playSpecialMusic(Assets.Music.HALLS_BOSS_FINALE, id());
 			}
 		}
@@ -615,16 +615,14 @@ public class YogDzewa extends Mob {
 
 		if (!BossHealthBar.isAssigned(this)) {
 			BossHealthBar.addBoss(this);
-			if (showBossBar) {
-				if (!(Dungeon.level instanceof HallsBossLevel)) {
-					Dungeon.level.seal();
-					playBossMusic(Assets.Music.HALLS_BOSS);
-				}
-				yell(Messages.get(this, "notice"));
-				for (Char ch : Actor.chars()) {
-					if (ch instanceof DriedRose.GhostHero) {
-						((DriedRose.GhostHero) ch).sayBoss(YogDzewa.class);
-					}
+			if (!(Dungeon.level instanceof HallsBossLevel)) {
+				if (showBossBar) Dungeon.level.seal();
+				playBossMusic(Assets.Music.HALLS_BOSS);
+			}
+			yell(Messages.get(this, "notice"));
+			for (Char ch : Actor.chars()) {
+				if (ch instanceof DriedRose.GhostHero) {
+					((DriedRose.GhostHero) ch).sayBoss(YogDzewa.class);
 				}
 			}
 			if (Dungeon.level instanceof HallsBossLevel) {
