@@ -176,7 +176,7 @@ public class HallsBossLevel extends Level {
 		}
 
 		CustomTilemap vis = new CenterPieceVisuals();
-		vis.pos(ROOM_LEFT, ROOM_TOP+1);
+		vis.pos(ROOM_LEFT + vis.offsetCenterX, ROOM_TOP+1 + vis.offsetCenterY);
 		customTiles.add(vis);
 
 		vis = new BigPillarVisual();
@@ -188,7 +188,7 @@ public class HallsBossLevel extends Level {
 		customWalls.add(vis);
 
 		vis = new LevelExitVisual();
-		vis.pos(WIDTH/2-vis.tileW/2, ROOM_TOP);
+		vis.pos(WIDTH/2, ROOM_TOP + 1);
 		customWalls.add(vis);
 
 		//basic version of building flag maps for the pathfinder test
@@ -210,7 +210,7 @@ public class HallsBossLevel extends Level {
 	@Override
 	public int exit() {
 		int exit = super.exit();
-		return exit == 0 ? exitCell : exit;
+		return exit == 0 || exit == entrance() ? exitCell : exit;
 	}
 
 	@Override
@@ -315,13 +315,13 @@ public class HallsBossLevel extends Level {
 			for (CustomTilemap t : customTiles) {
 				if (t instanceof CenterPieceVisuals) {
 					((CenterPieceVisuals) t).updateState();
-				} else if (t instanceof LevelExitVisual) {
-					((LevelExitVisual) t).updateState();
 				}
 			}
 			for (CustomTilemap t : customWalls) {
 				if (t instanceof CenterPieceWalls) {
 					((CenterPieceWalls) t).updateState();
+				} else if (t instanceof LevelExitVisual) {
+					((LevelExitVisual) t).updateState();
 				}
 			}
 
