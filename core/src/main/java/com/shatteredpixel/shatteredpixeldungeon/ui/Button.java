@@ -208,7 +208,7 @@ public class Button extends Component {
 		super.cancelClick();
 		clickReady = false;
 		isclickHolding = false;
-		onPointerUp();
+		if (active) onPointerUp();
 		hotArea.reset();
 		if (pressedButton == this) pressedButton = null;
 	}

@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndZones;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
@@ -88,6 +89,7 @@ import com.watabou.utils.Reflection;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -477,6 +479,9 @@ public class EditorScene extends PixelScene {
     }
 
     public static void updateMap(int cell) {
+        if (Dungeon.level != null && Dungeon.level.visualRegions[cell] == LevelScheme.REGION_NONE)
+            Dungeon.level.visualMap[cell] = Dungeon.level.map[cell];
+
         revalidateBossCustomTiles();
         if (scene != null) {
             scene.tiles.updateMapCell(cell);
@@ -488,6 +493,18 @@ public class EditorScene extends PixelScene {
     }
 
     public static void updateMap() {
+        if (Dungeon.level != null) {
+            System.arraycopy(Dungeon.level.map, 0, Dungeon.level.visualMap, 0, Dungeon.level.map.length);
+            Arrays.fill(Dungeon.level.visualRegions, LevelScheme.REGION_NONE);
+            for (CustomTilemap vis : Dungeon.level.customTiles) {
+                if (vis instanceof CustomTileLoader.SimpleCustomTile) {
+                    int cell = vis.tileX + vis.tileY * Dungeon.level.width();
+                    Dungeon.level.visualMap[cell] = ((CustomTileLoader.SimpleCustomTile) vis).imageTerrain;
+                    Dungeon.level.visualRegions[cell] = ((CustomTileLoader.SimpleCustomTile) vis).region;
+                }
+            }
+        }
+
         revalidateBossCustomTiles();
         if (scene != null) {
             scene.tiles.updateMap();

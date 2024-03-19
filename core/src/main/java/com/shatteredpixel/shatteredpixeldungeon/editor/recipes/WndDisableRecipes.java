@@ -12,7 +12,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.Blandfruit;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.StewedMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.BlizzardBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.CausticBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.InfernalBrew;
@@ -39,7 +38,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.Recycle;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.SummonElemental;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.TelekineticGrab;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.WildEnergy;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -140,8 +138,8 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
         switch (index) {
             case 0:
             default:
-                result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, 300, Messages.get(WndDisableRecipes.class, "potions"), Potion.PlaceHolder.class));
-                result.add(new RecipeInfo(ItemSpriteSheet.STONE_HOLDER, 100, Messages.get(WndDisableRecipes.class, "runestones"), Runestone.PlaceHolder.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, 300, Messages.get(WndDisableRecipes.class, "potions"), null));
+                result.add(new RecipeInfo(ItemSpriteSheet.STONE_HOLDER, 100, Messages.get(WndDisableRecipes.class, "runestones"), null));
                 result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, 101, Messages.get(WndDisableRecipes.class, "exotic_potions"), null));
                 result.add(new RecipeInfo(ItemSpriteSheet.SCROLL_HOLDER, 102, Messages.get(WndDisableRecipes.class, "exotic_scrolls"), null));
                 return result;
