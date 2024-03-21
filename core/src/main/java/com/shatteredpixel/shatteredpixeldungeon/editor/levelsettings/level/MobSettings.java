@@ -1,9 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings.ITEM_HEIGHT;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab.BUTTON_HEIGHT;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab.GAP;
-
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
@@ -19,11 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSelectL
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
@@ -37,12 +29,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
@@ -52,11 +40,11 @@ import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings.ITEM_HEIGHT;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab.BUTTON_HEIGHT;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab.GAP;
 
 public class MobSettings extends Component implements LevelTab.BackPressImplemented {
 
@@ -445,8 +433,8 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
         }
 
         @Override
-        protected void showAddItemWnd() {
-            EditorScene.selectItem(createSelector(MobItem.class, false, Mobs.bag.getClass()));
+        protected WndBag.ItemSelector createSelector(com.watabou.utils.Consumer<Item> onSelect) {
+            return createSelector(MobItem.class, false, Mobs.bag.getClass(), onSelect);
         }
 
         @Override

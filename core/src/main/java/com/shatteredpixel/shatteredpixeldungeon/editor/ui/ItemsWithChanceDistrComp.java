@@ -1,8 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp.BUTTON_HEIGHT;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp.GAP;
-
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
@@ -17,22 +14,21 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Consumer;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp.BUTTON_HEIGHT;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp.GAP;
 
 public abstract class ItemsWithChanceDistrComp extends Component {
 
@@ -76,7 +72,7 @@ public abstract class ItemsWithChanceDistrComp extends Component {
                 addItem = new RedButton(addItemLabel) {
                     @Override
                     protected void onClick() {
-                        showAddItemWnd();
+                        showAddItemWnd(null);
                     }
                 };
                 add(addItem);
@@ -97,9 +93,13 @@ public abstract class ItemsWithChanceDistrComp extends Component {
         };
     }
 
-    protected abstract void showAddItemWnd();
+    protected void showAddItemWnd(Consumer<Item> onSelect) {
+        EditorScene.selectItem(createSelector(onSelect));
+    }
 
-    protected final WndBag.ItemSelector createSelector(Class<? extends Item> itemClasses, boolean allowRandomItem, Class<? extends Bag> prefBag) {
+    protected abstract WndBag.ItemSelector createSelector(Consumer<Item> onSelect);
+
+    protected final WndBag.ItemSelector createSelector(Class<? extends Item> itemClasses, boolean allowRandomItem, Class<? extends Bag> prefBag, Consumer<Item> onSelect) {
         return new ItemSelector.AnyItemSelectorWnd(itemClasses, allowRandomItem) {
             {
                 preferredBag = prefBag;
@@ -109,14 +109,19 @@ public abstract class ItemsWithChanceDistrComp extends Component {
                 if (!acceptItem(item)) return;
                 if (item != EditorItem.NULL_ITEM)
                     item = item instanceof ItemItem ? ((ItemItem) item).item().getCopy() : item.getCopy();
-                ItemWithCount i = new ItemWithCount();
-                i.items.add(item);
-                i.setCount(1);
-                sum++;
-                randomItemData.distrSlots.add(i);
-                addSlot(i);
 
-                updateList(true);
+                if (onSelect == null) {
+                    ItemWithCount i = new ItemWithCount();
+                    i.items.add(item);
+                    i.setCount(1);
+                    sum++;
+                    randomItemData.distrSlots.add(i);
+                    addSlot(i);
+
+                    updateList(true);
+                } else {
+                    onSelect.accept(item);
+                }
             }
 
             @Override
@@ -241,6 +246,11 @@ public abstract class ItemsWithChanceDistrComp extends Component {
                         if (ItemsWithChanceDistrComp.this instanceof LootTableComp)
                             EditItemComp.showSpreadIfLoot = true;
                         super.showWndEditItemComp(slot, item);
+                    }
+
+                    @Override
+                    protected void showSelectWindow() {
+                        showAddItemWnd(this::onSelect);
                     }
                 };
                 add(items);

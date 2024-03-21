@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Consumer;
 
 import java.util.HashSet;
 
@@ -28,12 +29,17 @@ public class RandomItemDistrComp extends ItemsWithChanceDistrComp {
     }
 
     @Override
-    protected void showAddItemWnd() {
-        WndBag.ItemSelector selector = createSelector((Class<? extends Item>) randomItem.getType(), false, Items.bag.getClass());
+    protected void showAddItemWnd(Consumer<Item> onSelect) {
+        WndBag.ItemSelector selector = createSelector(onSelect);
         if (randomItem.getType() != Item.class)
             ItemSelector.showSelectWindow(selector, ItemSelector.NullTypeSelector.NOTHING, randomItem.getType(),
                     Items.bag, new HashSet<>(0), false);
         else EditorScene.selectItem(selector);
+    }
+
+    @Override
+    protected WndBag.ItemSelector createSelector(Consumer<Item> onSelect) {
+        return createSelector((Class<? extends Item>) randomItem.getType(), false, Items.bag.getClass(), onSelect);
     }
 
     @Override

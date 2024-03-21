@@ -1,13 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Consumer;
 import com.watabou.utils.Reflection;
 
 public class LootTableComp extends ItemsWithChanceDistrComp {
@@ -44,8 +45,8 @@ public class LootTableComp extends ItemsWithChanceDistrComp {
     }
 
     @Override
-    protected void showAddItemWnd() {
-        EditorScene.selectItem(createSelector(Item.class, true, Items.bag.getClass()));
+    protected WndBag.ItemSelector createSelector(Consumer<Item> onSelect) {
+        return createSelector(Item.class, true, Items.bag.getClass(), onSelect);
     }
 
     @Override
