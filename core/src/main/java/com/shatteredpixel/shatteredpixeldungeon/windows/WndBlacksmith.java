@@ -72,7 +72,8 @@ public class WndBlacksmith extends Window {
 		titlebar.setRect( 0, 0, width, 0 );
 		add( titlebar );
 
-		RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "prompt", troll.quest.favor), 6 );
+		String prompt = troll.quest.isOldQuest() ? Messages.get(this, "prompt_old") : Messages.get(this, "prompt", troll.quest.favor);
+		RenderedTextBlock message = PixelScene.renderTextBlock( prompt, 6 );
 		message.maxWidth( width );
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );

@@ -14,11 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.BatSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CrystalGuardianSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollGuardSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -312,6 +308,11 @@ public class BlacksmithQuest extends Quest {
 
     public static boolean isOldGoldQuestsActive() {
         return oldGoldQuestsActive > 0;
+    }
+
+
+    public boolean isOldQuest() {
+        return type() == GOLD || type() == BLOOD;
     }
 
     @Override

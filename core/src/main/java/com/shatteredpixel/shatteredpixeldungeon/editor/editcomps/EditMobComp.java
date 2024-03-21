@@ -5,77 +5,24 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM201;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalCore;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SpawnerMob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.TormentedSpirit;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeMobCustomizable;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BtnSelectBossMusic;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffIndicatorEditor;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.BuffListContainer;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.FistSelector;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.HeroClassSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.LotusLevelSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.MobStateSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.QuestSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.DestCellSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.WndEditStats;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BuffItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelectorList;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledItemSelector;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -97,25 +44,10 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.MimicSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.SpawnerSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
@@ -123,11 +55,7 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class EditMobComp extends DefaultEditComp<Mob> {
 
@@ -405,7 +333,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 add(questItem2);
                 questItem1.setShowWhenNull(ItemSpriteSheet.SOMETHING);
                 questItem2.setShowWhenNull(ItemSpriteSheet.SOMETHING);
-                blacksmithQuestRewards = null;
 
             } else if (mob instanceof Ghost) {
                 questItem1 = new StyledItemSelector(label("weapon"),
@@ -448,7 +375,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 if (mob instanceof Blacksmith) {
                     BlacksmithQuest quest = ((Blacksmith) mob).quest;
                     if (quest.smithRewards == null) quest.smithRewards = new ArrayList<>(3);
-                    while (quest.smithRewards.size() < 3) quest.smithRewards.add(new Item());
+                    while (quest.smithRewards.size() < 3) quest.smithRewards.add(ItemSelectorList.NULL_ITEM);
                     blacksmithQuestRewards = new ItemSelectorList<Item>(quest.smithRewards, label("blacksmith_items")) {
                         @Override
                         public void change(int index) {
@@ -492,7 +419,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                             super.destroy();
                             Set<Item> toRemove = new HashSet<>(4);
                             for (Item i : list) {
-                                if (i.getClass() == Item.class) toRemove.add(i);
+                                if (i == ItemSelectorList.NULL_ITEM) toRemove.add(i);
                             }
                             list.removeAll(toRemove);
                         }

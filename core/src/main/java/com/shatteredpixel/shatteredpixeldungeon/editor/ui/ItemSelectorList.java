@@ -3,14 +3,14 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.QuestSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
 import java.util.List;
@@ -25,6 +25,13 @@ public class ItemSelectorList<T extends Item> extends Component {
     protected InventorySlot[] itemSlots;
 
     protected final List<T> list;
+
+    public static final Item NULL_ITEM = new Item() {
+        @Override
+        public String name() {
+            return Messages.get(QuestSpinner.class, "random");
+        }
+    };
 
     public ItemSelectorList(List<T> list, String label) {
         this(list, label, 9);
@@ -47,7 +54,7 @@ public class ItemSelectorList<T extends Item> extends Component {
         }
         if (index < itemSlots.length) {
             for (; index < itemSlots.length; index++) {
-                itemSlots[index] = new OwnItemSlot(new Item(), index);
+                itemSlots[index] = new OwnItemSlot(NULL_ITEM, index);
                 add(itemSlots[index]);
             }
         }
@@ -122,21 +129,20 @@ public class ItemSelectorList<T extends Item> extends Component {
 
         @Override
         protected void onClick() {
-            if (item.getClass() == Item.class) {
+            if (item == NULL_ITEM) {
                 change(index);
                 return;
             }
 
             super.onClick();
-            Window w = new EditCompWindow(item) {
+
+            EditorScene.show(new EditCompWindow(item) {
                 @Override
                 protected void onUpdate() {
                     super.onUpdate();
                     updateItem(index);
                 }
-            };
-            if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-            else Game.scene().addToFront(w);
+            });
         }
 
         @Override

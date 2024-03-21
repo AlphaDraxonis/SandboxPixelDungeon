@@ -200,7 +200,7 @@ public class Blacksmith extends QuestNPC<BlacksmithQuest> {
 					if (quest.type() >= BlacksmithQuest.CRYSTAL) msg += "\n\n" + Messages.get(Blacksmith.this, "reminder_" + quest.getMessageString());
 					tell(msg);
 			}
-		} else if (quest.reforges == 0 && quest.type() <= BlacksmithQuest.BLOOD) {
+		} else if (quest.reforges == 0 && quest.isOldQuest()) {
 
 			Game.runOnRenderThread(new Callback() {
 				@Override
