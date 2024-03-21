@@ -12,18 +12,14 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.Tilemap;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class CustomTileLoader {
 
@@ -310,6 +306,12 @@ public final class CustomTileLoader {
             imageTerrain = template.imageTerrain;
             region = template.region;
             updateTexture();
+        }
+
+        @Override
+        public Image image(int tileX, int tileY) {
+            int cell = tileX + tileY * Dungeon.level.width();
+            return DungeonTerrainTilemap.tile(cell, imageTerrain, Dungeon.level.visualRegions[cell]);
         }
     }
 

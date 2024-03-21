@@ -23,10 +23,13 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 
@@ -118,10 +121,14 @@ public class TenguSprite extends MobSprite {
 
 	@Override
 	protected void playZapAnim(int cell) {
+		playZap(parent, this, cell, ch);
+	}
+
+	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
 		//Zap animations are usually handled in Tengu.java
 		if (!(ch instanceof Tengu)) {
 			((MissileSprite)parent.recycle( MissileSprite.class )).
-					reset( this, cell, new TenguShuriken(), new Callback() {
+					reset( sprite, cell, new TenguShuriken(), new Callback() {
 						@Override
 						public void call() {
 							ch.onZapComplete();

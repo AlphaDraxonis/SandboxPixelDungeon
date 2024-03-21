@@ -1,16 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CAVES;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CITY;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_HALLS;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_NONE;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_PRISON;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ENTRANCE;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EXIT;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL;
-
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
@@ -37,33 +26,14 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
-import com.shatteredpixel.shatteredpixeldungeon.levels.CavesLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.CityLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.DeadEndLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.HallsLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BlazingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BurningTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ChillingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ExplosiveTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FrostTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GatewayTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
@@ -71,23 +41,14 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Music;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Reflection;
-import com.watabou.utils.SparseArray;
+import com.watabou.utils.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.*;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.*;
 
 public class CustomLevel extends Level {
 
@@ -433,7 +394,8 @@ public class CustomLevel extends Level {
             else Music.INSTANCE.play(currentMusic, true);
         }
         else if (musicRequests.isEmpty() && musicFile != null) {
-            Music.INSTANCE.play(musicFile, true);
+            if (musicFile.isEmpty()) Music.INSTANCE.end();
+            else Music.INSTANCE.play(musicFile, true);
         }
         else {
             playLevelMusic(musicRegion == REGION_NONE ? getRegionValue() : musicRegion);
@@ -629,7 +591,7 @@ public class CustomLevel extends Level {
 
         bundle.put(WATER_TEXTUTE, waterTexture);
         bundle.put(MUSIC_REGION, musicRegion);
-        bundle.put(MUSIC_FILE, musicFile);
+        if (musicFile != null) bundle.put(MUSIC_FILE, musicFile);
         bundle.put(ENABLE_RESPAWNING, enableRespawning);
         bundle.put(RESPAWN_COOLDOWN, respawnCooldown);
         bundle.put(MOB_LIMIT, mobLimit);
@@ -663,8 +625,7 @@ public class CustomLevel extends Level {
 
         musicRegion = bundle.getInt(MUSIC_REGION) + bundle.getInt("music");
         if (bundle.contains("custom_music")) musicFile = bundle.getString("custom_music");
-        else musicFile = bundle.getString(MUSIC_FILE);
-        if ("".equals(musicFile)) musicFile = null;
+        else if (bundle.contains(MUSIC_FILE)) musicFile = bundle.getString(MUSIC_FILE);
 
         if (bundle.contains("init_for_play_called") && !bundle.getBoolean("init_for_play_called")) {//TODO remove in 1.2
             blobs.remove(Alchemy.class);

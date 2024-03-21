@@ -67,9 +67,11 @@ public class SummoningTrap extends Trap {
 
 		ArrayList<Integer> candidates = new ArrayList<>();
 
+		Mob enemyMob = new Mob(){};
+
 		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 			int p = pos + PathFinder.NEIGHBOURS8[i];
-			if (Barrier.canEnterCell(p, null, true, true)) {
+			if (Barrier.canEnterCell(p, enemyMob, true, true)) {
 				candidates.add( p );
 			}
 		}
