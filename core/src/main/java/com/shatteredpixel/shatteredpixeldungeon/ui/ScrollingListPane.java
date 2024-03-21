@@ -23,12 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.watabou.noosa.BitmapText;
-import com.watabou.noosa.ColorBlock;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.MovieClip;
-import com.watabou.noosa.Scene;
+import com.watabou.noosa.*;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -278,5 +273,35 @@ public class ScrollingListPane extends ScrollPane {
 
     }
 
+    public static abstract class ListButton extends ListItem {
+
+        protected StyledButton button;
+
+        public ListButton() {
+            super(new Image(), "");
+        }
+
+        @Override
+        protected void createChildren(Object... params) {
+            super.createChildren(params);
+            remove(icon);
+            remove(label);
+            hotArea.destroy();
+            hotArea.killAndErase();
+            hotArea.remove();
+            add(button = createButton());
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+
+            button.setRect(x + (width - Math.max(width * 0.8f, button.reqWidth())) * 0.5f, y + Math.max(0, (height - button.reqHeight() - 2) * 0.5f),
+                    Math.max(width * 0.8f, button.reqWidth()), Math.min(height, button.reqHeight() + 2));
+            PixelScene.align(button);
+        }
+
+        protected abstract StyledButton createButton();
+    }
 
 }

@@ -2,60 +2,14 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ActionTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.AlarmTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BlazingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BurningTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ChillingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ConfusionTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CorrosionTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CursingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisarmingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DistortionTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ExplosiveTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FlashingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FlockTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FrostTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GatewayTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GeyserTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GnollRockfallTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GoldDiggerTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrimTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrippingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GuardianTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.LooseItemsTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.OozeTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ParalyticTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PoisonDartTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.RageTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.RockfallTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ShockingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ShroudingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.StormTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.SummoningTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.TeleportationTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ToxicTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.UnstableTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WarpingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WarpwayTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WeakeningTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WornDartTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 public enum Traps {
 
@@ -189,17 +143,7 @@ public enum Traps {
     }
 
 
-    public static final EditorItemBag bag = new EditorItemBag("name", 0) {
-        @Override
-        public Item findItem(Object src) {
-            for (Item bag : items) {
-                for (Item i : ((Bag) bag).items) {
-                    if (((TrapItem) i).getObject().getClass() == src) return i;
-                }
-            }
-            return null;
-        }
-    };
+    public static final EditorItemBag bag = new EditorItemBag("name", 0) {};
 
     static {
         for (Traps traps : Traps.values()) {

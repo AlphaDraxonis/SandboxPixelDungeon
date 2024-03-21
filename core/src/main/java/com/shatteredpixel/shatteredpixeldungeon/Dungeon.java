@@ -23,15 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Awareness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSight;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
@@ -44,7 +36,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClassGenerator;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
@@ -64,14 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
-import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.HallsBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
@@ -84,26 +70,13 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Toolbar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
 import com.watabou.noosa.Game;
-import com.watabou.utils.BArray;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.DeviceCompat;
-import com.watabou.utils.FileUtils;
-import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.*;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 public class Dungeon {
 
@@ -343,6 +316,8 @@ public class Dungeon {
 		hero.live();
 		
 		Badges.reset();
+
+		CustomObject.loadScripts();
 		
 		GamesInProgress.selectedClass.initHero( hero );
 	}
@@ -543,7 +518,7 @@ public class Dungeon {
 			But when they do the user will get a nice 'report this issue' dialogue, and I can fix the bug.*/
 		}
 
-        LuaClassGenerator.updateGlobalVars();
+        LuaManager.updateGlobalVars();
 	}
 
 	public static void dropToChasm( Item item ) {
@@ -858,6 +833,8 @@ public class Dungeon {
         } else CustomDungeonSaves.setCurDirectory(GamesInProgress.gameFolder(save) + "/");
 
         CustomTileLoader.loadTiles(true);
+
+		CustomObject.loadScripts();
     }
 
     public static Level loadLevel(int save) throws IOException {

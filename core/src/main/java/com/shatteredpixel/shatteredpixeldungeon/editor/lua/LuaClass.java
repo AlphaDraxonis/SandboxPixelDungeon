@@ -24,11 +24,24 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
-public interface LuaClass {
+import com.watabou.utils.Bundlable;
+
+public interface LuaClass extends Bundlable {
 
     String VARS = "vars";
+    String IDENTIFIER = "identifier";
 
-    void setIdentifier(String identifier);
-    String getIdentifier();
+    void setIdentifier(int identifier);
+    int getIdentifier();
+
+    /**
+     * Returns if this object is the one associated in CustomObject
+     * @return CustomObject.getLuaClass(getIdentifier()) == this
+     */
+    default boolean isOriginal() {
+        return CustomObject.getLuaClass(getIdentifier()) == this;
+    }
+
+    //TODO we also need a way to override mob sprites...
 
 }

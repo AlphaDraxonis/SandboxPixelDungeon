@@ -1,10 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.watabou.noosa.Image;
 
@@ -69,23 +66,6 @@ public enum MobSprites {
     }
 
     public static final EditorItemBag bag = new EditorItemBag("name", 0){
-        @Override
-        public Item findItem(Object src) {
-            if (src instanceof Char) {
-                for (Item bag : items) {
-                    for (Item i : ((Bag) bag).items) {
-                        if (((MobSpriteItem) i).mob() == src) return i;
-                    }
-                }
-            } else {
-                for (Item bag : items) {
-                    for (Item i : ((Bag) bag).items) {
-                        if (((MobSpriteItem) i).getObject() == src) return i;
-                    }
-                }
-            }
-            return null;
-        }
     };
 
     static {

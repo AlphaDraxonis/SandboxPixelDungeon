@@ -1,82 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Acidic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Albino;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredBrute;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bandit;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bat;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bee;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CausticSlime;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Crab;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalGuardian;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalMimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalWisp;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM200;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM201;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FetidRat;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalCore;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalSentry;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FungalSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Gnoll;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGuard;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollSapper;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollTrickster;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GoldenMimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GreatCrab;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.PhantomPiranha;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RipperDemon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RotHeart;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RotLasher;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Scorpio;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Senior;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shaman;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Skeleton;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Slime;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.SpectralNecromancer;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Succubus;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Swarm;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.TormentedSpirit;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs.Mob_lua;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.ImpShopkeeper;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomObjectComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -84,15 +16,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.BatSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.MonkSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.SuccubusSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.WandmakerSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.WraithSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
@@ -311,7 +238,7 @@ public enum Mobs {
     }
 
     public static Mob initMob(Class<? extends Mob> mobClass) {
-        Mob mob = (Mob) Reflection.newInstance(mobClass);
+        Mob mob = Reflection.newInstance(mobClass);
         if (mob instanceof WandOfRegrowth.Lotus) {
             ((WandOfRegrowth.Lotus) mob).setLevel(7);
         }
@@ -348,10 +275,20 @@ public enum Mobs {
 
     public static final EditorItemBag bag = new EditorItemBag("name", 0){
         @Override
-        public Item findItem(Object src) {
-            for (Item bag : items) {
-                for (Item i : ((Bag) bag).items) {
-                    if (((MobItem) i).mob().getClass() == src) return i;
+        public Item findItem(FindInBag src) {
+            if (src.getType() == FindInBag.Type.CLASS) {
+                for (Item bag : items) {
+                    for (Item i : ((Bag) bag).items) {
+                        if (((MobItem) i).mob().getClass() == src.getValue()) return i;
+                    }
+                }
+            }
+            if (src.getType() == FindInBag.Type.CUSTOM_OBJECT) {
+                for (Item bag : items) {
+                    for (Item i : ((Bag) bag).items) {
+                        Mob m = ((MobItem) i).mob();
+                        if (m instanceof LuaClass && ((LuaClass) m).getIdentifier() == (int) src.getValue()) return i;
+                    }
                 }
             }
             return null;
@@ -361,6 +298,39 @@ public enum Mobs {
     static {
         for (Mobs m : values()) {
             bag.items.add(new MobBag(m));
+        }
+        bag.items.add(customMobsBag = new CustomMobsBag());
+    }
+
+    public static CustomMobsBag customMobsBag;
+
+    public static class CustomMobsBag extends EditorItemBag {
+        public CustomMobsBag() {
+            super("nametzz", -1);
+        }
+
+        @Override
+        public Image getCategoryImage() {
+            return Icons.TALENT.get();
+        }
+    }
+
+    public static void updateCustomMobsInInv() {
+        customMobsBag.clear();
+        for (Mob customMob : CustomObject.getAllCustomObjects(Mob.class)) {
+            customMobsBag.items.add(new MobItem(customMob));
+        }
+    }
+
+
+    public static class AddCustomMobButton extends ScrollingListPane.ListButton {
+        protected RedButton createButton() {
+            return new RedButton(Messages.get(Tiles.WndCreateCustomTile.class, "titletzz")) {
+                @Override
+                protected void onClick() {
+                    EditorScene.show(new EditCustomObjectComp.WndNewCustomObject());
+                }
+            };
         }
     }
 

@@ -1,7 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.BUTTON_HEIGHT;
-
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -14,6 +12,8 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
+
+import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.BUTTON_HEIGHT;
 
 public abstract class NewCompWindow<T> extends Window {
 

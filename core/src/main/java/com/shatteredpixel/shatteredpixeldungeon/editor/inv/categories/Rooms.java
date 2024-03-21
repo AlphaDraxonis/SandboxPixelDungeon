@@ -3,8 +3,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.RoomItem;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
@@ -12,68 +10,9 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoo
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RotGardenRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.RatKingRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretArtilleryRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretChestChasmRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretGardenRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretHoardRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretHoneypotRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretLaboratoryRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretLarderRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretLibraryRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretMazeRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRunestoneRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretSummoningRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretWellRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ArmoryRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.CryptRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.CrystalChoiceRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.CrystalPathRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.CrystalVaultRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.DemonSpawnerRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.GardenRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.LaboratoryRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.LibraryRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicWellRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.PitRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.PoolRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.RunestoneRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SacrificeRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.StatueRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.StorageRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ToxicGasRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.TrapsRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.TreasuryRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.AquariumRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.BurnedRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.CaveRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.CavesFissureRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.CellBlockRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.ChasmRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.CircleBasinRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.CirclePitRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EmptyRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.FissureRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.GrassyGraveRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.HallwayRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.MinefieldRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.PillarsRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.PlantsRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.PlatformRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RingRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RuinsRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.SegmentedLibraryRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.SegmentedRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.SewerPipeRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.SkullsRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StatuesRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StripedRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StudyRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.SuspiciousChestRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -276,17 +215,7 @@ public enum Rooms {
         }
     }
 
-    public static final EditorItemBag bag = new EditorItemBag("name", 0) {
-        @Override
-        public Item findItem(Object src) {
-            for (Item bag : items) {
-                for (Item i : ((Bag) bag).items) {
-                    if (((RoomItem) i).room().getClass() == src) return i;
-                }
-            }
-            return null;
-        }
-    };
+    public static final EditorItemBag bag = new EditorItemBag("name", 0) {};
 
     static {
         for (Rooms r : values()) {

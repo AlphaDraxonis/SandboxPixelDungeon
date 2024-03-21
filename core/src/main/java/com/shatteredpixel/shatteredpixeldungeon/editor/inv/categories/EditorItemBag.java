@@ -1,6 +1,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -35,10 +38,38 @@ public class EditorItemBag extends Bag {
         return Messages.get(this, name);
     }
 
-    public Item findItem(Object src){
-        for (Item i : items) {
-            if (i.getClass() == src) return i;
+    public Item findItem(FindInBag src){
+        return findItem(this, src);
+    }
+
+    private static Item findItem(Bag bag, FindInBag src){
+
+        if (src.getType() == FindInBag.Type.CLASS) {
+            for (Item item : bag.items) {
+                if (item instanceof Bag) {
+                    Item result = findItem((Bag) item, src);
+                    if (result != null) return result;
+                }
+                Object realItem;
+                if (item instanceof EditorItem) realItem = ((EditorItem<?>) item).getObject();
+                else realItem = item;
+                if (realItem.getClass() == src.getValue()) return item;
+            }
         }
+        if (src.getType() == FindInBag.Type.CUSTOM_OBJECT) {
+            for (Item item : bag.items) {
+                if (item instanceof Bag) {
+                    Item result = findItem((Bag) item, src);
+                    if (result != null) return result;
+                }
+                Object realItem;
+                if (item instanceof EditorItem) realItem = ((EditorItem<?>) item).getObject();
+                else realItem = item;
+                if (realItem.getClass() == src.getValue()) return item;
+                if (realItem instanceof LuaClass && ((LuaClass) realItem).getIdentifier() == (int) src.getValue()) return item;
+            }
+        }
+
         return null;
     }
 

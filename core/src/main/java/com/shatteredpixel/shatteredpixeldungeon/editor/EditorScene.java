@@ -6,14 +6,20 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -24,7 +30,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelec
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ZoneActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ToastWithButtons;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -360,7 +365,7 @@ public class EditorScene extends PixelScene {
     public void update() {
         super.update();
 
-        for (Gizmo g : toDestroy){
+        for (Gizmo g : toDestroy){//tzz check!
             g.destroy();
         }
         toDestroy.clear();
@@ -427,6 +432,10 @@ public class EditorScene extends PixelScene {
                 cancel();
             }
         });
+    }
+
+    public static synchronized void promptStatic(Component newPrompt) {
+        if (scene != null) scene.prompt(newPrompt);
     }
 
     private synchronized void prompt(Component newPrompt) {
@@ -993,66 +1002,6 @@ public class EditorScene extends PixelScene {
 //        scene.switchLevelIndicator.setRect(0, 0, Tag.SIZE, Tag.SIZE);
     }
 
-    private static Object getObjAtCell(int cell) {
-        Mob mob = customLevel.findMob(cell);
-        if (mob != null) return mob;
-        Heap heap = customLevel.heaps.get(cell);
-        if (heap != null && heap.peek() != null) return heap.peek();
-        Plant plant = customLevel.plants.get(cell);
-        if (plant != null) return plant;
-        Trap trap = customLevel.traps.get(cell);
-        if (trap != null) return trap;
-        for (int i = 0; i < BlobActionPart.BlobData.BLOB_CLASSES.length; i++) {
-            Blob b = Dungeon.level.blobs.getOnly(BlobActionPart.BlobData.BLOB_CLASSES[i]);
-            if (b != null && !(b instanceof WellWater) && b.cur != null && b.cur[cell] > 0) return b;
-        }
-        for (CustomParticle particle : Dungeon.level.particles.values()) {
-            if (particle != null && particle.cur != null && particle.cur[cell] > 0) return particle;
-        }
-        Barrier barrier = customLevel.barriers.get(cell);
-        if (barrier != null) return barrier;
-        CustomTilemap customTile = CustomTileItem.findCustomTileAt(cell, false);
-        if (customTile != null) return customTile;
-        customTile = CustomTileItem.findCustomTileAt(cell, true);
-        if (customTile != null) return customTile;
-        return customLevel.map[cell];
-    }
-
-    public static <T> EditorItem<?> getObjAsInBag(T obj) {
-        if (obj instanceof Integer || obj instanceof String || obj instanceof CustomParticle || obj instanceof CustomParticle.ParticleProperty)
-            return (EditorItem<T>) Tiles.bag.findItem(obj);
-        if (obj instanceof CustomTileLoader.UserCustomTile) return (EditorItem<T>) Tiles.bag.findItem(((CustomTileLoader.UserCustomTile) obj).identifier);
-
-        Class<?> clazz = obj.getClass();
-        EditorItem<T> inBag;
-        if (Item.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Items.bag.findItem(clazz);
-        else if (Mob.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Mobs.bag.findItem(clazz);
-        else if (Trap.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Traps.bag.findItem(clazz);
-        else if (Plant.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Plants.bag.findItem(clazz);
-        else if (Blob.class.isAssignableFrom(clazz)) {
-            BlobItem realInBag = (BlobItem) Tiles.bag.findItem(clazz);//Blobs
-            realInBag.setObject((Class<? extends Blob>) clazz);
-            return realInBag;
-        }
-        else if (Barrier.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Tiles.bag.findItem(clazz);
-        else if (CustomTilemap.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Tiles.bag.findItem(clazz);//CustomTiles
-        else return null;
-        if (inBag !=null) inBag.setObject(obj);
-        return inBag;
-    }
-
-    public static EditorItem getObjAsInBagFromClass(Class<?> clazz) {
-        if (Item.class.isAssignableFrom(clazz)) return (EditorItem) Items.bag.findItem(clazz);
-        if (Mob.class.isAssignableFrom(clazz)) return (EditorItem) Mobs.bag.findItem(clazz);
-//        if (obj instanceof Integer) return (EditorItem) Tiles.bag.findItem(obj);
-        if (Trap.class.isAssignableFrom(clazz)) return (EditorItem) Traps.bag.findItem(clazz);
-        if (Plant.class.isAssignableFrom(clazz)) return (EditorItem) Plants.bag.findItem(clazz);
-        if (Blob.class.isAssignableFrom(clazz)) return (EditorItem) Tiles.bag.findItem(clazz);//Blobs
-        if (Barrier.class.isAssignableFrom(clazz)) return (EditorItem) Tiles.bag.findItem(clazz);//Barriers
-        if (CustomTilemap.class.isAssignableFrom(clazz)) return (EditorItem) Tiles.bag.findItem(clazz);//CustomTiles
-        return null;
-    }
-
     public static void updateDepthIcon() {
         if (scene == null) return;
         scene.menu.updateDepthIcon();
@@ -1218,9 +1167,7 @@ public class EditorScene extends PixelScene {
 
     public static void putInQuickslot(Integer cell) {
         if (cell != null && cell >= 0 && cell < customLevel.length()) {
-            Item firstObj = getObjAsInBag(getObjAtCell(cell));
-            if (firstObj == null) firstObj = getObjAsInBag(customLevel.map[cell]);
-            QuickSlotButton.set(firstObj);
+            QuickSlotButton.set(new FindInBag(FindInBag.getObjAtCell(cell)).getAsInBag());
         }
     }
 

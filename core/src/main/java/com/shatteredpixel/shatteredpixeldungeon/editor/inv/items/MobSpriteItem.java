@@ -1,23 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalGuardian;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalSpire;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGuard;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RipperDemon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobSpriteComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
@@ -45,7 +32,7 @@ public class MobSpriteItem extends EditorItem<Class<? extends CharSprite>> {
 
     public MobSpriteItem(Class<? extends CharSprite> sprite) {
         this.obj = sprite;
-        this.mob = (Mob) ((MobSpriteItem)MobSprites.bag.findItem(sprite)).mob().getCopy();
+        this.mob = (Mob) ((MobSpriteItem)MobSprites.bag.findItem(new FindInBag(FindInBag.Type.CLASS, sprite, null))).mob().getCopy();
         this.mob.spriteClass = obj;
     }
 

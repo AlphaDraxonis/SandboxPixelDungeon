@@ -2,23 +2,8 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PlantItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
-import com.shatteredpixel.shatteredpixeldungeon.plants.BlandfruitBush;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Fadeleaf;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Firebloom;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Icecap;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Mageroyal;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Rotberry;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Sorrowmoss;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Starflower;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Stormvine;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Sungrass;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
+import com.shatteredpixel.shatteredpixeldungeon.plants.*;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
@@ -95,17 +80,7 @@ public enum Plants {
         }
     }
 
-    public static final EditorItemBag bag = new EditorItemBag("name", 0) {
-        @Override
-        public Item findItem(Object src) {
-            for (Item bag : items) {
-                for (Item i : ((Bag) bag).items) {
-                    if (((PlantItem) i).getObject().getClass() == src) return i;
-                }
-            }
-            return null;
-        }
-    };
+    public static final EditorItemBag bag = new EditorItemBag("name", 0) {};
 
     static {
         for (Plants p : values()) {

@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditParticleComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
@@ -93,53 +94,51 @@ public enum Tiles {
 
     public static final EditorItemBag bag = new EditorItemBag("name", 0) {
         @Override
-        public Item findItem(Object src) {
-            if (src instanceof Class<?>) {//for blobs, customTiles and barriers
-                for (Item bag : items) {
-                    for (Item i : ((Bag) bag).items) {
-                        if (i instanceof BlobItem && ((BlobItem) i).getObject() == src) return i;
-                        if (i instanceof CustomTileItem && ((CustomTileItem) i).getObject().getClass() == src) return i;
-                        if (i instanceof BarrierItem && ((BarrierItem) i).getObject().getClass() == src) return i;
-                    }
-                }
-                return null;
-            }
-            if (src instanceof String) {
+        public Item findItem(FindInBag src) {
+
+            Item result = super.findItem(src);
+            if (result != null) return result;
+
+            if (src.getType() == FindInBag.Type.CUSTOM_TILE) {
                 for (Item i : customTileBag.items) {
                     if (i instanceof CustomTileItem) {
                         CustomTilemap customTile = ((CustomTileItem) i).getObject();
                         if (customTile instanceof CustomTileLoader.UserCustomTile
-                                && src.equals(((CustomTileLoader.UserCustomTile) customTile).identifier)) return i;
+                                && src.getValue().equals(((CustomTileLoader.UserCustomTile) customTile).identifier)) return i;
                     }
                 }
                 return null;
             }
-            if (src instanceof CustomParticle || src instanceof CustomParticle.ParticleProperty) {
-                int id = src instanceof CustomParticle ? ((CustomParticle) src).particleID : ((CustomParticle.ParticleProperty) src).particleID();
+            if (src.getType() == FindInBag.Type.PARTICLE) {
+                int id = (int) src.getValue();
                 for (Item i : particleBag.items) {
                     if (i instanceof ParticleItem && ((ParticleItem) i).getObject().particleID() == id) return i;
                 }
                 return null;
             }
-            int val = (int) src;
-            if (val == Terrain.CUSTOM_DECO_EMPTY) {
-                val = EMPTY_DECO;
-            }
-            if (val == Terrain.CUSTOM_DECO) {
-                if (EditorScene.customLevel().bossGroundVisuals instanceof CityBossLevel.CustomGroundVisuals)
-                    return findItem(CityBossLevel.KingsThrone.class);
-                val = Terrain.WALL;
-            }
-            if (val == TRAP || val == INACTIVE_TRAP || val == SECRET_TRAP) {
-                if (EditorScene.customLevel().bossGroundVisuals instanceof CavesBossLevel.ArenaVisuals)
-                    return findItem(CavesBossLevel.TrapTile.class);
-                val = Terrain.EMPTY;
-            }
-            for (Item bag : items) {
-                for (Item i : ((Bag) bag).items) {
-                    if (i instanceof TileItem && ((TileItem) i).terrainType() == val) return i;
+            if (src.getType() == FindInBag.Type.TILE) {
+                int val = (int) src.getValue();
+                if (val == Terrain.CUSTOM_DECO_EMPTY) {
+                    val = EMPTY_DECO;
                 }
+                if (val == Terrain.CUSTOM_DECO) {
+                    if (EditorScene.customLevel().bossGroundVisuals instanceof CityBossLevel.CustomGroundVisuals)
+                        return findItem(new FindInBag(FindInBag.Type.CLASS, CityBossLevel.KingsThrone.class, null));
+                    val = Terrain.WALL;
+                }
+                if (val == TRAP || val == INACTIVE_TRAP || val == SECRET_TRAP) {
+                    if (EditorScene.customLevel().bossGroundVisuals instanceof CavesBossLevel.ArenaVisuals)
+                        return findItem(new FindInBag(FindInBag.Type.CLASS, CavesBossLevel.TrapTile.class, null));
+                    val = Terrain.EMPTY;
+                }
+                for (Item bag : items) {
+                    for (Item i : ((Bag) bag).items) {
+                        if (i instanceof TileItem && ((TileItem) i).terrainType() == val) return i;
+                    }
+                }
+                return null;
             }
+
             return null;
         }
     };
@@ -280,34 +279,7 @@ public enum Tiles {
         customTileBag.items.remove(customTileItem);
     }
 
-    public static class AddSimpleCustomTileButton extends ScrollingListPane.ListItem {
-
-        protected RedButton button;
-
-        public AddSimpleCustomTileButton() {
-            super(new Image(), "");
-        }
-
-        @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
-            remove(icon);
-            remove(label);
-            hotArea.destroy();
-            hotArea.killAndErase();
-            hotArea.remove();
-            add(button = createButton());
-        }
-
-        @Override
-        protected void layout() {
-            super.layout();
-
-            button.setRect(x + (width - Math.max(width * 0.8f, button.reqWidth())) * 0.5f, y + Math.max(0, (height - button.reqHeight() - 2) * 0.5f),
-                    Math.max(width * 0.8f, button.reqWidth()), Math.min(height, button.reqHeight() + 2));
-            PixelScene.align(button);
-        }
-
+    public static class AddSimpleCustomTileButton extends ScrollingListPane.ListButton {
         protected RedButton createButton() {
             return new RedButton(Messages.get(WndCreateCustomTile.class, "title")) {
                 @Override
@@ -318,7 +290,7 @@ public enum Tiles {
         }
     }
 
-    public static class AddParticleButton extends AddSimpleCustomTileButton {
+    public static class AddParticleButton extends ScrollingListPane.ListButton {
         protected RedButton createButton() {
             return new RedButton(Messages.get(EditParticleComp.WndNewParticle.class, "title")) {
                 @Override

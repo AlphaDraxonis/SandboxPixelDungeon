@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.WellWaterSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ParticleItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -162,7 +163,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             customParticles = new ArrayList<>(4);
             for (CustomParticle particle : Dungeon.level.particles.values()) {
                 if (particle != null && particle.cur != null && particle.cur[cell] > 0) {
-                    EditorItem<?> particleItem = EditorScene.getObjAsInBag(particle);
+                    EditorItem<?> particleItem = new FindInBag(particle).getAsInBag();
                     if (particleItem != null) {
                         ScrollingListPane.ListItem listItem = new DefaultListItemWithRemoveBtn(
                                 particleItem, null, particleItem.name(), particleItem.getSprite()) {

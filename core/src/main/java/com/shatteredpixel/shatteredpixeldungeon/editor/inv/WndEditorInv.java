@@ -4,11 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -144,6 +140,9 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                     }
                     if (b instanceof Tiles.ParticleBag) {
                         ret.add(new Tiles.AddParticleButton());
+                    }
+                    if (b instanceof Mobs.CustomMobsBag) {
+                        ret.add(new Mobs.AddCustomMobButton());
                     }
 
                     return ret;

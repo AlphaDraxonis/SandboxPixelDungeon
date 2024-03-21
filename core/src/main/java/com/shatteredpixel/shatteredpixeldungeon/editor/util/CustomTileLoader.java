@@ -4,6 +4,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -35,6 +36,7 @@ public final class CustomTileLoader {
 
         EditorItemBag.callStaticInitializers();
         Tiles.updateParticlesInInv();
+        Mobs.updateCustomMobsInInv();
 
         if (!forceLoad && Dungeon.customDungeon.getName().equals(dungeonNameOfLastLoadedTiles)) return;
         dungeonNameOfLastLoadedTiles = Dungeon.customDungeon.getName();

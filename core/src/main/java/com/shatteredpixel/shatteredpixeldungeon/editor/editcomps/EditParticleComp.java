@@ -24,8 +24,6 @@ import com.watabou.utils.Random;
 
 public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticleProperty> {
 
-    //And show links to open such window directly from EditTileComp
-
     protected Emitter emitter;
 
     protected StyledSpinner type;

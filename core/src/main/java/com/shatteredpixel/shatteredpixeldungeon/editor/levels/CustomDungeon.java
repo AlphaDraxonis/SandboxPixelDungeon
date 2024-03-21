@@ -11,26 +11,19 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ParticleItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSwitchFloor;
-import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
-import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
-import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
-import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
-import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
-import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
+import com.shatteredpixel.shatteredpixeldungeon.editor.quests.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.recipes.CustomRecipe;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
@@ -38,11 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrCo
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.ItemStatusHandler;
-import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
+import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
@@ -60,7 +49,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
@@ -114,11 +102,14 @@ public class CustomDungeon implements Bundlable {
     public List<CustomRecipe> recipes;
     public Set<Integer> blockedRecipes;
     public Set<Class<? extends Item>> blockedRecipeResults;
-    public int nextParticleID = 1;
 
+	public int nextParticleID = 1;
     public Map<Integer, CustomParticle.ParticleProperty> particles;
 
     public CustomDungeon(String name) {
+
+        CustomObject.reset();
+
         this.name = name;
         ratKingLevels = new HashSet<>();
         itemDistributions = new ArrayList<>(5);
@@ -482,16 +473,9 @@ public class CustomDungeon implements Bundlable {
         return isEditing() || Dungeon.customDungeon.seeSecrets;
     }
 
-    public void setItemInToolbar(int slot, EditorItem item) {
+    public void setItemInToolbar(int slot, EditorItem<?> item) {
         if (item == null) toolbarItems[slot] = null;
-        else if (item instanceof TileItem) toolbarItems[slot] = ((TileItem) item).terrainType();
-        else if (item instanceof BlobItem) toolbarItems[slot] = ((BlobItem) item).getObject();
-        else if (item instanceof ParticleItem) toolbarItems[slot] = ((ParticleItem) item).getObject();
-        else if (item instanceof CustomTileItem) {
-            CustomTilemap cust = ((CustomTileItem) item).getObject();
-            if (cust instanceof CustomTileLoader.UserCustomTile) toolbarItems[slot] = ((CustomTileLoader.UserCustomTile) cust).identifier;
-            else toolbarItems[slot] = item.getObject().getClass();
-        } else toolbarItems[slot] = item.getObject().getClass();
+        else toolbarItems[slot] = new FindInBag(item.getObject());
     }
 
     public void restoreToolbar() {
@@ -500,12 +484,14 @@ public class CustomDungeon implements Bundlable {
         for (int i = 0; i < toolbarItems.length; i++) {
             if (toolbarItems[i] != null) {
                 Object obj = toolbarItems[i];
-                if (obj instanceof Integer || obj instanceof String || obj instanceof CustomParticle.ParticleProperty)
-                    QuickSlotButton.set(i, EditorScene.getObjAsInBag(obj));
-                else if (obj == EditorItem.REMOVER_ITEM.getClass())
-                    QuickSlotButton.set(i, EditorItem.REMOVER_ITEM);
-                else
-                    QuickSlotButton.set(i, EditorScene.getObjAsInBagFromClass((Class<?>) obj));
+                if (!(obj instanceof FindInBag)) {
+                    if (obj instanceof Integer) obj = new FindInBag(FindInBag.Type.TILE, obj, null);
+                    else if (obj instanceof String) obj = new FindInBag(FindInBag.Type.CUSTOM_TILE, obj, null);
+                    else if (obj instanceof CustomParticle.ParticleProperty) obj = new FindInBag(FindInBag.Type.PARTICLE, obj, null);
+                    else if (obj == EditorItem.REMOVER_ITEM.getClass()) obj = new FindInBag(FindInBag.Type.REMOVER, null, null);
+                    else obj = new FindInBag(FindInBag.Type.CLASS, obj, null);
+                }
+                QuickSlotButton.set(i, ((FindInBag) obj).getAsInBag());
             }
         }
         lastSelectedToolbarSlot = slotBefore;
@@ -532,10 +518,7 @@ public class CustomDungeon implements Bundlable {
     private static final String COLOR_CLASSES = "color_classes";
     private static final String GEM_LABELS = "gem_labels";
     private static final String GEM_CLASSES = "gem_classes";
-    private static final String TOOLBAR_ITEM = "toolbar_item_";
-    private static final String TOOLBAR_ITEM_INT = "toolbar_item_int_";
-    private static final String TOOLBAR_ITEM_STRING = "toolbar_item_string_";
-    private static final String TOOLBAR_ITEM_BUNDLABLE = "toolbar_item_bundlable";
+    private static final String TOOLBAR_SLOT = "toolbar_slot_";
     private static final String LAST_SELECTED_TOOLBAR_SLOT = "last_selected_toolbar_slot";
     private static final String HEROES_ENABLED = "heroes_enabled";
     private static final String HERO_SUBCLASSES_ENABLED = "hero_subclasses_enabled";
@@ -578,6 +561,8 @@ public class CustomDungeon implements Bundlable {
         bundle.put(BLOCKED_RECIPE_RESULTS, blockedRecipeResults.toArray(EditorUtilies.EMPTY_CLASS_ARRAY));
 
         bundle.put(PARTICLES, particles.values());
+
+        CustomObject.store(bundle);
 
         if (scrollRuneLabels != null) {
             String[] labels = new String[scrollRuneLabels.size()];
@@ -631,13 +616,13 @@ public class CustomDungeon implements Bundlable {
         for (int j = 0; j < toolbarItems.length; j++) {
             if (toolbarItems[j] != null) {
                 Object obj = toolbarItems[j];
-                if (obj instanceof Integer)
-                    bundle.put(TOOLBAR_ITEM_INT + j, (int) obj);
-                else if (obj instanceof String)
-                    bundle.put(TOOLBAR_ITEM_STRING + j, (String) obj);
-                else if (obj instanceof CustomParticle.ParticleProperty)
-                    bundle.put(TOOLBAR_ITEM_BUNDLABLE + j, (CustomParticle.ParticleProperty) obj);
-                else bundle.put(TOOLBAR_ITEM + j, (Class<?>) obj);
+                if (!(obj instanceof FindInBag)) {
+                    if (obj instanceof CustomParticle.ParticleProperty) obj = new FindInBag(FindInBag.Type.PARTICLE, ((CustomParticle.ParticleProperty) obj).particleID(), null);
+                    else {
+                        obj = new FindInBag(obj);
+                    }
+                }
+                bundle.put(TOOLBAR_SLOT + j, (FindInBag) obj);
             }
         }
     }
@@ -711,6 +696,8 @@ public class CustomDungeon implements Bundlable {
         }
         updateNextParticleID();
 
+        CustomObject.restore(bundle);
+
         if (bundle.contains(RUNE_LABELS)) {
             scrollRuneLabels = new LinkedHashMap<>();
             String[] labels = bundle.getStringArray(RUNE_LABELS);
@@ -748,14 +735,17 @@ public class CustomDungeon implements Bundlable {
         }
         lastSelectedToolbarSlot = bundle.getInt(LAST_SELECTED_TOOLBAR_SLOT);
         for (i = 0; i < toolbarItems.length; i++) {
-            if (bundle.contains(TOOLBAR_ITEM + i))
-                toolbarItems[i] = bundle.getClass(TOOLBAR_ITEM + i);
-            else if (bundle.contains(TOOLBAR_ITEM_INT + i))
-                toolbarItems[i] = bundle.getInt(TOOLBAR_ITEM_INT + i);
-            else if (bundle.contains(TOOLBAR_ITEM_STRING + i))
-                toolbarItems[i] = bundle.getString(TOOLBAR_ITEM_STRING + i);
-            else if (bundle.contains(TOOLBAR_ITEM_BUNDLABLE + i))
-                toolbarItems[i] = bundle.get(TOOLBAR_ITEM_BUNDLABLE + i);
+            if (bundle.contains(TOOLBAR_SLOT + i))
+                toolbarItems[i] = bundle.get(TOOLBAR_SLOT + i);
+
+            else if (bundle.contains("toolbar_item_" + i))
+                toolbarItems[i] = bundle.getClass("toolbar_item_" + i);
+            else if (bundle.contains("toolbar_item_int_" + i))
+                toolbarItems[i] = bundle.getInt("toolbar_item_int_" + i);
+            else if (bundle.contains("toolbar_item_string_" + i))
+                toolbarItems[i] = bundle.getString("toolbar_item_string_" + i);
+            else if (bundle.contains("toolbar_item_bundlable" + i))
+                toolbarItems[i] = bundle.get("toolbar_item_bundlable" + i);
         }
     }
 
