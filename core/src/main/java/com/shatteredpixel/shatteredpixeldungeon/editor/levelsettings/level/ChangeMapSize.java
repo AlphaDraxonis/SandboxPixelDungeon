@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
 public class ChangeMapSize extends Component {
@@ -104,8 +105,16 @@ public class ChangeMapSize extends Component {
 
         Undo.reset();
         WndEditorSettings.closingBecauseMapSizeChange = true;
-        SandboxPixelDungeon.switchNoFade(EditorScene.class);
-        WndEditorSettings.closingBecauseMapSizeChange = false;
+        SandboxPixelDungeon.switchNoFade(EditorScene.class, new Game.SceneChangeCallback() {
+            @Override
+            public void beforeCreate() {
+            }
+
+            @Override
+            public void afterCreate() {
+                WndEditorSettings.closingBecauseMapSizeChange = false;
+            }
+        });
     }
 
     public static Component createTitle() {

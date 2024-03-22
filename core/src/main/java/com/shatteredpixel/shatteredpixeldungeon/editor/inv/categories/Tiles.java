@@ -1,42 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.BUTTON_HEIGHT;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ALCHEMY;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.BARRICADE;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.BOOKSHELF;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.CHASM;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.COIN_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.CRYSTAL_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMBERS;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY_DECO;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY_SP;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMPTY_WELL;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ENTRANCE;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EXIT;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.FURROWED_GRASS;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.GRASS;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.HIGH_GRASS;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.INACTIVE_TRAP;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_EXIT;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.MIMIC_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.MINE_BOULDER;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.MINE_CRYSTAL;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.OPEN_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.PEDESTAL;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_CRYSTAL_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_LOCKED_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_TRAP;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SIGN;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.STATUE;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.STATUE_SP;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.TRAP;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.UNLOCKED_EXIT;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WALL_DECO;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WATER;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WELL;
-
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
@@ -47,11 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditParticleComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BarrierItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ParticleItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -67,11 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
-import com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.HallsBossLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
@@ -83,17 +38,16 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.noosa.Image;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.BUTTON_HEIGHT;
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.*;
 
 public enum Tiles {
 
@@ -404,8 +358,9 @@ public enum Tiles {
                 identifier.setHighlightingEnabled(false);
                 add(identifier);
             } else {
-//                info = PixelScene.renderTextBlock(Messages.get(WndCreateCustomTile.class, "edit_info"),6);
-//                add(info);
+                info = PixelScene.renderTextBlock(Messages.get(WndCreateCustomTile.class, "identifier_label") + " " + customTile.identifier,6);
+                info.setHighlighting(false);
+                add(info);
             }
 
             name = new StringInputComp(Messages.get(WndCreateCustomTile.class, "name_label"), null, 100, false, customTile == null ? "???" : customTile.name) {
@@ -417,6 +372,7 @@ public enum Tiles {
             };
             name.setHighlightingEnabled(false);
             add(name);
+            nameSet = customTile != null && !Level.getFullMessageKey(customTile.region, customTile.imageTerrain, false).equals(customTile.name);
 
             desc = new StringInputComp(Messages.get(WndCreateCustomTile.class, "desc_label"), null, 500, true, customTile == null ? "???" : customTile.desc) {
                 @Override
@@ -427,6 +383,7 @@ public enum Tiles {
             };
             desc.setHighlightingEnabled(false);
             add(desc);
+            descSet = customTile != null && !Level.getFullMessageKey(customTile.region, customTile.imageTerrain, true).equals(customTile.desc);
 
             region = new Spinner(new SpinnerIntegerModel(LevelScheme.REGION_SEWERS, LevelScheme.REGION_HALLS,
                     customTile == null ? EditorScene.customLevel().getRegionValue() : customTile.region, 1, true, null) {

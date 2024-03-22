@@ -47,7 +47,7 @@ public final class Undo {
             redoStack.clear(); // Clear redo stack when a new action is added
             EditorScene.updateUndoButtons();
         }
-        if (autoSaveCounter == 25) {
+        if (autoSaveCounter >= 25) {
             try {
                 EditorScene.customLevel().levelScheme.saveLevel();
                 autoSaveCounter = SPDSettings.autoSave() * 5;

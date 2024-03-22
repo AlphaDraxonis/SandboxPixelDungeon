@@ -683,7 +683,7 @@ public class CustomLevel extends Level {
         Arrays.fill(Dungeon.level.visualRegions, LevelScheme.REGION_NONE);
         for (CustomTilemap vis : Dungeon.level.customTiles) {
             if (vis instanceof CustomTileLoader.SimpleCustomTile) {
-                int cell = vis.tileX + vis.tileY * Dungeon.level.width();
+                int cell = vis.tileX + vis.tileY * newWidth;
                 Dungeon.level.visualMap[cell] = ((CustomTileLoader.SimpleCustomTile) vis).imageTerrain;
                 Dungeon.level.visualRegions[cell] = ((CustomTileLoader.SimpleCustomTile) vis).region;
             }
@@ -1042,7 +1042,7 @@ public class CustomLevel extends Level {
                     Map<Integer, Item> prizes = ((SacrificialFire) b).getPrizes();
                     Map<Integer, Item> newPrizePositions = new HashMap<>(3);
                     for (Item i : prizes.values()){
-                        i.onMapSizeChange(newPosition, isPositionValid);
+                        if (i != null) i.onMapSizeChange(newPosition, isPositionValid);
                     }
                     for (Integer oldPos : prizes.keySet()) {
                         int nPos = newPosition.get(oldPos);
