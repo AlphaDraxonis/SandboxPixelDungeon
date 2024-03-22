@@ -186,18 +186,20 @@ public final class LuaClassGenerator {
         String implementLuaClassStuff =
                 "\n" +
                         "    @Override\n" +
-                        "    public void setIdentifier(String identifier) {\n" +
+                        "    public void setIdentifier(int identifier) {\n" +
                         "        this.identifier = identifier;\n" +
                         "    }\n" +
                         "\n" +
                         "    @Override\n" +
-                        "    public String getIdentifier() {\n" +
+                        "    public int getIdentifier() {\n" +
                         "        return this.identifier;\n" +
-                        "    }\n";
+                        "    }\n" +
+                        "\n";
         String bundlingMethods =
                 "@Override\n" +
                         "    public void storeInBundle(Bundle bundle) {\n" +
                         "        super.storeInBundle(bundle);\n" +
+                        "        bundle.put(LuaClass.IDENTIFIER, identifier);\n" +
                         "        if (vars != null && !CustomDungeon.isEditing()) {\n" +
                         "            LuaClassGenerator.storeVarInBundle(bundle, vars, VARS);\n" +
                         "        }\n" +
@@ -206,6 +208,7 @@ public final class LuaClassGenerator {
                         "    @Override\n" +
                         "    public void restoreFromBundle(Bundle bundle) {\n" +
                         "        super.restoreFromBundle(bundle);\n" +
+                        "        identifier = bundle.getInt(LuaClass.IDENTIFIER);\n" +
                         "        LuaValue loaded = LuaClassGenerator.restoreVarFromBundle(bundle, VARS);\n" +
                         "        if (loaded != null && loaded.istable()) {\n" +
                         "            vars = loaded.checktable();\n" +

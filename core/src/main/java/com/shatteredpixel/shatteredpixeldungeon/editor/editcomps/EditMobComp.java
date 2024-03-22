@@ -20,6 +20,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.WndSelectMusic;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
@@ -47,6 +50,9 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.watabou.noosa.Game;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
@@ -60,8 +66,6 @@ import java.util.*;
 
 public class EditMobComp extends DefaultEditComp<Mob> {
 
-
-    //TODO demon spawner should set their cooldown here!
     private MobStateSpinner mobStateSpinner;
     private StyledSpinner playerAlignment;
     private StyledButton editStats;
@@ -777,6 +781,16 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 blacksmithQuestRewards,
                 buffs
         };
+
+        //TODO might wanna add editStats to link to the original mob! tzz
+        if (mob instanceof LuaClass && !((LuaClass) mob).isOriginal()) {
+            for (Component c : rectComps) {
+                if (c != null) c.visible = c.active = false;
+            }
+            for (Component c : linearComps) {
+                if (c != null) c.visible = c.active = false;
+            }
+        }
     }
 
     @Override
