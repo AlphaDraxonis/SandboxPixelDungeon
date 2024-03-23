@@ -57,6 +57,7 @@ public class MobItem extends EditorItem<Mob> {
     public void setObject(Mob obj) {
         Mob copy = (Mob) obj.getCopy();
         copy.pos = -1;
+        copy.turnToCell = -1;
         super.setObject(copy);
     }
 

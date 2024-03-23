@@ -56,12 +56,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Reflection;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class Item implements Bundlable, Customizable {
 
@@ -712,7 +707,7 @@ public class Item implements Bundlable, Customizable {
     public Item getCopy(){
         Bundle bundle = new Bundle();
         bundle.put("ITEM",this);
-        return  (Item) bundle.get("ITEM");
+        return (Item) bundle.get("ITEM");
     }
 
 	public int targetingPos( Hero user, int dst ){

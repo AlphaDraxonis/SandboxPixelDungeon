@@ -49,6 +49,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.*;
@@ -900,6 +901,33 @@ public class EditorScene extends PixelScene {
         }
 
         return false;
+    }
+
+    private final List<Window> temporarilyHiddenWindows = new ArrayList<>(5);
+
+    public static synchronized void hideWindowsTemporarily() {
+        if (scene == null) return;
+
+        for (Gizmo g : scene.members.toArray(new Gizmo[0])) {
+            if (g instanceof Window) {
+                scene.remove(g);
+                g.active = false;
+                if (g instanceof WndTabbed)
+                    ((WndTabbed) g).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
+                scene.temporarilyHiddenWindows.add((Window) g);
+            }
+        }
+    }
+
+    public static synchronized void reshowWindows() {
+        if (scene == null) return;
+        for (Window w : scene.temporarilyHiddenWindows) {
+			scene.addToFront(w);
+            w.active = true;
+            if (w instanceof WndTabbed)
+                ((WndTabbed) w).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
+		}
+        scene.temporarilyHiddenWindows.clear();
     }
 
     public static void layoutTags() {

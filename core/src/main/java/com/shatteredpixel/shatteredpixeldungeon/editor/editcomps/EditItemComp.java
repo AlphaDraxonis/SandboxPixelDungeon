@@ -5,11 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ReorderHeapComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeItemCustomizable;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugmentationSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.ChargeSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.CurseButton;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.WndChooseEnchant;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
@@ -34,11 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FakeTenguShocker;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
@@ -52,18 +44,9 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
-import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
@@ -100,8 +83,6 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
     private Component[] rectComps;
     private Component[] linearComps;
-
-    private Window windowInstance;
 
     private final ItemItem itemItem;//used for linking the item with the sprite in the toolbar
 
@@ -320,12 +301,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     keyCell = new RedButton("") {
                         @Override
                         protected void onClick() {
-                            EditorScene.selectCell(gatewayTelePosListener);
-                            windowInstance = EditorUtilies.getParentWindow(keyCell);
-                            windowInstance.active = false;
-                            if (windowInstance instanceof WndTabbed)
-                                ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
-                            Game.scene().remove(windowInstance);
+                            EditorScene.hideWindowsTemporarily();
+                            EditorScene.selectCell(keyCellPositionListener);
                         }
                     };
                     if (cell == -1) keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
@@ -454,7 +431,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
     }
 
-    private final CellSelector.Listener gatewayTelePosListener = new CellSelector.Listener() {
+    private final CellSelector.Listener keyCellPositionListener = new CellSelector.Listener() {
         @Override
         public void onSelect(Integer cell) {
             if (cell != null) {
@@ -475,10 +452,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     keyCell.text(label("key_cell_any"));
                 else
                     keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilies.cellToString(key.cell)));
-                windowInstance.active = true;
-                if (windowInstance instanceof WndTabbed)
-                    ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
-                EditorScene.show(windowInstance);
+
+                EditorScene.reshowWindows();
             }
         }
 

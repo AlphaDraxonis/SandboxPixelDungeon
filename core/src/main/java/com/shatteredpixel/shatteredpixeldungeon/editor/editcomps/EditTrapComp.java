@@ -28,10 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Consumer;
 
@@ -44,7 +41,6 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
     protected Spinner radius, pitfallDelay;
     protected ItemContainer<MobItem> summonMobs;
     protected RedButton randomTrap;
-    private Window windowInstance;
 
     private final TrapItem trapItem;//used for linking the item with the sprite in the toolbar
 
@@ -156,12 +152,8 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                     }
                     @Override
                     protected void onClick() {
+                        EditorScene.hideWindowsTemporarily();
                         EditorScene.selectCell(gatewayTelePosListener);
-                        windowInstance = EditorUtilies.getParentWindow(gatewayTelePos);
-                        windowInstance.active = false;
-                        if (windowInstance instanceof WndTabbed)
-                            ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
-                        Game.scene().remove(windowInstance);
                     }
                 };
                 if (telePos == -1) gatewayTelePos.text(Messages.get(this, "gateway_trap_random"));
@@ -332,10 +324,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                     gatewayTelePos.text(Messages.get(EditTrapComp.class, "gateway_trap_pos", EditorUtilies.cellToString(trap.telePos)));
                 }
 
-                windowInstance.active = true;
-                if (windowInstance instanceof WndTabbed)
-                    ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
-                EditorScene.show(windowInstance);
+                EditorScene.reshowWindows();
             }
         }
 

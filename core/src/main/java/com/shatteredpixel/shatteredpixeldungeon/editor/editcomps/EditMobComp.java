@@ -47,10 +47,11 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.windows.*;
-import com.watabou.noosa.Game;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -89,9 +90,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private StyledSpinner heroMobLvl, heroMobStr;
     private HeroClassSpinner heroClassSpinner;
     private HeroClassSpinner.SubclassSpinner heroSubclassSpinner;
-
-
-    private Window windowInstance;
 
     private final Component[] rectComps, linearComps;
 
@@ -720,12 +718,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 }
                 @Override
                 protected void onClick() {
+                    EditorScene.hideWindowsTemporarily();
                     EditorScene.selectCell(turnToListener);
-                    windowInstance = EditorUtilies.getParentWindow(turnTo);
-                    windowInstance.active = false;
-                    if (windowInstance instanceof WndTabbed)
-                        ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
-                    Game.scene().remove(windowInstance);
                 }
             };
             add(turnTo);
@@ -1074,10 +1068,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             obj.sprite.turnTo(obj.pos, obj.turnToCell == -1 ? Random.Int( Dungeon.level.length() ) : obj.turnToCell);
 
             ignoreNextSelections = 2;//will be canceled
-            windowInstance.active = true;
-            if (windowInstance instanceof WndTabbed)
-                ((WndTabbed) windowInstance).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
-            EditorScene.show(windowInstance);
+
+            EditorScene.reshowWindows();
         }
 
         @Override

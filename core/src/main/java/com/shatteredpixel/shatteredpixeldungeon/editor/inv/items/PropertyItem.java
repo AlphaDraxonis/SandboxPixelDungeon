@@ -6,19 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditPropertyCom
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CausticSlimeSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GhostSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GolemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GreatCrabSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.KingSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.LarvaSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.PylonSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.RipperSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.SwarmSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.WandmakerSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.watabou.noosa.Image;
 
 import java.util.Locale;

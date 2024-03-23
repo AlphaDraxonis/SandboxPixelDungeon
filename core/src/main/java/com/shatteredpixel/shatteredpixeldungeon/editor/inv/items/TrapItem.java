@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTrapComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TrapActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.watabou.noosa.Image;
@@ -30,6 +31,11 @@ public class TrapItem extends EditorItem<Trap> {
     @Override
     public Image getSprite() {
         return getObject().getSprite();
+    }
+
+    @Override
+    public Item getCopy() {
+        return new TrapItem(getObject().getCopy());
     }
 
     @Override
