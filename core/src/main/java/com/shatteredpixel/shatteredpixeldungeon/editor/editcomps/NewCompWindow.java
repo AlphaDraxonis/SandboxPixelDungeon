@@ -39,8 +39,7 @@ public abstract class NewCompWindow<T> extends Window {
         title = new IconTitle(getIcon(), Messages.titleCase( Messages.get(this, "title") ));
         add(title);
 
-        int textSize = (int) PixelScene.uiCamera.zoom * 9;
-        textBox = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, textSize) {
+        textBox = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, PixelScene.uiCamera.zoom) {
             @Override
             public void enterPressed() {
                 if (!getText().isEmpty()) {

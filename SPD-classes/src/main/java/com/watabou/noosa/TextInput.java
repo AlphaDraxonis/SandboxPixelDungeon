@@ -24,6 +24,7 @@ package com.watabou.noosa;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -33,6 +34,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -40,31 +42,82 @@ import com.watabou.glscripts.Script;
 import com.watabou.glwrap.Blending;
 import com.watabou.glwrap.Quad;
 import com.watabou.glwrap.Texture;
+import com.watabou.input.PointerEvent;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.Function;
 import com.watabou.utils.Point;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 //essentially contains a libGDX text input field, plus a PD-rendered background
 public class TextInput extends Component {
 
+	private static Set<TextInput> activeTextInputs = new HashSet<>();
+
+	private boolean hasFocus;
+
 	private Stage stage;
 	private Container container;
-	private TextField textField;
+	protected TextField textField;
+	private final boolean multiline;
 
 	private Skin skin;
+	private TextField.TextFieldStyle style;
+	private int normalCursorColor;
 
 	private NinePatch bg;
+	private PointerArea catchClicks;
 
 	public Function<String, String> convertStringToValidString;
 
-	public TextInput( NinePatch bg, boolean multiline, int size ){
+	public TextInput( NinePatch bg, boolean multiline, float pixelScene_uiCamera_zoom ){
+		this(bg, multiline, multiline ? 6 : 9, pixelScene_uiCamera_zoom);
+	}
+
+	public TextInput( NinePatch bg, boolean multiline, int fontSize, float zoom ){
 		super();
+		this.multiline = multiline;
 		this.bg = bg;
 		add(bg);
+
+		catchClicks = new PointerArea(bg) {
+
+			private boolean clickStarted = false;
+
+			@Override
+			protected void onPointerUp(PointerEvent event) {
+				super.onPointerUp(event);
+				if (clickStarted) {
+					gainFocus();
+					//set the cursor at where it was clicked
+					stage.touchDown((int) event.current.x, (int) event.current.y, event.id, event.button);
+					stage.touchUp((int) event.current.x, (int) event.current.y, event.id, event.button);
+				}
+				clickStarted = false;
+			}
+
+			@Override
+			protected void onPointerDown(PointerEvent event) {
+				super.onPointerDown(event);
+				clickStarted = true;
+			}
+
+			@Override
+			public void reset() {
+				super.reset();
+				clickStarted = false;
+			}
+		};
+		catchClicks.blockLevel = PointerArea.NEVER_BLOCK;
+		add(catchClicks);
+
+		activeTextInputs.add(this);
+
+		int size = (int) zoom * fontSize;
 
 		//use a custom viewport here to ensure stage camera matches game camera
 		Viewport viewport = new Viewport() {};
@@ -74,7 +127,7 @@ public class TextInput extends Component {
 		stage = new Stage(viewport){
 			@Override
 			public boolean keyDown(int keycode) {
-				if (!isActive() || keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
+				if (!isActive() || !hasFocus || keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE || !isInTopWindow()) {
 					return false; // don't consume the back button event
 				}
 				return super.keyDown(keycode); // Let other events be processed
@@ -82,43 +135,43 @@ public class TextInput extends Component {
 
 			@Override
 			public boolean keyUp(int keycode) {
-				if (isActive()) return super.keyUp(keycode);
+				if (isActive() && hasFocus && isInTopWindow()) return super.keyUp(keycode);
 				return false;
 			}
 
 			@Override
 			public boolean keyTyped(char character) {
-				if (isActive()) return super.keyTyped(character);
+				if (isActive() && hasFocus && isInTopWindow()) return super.keyTyped(character);
 				return false;
 			}
 
 			@Override
 			public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-				if (isActive()) return super.touchDown(screenX, screenY, pointer, button);
+				if (isActive() && hasFocus && isInTopWindow()) return super.touchDown(screenX, screenY, pointer, button);
 				return false;
 			}
 
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-				if (isActive()) return super.touchUp(screenX, screenY, pointer, button);
+				if (isActive() && hasFocus) return super.touchUp(screenX, screenY, pointer, button);
 				return false;
 			}
 
 			@Override
 			public boolean touchDragged(int screenX, int screenY, int pointer) {
-				if (isActive()) return super.touchDragged(screenX, screenY, pointer);
+				if (isActive() && hasFocus && isInTopWindow()) return super.touchDragged(screenX, screenY, pointer);
 				return false;
 			}
 
 			@Override
 			public boolean mouseMoved(int screenX, int screenY) {
-				if (isActive()) return super.mouseMoved(screenX, screenY);
+				if (isActive() && hasFocus && isInTopWindow()) return super.mouseMoved(screenX, screenY);
 				return false;
 			}
 
 			@Override
 			public boolean scrolled(float amountX, float amountY) {
-				if (isActive()) return super.scrolled(amountX, amountY);
+				if (isActive() && hasFocus && isInTopWindow()) return super.scrolled(amountX, amountY);
 				return false;
 			}
 		};
@@ -130,7 +183,7 @@ public class TextInput extends Component {
 
 		skin = new Skin(FileUtils.getFileHandle(Files.FileType.Internal, "gdx/textfield.json"));
 
-		TextField.TextFieldStyle style = skin.get(TextField.TextFieldStyle.class);
+		style = skin.get(TextField.TextFieldStyle.class);
 		style.font = Game.platform.getFont(size, "", false, false);
 		style.background = null;
 		textField = multiline ? new TextArea("", style) : new TextField("", style);
@@ -152,27 +205,63 @@ public class TextInput extends Component {
 			}
 		});
 
-		if (!multiline){
-			textField.setTextFieldListener(new TextField.TextFieldListener(){
-				public void keyTyped (TextField textField, char c){
-					if (c == '\r' || c == '\n'){
-						enterPressed();
-					}
-				}
+		textField.setTextFieldListener((textField, c) -> onKeyTyped(c));
 
-			});
-		}
-
-		textField.setOnscreenKeyboard(new TextField.OnscreenKeyboard() {
-			@Override
-			public void show(boolean visible) {
-				Game.platform.setOnscreenKeyboardVisible(visible);
-			}
-		});
+		textField.setOnscreenKeyboard(visible -> Game.platform.setOnscreenKeyboardVisible(visible));
 
 		container.setActor(textField);
 		stage.setKeyboardFocus(textField);
 		Game.platform.setOnscreenKeyboardVisible(true);
+
+		normalCursorColor = ((NinePatchDrawable) style.cursor).getPatch().getColor().toIntBits();
+		gainFocus();
+	}
+
+	public synchronized void gainFocus() {
+		if (!hasFocus) {
+			for (TextInput textInput : activeTextInputs.toArray(new TextInput[0])) {
+				if (textInput.isActive() && textInput != this) {
+					textInput.textField.clearSelection();
+					Color cursorColor = ((NinePatchDrawable) textInput.style.cursor).getPatch().getColor();
+					normalCursorColor = cursorColor.toIntBits();
+					cursorColor.set(0);
+					textInput.hasFocus = false;
+				}
+			}
+			((NinePatchDrawable) style.cursor).getPatch().getColor().set(normalCursorColor == 0 ? 0xFFFFFFFF : normalCursorColor);
+			hasFocus = true;
+		}
+	}
+
+	public static Function<Gizmo, Boolean> checkIfGizmoIsInstanceofWindow;
+	private boolean isInTopWindow() {
+		Gizmo ownWindow = this;
+		do {
+			ownWindow = ownWindow.parent;
+		} while (ownWindow != null && !checkIfGizmoIsInstanceofWindow.apply(ownWindow));
+		if (!checkIfGizmoIsInstanceofWindow.apply(ownWindow)) return true;
+		int startIndex = Game.scene().members.indexOf(ownWindow) + 1;
+		int memberCount = Game.scene().members.size();
+		for (int i = startIndex; i < memberCount; i++) {
+			Gizmo g = Game.scene().members.get(i);
+			if (checkIfGizmoIsInstanceofWindow.apply(g) && g != ownWindow) return false;
+		}
+		return true;
+	}
+
+	protected void onKeyTyped(char c) {
+		if (multiline) {
+			if (c == '\t'){
+				stage.keyTyped(' ');
+				stage.keyTyped(' ');
+				stage.keyTyped(' ');
+				stage.keyTyped(' ');
+			}
+		} else {
+			if (c == '\r' || c == '\n'){
+				enterPressed();
+			}
+		}
 	}
 
 	public void enterPressed(){
@@ -231,16 +320,37 @@ public class TextInput extends Component {
 	protected void layout() {
 		super.layout();
 
+		if (bg != null){
+			bg.x = x;
+			bg.y = y;
+			bg.size(width, height);
+		}
+		if (catchClicks != null){
+			catchClicks.x = x;
+			catchClicks.y = y;
+			catchClicks.width = width;
+			catchClicks.height = height;
+		}
+
+		layoutContainer(true);
+	}
+
+	private float lastScrollX = 99999, lastScrollY = 99999;
+
+	private void layoutContainer(boolean force) {
+
+		Camera c = camera();
+
+		if (!force && c != null && c.scroll.y == lastScrollY && c.scroll.x == lastScrollX) {
+			return;
+		}
+
 		float contX = x;
 		float contY = y;
 		float contW = width;
 		float contH = height;
 
 		if (bg != null){
-			bg.x = x;
-			bg.y = y;
-			bg.size(width, height);
-
 			contX += bg.marginLeft();
 			contY += bg.marginTop();
 			contW -= bg.marginHor();
@@ -248,12 +358,19 @@ public class TextInput extends Component {
 		}
 
 		float zoom = Camera.main.zoom;
-		Camera c = camera();
 		if (c != null){
+
 			zoom = c.zoom;
 			Point p = c.cameraToScreen(contX, contY);
 			contX = p.x/zoom;
 			contY = p.y/zoom;
+
+			if (!force) {
+				lastScrollX = c.scroll.x;
+				lastScrollY = c.scroll.y;
+			}
+		} else {
+			lastScrollX = lastScrollY = 99999;
 		}
 
 		container.align(Align.topLeft);
@@ -262,9 +379,20 @@ public class TextInput extends Component {
 	}
 
 	@Override
+	public void cancelClick() {
+		if (catchClicks != null) catchClicks.reset();
+	}
+
+	@Override
+	public void redirectPointerEvent(PointerEvent event) {
+		if (catchClicks != null) catchClicks.onSignal(event);
+	}
+
+	@Override
 	public void update() {
 		super.update();
 		stage.act(Game.elapsed);
+		layoutContainer(false);
 	}
 
 	@Override
@@ -287,6 +415,15 @@ public class TextInput extends Component {
 			Game.inputHandler.removeInputProcessor(stage);
 			Game.platform.setOnscreenKeyboardVisible(false);
 			if (!DeviceCompat.isDesktop()) Game.platform.updateSystemUI();
+		}
+		activeTextInputs.remove(this);
+		if (hasFocus) {//TODO test!
+			for (TextInput textInput : activeTextInputs.toArray(new TextInput[0])) {
+				if (textInput.isActive()) {
+					textInput.gainFocus();
+					break;
+				}
+			}
 		}
 	}
 

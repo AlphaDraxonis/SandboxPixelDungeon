@@ -39,7 +39,7 @@ public class FoldableComp extends Component {
         line = new ColorBlock(1, 1, 0xFF222222);
         add(line);
 
-        title = PixelScene.renderTextBlock(9);
+        title = PixelScene.renderTextBlock(titleFontSize());
         add(title);
 
 
@@ -61,6 +61,10 @@ public class FoldableComp extends Component {
 
         fold.visible = fold.active = false;
         expand.visible = expand.active = false;
+    }
+
+    protected int titleFontSize() {
+        return 9;
     }
 
 

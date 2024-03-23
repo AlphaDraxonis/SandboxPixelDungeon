@@ -84,8 +84,7 @@ public class WndTextInput extends Window {
 			pos = txtBody.bottom() + 2 * MARGIN;
 		}
 
-		int textSize = (int)PixelScene.uiCamera.zoom * (multiLine ? 6 : 9);
-		textBox = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), multiLine, textSize){
+		textBox = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), multiLine, PixelScene.uiCamera.zoom){
 			@Override
 			public void enterPressed() {
 				//triggers positive action on enter pressed, only with non-multiline though.

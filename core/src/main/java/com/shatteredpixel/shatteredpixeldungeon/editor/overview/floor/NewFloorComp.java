@@ -1,8 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.BUTTON_HEIGHT;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.MARGIN;
-
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -14,15 +11,14 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.impls.DepthSpi
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.TextInput;
+
+import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.BUTTON_HEIGHT;
+import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.MARGIN;
 
 public class NewFloorComp extends WndNewFloor.OwnTab {
 
@@ -50,8 +46,7 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
         title.hardlight(Window.TITLE_COLOR);
         add(title);
 
-        int textSize = (int) PixelScene.uiCamera.zoom * 9;
-        textBox = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, textSize) {
+        textBox = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, PixelScene.uiCamera.zoom) {
             @Override
             public void enterPressed() {
                 if (!getText().isEmpty()) {

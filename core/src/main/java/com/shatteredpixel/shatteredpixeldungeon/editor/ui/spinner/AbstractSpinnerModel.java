@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 
@@ -41,7 +42,7 @@ public abstract class AbstractSpinnerModel implements SpinnerModel, Serializable
 
     @Override
     public Component createInputField(int fontSize) {
-        inputField = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, fontSize);
+        inputField = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, fontSize, PixelScene.uiCamera.zoom);
         return inputField;
     }
 
