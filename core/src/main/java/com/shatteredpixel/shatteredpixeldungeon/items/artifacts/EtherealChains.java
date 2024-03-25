@@ -283,7 +283,7 @@ public class EtherealChains extends Artifact {
 		int chargeTarget = 5+(level()*2);
 		if (charge < chargeTarget*2){
 			partialCharge += 0.5f*amount;
-			if (partialCharge >= 1){
+			while (partialCharge >= 1){
 				partialCharge--;
 				charge++;
 				updateQuickslot();
@@ -322,7 +322,7 @@ public class EtherealChains extends Artifact {
 				Buff.prolong( target, Cripple.class, 10f);
 			}
 
-			if (partialCharge >= 1) {
+			while (partialCharge >= 1) {
 				partialCharge --;
 				charge ++;
 			}
