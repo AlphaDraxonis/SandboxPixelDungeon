@@ -35,12 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EntranceRo
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.watabou.noosa.Game;
-import com.watabou.utils.Graph;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
-import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
-import com.watabou.utils.Reflection;
+import com.watabou.utils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -131,20 +126,26 @@ public abstract class RegularPainter extends Painter {
 		}
 		
 		paintDoors( level, rooms );
+
+		//use a separate RNG here so that extra painting variance doesn't affect the rest of levelgen
+		//e.g. this minimizes mossy clump's effect on levelgen
+		Random.pushGenerator(Random.Long());
+
+			if (waterFill > 0f) {
+				paintWater( level, rooms );
+			}
+
+			if (grassFill > 0f){
+				paintGrass( level, rooms );
+			}
+
+			if (nTraps > 0){
+				paintTraps( level, rooms );
+			}
 		
-		if (waterFill > 0f) {
-			paintWater( level, rooms );
-		}
-		
-		if (grassFill > 0f){
-			paintGrass( level, rooms );
-		}
-		
-		if (nTraps > 0){
-			paintTraps( level, rooms );
-		}
-		
-		decorate( level, rooms );
+			decorate( level, rooms );
+
+		Random.popGenerator();
 		
 		return true;
 	}

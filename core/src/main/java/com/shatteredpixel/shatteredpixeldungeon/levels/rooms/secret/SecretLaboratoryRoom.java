@@ -26,6 +26,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ExoticCrystals;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -85,6 +87,13 @@ public class SecretLaboratoryRoom extends SecretRoom {
 			
 			Class<?extends Potion> potionCls = Random.chances(chances);
 			chances.put(potionCls, 0f);
+
+			if (ExoticPotion.regToExo.containsKey(potionCls)){
+				if (Random.Float() < ExoticCrystals.consumableExoticChance()){
+					potionCls = ExoticPotion.regToExo.get(potionCls);
+				}
+			}
+
 			level.drop( Reflection.newInstance(potionCls), pos );
 		}
 		

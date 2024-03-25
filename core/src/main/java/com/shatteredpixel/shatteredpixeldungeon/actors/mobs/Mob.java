@@ -58,10 +58,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Brimstone;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArmband;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfWealth;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ExoticCrystals;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.EnchantmentWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
@@ -1285,6 +1288,16 @@ public abstract class Mob extends Char implements Customizable {
 			item = Generator.randomUsingDefaults( (Generator.Category)loot );
 
 		} else if (loot instanceof Class<?>) {
+
+			if (ExoticPotion.regToExo.containsKey(loot)){
+				if (Random.Float() < ExoticCrystals.consumableExoticChance()){
+					return Generator.random(ExoticPotion.regToExo.get(loot));
+				}
+			} else if (ExoticScroll.regToExo.containsKey(loot)){
+				if (Random.Float() < ExoticCrystals.consumableExoticChance()){
+					return Generator.random(ExoticScroll.regToExo.get(loot));
+				}
+			}
 
 			item = Generator.random( (Class<? extends Item>)loot );
 

@@ -29,13 +29,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Pasty;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.*;
-import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
-import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.PetrifiedSeed;
-import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
-import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.*;
@@ -385,9 +384,11 @@ public class Generator {
 			TRINKET.classes = new Class<?>[]{
 					RatSkull.class,
 					ParchmentScrap.class,
-					PetrifiedSeed.class
+					PetrifiedSeed.class,
+					ExoticCrystals.class,
+					MossyClump.class
 			};
-			TRINKET.defaultProbs = new float[]{ 1, 1, 1 };
+			TRINKET.defaultProbs = new float[]{ 1, 1, 1, 1, 1 };
 			TRINKET.probs = TRINKET.defaultProbs.clone();
 
 			for (Category cat : Category.values()){
@@ -451,11 +452,15 @@ public class Generator {
 	//reverts changes to drop chances generates by this item
 	//equivalent of shuffling the card back into the deck, does not preserve order!
 	public static void undoDrop(Item item){
+		undoDrop(item.getClass());
+	}
+
+	public static void undoDrop(Class cls){
 		for (Category cat : Category.values()){
-			if (item.getClass().isAssignableFrom(cat.superClass)){
+			if (cls.isAssignableFrom(cat.superClass)){
 				if (cat.defaultProbs == null) continue;
 				for (int i = 0; i < cat.classes.length; i++){
-					if (item.getClass() == cat.classes[i]){
+					if (cls == cat.classes[i]){
 						cat.probs[i]++;
 					}
 				}
@@ -510,13 +515,24 @@ public class Generator {
 					i = Random.chances(cat.probs);
 				}
 				if (cat.defaultProbs != null) cat.probs[i]--;
+				Class<?> itemCls = cat.classes[i];
 
 				if (cat.defaultProbs != null && cat.seed != null){
 					Random.popGenerator();
 					cat.dropped++;
 				}
 
-				return ((Item) Reflection.newInstance(cat.classes[i])).random();
+				if (ExoticPotion.regToExo.containsKey(itemCls)){
+					if (Random.Float() < ExoticCrystals.consumableExoticChance()){
+						itemCls = ExoticPotion.regToExo.get(itemCls);
+					}
+				} else if (ExoticScroll.regToExo.containsKey(itemCls)){
+					if (Random.Float() < ExoticCrystals.consumableExoticChance()){
+						itemCls = ExoticScroll.regToExo.get(itemCls);
+					}
+				}
+
+				return ((Item) Reflection.newInstance(itemCls)).random();
 		}
 	}
 

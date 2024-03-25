@@ -57,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MossyClump;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
@@ -285,6 +286,12 @@ public abstract class Level implements Bundlable {
 					case 6:
 						feeling = Feeling.SECRETS;
 						break;
+					default:
+						if (Random.Float() < MossyClump.overrideNormalLevelChance()){
+							feeling = MossyClump.getNextFeeling();
+						} else {
+							feeling = Feeling.NONE;
+						}
 				}
 			}
 			if (feeling == Feeling.DARK) {
