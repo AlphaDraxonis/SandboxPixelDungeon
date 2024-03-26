@@ -234,6 +234,10 @@ public class Game implements ApplicationListener {
 	public static Scene scene() {
 		return instance.scene;
 	}
+
+	public static boolean switchingScene() {
+		return instance.requestedReset;
+	}
 	
 	protected void step() {
 

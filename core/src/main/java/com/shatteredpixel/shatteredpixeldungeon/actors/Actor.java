@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
+import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.SparseArray;
@@ -105,7 +106,7 @@ public abstract class Actor implements Bundlable, Copyable<Actor> {
 	public void setDurationForBuff(int duration) {
 		time = now + duration - 1;
 	}
-	
+
 	protected void diactivate() {
 		time = Float.MAX_VALUE;
 	}
@@ -260,7 +261,7 @@ public abstract class Actor implements Bundlable, Copyable<Actor> {
 		do {
 			
 			current = null;
-			if (!interrupted) {
+			if (!interrupted && !Game.switchingScene()) {
 				float earliest = Float.MAX_VALUE;
 
 				for (Actor actor : all) {
