@@ -65,14 +65,14 @@ public class HeavyBoomerang extends MissileWeapon {
 	protected void rangedHit(Char enemy, int cell) {
 		decrementDurability();
 		if (durability > 0){
-			Buff.append(Dungeon.hero, CircleBack.class).setup(this, cell, Dungeon.hero.pos, Dungeon.levelName);
+			Buff.append(Dungeon.hero, CircleBack.class).setup(this, cell, Dungeon.hero.pos, Dungeon.levelName, Dungeon.branch);
 		}
 	}
 	
 	@Override
 	protected void rangedMiss(int cell) {
 		parent = null;
-		Buff.append(Dungeon.hero, CircleBack.class).setup(this, cell, Dungeon.hero.pos, Dungeon.levelName);
+		Buff.append(Dungeon.hero, CircleBack.class).setup(this, cell, Dungeon.hero.pos, Dungeon.levelName, Dungeon.branch);
 	}
 	
 	public static class CircleBack extends Buff {
@@ -85,14 +85,16 @@ public class HeavyBoomerang extends MissileWeapon {
 		private int thrownPos;
 		private int returnPos;
 		private String returnLevel;
+		private int returnBranch;
 		
 		private int left;
 		
-		public void setup( HeavyBoomerang boomerang, int thrownPos, int returnPos, String returnLevel){
+		public void setup( HeavyBoomerang boomerang, int thrownPos, int returnPos, String returnLevel, int returnBranch){
 			this.boomerang = boomerang;
 			this.thrownPos = thrownPos;
 			this.returnPos = returnPos;
 			this.returnLevel = returnLevel;
+			this.returnBranch = returnBranch;
 			left = 3;
 		}
 		
@@ -111,7 +113,7 @@ public class HeavyBoomerang extends MissileWeapon {
 		
 		@Override
 		public boolean act() {
-			if (returnLevel.equals(Dungeon.levelName)){
+			if (returnLevel.equals(Dungeon.levelName) && returnBranch == Dungeon.branch){
 				left--;
 				if (left <= 0){
 					final Char returnTarget = Actor.findChar(returnPos);
@@ -161,7 +163,7 @@ public class HeavyBoomerang extends MissileWeapon {
 		private static final String THROWN_POS = "thrown_pos";
 		private static final String RETURN_POS = "return_pos";
 		private static final String RETURN_LEVEL = "return_level";
-		
+		private static final String RETURN_BRANCH = "return_branch";
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
@@ -169,6 +171,7 @@ public class HeavyBoomerang extends MissileWeapon {
 			bundle.put(THROWN_POS, thrownPos);
 			bundle.put(RETURN_POS, returnPos);
 			bundle.put(RETURN_LEVEL, returnLevel);
+			bundle.put(RETURN_BRANCH, returnBranch);
 		}
 		
 		@Override
@@ -178,6 +181,7 @@ public class HeavyBoomerang extends MissileWeapon {
 			thrownPos = bundle.getInt(THROWN_POS);
 			returnPos = bundle.getInt(RETURN_POS);
 			returnLevel = bundle.getString(RETURN_LEVEL);
+			returnBranch = bundle.contains(RETURN_BRANCH) ? bundle.getInt(RETURN_BRANCH) : 0;
 		}
 	}
 	
