@@ -356,6 +356,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 
 	public void die() {
 		sleeping = false;
+		remove( State.PARALYSED );
 		play( die );
 
 		hideEmo();
