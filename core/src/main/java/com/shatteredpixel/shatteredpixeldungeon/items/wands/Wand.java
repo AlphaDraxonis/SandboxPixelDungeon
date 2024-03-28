@@ -443,8 +443,14 @@ public abstract class Wand extends Item {
 				&& !curUser.belongings.contains(this)){
 
 			Buff.prolong(curUser, Talent.EmpoweredStrikeTracker.class, 10f);
-
 		}
+
+		if (Dungeon.hero.hasTalent(Talent.LINGERING_MAGIC)
+				&& charger != null && charger.target == Dungeon.hero){
+
+			Buff.affect(Dungeon.hero, Talent.LingeringMagicTracker.class, 5f);
+		}
+
 		Invisibility.dispel();
 		updateQuickslot();
 
@@ -664,12 +670,12 @@ public abstract class Wand extends Item {
 		}
 
 	}
-	
+
 	protected static CellSelector.Listener zapper = new  CellSelector.Listener() {
-		
+
 		@Override
 		public void onSelect( Integer target ) {
-			
+
 			if (target != null) {
 
 				//FIXME this safety check shouldn't be necessary
