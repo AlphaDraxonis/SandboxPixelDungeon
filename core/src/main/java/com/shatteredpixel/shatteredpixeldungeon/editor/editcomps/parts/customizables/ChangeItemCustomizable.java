@@ -26,11 +26,9 @@ public class ChangeItemCustomizable extends ChangeCustomizable<Item> {
 
             @Override
             public void change() {
-                List<String> imgFiles = CustomDungeonSaves.findAllFiles("png");
-                if (imgFiles == null) {
-                    return;
-                }
-                String[] options = new String[imgFiles.size() + 1];
+                List<String> imgFiles = CustomDungeonSaves.findAllFilePaths("png");
+
+				String[] options = new String[imgFiles.size() + 1];
                 options[0] = Messages.get(ChangeItemCustomizable.class, "no_custom_sprite");
                 int i = 1;
                 for (String m : imgFiles) {

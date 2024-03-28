@@ -28,10 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaUserdata;
-import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
@@ -44,8 +41,14 @@ public class LuaManager {
 
 	public static int scriptsRunning = 0;//TODO tzz restrict certain methods (e.g. file reading/writing) -> throw an exception if any method is invoked
 
-	public static boolean areScriptsRunning() {//tzz implement!
-		return scriptsRunning > 0;
+	public static boolean areScriptsRunning() {
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		for (StackTraceElement element : stackTrace) {
+			if (element.getClassName().startsWith("org.luaj")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	static {
@@ -78,6 +81,22 @@ public class LuaManager {
 //			globals.set("gold", LuaValue.valueOf(0));
 //			globals.set("energy", LuaValue.valueOf(0));
 		}
+	}
+
+
+	public static String compile(String code) {
+		try {
+			globals.load(code).call();
+			return null;
+		} catch (LuaError e) {
+//			"[string \"function die(this, vars, super, source)\n" +
+//					"return source-m-.hashcode(...\"]:2: unexpected symbol 46 (.)";
+			return e.getMessage();
+		}
+	}
+
+	public static LuaValue load(String code) {
+		return globals.load(code);
 	}
 
 

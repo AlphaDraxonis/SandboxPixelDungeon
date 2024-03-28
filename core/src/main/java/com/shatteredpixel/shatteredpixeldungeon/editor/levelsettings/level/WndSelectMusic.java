@@ -191,7 +191,7 @@ public class WndSelectMusic extends WndChooseOneInCategories {
     }
 
     private void chooseCustomMusic() {
-        List<String> audioFiles = CustomDungeonSaves.findAllFiles("ogg", "mp3", "wav");
+        List<String> audioFiles = CustomDungeonSaves.findAllFilePaths("ogg", "mp3", "wav");
         String[] options = new String[audioFiles.size()];
         int i = 0;
         for (String m : audioFiles) {

@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
@@ -76,26 +77,30 @@ public class CustomObject implements Bundlable {
 
 	public void loadScript() {
 
-		script = LuaManager.globals.load(
-				vars +
-//                         "function attackSkill(this, vars) " +
-//                         "if vars.item == nil then" +
-//                         "   vars.item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
-//                         " else  level:drop(luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing\"), this.pos + level:width()).sprite:drop()" +
-//                         " end  vars.static.aNumber = vars.static.aNumber + 1 return vars.static.aNumber" +
-//                         " end " +
+		LuaScript ls = CustomDungeonSaves.readLuaFile(pathToScript);
+		if (ls != null) script = LuaManager.globals.load(ls.code).call();
+		else script = null;
 
-						"function die(this, vars, super, cause) " +
-						"local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
-						"level:drop(item, this.pos + level:width()).sprite:drop()" +
-						"super:call({cause})" +
-						" end  " +
-
-						"return {" +
-//                         "attackProc = attackProc; " +
-						"die = die;" +
-						"vars = vars " +
-						"}").call();
+//		script = LuaManager.globals.load(
+//				vars +
+////                         "function attackSkill(this, vars) " +
+////                         "if vars.item == nil then" +
+////                         "   vars.item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
+////                         " else  level:drop(luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing\"), this.pos + level:width()).sprite:drop()" +
+////                         " end  vars.static.aNumber = vars.static.aNumber + 1 return vars.static.aNumber" +
+////                         " end " +
+//
+//						"function die(this, vars, super, cause) " +
+//						"local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
+//						"level:drop(item, this.pos + level:width()).sprite:drop()" +
+//						"super:call({cause})" +
+//						" end  " +
+//
+//						"return {" +
+////                         "attackProc = attackProc; " +
+//						"die = die;" +
+//						"vars = vars " +
+//						"}").call();
 	}
 
 
@@ -126,23 +131,27 @@ public class CustomObject implements Bundlable {
 
 	private static final String LUA_CLASS = "lua_class";
 	private static final String NAME = "name";
+	private static final String PATH_TO_SCRIPT = "path_to_script";
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		luaClass = (LuaClass) bundle.get(LUA_CLASS);
 		name = bundle.getString(NAME);
+		pathToScript = bundle.getString(PATH_TO_SCRIPT);
 	}
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		bundle.put(LUA_CLASS, luaClass);
 		bundle.put(NAME, name);
+		bundle.put(PATH_TO_SCRIPT, pathToScript);
 	}
 
 	public static void assignNewID(CustomObject customObject) {
 		while (customObjects.containsKey(nextCustomObjectID++)) ;
 
 		customObject.luaClass = new Mob_lua();//tzz this is just temporarily!
+		((Mob_lua) customObject.luaClass).pos = -1;
 
 
 		customObjects.put(nextCustomObjectID, customObject);

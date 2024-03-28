@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitio
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -24,11 +25,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class CustomDungeonSaves {
 
@@ -47,6 +44,9 @@ public class CustomDungeonSaves {
     private static final String FLOOR = "floor";
     public static final String EXPORT = "export";
     public static final String BUGGED = "bugged";
+
+    private static final String LUA_SCRIPTS = "scripts/";
+    private static final String LUA_FILE_EXTENSION = ".lua";
 
     static String curDirectory;
 
@@ -260,7 +260,22 @@ public class CustomDungeonSaves {
         return FileUtils.getFileHandle(CustomDungeonSaves.curDirectory + CustomTileLoader.EXTRA_FILES);
     }
 
-    public static List<String> findAllFiles(String... extensions) {
+    public static List<String> findAllFilePaths(String... extensions) {
+        List<String> fullFilePaths = new ArrayList<>(8);
+
+        Set<FileHandle> files = findAllFiles(extensions);
+        if (files == null) return fullFilePaths;
+
+        String rootDir = getAdditionalFilesDir().path() + "/";
+        for (FileHandle f : files) {
+			fullFilePaths.add(f.path().replaceFirst(rootDir, ""));
+		}
+        Collections.sort(fullFilePaths);
+
+        return fullFilePaths;
+    }
+
+    public static Set<FileHandle> findAllFiles(String... extensions) {
         FileHandle dir = getAdditionalFilesDir();
         if (!dir.exists()) {
             dir.mkdirs();
@@ -270,25 +285,20 @@ public class CustomDungeonSaves {
 
         Set<FileHandle> files = new HashSet<>();
         addAddSubdirFiles(files, dir);
-        List<String> fullFilePaths = new ArrayList<>(8);
-
-        String rootDir = dir.path() + "/";
 
         StringBuilder b = new StringBuilder();
-        for (int i = 0; i < extensions.length; i++) {
-            b.append(extensions[i]).append('/');
-        }
+		for (String extension : extensions) {
+			b.append(extension).append('/');
+		}
         String extensionsCSV = b.toString();
 
-        for (FileHandle f : files) {
-            if (extensionsCSV.contains(f.extension())) {
-                fullFilePaths.add(f.path().replaceFirst(rootDir, ""));
+        for (FileHandle f : files.toArray(new FileHandle[0])) {
+            if (!extensionsCSV.contains(f.extension())) {
+                files.remove(f);
             }
         }
 
-        Collections.sort(fullFilePaths);
-
-        return fullFilePaths;
+        return files;
     }
 
     private static void addAddSubdirFiles(Set<FileHandle> files, FileHandle parentDir) {
@@ -299,6 +309,27 @@ public class CustomDungeonSaves {
                 files.add(f);
             }
         }
+    }
+
+    public static List<LuaScript> findScripts(Function<LuaScript, Boolean> condition) {
+        List<LuaScript> result = new ArrayList<>(8);
+        Set<FileHandle> files = findAllFiles("lua");
+        if (files == null) return result;
+
+        for (FileHandle file : files) {
+            LuaScript script = LuaScript.readFromFile(file.readString(), file.path().replaceFirst(getAdditionalFilesDir().path() + "/", ""));
+            if (script != null && (condition == null || condition.apply(script))) {
+                result.add(script);
+            }
+        }
+        Collections.sort(result);
+        return result;
+    }
+
+    public static LuaScript readLuaFile(String pathToScript) {
+        FileHandle file = FileUtils.getFileHandle(getExternalFilePath(pathToScript));
+        if (!file.exists()) return null;
+        return LuaScript.readFromFile(file.readString(), file.path().replaceFirst(getAdditionalFilesDir().path() + "/", ""));
     }
 
     public static String getExternalFilePath(String pathFromRoot) {

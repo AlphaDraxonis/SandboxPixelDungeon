@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -67,6 +68,7 @@ public final class LuaClassGenerator {
 
     //TODO: implement static: for this mob type, and super_static for ALL custom mobs
     //These ("static" and "globals") are seserverd names and cannot be used as names for vaiables!
+    //they cannot even be declared as new variables at any time!
 
     //Whenever a game is started or loaded / it should also load all scripts of all custom mob types, and
 
@@ -180,7 +182,7 @@ public final class LuaClassGenerator {
                 "        if (!CustomDungeon.isEditing() && LuaClassGenerator.luaScript != null && LuaClassGenerator.luaScript.get(\"vars\").istable()) {\n" +
                 "            vars = LuaClassGenerator.deepCopyLuaValue(LuaClassGenerator.luaScript.get(\"vars\")).checktable();\n" +
                 "            vars.set(\"static\", LuaClassGenerator.luaScript.get(\"vars\").get(\"static\"));\n" +
-                "            vars.set(\"globals\", LuaClassGenerator.luaScript.get(\"vars\").get(\"globals\"));\n" +
+//                "            vars.set(\"globals\", LuaClassGenerator.luaScript.get(\"vars\").get(\"globals\"));\n" +
                 "        }\n" +
                 "    }\n";
         String implementLuaClassStuff =
@@ -214,7 +216,7 @@ public final class LuaClassGenerator {
                         "            vars = loaded.checktable();\n" +
                         "            if (LuaClassGenerator.luaScript != null && LuaClassGenerator.luaScript.get(\"vars\").istable()) {\n" +
                         "                vars.set(\"static\", LuaClassGenerator.luaScript.get(\"vars\").get(\"static\"));\n" +
-                        "                vars.set(\"globals\", LuaClassGenerator.luaScript.get(\"vars\").get(\"globals\"));\n" +
+//                        "                vars.set(\"globals\", LuaClassGenerator.luaScript.get(\"vars\").get(\"globals\"));\n" +
                         "            }\n" +
                         "        }\n" +
                         "    }\n\n";
@@ -267,18 +269,38 @@ public final class LuaClassGenerator {
             overrideMethods.append(") {\n");
             overrideMethods.append("        LuaValue luaScript = CustomLuaObject.getScript(identifier);\n");
             overrideMethods.append("        if (luaScript != null && !luaScript.get(\"").append(m.getName()).append("\").isnil()) {\n");
-            overrideMethods.append("            LuaManager.scriptsRunning++;\n");
 
             overrideMethods.append("            MethodOverride");
+            if (paramTypes.length <= 10) overrideMethods.append('.');
             if (returnType == void.class) overrideMethods.append("Void");
-            overrideMethods.append(" superMethod = args -> super.");
+            if (paramTypes.length <= 10) overrideMethods.append('A').append(paramTypes.length);
+            if (returnType != void.class) {
+                overrideMethods.append('<');
+                if (returnType.isPrimitive()) {
+                    if (returnType == int.class) overrideMethods.append("Integer");
+                    else if (returnType == char.class) overrideMethods.append("Character");
+                    else overrideMethods.append(Messages.capitalize(returnType.getSimpleName()));
+                }
+                else overrideMethods.append(returnType.getSimpleName());
+                overrideMethods.append('>');
+            }
+
+            overrideMethods.append(" superMethod = (");
+            for (int i = 0; i < paramTypes.length; i++) {
+                overrideMethods.append('a').append(i);
+                if (i + 1 < paramTypes.length) overrideMethods.append(", ");
+            }
+            overrideMethods.append(") -> super.");
             overrideMethods.append(m.getName()).append('(');
             for (int i = 0; i < paramTypes.length; i++) {
-                overrideMethods.append("args[");
-                overrideMethods.append(i);
-                overrideMethods.append(']');
-                if (i < paramTypes.length - 1)
-                    overrideMethods.append(", ");
+                if (paramTypes[i] != Object.class) {
+                    overrideMethods.append('(');
+                    overrideMethods.append(paramTypes[i].getSimpleName());
+                    overrideMethods.append(')');
+                    overrideMethods.append(' ');
+                }
+                overrideMethods.append('a').append(i);
+                if (i+1 < paramTypes.length) overrideMethods.append(", ");
             }
             overrideMethods.append(");\n");
 
@@ -307,7 +329,6 @@ public final class LuaClassGenerator {
             overrideMethods.append(')');
             if (useInvoke) overrideMethods.append(".arg1()");
             overrideMethods.append(returnTypeString).append(";\n");
-            overrideMethods.append("            LuaManager.scriptsRunning--;\n");
             if (!returnString.isEmpty())
                 overrideMethods.append("            return ret;\n");
             overrideMethods.append("        } else {\n");

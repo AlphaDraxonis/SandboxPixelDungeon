@@ -41,7 +41,7 @@ public class SimpleWindow extends Window {
         };
         add(sp);
 
-        add(title);
+        if (title != null) add(title);
         if (outsideSp != null) {
             add(outsideSp);
         }
@@ -52,12 +52,17 @@ public class SimpleWindow extends Window {
 
     public void layout() {
 
+        if (body == null || sp == null) return;
+
         float posY = 0;
 
         posY += GAP * 2;
-        if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth(width);
-        title.setRect(Math.max(GAP, (width - title.width()) * titleAlignment), posY, width - GAP, title.height());
-        posY = title.bottom() + GAP * 3;
+
+        if (title != null) {
+            if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth(width);
+            title.setRect(Math.max(GAP, (width - title.width()) * titleAlignment), posY, width - GAP, title.height());
+            posY = title.bottom() + GAP * 3;
+        }
 
         body.setSize(width, -1);
 
@@ -80,20 +85,20 @@ public class SimpleWindow extends Window {
     protected void onScroll(ScrollPane sp) {
     }
 
-    public float preferredHeight() {
-        float result;
-        body.setSize(width, -1);
-        result = GAP * 5 + title.height() + body.height() + 1;
-
-        if (outsideSp != null) {
-            outsideSp.setSize(width, -1);
-            float outsideSpH = outsideSp.height();
-            if (outsideSpH != 0) {
-                result += outsideSpH + GAP - 1;
-            }
-        }
-        return result;
-    }
+//    public float preferredHeight() {
+//        float result;
+//        body.setSize(width, -1);
+//        result = GAP * 5 + title.height() + body.height() + 1;
+//
+//        if (outsideSp != null) {
+//            outsideSp.setSize(width, -1);
+//            float outsideSpH = outsideSp.height();
+//            if (outsideSpH != 0) {
+//                result += outsideSpH + GAP - 1;
+//            }
+//        }
+//        return result;
+//    }
 
     @Override
     public void resize(int w, int h) {

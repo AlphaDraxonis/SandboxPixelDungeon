@@ -31,7 +31,6 @@ public class Mob_lua extends Rat implements LuaMob {
         if (!CustomDungeon.isEditing() && (script = CustomObject.getScript(identifier)) != null && script.get("vars").istable()) {
             vars = LuaManager.deepCopyLuaValue(script.get("vars")).checktable();
             vars.set("static", script.get("vars").get("static"));
-            vars.set("globals", script.get("vars").get("globals"));
         }
     }
 
@@ -54,7 +53,6 @@ public class Mob_lua extends Rat implements LuaMob {
             LuaValue script = CustomObject.getScript(identifier);
             if (script != null && script.get("vars").istable()) {
                 vars.set("static", script.get("vars").get("static"));
-                vars.set("globals", script.get("vars").get("globals"));
             }
         }
     }
@@ -87,7 +85,7 @@ public class Mob_lua extends Rat implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("die").isnil()) {
             LuaManager.scriptsRunning++;
-            MethodOverrideVoid superMethod = args -> super.die(args[0]);
+            MethodOverride.VoidA1 superMethod = a0 -> super.die(a0);
             luaScript.get("die").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)});
             LuaManager.scriptsRunning--;
         } else {

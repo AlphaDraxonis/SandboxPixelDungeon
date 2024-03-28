@@ -22,7 +22,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.WndSelectMusic;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaMob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
@@ -94,6 +97,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private StyledSpinner heroMobLvl, heroMobStr;
     private HeroClassSpinner heroClassSpinner;
     private HeroClassSpinner.SubclassSpinner heroSubclassSpinner;
+    private StyledButton test;
 
     private final Component[] rectComps, linearComps;
 
@@ -745,7 +749,19 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(editStats);
         }
 
-        rectComps = new Component[]{
+
+
+        if (mob instanceof LuaMob && ((LuaMob) mob).isOriginal()) {
+            test = new RedButton("TEST") {
+                @Override
+                protected void onClick() {
+                    IDEWindow.showWindow(CustomObject.customObjects.get(((LuaMob) mob).getIdentifier()));
+                }
+            };
+            add(test);
+        }
+
+		rectComps = new Component[]{
 
                 mobStateSpinner, playerAlignment, mob instanceof Ghost ? questSpinner : null, editStats, turnTo,
 
@@ -779,7 +795,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 summonMobs,
                 yogNormalFists, yogChallengeFists,
                 blacksmithQuestRewards,
-                buffs
+                buffs,test
         };
 
         //TODO might wanna add editStats to link to the original mob! tzz
