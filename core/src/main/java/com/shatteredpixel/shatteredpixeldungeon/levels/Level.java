@@ -57,6 +57,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MossyClump;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
@@ -1241,19 +1242,21 @@ public abstract class Level implements Bundlable {
 	}
 
 	public float respawnCooldown(){
+		float cooldown;
 		if (Statistics.amuletObtained){
 			if (Dungeon.getSimulatedDepth() == 1){
 				//very fast spawns on floor 1! 0/2/4/6/8/10/12, etc.
-				return (Dungeon.level.mobCount()) * (TIME_TO_RESPAWN / 25f);
+				cooldown = (Dungeon.level.mobCount()) * (TIME_TO_RESPAWN / 25f);
 			} else {
 				//respawn time is 5/5/10/15/20/25/25, etc.
-				return Math.round(GameMath.gate( TIME_TO_RESPAWN/10f, Dungeon.level.mobCount() * (TIME_TO_RESPAWN / 10f), TIME_TO_RESPAWN / 2f));
+				cooldown = Math.round(GameMath.gate( TIME_TO_RESPAWN/10f, Dungeon.level.mobCount() * (TIME_TO_RESPAWN / 10f), TIME_TO_RESPAWN / 2f));
 			}
 		} else if (Dungeon.level.feeling == Feeling.DARK){
-			return 2*TIME_TO_RESPAWN/3f;
+			cooldown = 2*TIME_TO_RESPAWN/3f;
 		} else {
-			return TIME_TO_RESPAWN;
+			cooldown = TIME_TO_RESPAWN;
 		}
+		return cooldown / DimensionalSundial.spawnMultiplierAtCurrentTime();
 	}
 
 	public boolean spawnMob(int disLimit){
