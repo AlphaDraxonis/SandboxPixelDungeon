@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import org.luaj.vm2.LuaError;
 import com.watabou.noosa.Game;
 
 import java.io.PrintWriter;
@@ -32,6 +33,12 @@ public class WndError extends WndTitledMessage {
 
 	public WndError( String message ) {
 		super( Icons.WARNING.get(), Messages.get(WndError.class, "title"), message );
+	}
+
+	public WndError( LuaError error ) {
+		this( error.getMessage() );
+		content.sp.scrollTo(0, text.bottom());
+		setHighligtingEnabled(false);
 	}
 
 	public WndError ( Throwable throwable ) {

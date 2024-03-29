@@ -22,16 +22,88 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
+//public class WndTitledMessage extends Window {
+//
+//    public static final int WIDTH_MIN    = 120;
+//    public static final int WIDTH_MAX    = 220;
+//    public static final int GAP	= 2;
+//
+//    protected RenderedTextBlock text;
+//    protected ScrollPane sp;
+//
+//    public WndTitledMessage(Image icon, String title, String message ) {
+//
+//        this( new IconTitle( icon, title ), message );
+//
+//    }
+//
+//    public WndTitledMessage(Component titlebar, String message ) {
+//
+//        super();
+//
+//        int width = WIDTH_MIN;
+//
+//        titlebar.setRect(0, 0, width, 0);
+//        add(titlebar);
+//
+//        sp = new ScrollPane(new Component() {
+//            @Override
+//            protected void createChildren(Object... params) {
+//                text = PixelScene.renderTextBlock( 6 );
+//                text.text( message, WndTitledMessage.this.width );
+//                add(text);
+//            }
+//
+//            @Override
+//            protected void layout() {
+//                text.setPos(x, y);
+//                width = text.width();
+//                height = text.height();
+//                if (sp.height() < height) height += 1;
+//            }
+//        });
+//        add(sp);
+//
+//        while (PixelScene.landscape()
+//                && text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
+//                && width < WIDTH_MAX){
+//            width += 20;
+//            titlebar.setRect(0, 0, width, 0);
+//            sp.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
+//            text.maxWidth(width);
+//        }
+//
+//        bringToFront(titlebar);
+//
+//        resize( width, (int) Math.min(titlebar.height() + 2*GAP + text.height() + 2, PixelScene.uiCamera.height * 0.85f ));
+//
+//        sp.setRect( titlebar.left(), titlebar.bottom() + 2*GAP, width, height - titlebar.height() - 2*GAP - 2 );
+//    }
+//
+//    public static void layoutTitleBar(Component titlebar, int width) {
+//        if (titlebar == null) return;
+//        if (titlebar instanceof RenderedTextBlock) {
+//            ((RenderedTextBlock) titlebar).maxWidth(width);
+//            titlebar.setRect((width - titlebar.width()) / 2f, GAP, titlebar.width(), titlebar.height());
+//        } else titlebar.setRect(0, 0, width, 0);
+//        PixelScene.align(titlebar);
+//    }
+//
+//    public void setHighligtingEnabled(boolean enableHighligthing){
+//        text.setHighlighting(enableHighligthing);
+//    }
 public class WndTitledMessage extends Window {
 
     public static final int WIDTH_MIN    = 120;
     public static final int WIDTH_MAX    = 220;
     public static final int GAP	= 2;
 
+    protected WindowContent content;
     protected RenderedTextBlock text;
 
     public WndTitledMessage(Image icon, String title, String message ) {
@@ -44,28 +116,14 @@ public class WndTitledMessage extends Window {
 
         super();
 
-        int width = WIDTH_MIN;
+        content = new WindowContent(titlebar, message);
+        text = content.text;
+        add(content);
+        content.setSize(0, 0);
 
-        titlebar.setRect(0, 0, width, 0);
-        add(titlebar);
+        resize((int) Math.ceil(content.width()), (int) Math.ceil(content.height()));
 
-        text = PixelScene.renderTextBlock( 6 );
-        text.text( message, width );
-        text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
-        add( text );
-
-        while (PixelScene.landscape()
-                && text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
-                && width < WIDTH_MAX){
-            width += 20;
-            titlebar.setRect(0, 0, width, 0);
-            text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
-            text.maxWidth(width);
-        }
-
-        bringToFront(titlebar);
-
-        resize( width, (int)text.bottom() + 2 );
+        content.setPos(0, 0);
     }
 
     public static void layoutTitleBar(Component titlebar, int width) {
@@ -78,6 +136,68 @@ public class WndTitledMessage extends Window {
     }
 
     public void setHighligtingEnabled(boolean enableHighligthing){
-        text.setHighlighting(enableHighligthing);
+        content.setHighligtingEnabled(enableHighligthing);
     }
+
+    protected static class WindowContent extends Component {
+
+        protected Component titlebar;
+        protected RenderedTextBlock text;
+        protected ScrollPane sp;
+
+        public WindowContent(Component titlebar, String message ) {
+            this.titlebar = titlebar;
+            add(titlebar);
+
+            sp = new ScrollPane(new Component() {
+                @Override
+                protected void createChildren(Object... params) {
+                    text = PixelScene.renderTextBlock( 6 );
+                    text.text( message );
+                    add(text);
+                }
+
+                @Override
+                protected void layout() {
+                    text.setPos(x, y);
+                    width = text.width();
+                    height = text.height();
+                    if (height > sp.height()) height += 2;
+                }
+            });
+            add(sp);
+
+            bringToFront(titlebar);
+        }
+
+        @Override
+        protected void layout() {
+            width = Math.max(width, WIDTH_MIN);
+            titlebar.setRect(0, 0, width, 0);
+
+            text.maxWidth((int) width);
+
+            while (PixelScene.landscape()
+                    && text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
+                    && width < WIDTH_MAX){
+                width += 20;
+                titlebar.setRect(0, 0, width, 0);
+                sp.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
+                text.maxWidth((int) width);
+            }
+
+            bringToFront(titlebar);
+
+            height = titlebar.height() + 2*GAP + text.height() + 2 - 1;
+            boolean needsSp = height > PixelScene.uiCamera.height * 0.85f;
+            if (needsSp) height = PixelScene.uiCamera.height * 0.85f;
+            sp.setRect( titlebar.left(), titlebar.bottom() + 2*GAP, width, height - titlebar.height() - 2*GAP + (needsSp ? 0 : 1) );
+        }
+
+        public void setHighligtingEnabled(boolean enableHighligthing){
+            text.setHighlighting(enableHighligthing);
+        }
+
+    }
+
 }
