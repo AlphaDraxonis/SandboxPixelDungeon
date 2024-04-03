@@ -45,11 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
-import com.watabou.utils.ColorMath;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
+import com.watabou.utils.*;
 
 public class WandOfLivingEarth extends DamageWand {
 	
@@ -352,16 +348,16 @@ public class WandOfLivingEarth extends DamageWand {
 
 		@Override
 		public int damageRoll() {
-			return Random.NormalIntRange(2, 4 + Dungeon.scalingDepth()/2);
+			return Char.combatRoll(2, 4 + Dungeon.scalingDepth()/2);
 		}
 
 		@Override
 		public int drRoll() {
 			int dr = super.drRoll();
 			if (Dungeon.isChallenged(Challenges.NO_ARMOR)){
-				return dr + Random.NormalIntRange(wandLevel, 2 + wandLevel);
+				return dr + Char.combatRoll(wandLevel, 2 + wandLevel);
 			} else {
-				return dr + Random.NormalIntRange(wandLevel, 3 + 3 * wandLevel);
+				return dr + Char.combatRoll(wandLevel, 3 + 3 * wandLevel);
 			}
 		}
 

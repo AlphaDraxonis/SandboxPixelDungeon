@@ -36,7 +36,7 @@ public class Crab extends Mob {
 		damageReductionMax = 4;
 		damageRollMin = 1;
 		damageRollMax = 7;
-		
+
 		EXP = 4;
 		maxLvl = 9;
 		
@@ -46,7 +46,7 @@ public class Crab extends Mob {
 	
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 1, 7 );
+//		return Char.combatRoll( 1, 7 );
 //	}
 //
 //	@Override
@@ -56,6 +56,6 @@ public class Crab extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 4);
+//		return super.drRoll() + Char.combatRoll(0, 4);
 //	}
 }

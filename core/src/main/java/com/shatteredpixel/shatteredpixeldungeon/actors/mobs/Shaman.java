@@ -25,12 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -52,7 +47,7 @@ public abstract class Shaman extends Mob {
 		damageRollMin = 5;
 		damageRollMax = 10;
 		damageReductionMax = 6;
-		
+
 		EXP = 8;
 		maxLvl = 16;
 		
@@ -62,7 +57,7 @@ public abstract class Shaman extends Mob {
 	
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 5, 10 );
+//		return Char.combatRoll( 5, 10 );
 //	}
 //
 //	@Override
@@ -72,7 +67,7 @@ public abstract class Shaman extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 6);
+//		return super.drRoll() + Char.combatRoll(0, 6);
 //	}
 
 	@Override
@@ -139,7 +134,7 @@ public abstract class Shaman extends Mob {
 				if (enemy == Dungeon.hero) Sample.INSTANCE.play( Assets.Sounds.DEBUFF );
 			}
 			
-			int dmg = Random.NormalIntRange( 6, 15 );
+			int dmg = Char.combatRoll( 6, 15 );
 			dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
 			enemy.damage( dmg, new EarthenBolt() );
 			
@@ -154,7 +149,7 @@ public abstract class Shaman extends Mob {
 	}
 	
 	protected abstract void debuff( Char enemy );
-	
+
 	@Override
 	public String description() {
 		if (customDesc != null) return super.description();

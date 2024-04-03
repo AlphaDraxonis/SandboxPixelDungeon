@@ -82,7 +82,7 @@ public class CrystalWisp extends Mob{
 
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 5, 10 );
+//		return Char.combatRoll( 5, 10 );
 //	}
 //
 //	@Override
@@ -92,7 +92,7 @@ public class CrystalWisp extends Mob{
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 5);
+//		return super.drRoll() + Char.combatRoll(0, 5);
 //	}
 
 	@Override
@@ -131,7 +131,7 @@ public class CrystalWisp extends Mob{
 		Char enemy = this.enemy;
 		if (Char.hit( this, enemy, true )) {
 
-			int dmg = Random.NormalIntRange( specialDamageRollMin, specialDamageRollMax );
+			int dmg = Char.combatRoll( specialDamageRollMin, specialDamageRollMax );
 			enemy.damage( dmg, new LightBeam() );
 
 			if (!enemy.isAlive() && enemy == Dungeon.hero) {

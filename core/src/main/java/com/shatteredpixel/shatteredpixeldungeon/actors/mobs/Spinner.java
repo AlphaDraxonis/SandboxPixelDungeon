@@ -25,11 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Web;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -62,7 +58,7 @@ public class Spinner extends Mob {
 
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange(10, 20);
+//		return Char.combatRoll(10, 20);
 //	}
 //
 //	@Override
@@ -72,7 +68,7 @@ public class Spinner extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 6);
+//		return super.drRoll() + Char.combatRoll(0, 6);
 //	}
 
 	private int webCoolDown = 0;

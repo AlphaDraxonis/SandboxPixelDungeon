@@ -203,7 +203,7 @@ public class Bomb extends Item {
 					continue;
 				}
 
-				int dmg = Random.NormalIntRange(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth()*2) * quantity();
+				int dmg = Char.combatRoll(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth()*2) * quantity();
 
 				//those not at the center of the blast take less damage
 				if (ch.pos != cell){

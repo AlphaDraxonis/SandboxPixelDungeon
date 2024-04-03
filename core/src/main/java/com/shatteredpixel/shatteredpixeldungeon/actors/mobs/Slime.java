@@ -39,7 +39,7 @@ public class Slime extends Mob {
 		attackSkill = 12;
 		damageRollMin = 2;
 		damageRollMax = 5;
-		
+
 		EXP = 4;
 		maxLvl = 9;
 		
@@ -48,7 +48,7 @@ public class Slime extends Mob {
 	
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 2, 5 );
+//		return Char.combatRoll( 2, 5 );
 //	}
 //
 //	@Override

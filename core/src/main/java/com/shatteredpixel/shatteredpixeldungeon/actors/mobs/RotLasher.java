@@ -116,7 +116,7 @@ public class RotLasher extends Mob {
 
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange(8, 15);
+//		return Char.combatRoll(8, 15);
 //	}
 //
 //	@Override
@@ -126,7 +126,7 @@ public class RotLasher extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 8);
+//		return super.drRoll() + Char.combatRoll(0, 8);
 //	}
 	
 	{

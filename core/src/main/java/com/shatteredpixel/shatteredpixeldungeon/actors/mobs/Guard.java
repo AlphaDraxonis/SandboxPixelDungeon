@@ -70,7 +70,7 @@ public class Guard extends Mob {
 
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange(4, 12);
+//		return Char.combatRoll(4, 12);
 //	}
 
 	private boolean chain(int target){
@@ -144,7 +144,7 @@ public class Guard extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 7);
+//		return super.drRoll() + Char.combatRoll(0, 7);
 //	}
 
 	@Override

@@ -141,7 +141,7 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 3, 6 );
+//		return Char.combatRoll( 3, 6 );
 //	}
 //
 //	@Override
@@ -151,7 +151,7 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 6);
+//		return super.drRoll() + Char.combatRoll(0, 6);
 //	}
 
 	@Override
@@ -700,7 +700,7 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 						}
 
 						if (ch != null && !(ch instanceof GnollGeomancer)){
-							ch.damage(Random.NormalIntRange(6, 12), new GnollGeomancer.Boulder());
+							ch.damage(Char.combatRoll(6, 12), new GnollGeomancer.Boulder());
 
 							if (ch.isAlive()){
 								Buff.prolong( ch, Paralysis.class, ch instanceof GnollGuard ? 10 : 3 );
@@ -803,7 +803,7 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 
 		@Override
 		public void affectChar(Char ch) {
-			ch.damage(Random.NormalIntRange(6, 12), this);
+			ch.damage(Char.combatRoll(6, 12), this);
 			if (ch.isAlive()) {
 				Buff.prolong(ch, Paralysis.class, ch instanceof GnollGuard ? 10 : 3);
 			} else if (ch == Dungeon.hero){

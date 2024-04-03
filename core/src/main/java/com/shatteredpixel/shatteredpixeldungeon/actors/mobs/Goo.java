@@ -21,11 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
+import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -92,7 +88,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 				Statistics.bossScores[0] -= 100;
 			}
 		}
-		return Random.NormalIntRange( min, max);
+		return Char.combatRoll( min, max);
 	}
 
 	@Override
@@ -110,7 +106,7 @@ public class Goo extends Mob implements MobBasedOnDepth {
 
 //	@Override
 //	public int drRoll() {
-//		return (int) (super.drRoll() + Random.NormalIntRange(0, 2) * statsScale);
+//		return (int) (super.drRoll() + Char.combatRoll(0, 2) * statsScale);
 //	}
 
 	@Override

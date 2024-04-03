@@ -53,7 +53,7 @@ public class Ghoul extends Mob {
 		damageRollMin = 16;
 		damageRollMax = 22;
 		damageReductionMax = 4;
-		
+
 		EXP = 5;
 		maxLvl = 20;
 		
@@ -69,7 +69,7 @@ public class Ghoul extends Mob {
 
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 16, 22 );
+//		return Char.combatRoll( 16, 22 );
 //	}
 //
 //	@Override
@@ -79,7 +79,7 @@ public class Ghoul extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 4);
+//		return super.drRoll() + Char.combatRoll(0, 4);
 //	}
 
 	@Override

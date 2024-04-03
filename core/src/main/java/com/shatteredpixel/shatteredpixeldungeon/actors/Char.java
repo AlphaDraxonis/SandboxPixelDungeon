@@ -104,7 +104,7 @@ public abstract class Char extends Actor {
 	public boolean rooted		= false;
 	public boolean flying		= false;
 	public int invisible		= 0;
-	
+
 	//these are relative to the hero
 	public enum Alignment{
 		ENEMY,
@@ -120,7 +120,7 @@ public abstract class Char extends Actor {
 	private LinkedHashSet<Buff> buffs = new LinkedHashSet<>();
 
 	public Zone currentZoneBuffs;
-	
+
 	@Override
 	protected boolean act() {
 		if (fieldOfView == null || fieldOfView.length != Dungeon.level.length()){
@@ -600,6 +600,12 @@ public abstract class Char extends Actor {
 		return (acuRoll * accMulti) >= defRoll;
 	}
 
+	//used for damage and blocking calculations, normally just calls NormalIntRange
+	// but may be affected by things that specifically impact combat number ranges
+	public static int combatRoll(int min, int max ){
+		return Random.NormalIntRange( min, max );
+	}
+
 	protected void zap() {
 		//do nothing by default
 	}
@@ -609,7 +615,7 @@ public abstract class Char extends Actor {
 		zap();
 		next();
 	}
-	
+
 	public int attackSkill( Char target ) {//accurancy
 		return 0;
 	}
@@ -623,7 +629,11 @@ public abstract class Char extends Actor {
 	}
 	
 	public int drRoll() { //defenseRoll
-		return Random.NormalIntRange( 0 , Barkskin.currentLevel(this) ) + Random.NormalIntRange(0, damageReductionMax);
+		int dr = combatRoll(0, damageReductionMax);;
+
+		dr += combatRoll( 0 , Barkskin.currentLevel(this) );
+
+		return dr;
 	}
 	
 	public int damageRoll() {
@@ -753,7 +763,7 @@ public abstract class Char extends Actor {
 		
 		//TODO improve this when I have proper damage source logic
 		if (AntiMagic.RESISTS.contains(src.getClass()) && buff(ArcaneArmor.class) != null){
-			dmg -= Random.NormalIntRange(0, buff(ArcaneArmor.class).level());
+			dmg -= combatRoll(0, buff(ArcaneArmor.class).level());
 			if (dmg < 0) dmg = 0;
 		}
 

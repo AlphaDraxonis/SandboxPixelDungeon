@@ -287,7 +287,7 @@ public class SentryRoom extends SpecialRoom {
 		@Override
 		public void onZapComplete(){
 			if (hit(this, Dungeon.hero, true)) {
-				Dungeon.hero.damage((int) (Random.NormalIntRange(2 + Dungeon.depth / 2, 4 + Dungeon.depth) * statsScale), new Eye.DeathGaze());
+				Dungeon.hero.damage((int) (Char.combatRoll(2 + Dungeon.depth / 2, 4 + Dungeon.depth) * statsScale), new Eye.DeathGaze());
 				if (!Dungeon.hero.isAlive()) {
 					Badges.validateDeathFromEnemyMagic();
 					Dungeon.fail(this);

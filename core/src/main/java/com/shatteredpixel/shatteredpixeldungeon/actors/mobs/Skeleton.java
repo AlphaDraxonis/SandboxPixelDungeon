@@ -35,7 +35,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 public class Skeleton extends Mob {
 	
@@ -50,7 +49,7 @@ public class Skeleton extends Mob {
 		specialDamageRollMin = 6;
 		specialDamageRollMax = 12;
 		damageReductionMax = 5;
-		
+
 		EXP = 5;
 		maxLvl = 10;
 
@@ -63,7 +62,7 @@ public class Skeleton extends Mob {
 	
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 2, 10 );
+//		return Char.combatRoll( 2, 10 );
 //	}
 	
 	@Override
@@ -77,7 +76,7 @@ public class Skeleton extends Mob {
 		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 			Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
 			if (ch != null && ch.isAlive()) {
-				int damage = Math.round(Random.NormalIntRange(specialDamageRollMin, specialDamageRollMax));
+				int damage = Math.round(Char.combatRoll(specialDamageRollMin, specialDamageRollMax));
 				damage = Math.round( damage * AscensionChallenge.statModifier(this));
 				//armor is 2x effective against bone explosion
 				damage = Math.max( 0,  damage - (ch.drRoll() + ch.drRoll()) );
@@ -131,6 +130,6 @@ public class Skeleton extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 5);
+//		return super.drRoll() + Char.combatRoll(0, 5);
 //	}
 }

@@ -88,7 +88,7 @@ public abstract class Elemental extends Mob {
 
 		hpSet = true;
 	}
-
+	
 	@Override
 	public boolean areStatsEqual(Mob other) {
 
@@ -126,13 +126,13 @@ public abstract class Elemental extends Mob {
 
 		return equal;
 	}
-	
+
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 5);
+//		return super.drRoll() + Char.combatRoll(0, 5);
 //	}
-	
-	protected int rangedCooldown = Random.NormalIntRange( 3, 5 );
+
+	protected int rangedCooldown = Char.combatRoll( 3, 5 );
 	
 	@Override
 	protected boolean act() {
@@ -194,13 +194,13 @@ public abstract class Elemental extends Mob {
 			enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
 		}
 
-		rangedCooldown = Random.NormalIntRange( 3, 5 );
+		rangedCooldown = Char.combatRoll( 3, 5 );
 	}
-	
+
 	@Override
 	public boolean add( Buff buff ) {
 		if (harmfulBuffs.contains( buff.getClass() )) {
-			damage( Random.NormalIntRange( HT/2, HT * 3/5 ), buff );
+			damage( Char.combatRoll( HT/2, HT * 3/5 ), buff );
 			return false;
 		} else {
 			return super.add( buff );
@@ -277,7 +277,7 @@ public abstract class Elemental extends Mob {
 			attackSkill = 15;
 			damageRollMin = 10;
 			damageRollMax = 12;
-			
+
 			properties.add(Property.MINIBOSS);
 		}
 
@@ -394,7 +394,7 @@ public abstract class Elemental extends Mob {
 			}
 
 			targetingPos = -1;
-			rangedCooldown = Random.NormalIntRange( 3, 5 );
+			rangedCooldown = Char.combatRoll( 3, 5 );
 		}
 
 		@Override

@@ -35,7 +35,7 @@ public class Gnoll extends Mob {
 		damageRollMin = 1;
 		damageRollMax = 6;
 		damageReductionMax = 2;
-		
+
 		EXP = 2;
 		maxLvl = 8;
 		
@@ -45,7 +45,7 @@ public class Gnoll extends Mob {
 	
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 1, 6 );
+//		return Char.combatRoll( 1, 6 );
 //	}
 //
 //	@Override
@@ -55,6 +55,6 @@ public class Gnoll extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 2);
+//		return super.drRoll() + Char.combatRoll(0, 2);
 //	}
 }

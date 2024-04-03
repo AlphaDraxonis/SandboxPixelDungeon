@@ -51,7 +51,7 @@ public class Golem extends Mob {
 		damageRollMin = 25;
 		damageRollMax = 30;
 		damageReductionMax = 12;
-		
+
 		EXP = 12;
 		maxLvl = 22;
 
@@ -67,7 +67,7 @@ public class Golem extends Mob {
 
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 25, 30 );
+//		return Char.combatRoll( 25, 30 );
 //	}
 //
 //	@Override
@@ -77,7 +77,7 @@ public class Golem extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 12);
+//		return super.drRoll() + Char.combatRoll(0, 12);
 //	}
 
 	@Override

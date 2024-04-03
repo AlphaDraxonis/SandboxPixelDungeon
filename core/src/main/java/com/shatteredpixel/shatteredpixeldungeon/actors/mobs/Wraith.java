@@ -72,7 +72,7 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 	
 	@Override
 	public int damageRoll() {
-		return (int) (Random.NormalIntRange( 1 + level/2, 2 + level ) * statsScale);
+		return (int) (Char.combatRoll( 1 + level/2, 2 + level ) * statsScale);
 	}
 	
 	@Override

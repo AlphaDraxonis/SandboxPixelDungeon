@@ -97,7 +97,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 6, 12 );
+//		return Char.combatRoll( 6, 12 );
 //	}
 
 
@@ -127,7 +127,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 	//	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 5);
+//		return super.drRoll() + Char.combatRoll(0, 5);
 //	}
 
 	boolean loading = false;
@@ -210,7 +210,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				bleeding = true;
 
 			} else PrisonBossLevel.killTengu(Dungeon.level, Tengu.this);
-			
+
 		//if tengu has lost a certain amount of hp, jump
 		} else if (newBracket != curbracket) {
 			//let full attack action complete first
@@ -791,7 +791,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				detach();
 				return true;
 			}
-			
+
 			timer--;
 			spend(TICK);
 			return true;
@@ -838,7 +838,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 				if (PathFinder.distance[cell] < Integer.MAX_VALUE) {
 					Char ch = Actor.findChar(cell);
 					if (ch != null && !(ch instanceof Tengu)) {
-						int dmg = Random.NormalIntRange(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth() * 2);
+						int dmg = Char.combatRoll(5 + Dungeon.scalingDepth(), 10 + Dungeon.scalingDepth() * 2);
 						dmg -= ch.drRoll();
 
 						if (dmg > 0) {

@@ -41,7 +41,7 @@ public class Snake extends Mob {
 		attackSkill = 10;
 		damageRollMin = 1;
 		damageRollMax = 4;
-		
+
 		EXP = 2;
 		maxLvl = 7;
 		
@@ -51,7 +51,7 @@ public class Snake extends Mob {
 	
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 1, 4 );
+//		return Char.combatRoll( 1, 4 );
 //	}
 //
 //	@Override

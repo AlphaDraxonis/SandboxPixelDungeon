@@ -37,7 +37,7 @@ public class Rat extends Mob {
 		damageRollMin = 1;
 		damageRollMax = 4;
 		damageReductionMax = 1;
-		
+
 		maxLvl = 5;
 	}
 
@@ -52,7 +52,7 @@ public class Rat extends Mob {
 
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 1, 4 );
+//		return Char.combatRoll( 1, 4 );
 //	}
 //
 //	@Override
@@ -62,7 +62,7 @@ public class Rat extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 1);
+//		return super.drRoll() + Char.combatRoll(0, 1);
 //	}
 
 	private static final String RAT_ALLY = "rat_ally";

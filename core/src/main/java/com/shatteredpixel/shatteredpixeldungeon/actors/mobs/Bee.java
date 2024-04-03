@@ -122,7 +122,7 @@ public class Bee extends Mob implements MobBasedOnDepth {
 	
 	@Override
 	public int damageRoll() {
-		return (int) (Random.NormalIntRange( HT / 10, HT / 4 ) * statsScale);
+		return (int) (Char.combatRoll( HT / 10, HT / 4 ) * statsScale);
 	}
 	
 	@Override

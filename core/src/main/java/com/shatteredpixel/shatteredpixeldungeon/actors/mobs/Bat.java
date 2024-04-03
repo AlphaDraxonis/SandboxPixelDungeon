@@ -53,7 +53,7 @@ public class Bat extends Mob {
 	
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 5, 18 );
+//		return Char.combatRoll( 5, 18 );
 //	}
 //
 //	@Override
@@ -63,7 +63,7 @@ public class Bat extends Mob {
 
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 4);
+//		return super.drRoll() + Char.combatRoll(0, 4);
 //	}
 	
 	@Override

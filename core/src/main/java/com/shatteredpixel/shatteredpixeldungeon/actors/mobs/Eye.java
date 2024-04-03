@@ -34,31 +34,12 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.PurpleParticle
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfBlast;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfBlink;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfClairvoyance;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfDeepSleep;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfDisarming;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfFear;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfFlock;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfShock;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Fadeleaf;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Firebloom;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Icecap;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Mageroyal;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Sorrowmoss;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Starflower;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Stormvine;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Sungrass;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
+import com.shatteredpixel.shatteredpixeldungeon.plants.*;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.EyeSprite;
@@ -98,7 +79,7 @@ public class Eye extends Mob {
 
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange(20, 30);
+//		return Char.combatRoll(20, 30);
 //	}
 //
 //	@Override
@@ -108,7 +89,7 @@ public class Eye extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 10);
+//		return super.drRoll() + Char.combatRoll(0, 10);
 //	}
 	
 	private Ballistica beam;
@@ -218,7 +199,7 @@ public class Eye extends Mob {
 			}
 
 			if (hit( this, ch, true )) {
-				int dmg = Random.NormalIntRange( specialDamageRollMin, specialDamageRollMax );
+				int dmg = Char.combatRoll( specialDamageRollMin, specialDamageRollMax );
 				dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
 				ch.damage( dmg, new DeathGaze() );
 

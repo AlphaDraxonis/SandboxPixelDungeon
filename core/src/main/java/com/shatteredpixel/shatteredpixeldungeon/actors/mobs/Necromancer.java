@@ -44,7 +44,6 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 public class Necromancer extends SpawnerMob {
@@ -93,7 +92,7 @@ public class Necromancer extends SpawnerMob {
 	
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 5);
+//		return super.drRoll() + Char.combatRoll(0, 5);
 //	}
 	
 	@Override
@@ -227,7 +226,7 @@ public class Necromancer extends SpawnerMob {
 
 				Char blocker = Actor.findChar(summoningPos);
 				if (blocker.alignment != alignment){
-					blocker.damage( Random.NormalIntRange(2, 10), new SummoningBlockDamage() );
+					blocker.damage( Char.combatRoll(2, 10), new SummoningBlockDamage() );
 					if (blocker == Dungeon.hero && !blocker.isAlive()){
 						Badges.validateDeathFromEnemyMagic();
 						Dungeon.fail(this);

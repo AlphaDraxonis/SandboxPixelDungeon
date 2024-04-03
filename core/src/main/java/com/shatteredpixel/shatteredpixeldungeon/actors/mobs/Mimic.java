@@ -238,17 +238,17 @@ public class Mimic extends Mob implements MobBasedOnDepth {
     @Override
     public int damageRoll() {
         if (alignment == Alignment.NEUTRAL) {
-            int dmg = Random.NormalIntRange(2 + 2 * level, 2 + 2 * level);
+            int dmg = Char.combatRoll(2 + 2 * level, 2 + 2 * level);
             if (superHidden) dmg *= 3;
             return (int) (dmg * statsScale);
         } else {
-            return (int) (Random.NormalIntRange(1 + level, 2 + 2 * level) * statsScale);
+            return (int) (Char.combatRoll(1 + level, 2 + 2 * level) * statsScale);
         }
     }
 
     @Override
     public int drRoll() {
-        return (int) (super.drRoll() + Random.NormalIntRange(0, 1 + level / 2) * statsScale);
+        return (int) (super.drRoll() + Char.combatRoll(0, 1 + level / 2) * statsScale);
     }
 
     @Override

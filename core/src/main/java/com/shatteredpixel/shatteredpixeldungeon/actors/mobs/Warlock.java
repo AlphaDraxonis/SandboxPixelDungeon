@@ -57,7 +57,7 @@ public class Warlock extends Mob implements Callback {
 		specialDamageRollMin = 12;
 		specialDamageRollMax = 18;
 		damageReductionMax = 8;
-		
+
 		EXP = 11;
 		maxLvl = 21;
 		
@@ -69,7 +69,7 @@ public class Warlock extends Mob implements Callback {
 	
 //	@Override
 //	public int damageRoll() {
-//		return Random.NormalIntRange( 12, 18 );
+//		return Char.combatRoll( 12, 18 );
 //	}
 //
 //	@Override
@@ -79,7 +79,7 @@ public class Warlock extends Mob implements Callback {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 8);
+//		return super.drRoll() + Char.combatRoll(0, 8);
 //	}
 	
 	@Override
@@ -123,7 +123,7 @@ public class Warlock extends Mob implements Callback {
 				Sample.INSTANCE.play( Assets.Sounds.DEBUFF );
 			}
 			
-			int dmg = Random.NormalIntRange( specialDamageRollMin, specialDamageRollMax );
+			int dmg = Char.combatRoll( specialDamageRollMin, specialDamageRollMax );
 			dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
 			enemy.damage( dmg, new DarkBolt() );
 			

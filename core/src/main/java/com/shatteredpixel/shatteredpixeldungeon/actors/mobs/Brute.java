@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldBuff;
@@ -35,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.BruteSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 public class Brute extends Mob {
 	
@@ -50,7 +50,7 @@ public class Brute extends Mob {
 		damageRollMax = 25;
 		specialDamageRollMin = 15;
 		specialDamageRollMax = 40;
-		
+
 		EXP = 8;
 		maxLvl = 16;
 		
@@ -63,7 +63,7 @@ public class Brute extends Mob {
 	@Override
 	public int damageRoll() {
 		return buff(BruteRage.class) != null ?
-					Random.NormalIntRange( specialDamageRollMin, specialDamageRollMax ) :
+				Char.combatRoll( specialDamageRollMin, specialDamageRollMax ) :
 					super.damageRoll();
 	}
 	
@@ -74,7 +74,7 @@ public class Brute extends Mob {
 //
 //	@Override
 //	public int drRoll() {
-//		return super.drRoll() + Random.NormalIntRange(0, 8);
+//		return super.drRoll() + Char.combatRoll(0, 8);
 //	}
 
 	@Override

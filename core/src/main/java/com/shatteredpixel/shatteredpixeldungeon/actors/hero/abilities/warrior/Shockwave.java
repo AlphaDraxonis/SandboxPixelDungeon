@@ -24,11 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -114,7 +110,7 @@ public class Shockwave extends ArmorAbility {
 							Char ch = Actor.findChar(cell);
 							if (ch != null && ch.alignment != hero.alignment){
 								int scalingStr = hero.STR()-10;
-								int damage = Random.NormalIntRange(5 + scalingStr, 10 + 2*scalingStr);
+								int damage = Char.combatRoll(5 + scalingStr, 10 + 2*scalingStr);
 								damage = Math.round(damage * (1f + 0.2f*hero.pointsInTalent(Talent.SHOCK_FORCE)));
 								damage -= ch.drRoll();
 
