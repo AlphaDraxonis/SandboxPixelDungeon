@@ -21,6 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSwitchFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.*;
@@ -769,6 +770,9 @@ public class CustomDungeon implements Bundlable {
 
 
     public void delete(LevelScheme levelScheme) throws IOException {
+
+        if (!LuaManager.checkAccess("customDungeon.delete")) return;
+
         String n = levelScheme.getName();
         ratKingLevels.remove(n);
 
@@ -921,6 +925,8 @@ public class CustomDungeon implements Bundlable {
 
     public void renameZone(Zone zone, String newName) {
 
+        if (!LuaManager.checkAccess("renameZone")) return;
+
         try {
             String oldName = zone.getName();
             zone.name = newName;
@@ -971,6 +977,9 @@ public class CustomDungeon implements Bundlable {
     }
 
     public void deleteZone(Zone zone) throws IOException {
+
+        if (!LuaManager.checkAccess("deleteZone")) return;
+
         String n = zone.getName();
 
         //Remove transitions and keys
@@ -1018,6 +1027,9 @@ public class CustomDungeon implements Bundlable {
     }
 
     public static void deleteDungeon(String name) {
+
+        if (!LuaManager.checkAccess("deleteDungeon")) return;
+
         if (Dungeon.customDungeon != null && Dungeon.customDungeon.name.equals(name))
             Dungeon.customDungeon = null;
         CustomDungeonSaves.deleteDungeonFile(name);
@@ -1025,6 +1037,9 @@ public class CustomDungeon implements Bundlable {
     }
 
     public static CustomDungeonSaves.Info copyDungeon(String oldName, String newName) {
+
+        if (!LuaManager.checkAccess("copyDungeon")) return null;
+
         try {
             CustomDungeon dungeon = null;
             try {
@@ -1043,6 +1058,9 @@ public class CustomDungeon implements Bundlable {
     }
 
     public LevelScheme copyLevel(LevelScheme levelScheme, String newName) {
+
+        if (!LuaManager.checkAccess("copyLevel")) return null;
+
         Bundle bundle = new Bundle();
         bundle.put("LevelScheme", levelScheme);
         LevelScheme ls = (LevelScheme) bundle.get("LevelScheme");
@@ -1111,6 +1129,9 @@ public class CustomDungeon implements Bundlable {
     }
 
     public static void renameDungeon(String oldName, String newName) {
+
+        if (!LuaManager.checkAccess("renameDungeon")) return;
+
         try {
             CustomDungeon dungeon = CustomDungeonSaves.renameDungeon(oldName, newName);
             if (dungeon != null) {
@@ -1126,6 +1147,8 @@ public class CustomDungeon implements Bundlable {
     }
 
     public void renameLevel(LevelScheme levelScheme, String newName) {
+
+        if (!LuaManager.checkAccess("renameLevel")) return;
 
         try {
             String oldName = levelScheme.getName();

@@ -7,11 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRemoverComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EditorInventoryWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Plants;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
@@ -21,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
@@ -224,10 +221,10 @@ public abstract class EditorItem<T> extends Item {
                     Image icon = Icons.ETERNAL_FIRE.get();
                     icon.scale.set(2.28f);// 16/7 = 2.28
                     return icon;
-                case ITEM: return new ItemSprite(Reflection.newInstance(Items.getRandomItem(null)));
-                case PLANT: return Reflection.newInstance(Plants.getRandomPlant(null)).getSprite();
+                case ITEM: return new ItemSprite((Item) Reflection.newInstance(EditorInvCategory.getRandom(Items.values())));
+                case PLANT: return ((Plant) Reflection.newInstance(EditorInvCategory.getRandom(Plants.values()))).getSprite();
                 case TRAP:
-                    Trap t = Reflection.newInstance(Traps.getRandomTrap(null));
+                    Trap t = Reflection.newInstance(EditorInvCategory.getRandom(Traps.values()));
                     t.visible = true;
                     return t.getSprite();
                 case BARRIER: return EditorUtilies.getBarrierTexture(1);

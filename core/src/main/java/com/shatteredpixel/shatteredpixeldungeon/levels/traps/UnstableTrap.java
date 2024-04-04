@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInvCategory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Traps;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -45,7 +46,7 @@ public class UnstableTrap extends Trap {
 
 	@Override
 	public void activate() {
-		Class<? extends Trap> trapClass = Traps.getRandomTrap(IGNORE_TRAPS);
+		Class<? extends Trap> trapClass = EditorInvCategory.getRandom(Traps.values(), IGNORE_TRAPS);
 		Trap t = Reflection.newInstance(trapClass);
 		t.pos = pos;
 

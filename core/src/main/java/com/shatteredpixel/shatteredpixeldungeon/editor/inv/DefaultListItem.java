@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -11,7 +12,9 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndChooseSubclass;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 
@@ -31,17 +34,43 @@ public class DefaultListItem extends AdvancedListPaneItem {
         label.setHighlighting(false);
 
         if (item instanceof EditorItem) {
-            editButton = new IconButton(Icons.get(Icons.EDIT)) {
+            editButton = new IconButton(Icons.EDIT.get()) {
                 @Override
                 protected void onClick() {
-                    openEditWindow();
+                    if (WndEditorInv.chooseClass) {
+                        Class<?> clazz = ((EditorItem<?>) item).getObject().getClass();
+                        while (clazz.getEnclosingClass() != null)
+                            clazz = clazz.getEnclosingClass();
+                        String className = clazz.getName();
+                        EditorScene.show(new WndOptions(
+                                Messages.get(DefaultListItem.class, "open_github_title"),
+                                Messages.get(DefaultListItem.class, "open_github_body", clazz.getSimpleName()),
+                                Messages.get(WndNewDungeon.class, "add_default_yes"),
+                                Messages.get(WndChooseSubclass.class, "no")) {
+                            @Override
+                            protected void onSelect(int index) {
+                                if (index == 0) {
+                                    Game.platform.openURI(
+                                            "https://github.com/AlphaDraxonis/SandboxPixelDungeon/blob/master/"
+                                            + (className.startsWith("com.watabou") ? "SPD-classes" : "core")
+                                            + "/src/main/java/" + className.replace('.', '/') + ".java");
+                                }
+                            }
+                        });
+                    }
+                    else openEditWindow();
                 }
 
                 @Override
                 protected String hoverText() {
+                    if (WndEditorInv.chooseClass) return Messages.get(DefaultListItem.class, "open_github");
                     return Messages.get(DefaultListItem.class, "edit");
                 }
             };
+            if (WndEditorInv.chooseClass) {
+                editButton.icon(Icons.MORE.get());
+//                editButton.icon(Icons.GITHUB.get);
+            }
             add(editButton);
         }
 
@@ -125,31 +154,7 @@ public class DefaultListItem extends AdvancedListPaneItem {
 
     protected boolean openEditWindow() {
         if (item instanceof EditorItem) {
-            Window w = new EditCompWindow(item, this);
-//            Window w = new Window();
-//            DefaultEditComp<?> content = ((EditorItem) item).createEditComponent();
-//            content.advancedListPaneItem = this;
-//
-//            float newWidth = PixelScene.landscape() ?
-//                    Math.min(200, PixelScene.uiCamera.width * 0.8f) :
-//                    Math.min(160, PixelScene.uiCamera.width * 0.8f);
-//
-//            content.setRect(0, 0, newWidth, -1);
-//            ScrollPane sp = new ScrollPane(content);
-//            w.add(sp);
-//
-//            Runnable r = () -> {
-//                float ch = content.height();
-//                int maxHeight = (int) (PixelScene.uiCamera.height * 0.8);
-//                int h = (int) Math.ceil(ch > maxHeight ? maxHeight : ch);
-//                w.resize((int) Math.ceil(newWidth), h);
-//                sp.setSize((int) Math.ceil(newWidth), h);
-//                sp.scrollToCurrentView();
-//            };
-//            content.setOnUpdate(r);
-//            r.run();
-
-            EditorScene.show(w);
+            EditorScene.show(new EditCompWindow(item, this));
             return true;
         }
         return false;

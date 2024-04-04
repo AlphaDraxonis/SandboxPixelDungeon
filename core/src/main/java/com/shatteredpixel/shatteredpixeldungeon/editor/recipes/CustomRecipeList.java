@@ -15,18 +15,14 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CustomRecipeList extends Component {
@@ -286,6 +282,11 @@ public class CustomRecipeList extends Component {
                     }
 
                     @Override
+                    public List<Bag> getBags() {
+                        return Collections.singletonList(Items.bag);
+                    }
+
+                    @Override
                     public boolean itemSelectable(Item item) {
                         return true;
                     }
@@ -298,11 +299,6 @@ public class CustomRecipeList extends Component {
                         if (slot == 999) recipe.itemOutput = item;
                         else recipe.setInput(slot, item);
                         item(item);
-                    }
-
-                    @Override
-                    public boolean addOtherTabs() {
-                        return false;
                     }
 
                     @Override

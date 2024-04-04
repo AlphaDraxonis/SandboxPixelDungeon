@@ -3,7 +3,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.DungeonTab;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.ItemTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.LevelGenComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
@@ -34,7 +33,6 @@ public class WndEditorSettings extends WndTabbed {
 
     public static final int ITEM_HEIGHT = 18;
 
-    private final ItemTab itemTab = null;
     private final LevelTab levelTab;
     private final DungeonTab dungeonTab;
     private final TransitionTab transitionTab;

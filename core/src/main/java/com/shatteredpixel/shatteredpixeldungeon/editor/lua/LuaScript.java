@@ -24,8 +24,13 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
+import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,14 +38,13 @@ import java.util.regex.Pattern;
 public class LuaScript implements Comparable<LuaScript> {
 
 	public final Class<?> type;
-	public String name, desc;
+	public String desc;
 	public String code;
 
 	public final String pathFromRoot;
 
-	public LuaScript(Class<?> type, String name, String desc, String pathFromRoot) {
+	public LuaScript(Class<?> type, String desc, String pathFromRoot) {
 		this.type = type;
-		this.name = name;
 		this.desc = desc;
 		this.pathFromRoot = pathFromRoot;
 	}
@@ -54,11 +58,10 @@ public class LuaScript implements Comparable<LuaScript> {
 		LuaScript luaScript = new LuaScript(
 				Reflection.forName(lines[0].substring(2)),
 				lines[1].replace((char) 29, '\n').substring(2),
-				lines[2].replace((char) 29, '\n').substring(2),
 				pathFromRoot
 		);
 		if (lines.length > 3) {
-			int index = lines[0].length() + lines[1].length() + lines[2].length() + 3;
+			int index = lines[0].length() + lines[1].length() + 3;
 			luaScript.code = fileContent.substring(index);
 		}
 		return luaScript;
@@ -69,7 +72,6 @@ public class LuaScript implements Comparable<LuaScript> {
 
 		b.append("--").append(type.getName()).append('\n');
 
-		b.append("--").append(name.replace('\n', (char) 29)).append('\n');
 		b.append("--").append(desc.replace('\n', (char) 29)).append('\n');
 
 		b.append(code);
@@ -80,14 +82,8 @@ public class LuaScript implements Comparable<LuaScript> {
 
 	@Override
 	public int compareTo(LuaScript o) {
-		return name.compareTo(o.name);
+		return pathFromRoot.compareTo(o.pathFromRoot);
 	}
-
-	@Override
-	public String toString() {
-		return name;
-	}
-
 
 	//replaces comments and string values so the pattern matcher
 	public static String cleanLuaCode(String luaCode) {
@@ -224,5 +220,17 @@ public class LuaScript implements Comparable<LuaScript> {
 			s.append(c);
 		}
 		return s.toString();
+	}
+
+	public LuaScript getCopy() {
+		LuaScript copy = new LuaScript(type, desc, pathFromRoot);
+		copy.code = code;
+		return copy;
+	}
+
+	public Image sprite() {
+		boolean abstrct = Modifier.isAbstract(type.getModifiers());
+		if (Mob.class.isAssignableFrom(type)) return abstrct ? new SkeletonSprite() : ((Mob) Reflection.newInstance(type)).sprite();
+		return new ItemSprite();
 	}
 }

@@ -28,22 +28,13 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot;
-import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RightClickMenu;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
@@ -53,7 +44,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.PointF;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class WndBag extends WndTabbed {
 
@@ -143,8 +134,12 @@ public class WndBag extends WndTabbed {
         layoutTabs();
     }
 
-    protected ArrayList<Bag> getBags() {
-        return Dungeon.hero.belongings.getBags();
+    protected List<Bag> getBags() {
+        if (selector == null) return Dungeon.hero.belongings.getBags();
+        else {
+            List<Bag> result = selector.getBags();
+            return result == null ? Dungeon.hero.belongings.getBags() : result;
+        }
     }
 
     public static WndBag lastBag(ItemSelector selector) {
@@ -492,11 +487,11 @@ public class WndBag extends WndTabbed {
 
         Class<? extends Bag> preferredBag();
 
+        List<Bag> getBags();
+
         boolean itemSelectable(Item item);
 
         void onSelect(Item item);
-
-        boolean addOtherTabs();
 
         boolean acceptsNull();
 
@@ -512,8 +507,9 @@ public class WndBag extends WndTabbed {
             return null; //defaults to last bag opened
         }
 
-        public boolean addOtherTabs() {
-            return true;
+        @Override
+        public List<Bag> getBags() {
+            return null; //defaults to all inventory bags
         }
 
         public boolean acceptsNull() {

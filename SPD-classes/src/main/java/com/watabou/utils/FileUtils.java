@@ -71,6 +71,15 @@ public class FileUtils {
 	}
 	
 	public static FileHandle getFileHandle( Files.FileType type, String basePath, String name ){
+
+//		//LuaManager.checkAccess
+//		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+//		for (StackTraceElement element : stackTrace) {
+//			if (element.getClassName().startsWith("org.luaj")) {
+//				return null;
+//			}
+//		}
+
 		switch (type){
 			case Classpath:
 				return Gdx.files.classpath( basePath + name );

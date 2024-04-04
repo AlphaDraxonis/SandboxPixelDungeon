@@ -1,17 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs.Mob_lua;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomObjectComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
@@ -23,12 +18,9 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 
-public enum Mobs {
+public enum Mobs implements EditorInvCategory<Mob> {
 
 
     //Any changes in ordinal should also be made in MobSprites!!!
@@ -41,91 +33,42 @@ public enum Mobs {
     NPC;
 
 
-    private static final Class<?>[] EMPTY_MOB_CLASS_ARRAY = new Class[0];
-
-    public static Class<?>[][] getAllMobs(Set<Class<? extends Mob>> mobsToIgnore) {
-        Mobs[] all = values();
-        Class<?>[][] ret = new Class[all.length][];
-        for (int i = 0; i < all.length; i++) {
-            List<Class<?>> mobs = new ArrayList<>(Arrays.asList(all[i].classes()));
-            if (mobsToIgnore != null) mobs.removeAll(mobsToIgnore);
-            ret[i] = mobs.toArray(EMPTY_MOB_CLASS_ARRAY);
-        }
-        return ret;
-    }
-
-    public static String[] getAllNames() {
-        Mobs[] all = values();
-        String[] ret = new String[all.length];
-        for (int i = 0; i < all.length; i++) {
-            ret[i] = all[i].getName();
-        }
-        return ret;
-    }
-
+    @Override
     public String getName() {
         switch (this) {
-            case NPC:
-                return Messages.get(Mobs.class, "npc");
-            case SPECIAL:
-                return Messages.get(Mobs.class, "general");
-            case SEWER:
-                return Document.INTROS.pageTitle("Sewers");
-            case PRISON:
-                return Document.INTROS.pageTitle("Prison");
-            case CAVES:
-                return Document.INTROS.pageTitle("Caves");
-            case CITY:
-                return Document.INTROS.pageTitle("City");
-            case HALLS:
-                return Document.INTROS.pageTitle("Halls");
+            case SEWER:  return Document.INTROS.pageTitle("Sewers");
+            case PRISON: return Document.INTROS.pageTitle("Prison");
+            case CAVES:  return Document.INTROS.pageTitle("Caves");
+            case CITY:   return Document.INTROS.pageTitle("City");
+            case HALLS:  return Document.INTROS.pageTitle("Halls");
+            default:     return Messages.get(this, name().toLowerCase(Locale.ENGLISH));
         }
-        return null;
     }
 
-    public Image getImage() {
-        switch (Mobs.this) {
-            case NPC:
-                return new WandmakerSprite();
-            case SPECIAL:
-                return new WraithSprite();
-            case SEWER:
-                return new GnollSprite();
-            case PRISON:
-                return new SkeletonSprite();
-            case CAVES:
-                return new BatSprite();
-            case CITY:
-                return new MonkSprite();
-            case HALLS:
-                return new SuccubusSprite();
+    @Override
+    public Image getSprite() {
+        switch (this) {
+            case SEWER:   return new GnollSprite();
+            case PRISON:  return new SkeletonSprite();
+            case CAVES:   return new BatSprite();
+            case CITY:    return new MonkSprite();
+            case HALLS:   return new SuccubusSprite();
+            case NPC:     return new WandmakerSprite();
+            case SPECIAL: return new WraithSprite();
+            default:      return new ItemSprite(ItemSpriteSheet.SOMETHING);
         }
-        return new ItemSprite(ItemSpriteSheet.SOMETHING);
-    }
-
-
-    public int numCharacter() {
-        return classes().length;
-    }
-
-    public static int numMobsTotal() {
-        int numMobs = -NPC.numCharacter();
-        Mobs[] all = values();
-        for (Mobs m : all) {
-            numMobs += m.numCharacter();
-        }
-        return numMobs;
     }
 
     private Class<?>[] classes;
 
+    @Override
     public Class<?>[] classes() {
         return classes;
     }
 
     static {
 
-        NPC.classes = new Class[]{
+        NPC.classes = new Class[] {
                 Ghost.class,
                 Wandmaker.class,
                 Blacksmith.class,
@@ -137,8 +80,7 @@ public enum Mobs {
                 WandOfRegrowth.Lotus.class
         };
 
-        SPECIAL.classes = new Class[]{
-                Mob_lua.class,
+        SPECIAL.classes = new Class[] {
                 Statue.class,
                 ArmoredStatue.class,
                 Piranha.class,
@@ -153,7 +95,7 @@ public enum Mobs {
                 HeroMob.class
         };
 
-        SEWER.classes = new Class[]{
+        SEWER.classes = new Class[] {
                 Rat.class,
                 Albino.class,
                 FetidRat.class,
@@ -168,7 +110,7 @@ public enum Mobs {
                 Goo.class
         };
 
-        PRISON.classes = new Class[]{
+        PRISON.classes = new Class[] {
                 Skeleton.class,
                 Thief.class,
                 Bandit.class,
@@ -182,7 +124,7 @@ public enum Mobs {
                 Tengu.class
         };
 
-        CAVES.classes = new Class[]{
+        CAVES.classes = new Class[] {
                 Brute.class,
                 ArmoredBrute.class,
                 Shaman.RedShaman.class,
@@ -205,7 +147,7 @@ public enum Mobs {
                 CrystalSpire.class
         };
 
-        CITY.classes = new Class[]{
+        CITY.classes = new Class[] {
                 Ghoul.class,
                 Warlock.class,
                 Elemental.FireElemental.class,
@@ -218,7 +160,7 @@ public enum Mobs {
                 DwarfKing.class
         };
 
-        HALLS.classes = new Class[]{
+        HALLS.classes = new Class[] {
                 Succubus.class,
                 Eye.class,
                 Scorpio.class,
@@ -251,55 +193,22 @@ public enum Mobs {
         return mob;
     }
 
-    public static class MobBag extends EditorItemBag {
-        private final Mobs mobs;
-
-        public MobBag(Mobs mobs) {
-            super(null, 0);
-            this.mobs = mobs;
-            for (Class<?> m : mobs.classes) {
-                items.add(new MobItem(initMob((Class<? extends Mob>) m)));
-            }
-        }
-
-        @Override
-        public Image getCategoryImage() {
-            return mobs.getImage();
-        }
-
-        @Override
-        public String name() {
-            return mobs.getName();
-        }
-    }
-
-    public static final EditorItemBag bag = new EditorItemBag("name", 0){
-        @Override
-        public Item findItem(FindInBag src) {
-            if (src.getType() == FindInBag.Type.CLASS) {
-                for (Item bag : items) {
-                    for (Item i : ((Bag) bag).items) {
-                        if (((MobItem) i).mob().getClass() == src.getValue()) return i;
-                    }
-                }
-            }
-            if (src.getType() == FindInBag.Type.CUSTOM_OBJECT) {
-                for (Item bag : items) {
-                    for (Item i : ((Bag) bag).items) {
-                        Mob m = ((MobItem) i).mob();
-                        if (m instanceof LuaClass && ((LuaClass) m).getIdentifier() == (int) src.getValue()) return i;
-                    }
-                }
-            }
-            return null;
-        }
-    };
+    public static final EditorItemBag bag = new EditorItemBag("name", 0){};
 
     static {
         for (Mobs m : values()) {
             bag.items.add(new MobBag(m));
         }
         bag.items.add(customMobsBag = new CustomMobsBag());
+    }
+
+    public static class MobBag extends EditorInvCategoryBag {
+        public MobBag(Mobs mobs) {
+            super(mobs);
+            for (Class<?> m : mobs.classes) {
+                items.add(new MobItem(initMob((Class<? extends Mob>) m)));
+            }
+        }
     }
 
     public static CustomMobsBag customMobsBag;

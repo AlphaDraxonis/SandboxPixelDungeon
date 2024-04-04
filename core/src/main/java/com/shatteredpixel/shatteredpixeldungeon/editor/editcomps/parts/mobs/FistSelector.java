@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -53,13 +54,13 @@ public class FistSelector extends ItemSelectorList<MobItem> {
             }
 
             @Override
-            public boolean addOtherTabs() {
-                return false;
+            public Class<? extends Bag> preferredBag() {
+                return Mobs.bag.getClass();
             }
 
             @Override
-            public Class<? extends Bag> preferredBag() {
-                return Mobs.bag.getClass();
+            public List<Bag> getBags() {
+                return Collections.singletonList(Mobs.bag);
             }
         }, ItemSelector.NullTypeSelector.DISABLED, YogFist.class, Mobs.bag, new HashSet<>());
     }

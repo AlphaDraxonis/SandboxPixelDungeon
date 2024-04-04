@@ -25,16 +25,35 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.lib.jse.JsePlatform;
 
 public class LuaManager {
 
 	public static void callStaticInitializers() {
+	}
+
+	{
+		String code = "local restrictedEnv = {}\n" +
+				"\n" +
+				"for k, v in pairs(_G) do\n" +
+				"    restrictedEnv[k] = v\n" +
+				"end\n" +
+				"\n" +
+				"restrictedEnv.io.open = nil\n" +
+				"restrictedEnv.io.close = nil\n" +
+				"restrictedEnv.io.read = nil\n" +
+				"restrictedEnv.io.write = nil\n" +
+				"restrictedEnv.os.execute = nil\n" +
+				"\n" +
+				"setmetatable(restrictedEnv, {__index = restrictedEnv})";
 	}
 
 	static final Globals globals;
@@ -42,17 +61,45 @@ public class LuaManager {
 	public static int scriptsRunning = 0;//TODO tzz restrict certain methods (e.g. file reading/writing) -> throw an exception if any method is invoked
 
 	public static boolean areScriptsRunning() {
-		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-		for (StackTraceElement element : stackTrace) {
-			if (element.getClassName().startsWith("org.luaj")) {
-				return true;
+		for (StackTraceElement[] stackTrace : Thread.getAllStackTraces().values()) {
+			for (StackTraceElement element : stackTrace) {
+				if (element.getClassName().contains("org.luaj.vm2")) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
+	private static void showScriptRunningWarning(String methodName) {
+		Window w = new WndError("tzz A script tried to call the method " + methodName + "(), " +
+				"but the access couldn't be granted due to security reasons (the effects would go beyond the current game)." +
+				"\n\n_The fact that a script even tried this is alarming and you should definitely be careful!_");
+		if (Game.scene() instanceof GameScene) GameScene.show(w);
+		else EditorScene.show(w);
+	}
+
+	public static boolean checkAccess(String methodName) {
+		if (areScriptsRunning()) {
+			showScriptRunningWarning(methodName);
+			return false;
+		}
+		return true;
+	}
+
 	static {
-		globals = JsePlatform.standardGlobals();
+		globals = new LuaGlobals();
+
+//		globals.set("load", LuaValue.NIL);
+//		globals.set("loadstring", LuaValue.NIL);
+//		globals.set("dofile", LuaValue.NIL);
+//		globals.set("loadfile", LuaValue.NIL);
+//		globals.set("loadstring", LuaValue.NIL);
+//		globals.set("debug", LuaValue.NIL);
+//		globals.set("os", LuaValue.NIL);
+//		globals.set("io", LuaValue.NIL);
+//		globals.set("socket", LuaValue.NIL);
+//		globals.set("_ENV", LuaValue.NIL);
 	}
 
 
@@ -67,19 +114,16 @@ public class LuaManager {
 		globals.set("depth", LuaValue.valueOf(Dungeon.depth));
 		globals.set("branch", LuaValue.valueOf(Dungeon.branch));
 		globals.set("version", LuaValue.valueOf(Game.version));
+		globals.set("versionCode", LuaValue.valueOf(Game.versionCode));
 
 		updateStatistics();
 	}
 
-	public static void updateStatistics() {
+	public static void updateStatistics() {//tzz
 		if (Dungeon.hero != null) {
 //			globals.set("limitedDrops", CoerceJavaToLua.coerce(Dungeon.LimitedDrops.values()));
-//			globals.set("gold", LuaValue.valueOf(Dungeon.gold));
-//			globals.set("energy", LuaValue.valueOf(Dungeon.energy));
 		} else {
 //			globals.set("limitedDrops", ((LuaValue) null));
-//			globals.set("gold", LuaValue.valueOf(0));
-//			globals.set("energy", LuaValue.valueOf(0));
 		}
 	}
 
@@ -126,7 +170,7 @@ public class LuaManager {
 		}
 	}
 
-	private static final String TYPE_OF_PREFIX = "__type";
+	private static final String TYPE_OF_PREFIX = "__type_";
 	private static final int TYPE_BUNDLABLE = 1, TYPE_INT = 2, TYPE_BOOLEAN = 3, TYPE_STRING = 4, TYPE_LONG = 5, TYPE_FLOAT = 6, TYPE_TABLE = 100;
 	public static void storeVarInBundle(Bundle bundle, LuaValue value, String key) {
 

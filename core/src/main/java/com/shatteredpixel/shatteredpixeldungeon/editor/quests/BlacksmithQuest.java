@@ -269,10 +269,10 @@ public class BlacksmithQuest extends Quest {
         if (b != null && b.contains(OLD_GOLD_QUESTS_ACTIVE)) {
             oldGoldQuestsActive = b.getInt(OLD_GOLD_QUESTS_ACTIVE);
 
-            int[] ids = bundle.getIntArray(QUEST_IDS);
+            int[] ids = b.getIntArray(QUEST_IDS);
             if (ids != null) {
                 for (int id : ids) {
-                    quests.put(id, (BlacksmithQuest) bundle.get(QUEST_VALUE + id));
+                    quests.put(id, (BlacksmithQuest) b.get(QUEST_VALUE + id));
                     nextId = Math.max(id + 1, nextId);
                 }
             }

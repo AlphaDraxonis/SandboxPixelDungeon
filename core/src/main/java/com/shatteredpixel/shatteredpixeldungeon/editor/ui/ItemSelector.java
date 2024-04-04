@@ -18,7 +18,9 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.ui.Component;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 public class ItemSelector extends Component {
 
@@ -282,8 +284,8 @@ public class ItemSelector extends Component {
         }
 
         @Override
-        public boolean addOtherTabs() {
-            return false;
+        public List<Bag> getBags() {
+            return Collections.singletonList(EditorItemBag.getBag(preferredBag));
         }
     }
 }

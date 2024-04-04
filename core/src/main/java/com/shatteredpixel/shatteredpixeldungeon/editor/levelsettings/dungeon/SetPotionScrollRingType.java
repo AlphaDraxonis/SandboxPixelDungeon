@@ -3,7 +3,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.items.ItemTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
@@ -156,7 +155,6 @@ public class SetPotionScrollRingType extends Component {
             else if (items[i] instanceof Ring)
                 d.putRingGemLabel(((Ring) items[i]).getClass(), val);
         }
-        ItemTab.updateItems();
         QuickSlotButton.refresh();
         EditorScene.updateHeapImages();
     }

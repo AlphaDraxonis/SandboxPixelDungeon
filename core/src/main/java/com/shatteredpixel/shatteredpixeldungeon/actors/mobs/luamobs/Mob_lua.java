@@ -11,8 +11,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
@@ -25,14 +29,6 @@ public class Mob_lua extends Rat implements LuaMob {
 
     private int identifier;
     private LuaTable vars;
-
-    {
-        LuaValue script;
-        if (!CustomDungeon.isEditing() && (script = CustomObject.getScript(identifier)) != null && script.get("vars").istable()) {
-            vars = LuaManager.deepCopyLuaValue(script.get("vars")).checktable();
-            vars.set("static", script.get("vars").get("static"));
-        }
-    }
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -47,13 +43,14 @@ public class Mob_lua extends Rat implements LuaMob {
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         identifier = bundle.getInt(LuaClass.IDENTIFIER);
-        LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, VARS);
-        if (loaded != null && loaded.istable()) {
-            vars = loaded.checktable();
-            LuaValue script = CustomObject.getScript(identifier);
-            if (script != null && script.get("vars").istable()) {
-                vars.set("static", script.get("vars").get("static"));
-            }
+
+        LuaValue script;
+        if (!CustomDungeon.isEditing() && (script = CustomObject.getScript(identifier)) != null && script.get("vars").istable()) {
+            vars = LuaManager.deepCopyLuaValue(script.get("vars")).checktable();
+
+            LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, VARS);
+            if (loaded != null && loaded.istable()) vars = loaded.checktable();
+            if (script.get("static").istable()) vars.set("static", script.get("static"));
         }
     }
 
@@ -72,12 +69,15 @@ public class Mob_lua extends Rat implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("attackSkill").isnil()) {
             LuaManager.scriptsRunning++;
-            int ret = luaScript.get("attackSkill").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.attackSkill(arg0);
+            try {
+                int ret = luaScript.get("attackSkill").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
+                LuaManager.scriptsRunning--;
+                return ret;
+            } catch (LuaError e) {
+                Game.runOnRenderThread(()->	GameScene.show(new WndError(e)));
+            }
         }
+        return super.attackSkill(arg0);
     }
 
     @Override

@@ -21,11 +21,7 @@ import com.watabou.noosa.ui.Component;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ItemContainer<T extends Item> extends Component implements WndBag.ItemSelectorInterface { // needs access to protected methods
 
@@ -133,11 +129,6 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
     }
 
     @Override
-    public boolean addOtherTabs() {
-        return false;
-    }
-
-    @Override
     public boolean acceptsNull() {
         return false;
     }
@@ -167,6 +158,12 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
     public Class<? extends Bag> preferredBag() {
         return Items.bag.getClass();
     }
+
+    @Override
+    public List<Bag> getBags() {
+        return Collections.singletonList(Items.bag);
+    }
+
     //IMPORTANT METHODS
     //IMPORTANT METHODS
 

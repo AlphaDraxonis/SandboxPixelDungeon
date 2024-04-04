@@ -15,12 +15,13 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
-public enum Rooms {
+import java.util.Locale;
+
+public enum Rooms implements EditorInvCategory<Room> {
 
     SEWER,
     PRISON,
@@ -31,54 +32,42 @@ public enum Rooms {
     SPECIAL,
     SECRET;
 
+    @Override
     public String getName() {
         switch (this) {
-            case SEWER:
-                return Document.INTROS.pageTitle("Sewers");
-            case PRISON:
-                return Document.INTROS.pageTitle("Prison");
-            case CAVES:
-                return Document.INTROS.pageTitle("Caves");
-            case CITY:
-                return Document.INTROS.pageTitle("City");
-            case HALLS:
-                return Document.INTROS.pageTitle("Halls");
-            case STANDARD:
-                return Messages.get(Rooms.class, "standard");
-            case SPECIAL:
-                return Messages.get(Rooms.class, "special");
-            case SECRET:
-                return Messages.get(Rooms.class, "secret");
+            case SEWER:    return Document.INTROS.pageTitle("Sewers");
+            case PRISON:   return Document.INTROS.pageTitle("Prison");
+            case CAVES:    return Document.INTROS.pageTitle("Caves");
+            case CITY:     return Document.INTROS.pageTitle("City");
+            case HALLS:    return Document.INTROS.pageTitle("Halls");
+
+            default:       return Messages.get(this, name().toLowerCase(Locale.ENGLISH));
         }
-        return null;
     }
 
-    public Image getImage() {
+    @Override
+    public Image getSprite() {
         switch (Rooms.this) {
-            case SEWER:
-                return new TileSprite(Assets.Environment.TILES_SEWERS, Terrain.EMPTY_SP);
-            case PRISON:
-                return new TileSprite(Assets.Environment.TILES_PRISON, Terrain.EMPTY_SP);
-            case CAVES:
-                return new TileSprite(Assets.Environment.TILES_CAVES, Terrain.EMPTY_SP);
-            case CITY:
-                return new TileSprite(Assets.Environment.TILES_CITY, Terrain.EMPTY_SP);
-            case HALLS:
-                return new TileSprite(Assets.Environment.TILES_HALLS, Terrain.EMPTY_SP);
-            case STANDARD:
-                return new ItemSprite();
-            case SPECIAL:
-                return Icons.get(Icons.TALENT);
+            case SEWER:  return new TileSprite(Assets.Environment.TILES_SEWERS, Terrain.EMPTY_SP);
+            case PRISON: return new TileSprite(Assets.Environment.TILES_PRISON, Terrain.EMPTY_SP);
+            case CAVES:  return new TileSprite(Assets.Environment.TILES_CAVES, Terrain.EMPTY_SP);
+            case CITY:   return new TileSprite(Assets.Environment.TILES_CITY, Terrain.EMPTY_SP);
+            case HALLS:  return new TileSprite(Assets.Environment.TILES_HALLS, Terrain.EMPTY_SP);
+
+            case STANDARD: return new ItemSprite();
+            case SPECIAL:  return Icons.get(Icons.TALENT);
             case SECRET:
                 Image img = new Image(Assets.Interfaces.TOOLBAR);
                 img.frame(193, 0, 16, 16);
                 return img;
+
+            default: return new ItemSprite();
         }
-        return new ItemSprite(ItemSpriteSheet.SOMETHING);
     }
 
     private Class<?>[] classes;
 
+    @Override
     public Class<?>[] classes() {
         return classes;
     }
@@ -88,43 +77,42 @@ public enum Rooms {
 
         //TODO Exit/Entrance
 
-        SEWER.classes = new Class[]{
+        SEWER.classes = new Class[] {
                 SewerPipeRoom.class,
                 RingRoom.class,
                 CircleBasinRoom.class
         };
 
-        PRISON.classes = new Class[]{
+        PRISON.classes = new Class[] {
                 SegmentedRoom.class,
                 PillarsRoom.class,
                 CellBlockRoom.class,
                 RotGardenRoom.class,
                 RitualSiteRoom.class,
                 MassGraveRoom.class
-
         };
 
-        CAVES.classes = new Class[]{
+        CAVES.classes = new Class[] {
                 CaveRoom.class,
                 CavesFissureRoom.class,
                 CirclePitRoom.class,
                 BlacksmithRoom.class
         };
 
-        CITY.classes = new Class[]{
+        CITY.classes = new Class[] {
                 HallwayRoom.class,
                 StatuesRoom.class,
                 SegmentedLibraryRoom.class
         };
 
-        HALLS.classes = new Class[]{
+        HALLS.classes = new Class[] {
                 RuinsRoom.class,
                 ChasmRoom.class,
                 SkullsRoom.class,
                 DemonSpawnerRoom.class
         };
 
-        SPECIAL.classes = new Class[]{
+        SPECIAL.classes = new Class[] {
 
                 ArmoryRoom.class,
                 CryptRoom.class,
@@ -155,10 +143,9 @@ public enum Rooms {
                 WeakFloorRoom.class,
                 PitRoom.class
 
-
         };
 
-        STANDARD.classes = new Class[]{
+        STANDARD.classes = new Class[] {
                 EmptyRoom.class,
                 PlantsRoom.class,
                 AquariumRoom.class,
@@ -173,9 +160,7 @@ public enum Rooms {
                 MinefieldRoom.class
         };
 
-        SECRET.classes = new Class[]{
-
-
+        SECRET.classes = new Class[] {
                 SecretArtilleryRoom.class,
                 SecretLibraryRoom.class,
                 SecretRunestoneRoom.class,
@@ -188,31 +173,7 @@ public enum Rooms {
                 SecretChestChasmRoom.class,
                 SecretHoardRoom.class,
                 SecretSummoningRoom.class
-
         };
-
-    }
-
-    public static class RoomBag extends EditorItemBag {
-        private final Rooms rooms;
-
-        public RoomBag(Rooms rooms) {
-            super(null, 0);
-            this.rooms = rooms;
-            for (Class<?> r : rooms.classes) {
-                items.add(new RoomItem((Room) Reflection.newInstance(r)));
-            }
-        }
-
-        @Override
-        public Image getCategoryImage() {
-            return rooms.getImage();
-        }
-
-        @Override
-        public String name() {
-            return rooms.getName();
-        }
     }
 
     public static final EditorItemBag bag = new EditorItemBag("name", 0) {};
@@ -220,6 +181,15 @@ public enum Rooms {
     static {
         for (Rooms r : values()) {
             bag.items.add(new RoomBag(r));
+        }
+    }
+
+    public static class RoomBag extends EditorInvCategoryBag {
+        public RoomBag(Rooms rooms) {
+            super(rooms);
+            for (Class<?> r : rooms.classes) {
+                items.add(new RoomItem((Room) Reflection.newInstance(r)));
+            }
         }
     }
 }

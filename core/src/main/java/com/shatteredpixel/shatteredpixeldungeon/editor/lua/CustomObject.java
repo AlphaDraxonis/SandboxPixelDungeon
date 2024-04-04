@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs.Mob_lua;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -56,29 +57,25 @@ public class CustomObject implements Bundlable {
 	public String pathToScript;
 
 	private LuaValue script;
+	private LuaValue staticVarsTemp;
+
+	private static LuaValue globalVars;
 
 	public Image getSprite() {
 		if (luaClass instanceof Mob) return ((Mob) luaClass).sprite();
 		return new ItemSprite();
 	}
 
-	private static final String vars =
-			"vars = { " +
-//                    "local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
-					"item = nil;" +
-					"test = 11;" +
-					"static = {" +
-					"aNumber = 17" +
-					"};" +
-					"globals = {" +
-					"globalValue = 99" +
-					"}" +
-					" }  ";
-
 	public void loadScript() {
 
 		LuaScript ls = CustomDungeonSaves.readLuaFile(pathToScript);
-		if (ls != null) script = LuaManager.globals.load(ls.code).call();
+		if (ls != null) {
+			script = LuaManager.globals.load(ls.code).call();
+			if (staticVarsTemp != null) {
+				script.set("static", staticVarsTemp);
+				staticVarsTemp = null;
+			}
+		}
 		else script = null;
 
 //		script = LuaManager.globals.load(
@@ -106,6 +103,8 @@ public class CustomObject implements Bundlable {
 
 	public static void loadScripts() {
 		LuaManager.callStaticInitializers();
+		if (globalVars == null) globalVars = LuaManager.globals.load("return {globus = 6}").call();//TODO initialize globals from a file tzz
+		LuaManager.globals.set("globals", globalVars);
 		for (CustomObject obj : customObjects.values()) {
 			obj.loadScript();
 		}
@@ -132,12 +131,18 @@ public class CustomObject implements Bundlable {
 	private static final String LUA_CLASS = "lua_class";
 	private static final String NAME = "name";
 	private static final String PATH_TO_SCRIPT = "path_to_script";
+	private static final String STATIC_VARS = "static_vars";
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		luaClass = (LuaClass) bundle.get(LUA_CLASS);
 		name = bundle.getString(NAME);
 		pathToScript = bundle.getString(PATH_TO_SCRIPT);
+
+		LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, STATIC_VARS);
+		if (loaded != null && loaded.istable()) {
+			staticVarsTemp = loaded.checktable();
+		}
 	}
 
 	@Override
@@ -145,6 +150,10 @@ public class CustomObject implements Bundlable {
 		bundle.put(LUA_CLASS, luaClass);
 		bundle.put(NAME, name);
 		bundle.put(PATH_TO_SCRIPT, pathToScript);
+
+		if (script != null && script.get("static").istable() && !CustomDungeon.isEditing()) {
+			LuaManager.storeVarInBundle(bundle, script.get("static"), STATIC_VARS);
+		}
 	}
 
 	public static void assignNewID(CustomObject customObject) {
@@ -215,12 +224,13 @@ public class CustomObject implements Bundlable {
 
 
 	public static int nextCustomObjectID = 1;
-	public static Map<Integer, CustomObject> customObjects = new HashMap<>();//tzz store in bundle!
+	public static Map<Integer, CustomObject> customObjects = new HashMap<>();
 
 
 	private static final String NODE = "lua_static";
 	private static final String NEXT_CUSTOM_OBJECT_ID = "next_custom_object_id";
 	private static final String CUSTOM_OBJECTS = "custom_objects";
+	private static final String GLOBAL_VARS = "global_vars";
 
 	public static void restore(Bundle bundle) {
 
@@ -238,6 +248,11 @@ public class CustomObject implements Bundlable {
 			CustomObject clo = (CustomObject) b;
 			customObjects.put(clo.luaClass.getIdentifier(), clo);
 		}
+
+		LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, GLOBAL_VARS);
+		if (loaded != null && loaded.istable()) {
+			globalVars = loaded.checktable();
+		}
 	}
 
 	public static void store(Bundle bundle) {
@@ -245,6 +260,10 @@ public class CustomObject implements Bundlable {
 		node.put(NEXT_CUSTOM_OBJECT_ID, nextCustomObjectID);
 		node.put(CUSTOM_OBJECTS, customObjects.values());
 		bundle.put(NODE, node);
+
+		if (globalVars != null && globalVars.istable() && !CustomDungeon.isEditing()) {
+			LuaManager.storeVarInBundle(bundle, globalVars, GLOBAL_VARS);
+		}
 	}
 
 	public static void reset() {

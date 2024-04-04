@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -18,7 +19,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndScrollOfDebug;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndInspectObject;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
@@ -48,7 +49,7 @@ public class SideControlPane extends Component {
             buttons[0] = new ExitBtn();
 //            buttons[1] = new SoDebugBtn();
             buttons[1] = new DamageBtn();
-            buttons[2] = DeviceCompat.isDebug() ? new SoDebugBtn() : new SecretsBtn();
+            buttons[2] = DeviceCompat.isDebug() ? new DebugBtn() : new SecretsBtn();
             buttons[3] = new MindVisionBtn();
             buttons[4] = new MappingBtn();
             buttons[5] = new KeyBtn();
@@ -247,16 +248,17 @@ public class SideControlPane extends Component {
         }
     }
 
-    public static final class SoDebugBtn extends SideControlButton {
+    public static final class DebugBtn extends SideControlButton {
 
-        private SoDebugBtn() {
+        private DebugBtn() {
             super(4);
             enable(true);
         }
 
         @Override
         protected void onClick() {
-            GameScene.show(new WndScrollOfDebug());
+            WndInspectObject.show(Rat.class, 0, null);
+//            GameScene.show(new WndScrollOfDebug());
         }
     }
 

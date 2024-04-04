@@ -1,7 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings.ITEM_HEIGHT;
-
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
@@ -10,12 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSe
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
@@ -24,6 +17,8 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Signal;
+
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings.ITEM_HEIGHT;
 
 public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
@@ -64,12 +59,15 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
         float posY = y;
 
         if (layoutOwnMenu) {
-            if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth((int) width);
-            title.setRect(x, posY, width, title.height());
+            if (title != null) {
+                if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth((int) width);
+                title.setRect(x, posY, width, title.height());
+                posY = title.bottom() + GAP;
+            }
 
             layoutOwnContent();
 
-            sp.setRect(x, title.bottom() + GAP, width, height - title.bottom() - GAP - 1);
+            sp.setRect(x, posY, width, height - posY - 1 + y);
 
         } else {
             posY += GAP * 2;

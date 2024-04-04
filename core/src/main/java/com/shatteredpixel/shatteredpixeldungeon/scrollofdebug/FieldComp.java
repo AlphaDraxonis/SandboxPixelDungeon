@@ -27,6 +27,9 @@ public class FieldComp extends Button {
 
     private IconButton take;
 
+    private Button editValue;
+    private Button inspectType;
+
     public FieldComp(Field field, Object obj) {
         this.field = field;
         this.obj = obj;

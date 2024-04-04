@@ -7,47 +7,20 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.*;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+public enum Plants implements EditorInvCategory<Plant> {
 
-public enum Plants {
-
-    PLANTS;
-
-    private static final Class<?>[] EMPTY_PLANT_CLASS_ARRAY = new Class[0];
-
-    public static Class<?>[][] getAllPlants(Set<Class<? extends Plant>> plantsToIgnore) {
-        Plants[] all = values();
-        Class<?>[][] ret = new Class[all.length][];
-        for (int i = 0; i < all.length; i++) {
-            List<Class<?>> plants = new ArrayList<>(Arrays.asList(all[i].classes()));
-            if (plantsToIgnore != null) plants.removeAll(plantsToIgnore);
-            ret[i] = plants.toArray(EMPTY_PLANT_CLASS_ARRAY);
-        }
-        return ret;
-    }
-
-    public static Class<? extends Plant> getRandomPlant(Set<Class<? extends Plant>> plantsToIgnore) {
-        Class<? extends Plant>[][] plants = (Class<? extends Plant>[][]) getAllPlants(plantsToIgnore);
-        List<Class<? extends Plant>> plantList = new ArrayList<>();
-        for (Class<? extends Plant>[] plant : plants) {
-            plantList.addAll(Arrays.asList(plant));
-        }
-        int length = plantList.size();
-        if (length == 0) return null;
-        return plantList.get((int) (Math.random() * length));
-    }
+    ALL;
 
     private Class<?>[] classes;
 
+    @Override
     public Class<?>[] classes() {
         return classes;
     }
 
     static {
-        PLANTS.classes = new Class[]{
+
+        ALL.classes = new Class[]{
                 Firebloom.class,
                 Icecap.class,
                 Sungrass.class,
@@ -66,18 +39,9 @@ public enum Plants {
         };
     }
 
-    public static class PlantBag extends EditorItemBag {
-        public PlantBag(Plants plants) {
-            super("plants", 0);
-            for (Class<?> p : plants.classes) {
-                items.add(new PlantItem((Plant) Reflection.newInstance(p)));
-            }
-        }
-
-        @Override
-        public Image getCategoryImage() {
-            return EditorUtilies.getTerrainFeatureTexture(116);//Ice cap
-        }
+    @Override
+    public Image getSprite() {
+        return EditorUtilies.getTerrainFeatureTexture(116);//Ice cap
     }
 
     public static final EditorItemBag bag = new EditorItemBag("name", 0) {};
@@ -85,6 +49,15 @@ public enum Plants {
     static {
         for (Plants p : values()) {
             bag.items.add(new PlantBag(p));
+        }
+    }
+
+    public static class PlantBag extends EditorInvCategoryBag {
+        public PlantBag(Plants plants) {
+            super(plants);
+            for (Class<?> p : plants.classes) {
+                items.add(new PlantItem((Plant) Reflection.newInstance(p)));
+            }
         }
     }
 }

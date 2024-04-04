@@ -72,6 +72,9 @@ public class MethodPanel extends CodeInputPanel {
 
 	@Override
 	protected String convertToLuaCode() {
+
+		if (textInput == null) return null;
+
 		StringBuilder b = new StringBuilder();
 
 		b.append("function ");
@@ -83,7 +86,7 @@ public class MethodPanel extends CodeInputPanel {
 		}
 		b.append(")\n");
 
-		b.append(textInput == null ? "\n" : "    " + textInput.getText().replace("\n", "\n    "));
+		b.append(textInput.getText());
 
 		b.append("\nend");
 
@@ -91,15 +94,34 @@ public class MethodPanel extends CodeInputPanel {
 	}
 
 	@Override
-	protected void compile() {
-		super.compile();
-		String code = convertToLuaCode();
-		String cleanedCode = LuaScript.cleanLuaCode(code);
-		if (LuaScript.extractTableFromScript(cleanedCode, code, "vars", false) != null
-				|| LuaScript.extractTableFromScript(cleanedCode, code, "static", false) != null) {
-			throw new RuntimeException("Cannot use tables named 'vars' or 'static'!");
+	String getLabel() {
+		StringBuilder b = new StringBuilder(method.getName());
+		b.append(" (");
+		Class<?>[] paramTypes = method.getParameterTypes();
+		for (int i = 0; i < paramTypes.length; i++) {
+			b.append(paramTypes[i].getSimpleName()).append(' ');
+			b.append(paramNames[i]);
+			if (i < paramTypes.length - 1)
+				b.append(", ");
 		}
+		b.append(')');
+		return b.toString();
 	}
+
+//	@Override
+//	protected String compile() {
+//		String result = super.compile();
+//		String code = convertToLuaCode();
+//		if (code == null) return result;
+//		String cleanedCode = LuaScript.cleanLuaCode(code);
+//		if (LuaScript.extractTableFromScript(cleanedCode, code, "vars", false) != null
+//				|| LuaScript.extractTableFromScript(cleanedCode, code, "static", false) != null) {
+//			String tableNamesReserved = Messages.get(this, "compile_error_table_names_reserved", "vars", "static");
+//			if (result == null) return tableNamesReserved;
+//			return result + "\n" + tableNamesReserved;
+//		}
+//		return result;
+//	}
 
 	@Override
 	public void applyScript(boolean forceChange, LuaScript fullScript, String cleanedCode) {

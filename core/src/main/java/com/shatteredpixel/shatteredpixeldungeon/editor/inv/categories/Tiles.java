@@ -110,7 +110,9 @@ public enum Tiles {
                 return null;
             }
             if (src.getType() == FindInBag.Type.PARTICLE) {
-                int id = (int) src.getValue();
+                int id;
+                if (src.getValue() instanceof CustomParticle.ParticleProperty) id = ((CustomParticle.ParticleProperty) src.getValue()).particleID();
+                else id = (int) src.getValue();
                 for (Item i : particleBag.items) {
                     if (i instanceof ParticleItem && ((ParticleItem) i).getObject().particleID() == id) return i;
                 }
@@ -145,14 +147,11 @@ public enum Tiles {
 
     public static class TileBag extends EditorItemBag {
 
-        private final int[] terrains;
-
         public TileBag(String name, int... terrainCategory) {
             super(name, terrainCategory[0]);
             for (int i : terrainCategory) {
                 items.add(new TileItem(i, -1));
             }
-            this.terrains = terrainCategory;
         }
 
         @Override

@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitio
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -45,12 +46,10 @@ public class CustomDungeonSaves {
     public static final String EXPORT = "export";
     public static final String BUGGED = "bugged";
 
-    private static final String LUA_SCRIPTS = "scripts/";
-    private static final String LUA_FILE_EXTENSION = ".lua";
-
     static String curDirectory;
 
     public static void setCurDirectory(String curDirectory) {
+        if (!LuaManager.checkAccess("setCurDirectory")) return;
         CustomDungeonSaves.curDirectory = curDirectory;
     }
 
@@ -101,8 +100,7 @@ public class CustomDungeonSaves {
             Game.runOnRenderThread(() -> {
                 WndTitledMessage w = new WndError(getMessage());
                 w.setHighligtingEnabled(false);
-                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                else Game.scene().addToFront(w);
+                EditorScene.show(w);
             });
         }
     }
@@ -174,10 +172,12 @@ public class CustomDungeonSaves {
     }
 
     public static boolean deleteLevelFile(String levelSchemeName) {
+        if (!LuaManager.checkAccess("deleteLevelFile")) return false;
         return FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, levelSchemeName.replace(' ', '_'))).delete();
     }
 
     public static boolean deleteDungeonFile(String dungeonName) {
+        if (!LuaManager.checkAccess("deleteDungeonFile")) return false;
         try {
             return FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + findActualDungeonFolderName(dungeonName)).deleteDirectory();
         } catch (IOException e) {
@@ -328,7 +328,7 @@ public class CustomDungeonSaves {
 
     public static LuaScript readLuaFile(String pathToScript) {
         FileHandle file = FileUtils.getFileHandle(getExternalFilePath(pathToScript));
-        if (!file.exists()) return null;
+        if (!file.exists() || file.isDirectory()) return null;
         return LuaScript.readFromFile(file.readString(), file.path().replaceFirst(getAdditionalFilesDir().path() + "/", ""));
     }
 
@@ -341,6 +341,9 @@ public class CustomDungeonSaves {
     }
 
     public static void copyLevelsForNewGame(String dungeonName, String dirDestination) throws IOException {
+
+        if (!LuaManager.checkAccess("copyLevelsForNewGame")) return;
+
         try {
             FileHandle src = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(),
                     DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/" + LEVEL_FOLDER);
@@ -362,6 +365,9 @@ public class CustomDungeonSaves {
     }
 
     public static void writeClearText(String fileName, String text) throws IOException {
+
+        if (!LuaManager.checkAccess("writeClearTextToFile")) return;
+
         try {
             FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), ROOT_DIR + fileName.replace(' ', '_'));
             //write to a temp file, then move the files.
@@ -382,6 +388,9 @@ public class CustomDungeonSaves {
     }
 
     private static boolean write(OutputStream stream, String text) {
+
+        if (!LuaManager.checkAccess("writeToFile")) return false;
+
         try {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream));
 
@@ -396,6 +405,9 @@ public class CustomDungeonSaves {
     }
 
     public static void writeBytes(String fileName, byte[] bytes) throws IOException {
+
+        if (!LuaManager.checkAccess("writeBytesToFile")) return;
+
         try {
             FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), ROOT_DIR + fileName.replace(' ', '_'));
             //write to a temp file, then move the files.

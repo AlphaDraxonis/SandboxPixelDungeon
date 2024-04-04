@@ -37,10 +37,6 @@ public class BuffItem extends EditorItem<Buff> {
         //can't be placed
     }
 
-    public static boolean invalidPlacement(int cell) {
-        return true;
-    }
-
     @Override
     public Item getCopy() {
         return new BuffItem((Buff) getObject().getCopy());

@@ -26,6 +26,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
@@ -48,6 +49,7 @@ public class VariablesPanel extends CodeInputPanel {
 	protected void onAddClick() {
 		super.onAddClick();
 		remover.visible = remover.active = false;
+		layout();
 	}
 
 	@Override
@@ -64,30 +66,22 @@ public class VariablesPanel extends CodeInputPanel {
 	}
 
 	@Override
-	protected void compile() {
-		super.compile();
+	protected String compile() {
+		String result = super.compile();
 		String code = convertToLuaCode();
+		if (code == null) return result;
 		String cleanedComments = LuaScript.cleanLuaCode(code.replace('\"', '_'));
 		if (cleanedComments.contains("--")) {
-			throw new RuntimeException("Comments not supported!");
+			String comments = Messages.get(this, "compile_error_comments_not_allowed");
+			if (result == null) return comments;
+			return result + "\n" + comments;
 		}
+		return result;
 	}
 
 	@Override
 	public void applyScript(boolean forceChange, LuaScript fullScript, String cleanedCode) {
 		String newCode = LuaScript.extractTableFromScript(cleanedCode, fullScript.code, tableName, true);
-		String cleanedNewCode = null;
-
-		if (newCode != null && tableName.equals("vars")) {
-			//do not show the table 'static'
-			cleanedNewCode = LuaScript.cleanLuaCode(newCode);
-			String staticTable = LuaScript.extractTableFromScript(cleanedCode, fullScript.code, "static", false);
-			if (staticTable != null) {
-				//cut out the static table, but deal with the case that the exact same string could also be part of a comment
-				int indexStart = cleanedNewCode.indexOf(staticTable);
-				newCode = newCode.substring(0, indexStart) + newCode.substring(indexStart + staticTable.length());
-			}
-		}
 
 		if (!forceChange && newCode != null && textInput != null && !textInput.getText().isEmpty()) {
 			//smart insert code
@@ -95,7 +89,7 @@ public class VariablesPanel extends CodeInputPanel {
 
 			LuaTable oldTable = LuaManager.load("return {" + textInput.getText().replaceAll("\\bnil\\b", "\"_\"") + "}").call().checktable();
 			LuaTable newTable = LuaManager.load("return {" +       newCode      .replaceAll("\\bnil\\b", "\"_\"") + "}").call().checktable();
-			if (cleanedNewCode == null) cleanedNewCode = LuaScript.cleanLuaCode(newCode);
+			String cleanedNewCode = LuaScript.cleanLuaCode(newCode);
 			String oldCode = textInput.getText();
 			String cleanedOldCode = LuaScript.cleanLuaCode(oldCode);
 			LuaValue[] oldKeys = oldTable.keys();
@@ -116,8 +110,8 @@ public class VariablesPanel extends CodeInputPanel {
 				if (oldKeysString.contains(key)) {
 					oldKeysString.remove(key);
 
-					String oldValue = extractKeyWithValueAssignment(cleanedOldCode, oldCode, key);
-					//comments are not supported
+//					String oldValue = extractKeyWithValueAssignment(cleanedOldCode, oldCode, key);
+//					//comments are not supported
 //					if (oldValue != null && !oldValue.equals(value)) writeCode.append("--[[").append(oldValue).append("]]\n     ").append(value);
 //					else
 						writeCode.append(value);

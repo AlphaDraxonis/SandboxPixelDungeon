@@ -99,6 +99,7 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(65, Mob.class.getMethod("aggro", Char.class), "ch");//will target ch
 			addMethod(66, Mob.class.getDeclaredMethod("chooseEnemy"));//use to set to a certain enemy, return null if there is no enemy
 			addMethod(67, Mob.class.getMethod("clearEnemy"));//forgets current enemy
+			addMethod(68, Mob.class.getMethod("restoreEnemy"));//restore any actors if only id was stored
 
 			addMethod(81, Mob.class.getDeclaredMethod("act"));
 			addMethod(82, Mob.class.getMethod("info"));

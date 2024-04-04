@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
@@ -230,7 +231,6 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
         if (mobSpawning != null) mobSpawning.visible = mobSpawning.active = comp == mobSpawning;
         if (mobRotation != null) {
             mobRotation.visible = mobRotation.active = comp == mobRotation;
-            if (comp != mobRotation) WndChooseMob.resetLastView();
             if (outsideSpExtraBtn != null) outsideSpExtraBtn.destroy();
             outsideSpExtraBtn = mobRotation.getOutsideSp();
             outsideSp.add(outsideSpExtraBtn);

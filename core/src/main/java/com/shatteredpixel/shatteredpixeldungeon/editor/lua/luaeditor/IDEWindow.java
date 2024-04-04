@@ -24,32 +24,35 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeItemCustomizable;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseObjectComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.Reflection;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class IDEWindow extends Component {
 
-	//Main window to edit lua files
-
-	//No title
-	//Obv use one scrollpane
+	//TODO tzz button: view class on github
 
 	//Top: select file (if file not exists: will be created when saved (always ask for saving when trying to close, and compile))
 
@@ -62,9 +65,14 @@ public class IDEWindow extends Component {
 
 	private LuaScript script;
 
-	private ScriptSelector scriptSelector;
 	private CodeInputPanel[] codeInputPanels;
-	private CodeInputPanel inputDesc, inputLocalVars, inputScriptVars, inputGlobalVars;
+	private CodeInputPanel inputDesc, inputLocalVars, inputScriptVars;
+	private RenderedTextBlock pathLabel;
+	private TextInput pathInput;
+	private IconButton changeScript;
+
+	private Component outsideSp;
+
 	private final Class<?> clazz;
 	private final CustomObject customObject;
 
@@ -72,26 +80,74 @@ public class IDEWindow extends Component {
 		this.customObject = customObject;
 		this.clazz = customObject.luaClass.getClass();
 
-		scriptSelector = new ScriptSelector();
-		add(scriptSelector);
+		pathLabel = PixelScene.renderTextBlock("Path tzz",9);
+		add(pathLabel);
+
+		pathInput = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, PixelScene.uiCamera.zoom) {
+			@Override
+			protected void looseFocus() {
+				super.looseFocus();
+				String text = getText();
+				if (text != null && !text.isEmpty() && !text.endsWith(".lua")) {
+					setText(text + ".lua");
+				}
+			}
+		};
+		pathInput.setTextFieldFilter((textField, c) -> TextInput.FILE_NAME_INPUT.acceptChar(textField, c) || c == '/' || c == '\\');
+		add(pathInput);
+
+		changeScript = new IconButton(Icons.CHANGES.get()) {
+			@Override
+			protected void onClick() {
+				List<LuaScript> scripts = CustomDungeonSaves.findScripts(script -> script.type.isAssignableFrom(clazz));
+
+				String[] options = new String[scripts.size()];
+				int i = 0;
+				for (LuaScript s : scripts) {
+					options[i++] = s.pathFromRoot;
+				}
+				EditorScene.show(new WndOptions(
+						Messages.get(IDEWindow.class, "choose_script_title"),
+						Messages.get(IDEWindow.class, "choose_script_body", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()),
+						options
+				) {
+					{
+						tfMessage.setHighlighting(false);
+					}
+
+					@Override
+					protected Image getIcon(int index) {
+						return scripts.get(index).sprite();
+					}
+
+					@Override
+					protected void onSelect(int index) {
+						selectScript(scripts.get(index), true);
+					}
+				});
+			}
+		};
+		add(changeScript);
+
+		outsideSp = new OutsideSp();
 
 		List<LuaMethodManager> methods = LuaMethodManager.getAllMethodsInOrder(clazz);
 
-		codeInputPanels = new CodeInputPanel[methods.size() + 4];
+		codeInputPanels = new CodeInputPanel[methods.size() + 3];
 
 		codeInputPanels[0] = inputDesc = new CodeInputPanel() {
 			{
-				title.text("ScriptDESC tzz");
+				title.text(Messages.get(IDEWindow.class, "desc_title"));
 			}
 
 			@Override
 			protected String createDescription() {
-				return Messages.get(this, "desc");
+				return Messages.get(IDEWindow.class, "desc_info");
 			}
 
 			@Override
 			protected String convertToLuaCode() {
-				return "--" + textInput.getText();
+				return "--" + textInput.getText().replace('\n', (char) 29);
 			}
 
 			@Override
@@ -101,6 +157,7 @@ public class IDEWindow extends Component {
 					textInput.setText(fullScript.desc);
 				}
 			}
+
 			@Override
 			protected void layoutParent() {
 				layoutParent.run();
@@ -120,7 +177,7 @@ public class IDEWindow extends Component {
 		};
 		add(inputDesc);
 
-		codeInputPanels[1] = inputLocalVars = new VariablesPanel("local vars tzz", "vars") {
+		codeInputPanels[1] = inputLocalVars = new VariablesPanel(Messages.get(IDEWindow.class, "vars_title"), "vars") {
 			@Override
 			protected void layoutParent() {
 				layoutParent.run();
@@ -128,22 +185,25 @@ public class IDEWindow extends Component {
 
 			@Override
 			protected String createDescription() {
-				return "tzz Define instance attributes. Separate them using a comma (,). Type declarations are not required!\nExample: aNumber = 5, item = nil";
+				return Messages.get(IDEWindow.class, "vars_info");
 			}
 		};
 		add(inputLocalVars);
 
-		codeInputPanels[2] = inputScriptVars = new VariablesPanel("static vars tzz", "static") {
+		codeInputPanels[2] = inputScriptVars = new VariablesPanel(Messages.get(IDEWindow.class, "static_title"), "static") {
 			@Override
 			protected void layoutParent() {
 				layoutParent.run();
 			}
 
-			//tzz description
+			@Override
+			protected String createDescription() {
+				return Messages.get(IDEWindow.class, "static_info");
+			}
 		};
 		add(inputScriptVars);
 
-		int i = 4;
+		int i = 3;
 		for (LuaMethodManager methodInfo : methods) {
 			codeInputPanels[i] = new MethodPanel(methodInfo.method, methodInfo.paramNames) {
 				@Override
@@ -155,14 +215,98 @@ public class IDEWindow extends Component {
 			i++;
 		}
 
-		scriptSelector.selectObject(CustomDungeonSaves.readLuaFile(customObject.pathToScript));
+		selectScript(CustomDungeonSaves.readLuaFile(customObject.pathToScript), true);
+		inputDesc.textInput.gainFocus();
 	}
 
 	@Override
 	protected void layout() {
-		height = 0;
-		height = EditorUtilies.layoutCompsLinear(2, this, scriptSelector) + 2;
+
+		float h = 18;
+		changeScript.setRect(x + width - h, y, h, h);
+		pathLabel.maxWidth((int) ((changeScript.left() - 1)*2/3f));
+		float w = (changeScript.left() - x - pathLabel.width() - 3 - 2);
+		pathInput.setRect(x + changeScript.left() - 2 - w, y, w, h);
+
+		pathLabel.maxWidth((int) (pathInput.left() - 2));
+		pathLabel.setPos(x, y + (h - pathLabel.height()) * 0.5f);
+
+		height = Math.max(h, pathLabel.height()) + 3;
 		height = EditorUtilies.layoutCompsLinear(2, this, codeInputPanels);
+	}
+
+	public Component getOutsideSp() {
+		return outsideSp;
+	}
+
+	private String createFullScript() {
+		StringBuilder b = new StringBuilder();
+
+		script.desc = inputDesc.convertToLuaCode().substring(2);//uncomment, removes --
+		b.append('\n');
+
+		StringBuilder functions = new StringBuilder();
+
+		for (int i = 1; i < codeInputPanels.length; i++) {
+			String code = codeInputPanels[i].convertToLuaCode();
+			if (code != null) {
+				functions.append(code);
+				functions.append("\n\n");
+			}
+		}
+
+		String fullFunctions = functions.toString();
+		b.append(fullFunctions);
+
+		String cleanedFunctions = LuaScript.cleanLuaCode(fullFunctions);
+
+		Matcher matcher = Pattern.compile("\\bfunction\\s+.*\\(").matcher(cleanedFunctions);
+
+		b.append("return {\n    vars = vars; static = static; ");
+
+		while (matcher.find()) {
+			String functionName = matcher.group();
+			functionName = functionName.substring(8, functionName.length() - 1);
+			if (functionName.startsWith(" ")) functionName = functionName.substring(1);
+			b.append(functionName).append(" = ").append(functionName).append("; ");
+		}
+		b.append("\n}");
+
+		script.code  = b.toString();
+
+		return script.writeToFile();
+	}
+
+	private void compile() {
+		StringBuilder b = new StringBuilder();
+		for (CodeInputPanel inputPanel : codeInputPanels) {
+			String msg = inputPanel.compile();
+			if (msg != null) {
+				if (b.length() > 0) b.append("\n\n");
+				b.append('_').append(inputPanel.getLabel()).append("_:\n");
+				b.append(msg);
+			}
+		}
+		String result = b.toString();
+		if (!result.isEmpty()) {
+			EditorScene.show(new WndError(result));
+		} else {
+			RenderedTextBlock title = PixelScene.renderTextBlock(Messages.get(IDEWindow.class, "compile_no_error_title"), 9);
+			title.hardlight(Window.TITLE_COLOR);
+			EditorScene.show(new WndTitledMessage(title, Messages.get(IDEWindow.class, "compile_no_error_body")));
+		}
+	}
+
+	private void save() {
+		customObject.pathToScript = pathInput.getText();
+		if (!customObject.pathToScript.endsWith(".lua")) customObject.pathToScript += ".lua";
+		String content = createFullScript();
+		try {
+			CustomDungeonSaves.writeClearText(CustomDungeonSaves.getExternalFilePath(customObject.pathToScript), content);
+			EditorScene.show(new WndMessage(Messages.get(IDEWindow.class, "write_file_successful", customObject.pathToScript)));
+		} catch (Exception e) {
+			EditorScene.show(new WndError(Messages.get(IDEWindow.class, "write_file_exception", e.getClass().getSimpleName(), e.getMessage())));
+		}
 	}
 
 	public static void showWindow(CustomObject customObject) {
@@ -171,88 +315,199 @@ public class IDEWindow extends Component {
 
 		IDEWindow ideWindow = new IDEWindow(customObject, w::layout);
 
-		w.initComponents(null, ideWindow, null);
+		w.initComponents(null, ideWindow, ideWindow.getOutsideSp());
 
 		EditorScene.show(w);
 
 	}
 
-	private class ScriptSelector extends ChooseObjectComp {
-
-		public ScriptSelector() {
-			super("SCRIPT tzz");
-		}
-
-		@Override
-		protected void doChange() {
-			//TODO tzzz warning that all local changes will be lost!
-			List<LuaScript> scripts = CustomDungeonSaves.findScripts(script -> script.type.isAssignableFrom(clazz));
-
-			String[] options = new String[scripts.size() + 1];
-			options[0] = "<new>tzz";
-			int i = 1;
-			for (LuaScript s : scripts) {
-				options[i++] = s.name;
-			}
-			EditorScene.show(new WndOptions(
-					Messages.get(ChangeItemCustomizable.class, "custom_sprite"),//tzz
-					Messages.get(ChangeItemCustomizable.class, "custom_sprite_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath()),
-					options
-			) {
-				{
-					tfMessage.setHighlighting(false);
-				}
-
-				@Override
-				protected Image getIcon(int index) {
-					if (index == 0) return new ItemSprite();
-					if (Mob.class.isAssignableFrom(scripts.get(index-1).type)) return ((Mob) Reflection.newInstance(scripts.get(index-1).type)).sprite();
-					return new ItemSprite();
-				}
-
-				@Override
-				protected void onSelect(int index) {
-					if (index == 0) {
-						EditorScene.show(new WndTextInput(
-								"TITLE: enter name, relplace space with _, check if file name is already used",
-								"body",
-								"", 50, false, "ok", "nein"
-						) {
-							@Override
-							public void onSelect(boolean positive, String text) {
-								if (positive) {
-									LuaScript luaScript = new LuaScript(clazz, text, "empty desc", null);
-									ScriptSelector.this.selectObject(luaScript);
-								}
-							}
-						});
-					} else {
-						ScriptSelector.this.selectObject(scripts.get(index-1));
-					}
-				}
-			});
-		}
-
-		@Override
-		public void selectObject(Object object) {
-			super.selectObject(object);
-			script = ((LuaScript) object);
-			String cleanedCode;
-			LuaScript currentScript;
+	public void selectScript(LuaScript script, boolean force) {
+		this.script = script;
+		String cleanedCode;
+		LuaScript currentScript;
+		if (force) {
 			if (script == null) {
-				currentScript = new LuaScript(Object.class, "", "", "");
+				currentScript = new LuaScript(Object.class, "", "");
 				currentScript.code = "";
 				cleanedCode = "";
 			} else {
 				currentScript = script;
 				cleanedCode = LuaScript.cleanLuaCode(script.code);
+				pathInput.setText(currentScript.pathFromRoot);
 			}
-			customObject.pathToScript = currentScript.pathFromRoot;
+		} else {
+			currentScript = script;
+			cleanedCode = LuaScript.cleanLuaCode(script.code);
+		}
 
-			for (CodeInputPanel inputPanel : codeInputPanels) {
-				if (inputPanel != null/*<- <- <- tzz remove*/) inputPanel.applyScript(true, currentScript, cleanedCode);
-			}
-			IDEWindow.this.layout();
+		for (CodeInputPanel inputPanel : codeInputPanels) {
+			inputPanel.applyScript(force, currentScript, cleanedCode);
+		}
+		IDEWindow.this.layout();
+	}
+
+	private class OutsideSp extends Component {//TODO tzz hover texts
+		private RedButton btnCompile, btnSave, insertClassName, insertFullTemplate;
+		private StyledButton btnCopy, btnPaste;
+
+		@Override
+		protected void createChildren(Object... params) {
+			btnCompile = new RedButton("") {
+				@Override
+				protected void onClick() {
+					compile();
+				}
+
+				@Override
+				protected String hoverText() {
+					return Messages.get(IDEWindow.class, "compile");
+				}
+			};
+			btnCompile.icon(Icons.COLORS.get());//tzz
+			add(btnCompile);
+
+			btnSave = new RedButton(""){
+				@Override
+				protected void onClick() {
+					save();
+				}
+
+				@Override
+				protected String hoverText() {
+					return Messages.get(IDEWindow.class, "save");
+				}
+			};
+			btnSave.icon(Icons.COLORS.get());//tzz
+			add(btnSave);
+
+			insertClassName = new RedButton("InClName") {
+				@Override
+				protected void onClick() {
+					WndEditorInv.chooseClass = true;
+					EditorScene.selectItem(new WndBag.ItemSelectorInterface() {
+						@Override
+						public String textPrompt() {
+							return null;
+						}
+
+						@Override
+						public Class<? extends Bag> preferredBag() {
+							return null;
+						}
+
+						@Override
+						public List<Bag> getBags() {
+							return Arrays.asList(Mobs.bag, Items.bag, Traps.bag, Plants.bag, Buffs.bag);
+						}
+
+						@Override
+						public boolean itemSelectable(Item item) {
+							return true;
+						}
+
+						@Override
+						public void onSelect(Item item) {
+							WndEditorInv.chooseClass = false;
+							Object obj;
+							if (item instanceof EditorItem) obj = ((EditorItem<?>) item).getObject();
+							else obj = item;
+							if (obj == null) return;
+							String clName = obj.getClass().getSimpleName();
+							TextInput textInput = TextInput.getWithFocus();
+							if (textInput != null && textInput != pathInput) textInput.insert("new(\"" + clName + "\")");
+						}
+
+						@Override
+						public boolean acceptsNull() {
+							return false;
+						}
+					});
+				}
+			};
+			add(insertClassName);
+
+			insertFullTemplate = new RedButton("InsFull tzz") {
+				@Override
+				protected void onClick() {
+					LuaTemplates.show(script -> selectScript(script, false));
+				}
+			};
+			add(insertFullTemplate);
+
+			btnCopy = new RedButton(""){
+				@Override
+				protected void onPointerDown() {
+					super.onPointerDown();
+					PointerEvent.clearKeyboardThisPress = false;
+				}
+
+				@Override
+				protected void onPointerUp() {
+					super.onPointerUp();
+					PointerEvent.clearKeyboardThisPress = false;//tzz test if this is required everywhere
+				}
+
+				@Override
+				protected void onClick() {
+					super.onClick();
+					TextInput textInput = TextInput.getWithFocus();
+					if (textInput != null) textInput.copyToClipboard();
+				}
+			};
+			btnCopy.icon(Icons.COPY.get());
+			add(btnCopy);
+
+			btnPaste = new RedButton(""){
+				@Override
+				protected void onPointerDown() {
+					super.onPointerDown();
+					PointerEvent.clearKeyboardThisPress = false;
+				}
+
+				@Override
+				protected void onPointerUp() {
+					super.onPointerUp();
+					PointerEvent.clearKeyboardThisPress = false;
+				}
+
+				@Override
+				protected void onClick() {
+					super.onClick();
+					TextInput textInput = TextInput.getWithFocus();
+					if (textInput != null) textInput.pasteFromClipboard();
+				}
+
+			};
+			btnPaste.icon(Icons.PASTE.get());
+			add(btnPaste);
+		}
+
+		@Override
+		protected void layout() {
+			float h = 18;
+			float gap = 1;
+			float posX = x + width;
+			btnPaste.setRect(posX - gap - btnPaste.icon().width, y + (h - btnPaste.height()) * 0.5f, btnPaste.icon().width, btnPaste.icon().height);
+			posX = btnPaste.left();
+			btnCopy.setRect(posX - gap - btnCopy.icon().width, y + (h - btnCopy.height()) * 0.5f, btnCopy.icon().width, btnCopy.icon().height);
+			posX = btnCopy.left();
+			btnCompile.setRect(posX - gap - btnCompile.icon().width, y + (h - btnCompile.height()) * 0.5f, btnCompile.icon().width, btnCompile.icon().height);
+			posX = btnCompile.left();
+			btnSave.setRect(posX - gap - btnSave.icon().width, y + (h - btnSave.height()) * 0.5f, btnSave.icon().width, btnSave.icon().height);
+			posX = btnSave.left();
+			float w = (posX - x - gap*6) / 2f;
+			insertClassName.setRect(x + gap*2, y, w, h);
+			insertFullTemplate.setRect(insertClassName.right() + gap*2, y, w, h);
+
+			PixelScene.align(btnPaste);
+			PixelScene.align(btnCopy);
+			PixelScene.align(btnSave);
+			PixelScene.align(insertClassName);
+			PixelScene.align(insertFullTemplate);
+
+			height = h;
 		}
 	}
+
+
 }

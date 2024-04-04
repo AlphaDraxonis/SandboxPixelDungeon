@@ -1,8 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.ui.Component;
 
 //Window where a component can be added, supports scroll pane
@@ -14,6 +16,10 @@ public class SimpleWindow extends Window {
     protected ScrollPane sp;
 
     private float contentAlignment, titleAlignment;
+
+    public SimpleWindow() {
+        this(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
+    }
 
     public SimpleWindow(int width, int height) {
         super(width, height);
@@ -64,11 +70,11 @@ public class SimpleWindow extends Window {
             posY = title.bottom() + GAP * 3;
         }
 
-        body.setSize(width, -1);
+        body.setSize(width, 0);
 
         float normalSpHeight;
         if (outsideSp != null) {
-            outsideSp.setSize(width, -1);
+            outsideSp.setSize(width, 0);
             float outsideSpH = outsideSp.height();
             outsideSp.setPos(0, height - outsideSpH);
             normalSpHeight = height - posY - (outsideSpH == 0 ? 1 : outsideSpH + GAP);

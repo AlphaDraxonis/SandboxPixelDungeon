@@ -29,12 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IllegalFormatException;
-import java.util.Locale;
+import java.util.*;
 
 /*
 	Simple wrapper class for libGDX I18NBundles.
@@ -213,9 +208,10 @@ public class Messages {
 		return str.toLowerCase(locale);
 	}
 
-	public static final int PACKAGE_NAME_LENGTH = "com.shatteredpixel.shatteredpixeldungeon.".length();
+	public static String MAIN_PACKAGE_NAME = "com.shatteredpixel.shatteredpixeldungeon.";
+	public static final int PACKAGE_NAME_LENGTH = MAIN_PACKAGE_NAME.length();
 	public static String trimPackageName(String s) {
-		return s.replace("com.shatteredpixel.shatteredpixeldungeon.", "");
+		return s.replace(MAIN_PACKAGE_NAME, "");
 	}
 
 	public static String getFullMessageKey(Class<?> clazz, String property) {

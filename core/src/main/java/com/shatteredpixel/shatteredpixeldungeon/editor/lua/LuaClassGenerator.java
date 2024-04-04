@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInvCategory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -142,7 +143,7 @@ public final class LuaClassGenerator {
 
     public static void generateSourceFiles() {
 
-        Class[][] mobs = Mobs.getAllMobs(null);
+        Class[][] mobs = EditorInvCategory.getAll(Mobs.values());
 
         generateFile(Mob.class);
         generateFile(Rat.class);

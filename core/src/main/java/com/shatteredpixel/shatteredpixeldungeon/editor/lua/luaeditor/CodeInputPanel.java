@@ -24,6 +24,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
@@ -61,20 +62,30 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 		return new BodyWrapper();
 	}
 
-//	private int lastNumLines;
-//	private void resizeTextArea(TextArea textArea) {
-//		int numLines = textArea.getLines();
-//		if (lastNumLines != numLines) {
-//			lastNumLines = numLines;
-//			layoutParent();
-//			textArea.invalidateHierarchy();
-//		}
-//	}
-//
+	private int lastNumLines;
+	private void resizeTextArea(TextArea textArea) {
+		int numLines = textArea.getLines();
+		if (lastNumLines != numLines) {
+			lastNumLines = numLines;
+			layoutParent();
+			//TODO everything not working!
+			if (textInput.isVisibleOnScreen()) Gdx.app.postRunnable(() -> {
+				textArea.invalidateHierarchy();
+				if (numLines > 0) {
+					int pos = textArea.getCursorPosition();
+					textArea.moveCursorLine(0);
+					Gdx.app.postRunnable(()->textArea.setCursorPosition(pos));
+				}
+			});
+//			else textArea.invalidateHierarchy();
+
+//			textArea.invalidate();
+		}
+	}
+
 	protected float calculateRequiredHeight(TextArea textArea) {
-		return 100;
-//		float height = (textArea.getLines() + 4) * textArea.getStyle().font.getLineHeight() / Camera.main.zoom;
-//		return Math.max(height, 100); // 100 = minimum height
+		float height = ((textArea.getLines()+2) * textArea.getStyle().font.getLineHeight()) / PixelScene.uiCamera.zoom;
+		return Math.max(height, 70); // 70 = minimum height
 	}
 
 	protected String createDescription() {
@@ -87,7 +98,7 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 
 	protected final void setCode(boolean forceChange, String code) {
 		if (code == null) {
-			if (forceChange && textInput != null) onRemove();//TODO no warning!
+			if (forceChange && textInput != null) onRemove();//TODO tzz add a warning!
 			return;
 		}
 
@@ -101,14 +112,14 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 		}
 	}
 
+	String getLabel() {
+		return title.text();
+	}
+
 	//can only check for syntax errors, not for undeclared variables
-	protected void compile() {
+	protected String compile() {
 		String code = convertToLuaCode();
-		LuaManager.compile(code);
-		String cleanedCode = LuaScript.cleanLuaCode(code);
-		if (cleanedCode.indexOf("function", 2) != -1) {
-			throw new RuntimeException("Declaring functions inside functions is not possible in SandboxPD!");
-		}
+		return code == null ? null : LuaManager.compile(code);
 	}
 
 	private class BodyWrapper extends Component {
@@ -121,17 +132,13 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 					super.layout();
 				}
 
-//			@Override
-//			protected void onKeyTyped(char c) {
-//				super.onKeyTyped(c);
-//				resizeTextArea((TextArea) textField);
-//			}
-//
-//			@Override
-//			public void pasteFromClipboard() {
-//				super.pasteFromClipboard();
-//				resizeTextArea((TextArea) textField);
-//			}
+				@Override
+				public void setText(String text) {
+					super.setText(text);
+					if (info != null) {
+						Gdx.app.postRunnable(() -> resizeTextArea((TextArea) textField));
+					}
+				}
 			};
 			add(textInput);
 

@@ -409,13 +409,13 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                                 }
 
                                 @Override
-                                public boolean addOtherTabs() {
-                                    return false;
+                                public Class<? extends Bag> preferredBag() {
+                                    return Items.bag.getClass();
                                 }
 
                                 @Override
-                                public Class<? extends Bag> preferredBag() {
-                                    return Items.bag.getClass();
+                                public List<Bag> getBags() {
+                                    return Collections.singletonList(Items.bag);
                                 }
                             }, ItemSelector.NullTypeSelector.RANDOM, Item.class, Items.bag, new HashSet<>());
                         }

@@ -14,8 +14,9 @@ import java.util.ArrayList;
 
 public class EditorItemBag extends Bag {
 
+    //absolutely necessary to call this before using any of the subclasses
     public static void callStaticInitializers() {
-    }//absolutely necessary to call this before using any of the subclasses
+    }
 
     private final String name;
 
@@ -92,7 +93,7 @@ public class EditorItemBag extends Bag {
 
     public static EditorItemBag getLastBag() {
         EditorItemBag lastBag = WndEditorInv.lastBag();
-        if (lastBag != null) return lastBag;
+        if (lastBag != null && getBags().contains(lastBag)) return lastBag;
         return getBag(EditorItemBag.class);
     }
 
@@ -110,6 +111,7 @@ public class EditorItemBag extends Bag {
         if (Items.class == cl) return (T) Items.bag;
         if (Traps.class == cl) return (T) Traps.bag;
         if (Plants.class == cl) return (T) Plants.bag;
+        if (Buffs.class == cl) return (T) Buffs.bag;
         if (MobSprites.class == cl) return (T) MobSprites.bag;
 
         return null;
