@@ -33,14 +33,12 @@ import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
 import com.shatteredpixel.shatteredpixeldungeon.services.news.NewsImpl;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.UpdateImpl;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.noosa.Game;
 import com.watabou.utils.FileUtils;
 import com.watabou.utils.Point;
-
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Locale;
 
 public class DesktopLauncher {
@@ -71,27 +69,7 @@ public class DesktopLauncher {
 			@Override
 			public void uncaughtException(Thread thread, Throwable throwable) {
 				Game.reportException(throwable);
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				throwable.printStackTrace(pw);
-				pw.flush();
-				String exceptionMsg = sw.toString();
-
-				//shorten/simplify exception message to make it easier to fit into a message box
-				exceptionMsg = exceptionMsg.replaceAll("\\(.*:([0-9]*)\\)", "($1)");
-				exceptionMsg = exceptionMsg.replace("com.shatteredpixel.shatteredpixeldungeon.", "");
-				exceptionMsg = exceptionMsg.replace("com.alphadraxonis.sandboxpixeldungeon.", "");
-				exceptionMsg = exceptionMsg.replace("com.watabou.", "");
-				exceptionMsg = exceptionMsg.replace("com.badlogic.gdx.", "");
-				exceptionMsg = exceptionMsg.replace("\t", "  "); //shortens length of tabs
-
-				//replace ' and " with similar equivalents as tinyfd hates them for some reason
-				exceptionMsg = exceptionMsg.replace('\'', '’');
-				exceptionMsg = exceptionMsg.replace('"', '”');
-
-				if (exceptionMsg.length() > 1000){
-					exceptionMsg = exceptionMsg.substring(0, 1000) + "...";
-				}
+				String exceptionMsg = WndError.createStackTrace(throwable, true);
 
 				if (exceptionMsg.contains("Couldn’t create window")){
 					TinyFileDialogs.tinyfd_messageBox(title + " Has Crashed!",

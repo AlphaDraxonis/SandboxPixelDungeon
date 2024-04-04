@@ -20,6 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.WndZones;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
@@ -49,6 +50,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.PointerEvent;
@@ -346,6 +348,11 @@ public class EditorScene extends PixelScene {
         if (displayZones) {
             displayZones = false;
             setDisplayZoneState(true);
+        }
+
+        if (error != null) {
+            EditorScene.show(new WndError(error));
+            error = null;
         }
     }
 
@@ -869,6 +876,14 @@ public class EditorScene extends PixelScene {
         return wnd;
     }
 
+    private static Throwable error;
+    public static void catchError(Throwable t) {
+        error = t;
+        EditorScene.start();
+        EditorScene.openDifferentLevel = false;
+        WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
+    }
+
     public static void show(Window wnd) {
         if (scene != null && Game.scene() instanceof EditorScene) {
             cancel();
@@ -1091,7 +1106,7 @@ public class EditorScene extends PixelScene {
 //        Emitter.freezeEmitters = false;
 
         scene = null;
-        if (Dungeon.customDungeon.getFloor(Dungeon.level.name) != null) {
+        if (Dungeon.customDungeon.getFloor(Dungeon.level.name) != null && error == null) {
             try {
                 CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
                 CustomDungeonSaves.saveLevel(Dungeon.level);//only save if not already deleted

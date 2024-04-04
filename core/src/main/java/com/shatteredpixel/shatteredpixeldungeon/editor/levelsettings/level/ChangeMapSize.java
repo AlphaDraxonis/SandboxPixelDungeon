@@ -101,7 +101,13 @@ public class ChangeMapSize extends Component {
 
         int nW = left + right + 1;
         int nH = top + bottom + 1;
-        CustomLevel.changeMapSize(EditorScene.customLevel(), nW, nH, top - startTop, left - startLeft);
+
+        try {
+            CustomLevel.changeMapSize(EditorScene.customLevel(), nW, nH, top - startTop, left - startLeft);
+        } catch (Exception ex) {
+            EditorScene.catchError(ex);
+            return;
+        }
 
         Undo.reset();
         WndEditorSettings.closingBecauseMapSizeChange = true;

@@ -21,28 +21,18 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.noosa.ColorBlock;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WndEditFloorInOverview extends WndTabbed {
 
@@ -161,18 +151,19 @@ public class WndEditFloorInOverview extends WndTabbed {
                                     }
                                 }
                                 if (!text.equals(levelScheme.getName())) {
-                                    levelScheme.getCustomDungeon().renameLevel(levelScheme, text);
-                                    listPane.updateList();
-                                    WndEditFloorInOverview.this.hide();
-                                    Window w = new WndEditFloorInOverview(levelScheme, listItem, listPane);
-                                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                                    else Game.scene().addToFront(w);
+                                    try {
+                                        levelScheme.getCustomDungeon().renameLevel(levelScheme, text);
+                                        listPane.updateList();
+                                        WndEditFloorInOverview.this.hide();
+                                        EditorScene.show(new WndEditFloorInOverview(levelScheme, listItem, listPane));
+                                    } catch (Exception ex) {
+                                        EditorScene.catchError(ex);
+                                    }
                                 }
                             }
                         }
                     };
-                    if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                    else Game.scene().addToFront(w);
+                    EditorScene.show(w);
                 }
 
                 @Override

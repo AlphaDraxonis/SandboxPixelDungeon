@@ -23,11 +23,46 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.watabou.noosa.Game;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class WndError extends WndTitledMessage {
 
 	public WndError( String message ) {
 		super( Icons.WARNING.get(), Messages.get(WndError.class, "title"), message );
+	}
+
+	public WndError ( Throwable throwable ) {
+		super(Icons.WARNING.get(),  Messages.get(WndError.class, "title"), Messages.get(WndError.class, "error_msg", Game.version) + createStackTrace(throwable, false) );
+		Game.reportException(throwable);
+	}
+
+	public static String createStackTrace(Throwable throwable, boolean limitLength ) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		throwable.printStackTrace(pw);
+		pw.flush();
+		String exceptionMsg = sw.toString();
+
+		//shorten/simplify exception message to make it easier to fit into a message box
+		exceptionMsg = exceptionMsg.replaceAll("\\(.*:([0-9]*)\\)", "($1)");
+		exceptionMsg = exceptionMsg.replace("com.shatteredpixel.shatteredpixeldungeon.", "");
+		exceptionMsg = exceptionMsg.replace("com.alphadraxonis.sandboxpixeldungeon.", "");
+		exceptionMsg = exceptionMsg.replace("com.watabou.", "");
+		exceptionMsg = exceptionMsg.replace("com.badlogic.gdx.", "");
+		exceptionMsg = exceptionMsg.replace("\t", "  "); //shortens length of tabs
+
+		//replace ' and " with similar equivalents as tinyfd hates them for some reason
+		exceptionMsg = exceptionMsg.replace('\'', '’');
+		exceptionMsg = exceptionMsg.replace('"', '”');
+
+		if (limitLength && exceptionMsg.length() > 1000){
+			exceptionMsg = exceptionMsg.substring(0, 1000) + "...";
+		}
+
+		return exceptionMsg;
 	}
 
 }
