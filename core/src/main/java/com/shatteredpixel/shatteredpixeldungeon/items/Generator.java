@@ -387,9 +387,11 @@ public class Generator {
 					PetrifiedSeed.class,
 					ExoticCrystals.class,
 					MossyClump.class,
-					DimensionalSundial.class
+					DimensionalSundial.class,
+					ThirteenLeafClover.class,
+					TrapMechanism.class
 			};
-			TRINKET.defaultProbs = new float[]{ 1, 1, 1, 1, 1, 1 };
+			TRINKET.defaultProbs = new float[]{ 1, 1, 1, 1, 1, 1, 1, 1 };
 			TRINKET.probs = TRINKET.defaultProbs.clone();
 
 			for (Category cat : Category.values()){
