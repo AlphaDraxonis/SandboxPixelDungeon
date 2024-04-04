@@ -127,7 +127,7 @@ public class TextInput extends Component {
 		stage = new Stage(viewport){
 			@Override
 			public boolean keyDown(int keycode) {
-				if (!isActive() || !hasFocus || keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE || !isInTopWindow()) {
+				if (!isActive() || !hasFocus() || keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE || !isInTopWindow()) {
 					return false; // don't consume the back button event
 				}
 				return super.keyDown(keycode); // Let other events be processed
@@ -135,43 +135,50 @@ public class TextInput extends Component {
 
 			@Override
 			public boolean keyUp(int keycode) {
-				if (isActive() && hasFocus && isInTopWindow()) return super.keyUp(keycode);
+				if (isActive() && hasFocus() && isInTopWindow())
+					return super.keyUp(keycode);
 				return false;
 			}
 
 			@Override
 			public boolean keyTyped(char character) {
-				if (isActive() && hasFocus && isInTopWindow()) return super.keyTyped(character);
+				if (isActive() && hasFocus() && isInTopWindow())
+					return super.keyTyped(character);
 				return false;
 			}
 
 			@Override
 			public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-				if (isActive() && hasFocus && isInTopWindow()) return super.touchDown(screenX, screenY, pointer, button);
+				if (isActive() && hasFocus() && isInTopWindow() && catchClicks.overlapsScreenPoint(screenX, screenY))
+					return super.touchDown(screenX, screenY, pointer, button);
 				return false;
 			}
 
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-				if (isActive() && hasFocus) return super.touchUp(screenX, screenY, pointer, button);
+				if (isActive() && hasFocus() && isInTopWindow() /*&& catchClicks.overlapsScreenPoint(screenX, screenY)*/)
+					return super.touchUp(screenX, screenY, pointer, button);
 				return false;
 			}
 
 			@Override
 			public boolean touchDragged(int screenX, int screenY, int pointer) {
-				if (isActive() && hasFocus && isInTopWindow()) return super.touchDragged(screenX, screenY, pointer);
+				if (isActive() && hasFocus() && isInTopWindow() /*&& catchClicks.overlapsScreenPoint(screenX, screenY)*/)
+					return super.touchDragged(screenX, screenY, pointer);
 				return false;
 			}
 
 			@Override
 			public boolean mouseMoved(int screenX, int screenY) {
-				if (isActive() && hasFocus && isInTopWindow()) return super.mouseMoved(screenX, screenY);
+				if (isActive() && hasFocus && isInTopWindow() && catchClicks.overlapsScreenPoint(screenX, screenY))
+					return super.mouseMoved(screenX, screenY);
 				return false;
 			}
 
 			@Override
 			public boolean scrolled(float amountX, float amountY) {
-				if (isActive() && hasFocus && isInTopWindow()) return super.scrolled(amountX, amountY);
+				if (isActive() && hasFocus && isInTopWindow())
+					return super.scrolled(amountX, amountY);
 				return false;
 			}
 		};
@@ -221,16 +228,20 @@ public class TextInput extends Component {
 		if (!hasFocus) {
 			for (TextInput textInput : activeTextInputs.toArray(new TextInput[0])) {
 				if (textInput.isActive() && textInput != this) {
-					textInput.textField.clearSelection();
-					Color cursorColor = ((NinePatchDrawable) textInput.style.cursor).getPatch().getColor();
-					normalCursorColor = cursorColor.toIntBits();
-					cursorColor.set(0);
-					textInput.hasFocus = false;
+					textInput.looseFocus();
 				}
 			}
 			((NinePatchDrawable) style.cursor).getPatch().getColor().set(normalCursorColor == 0 ? 0xFFFFFFFF : normalCursorColor);
 			hasFocus = true;
 		}
+	}
+
+	protected void looseFocus() {
+		textField.clearSelection();
+		Color cursorColor = ((NinePatchDrawable) style.cursor).getPatch().getColor();
+		normalCursorColor = cursorColor.toIntBits();
+		cursorColor.set(0);
+		hasFocus = false;
 	}
 
 	public static Function<Gizmo, Boolean> checkIfGizmoIsInstanceofWindow;
@@ -247,6 +258,22 @@ public class TextInput extends Component {
 			if (checkIfGizmoIsInstanceofWindow.apply(g) && g != ownWindow) return false;
 		}
 		return true;
+	}
+
+	public static TextInput getWithFocus() {
+		for (TextInput c : activeTextInputs) {
+			if (c.hasFocus() && c.isActive() && c.isInTopWindow()) return c;
+		}
+		return null;
+	}
+
+	public boolean hasFocus() {
+		return hasFocus;
+	}
+
+	public boolean isVisibleOnScreen() {//FIXME not very relying
+		Point posOnScreen = catchClicks.camera().cameraToScreen(catchClicks.x, catchClicks.y);
+		return catchClicks.overlapsScreenPoint(posOnScreen.x, posOnScreen.y);
 	}
 
 	protected void onKeyTyped(char c) {
@@ -305,15 +332,19 @@ public class TextInput extends Component {
 			Gdx.app.getClipboard().setContents(contents);
 		}
 
-		String existing = textField.getText();
-		int cursorIdx = textField.getCursorPosition();
-
-		textField.setText(existing.substring(0, cursorIdx) + contents + existing.substring(cursorIdx));
-		textField.setCursorPosition(cursorIdx + contents.length());
+		insert(contents);
 	}
 
 	public void selectAll() {
 		textField.selectAll();
+	}
+
+	public void insert(String s) {
+		String existing = textField.getText();
+		int cursorIdx = textField.getCursorPosition();
+
+		textField.setText(existing.substring(0, cursorIdx) + s + existing.substring(cursorIdx));
+		textField.setCursorPosition(cursorIdx + s.length());
 	}
 
 	@Override
@@ -369,6 +400,12 @@ public class TextInput extends Component {
 				lastScrollX = c.scroll.x;
 				lastScrollY = c.scroll.y;
 			}
+
+			float cameraBottom = c.y + c.scroll.y + c.height;
+			if (cameraBottom > 1 && contY + contH > cameraBottom) {
+				contH = Math.max(0, cameraBottom - contY);
+			}
+
 		} else {
 			lastScrollX = lastScrollY = 99999;
 		}
