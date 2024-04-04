@@ -25,6 +25,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.watabou.utils.BArray;
+import com.watabou.utils.PathFinder;
+
+import java.util.HashSet;
+import java.util.Set;
 
 //based on: http://www.roguebasin.com/index.php?title=FOV_using_recursive_shadowcasting
 public final class ShadowCaster {
@@ -48,6 +52,8 @@ public final class ShadowCaster {
 	}
 	
 	public static void castShadow( int x, int y, boolean[] fieldOfView, boolean[] blocking, int distance, boolean canSightBeBlockedByZone ) {
+
+		int startingCell = y * Dungeon.level.width() + x;
 		
 		if (distance >= MAX_DISTANCE){
 			distance = MAX_DISTANCE;
@@ -56,18 +62,28 @@ public final class ShadowCaster {
 		BArray.setFalse(fieldOfView);
 
 		//set source cell to true
-		fieldOfView[y * Dungeon.level.width() + x] = true;
+		fieldOfView[startingCell] = true;
+
+		Set<Zone> transparentZones;
+		if (canSightBeBlockedByZone && !Dungeon.level.zoneMap.isEmpty()) {
+			transparentZones = new HashSet<>(5);
+			for (int i : PathFinder.NEIGHBOURS9) {
+				Zone zone = Dungeon.level.zone[i + startingCell];
+				if (zone != null) transparentZones.add(zone);
+			}
+			if (transparentZones.isEmpty()) transparentZones = null;
+		} else transparentZones = null;
 		
-		//scans octants, clockwiser
+		//scans octants, clockwise
 		try {
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, -1, false,null, canSightBeBlockedByZone);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, +1, true, null, canSightBeBlockedByZone);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, +1, true, null, canSightBeBlockedByZone);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, +1, false,null, canSightBeBlockedByZone);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, +1, false,null, canSightBeBlockedByZone);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, -1, true, null, canSightBeBlockedByZone);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, -1, true, null, canSightBeBlockedByZone);
-			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, -1, false,null, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, -1, false,transparentZones, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, +1, true, transparentZones, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, +1, true, transparentZones, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, +1, false,transparentZones, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, +1, false,transparentZones, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, -1, true, transparentZones, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, -1, true, transparentZones, canSightBeBlockedByZone);
+			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, -1, false,transparentZones, canSightBeBlockedByZone);
 		} catch (Exception e){
 			SandboxPixelDungeon.reportException(e);
 			BArray.setFalse(fieldOfView);
@@ -78,7 +94,7 @@ public final class ShadowCaster {
 	//This can add up to a whole FOV by mirroring in X(mX), Y(mY), and X=Y(mXY)
 	private static void scanOctant(int distance, boolean[] fov, boolean[] blocking, int row,
 	                               int x, int y, double lSlope, double rSlope,
-	                               int mX, int mY, boolean mXY, Zone zoneWithSightBlocking, boolean canSightBeBlockedByZone){
+	                               int mX, int mY, boolean mXY, Set<Zone> transparentZones, boolean canSightBeBlockedByZone){
 
 		boolean inBlocking = false;
 		int start, end;
@@ -130,8 +146,8 @@ public final class ShadowCaster {
 
 				boolean blockedByZone;
 				if (canSightBeBlockedByZone) {
-					if (Dungeon.level.zone[cell] != null && Dungeon.level.zone[cell].blocksVision) zoneWithSightBlocking = Dungeon.level.zone[cell];
-					blockedByZone = zoneWithSightBlocking != null && (Dungeon.level.zone[cell] == null || Dungeon.level.zone[cell] != zoneWithSightBlocking);
+					Zone z = Dungeon.level.zone[cell];
+					blockedByZone = z != null && z.blocksVision && (transparentZones == null || !transparentZones.contains(z));
 				} else blockedByZone = false;
 
 				if (!blockedByZone) fov[cell] = true;
@@ -145,7 +161,7 @@ public final class ShadowCaster {
 							scanOctant(distance, fov, blocking, row+1, x, y, lSlope,
 									//change in x over change in y
 									(col - 0.5) / (row + 0.5),
-									mX, mY, mXY, zoneWithSightBlocking, canSightBeBlockedByZone);
+									mX, mY, mXY, transparentZones, canSightBeBlockedByZone);
 						}
 					}
 				
