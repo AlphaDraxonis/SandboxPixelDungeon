@@ -24,11 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PinCushion;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
@@ -58,6 +54,8 @@ abstract public class MissileWeapon extends Weapon {
 
 		defaultAction = AC_THROW;
 		usesTargeting = true;
+
+		setCursedKnown(true);
 	}
 	
 	protected boolean sticky = true;
@@ -502,6 +500,8 @@ abstract public class MissileWeapon extends Weapon {
 		super.restoreFromBundle(bundle);
 		bundleRestoring = false;
 		durability = bundle.getFloat(DURABILITY);
+
+		setCursedKnown(true);
 	}
 
 	public static class PlaceHolder extends MissileWeapon {

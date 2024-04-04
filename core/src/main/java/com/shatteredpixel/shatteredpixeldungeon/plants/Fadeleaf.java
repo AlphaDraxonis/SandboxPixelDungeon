@@ -48,7 +48,7 @@ public class Fadeleaf extends Plant {
 			
 			if (((Hero) ch).subClass == HeroSubClass.WARDEN && Dungeon.interfloorTeleportAllowed()){
 
-				ScrollOfTeleportation.teleportToLocation(ch, Dungeon.level.getTransition(LevelTransition.Type.REGULAR_ENTRANCE).cell());
+				ScrollOfTeleportation.teleportToLocation(ch, Dungeon.level.getTransition(LevelTransition.Type.REGULAR_ENTRANCE).cell(), false);
 				
 			} else {
 				ScrollOfTeleportation.teleportChar(ch, Fadeleaf.class);

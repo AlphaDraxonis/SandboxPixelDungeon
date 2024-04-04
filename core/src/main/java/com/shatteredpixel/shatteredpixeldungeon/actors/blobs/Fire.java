@@ -79,11 +79,13 @@ public class Fire extends Blob {
 
 					}
 
-				} else if (freezes.length == 0 || totalFreezeVolume <= 0) {
+				} else {
 
 					int curFreeze = 0;
-					for (Blob freeze : freezes) {
-						curFreeze += freeze.cur[cell];
+					if (freezes.length > 0 && totalFreezeVolume > 0) {
+						for (Blob freeze : freezes) {
+							curFreeze += freeze.cur[cell];
+						}
 					}
 
 					if (curFreeze <= 0 &&
@@ -99,8 +101,6 @@ public class Fire extends Blob {
 						fire = 0;
 					}
 
-				} else {
-					fire = 0;
 				}
 
 				volume += (off[cell] = fire);

@@ -58,7 +58,7 @@ public final class ShadowCaster {
 		//set source cell to true
 		fieldOfView[y * Dungeon.level.width() + x] = true;
 		
-		//scans octants, clockwise
+		//scans octants, clockwiser
 		try {
 			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, +1, -1, false,null, canSightBeBlockedByZone);
 			scanOctant(distance, fieldOfView, blocking, 1, x, y, 0.0, 1.0, -1, +1, true, null, canSightBeBlockedByZone);
