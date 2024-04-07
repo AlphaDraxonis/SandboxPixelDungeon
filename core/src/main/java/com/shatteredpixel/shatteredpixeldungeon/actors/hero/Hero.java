@@ -1336,7 +1336,13 @@ public class Hero extends Char {
 
 		enemy = action.target;
 
-		if (enemy.isAlive() && canAttack( enemy ) && !isCharmedBy( enemy ) && enemy.invisible == 0) {
+		if (isCharmedBy( enemy )){
+			GLog.w( Messages.get(Charm.class, "cant_attack"));
+			ready();
+			return false;
+		}
+
+		if (enemy.isAlive() && canAttack( enemy ) && enemy.invisible == 0) {
 
 			if (heroClass != HeroClass.DUELIST
 					&& hasTalent(Talent.AGGRESSIVE_BARRIER)
