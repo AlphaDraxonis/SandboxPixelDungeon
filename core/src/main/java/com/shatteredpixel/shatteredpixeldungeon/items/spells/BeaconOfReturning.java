@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.QuestLevels;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
@@ -51,6 +52,8 @@ public class BeaconOfReturning extends Spell {
 	
 	{
 		image = ItemSpriteSheet.RETURN_BEACON;
+
+		talentChance = 1/(float)Recipe.OUT_QUANTITY;
 	}
 	
 	public String returnLevel = Level.SURFACE;
@@ -171,6 +174,9 @@ public class BeaconOfReturning extends Spell {
 			Game.switchScene( InterlevelScene.class );
 		}
 		detach(hero.belongings.backpack);
+		if (Random.Float() < talentChance){
+			Talent.onScrollUsed(curUser, curUser.pos, talentFactor);
+		}
 	}
 	
 	@Override
