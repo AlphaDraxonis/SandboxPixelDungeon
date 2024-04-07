@@ -213,15 +213,17 @@ public class BeaconOfReturning extends Spell {
 	
 	@Override
 	public int value() {
-		return (int)(60 * (quantity/5f));
+		return (int)(60 * (quantity/(float)Recipe.OUT_QUANTITY));
 	}
 
 	@Override
 	public int energyVal() {
-		return (int)(12 * (quantity/5f));
+		return (int)(12 * (quantity/(float)Recipe.OUT_QUANTITY));
 	}
 	
 	public static class Recipe extends com.shatteredpixel.shatteredpixeldungeon.items.Recipe.SimpleRecipe {
+
+		private static final int OUT_QUANTITY = 5;
 		
 		{
 			inputs =  new Class[]{ScrollOfPassage.class};
@@ -230,7 +232,7 @@ public class BeaconOfReturning extends Spell {
 			cost = 12;
 			
 			output = BeaconOfReturning.class;
-			outQuantity = 5;
+			outQuantity = OUT_QUANTITY;
 		}
 		
 	}
