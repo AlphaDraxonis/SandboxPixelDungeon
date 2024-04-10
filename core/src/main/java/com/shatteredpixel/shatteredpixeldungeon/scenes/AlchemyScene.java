@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.LiquidMetal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -73,6 +74,7 @@ public class AlchemyScene extends PixelScene {
 	private Image energyIcon;
 	private RenderedTextBlock energyLeft;
 	private IconButton energyAdd;
+	private boolean energyAddBlinking = false;
 
 	private static final int BTN_SIZE	= 28;
 
@@ -391,6 +393,22 @@ public class AlchemyScene extends PixelScene {
 		add(energyIcon);
 
 		energyAdd = new IconButton(Icons.get(Icons.PLUS)){
+
+			private float time = 0;
+
+			@Override
+			public void update() {
+				super.update();
+				if (energyAddBlinking){
+					icon.brightness( 0.5f + (float)Math.abs(Math.cos( StatusPane.FLASH_RATE * (time += Game.elapsed) )));
+				} else {
+					if (time > 0){
+						icon.resetColor();
+					}
+					time = 0;
+				}
+			}
+
 			@Override
 			protected void onClick() {
 				WndEnergizeItem.openItemSelector();
@@ -503,6 +521,7 @@ public class AlchemyScene extends PixelScene {
 		if (recipes.isEmpty()){
 			combines[0].setPos(combines[0].left(), inputs[1].top()+5);
 			outputs[0].setPos(outputs[0].left(), inputs[1].top());
+			energyAddBlinking = false;
 			return;
 		}
 
@@ -514,6 +533,7 @@ public class AlchemyScene extends PixelScene {
 		float top = inputs[0].top() + height/2;
 
 		//positions and enables active buttons
+		boolean promptToAddEnergy = false;
 		for (int i = 0; i < recipes.size(); i++){
 
 			Recipe recipe = recipes.get(i);
@@ -534,8 +554,14 @@ public class AlchemyScene extends PixelScene {
 			combines[i].setRect(combines[0].left(), outputs[i].top()+5, 30, 20);
 			combines[i].enable(cost <= availableEnergy, cost);
 
+			if (cost > availableEnergy && recipe instanceof TrinketCatalyst.Recipe){
+				promptToAddEnergy = true;
+			}
+
 		}
-		
+
+		energyAddBlinking = promptToAddEnergy;
+
 	}
 	
 	private void combine( int slot ){
