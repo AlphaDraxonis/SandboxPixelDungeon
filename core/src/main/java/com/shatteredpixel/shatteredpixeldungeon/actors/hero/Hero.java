@@ -410,7 +410,7 @@ public class Hero extends Char {
 		}
 
 		if (buff(Scimitar.SwordDance.class) != null){
-			accuracy *= 1.25f;
+			accuracy *= 1.50f;
 		}
 		
 		if (!RingOfForce.fightingUnarmed(this)) {
@@ -473,7 +473,8 @@ public class Hero extends Char {
 		}
 
 		if (buff(RoundShield.GuardTracker.class) != null){
-			buff(RoundShield.GuardTracker.class).detach();
+			buff(RoundShield.GuardTracker.class).hasBlocked = true;
+			BuffIndicator.refreshHero();
 			Sample.INSTANCE.play(Assets.Sounds.HIT_PARRY, 1, Random.Float(0.96f, 1.05f));
 			return Messages.get(RoundShield.GuardTracker.class, "guarded");
 		}
