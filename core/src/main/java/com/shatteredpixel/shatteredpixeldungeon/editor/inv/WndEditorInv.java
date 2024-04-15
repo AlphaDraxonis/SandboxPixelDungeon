@@ -126,14 +126,12 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
         for (Bag baAag : bags) {
             EditorItemBag b = (EditorItemBag) baAag;
             cats[i] = new CategoryScroller.Category() {
+
                 @Override
-                protected List<?> getItems() {
+                protected List<?> createItems(boolean required) {
+                    if (selector == null && !required) return null;
+
                     List<Object> ret = new ArrayList<>(b.items);
-                    if (selector == null) {
-                        ret.add(0, EditorItem.REMOVER_ITEM);
-                    } else if (selector.acceptsNull()) {
-                        ret.add(0, selector.getItemForNull());
-                    }
 
                     if (selector != null) {
                         for (Item i : b.items) {
@@ -142,6 +140,14 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                                     ret.remove(i);
                             } else if (!selector.itemSelectable(i))
                                 ret.remove(i);
+                        }
+                    }
+
+                    if (!ret.isEmpty()) {
+                        if (selector == null) {
+                            ret.add(0, EditorItem.REMOVER_ITEM);
+                        } else if (selector.acceptsNull()) {
+                            ret.add(0, selector.getItemForNull());
                         }
                     }
 
@@ -321,7 +327,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
 
     @Override
     public void hide() {
-        lastSelected.put(curBag, body.getSelectedIndex());
+        lastSelected.put(curBag, body.getSelectedCatIndex());
         lastScrollPos.put(curBag, body.getCurrentViewY());
         lastTrapForImage = null;
         lastPlantForImage = null;

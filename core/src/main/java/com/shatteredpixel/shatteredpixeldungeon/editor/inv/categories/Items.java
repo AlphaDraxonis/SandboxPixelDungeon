@@ -269,8 +269,6 @@ public enum Items implements EditorInvCategory<Item> {
                 ArcaneCatalyst.class,
                 ArcaneResin.class,
                 LiquidMetal.class,
-                GooBlob.class,
-                MetalShard.class,
 
                 Alchemize.class,
                 AquaBlast.class,
@@ -303,6 +301,8 @@ public enum Items implements EditorInvCategory<Item> {
                 Ankh.class,
                 Waterskin.class,
                 BrokenSeal.class,
+                GooBlob.class,
+                MetalShard.class,
                 TengusMask.class,
                 KingsCrown.class,
                 Amulet.class,
