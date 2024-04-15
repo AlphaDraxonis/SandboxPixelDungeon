@@ -76,6 +76,11 @@ public class ItemItem extends EditorItem<Item> {
     }
 
     @Override
+    public Item getCopy() {
+        return new ItemItem(getObject().getCopy());
+    }
+
+    @Override
     public ScrollingListPane.ListItem createListItem(EditorInventoryWindow window) {
         return new DefaultListItem(this, window, Messages.titleCase(title()), getSprite()) {
             @Override

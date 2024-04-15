@@ -1,7 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionCompRow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -64,7 +63,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             public void selectObject(Object object) {
                 super.selectObject(object);
                 if (object instanceof LevelScheme)
-                    EditorScene.customLevel().levelScheme.setPassage(EditorUtilies.getCodeName((LevelScheme) object));
+                    Dungeon.level.levelScheme.setPassage(EditorUtilies.getCodeName((LevelScheme) object));
             }
 
             @Override
@@ -79,7 +78,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             public void selectObject(Object object) {
                 super.selectObject(object);
                 if (object instanceof LevelScheme)
-                    EditorScene.customLevel().levelScheme.setChasm(EditorUtilies.getCodeName((LevelScheme) object), true);
+                    Dungeon.level.levelScheme.setChasm(EditorUtilies.getCodeName((LevelScheme) object), true);
             }
 
             @Override
@@ -90,13 +89,13 @@ public class TransitionTab extends WndEditorSettings.TabComp {
             @Override
             protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
                 List<LevelSchemeLike> ret = super.filterLevels(levels);
-//                ret.remove(EditorScene.customLevel().levelScheme);//Cant choose same level
+//                ret.remove(Dungeon.level.levelScheme);//Cant choose same level
                 return ret;
             }
         };
         content.add(chasm);
 
-        LevelScheme levelScheme = EditorScene.customLevel().levelScheme;
+        LevelScheme levelScheme = Dungeon.level.levelScheme;
         startfloor.selectObject(Dungeon.customDungeon.getStart());
         passage.selectObject(levelScheme.getPassage() != null && !levelScheme.getPassage().equals(Dungeon.customDungeon.getStart())
                 ? levelScheme.getPassage() : null);
@@ -143,8 +142,8 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         titleLevelTransitions.setPos(x + (width - titleLevelTransitions.width()) * 0.5f, pos + (WndEditorSettings.ITEM_HEIGHT - 3 - titleLevelTransitions.height()) * 0.5f);
         pos += WndEditorSettings.ITEM_HEIGHT - 3;
 
-        pos = layoutTransitionComps(EditorScene.customLevel().levelScheme.entranceCells, pos);
-        pos = layoutTransitionComps(EditorScene.customLevel().levelScheme.exitCells, pos);
+        pos = layoutTransitionComps(Dungeon.level.levelScheme.entranceCells, pos);
+        pos = layoutTransitionComps(Dungeon.level.levelScheme.exitCells, pos);
 
         content.setSize(width, pos - 1);
         sp.setPos(sp.left(), sp.top());
@@ -156,7 +155,7 @@ public class TransitionTab extends WndEditorSettings.TabComp {
         for (int cell : cells) {
             TransitionCompRow comp = transitionCompMap.get(cell);
             if (comp == null) {
-                comp = new TransitionCompRow(cell, EditorScene.customLevel().levelScheme, true) {
+                comp = new TransitionCompRow(cell, Dungeon.level.levelScheme, true) {
                     @Override
                     protected void layoutParent() {
                         TransitionTab.this.layout();

@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
@@ -44,12 +45,12 @@ public class MenuPane extends Component {
         bg = new Image(Assets.Interfaces.MENU);
         add(bg);
 
-        if (EditorScene.customLevel().feeling != null) {
-            depthIcon =  Icons.get(EditorScene.customLevel().levelScheme.getFeeling());
+        if (Dungeon.level.feeling != null) {
+            depthIcon =  Icons.get(Dungeon.level.levelScheme.getFeeling());
             add(depthIcon);
         }
 
-        depthText = new BitmapText(EditorScene.customLevel().name, PixelScene.pixelFont);
+        depthText = new BitmapText(Dungeon.level.name, PixelScene.pixelFont);
         depthText.hardlight(0xCACFC2);
         depthText.measure();
         add(depthText);
@@ -57,7 +58,7 @@ public class MenuPane extends Component {
         depthButton = new Button() {
             @Override
             protected String hoverText() {
-                switch (EditorScene.customLevel().feeling) {
+                switch (Dungeon.level.feeling) {
                     case CHASM:     return Messages.get(GameScene.class, "chasm");
                     case WATER:     return Messages.get(GameScene.class, "water");
                     case GRASS:     return Messages.get(GameScene.class, "grass");
@@ -120,9 +121,9 @@ public class MenuPane extends Component {
     public void updateDepthIcon(){
         remove(depthIcon);
         depthIcon.destroy();
-        depthIcon =  Icons.get(EditorScene.customLevel().levelScheme.getFeeling());
+        depthIcon =  Icons.get(Dungeon.level.levelScheme.getFeeling());
         add(depthIcon);
-        depthText.text(EditorScene.customLevel().name);
+        depthText.text(Dungeon.level.name);
         depthText.measure();
         layout();
     }

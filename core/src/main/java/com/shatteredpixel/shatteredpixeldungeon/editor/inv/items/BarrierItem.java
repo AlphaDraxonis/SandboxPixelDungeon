@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditBarrierComp
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.noosa.Image;
 
 public class BarrierItem extends EditorItem<Barrier> {
@@ -31,6 +32,11 @@ public class BarrierItem extends EditorItem<Barrier> {
     @Override
     public Image getSprite() {
         return getObject().getSprite();
+    }
+
+    @Override
+    public Item getCopy() {
+        return new BarrierItem(getObject().getCopy());
     }
 
     @Override

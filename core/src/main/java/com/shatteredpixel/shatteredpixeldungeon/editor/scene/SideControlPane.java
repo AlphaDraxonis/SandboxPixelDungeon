@@ -9,7 +9,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -19,7 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndInspectObject;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndScrollOfDebug;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
@@ -167,7 +166,7 @@ public class SideControlPane extends Component {
         protected void onClick() {
             try {
                 if (Dungeon.hero == null) {
-                    CustomDungeonSaves.saveLevel(EditorScene.customLevel());
+                    CustomDungeonSaves.saveLevel(EditorScene.getCustomLevel());
                     CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
                 } else
                     Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(Dungeon.customDungeon.getName());//restart
@@ -257,8 +256,8 @@ public class SideControlPane extends Component {
 
         @Override
         protected void onClick() {
-            WndInspectObject.show(Rat.class, 0, null);
-//            GameScene.show(new WndScrollOfDebug());
+//            WndInspectObject.show(Rat.class, 0, null);
+            GameScene.show(new WndScrollOfDebug());
         }
     }
 
@@ -414,7 +413,7 @@ public class SideControlPane extends Component {
 
         @Override
         public void onRightClick(Integer cell) {
-            if (cell != null && cell >= 0 && cell < EditorScene.customLevel().length()) {
+            if (cell != null && cell >= 0 && cell < Dungeon.level.length()) {
                 EditorScene.showEditCellWindow(cell);
             }
         }
@@ -432,7 +431,7 @@ public class SideControlPane extends Component {
 
         @Override
         public void onRightClick(Integer cell) {
-            if (cell != null && cell >= 0 && cell < EditorScene.customLevel().length()) {
+            if (cell != null && cell >= 0 && cell < Dungeon.level.length()) {
                 EditorScene.showEditCellWindow(cell);
             }
         }

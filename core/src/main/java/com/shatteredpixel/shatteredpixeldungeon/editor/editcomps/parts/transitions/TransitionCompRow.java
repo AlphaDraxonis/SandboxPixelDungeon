@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -59,7 +60,7 @@ public class TransitionCompRow extends FoldableCompWithAdd {
     protected void onAdd(Object toAdd, boolean initialAdding) {
         super.onAdd(toAdd, initialAdding);
 
-        if (!initialAdding && levelScheme.getLevel() == EditorScene.customLevel())
+        if (!initialAdding && levelScheme.getLevel() == Dungeon.level)
             EditorScene.add((LevelTransition) toAdd);
     }
 
@@ -99,7 +100,7 @@ public class TransitionCompRow extends FoldableCompWithAdd {
                 t.destCell = -1;
             } else {
                 levelScheme.getLevel().transitions.remove(transition.cell());
-                if (levelScheme.getLevel() == EditorScene.customLevel())
+                if (levelScheme.getLevel() == Dungeon.level)
                     EditorScene.remove(transition);
             }
         });

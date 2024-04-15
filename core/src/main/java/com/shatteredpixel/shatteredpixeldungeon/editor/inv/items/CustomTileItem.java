@@ -14,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.CustomTileActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -57,6 +58,11 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
         Image img = cust instanceof CustomTileLoader.OwnCustomTile ? new Image(cust.getTexture()) : cust.fullImage();
         img.scale.set(Math.min(1f / cust.tileW, 1f / cust.tileH));
         return img;
+    }
+
+    @Override
+    public Item getCopy() {
+        return new CustomTileItem(getObject().getCopy(), cell);
     }
 
     public int cell() {

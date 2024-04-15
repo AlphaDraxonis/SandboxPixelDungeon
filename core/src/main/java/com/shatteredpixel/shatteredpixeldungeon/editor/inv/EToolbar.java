@@ -1,11 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
-import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
-import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
@@ -146,7 +141,7 @@ public class EToolbar extends Component {
             @Override
             protected void onClick() {
                 try {
-                    CustomDungeonSaves.saveLevel(EditorScene.customLevel());
+                    CustomDungeonSaves.saveLevel(EditorScene.getCustomLevel());
                     EditorScene.show(new WndSwitchFloor());
                 } catch (IOException e) {
                     SandboxPixelDungeon.reportException(e);

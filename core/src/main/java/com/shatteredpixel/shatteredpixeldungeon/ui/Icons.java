@@ -91,6 +91,7 @@ public enum Icons {
     MORE,
     EDIT,
     TRASH,
+    BOOKMARK,
     BACK,
     SWAP,
     RULER,
@@ -316,6 +317,9 @@ public enum Icons {
                 break;
             case TRASH:
                 icon.frame(icon.texture.uvRectBySize(192, 112, 11, 11));
+                break;
+            case BOOKMARK:
+                icon.frame(icon.texture.uvRectBySize(208, 112, 11, 11));
                 break;
             case BACK:
                 icon.frame(icon.texture.uvRectBySize(236, 80, 20, 13));

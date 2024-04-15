@@ -118,7 +118,7 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
         @Override
         public void undo() {
 
-            Plant plantAtCell = EditorScene.customLevel().plants.get(after.pos);
+            Plant plantAtCell = Dungeon.level.plants.get(after.pos);
 
             remove(plantAtCell);
 
@@ -129,7 +129,7 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
 
         @Override
         public void redo() {
-            Plant plantAtCell = EditorScene.customLevel().plants.get(after.pos);
+            Plant plantAtCell = Dungeon.level.plants.get(after.pos);
 
             if (plantAtCell != null) remove(plantAtCell);
 

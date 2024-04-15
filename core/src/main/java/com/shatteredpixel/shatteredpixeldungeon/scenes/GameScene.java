@@ -34,7 +34,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -43,6 +42,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.SideControlPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.effects.*;
+import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
+import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
+import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
@@ -63,14 +66,12 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.DiscardedItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.*;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
-import com.watabou.glwrap.Blending;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.PointerEvent;
@@ -78,6 +79,7 @@ import com.watabou.noosa.*;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.tweeners.Tweener;
+import com.watabou.noosa.ui.Component;
 import com.watabou.utils.*;
 
 import java.io.IOException;
@@ -87,57 +89,28 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-public class GameScene extends PixelScene {
+public class GameScene extends DungeonScene {
 
 	static GameScene scene;
 
-	private SkinnedBlock water;
-	private DungeonTerrainTilemap[] tiles;
-	private GridTileMap visualGrid;
-	private TerrainFeaturesTilemap terrainFeatures;
-	private BarrierTilemap barriers;
 	private RaisedTerrainTilemap[] raisedTerrain;
 	private DungeonWallsTilemap[] walls;
 	private WallBlockingTilemap wallBlocking;
 	private FogOfWar fog;
 	private HeroSprite hero;
 
-	private MenuPane menu;
+	protected MenuPane menu;
 	private StatusPane status;
-	private SideControlPane sideControlPane;
 
 	private BossHealthBar boss;
 
 	private GameLog log;
 	public static List<String> errorMsg = new ArrayList<>();
 
-	private static CellSelector cellSelector;
-	
-	private Group terrain;
-	private Group customTiles;
-	private Group levelVisuals;
-	private Group levelWallVisuals;
-	private Group customWalls;
-	private Group ripples;
-	private Group plants;
-	private Group traps;
-	private Group heaps;
-	private Group mobs;
-	private Group floorEmitters;
-	private Group emitters;
-	private Group effects;
-	private Group gases;
-	private Group spells;
-	private Group statuses;
-	private Group emoicons;
-	private Group overFogEffects;
-	private Group healthIndicators;
 
-	private InventoryPane inventory;
 	private static boolean invVisible = true;
 
 	private Toolbar toolbar;
-	private Toast prompt;
 
 	private AttackIndicator attack;
 	private LootIndicator loot;
@@ -173,62 +146,15 @@ public class GameScene extends PixelScene {
 
 		scene = this;
 
-		terrain = new Group();
-		add( terrain );
-
-		water = new SkinnedBlock(
-			Dungeon.level.width() * DungeonTilemap.SIZE,
-			Dungeon.level.height() * DungeonTilemap.SIZE,
-			Dungeon.level.waterTex() ){
-
-			@Override
-			protected NoosaScript script() {
-				return NoosaScriptNoLighting.get();
-			}
-
-			@Override
-			public void draw() {
-				//water has no alpha component, this improves performance
-				Blending.disable();
-				super.draw();
-				Blending.enable();
-			}
-		};
-		water.autoAdjust = true;
-		terrain.add( water );
-
-		terrain.add( LevelColoring.getWater() );
-
-		ripples = new Group();
-		terrain.add( ripples );
-
-		DungeonTileSheet.setupVariance(Dungeon.level.map.length, Dungeon.seedCurLevel());
-
-		tiles = new DungeonTerrainTilemap[6];
-		for (int i = 0; i < tiles.length; i++) {
-			if (i == Dungeon.region()) continue;
-			tiles[i] = new DungeonTerrainTilemap(i);
-			terrain.add(tiles[i]);
-		}
-		tiles[Dungeon.region()] = tiles[0];
-
-		customTiles = new Group();
-		terrain.add(customTiles);
-
-		for( CustomTilemap visual : Dungeon.level.customTiles){
-			addCustomTile(visual);
-		}
-
-		visualGrid = new GridTileMap();
-		terrain.add( visualGrid );
-
-		terrainFeatures = new TerrainFeaturesTilemap(Dungeon.level.plants, Dungeon.level.traps);
-		terrain.add(terrainFeatures);
-
-		barriers = new BarrierTilemap(Dungeon.level.barriers);
-		terrain.add(barriers);
-
-		terrain.add( LevelColoring.getFloor() );
+		initBasics();
+		//tzz supre!
+		//tiles = new DungeonTerrainTilemap[6];
+		//		for (int i = 0; i < tiles.length; i++) {
+		//			if (i == Dungeon.region()) continue;
+		//			tiles[i] = new DungeonTerrainTilemap(i);
+		//			terrain.add(tiles[i]);
+		//		}
+		//		tiles[Dungeon.region()] = tiles[0];
 
 		levelVisuals = Dungeon.level.addVisuals();
 		add(levelVisuals);
@@ -237,7 +163,7 @@ public class GameScene extends PixelScene {
 		add(floorEmitters);
 
 		heaps = new Group();
-		add( heaps );
+		add(heaps);
 		
 		for ( Heap heap : Dungeon.level.heaps.valueList() ) {
 			addHeapSprite( heap );
@@ -622,7 +548,7 @@ public class GameScene extends PixelScene {
 
 		Emitter.freezeEmitters = false;
 		
-		scene = null;
+		scene = null;//tzz checken, ob diese Zeile entfernt werden muss!
 		Badges.saveGlobal();
 		Journal.saveGlobal();
 		
@@ -663,10 +589,6 @@ public class GameScene extends PixelScene {
 	}
 
 	private static Thread actorThread;
-	
-	//sometimes UI changes can be prompted by the actor thread.
-	// We queue any removed element destruction, rather than destroying them in the actor thread.
-	private ArrayList<Gizmo> toDestroy = new ArrayList<>();
 
 	//the actor thread processes at a maximum of 60 times a second
 	//this caps the speed of resting for higher refresh rate displays
@@ -763,17 +685,6 @@ public class GameScene extends PixelScene {
 			g.destroy();
 		}
 		toDestroy.clear();
-	}
-
-	private static Point lastOffset = null;
-
-	@Override
-	public synchronized Gizmo erase (Gizmo g) {
-		Gizmo result = super.erase(g);
-		if (result instanceof Window){
-			lastOffset = ((Window) result).getOffset();
-		}
-		return result;
 	}
 
 	private boolean tagAttack    = false;
@@ -911,8 +822,9 @@ public class GameScene extends PixelScene {
 			gases.add(new CustomParticle.ParticleEmitter(particle));
 		}
 	}
-	
-	private synchronized void addMobSprite( Mob mob ) {
+
+	@Override
+	protected synchronized void addMobSprite( Mob mob ) {
 		CharSprite sprite = mob.sprite();
 		mobs.add( sprite );
 		sprite.link( mob );
@@ -920,116 +832,25 @@ public class GameScene extends PixelScene {
 		sortMobSprites();
 	}
 
-	//ensures that mob sprites are drawn from top to bottom, in case of overlap
-	public static void sortMobSprites(){
-		if (CustomDungeon.isEditing()) EditorScene.sortMobSprites();
-		if (scene != null){
-			synchronized (scene) {
-				scene.mobs.sort(new Comparator() {
-					@Override
-					public int compare(Object a, Object b) {
-						//elements that aren't visual go to the end of the list
-						if (a instanceof Visual && b instanceof Visual) {
-							return (int) Math.signum((((Visual) a).y + ((Visual) a).height())
-									- (((Visual) b).y + ((Visual) b).height()));
-						} else if (a instanceof Visual){
-							return -1;
-						} else if (b instanceof Visual){
-							return 1;
-						} else {
-							return 0;
-						}
-					}
-				});
-			}
-		}
-	}
-	
-	private synchronized void prompt( String text ) {
-		
-		if (prompt != null) {
-			prompt.killAndErase();
-			toDestroy.add(prompt);
-			prompt = null;
-		}
-		
-		if (text != null) {
-			prompt = new Toast( text ) {
-				@Override
-				protected void onClose() {
-					cancel();
-				}
-			};
-			prompt.camera = uiCamera;
-			Toast.placeToastOnScreen(prompt);
+	@Override
+	protected synchronized void prompt(Component newPrompt) {
 
+		super.prompt(newPrompt);
+
+		if (prompt != null) {
 			if (inventory != null && inventory.visible && prompt.right() > inventory.left() - 10){
 				prompt.setPos(inventory.left() - prompt.width() - 10, prompt.top());
 			}
-
-			add( prompt );
 		}
 	}
-	
-	private void showBanner( Banner banner ) {
-		banner.camera = uiCamera;
 
-		float offset = Camera.main.centerOffset.y;
-		banner.x = align( uiCamera, (uiCamera.width - banner.width) / 2 );
-		banner.y = align( uiCamera, (uiCamera.height - banner.height) / 2 - banner.height/2 - 16 - offset );
 
-		addToFront( banner );
-	}
-	
 	// -------------------------------------------------------
 
-	public static void add( Plant plant ) {
-		if (scene != null) {
-			scene.addPlantSprite( plant );
-		}
-	}
-
-	public static void add( Trap trap ) {
-		if (scene != null) {
-			scene.addTrapSprite( trap );
-		}
-	}
-	
-	public static void add( Blob gas ) {
-		Actor.add( gas );
-		if (scene != null) {
-			scene.addBlobSprite( gas );
-		}
-	}
-
-	public static void add( CustomParticle particle ) {
-		if (scene != null) {
-			scene.addParticleSprite(particle);
-		}
-	}
-	
-	public static void add( Heap heap ) {
-		if (CustomDungeon.isEditing()) EditorScene.add(heap);
-		else if (scene != null) {
-			//heaps that aren't added as part of levelgen don't count for exploration bonus
-			heap.autoExplored = true;
-			scene.addHeapSprite( heap );
-		}
-	}
-	
-	public static void discard( Heap heap ) {
-		if (CustomDungeon.isEditing()) EditorScene.discard(heap);
-		else if (scene != null) {
-			scene.addDiscardedSprite( heap );
-		}
-	}
-	
-	public static void add( Mob mob ) {
-		Dungeon.level.mobs.add( mob );
-		if (scene != null) {
-			scene.addMobSprite(mob);
-			Actor.add(mob);
-		}
+	@Override
+	protected void doAddHeap(Heap heap) {
+		//heaps that aren't added as part of levelgen don't count for exploration bonus
+		heap.autoExplored = true;
 	}
 
 	public static void addSprite( Mob mob ) {
@@ -1041,55 +862,17 @@ public class GameScene extends PixelScene {
 		scene.addMobSprite( mob );
 		Actor.addDelayed( mob, delay );
 	}
-	
-	public static void add( EmoIcon icon ) {
-		scene.emoicons.add( icon );
-	}
-	
+
 	public static void add( CharHealthIndicator indicator ){
 		if (scene != null) scene.healthIndicators.add(indicator);
-	}
-	
-	public static void add( CustomTilemap t, boolean wall ){
-		if (scene == null) return;
-		if (wall){
-			scene.addCustomWall(t);
-		} else {
-			scene.addCustomTile(t);
-		}
-	}
-	
-	public static void effect( Visual effect ) {
-		if (scene != null) scene.effects.add( effect );
 	}
 
 	public static void effectOverFog( Visual effect ) {
 		scene.overFogEffects.add( effect );
 	}
-	
-	public static Ripple ripple( int pos ) {
-		if (scene != null) {
-			Ripple ripple = (Ripple) scene.ripples.recycle(Ripple.class);
-			ripple.reset(pos);
-			return ripple;
-		} else {
-			return EditorScene.ripple( pos );
-		}
-	}
-	
+
 	public static synchronized SpellSprite spellSprite() {
 		return (SpellSprite)scene.spells.recycle( SpellSprite.class );
-	}
-	
-	public static synchronized Emitter emitter() {
-
-		if (scene != null) {
-			Emitter emitter = (Emitter)scene.emitters.recycle( Emitter.class );
-			emitter.revive();
-			return emitter;
-		} else {
-			return EditorScene.emitter();
-		}
 	}
 
 	public static synchronized Emitter floorEmitter() {
@@ -1189,7 +972,8 @@ public class GameScene extends PixelScene {
 	}
 
 	//updates the whole map
-	public static void updateMap() {
+	@Override
+	protected void updateMapImpl() {
 		if (Dungeon.level != null) {
 			System.arraycopy(Dungeon.level.map, 0, Dungeon.level.visualMap, 0, Dungeon.level.map.length);
 			Arrays.fill(Dungeon.level.visualRegions, LevelScheme.REGION_NONE);
@@ -1219,8 +1003,9 @@ public class GameScene extends PixelScene {
 			updateFog();
 		}
 	}
-	
-	public static void updateMap( int cell ) {
+
+	@Override
+	protected void updateMapImpl( int cell ) {
 		if (Dungeon.level != null && Dungeon.level.visualRegions[cell] == LevelScheme.REGION_NONE)
 			Dungeon.level.visualMap[cell] = Dungeon.level.map[cell];
 
@@ -1255,52 +1040,6 @@ public class GameScene extends PixelScene {
 				scene.tiles[i].discover( pos, oldValue );
 			}
 		}
-	}
-	
-	public static void show( Window wnd ) {
-		if (scene != null) {
-			cancel();
-
-			//If a window is already present (or was just present)
-			// then inherit the offset it had
-			if (scene.inventory != null && scene.inventory.visible){
-				Point offsetToInherit = null;
-				for (Gizmo g : scene.members){
-					if (g instanceof Window) offsetToInherit = ((Window) g).getOffset();
-				}
-				if (lastOffset != null) {
-					offsetToInherit = lastOffset;
-				}
-				if (offsetToInherit != null) {
-					wnd.offset(offsetToInherit);
-					wnd.boundOffsetWithMargin(3);
-				}
-			}
-
-			scene.addToFront(wnd);
-		}
-	}
-
-	public static boolean showingWindow(){
-		if (scene == null) return false;
-
-		for (Gizmo g : scene.members){
-			if (g instanceof Window) return true;
-		}
-
-		return false;
-	}
-
-	public static boolean interfaceBlockingHero(){
-		if (scene == null) return false;
-
-		if (showingWindow()) return true;
-
-		if (scene.inventory != null && scene.inventory.isSelecting()){
-			return true;
-		}
-
-		return false;
 	}
 
 	public static void toggleInvPane(){
@@ -1441,23 +1180,19 @@ public class GameScene extends PixelScene {
 			Sample.INSTANCE.play( Assets.Sounds.BOSS );
 		}
 	}
-	
-	public static void handleCell( int cell ) {
-		cellSelector.select( cell, PointerEvent.LEFT, false );
-	}
-	
-	public static void selectCell( CellSelector.Listener listener ) {
+
+	@Override
+	protected void selectCellImpl( CellSelector.Listener listener ) {
 		if (cellSelector.listener != null && cellSelector.listener != defaultCellListener){
 			cellSelector.listener.onSelect(null);
 		}
 		cellSelector.listener = listener;
 		cellSelector.enabled = Dungeon.hero.ready;
-		if (scene != null) {
-			scene.prompt(listener.prompt());
-		}
+		prompt(listener.prompt());
 	}
-	
-	public static boolean cancelCellSelector() {
+
+	@Override
+	protected boolean cancelCellSelectorImpl() {
 		if (cellSelector.listener != null && cellSelector.listener != defaultCellListener) {
 			cellSelector.resetKeyHold();
 			cellSelector.cancel();
@@ -1466,7 +1201,7 @@ public class GameScene extends PixelScene {
 			return false;
 		}
 	}
-	
+
 	public static WndBag selectItem( WndBag.ItemSelector listener ) {
 		cancel();
 
@@ -1484,23 +1219,9 @@ public class GameScene extends PixelScene {
 		
 		return null;
 	}
-	
-	public static boolean cancel() {
-		cellSelector.resetKeyHold();
-		if (Dungeon.hero != null && (Dungeon.hero.curAction != null || Dungeon.hero.resting)) {
-			
-			Dungeon.hero.curAction = null;
-			Dungeon.hero.resting = false;
-			return true;
-			
-		} else {
-			
-			return cancelCellSelector();
-			
-		}
-	}
-	
-	public static void ready() {
+
+	@Override
+	protected void readyImpl() {
 		selectCell( defaultCellListener );
 		QuickSlotButton.cancel();
 		InventoryPane.cancelTargeting();
@@ -1524,6 +1245,11 @@ public class GameScene extends PixelScene {
 				|| cell < 0
 				|| cell > Dungeon.level.length()
 				|| (!Dungeon.level.visited[cell] && !Dungeon.level.mapped[cell])) {
+			return;
+		}
+
+		if (Dungeon.isLevelTesting()) {
+			showEditCellWindow( cell );
 			return;
 		}
 
@@ -1712,7 +1438,9 @@ public class GameScene extends PixelScene {
 					if (index == 0){
 						handleCell(cell);
 					} else {
-						if (objects.size() == 0){
+						if (Dungeon.isLevelTesting()) {
+							showEditCellWindow( cell );
+						} else if (objects.size() == 0){
 							GameScene.show(new WndInfoCell(cell));
 						} else {
 							examineObject(objects.get(index-1));

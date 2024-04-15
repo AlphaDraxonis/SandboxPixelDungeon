@@ -91,20 +91,20 @@ public class SimpleWindow extends Window {
     protected void onScroll(ScrollPane sp) {
     }
 
-//    public float preferredHeight() {
-//        float result;
-//        body.setSize(width, -1);
-//        result = GAP * 5 + title.height() + body.height() + 1;
-//
-//        if (outsideSp != null) {
-//            outsideSp.setSize(width, -1);
-//            float outsideSpH = outsideSp.height();
-//            if (outsideSpH != 0) {
-//                result += outsideSpH + GAP - 1;
-//            }
-//        }
-//        return result;
-//    }
+    public float preferredHeight() {
+        float result;
+        body.setSize(width, -1);
+        result = GAP * 5 + title.height() + body.height() + 1;
+
+        if (outsideSp != null) {
+            outsideSp.setSize(width, -1);
+            float outsideSpH = outsideSp.height();
+            if (outsideSpH != 0) {
+                result += outsideSpH + GAP - 1;
+            }
+        }
+        return result;
+    }
 
     @Override
     public void resize(int w, int h) {

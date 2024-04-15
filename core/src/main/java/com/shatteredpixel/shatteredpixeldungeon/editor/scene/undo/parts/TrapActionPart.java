@@ -105,7 +105,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
         @Override
         public void undo() {
 
-            Trap trapAtCell = EditorScene.customLevel().traps.get(after.pos);
+            Trap trapAtCell = Dungeon.level.traps.get(after.pos);
 
             remove(trapAtCell);
 
@@ -117,7 +117,7 @@ public /*sealed*/ abstract class TrapActionPart extends TileItem.PlaceTileAction
 
         @Override
         public void redo() {
-            Trap trapAtCell = EditorScene.customLevel().traps.get(after.pos);
+            Trap trapAtCell = Dungeon.level.traps.get(after.pos);
 
             if (trapAtCell != null) remove(trapAtCell);
 

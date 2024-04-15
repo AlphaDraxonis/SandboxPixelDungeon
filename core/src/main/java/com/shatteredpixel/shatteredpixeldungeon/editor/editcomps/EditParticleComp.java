@@ -255,7 +255,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
         protected DefaultEditComp<CustomParticle.ParticleProperty> createEditComp() {
             return new EditParticleComp(obj) {
                 @Override
-                protected void updateObj() {
+                public void updateObj() {
                     WndNewParticle.this.title.icon(obj.getSprite());
                     WndNewParticle.this.title.setPos(WndNewParticle.this.title.left(), WndNewParticle.this.title.top());
                     super.updateObj();

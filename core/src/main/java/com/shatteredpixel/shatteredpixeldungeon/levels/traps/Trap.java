@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -33,7 +34,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
-public abstract class Trap implements Bundlable {
+public abstract class Trap implements Bundlable, Copyable<Trap> {
 
 	//trap colors
 	public static final int RED     = 0;
@@ -170,7 +171,8 @@ public abstract class Trap implements Bundlable {
 			bundle.put(REVEALED_WHEN_TRIGGERED, revealedWhenTriggered);
 	}
 
-	public Trap getCopy(){
+	@Override
+	public Trap getCopy() {
 		Bundle bundle = new Bundle();
 		bundle.put("TRAP",this);
 		return  (Trap) bundle.get("TRAP");

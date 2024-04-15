@@ -209,7 +209,6 @@ public class Dungeon {
         try {
             CustomDungeonSaves.copyLevelsForNewGame(customDungeon.getName(), levelDir);
         } catch (IOException e) {
-            e.printStackTrace();
             SandboxPixelDungeon.reportException(e);
         }
         CustomDungeonSaves.setCurDirectory(levelDir);

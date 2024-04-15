@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
@@ -8,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -29,16 +31,25 @@ public class EditCompWindow extends Window {
     }
 
     public EditCompWindow(Object object, AdvancedListPaneItem advancedListPaneItem) {
-        if (object instanceof EditorItem) content = ((EditorItem) object).createEditComponent();
-        else if (object instanceof Item) content = new EditItemComp((Item) object, null);
-        else if (object instanceof Mob) content = new EditMobComp((Mob) object);
-        else if (object instanceof Trap) content = new EditTrapComp((Trap) object);
-        else if (object instanceof Heap) content = new EditHeapComp((Heap) object);
-        else if (object instanceof Zone) content = new EditZoneComp((Zone) object);
-        else throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
+        content = createContent(object);
+
+        if (content == null)
+            throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
 
         content.advancedListPaneItem = advancedListPaneItem;
         init();
+    }
+
+    public static DefaultEditComp<?> createContent(Object object) {
+        if (object instanceof EditorItem) return ((EditorItem<?>) object).createEditComponent();
+        if (object instanceof Item) return new EditItemComp((Item) object, null);
+        if (object instanceof Mob) return new EditMobComp((Mob) object);
+        if (object instanceof Trap) return new EditTrapComp((Trap) object);
+        if (object instanceof Plant) return new EditPlantComp((Plant) object);
+        if (object instanceof Heap) return new EditHeapComp((Heap) object);
+        if (object instanceof Zone) return new EditZoneComp((Zone) object);
+        if (object instanceof Barrier) return new EditBarrierComp((Barrier) object);
+        return null;
     }
 
     private void init() {

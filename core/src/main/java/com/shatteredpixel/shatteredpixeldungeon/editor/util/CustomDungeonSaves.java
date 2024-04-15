@@ -165,9 +165,10 @@ public class CustomDungeonSaves {
 
     public static void saveLevel(Level level) throws IOException {
         Bundle bundle = new Bundle();
+        Level before = Dungeon.level;
         Dungeon.level = level;
         bundle.put(FLOOR, level);
-        Dungeon.level = EditorScene.customLevel();
+        Dungeon.level = before;
         FileUtils.bundleToFile(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, level.name.replace(' ', '_')), bundle);
     }
 

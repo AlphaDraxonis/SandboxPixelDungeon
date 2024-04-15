@@ -1,13 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfAwareness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfHealth;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WaterOfTransmutation;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
@@ -101,7 +95,7 @@ public class BlobActionPart {
             for (int i = 0; i < BLOB_CLASSES.length; i++) {
                 EditorScene.add(Blob.seed(cell, blobs[i], BLOB_CLASSES[i]));
             }
-            SacrificialFire sacrificialFire = (SacrificialFire) EditorScene.customLevel().blobs.getOnly(SacrificialFire.class);
+            SacrificialFire sacrificialFire = Dungeon.level.blobs.getOnly(SacrificialFire.class);
             if (sacrificialFire != null) sacrificialFire.setPrize(cell, sacrificialFirePrize);
         }
 
@@ -110,7 +104,7 @@ public class BlobActionPart {
     public static void place(int cell, Class<? extends Blob> blob, int amount) {
         EditorScene.add(Blob.seed(cell, amount, blob));
         if (blob == SacrificialFire.class) {
-            SacrificialFire sacrificialFire = (SacrificialFire) EditorScene.customLevel().blobs.getOnly(SacrificialFire.class);
+            SacrificialFire sacrificialFire = Dungeon.level.blobs.getOnly(SacrificialFire.class);
             if (sacrificialFire != null && sacrificialFire.getPrize(cell) == null)
                 sacrificialFire.setPrize(cell, SacrificialFire.prizeInInventory);
         }

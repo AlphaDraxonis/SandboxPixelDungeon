@@ -25,6 +25,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
@@ -36,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -70,6 +72,7 @@ import org.luaj.vm2.*;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 public class LuaGlobals extends Globals {
@@ -90,6 +93,23 @@ public class LuaGlobals extends Globals {
 						if (result.isuserdata()) {
 							Object obj = result.checkuserdata();
 							if (obj instanceof Bundlable || obj instanceof Ballistica) return result;
+						}
+					}
+					String fullName = searchFullyQualifiedName(arg.checkjstring());
+					if (fullName != null) return newInstance.call(fullName);
+				}
+				return LuaValue.NIL;
+			}
+		});
+
+		set("class", new OneArgFunction() {
+			@Override
+			public LuaValue call(LuaValue arg) {
+				if (arg.isstring()) {
+					if (arg.checkjstring().startsWith(Messages.MAIN_PACKAGE_NAME)) {
+						Class<?> result = Reflection.forName(arg.checkjstring());
+						if (Bundlable.class.isAssignableFrom(result)) {
+							return CoerceJavaToLua.coerce(result);
 						}
 					}
 					String fullName = searchFullyQualifiedName(arg.checkjstring());
@@ -224,6 +244,27 @@ public class LuaGlobals extends Globals {
 						Level.placeMob((Mob) obj);
 					}
 				}
+				return LuaValue.NIL;
+			}
+		});
+
+		set("giveItem", new OneArgFunction() {
+			@Override
+			public LuaValue call(LuaValue item) {
+				if (item.isuserdata()) {
+					Object obj = item.checkuserdata();
+					if (obj instanceof Item) {
+						((Item) obj).collect();
+					}
+				}
+				return LuaValue.NIL;
+			}
+		});
+
+		set("reloadScene", new ZeroArgFunction() {
+			@Override
+			public LuaValue call() {
+				SandboxPixelDungeon.seamlessResetScene();
 				return LuaValue.NIL;
 			}
 		});

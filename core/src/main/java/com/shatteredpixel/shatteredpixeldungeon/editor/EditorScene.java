@@ -7,7 +7,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
@@ -15,13 +14,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
@@ -35,24 +32,20 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ToastWithButtons;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
-import com.shatteredpixel.shatteredpixeldungeon.effects.EmoIcon;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Ripple;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.DiscardedItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.*;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
@@ -60,14 +53,13 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.*;
-import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.*;
 
 import java.io.IOException;
 import java.util.*;
 
-public class EditorScene extends PixelScene {
+public class EditorScene extends DungeonScene {
 
     private static EditorScene scene;
 
@@ -75,49 +67,18 @@ public class EditorScene extends PixelScene {
     private static CustomLevel customLevel;
 
 
-    private MenuPane menu;
+    protected MenuPane menu;
     private UndoPane undo;
-    private SideControlPane sideControlPane;
     private EToolbar toolbar;
 
-
-    private Component prompt;
-
-    private SkinnedBlock water;
-    private DungeonTerrainTilemap tiles;
-    private GridTileMap visualGrid;
-    private TerrainFeaturesTilemap terrainFeatures;
-    private BarrierTilemap barriers;
 
     private ZoneView zoneGroup;
 
 
-    private static CellSelector cellSelector;
 
-
-    private Group terrain;
-    private Group customTiles;
-    private Group levelVisuals;
-    private Group customWalls;
-    private Group ripples;
-    private Group heaps;
     private Group transitionIndicators;
     private Map<LevelTransition, BitmapText> transitionIndicatorsMap;
-    private Group mobs;
     private Group realMobs;
-    private Group floorEmitters;
-    private Group emitters;
-    private Group effects;
-    private Group gases;
-    private Group spells;
-    private Group statuses;
-    private Group emoicons;
-    private Group overFogEffects;
-    private Group healthIndicators;
-
-
-    private ArrayList<Gizmo> toDestroy = new ArrayList<>();
-
 
     private static PointF mainCameraPos;
 
@@ -169,19 +130,18 @@ public class EditorScene extends PixelScene {
         }
     }
 
-    public static void resetCameraPos() {
+    public static void resetCameraPos() {//tzz
         mainCameraPos = null;
     }
 
     @Override
     public void create() {
 
-        Dungeon.level = customLevel();//so changes aren't required everywhere,
+        Dungeon.level = customLevel;//so changes aren't required everywhere,
         // but the preferred way to access the current level is still through the method
         Dungeon.levelName = Dungeon.level.name;
-        DungeonTileSheet.setupVariance(customLevel().length(), 1234567);//TODO use dungeon seed
 
-        for (Heap heap : customLevel().heaps.valueList()) {
+        for (Heap heap : Dungeon.level.heaps.valueList()) {
             for (Item item : heap.items) {
                 item.image = Dungeon.customDungeon.getItemSpriteOnSheet(item);
             }
@@ -189,7 +149,7 @@ public class EditorScene extends PixelScene {
 
         super.create();
 
-        customLevel().playLevelMusic();
+        Dungeon.level.playLevelMusic();
 
 
         if (setCameraZoomWhenOpen >= 0) {
@@ -206,56 +166,10 @@ public class EditorScene extends PixelScene {
 
         scene = this;
 
-        terrain = new Group();
-        add(terrain);
-
-        water = new SkinnedBlock(
-                customLevel().width() * DungeonTilemap.SIZE,
-                customLevel().height() * DungeonTilemap.SIZE,
-                customLevel().waterTex()) {
-
-            @Override
-            protected NoosaScript script() {
-                return NoosaScriptNoLighting.get();
-            }
-
-            @Override
-            public void draw() {
-                //water has no alpha component, this improves performance
-                Blending.disable();
-                super.draw();
-                Blending.enable();
-            }
-        };
-        water.autoAdjust = true;
-        terrain.add(water);
-
-        terrain.add(LevelColoring.getWater());
-
-        ripples = new Group();
-        terrain.add( ripples );
-
-        tiles = new DungeonTerrainTilemap(0);
-        terrain.add(tiles);
-
-        customTiles = new Group();
-        terrain.add(customTiles);
-
         customBossTilemap = customBossWallsTilemap = null;
-        for (CustomTilemap visual : customLevel().customTiles) {
-            addCustomTile(visual);
-        }
 
-        visualGrid = new GridTileMap();
-        terrain.add(visualGrid);
+        initBasics();///tzz dungeonterrainmap with arg0
 
-        terrainFeatures = new TerrainFeaturesTilemap(customLevel().plants, customLevel().traps);
-        terrain.add(terrainFeatures);
-
-        barriers = new BarrierTilemap(customLevel().barriers);
-        terrain.add(barriers);
-
-        terrain.add(LevelColoring.getFloor());
         terrain.add(LevelColoring.getWall(true));
 
         transitionIndicators = new Group();
@@ -266,7 +180,7 @@ public class EditorScene extends PixelScene {
         heaps = new Group();
         add(heaps);
 
-        for (Heap heap : customLevel().heaps.valueList()) {
+        for (Heap heap : Dungeon.level.heaps.valueList()) {
             heap.destroySubicons();
             heap.initSubicons();
             heap.seen = true;
@@ -281,7 +195,7 @@ public class EditorScene extends PixelScene {
         realMobs = new Group();
         add(realMobs);
 
-        for (Mob mob : customLevel().mobs) {
+        for (Mob mob : Dungeon.level.mobs) {
             addMobSprite(mob);
         }
 
@@ -342,8 +256,6 @@ public class EditorScene extends PixelScene {
 
         toolbar.setRect(0, uiCamera.height - toolbar.height(), uiCamera.width, toolbar.height());
 
-        layoutTags();
-
 
         fadeIn();
 
@@ -402,97 +314,62 @@ public class EditorScene extends PixelScene {
         return displayZones;
     }
 
-    public static void sortMobSprites() {
-        if (scene != null) {
-            synchronized (scene) {
-                scene.mobs.sort(new Comparator() {
-                    @Override
-                    public int compare(Object a, Object b) {
-                        //elements that aren't visual go to the end of the list
-                        if (a instanceof Visual && b instanceof Visual) {
-                            return (int) Math.signum((((Visual) a).y + ((Visual) a).height())
-                                    - (((Visual) b).y + ((Visual) b).height()));
-                        } else if (a instanceof Visual) {
-                            return -1;
-                        } else if (b instanceof Visual) {
-                            return 1;
-                        } else {
-                            return 0;
-                        }
-                    }
-                });
-            }
+    @Override
+    public void update() {
+        super.update();
+
+        for (Gizmo g : toDestroy){
+            g.destroy();
         }
+        toDestroy.clear();
     }
 
-    private synchronized void prompt(String text) {
-        prompt(text == null ? null : new Toast(text) {
-            @Override
-            protected void onClose() {
-                cancel();
-            }
-        });
-    }
+    protected synchronized void prompt(Component newPrompt) {
 
-    public static synchronized void promptStatic(Component newPrompt) {
-        if (scene != null) scene.prompt(newPrompt);
-    }
+        super.prompt(newPrompt);
 
-    private synchronized void prompt(Component newPrompt) {
-
-        if (prompt != null) {
-            prompt.killAndErase();
-            toDestroy.add(prompt);
-            prompt = null;
-        }
-
-        if (newPrompt != null) {
-            prompt = newPrompt;
-            prompt.camera = uiCamera;
-            Toast.placeToastOnScreen(prompt);
-
-            add(prompt);
-        }
         if (displayZones && !(newPrompt instanceof ToastWithButtons)) {
             changeDisplayZoneModeButNoPrompt(false);
             sideControlPane.setButtonEnabled(SideControlPane.ToggleZoneViewBtn.class, false);
         }
     }
 
-    public static void updateMap(int cell) {
-        if (Dungeon.level != null && Dungeon.level.visualRegions[cell] == LevelScheme.REGION_NONE)
-            Dungeon.level.visualMap[cell] = Dungeon.level.map[cell];
+    @Override
+    protected void updateMapImpl() {
+		if (Dungeon.level != null) {
+			System.arraycopy(Dungeon.level.map, 0, Dungeon.level.visualMap, 0, Dungeon.level.map.length);
+			Arrays.fill(Dungeon.level.visualRegions, LevelScheme.REGION_NONE);
+			for (CustomTilemap vis : Dungeon.level.customTiles) {
+				if (vis instanceof CustomTileLoader.SimpleCustomTile) {
+					int cell = vis.tileX + vis.tileY * Dungeon.level.width();
+					Dungeon.level.visualMap[cell] = ((CustomTileLoader.SimpleCustomTile) vis).imageTerrain;
+					Dungeon.level.visualRegions[cell] = ((CustomTileLoader.SimpleCustomTile) vis).region;
+				}
+			}
+		}
 
-        revalidateBossCustomTiles();
-        if (scene != null) {
-            scene.tiles.updateMapCell(cell);
-            scene.visualGrid.updateMapCell(cell);
-            scene.terrainFeatures.updateMapCell(cell);
-            scene.barriers.updateMapCell(cell);
-            LevelColoring.allUpdateMapCell(cell);
-        }
-    }
-
-    public static void updateMap() {
-        if (Dungeon.level != null) {
-            System.arraycopy(Dungeon.level.map, 0, Dungeon.level.visualMap, 0, Dungeon.level.map.length);
-            Arrays.fill(Dungeon.level.visualRegions, LevelScheme.REGION_NONE);
-            for (CustomTilemap vis : Dungeon.level.customTiles) {
-                if (vis instanceof CustomTileLoader.SimpleCustomTile) {
-                    int cell = vis.tileX + vis.tileY * Dungeon.level.width();
-                    Dungeon.level.visualMap[cell] = ((CustomTileLoader.SimpleCustomTile) vis).imageTerrain;
-                    Dungeon.level.visualRegions[cell] = ((CustomTileLoader.SimpleCustomTile) vis).region;
-                }
-            }
-        }
-
-        revalidateBossCustomTiles();
+		revalidateBossCustomTiles();
         if (scene != null) {
             scene.tiles.updateMap();
             scene.visualGrid.updateMap();
             scene.terrainFeatures.updateMap();
             scene.barriers.updateMap();
             LevelColoring.allUpdateMap();
+        }
+    }
+
+    @Override
+    protected void updateMapImpl(int cell) {
+		if (Dungeon.level != null && Dungeon.level.visualRegions[cell] == LevelScheme.REGION_NONE)
+			Dungeon.level.visualMap[cell] = Dungeon.level.map[cell];
+
+		revalidateBossCustomTiles();
+        if (scene != null) {
+            scene.tiles.updateMapCell(cell);
+            scene.visualGrid.updateMapCell(cell);
+            scene.terrainFeatures.updateMapCell(cell);
+            scene.barriers.updateMapCell(cell);
+            LevelColoring.allUpdateMapCell(cell);
         }
     }
 
@@ -509,7 +386,7 @@ public class EditorScene extends PixelScene {
         scene.heaps.destroy();
         scene.heaps = new Group();
         scene.add(scene.heaps);
-        for (Heap heap : customLevel().heaps.valueList()) {
+        for (Heap heap : Dungeon.level.heaps.valueList()) {
             heap.destroySubicons();
             heap.initSubicons();
             heap.seen = true;
@@ -517,8 +394,9 @@ public class EditorScene extends PixelScene {
         }
     }
 
+    @Override
     public void addCustomTile(CustomTilemap visual) {
-        customTiles.add(visual.create());
+        super.addCustomTile(visual);
         if (visual instanceof CustomTilemap.BossLevelVisuals)
             customBossTilemap = (CustomTilemap.BossLevelVisuals) visual;
 
@@ -527,11 +405,12 @@ public class EditorScene extends PixelScene {
             int pos = visual.tileX + visual.tileY * customLevel.width();
             customLevel.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
             customLevel.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
-        }
+        }//tzz maybe move to super
     }
 
+    @Override
     public void addCustomWall(CustomTilemap visual) {
-        customWalls.add(visual.create());
+        super.addCustomWall(visual);
         if (visual instanceof CustomTilemap.BossLevelVisuals)
             customBossWallsTilemap = (CustomTilemap.BossLevelVisuals) visual;
 
@@ -543,41 +422,9 @@ public class EditorScene extends PixelScene {
         }
     }
 
-    public static void revalidateCustomTiles(){
-        if (scene == null) return;
-
-        scene.customTiles.parent.erase(scene.customTiles);
-        scene.customTiles.destroy();
-        scene.customTiles = new Group();
-        scene.terrain.add(scene.customTiles);
-
-        scene.customWalls.parent.erase(scene.customWalls);
-        scene.customWalls.destroy();
-        scene.customWalls = new Group();
-        scene.add(scene.customWalls);
-        Set<CustomTilemap> toRemove = new HashSet<>(4);
-        for (CustomTilemap visual : Dungeon.level.customTiles) {
-            if (visual instanceof CustomTileLoader.SimpleCustomTile) {
-                ((CustomTileLoader.SimpleCustomTile) visual).updateValues();
-                if (((CustomTileLoader.SimpleCustomTile) visual).identifier == null) toRemove.add(visual);
-                else add(visual);
-            } else add(visual);
-        }
-        Dungeon.level.customTiles.removeAll(toRemove);
-        toRemove.clear();
-        for (CustomTilemap visual : Dungeon.level.customWalls) {
-            if (visual instanceof CustomTileLoader.SimpleCustomTile) {
-                ((CustomTileLoader.SimpleCustomTile) visual).updateValues();
-                if (((CustomTileLoader.SimpleCustomTile) visual).identifier == null) toRemove.add(visual);
-                else add(visual);
-            } else add(visual);
-        }
-        Dungeon.level.customWalls.removeAll(toRemove);
-    }
-
     private static CustomTilemap.BossLevelVisuals customBossTilemap, customBossWallsTilemap;
     public static void revalidateBossCustomTiles() {
-        if (scene == null || EditorScene.customLevel() == null) return;
+        if (scene == null || Dungeon.level == null) return;
 
         if (customBossTilemap != null) {
             customBossTilemap.updateState();
@@ -587,40 +434,17 @@ public class EditorScene extends PixelScene {
         }
     }
 
-    public static void add(CustomTilemap t) {
-        if (scene == null) return;
-        if (t.wallVisual) {
-            scene.addCustomWall(t);
-        } else {
-            scene.addCustomTile(t);
-        }
-    }
-
-    public static void remove(CustomTilemap t) {
-        if (scene == null) return;
-        if (t instanceof CustomTileLoader.SimpleCustomTile) {
-            int pos = t.tileX + t.tileY * customLevel.width();
-            customLevel.visualMap[pos] = customLevel.map[pos];
-            customLevel.visualRegions[pos] = 0;
-        }
-        if (t.wallVisual) scene.customWalls.remove(t.killVisual());
-        else scene.customTiles.remove(t.killVisual());
-    }
-
-    private void addHeapSprite(Heap heap) {
-        heap.sprite = (ItemSprite) heaps.recycle(ItemSprite.class);
-        heap.sprite.revive();
-        heap.linkSprite(heap);
-        heap.addHeapComponents(heaps);
-    }
-
-    private void addDiscardedSprite(Heap heap) {
-        heap.sprite = (DiscardedItemSprite) heaps.recycle(DiscardedItemSprite.class);
-        heap.sprite.revive();
-        heap.linkSprite(heap);
-        heap.addHeapComponents(heaps);
-    }
-
+	//tzz checken!
+	//public static void remove(CustomTilemap t) {
+	//        if (scene == null) return;
+	//        if (t instanceof CustomTileLoader.SimpleCustomTile) {
+	//            int pos = t.tileX + t.tileY * customLevel.width();
+	//            customLevel.visualMap[pos] = customLevel.map[pos];
+	//            customLevel.visualRegions[pos] = 0;
+	//        }
+	//        if (t.wallVisual) scene.customWalls.remove(t.killVisual());
+	//        else scene.customTiles.remove(t.killVisual());
+	//    }
     private void addTransitionSprite(LevelTransition transition) {
         if (transitionIndicatorsMap.containsKey(transition)) return;
         BitmapText text = new BitmapText(PixelScene.pixelFont);
@@ -674,64 +498,13 @@ public class EditorScene extends PixelScene {
         if (scene == null) return;
         scene.transitionIndicators.clear();
         scene.transitionIndicatorsMap.clear();
-        for (LevelTransition transition : customLevel().transitions.values()) {
+        for (LevelTransition transition : Dungeon.level.transitions.values()) {
             scene.addTransitionSprite(transition);
         }
     }
 
-    public static void updateHeapImagesAndSubIcons() {
-        if (scene == null) return;
-        for (Heap heap : customLevel().heaps.valueList()) {
-            if (heap.sprite == null) continue;
-            updateHeapImage(heap);
-            heap.updateSubicon();
-        }
-    }
-
-    public static void updateHeapImages() {
-        if (scene == null) return;
-        for (Heap heap : customLevel().heaps.valueList()) {
-            updateHeapImage(heap);
-        }
-    }
-
-    public static void updateHeapImage(Heap heap) {
-        Item i = heap.peek();
-        i.image = CustomDungeon.getDungeon().getItemSpriteOnSheet(i);
-        heap.sprite.view(heap);
-        heap.sprite.place(heap.pos);
-    }
-
-    private void addBlobSprite(final Blob gas) {
-        if (gas.emitter == null) {
-            gases.add(new BlobEmitter(gas));
-        }
-    }
-
-    private void addParticleSprite(final CustomParticle particle) {
-        if (particle.emitter == null) {
-            gases.add(new CustomParticle.ParticleEmitter(particle));
-        }
-    }
-
-    public static void replaceMobSprite(Mob mob, Class<? extends CharSprite> newSprite) {
-        if (scene != null) {
-            CharSprite sprite = mob.sprite;
-            sprite.clearAura();
-            sprite.killAndErase();
-            if (sprite.realCharSprite != null) {
-                sprite.realCharSprite.killAndErase();
-            }
-            mob.spriteClass = newSprite;
-            new Thread(() -> {//don't ask me why this works... (2 different buffers apparently would share the same id)
-                try {Thread.sleep(50);} catch (InterruptedException ignored) {}
-                scene.addMobSprite(mob);
-            }).start();
-
-        }
-    }
-
-    private void addMobSprite(Mob mob) {
+    @Override
+    protected void addMobSprite(Mob mob) {
         CharSprite sprite = mob.sprite();
         sprite.visible = true;
         mobs.add(sprite);
@@ -752,102 +525,31 @@ public class EditorScene extends PixelScene {
         sortMobSprites();
     }
 
-    public static void add(Blob gas) {
-        if (scene != null) {
-            scene.addBlobSprite(gas);
-        }
-    }
+    // -------------------------------------------------------
 
-    public static void add(CustomParticle particle) {
-        if (scene != null) {
-            scene.addParticleSprite(particle);
-        }
-    }
-
-    public static void add(Mob mob) {
-        customLevel().mobs.add(mob);
-        if (scene != null) {
-            scene.addMobSprite(mob);
-        }
-    }
 
     public static void add(Zone zone) {
-        customLevel().zoneMap.put(zone.getName(), zone);
-        customLevel().levelScheme.zones.add(zone.getName());
+        Dungeon.level.zoneMap.put(zone.getName(), zone);
+        Dungeon.level.levelScheme.zones.add(zone.getName());
     }
 
     public static void remove(Zone zone) {
-        customLevel().zoneMap.remove(zone.getName());
-        customLevel().levelScheme.zones.remove(zone.getName());
+        Dungeon.level.zoneMap.remove(zone.getName());
+        Dungeon.level.levelScheme.zones.remove(zone.getName());
         if (scene != null) scene.zoneGroup.updateZoneColors();
     }
 
-    public static void add(Heap heap) {
-        if (scene != null) {
-            scene.addHeapSprite(heap);
-        }
-    }
-
-    public static void discard(Heap heap) {
-        if (scene != null) {
-            scene.addDiscardedSprite(heap);
-        }
-    }
-
-    public static void add(EmoIcon icon) {
-        scene.emoicons.add(icon);
-    }
-
-    public static Ripple ripple(int pos ) {
-        if (scene != null) {
-            Ripple ripple = (Ripple) scene.ripples.recycle(Ripple.class);
-            ripple.reset(pos);
-            return ripple;
-        } else {
-            return null;
-        }
-    }
-
-    public static Emitter emitter() {
-
-        if (scene != null) {
-            Emitter emitter = (Emitter) scene.emitters.recycle(Emitter.class);
-            emitter.revive();
-            return emitter;
-        } else {
-            return null;
-        }
-    }
-
-    public static void updateParticle(int id) {
-        CustomParticle particle = customLevel().particles.get(id);
-        if (particle != null) {
-            if (particle.emitter != null) {
-                particle.emitter.destroy();
-                particle.emitter.remove();
-                particle.emitter.killAndErase();
-                particle.emitter = null;
-            }
-            EditorScene.add(particle);
-        }
-    }
-
-    public static void handleCell(int cell) {
-        cellSelector.select(cell, PointerEvent.LEFT, false);
-    }
-
-    public static void selectCell(CellSelector.Listener listener) {
+    protected void selectCellImpl( CellSelector.Listener listener ) {
         if (cellSelector.listener != null && cellSelector.listener != defaultCellListener) {
             cellSelector.listener.onSelect(null);
         }
         cellSelector.listener = listener;
         cellSelector.enabled = true;
-        if (scene != null && cellSelector.listener != zonesCellListener) {
-            scene.prompt(listener.prompt());
-        }
+        prompt(listener.prompt());
     }
 
-    public static boolean cancelCellSelector() {
+    @Override
+    protected boolean cancelCellSelectorImpl() {
         if (cellSelector.listener != null && cellSelector.listener != defaultCellListener) {
             cellSelector.resetKeyHold();
             cellSelector.cancel();
@@ -857,22 +559,6 @@ public class EditorScene extends PixelScene {
         }
     }
 
-    public static void showEditCellWindow(int cell) {
-        if (scene == null) return;
-
-        CustomLevel level = customLevel();
-        int terrainType = level.map[cell];
-        if (TileItem.isTrapTerrainCell(terrainType)) terrainType = Terrain.EMPTY;
-
-        Trap trap = level.traps.get(cell);
-        Heap heap = level.heaps.get(cell);
-        Mob mob = level.findMob(cell);
-        Plant plant = level.plants.get(cell);
-        Barrier barrier = level.barriers.get(cell);
-
-        DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, plant, barrier, cell);
-    }
-
     public static WndEditorInv selectItem(WndBag.ItemSelectorInterface listener) {
         cancel();
 
@@ -880,127 +566,46 @@ public class EditorScene extends PixelScene {
         if (scene != null) {
             show(wnd);
         } else {
+            if (Game.scene() instanceof GameScene) GameScene.cancel();
             Game.scene().addToFront(wnd);
         }
         return wnd;
     }
 
-    private static Throwable error;
-    public static void catchError(Throwable t) {
-        error = t;
-        EditorScene.start();
-        EditorScene.openDifferentLevel = false;
-        WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
-    }
+	private static Throwable error;
+	public static void catchError(Throwable t) {
+		error = t;
+		EditorScene.start();
+		EditorScene.openDifferentLevel = false;
+		WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
+	}
 
-    public static void show(Window wnd) {
-        if (scene != null && Game.scene() instanceof EditorScene) {
-            cancel();
+	private final List<Window> temporarilyHiddenWindows = new ArrayList<>(5);
 
-            //If a window is already present (or was just present)
-            // then inherit the offset it had
-//            if (scene.inventory != null && scene.inventory.visible){
-//            Point offsetToInherit = null;
-//            for (Gizmo g : scene.members) {
-//                if (g instanceof Window) offsetToInherit = ((Window) g).getOffset();
-//            }
-//            if (lastOffset != null) {
-//                offsetToInherit = lastOffset;
-//            }
-//            if (offsetToInherit != null) {
-//                wnd.offset(offsetToInherit);
-//                wnd.boundOffsetWithMargin(3);
-//            }
-//            }
+	public static synchronized void hideWindowsTemporarily() {///tzzz make to super!
+		if (scene == null) return;
 
-            scene.addToFront(wnd);
-        } else Game.scene().addToFront(wnd);
-    }
-
-    public static boolean showingWindow() {
-        if (scene == null) return false;
-
-        for (Gizmo g : scene.members) {
-            if (g instanceof Window) return true;
-        }
-
-        return false;
-    }
-
-    private final List<Window> temporarilyHiddenWindows = new ArrayList<>(5);
-
-    public static synchronized void hideWindowsTemporarily() {
-        if (scene == null) return;
-
-        for (Gizmo g : scene.members.toArray(new Gizmo[0])) {
-            if (g instanceof Window) {
-                scene.remove(g);
-                g.active = false;
-                if (g instanceof WndTabbed)
-                    ((WndTabbed) g).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
-                scene.temporarilyHiddenWindows.add((Window) g);
-            }
-        }
-    }
-
-    public static synchronized void reshowWindows() {
-        if (scene == null) return;
-        for (Window w : scene.temporarilyHiddenWindows) {
-			scene.addToFront(w);
-            w.active = true;
-            if (w instanceof WndTabbed)
-                ((WndTabbed) w).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
+		for (Gizmo g : scene.members.toArray(new Gizmo[0])) {
+			if (g instanceof Window) {
+				scene.remove(g);
+				g.active = false;
+				if (g instanceof WndTabbed)
+					((WndTabbed) g).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
+				scene.temporarilyHiddenWindows.add((Window) g);
+			}
 		}
-        scene.temporarilyHiddenWindows.clear();
-    }
+	}
 
-    public static void layoutTags() {
-
-        if (scene == null) return;
-
-        //move the camera center up a bit if we're on full UI and it is taking up lots of space
-        Camera.main.setCenterOffset(0, 0);
-        //Camera.main.panTo(Dungeon.hero.sprite.center(), 5f);
-
-        //primarily for phones displays with notches
-        //TODO Android never draws into notch atm, perhaps allow it for center notches?
-//        RectF insets = DeviceCompat.getSafeInsets();
-//        insets = insets.scale(1f / uiCamera.zoom);
-//
-//        boolean tagsOnLeft = SPDSettings.flipTags();
-//        float tagWidth = Tag.SIZE + (tagsOnLeft ? insets.left : insets.right);
-//        float tagLeft = tagsOnLeft ? 0 : uiCamera.width - tagWidth;
-//
-//        float pos = scene.toolbar.top();
-//        if (tagsOnLeft && SPDSettings.interfaceSize() > 0){
-//            pos = scene.status.top();
-//        }
-//
-//        if (scene.tagAttack){
-//            scene.attack.setRect( tagLeft, pos - Tag.SIZE, tagWidth, Tag.SIZE );
-//            scene.attack.flip(tagsOnLeft);
-//            pos = scene.attack.top();
-//        }
-//
-//        if (scene.tagLoot) {
-//            scene.loot.setRect( tagLeft, pos - Tag.SIZE, tagWidth, Tag.SIZE );
-//            scene.loot.flip(tagsOnLeft);
-//            pos = scene.loot.top();
-//        }
-//
-//        if (scene.tagAction) {
-//            scene.action.setRect( tagLeft, pos - Tag.SIZE, tagWidth, Tag.SIZE );
-//            scene.action.flip(tagsOnLeft);
-//            pos = scene.action.top();
-//        }
-//
-//        if (scene.tagResume) {
-//            scene.resume.setRect( tagLeft, pos - Tag.SIZE, tagWidth, Tag.SIZE );
-//            scene.resume.flip(tagsOnLeft);
-//        }
-
-//        scene.switchLevelIndicator.setRect(0, 0, Tag.SIZE, Tag.SIZE);
-    }
+	public static synchronized void reshowWindows() {
+		if (scene == null) return;
+		for (Window w : scene.temporarilyHiddenWindows) {
+			scene.addToFront(w);
+			w.active = true;
+			if (w instanceof WndTabbed)
+				((WndTabbed) w).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
+		}
+		scene.temporarilyHiddenWindows.clear();
+	}
 
     public static void updateDepthIcon() {
         if (scene == null) return;
@@ -1012,30 +617,16 @@ public class EditorScene extends PixelScene {
         scene.undo.updateStates();
     }
 
-    public static boolean interfaceBlockingHero() {
-        if (scene == null) return false;
-        return showingWindow();
-    }
-
-    public static boolean cancel() {
-        if (cellSelector != null) {
-            cellSelector.resetKeyHold();
-            return cancelCellSelector();
-        }
-        return false;
-    }
-
-    public static void ready() {
+    @Override
+    protected void readyImpl() {
         selectCell(displayZones ? zonesCellListener : defaultCellListener);
         QuickSlotButton.cancel();
-//        InventoryPane.cancelTargeting();
-//        if (scene != null && scene.toolbar != null) scene.toolbar.examining = false;
     }
 
     @Override
     public synchronized void onPause() {
         try {
-            CustomDungeonSaves.saveLevel(EditorScene.customLevel());
+            CustomDungeonSaves.saveLevel(customLevel);
             CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
         } catch (IOException e) {
             SandboxPixelDungeon.reportException(e);
@@ -1054,7 +645,6 @@ public class EditorScene extends PixelScene {
 //
 //        Emitter.freezeEmitters = false;
 
-        scene = null;
         if (Dungeon.customDungeon.getFloor(Dungeon.level.name) != null && error == null) {
             try {
                 CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
@@ -1067,7 +657,7 @@ public class EditorScene extends PixelScene {
         super.destroy();
     }
 
-    public static CustomLevel customLevel() {
+    public static CustomLevel getCustomLevel() {
         return customLevel;
     }
 
@@ -1079,12 +669,12 @@ public class EditorScene extends PixelScene {
 
             Item selected = EToolbar.getSelectedItem();
 
-            if (selected instanceof EditorItem) ((EditorItem) selected).place(cell);
+            if (selected instanceof EditorItem) ((EditorItem<?>) selected).place(cell);
         }
 
         @Override
         public void onRightClick(Integer cell) {
-            if (cell != null && cell >= 0 && cell < customLevel.length()) {
+            if (cell != null && cell >= 0 && cell < Dungeon.level.length()) {
                 EditorScene.showEditCellWindow(cell);
             }
         }
@@ -1108,7 +698,7 @@ public class EditorScene extends PixelScene {
     private static final CellSelector.Listener zonesCellListener = new CellSelector.Listener() {
         @Override
         public void onSelect(Integer cell) {
-            if (cell == null || !customLevel().insideMap(cell)) return;
+            if (cell == null || !Dungeon.level.insideMap(cell)) return;
 
             Zone selected = ZonePrompt.getSelectedZone();
 
@@ -1129,15 +719,15 @@ public class EditorScene extends PixelScene {
 
         @Override
         public void onRightClick(Integer cell) {
-            if (cell != null && cell >= 0 && cell < customLevel.length()) {
-                Zone zoneAt = customLevel().zone[cell];
+            if (cell != null && cell >= 0 && cell < Dungeon.level.length()) {
+                Zone zoneAt = Dungeon.level.zone[cell];
                 if (zoneAt != null) EditorScene.show(new EditCompWindow(zoneAt));
             }
         }
 
         @Override
         public void onMiddleClick(Integer cell) {
-            Zone zoneAt = customLevel().zone[cell];
+            Zone zoneAt = Dungeon.level.zone[cell];
             if (zoneAt != null) ZonePrompt.setSelectedZone(zoneAt);
         }
 
@@ -1166,21 +756,21 @@ public class EditorScene extends PixelScene {
     }
 
     public static void putInQuickslot(Integer cell) {
-        if (cell != null && cell >= 0 && cell < customLevel.length()) {
+        if (cell != null && cell >= 0 && cell < Dungeon.level.length()) {
             QuickSlotButton.set(new FindInBag(FindInBag.getObjAtCell(cell)).getAsInBag());
         }
     }
 
     public static void fillAllWithOneTerrain(Integer cell) {
-        if (cell != null && cell >= 0 && cell < customLevel.length()) {
+        if (cell != null && cell >= 0 && cell < Dungeon.level.length()) {
             Item selected = EToolbar.getSelectedItem();
 
             if (selected instanceof EditorItem) {
 
                 queue.add(cell);
 
-                CustomLevel level = customLevel();
-                EditorItem item = (EditorItem) selected;
+                Level level = Dungeon.level;
+                EditorItem<?> item = (EditorItem<?>) selected;
                 int lvlWidth = level.width();
 
                 CustomTilemap customTile = CustomTileItem.findAnyCustomTileAt(cell);
@@ -1236,7 +826,7 @@ public class EditorScene extends PixelScene {
             if (neighbor >= 0 && neighbor < map.length && !changedCells.contains(neighbor)
                     && map[neighbor] == terrainClick
                     && (Math.abs(neighbor % lvlWidth - xCoord) <= 1)
-                    && customLevel().traps.get(neighbor).getClass() == onTrapClicked
+                    && Dungeon.level.traps.get(neighbor).getClass() == onTrapClicked
                     && CustomTileItem.findAnyCustomTileAt(neighbor) == null)
                 queue.add(neighbor);
         }
@@ -1258,11 +848,6 @@ public class EditorScene extends PixelScene {
                     || ((CustomTileLoader.UserCustomTile) found).identifier.equals(((CustomTileLoader.UserCustomTile) customTile).identifier)))
                 queue.add(neighbor);
         }
-    }
-
-    public static void updatePathfinder() {
-        if (customLevel() != null && scene != null)
-            PathFinder.setMapSize(customLevel().width(), customLevel().height());
     }
 
 }

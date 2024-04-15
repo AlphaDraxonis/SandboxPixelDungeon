@@ -27,7 +27,7 @@ public /*sealed*/ abstract class BarrierActionPart implements ActionPart {
     }
 
     protected void remove() {
-        Barrier barrierAtCell = EditorScene.customLevel().barriers.get(cell);
+        Barrier barrierAtCell = Dungeon.level.barriers.get(cell);
         if (barrierAtCell != null)
             barrier = barrierAtCell;//This is because another place action could swap the actual barrier with another copy
         remove(cell);

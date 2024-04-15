@@ -49,7 +49,7 @@ public class GoldenMimic extends Mimic {
 
 	@Override
 	public String name() {
-		if (alignment == Alignment.NEUTRAL && !CustomDungeon.isEditing()){
+		if (alignment == Alignment.NEUTRAL && !CustomDungeon.knowsEverything()){
 			return Messages.get(Heap.class, "locked_chest");
 		} else {
 			return super.name();

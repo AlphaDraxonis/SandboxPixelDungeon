@@ -4,15 +4,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.HeapActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlantActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TileModify;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TrapActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -20,11 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
@@ -36,6 +28,7 @@ public abstract class DefaultEditComp<T> extends Component {
 
 
     protected final Component title;
+    protected final Component mainTitleComp;
     protected final RenderedTextBlock desc;
 
     protected final IconButton rename, delete;
@@ -44,15 +37,11 @@ public abstract class DefaultEditComp<T> extends Component {
 
     private Runnable onUpdate;
     public AdvancedListPaneItem advancedListPaneItem;
+    protected boolean doLayoutTitle = true;
 
     public DefaultEditComp(T obj) {
 
         this.obj = obj;
-
-        title = createTitle();
-        add(title);
-        desc = PixelScene.renderTextBlock(createDescription(), 6);
-        add(desc);
 
         rename = new IconButton(Icons.get(Icons.RENAME_ON)) {
             @Override
@@ -66,7 +55,6 @@ public abstract class DefaultEditComp<T> extends Component {
             }
         };
         rename.visible = false;
-        add(rename);
 
         delete = new IconButton(Icons.get(Icons.TRASH)) {
             @Override
@@ -80,40 +68,80 @@ public abstract class DefaultEditComp<T> extends Component {
             }
         };
         delete.visible = false;
-        add(delete);
+
+        mainTitleComp = createTitle();
+
+        title = new Component() {
+            @Override
+            protected void createChildren(Object... params) {
+                add(mainTitleComp);
+                add(rename);
+                add(delete);
+            }
+
+            @Override
+            protected void layout() {
+                layoutTitle();
+            }
+
+            @Override
+            public float height() {
+                return mainTitleComp.height();
+            }
+        };
+        add(title);
+
+        desc = PixelScene.renderTextBlock(createDescription(), 6);
+        add(desc);
+    }
+
+    public void setDoLayoutTitle(boolean doLayoutTitle) {
+        this.doLayoutTitle = doLayoutTitle;
+        if (doLayoutTitle) add(title);
+        else remove(title);
     }
 
     @Override
     protected void layout() {
-        //if you edit this, also check out EditItemComp#layout()
-
         desc.maxWidth((int) width);
 
-        float renameDeleteWidth = (rename.visible ? rename.icon().width + 2 : 0)
-                + (delete.visible ? delete.icon().width + 2 : 0);
         float posY = y;
 
-        if (title.visible) {
-            title.setRect(x, posY, width - renameDeleteWidth, title.height());
-            posY = title.bottom();
+        if (title.visible && doLayoutTitle) {
+            title.setRect(x, posY, width, mainTitleComp.height());
+            posY = mainTitleComp.bottom();
         }
         if (desc.visible) {
-            if (title.visible) posY += WndTitledMessage.GAP * 2;
+            if (title.visible && doLayoutTitle) posY += WndTitledMessage.GAP * 2;
             desc.setRect(x, posY, desc.width(), desc.height());
             posY = desc.bottom();
         }
 
-        float posX = width - renameDeleteWidth;
+        height = posY + 2 - y;
+        if (height == 2) height = 0;
+    }
+
+    protected void layoutTitle() {
+        //if you edit this, also check out EditItemComp#layout()
+
+        float renameDeleteWidth = (rename.visible ? rename.icon().width() + 2 : 0)
+                + (delete.visible ? delete.icon().width() + 2 : 0);
+
+        float posX = title.left();
+
+        mainTitleComp.setRect(posX, title.top(), title.width() - renameDeleteWidth, -1);
+        posX = mainTitleComp.right();
+
+        float h = title.height();
+
         if (rename.visible) {
-            rename.setRect(posX, title.top() + (title.height() - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
+            rename.setRect(posX, mainTitleComp.top() + (h - rename.icon().height()) * 0.5f, rename.icon().width(), rename.icon().height());
             posX += rename.width() + 2;
         }
         if (delete.visible) {
-            delete.setRect(posX, title.top() + (title.height() - delete.icon().height) * 0.5f, delete.icon().width, delete.icon().height);
+            delete.setRect(posX, mainTitleComp.top() + (h - delete.icon().height()) * 0.5f, delete.icon().width(), delete.icon().height());
+            posX += delete.width() + 2;
         }
-
-        height = posY + 2 - y;
-        if (height == 2) height = 0;
     }
 
     protected final void layoutCompsLinear(Component... comps) {
@@ -143,6 +171,10 @@ public abstract class DefaultEditComp<T> extends Component {
         return new IconTitle(getIcon(), createTitleText());
     }
 
+    public Component getTitleComponent() {
+        return title;
+    }
+
     protected abstract String createTitleText();
 
     protected abstract String createDescription();
@@ -155,9 +187,9 @@ public abstract class DefaultEditComp<T> extends Component {
 
 
     protected void updateObj() {
-        if (title instanceof IconTitle) {
-            ((IconTitle) title).label(createTitleText());
-            ((IconTitle) title).icon(getIcon());
+        if (mainTitleComp instanceof IconTitle) {
+            ((IconTitle) mainTitleComp).label(createTitleText());
+            ((IconTitle) mainTitleComp).icon(getIcon());
         }
         desc.text(createDescription());
 
@@ -176,6 +208,8 @@ public abstract class DefaultEditComp<T> extends Component {
 
 
     public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap, Plant plant, Barrier barrier, int cell) {
+
+        CustomDungeon.knowsEverything = true;
 
         int numTabs = 0;
         TileItem tileItem = null;
@@ -232,6 +266,7 @@ public abstract class DefaultEditComp<T> extends Component {
         Window w = new Window() {
             @Override
             public void hide() {
+                CustomDungeon.knowsEverything = false;
                 super.hide();
                 if (actionPart != null) actionPart.finish();
                 Undo.startAction();

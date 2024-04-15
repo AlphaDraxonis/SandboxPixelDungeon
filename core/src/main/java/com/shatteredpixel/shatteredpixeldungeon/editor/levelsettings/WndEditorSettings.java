@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings;
 
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.DungeonTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab;
@@ -57,7 +58,7 @@ public class WndEditorSettings extends WndTabbed {
         ownTabs = new TabComp[]{
                 levelTab = new LevelTab(),
                 dungeonTab = new DungeonTab(),
-                levelGenTab = new LevelGenComp(EditorScene.customLevel().levelScheme) {
+                levelGenTab = new LevelGenComp(Dungeon.level.levelScheme) {
                     @Override
                     protected void onFeelingChange() {
                         super.onFeelingChange();

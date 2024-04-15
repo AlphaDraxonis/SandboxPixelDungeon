@@ -199,6 +199,7 @@ public class Spinner extends Component {
 
         public void setText(String text) {
             textBlock.text(text);
+            layout();
         }
 
         public String getText() {

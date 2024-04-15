@@ -3,13 +3,10 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.HeapActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TileModify;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.TrapActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -79,7 +76,7 @@ public class EditCompWindowTabbed extends WndTabbed {
             if (toSelect == null) toSelect = heap;
             initComp(new EditHeapComp(heap) {
                 @Override
-                protected void updateObj() {
+                public void updateObj() {
                     super.updateObj();
                     if (comps.containsKey(heap)) {//ik this code is trash, but if it works it works
                         comps.get(heap).tabBtn.setIcon(getIcon());
@@ -149,7 +146,7 @@ public class EditCompWindowTabbed extends WndTabbed {
             if (toSelect == null) toSelect = trap;
             initComp(new EditTrapComp(trap) {
                 @Override
-                protected void updateObj() {
+                public void updateObj() {
                     super.updateObj();
                     if (comps.containsKey(trap)) comps.get(trap).tabBtn.setIcon(getIcon());
                 }
@@ -159,7 +156,7 @@ public class EditCompWindowTabbed extends WndTabbed {
             if (toSelect == null) toSelect = plant;
             initComp(new EditPlantComp(plant) {
                 @Override
-                protected void updateObj() {
+                public void updateObj() {
                     super.updateObj();
                     if (comps.containsKey(plant)) comps.get(plant).tabBtn.setIcon(getIcon());
                 }
@@ -169,7 +166,7 @@ public class EditCompWindowTabbed extends WndTabbed {
             if (toSelect == null) toSelect = barrier;
             initComp(new EditBarrierComp(barrier) {
                 @Override
-                protected void updateObj() {
+                public void updateObj() {
                     super.updateObj();
                     if (comps.containsKey(barrier)) comps.get(barrier).tabBtn.setIcon(getIcon());
                 }
@@ -179,7 +176,7 @@ public class EditCompWindowTabbed extends WndTabbed {
             if (toSelect == null) toSelect = tileItem;
             initComp(new EditTileComp(tileItem) {
                 @Override
-                protected void updateObj() {
+                public void updateObj() {
                     super.updateObj();
                     if (comps.containsKey(tileItem)) comps.get(tileItem).tabBtn.setIcon(getIcon());
                 }
@@ -406,6 +403,7 @@ public class EditCompWindowTabbed extends WndTabbed {
 
     @Override
     public void hide() {
+        CustomDungeon.knowsEverything = false;
         super.hide();
         for (ActionPartModify modify : actionPartModifyList) {
             Undo.startAction();

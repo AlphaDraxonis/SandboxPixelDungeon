@@ -8,11 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class EnchantmentWeapon extends MeleeWeapon {
 
@@ -33,7 +29,7 @@ public class EnchantmentWeapon extends MeleeWeapon {
         for (Enchantment ench : enchantments) {
             b.append(ench.name()).append(", ");
         }
-        if (enchantments.size() > 1) b.setLength(b.length() - 3);
+        if (enchantments.size() > 1) b.setLength(b.length() - 2);
         return b.toString();
     }
 

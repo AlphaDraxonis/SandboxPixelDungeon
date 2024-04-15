@@ -47,7 +47,7 @@ public class CrystalKey extends Key {
 
     @Override
     public String desc() {
-        return CustomDungeon.isEditing() ? EditorUtilies.addCrystalKeyDescription(super.desc(), Dungeon.level) : super.desc();
+        return CustomDungeon.knowsEverything() ? EditorUtilies.addCrystalKeyDescription(super.desc(), Dungeon.level) : super.desc();
     }
 
 }

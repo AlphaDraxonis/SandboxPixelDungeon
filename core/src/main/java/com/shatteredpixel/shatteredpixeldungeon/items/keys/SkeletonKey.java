@@ -68,7 +68,7 @@ public class SkeletonKey extends Key {
 
 	@Override
 	public String desc() {
-		return CustomDungeon.isEditing() ? EditorUtilies.addSkeletonKeyDescription(super.desc(), Dungeon.level) : super.desc();
+		return CustomDungeon.knowsEverything() ? EditorUtilies.addSkeletonKeyDescription(super.desc(), Dungeon.level) : super.desc();
 	}
 
 }

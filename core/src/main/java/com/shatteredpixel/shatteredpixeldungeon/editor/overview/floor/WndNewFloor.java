@@ -25,12 +25,7 @@ import com.watabou.utils.PathFinder;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 public class WndNewFloor extends WndTabbed {
 
@@ -126,7 +121,7 @@ public class WndNewFloor extends WndTabbed {
                 ex.printStackTrace();
             }
             if (generated == null) {
-                Level curLevel = EditorScene.customLevel();
+                Level curLevel = EditorScene.getCustomLevel();
                 if (curLevel != null) {
                     Dungeon.levelName = curLevel.name;
                     Dungeon.level = curLevel;
@@ -148,8 +143,8 @@ public class WndNewFloor extends WndTabbed {
                         @Override
                         public void onBackPressed() {
                             super.onBackPressed();
-                            if (EditorScene.customLevel() != null) {
-                                PathFinder.setMapSize(EditorScene.customLevel().width(), EditorScene.customLevel().height());
+                            if (EditorScene.getCustomLevel() != null) {
+                                PathFinder.setMapSize(Dungeon.level.width(), Dungeon.level.height());
                                 EditorScene.revalidateHeaps();
                             }
                         }

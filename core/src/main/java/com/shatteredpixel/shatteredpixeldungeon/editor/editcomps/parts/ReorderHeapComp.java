@@ -21,7 +21,7 @@ public class ReorderHeapComp extends Component {
     public EditCompWindowTabbed editCompWindowTabbed;
 
 
-    public boolean layoutRTL = true;
+    public boolean layoutRTL = false;
 
     public ReorderHeapComp(Item item, Heap heap) {
         this.item = item;
@@ -93,6 +93,11 @@ public class ReorderHeapComp extends Component {
             width = posX - x - 2;
         }
 
+    }
+
+    @Override
+    public float width() {
+        return (moveLeft.visible ? moveLeft.icon().width() + 2 : 0) + (moveRight.visible ? moveRight.icon().width() + 2 : 0);
     }
 
     @Override

@@ -28,14 +28,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -49,11 +43,7 @@ import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;
-import com.watabou.noosa.BitmapText;
-import com.watabou.noosa.ColorBlock;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.NinePatch;
-import com.watabou.noosa.PointerArea;
+import com.watabou.noosa.*;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Signal;
@@ -307,8 +297,8 @@ public class InventoryPane extends Component {
 		if (instance != null) instance.updateInventory();
 	}
 
-	public void updateInventory(){
-		if (selector == null){
+	public void updateInventory() {
+		if (selector == null) {
 			blocker.target = bg;
 			KeyEvent.removeKeyListener(keyBlocker);
 		} else {
@@ -316,29 +306,19 @@ public class InventoryPane extends Component {
 			KeyEvent.addKeyListener(keyBlocker);
 		}
 
-		Belongings stuff;
-		if (Dungeon.hero == null) {
+		if (Dungeon.hero == null) return;
 
-			stuff = null;
+		Belongings stuff = Dungeon.hero.belongings;
 
-			lastBag = EditorItemBag.getLastBag();
-			if (lastBag == null) lastBag = EditorItemBag.mainBag;
-
-		} else {
-
-			stuff = Dungeon.hero.belongings;
-
-			if (lastBag == null || !stuff.getBags().contains(lastBag)) {
-				lastBag = stuff.backpack;
-			}
-
-			equipped.get(0).item(stuff.weapon == null ? new WndBag.Placeholder(ItemSpriteSheet.WEAPON_HOLDER) : stuff.weapon);
-			equipped.get(1).item(stuff.armor == null ? new WndBag.Placeholder(ItemSpriteSheet.ARMOR_HOLDER) : stuff.armor);
-			equipped.get(2).item(stuff.artifact == null ? new WndBag.Placeholder(ItemSpriteSheet.ARTIFACT_HOLDER) : stuff.artifact);
-			equipped.get(3).item(stuff.misc == null ? new WndBag.Placeholder(ItemSpriteSheet.SOMETHING) : stuff.misc);
-			equipped.get(4).item(stuff.ring == null ? new WndBag.Placeholder(ItemSpriteSheet.RING_HOLDER) : stuff.ring);
-
+		if (lastBag == null || !stuff.getBags().contains(lastBag)) {
+			lastBag = stuff.backpack;
 		}
+
+		equipped.get(0).item(stuff.weapon == null ? new WndBag.Placeholder(ItemSpriteSheet.WEAPON_HOLDER) : stuff.weapon);
+		equipped.get(1).item(stuff.armor == null ? new WndBag.Placeholder(ItemSpriteSheet.ARMOR_HOLDER) : stuff.armor);
+		equipped.get(2).item(stuff.artifact == null ? new WndBag.Placeholder(ItemSpriteSheet.ARTIFACT_HOLDER) : stuff.artifact);
+		equipped.get(3).item(stuff.misc == null ? new WndBag.Placeholder(ItemSpriteSheet.SOMETHING) : stuff.misc);
+		equipped.get(4).item(stuff.ring == null ? new WndBag.Placeholder(ItemSpriteSheet.RING_HOLDER) : stuff.ring);
 
 		ArrayList<Item> items = (ArrayList<Item>) lastBag.items.clone();
 
@@ -370,11 +350,9 @@ public class InventoryPane extends Component {
 
 			goldTxt.text(Integer.toString(Dungeon.gold));
 			goldTxt.measure();
-			goldTxt.visible = gold.visible = !CustomDungeon.isEditing();
 
 			energyTxt.text(Integer.toString(Dungeon.energy));
 			energyTxt.measure();
-			energyTxt.visible = energy.visible = Dungeon.energy > 0 && !CustomDungeon.isEditing();
 		} else {
 			promptTxt.text(selector.textPrompt());
 			promptTxt.visible = true;
@@ -383,7 +361,7 @@ public class InventoryPane extends Component {
 			energyTxt.visible = energy.visible = false;
 		}
 
-		ArrayList<Bag> inventBags = stuff == null ? EditorItemBag.getBags() : stuff.getBags();
+		ArrayList<Bag> inventBags = stuff.getBags();
 		for (int i = 0; i < inventBags.size(); i++) {
 			BagButton bagButton;
 			if (bags.size() <= i) {
@@ -400,7 +378,7 @@ public class InventoryPane extends Component {
 		}
 		bagSp.givePointerPriority();
 
-		boolean lostInvent = stuff != null && Dungeon.hero.buff(LostInventory.class) != null;
+		boolean lostInvent = Dungeon.hero.buff(LostInventory.class) != null;
 		for (InventorySlot b : equipped){
 			b.enable(lastEnabled
 					&& !(b.item() instanceof WndBag.Placeholder)

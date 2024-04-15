@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.DefaultListItem
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ParticleActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
@@ -33,6 +34,11 @@ public class ParticleItem extends EditorItem<CustomParticle.ParticleProperty> {
     @Override
     public Image getSprite() {
         return getObject().getSprite();
+    }
+
+    @Override
+    public Item getCopy() {
+        return new ParticleItem(getObject().getCopy());
     }
 
     @Override

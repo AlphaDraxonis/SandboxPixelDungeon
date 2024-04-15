@@ -130,6 +130,11 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             mimicSuperHidden.addChangeListener(v -> {
                 ((Mimic) mob).superHidden = v;
                 updateObj();
+                if (mob.sprite != null) {
+                    for (Buff b : mob.buffs()) {
+                        b.fx(true);
+                    }
+                }
             });
             add(mimicSuperHidden);
         }
@@ -262,10 +267,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(tormentedSpiritPrize);
         }
 
-        if (!(mob instanceof Pylon) || mob instanceof QuestNPC<?>) {//mob (Pylon) should not be instanceof QuestNPC!!!
+        if (!(mob instanceof Pylon)) {//mob (Pylon) should not be instanceof QuestNPC!!!
             mobStateSpinner = new MobStateSpinner(mob);
+            mobStateSpinner.addChangeListener(this::updateObj);
             add(mobStateSpinner);
-            if (mob instanceof Mimic) mobStateSpinner.addChangeListener(this::updateObj);
         }
 
         if (mob instanceof WandOfRegrowth.Lotus) {
@@ -842,19 +847,19 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
     @Override
     public void updateObj() {
-        if (title instanceof MobTitleEditor) {
+        if (mainTitleComp instanceof MobTitleEditor) {
 
             if (obj instanceof ArmoredStatue) {
                 Armor armor = ((ArmoredStatue) obj).armor();
-                ((StatueSprite) ((MobTitleEditor) title).image).setArmor(armor == null ? 0 : armor.tier);
+                ((StatueSprite) ((MobTitleEditor) mainTitleComp).image).setArmor(armor == null ? 0 : armor.tier);
             }
 
             if (obj instanceof HeroMob) {
-                ((HeroSprite.HeroMobSprite) ((MobTitleEditor) title).image).updateHeroClass(((HeroMob) obj).hero());
+                ((HeroSprite.HeroMobSprite) ((MobTitleEditor) mainTitleComp).image).updateHeroClass(((HeroMob) obj).hero());
             }
 
             if (obj instanceof Mimic) {
-                MimicSprite sprite = (MimicSprite) ((MobTitleEditor) title).image;
+                MimicSprite sprite = (MimicSprite) ((MobTitleEditor) mainTitleComp).image;
                 sprite.superHidden = ((Mimic) obj).superHidden;
                 if (obj.state != obj.PASSIVE) sprite.idle();
                 else sprite.hideMimic();
@@ -867,8 +872,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 else ((PylonSprite) pylon.sprite).deactivate();
             }
 
-            ((MobTitleEditor) title).setText(((MobTitleEditor) title).createTitle(obj));
-            ((MobTitleEditor) title).layout();
+            ((MobTitleEditor) mainTitleComp).setText(((MobTitleEditor) mainTitleComp).createTitle(obj));
+            ((MobTitleEditor) mainTitleComp).layout();
         }
 
         if (mobWeapon != null) {
@@ -918,10 +923,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     }
 
     public void updateTitleIcon() {
-        if (title instanceof MobTitleEditor) {
-            ((MobTitleEditor) title).image.destroy();
-            ((MobTitleEditor) title).image.killAndErase();
-            title.add(((MobTitleEditor) title).image = obj.sprite());
+        if (mainTitleComp instanceof MobTitleEditor) {
+            ((MobTitleEditor) mainTitleComp).image.destroy();
+            ((MobTitleEditor) mainTitleComp).image.killAndErase();
+            mainTitleComp.add(((MobTitleEditor) mainTitleComp).image = obj.sprite());
         }
     }
 

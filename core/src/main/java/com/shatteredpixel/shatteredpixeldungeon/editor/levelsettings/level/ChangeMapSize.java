@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -64,13 +65,13 @@ public class ChangeMapSize extends Component {
         info = PixelScene.renderTextBlock(Messages.get(ChangeMapSize.class, "info"), 6);
         add(info);
 
-        topSpinner = new Spinner(new OwnSpinnerModel(1, 65, startTop = (int) Math.ceil((EditorScene.customLevel().height() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "n") + " ", 9);
+        topSpinner = new Spinner(new OwnSpinnerModel(1, 65, startTop = (int) Math.ceil((Dungeon.level.height() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "n") + " ", 9);
         add(topSpinner);
-        bottomSpinner = new Spinner(new OwnSpinnerModel(1, 65, startBottom = (int) ((EditorScene.customLevel().height() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "s") + " ", 9);
+        bottomSpinner = new Spinner(new OwnSpinnerModel(1, 65, startBottom = (int) ((Dungeon.level.height() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "s") + " ", 9);
         add(bottomSpinner);
-        leftSpinner = new Spinner(new OwnSpinnerModel(1, 65, startLeft = (int) Math.ceil((EditorScene.customLevel().width() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "w") + " ", 9);
+        leftSpinner = new Spinner(new OwnSpinnerModel(1, 65, startLeft = (int) Math.ceil((Dungeon.level.width() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "w") + " ", 9);
         add(leftSpinner);
-        rightSpinner = new Spinner(new OwnSpinnerModel(1, 65, startRight = (int) ((EditorScene.customLevel().width() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "e") + " ", 9);
+        rightSpinner = new Spinner(new OwnSpinnerModel(1, 65, startRight = (int) ((Dungeon.level.width() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "e") + " ", 9);
         add(rightSpinner);
     }
 
@@ -103,7 +104,7 @@ public class ChangeMapSize extends Component {
         int nH = top + bottom + 1;
 
         try {
-            CustomLevel.changeMapSize(EditorScene.customLevel(), nW, nH, top - startTop, left - startLeft);
+            CustomLevel.changeMapSize(Dungeon.level, nW, nH, top - startTop, left - startLeft);
         } catch (Exception ex) {
             EditorScene.catchError(ex);
             return;

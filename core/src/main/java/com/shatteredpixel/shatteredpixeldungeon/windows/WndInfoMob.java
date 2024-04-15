@@ -68,7 +68,7 @@ public class WndInfoMob extends WndTitledMessage {
             }
 
             buffs = createBuffIndicator(mob, false);
-            buffs.visible = CustomDungeon.isEditing() || Mimic.isLikeMob(mob);
+            buffs.visible = CustomDungeon.knowsEverything() || Mimic.isLikeMob(mob);
             add(buffs);
         }
 
@@ -85,9 +85,6 @@ public class WndInfoMob extends WndTitledMessage {
             boolean hasHealth = health != null;
             float heightHealth = hasHealth ? health.height() : 0;
 
-            image.x = 0;
-            image.y = Math.max(0, name.height() + heightHealth - image.height());
-
             float w = width - image.width() - GAP;
             int extraBuffSpace = 0;
 
@@ -100,6 +97,9 @@ public class WndInfoMob extends WndTitledMessage {
 
             name.setPos(x + image.width() + GAP,
                     image.height() > name.height() ? y + (image.height() - name.height()) / 2 : y);
+
+            image.x = x;
+            image.y = y + Math.max(0, name.height() + heightHealth - image.height());
 
             if (hasHealth)
                 health.setRect(image.width() + GAP, name.bottom() + GAP, w, health.height());

@@ -1,11 +1,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.FeelingSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.RandomGlyph;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.RandomCurse;
@@ -133,6 +135,9 @@ public class AugmentationSpinner extends StyledSpinner {
             int qu = Random.Int(item.randQuantMin, item.randQuantMax);
             if (qu <= 0) return null;
             item.quantity(qu);
+        }
+        if (item instanceof Bag) {
+            RandomItem.replaceRandomItemsInList(((Bag) item).items);
         }
         return item;
     }

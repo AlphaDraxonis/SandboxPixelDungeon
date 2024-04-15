@@ -1,6 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 
 import java.util.Objects;
@@ -29,12 +29,12 @@ public class SignActionPart {
 
         @Override
         public void undo() {
-            EditorScene.customLevel().signs.put(cell, oldSign);
+            Dungeon.level.signs.put(cell, oldSign);
         }
 
         @Override
         public void redo() {
-            EditorScene.customLevel().signs.put(cell, newSign);
+            Dungeon.level.signs.put(cell, newSign);
         }
 
         @Override

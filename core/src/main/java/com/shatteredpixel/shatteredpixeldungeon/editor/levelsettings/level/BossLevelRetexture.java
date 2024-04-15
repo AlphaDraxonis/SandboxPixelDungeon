@@ -26,7 +26,7 @@ public class BossLevelRetexture extends Component {
         none = new CheckBox(Messages.get(BossLevelRetexture.class, "none")){
             @Override
             public void checked(boolean value) {
-                CustomLevel level = EditorScene.customLevel();
+                CustomLevel level = EditorScene.getCustomLevel();
                 if (value || level.bossGroundVisuals != null) super.checked(value);
                 if (level.bossGroundVisuals != null && value) {
                     assignVisuals(null, null);
@@ -39,7 +39,7 @@ public class BossLevelRetexture extends Component {
         caves = new CheckBox(Messages.get(BossLevelRetexture.class, "caves")) {
             @Override
             public void checked(boolean value) {
-                CustomLevel level = EditorScene.customLevel();
+                CustomLevel level = EditorScene.getCustomLevel();
                 if (value || !(level.bossGroundVisuals instanceof CavesBossLevel.ArenaVisuals)) super.checked(value);
                 if (!(level.bossGroundVisuals instanceof CavesBossLevel.ArenaVisuals) && value) {
                     assignVisuals(new CavesBossLevel.ArenaVisuals(), new CavesBossLevel.EntranceOverhang());
@@ -52,7 +52,7 @@ public class BossLevelRetexture extends Component {
         city = new CheckBox(Messages.get(BossLevelRetexture.class, "city")){
             @Override
             public void checked(boolean value) {
-                CustomLevel level = EditorScene.customLevel();
+                CustomLevel level = EditorScene.getCustomLevel();
                 if (value || !(level.bossGroundVisuals instanceof CityBossLevel.CustomGroundVisuals)) super.checked(value);
                 if (!(level.bossGroundVisuals instanceof CityBossLevel.CustomGroundVisuals) && value) {
                     assignVisuals(new CityBossLevel.CustomGroundVisuals(), new CityBossLevel.CustomWallVisuals());
@@ -62,14 +62,14 @@ public class BossLevelRetexture extends Component {
         };
         add(city);
 
-        CustomLevel level = EditorScene.customLevel();
+        CustomLevel level = EditorScene.getCustomLevel();
         none.checked(level.bossGroundVisuals == null);
         caves.checked(level.bossGroundVisuals instanceof CavesBossLevel.ArenaVisuals);
         city.checked(level.bossGroundVisuals instanceof CityBossLevel.CustomGroundVisuals);
     }
 
     private void assignVisuals(CustomTilemap groundVisual, CustomTilemap wallsVisual) {
-        CustomLevel level = EditorScene.customLevel();
+        CustomLevel level = EditorScene.getCustomLevel();
         level.customTiles.remove(level.bossGroundVisuals);
         level.customWalls.remove(level.bossWallsVisuals);
         level.bossGroundVisuals = groundVisual;

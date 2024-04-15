@@ -48,7 +48,7 @@ public class GoldenKey extends Key {
 
 	@Override
 	public String desc() {
-		return CustomDungeon.isEditing() ? EditorUtilies.addGoldKeyDescription(super.desc(), Dungeon.level) : super.desc();
+		return CustomDungeon.knowsEverything() ? EditorUtilies.addGoldKeyDescription(super.desc(), Dungeon.level) : super.desc();
 	}
 
 }

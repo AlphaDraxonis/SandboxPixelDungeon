@@ -21,9 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.effects;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Game;
@@ -43,8 +41,7 @@ public class EmoIcon extends Image {
 		super();
 		
 		this.owner = owner;
-		if (CustomDungeon.isEditing()) EditorScene.add(this);
-		else GameScene.add( this );
+		DungeonScene.add(this);
 	}
 	
 	@Override

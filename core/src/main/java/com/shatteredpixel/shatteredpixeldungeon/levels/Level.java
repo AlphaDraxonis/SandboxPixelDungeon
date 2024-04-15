@@ -122,7 +122,7 @@ public abstract class Level implements Bundlable {
 	public boolean[] mapped;
 	public boolean[] discoverable;
 
-	public int viewDistance = Dungeon.isChallenged( Challenges.DARKNESS ) ? 2 : 8;
+	public int viewDistance = Dungeon.isChallenged( Challenges.DARKNESS ) ? 2 : 8, originalViewDistance;
 	
 	public boolean[] heroFOV;
 	
@@ -208,6 +208,7 @@ public abstract class Level implements Bundlable {
 	private static final String PARTICLES	= "particles";
 	private static final String FEELING		= "feeling";
 	private static final String VIEW_DISTANCE = "view_distance";
+	private static final String ORIGINAL_VIEW_DISTANCE = "original_view_distance";
 	private static final String BOSS_MOB_MUSIC = "boss_mob_music";
 	private static final String BOSS_MOB_AT = "boss_mob_at";
 	private static final String ZONES       = "zones";
@@ -375,6 +376,7 @@ public abstract class Level implements Bundlable {
 
 	public void initForPlay() {
 		initForPlayCalled = true;
+		originalViewDistance = viewDistance;
 		for (Zone z : zoneMap.values()) {
 			z.initTransitions(this);
 		}
@@ -530,6 +532,8 @@ public abstract class Level implements Bundlable {
 		}
 		name = bundle.getString( NAME );
 		viewDistance = bundle.getInt( VIEW_DISTANCE );
+		originalViewDistance = bundle.getInt( ORIGINAL_VIEW_DISTANCE );
+		if (originalViewDistance == 0) originalViewDistance = viewDistance;
 
 		if (bundle.contains("music_requests")) {
 			int[] intArray = bundle.getIntArray("music_requests");
@@ -707,6 +711,7 @@ public abstract class Level implements Bundlable {
 		bundle.put( "mobs_to_spawn", mobsToSpawn.toArray(new Class[0]));
 		bundle.put( "respawner", respawner );
 		bundle.put( VIEW_DISTANCE, viewDistance );
+		bundle.put( ORIGINAL_VIEW_DISTANCE, originalViewDistance );
 
 		bundle.put(MUSIC_REQUESTS, musicRequests.toArray(EditorUtilies.EMPTY_STRING_ARRAY));
 		int[] intArray = new int[musicRequestsMobIDs.size()];

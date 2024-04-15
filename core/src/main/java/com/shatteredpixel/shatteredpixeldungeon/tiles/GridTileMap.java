@@ -50,9 +50,9 @@ public class GridTileMap extends DungeonTilemap {
 		} else if (DungeonTileSheet.floorTile(tile) || tile == Terrain.HIGH_GRASS || tile == Terrain.FURROWED_GRASS) {
 			return gridSetting;
 		} else if (DungeonTileSheet.doorTile(tile)){
-			if (DungeonTileSheet.wallStitcheable(map[pos - mapWidth])){
+			if (pos - mapWidth >= 0 && DungeonTileSheet.wallStitcheable(map[pos - mapWidth])){
 				return 12 + gridSetting;
-			} else if ( tile == Terrain.OPEN_DOOR){
+			} else if (tile == Terrain.OPEN_DOOR){
 				return 8 + gridSetting;
 			} else {
 				return 4 + gridSetting;

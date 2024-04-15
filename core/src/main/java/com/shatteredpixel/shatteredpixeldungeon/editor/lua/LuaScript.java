@@ -25,6 +25,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.watabou.noosa.Image;
@@ -35,7 +36,7 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LuaScript implements Comparable<LuaScript> {
+public class LuaScript implements Comparable<LuaScript>, Copyable<LuaScript> {
 
 	public final Class<?> type;
 	public String desc;
@@ -222,6 +223,7 @@ public class LuaScript implements Comparable<LuaScript> {
 		return s.toString();
 	}
 
+	@Override
 	public LuaScript getCopy() {
 		LuaScript copy = new LuaScript(type, desc, pathFromRoot);
 		copy.code = code;

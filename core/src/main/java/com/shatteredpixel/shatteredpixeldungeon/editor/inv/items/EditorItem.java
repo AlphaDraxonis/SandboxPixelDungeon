@@ -2,7 +2,6 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRemoverComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
@@ -51,6 +50,9 @@ public abstract class EditorItem<T> extends Item {
     public abstract DefaultEditComp<?> createEditComponent();
 
     public abstract Image getSprite();
+
+    @Override
+    public abstract Item getCopy();
 
     public abstract void place(int cell);
 
@@ -122,6 +124,11 @@ public abstract class EditorItem<T> extends Item {
         }
 
         @Override
+        public Item getCopy() {
+            return this;
+        }
+
+        @Override
         public void place(int cell) {
             //Can't place this
         }
@@ -186,7 +193,7 @@ public abstract class EditorItem<T> extends Item {
         PARTICLE;
 
         public ActionPart doRemove(int cell) {
-            Level level = EditorScene.customLevel();
+            Level level = Dungeon.level;
             switch (this) {
                 case MOB: return MobItem.remove(level.findMob(cell));
                 case BLOB: return BlobItem.remove(cell);

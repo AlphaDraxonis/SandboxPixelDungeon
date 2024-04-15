@@ -38,7 +38,7 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
     }
 
     protected static void remove(Heap heap) {
-        heap = EditorScene.customLevel().heaps.get(heap.pos, heap);//This is because another place action could swap the actual heap with another copy
+        heap = Dungeon.level.heaps.get(heap.pos, heap);//This is because another place action could swap the actual heap with another copy
         heap.destroy();
     }
 
@@ -93,7 +93,7 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
         @Override
         public void undo() {
 
-            Heap heapAtCell = EditorScene.customLevel().heaps.get(after.pos);
+            Heap heapAtCell = Dungeon.level.heaps.get(after.pos);
 
             remove(heapAtCell);
 
@@ -102,7 +102,7 @@ public /*sealed*/ abstract class HeapActionPart implements ActionPart {
 
         @Override
         public void redo() {
-            Heap heapAtCell = EditorScene.customLevel().heaps.get(after.pos);
+            Heap heapAtCell = Dungeon.level.heaps.get(after.pos);
 
             if (heapAtCell != null) remove(heapAtCell);
 

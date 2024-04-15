@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -203,7 +204,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
             case 2:
                 titleText.text(Messages.get(MobSettings.class, "mob_rot"));
                 if (mobRotation == null) {
-                    mobRotation = new ChangeMobRotation(EditorScene.customLevel().getMobRotationVar());
+                    mobRotation = new ChangeMobRotation(EditorScene.getCustomLevel().getMobRotationVar());
                     add(mobRotation);
                 }
                 select(mobRotation);
@@ -278,7 +279,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
         protected BtnSelectBossMusic bossMusic;
 
         public MobSpawningComp() {
-            CustomLevel l = EditorScene.customLevel();
+            CustomLevel l = EditorScene.getCustomLevel();
 
             moblimit = new StyledSpinner(new SpinnerIntegerModel(0, 100, l.mobLimit(), 1, false, null),
                     Messages.get(MobSettings.class, "limit"));
@@ -312,7 +313,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
             disableSpawning.checked(l.enableRespawning);
             add(disableSpawning);
 
-            Mob bossMob = EditorScene.customLevel().findMob(EditorScene.customLevel().bossmobAt);
+            Mob bossMob = Dungeon.level.findMob(Dungeon.level.bossmobAt);
             MobActionPart.Modify modify = bossMob == null ? null : new MobActionPart.Modify(bossMob);
             boss = new ItemSelector(getUpdatedLabelForBossChooser(bossMob), MobItem.class, bossMob == null ? null : new MobItem(bossMob), ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
@@ -369,7 +370,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
                 @Override
                 public void onSelect(Integer cell) {
                     if (cell != null) {
-                        CustomLevel l = EditorScene.customLevel();
+                        CustomLevel l = EditorScene.getCustomLevel();
                         if (cell >= 0 && cell < l.length()) {
                             final int oldBoss = l.bossmobAt;
                             if (l.findMob(cell) == null) cell = Level.NO_BOSS_MOB;
@@ -466,7 +467,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
 
             clear();
 
-            List<Mob> mobsOnFloor = new ArrayList<>(EditorScene.customLevel().mobs);
+            List<Mob> mobsOnFloor = new ArrayList<>(Dungeon.level.mobs);
 
 //        for (Mob m : testMobs) {
 //            m.pos = Random.Int(EditorScene.floor().length());

@@ -71,7 +71,7 @@ public class ChangeRegion extends Component {
     public ChangeRegion(Runnable onClose) {
         super();
 
-        CustomLevel f = EditorScene.customLevel();
+        CustomLevel f = EditorScene.getCustomLevel();
 
         int[] oldValues = {
                 f.getRegionValue(),

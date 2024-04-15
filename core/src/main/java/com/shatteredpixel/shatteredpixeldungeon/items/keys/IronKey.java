@@ -47,7 +47,7 @@ public class IronKey extends Key {
 
     @Override
     public String desc() {
-        return CustomDungeon.isEditing() ? EditorUtilies.addIronKeyDescription(super.desc(), Dungeon.level) : super.desc();
+        return CustomDungeon.knowsEverything() ? EditorUtilies.addIronKeyDescription(super.desc(), Dungeon.level) : super.desc();
     }
 
 }

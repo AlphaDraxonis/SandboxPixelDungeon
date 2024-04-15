@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -42,6 +43,11 @@ public class BlobItem extends EditorItem<Class<? extends Blob>> {
     @Override
     public Image getSprite() {
         return createIcon(getObject());
+    }
+
+    @Override
+    public Item getCopy() {
+        return new BlobItem(getObject());
     }
 
     public static String createName(Class<? extends Blob> blob) {

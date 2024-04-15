@@ -96,7 +96,7 @@ public class WndEditFloorInOverview extends WndTabbed {
     @Override
     public void hide() {
         super.hide();
-        if (EditorScene.customLevel() != levelScheme.getLevel()) {
+        if (Dungeon.level != levelScheme.getLevel()) {
             levelScheme.unloadLevel();
             EditorScene.updatePathfinder();
         }
@@ -300,7 +300,7 @@ public class WndEditFloorInOverview extends WndTabbed {
             };
             delete.icon(Icons.get(Icons.CLOSE));
             add(delete);
-            if (levelScheme.getType() == CustomLevel.class && EditorScene.customLevel() != levelScheme.getLevel()) {
+            if (levelScheme.getType() == CustomLevel.class && Dungeon.level != levelScheme.getLevel()) {
                 open = new RedButton(Messages.get(WndEditFloorInOverview.class, "open")) {
                     @Override
                     protected void onClick() {

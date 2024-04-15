@@ -57,22 +57,12 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class CustomDungeon implements Bundlable {
 
     public boolean damageImmune, seeSecrets, permaMindVision, permaInvis, permaKey, extraSpeed;
+    public static boolean knowsEverything;
 
     private String name;
     private String lastEditedFloor;
@@ -104,7 +94,7 @@ public class CustomDungeon implements Bundlable {
     public Set<Integer> blockedRecipes;
     public Set<Class<? extends Item>> blockedRecipeResults;
 
-	public int nextParticleID = 1;
+    public int nextParticleID = 1;
     public Map<Integer, CustomParticle.ParticleProperty> particles;
 
     public CustomDungeon(String name) {
@@ -465,9 +455,12 @@ public class CustomDungeon implements Bundlable {
         return Dungeon.customDungeon;
     }
 
-    //if is in edit mode -> identify all items
     public static boolean isEditing() {
         return Dungeon.hero == null;
+    }
+
+    public static boolean knowsEverything() {
+        return knowsEverything || isEditing();
     }
 
     public static boolean showHiddenDoors() {
@@ -785,7 +778,7 @@ public class CustomDungeon implements Bundlable {
                 SandboxPixelDungeon.switchNoFade(FloorOverviewScene.class);
             } else startFloor = fs.get(0).getName();
         }
-        if (EditorScene.customLevel() != null && EditorScene.customLevel().levelScheme == levelScheme) {
+        if (EditorScene.getCustomLevel() != null && EditorScene.getCustomLevel().levelScheme == levelScheme) {
             LevelScheme openS = null;
             if (startFloor != null && getFloor(startFloor).getType() == CustomLevel.class)
                 openS = getFloor(startFloor);
@@ -826,7 +819,7 @@ public class CustomDungeon implements Bundlable {
                 for (LevelTransition transition : level.transitions.values()) {
                     if (transition != null && Objects.equals(transition.destLevel, n)) {
                         toRemoveTransitions.add(transition.cell());
-                        if (level == EditorScene.customLevel()) EditorScene.remove(transition);
+                        if (level == EditorScene.getCustomLevel()) EditorScene.remove(transition);
                     }
                 }
 
@@ -876,7 +869,7 @@ public class CustomDungeon implements Bundlable {
 
                 if (saveNeeded) CustomDungeonSaves.saveLevel(level);
                 if (load) ls.unloadLevel();
-                else if (level == EditorScene.customLevel() && levelScheme != level.levelScheme) {
+                else if (level == EditorScene.getCustomLevel() && levelScheme != level.levelScheme) {
                     Undo.reset();//TODO maybe not best solution to reset all
                     EditorScene.updateHeapImagesAndSubIcons();
                 }
@@ -903,7 +896,7 @@ public class CustomDungeon implements Bundlable {
         }
 
         //Set level for keys in inv
-        Items.updateKeys(n, EditorScene.customLevel() == null ? null : EditorScene.customLevel().name);
+        Items.updateKeys(n, EditorScene.getCustomLevel() == null ? null : EditorScene.getCustomLevel().name);
 
         EditorScene.updatePathfinder();
 
@@ -957,7 +950,7 @@ public class CustomDungeon implements Bundlable {
 
                     if (needsSave) CustomDungeonSaves.saveLevel(level);
                     if (load) ls.unloadLevel();
-                    else if (level == EditorScene.customLevel()) {
+                    else if (level == EditorScene.getCustomLevel()) {
                         Undo.reset();//TODO maybe not best solution to reset all
                     }
                 } else {
@@ -1003,7 +996,7 @@ public class CustomDungeon implements Bundlable {
 
                 if (needsSave || Dungeon.level == level) CustomDungeonSaves.saveLevel(level);
                 if (load) ls.unloadLevel();
-                else if (level == EditorScene.customLevel()) {
+                else if (level == EditorScene.getCustomLevel()) {
                     level.zoneMap.remove(n);
                     level.levelScheme.zones.remove(n);
                     if (zone.numCells() > 0) {
@@ -1023,7 +1016,7 @@ public class CustomDungeon implements Bundlable {
 
         EditorScene.updateMap();
 
-        if (zone == ZonePrompt.getSelectedZone()) ZonePrompt.setSelectedZone(ZonePrompt.getFirstZoneAvailable(EditorScene.customLevel()));
+        if (zone == ZonePrompt.getSelectedZone()) ZonePrompt.setSelectedZone(ZonePrompt.getFirstZoneAvailable(EditorScene.getCustomLevel()));
     }
 
     public static void deleteDungeon(String name) {
@@ -1250,7 +1243,7 @@ public class CustomDungeon implements Bundlable {
                         else CustomDungeonSaves.saveLevel(level);
                     }
                     if (load) ls.unloadLevel();
-                    else if (level == EditorScene.customLevel() && levelScheme != level.levelScheme) {
+                    else if (level == EditorScene.getCustomLevel() && levelScheme != level.levelScheme) {
                         if (saveNeeded) EditorScene.updateHeapImagesAndSubIcons();
                     }
                 } else {
@@ -1298,9 +1291,9 @@ public class CustomDungeon implements Bundlable {
                 }
             }
 
-            if (EditorScene.customLevel() != null) {
+            if (EditorScene.getCustomLevel() != null) {
                 Undo.reset();//TODO maybe not best solution to reset all, but UndoParts all store the old lvl name
-                for (LevelTransition t : EditorScene.customLevel().transitions.values())
+                for (LevelTransition t : EditorScene.getCustomLevel().transitions.values())
                     EditorScene.updateTransitionIndicator(t);
             }
             floors.remove(oldName);

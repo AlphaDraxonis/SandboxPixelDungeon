@@ -30,7 +30,7 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
     }
 
     protected void remove() {
-        Mob mobAtCell = EditorScene.customLevel().findMob(cell);
+        Mob mobAtCell = Dungeon.level.findMob(cell);
         if (mobAtCell != null)
             mob = mobAtCell;//This is because another place action could swap the actual mob with another copy
         remove(mob);
@@ -102,7 +102,7 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
         @Override
         public void undo() {
 
-            Mob mobAtCell = EditorScene.customLevel().findMob(after.pos);
+            Mob mobAtCell = Dungeon.level.findMob(after.pos);
 
             remove(mobAtCell);
 
@@ -111,7 +111,7 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
 
         @Override
         public void redo() {
-            Mob mobAtCell = EditorScene.customLevel().findMob(after.pos);
+            Mob mobAtCell = Dungeon.level.findMob(after.pos);
 
             if (mobAtCell != null) remove(mobAtCell);
 

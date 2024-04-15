@@ -468,11 +468,11 @@ public class Item implements Bundlable, Customizable, Copyable<Item> {
 	}
 
 	public final boolean cursedKnown() {
-		return cursedKnown || CustomDungeon.isEditing();
+		return cursedKnown || CustomDungeon.knowsEverything();
 	}
 
 	public final boolean levelKnown() {
-		return levelKnown || CustomDungeon.isEditing();
+		return levelKnown || CustomDungeon.knowsEverything();
 	}
 
 	public void setCursedKnown(boolean cursedKnown) {

@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
@@ -72,7 +73,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
-public class Heap implements Bundlable {
+public class Heap implements Bundlable, Copyable<Heap> {
 	
 	public enum Type {
 		HEAP,
@@ -514,6 +515,7 @@ public class Heap implements Bundlable {
 		bundle.put( PRICE_MULTIPLIER, priceMultiplier );
 	}
 
+	@Override
 	public Heap getCopy(){
 		Bundle bundle = new Bundle();
 		bundle.put("HEAP",this);
@@ -558,6 +560,9 @@ public class Heap implements Bundlable {
 
 	public void addHeapComponents(Group addTo) {
 		addTo.add(sprite);
+
+		if (!CustomDungeon.isEditing()) return;
+
 		addTo.add(subicon);
 		addTo.add(quantityDisplay);
 		addTo.add(heapSize);

@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FakeTenguShocker;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.*;
@@ -46,6 +47,9 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -81,6 +85,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledButton keyCell;
     protected StyledButton randomItem;
 
+    protected ItemContainer<Item> bagItems;
+
     private Component[] rectComps;
     private Component[] linearComps;
 
@@ -106,7 +112,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
         if (heap != null) {
             reorderHeapComp = new ReorderHeapComp(item, heap);
-            add(reorderHeapComp);
+            title.add(reorderHeapComp);
         }
 
         if (item.stackable) {
@@ -282,7 +288,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                             ((Key) item).levelName = EditorUtilies.getCodeName((LevelScheme) object);
                         }
                         if (keyCell != null) {
-                            boolean canChangeKeyCell = EditorScene.customLevel().name.equals(((Key) item).levelName);
+                            boolean canChangeKeyCell = Dungeon.level.name.equals(((Key) item).levelName);
                             if (!canChangeKeyCell && ((Key) item).cell != -1) {
                                 ((Key) item).cell = -1;
                                 keyCell.text(label("key_cell_any"));
@@ -297,7 +303,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
                 if (heap != null && heap.pos != -1) {
                     int cell = ((Key) item).cell;
-                    if (EditorScene.customLevel() == null || cell >= EditorScene.customLevel().length()) cell = ((Key) item).cell = -1;
+                    if (Dungeon.level == null || cell >= Dungeon.level.length()) cell = ((Key) item).cell = -1;
                     keyCell = new RedButton("") {
                         @Override
                         protected void onClick() {
@@ -311,6 +317,51 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 } else keyCell = null;
 
             }
+
+            if (item instanceof Bag) {
+                Bag bag = (Bag) item;
+                bagItems = new ItemContainer<Item>(bag.items, this, false, 0, bag.capacity()) {
+                    @Override
+                    protected void doAddItem(Item item) {
+                        if (bag.canHold( item )) {
+                            boolean wasIdentifyOnStart = item.identifyOnStart;
+                            item.identifyOnStart = false;
+                            item.collect(bag);
+                            item.identifyOnStart = wasIdentifyOnStart;
+                        }
+                        updateObj();
+                    }
+
+                    @Override
+                    public boolean itemSelectable(Item item) {
+//                        if (item instanceof Bag) return false;
+                        if (!bag.canHold(item)) return false;
+
+                        if (item.stackable) {
+                            for (Item i : bag.items) {
+                                if (item.isSimilar( i )) {
+                                    return false;
+                                }
+                            }
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    protected void showWndEditItemComp(ItemContainer<Item>.Slot slot, Item item) {
+                        EditorScene.show(new EditCompWindow(item, null, advancedListPaneItem) {
+                            @Override
+                            protected void onUpdate() {
+                                super.onUpdate();
+                                slot.item(item);
+//                                updateObj();
+                            }
+                        });
+                    }
+                };
+                add(bagItems);
+            }
+
         } else {
             randomItem = new RedButton(label("edit_random")) {
                 @Override
@@ -327,23 +378,43 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
         rectComps = new Component[]{quantity, quickslotPos, shockerDuration, chargeSpinner, levelSpinner, augmentationSpinner,
                 curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed, igniteBombOnDrop, spreadIfLoot};
-        linearComps = new Component[]{randomItem, keylevel, keyCell};
+        linearComps = new Component[]{bagItems, randomItem, keylevel, keyCell};
     }
 
     @Override
     protected void layout() {
-        desc.maxWidth((int) width);
-
-        rename.setRect(width - rename.icon().width() - WndTitledMessage.GAP, title.top() + (title.height() - rename.icon().height) * 0.5f, rename.icon().width, rename.icon().height);
-        if (reorderHeapComp != null) reorderHeapComp.setRect(rename.left() - WndTitledMessage.GAP, y, -1, title.height());
-
-        title.setRect(x, y, reorderHeapComp == null ? width : reorderHeapComp.left() - WndTitledMessage.GAP * 2, title.height());
-        desc.setRect(x, title.bottom() + WndTitledMessage.GAP * 2, desc.width(), desc.height());
-
-        height = desc.bottom() + 2;
-
+        super.layout();
         layoutCompsInRectangles(rectComps);
         layoutCompsLinear(linearComps);
+    }
+
+    @Override
+    protected void layoutTitle() {
+
+        float renameDeleteWidth =
+                (reorderHeapComp != null && reorderHeapComp.visible ? reorderHeapComp.width() + 2 : 0)
+                + (rename.visible ? rename.icon().width() + 2 : 0)
+                + (delete.visible ? delete.icon().width() + 2 : 0);
+
+        float posX = title.left();
+
+        mainTitleComp.setRect(posX, title.top(), title.width() - renameDeleteWidth, -1);
+        posX = mainTitleComp.right();
+
+        float h = title.height();
+
+        if (reorderHeapComp != null && reorderHeapComp.visible) {
+            reorderHeapComp.setRect(posX, title.top(), -1, h);
+            posX += reorderHeapComp.width() + 2;
+        }
+        if (rename.visible) {
+            rename.setRect(posX, mainTitleComp.top() + (h - rename.icon().height()) * 0.5f, rename.icon().width(), rename.icon().height());
+            posX += rename.width() + 2;
+        }
+        if (delete.visible) {
+            delete.setRect(posX, mainTitleComp.top() + (h - delete.icon().height()) * 0.5f, delete.icon().width(), delete.icon().height());
+            posX += delete.width() + 2;
+        }
     }
 
     @Override
@@ -438,7 +509,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 Key key = (Key) obj;
 
                 boolean validPos;
-                Heap h = EditorScene.customLevel().heaps.get(cell);
+                Heap h = Dungeon.level.heaps.get(cell);
                 if (key instanceof GoldenKey) validPos = h != null && h.type == Heap.Type.LOCKED_CHEST;
                 else if (key instanceof CrystalKey)
                     validPos = Dungeon.level.map[cell] == Terrain.CRYSTAL_DOOR || h != null && h.type == Heap.Type.CRYSTAL_CHEST;
@@ -512,6 +583,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
         if (a instanceof Bomb) {
             if (((Bomb) a).igniteOnDrop != ((Bomb) b).igniteOnDrop) return false;
+        }
+        if (a instanceof Bag) {
+            if (!isItemListEqual(((Bag) a).items, ((Bag) b).items)) return false;
         }
         if (a instanceof RandomItem) {
             if (!a.equals(b)) return false;

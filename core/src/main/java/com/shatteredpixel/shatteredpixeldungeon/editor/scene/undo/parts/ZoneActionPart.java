@@ -14,7 +14,7 @@ public /*sealed*/ abstract class ZoneActionPart implements ActionPart {
     protected final int cell;
 
     private ZoneActionPart(String zone, int cell) {
-        Zone zoneBF = EditorScene.customLevel().zone[cell];
+        Zone zoneBF = Dungeon.level.zone[cell];
         this.zoneBefore = zoneBF == null ? null : zoneBF.getName();
         this.zoneAfter = zone;
         this.cell = cell;

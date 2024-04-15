@@ -1,52 +1,20 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.COIN_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.CRYSTAL_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.ENTRANCE;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EXIT;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.FURROWED_GRASS;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.GRASS;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.HIGH_GRASS;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.INACTIVE_TRAP;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.LOCKED_EXIT;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.OPEN_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_CRYSTAL_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_LOCKED_DOOR;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SECRET_TRAP;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SIGN;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.SIGN_SP;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.TRAP;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.UNLOCKED_EXIT;
-import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.WELL;
-
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
-import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
+import com.shatteredpixel.shatteredpixeldungeon.editor.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BarrierActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.HeapActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.ParticleActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.PlaceCellActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -57,6 +25,8 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.PathFinder;
 
 import java.util.Collections;
+
+import static com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.*;
 
 public class TileItem extends EditorItem {
 
@@ -98,6 +68,11 @@ public class TileItem extends EditorItem {
     @Override
     public Image getSprite() {
         return new TileSprite(this);
+    }
+
+    @Override
+    public Item getCopy() {
+        return new TileItem(terrainType, image, cell);
     }
 
     @Override
@@ -183,7 +158,7 @@ public class TileItem extends EditorItem {
 
             super();
 
-            CustomLevel level = EditorScene.customLevel();
+            Level level = Dungeon.level;
             int oldTerrain = level.map[cell];
 
             if (oldTerrain == terrainType) {

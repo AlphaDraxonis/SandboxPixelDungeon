@@ -123,15 +123,17 @@ public enum Tiles {
                 if (val == Terrain.CUSTOM_DECO_EMPTY) {
                     val = EMPTY_DECO;
                 }
-                if (val == Terrain.CUSTOM_DECO) {
-                    if (EditorScene.customLevel().bossGroundVisuals instanceof CityBossLevel.CustomGroundVisuals)
-                        return findItem(new FindInBag(FindInBag.Type.CLASS, CityBossLevel.KingsThrone.class, null));
-                    val = Terrain.WALL;
-                }
-                if (val == TRAP || val == INACTIVE_TRAP || val == SECRET_TRAP) {
-                    if (EditorScene.customLevel().bossGroundVisuals instanceof CavesBossLevel.ArenaVisuals)
-                        return findItem(new FindInBag(FindInBag.Type.CLASS, CavesBossLevel.TrapTile.class, null));
-                    val = Terrain.EMPTY;
+                if (EditorScene.getCustomLevel() != null) {
+                    if (val == Terrain.CUSTOM_DECO) {
+                        if (EditorScene.getCustomLevel().bossGroundVisuals instanceof CityBossLevel.CustomGroundVisuals)
+                            return findItem(new FindInBag(FindInBag.Type.CLASS, CityBossLevel.KingsThrone.class, null));
+                        val = Terrain.WALL;
+                    }
+                    if (val == TRAP || val == INACTIVE_TRAP || val == SECRET_TRAP) {
+                        if (EditorScene.getCustomLevel().bossGroundVisuals instanceof CavesBossLevel.ArenaVisuals)
+                            return findItem(new FindInBag(FindInBag.Type.CLASS, CavesBossLevel.TrapTile.class, null));
+                        val = Terrain.EMPTY;
+                    }
                 }
                 for (Item bag : items) {
                     for (Item i : ((Bag) bag).items) {
@@ -357,7 +359,7 @@ public enum Tiles {
             descSet = customTile != null && !Level.getFullMessageKey(customTile.region, customTile.imageTerrain, true).equals(customTile.desc);
 
             region = new Spinner(new SpinnerIntegerModel(LevelScheme.REGION_SEWERS, LevelScheme.REGION_HALLS,
-                    customTile == null ? EditorScene.customLevel().getRegionValue() : customTile.region, 1, true, null) {
+                    customTile == null ? Dungeon.level.levelScheme.getRegion() : customTile.region, 1, true, null) {
                 @Override
                 public String getDisplayString() {
                     if (imageTerrain != null) imageTerrain.setValue(imageTerrain.getValue());

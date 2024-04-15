@@ -122,7 +122,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 
     @Override
     public String name() {
-        if (alignment == Alignment.NEUTRAL && !CustomDungeon.isEditing()) {
+        if (alignment == Alignment.NEUTRAL && !CustomDungeon.knowsEverything()) {
             return Messages.get(Heap.class, "chest");
         } else {
             return super.name();
@@ -141,7 +141,7 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 
     @Override
     public String info() {
-        if (!CustomDungeon.isEditing() && isLikeChest()) return description();
+        if (!CustomDungeon.knowsEverything() && isLikeChest()) return description();
         return super.info();
     }
 

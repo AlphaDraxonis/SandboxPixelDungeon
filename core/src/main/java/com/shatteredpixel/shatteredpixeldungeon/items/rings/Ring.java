@@ -144,7 +144,7 @@ public class Ring extends KindofMisc {
 	}
 	
 	public boolean isKnown() {
-		return anonymous || (handler != null && handler.isKnown( this )) || CustomDungeon.isEditing();
+		return anonymous || (handler != null && handler.isKnown( this )) || CustomDungeon.knowsEverything();
 	}
 	
 	public void setKnown() {

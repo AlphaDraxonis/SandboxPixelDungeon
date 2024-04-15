@@ -47,6 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.TenguDartTrap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.TargetHealthIndicator;
@@ -57,14 +58,7 @@ import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.tweeners.AlphaTweener;
-import com.watabou.utils.BArray;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
-import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
+import com.watabou.utils.*;
 
 import java.util.ArrayList;
 
@@ -290,12 +284,14 @@ public class PrisonBossLevel extends Level {
 		CustomTilemap vis = new ExitVisual();
 		vis.pos(11, 10);
 		customTiles.add(vis);
-		GameScene.add(vis, false);
+		vis.wallVisual = false;
+		DungeonScene.add(vis);
 		
 		vis = new ExitVisualWalls();
 		vis.pos(11, 10);
 		customWalls.add(vis);
-		GameScene.add(vis, true);
+		vis.wallVisual = true;
+		DungeonScene.add(vis);
 		
 		Painter.set(this, tenguCell.left+4, tenguCell.top, Terrain.DOOR);
 		
@@ -690,7 +686,8 @@ public class PrisonBossLevel extends Level {
 		FadingTraps t = new FadingTraps();
 		t.fadeDelay = 2f;
 		t.setCoveringArea(tenguCell);
-		GameScene.add(t, false);
+		t.wallVisual = false;
+		DungeonScene.add(t);
 		customTiles.add(t);
 	}
 	

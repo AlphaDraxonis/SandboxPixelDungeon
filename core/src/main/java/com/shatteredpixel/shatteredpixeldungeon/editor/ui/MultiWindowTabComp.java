@@ -26,8 +26,8 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
     public static final int GAP = 2, BIG_GAP = GAP * 3, BUTTON_HEIGHT = 18;
 
     protected boolean layoutOwnMenu = true;
-    private Component otherTitle, otherBody, outsideSp;
-    private ScrollPane spForOtherBody;
+    protected Component otherTitle, otherBody, outsideSp;
+    protected ScrollPane spForOtherBody;
     private float alignmentOther, titleAlignmentOther;
     private ButtonBack buttonBack;
 
@@ -130,6 +130,9 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
     }
 
     public void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
+
+        if (!layoutOwnMenu) destroyCurrentSubMenu();
+
         title.visible = title.active = false;
         content.visible = content.active = false;
         sp.visible = sp.active = false;
@@ -158,6 +161,16 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
     public void closeCurrentSubMenu() {
         layoutOwnMenu = true;
+        destroyCurrentSubMenu();
+
+        title.visible = title.active = true;
+        content.visible = content.active = true;
+        sp.visible = sp.active = true;
+
+        layout();
+    }
+
+    protected void destroyCurrentSubMenu() {
         otherTitle.remove();
         otherTitle.destroy();
         spForOtherBody.remove();
@@ -170,12 +183,6 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
             outsideSp.remove();
             outsideSp.destroy();
         }
-
-        title.visible = title.active = true;
-        content.visible = content.active = true;
-        sp.visible = sp.active = true;
-
-        layout();
     }
 
     public interface BackPressImplemented {

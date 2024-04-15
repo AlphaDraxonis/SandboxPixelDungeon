@@ -75,8 +75,8 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 };
                 add(addTransition);
 
-                if (EditorScene.customLevel().transitions.get(cell) != null) {
-                    addTransition(EditorScene.customLevel().transitions.get(cell));
+                if (Dungeon.level.transitions.get(cell) != null) {
+                    addTransition(Dungeon.level.transitions.get(cell));
                 }
 
             } else if (TileItem.isSignTerrainCell(item.terrainType())) {
@@ -85,7 +85,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
                     @Override
                     protected void onClick() {
-                        Sign sign = EditorScene.customLevel().signs.get(cell);
+                        Sign sign = Dungeon.level.signs.get(cell);
                         final Sign oldSign;
                         if (sign != null) oldSign = sign.getCopy();
                         else oldSign = null;
@@ -98,7 +98,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                             @Override
                             public void onSelect(boolean positive, String text) {
                                 if (positive) {
-                                    Sign newSign = EditorScene.customLevel().signs.get(cell);
+                                    Sign newSign = Dungeon.level.signs.get(cell);
                                     if (newSign == null) {
                                         newSign = new Sign();
                                         newSign.pos = item.cell();
@@ -205,15 +205,15 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     }
 
     public static LevelTransition createNewTransition(int cell) {
-        LevelTransition transition = new LevelTransition(EditorScene.customLevel(), cell, TransitionEditPart.DEFAULT, null);
-        EditorScene.customLevel().transitions.put(cell, transition);
+        LevelTransition transition = new LevelTransition(Dungeon.level, cell, TransitionEditPart.DEFAULT, null);
+        Dungeon.level.transitions.put(cell, transition);
         EditorScene.add(transition);
         return transition;
     }
 
     private void addTransition(LevelTransition transition) {
-        transitionEdit = addTransition(obj.terrainType(), transition, EditorScene.customLevel().levelScheme, t -> {
-            EditorScene.customLevel().transitions.remove(transition.cell());
+        transitionEdit = addTransition(obj.terrainType(), transition, Dungeon.level.levelScheme, t -> {
+            Dungeon.level.transitions.remove(transition.cell());
             EditorScene.remove(transition);
         });
         add(transitionEdit);
@@ -305,7 +305,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
     @Override
     protected String createDescription() {
-        CustomLevel level = EditorScene.customLevel();
+        Level level = Dungeon.level;
 
         CustomTilemapAndPosWrapper customTileWr = findCustomTile();
 
@@ -356,7 +356,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
     @Override
     public Image getIcon() {
-        return createImage(obj.terrainType(), EditorScene.customLevel(), obj.image(), obj.cell());
+        return createImage(obj.terrainType(), Dungeon.level, obj.image(), obj.cell());
     }
 
     private static Image createImage(int terrainFeature, Level level, int image, int cell) {
@@ -384,7 +384,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 return water;
             } else {
                 Image img = new Image(TextureCache.get(level.tilesTex()));
-                img.frame(CustomLevel.getTextureFilm(EditorScene.customLevel().tilesTex()).get(image));
+                img.frame(CustomLevel.getTextureFilm(Dungeon.level.tilesTex()).get(image));
                 return img;
             }
         }
