@@ -35,13 +35,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.LevelColoring;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.SideControlPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
-import com.shatteredpixel.shatteredpixeldungeon.effects.*;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
@@ -85,7 +83,6 @@ import com.watabou.utils.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -93,6 +90,7 @@ public class GameScene extends DungeonScene {
 
 	static GameScene scene;
 
+	private DungeonTerrainTilemap[] tiles;
 	private RaisedTerrainTilemap[] raisedTerrain;
 	private DungeonWallsTilemap[] walls;
 	private WallBlockingTilemap wallBlocking;
@@ -147,14 +145,6 @@ public class GameScene extends DungeonScene {
 		scene = this;
 
 		initBasics();
-		//tzz supre!
-		//tiles = new DungeonTerrainTilemap[6];
-		//		for (int i = 0; i < tiles.length; i++) {
-		//			if (i == Dungeon.region()) continue;
-		//			tiles[i] = new DungeonTerrainTilemap(i);
-		//			terrain.add(tiles[i]);
-		//		}
-		//		tiles[Dungeon.region()] = tiles[0];
 
 		levelVisuals = Dungeon.level.addVisuals();
 		add(levelVisuals);
@@ -388,10 +378,16 @@ public class GameScene extends DungeonScene {
 			case ASCEND:
 				Camera.main.snapTo(hero.center().x, hero.center().y + DungeonTilemap.SIZE * (defaultZoom/Camera.main.zoom));
 				break;
+			case NONE:
+				if (mainCameraPos != null) {
+					Camera.main.scroll = mainCameraPos;
+					break;
+				}
 			default:
 				Camera.main.snapTo(hero.center().x, hero.center().y);
 		}
 		Camera.main.panTo(hero.center(), 2.5f);
+		mainCameraPos = Camera.main.scroll;
 
 		if (InterlevelScene.mode != InterlevelScene.Mode.NONE) {
 			if (Dungeon.depth == Statistics.deepestFloor
@@ -536,6 +532,17 @@ public class GameScene extends DungeonScene {
 	}
 
 	public static List<Runnable> runAfterCreate = new ArrayList<>();
+
+	@Override
+	protected void initAndAddDungeonTilemap() {
+		tiles = new DungeonTerrainTilemap[6];
+		for (int i = 0; i < tiles.length; i++) {
+			if (i == Dungeon.region()) continue;
+			tiles[i] = new DungeonTerrainTilemap(i);
+			terrain.add(tiles[i]);
+		}
+		tiles[Dungeon.region()] = tiles[0];
+	}
 	
 	public void destroy() {
 		
@@ -548,7 +555,7 @@ public class GameScene extends DungeonScene {
 
 		Emitter.freezeEmitters = false;
 		
-		scene = null;//tzz checken, ob diese Zeile entfernt werden muss!
+		scene = null;
 		Badges.saveGlobal();
 		Journal.saveGlobal();
 		
@@ -764,62 +771,6 @@ public class GameScene extends DungeonScene {
 	protected void onBackPressed() {
 		if (!cancel()) {
 			add( new WndGame() );
-		}
-	}
-
-	public void addCustomTile( CustomTilemap visual){
-		customTiles.add( visual.create() );
-
-		if (visual instanceof CustomTileLoader.SimpleCustomTile) {
-			((CustomTileLoader.SimpleCustomTile) visual).placed = true;
-			int pos = visual.tileX + visual.tileY * Dungeon.level.width();
-			Dungeon.level.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
-			Dungeon.level.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
-		}
-	}
-
-	public void addCustomWall( CustomTilemap visual){
-		customWalls.add( visual.create() );
-
-		if (visual instanceof CustomTileLoader.SimpleCustomTile) {
-			((CustomTileLoader.SimpleCustomTile) visual).placed = true;
-			int pos = visual.tileX + visual.tileY * Dungeon.level.width();
-			Dungeon.level.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
-			Dungeon.level.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
-		}
-	}
-	
-	private void addHeapSprite( Heap heap ) {
-		ItemSprite sprite = heap.sprite = (ItemSprite)heaps.recycle( ItemSprite.class );
-		sprite.revive();
-		sprite.link( heap );
-		heaps.add( sprite );
-	}
-	
-	private void addDiscardedSprite( Heap heap ) {
-		heap.sprite = (DiscardedItemSprite)heaps.recycle( DiscardedItemSprite.class );
-		heap.sprite.revive();
-		heap.sprite.link( heap );
-		heaps.add( heap.sprite );
-	}
-	
-	private void addPlantSprite( Plant plant ) {
-
-	}
-
-	private void addTrapSprite( Trap trap ) {
-
-	}
-	
-	private void addBlobSprite( final Blob gas ) {
-		if (gas.emitter == null) {
-			gases.add( new BlobEmitter( gas ) );
-		}
-	}
-
-	private void addParticleSprite(final CustomParticle particle) {
-		if (particle.emitter == null) {
-			gases.add(new CustomParticle.ParticleEmitter(particle));
 		}
 	}
 

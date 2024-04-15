@@ -1,9 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
-import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
+import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -11,8 +8,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.EToolbar;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
@@ -44,14 +39,12 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
-import com.watabou.glwrap.Blending;
-import com.watabou.input.PointerEvent;
 import com.watabou.noosa.*;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.*;
@@ -62,6 +55,8 @@ import java.util.*;
 public class EditorScene extends DungeonScene {
 
     private static EditorScene scene;
+
+    private DungeonTerrainTilemap tiles;
 
 
     private static CustomLevel customLevel;
@@ -80,8 +75,6 @@ public class EditorScene extends DungeonScene {
     private Map<LevelTransition, BitmapText> transitionIndicatorsMap;
     private Group realMobs;
 
-    private static PointF mainCameraPos;
-
     private static boolean displayZones = false;
 
 
@@ -92,6 +85,7 @@ public class EditorScene extends DungeonScene {
         Statistics.reset();
         Dungeon.hero = null;
         Dungeon.branch = 0;
+        GamesInProgress.curSlot = 0;
         FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
     }
 
@@ -130,10 +124,6 @@ public class EditorScene extends DungeonScene {
         }
     }
 
-    public static void resetCameraPos() {//tzz
-        mainCameraPos = null;
-    }
-
     @Override
     public void create() {
 
@@ -168,7 +158,7 @@ public class EditorScene extends DungeonScene {
 
         customBossTilemap = customBossWallsTilemap = null;
 
-        initBasics();///tzz dungeonterrainmap with arg0
+        initBasics();
 
         terrain.add(LevelColoring.getWall(true));
 
@@ -274,13 +264,9 @@ public class EditorScene extends DungeonScene {
     }
 
     @Override
-    public void update() {
-        super.update();
-
-        for (Gizmo g : toDestroy){//tzz check!
-            g.destroy();
-        }
-        toDestroy.clear();
+    protected void initAndAddDungeonTilemap() {
+        tiles = new DungeonTerrainTilemap(0);
+        terrain.add( tiles );
     }
 
     public static void setDisplayZoneState(boolean enable) {
@@ -399,13 +385,6 @@ public class EditorScene extends DungeonScene {
         super.addCustomTile(visual);
         if (visual instanceof CustomTilemap.BossLevelVisuals)
             customBossTilemap = (CustomTilemap.BossLevelVisuals) visual;
-
-        if (visual instanceof CustomTileLoader.SimpleCustomTile) {
-            ((CustomTileLoader.SimpleCustomTile) visual).placed = true;
-            int pos = visual.tileX + visual.tileY * customLevel.width();
-            customLevel.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
-            customLevel.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
-        }//tzz maybe move to super
     }
 
     @Override
@@ -413,13 +392,6 @@ public class EditorScene extends DungeonScene {
         super.addCustomWall(visual);
         if (visual instanceof CustomTilemap.BossLevelVisuals)
             customBossWallsTilemap = (CustomTilemap.BossLevelVisuals) visual;
-
-        if (visual instanceof CustomTileLoader.SimpleCustomTile) {
-            ((CustomTileLoader.SimpleCustomTile) visual).placed = true;
-            int pos = visual.tileX + visual.tileY * customLevel.width();
-            customLevel.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
-            customLevel.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
-        }
     }
 
     private static CustomTilemap.BossLevelVisuals customBossTilemap, customBossWallsTilemap;
@@ -434,17 +406,15 @@ public class EditorScene extends DungeonScene {
         }
     }
 
-	//tzz checken!
-	//public static void remove(CustomTilemap t) {
-	//        if (scene == null) return;
-	//        if (t instanceof CustomTileLoader.SimpleCustomTile) {
-	//            int pos = t.tileX + t.tileY * customLevel.width();
-	//            customLevel.visualMap[pos] = customLevel.map[pos];
-	//            customLevel.visualRegions[pos] = 0;
-	//        }
-	//        if (t.wallVisual) scene.customWalls.remove(t.killVisual());
-	//        else scene.customTiles.remove(t.killVisual());
-	//    }
+    @Override
+    protected void removeImpl(CustomTilemap visual) {
+        if (visual instanceof CustomTileLoader.SimpleCustomTile) {
+            int pos = visual.tileX + visual.tileY * customLevel.width();
+            customLevel.visualMap[pos] = customLevel.map[pos];
+            customLevel.visualRegions[pos] = 0;
+        }
+    }
+
     private void addTransitionSprite(LevelTransition transition) {
         if (transitionIndicatorsMap.containsKey(transition)) return;
         BitmapText text = new BitmapText(PixelScene.pixelFont);
@@ -461,23 +431,23 @@ public class EditorScene extends DungeonScene {
                 if (trans.departCell == transition.departCell && trans.destCell == transition.destCell
                         && trans.destLevel.equals(transition.destLevel)) {
                     //just assume that this is effectively the same transition (relevant for undo working after level was reloaded)
-                    text = scene.transitionIndicatorsMap.get(trans);
-                    break;
-                }
-            }
-        }
-        scene.transitionIndicators.remove(text);
-        if (text == null) return;
-        text.destroy();
-        scene.transitionIndicatorsMap.remove(transition);
-    }
+					text = scene.transitionIndicatorsMap.get(trans);
+					break;
+				}
+			}
+		}
+		scene.transitionIndicators.remove(text);
+		if (text == null) return;
+		text.destroy();
+		scene.transitionIndicatorsMap.remove(transition);
+	}
 
-    public static void add(LevelTransition transition) {
-        if (scene == null) return;
-        scene.addTransitionSprite(transition);
-    }
+	public static void add(LevelTransition transition) {
+		if (scene == null) return;
+		scene.addTransitionSprite(transition);
+	}
 
-    public static void updateTransitionIndicator(LevelTransition transition) {
+	public static void updateTransitionIndicator(LevelTransition transition) {
         if (scene == null || transition == null) return;
         BitmapText text = scene.transitionIndicatorsMap.get(transition);
         if (text == null) return;
@@ -578,33 +548,6 @@ public class EditorScene extends DungeonScene {
 		EditorScene.start();
 		EditorScene.openDifferentLevel = false;
 		WndSelectDungeon.openDungeon(Dungeon.customDungeon.getName());
-	}
-
-	private final List<Window> temporarilyHiddenWindows = new ArrayList<>(5);
-
-	public static synchronized void hideWindowsTemporarily() {///tzzz make to super!
-		if (scene == null) return;
-
-		for (Gizmo g : scene.members.toArray(new Gizmo[0])) {
-			if (g instanceof Window) {
-				scene.remove(g);
-				g.active = false;
-				if (g instanceof WndTabbed)
-					((WndTabbed) g).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
-				scene.temporarilyHiddenWindows.add((Window) g);
-			}
-		}
-	}
-
-	public static synchronized void reshowWindows() {
-		if (scene == null) return;
-		for (Window w : scene.temporarilyHiddenWindows) {
-			scene.addToFront(w);
-			w.active = true;
-			if (w instanceof WndTabbed)
-				((WndTabbed) w).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
-		}
-		scene.temporarilyHiddenWindows.clear();
 	}
 
     public static void updateDepthIcon() {

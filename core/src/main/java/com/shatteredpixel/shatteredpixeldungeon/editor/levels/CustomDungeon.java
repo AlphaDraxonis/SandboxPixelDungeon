@@ -190,6 +190,11 @@ public class CustomDungeon implements Bundlable {
     }
 
     public int getItemSpriteOnSheet(Item item) {
+        if (Dungeon.isLevelTesting()) {
+            if (item instanceof Scroll || item instanceof Potion || item instanceof Ring)
+                item.reset();//we want to use the color from the handler
+            return item.image();
+        }
         int code = -1;
         Class<? extends Item> c = item.getClass();
         if (item instanceof Scroll) {

@@ -54,6 +54,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Banner;
 import com.shatteredpixel.shatteredpixeldungeon.ui.InventoryPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.watabou.glwrap.Blending;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.*;
@@ -61,18 +62,15 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
+import com.watabou.utils.PointF;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public abstract class DungeonScene extends PixelScene {
 
 	private static DungeonScene scene;
 
 	protected SkinnedBlock water;
-	protected DungeonTerrainTilemap tiles;
 	protected GridTileMap visualGrid;
 	protected TerrainFeaturesTilemap terrainFeatures;
 	protected BarrierTilemap barriers;
@@ -104,10 +102,16 @@ public abstract class DungeonScene extends PixelScene {
 
 	protected InventoryPane inventory;
 
+	protected static PointF mainCameraPos;
+
 
 	//sometimes UI changes can be prompted by the actor thread.
 	// We queue any removed element destruction, rather than destroying them in the actor thread.
 	protected ArrayList<Gizmo> toDestroy = new ArrayList<>();
+
+	public static void resetCameraPos() {
+		mainCameraPos = null;
+	}
 
 	@Override
 	public void create() {
@@ -148,8 +152,7 @@ public abstract class DungeonScene extends PixelScene {
 
 		DungeonTileSheet.setupVariance(Dungeon.level.map.length, Dungeon.seedCurLevel());
 
-		tiles = new DungeonTerrainTilemap();
-		terrain.add( tiles );
+		initAndAddDungeonTilemap();
 
 		customTiles = new Group();
 		terrain.add(customTiles);
@@ -168,14 +171,9 @@ public abstract class DungeonScene extends PixelScene {
 		terrain.add(barriers);
 
 		terrain.add( LevelColoring.getFloor() );
-
-
-		//TODO tzz
-
-
-		heaps = new Group();
-		add( heaps );
 	}
+
+	protected abstract void initAndAddDungeonTilemap();
 
 	@Override
 	public void update() {
@@ -266,10 +264,24 @@ public abstract class DungeonScene extends PixelScene {
 
 	public void addCustomTile(CustomTilemap visual) {
 		customTiles.add(visual.create());
+
+		if (visual instanceof CustomTileLoader.SimpleCustomTile) {
+			((CustomTileLoader.SimpleCustomTile) visual).placed = true;
+			int pos = visual.tileX + visual.tileY * Dungeon.level.width();
+			Dungeon.level.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
+			Dungeon.level.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
+		}
 	}
 
 	public void addCustomWall(CustomTilemap visual) {
-		customWalls.add(visual.create());
+		customWalls.add( visual.create() );
+
+		if (visual instanceof CustomTileLoader.SimpleCustomTile) {
+			((CustomTileLoader.SimpleCustomTile) visual).placed = true;
+			int pos = visual.tileX + visual.tileY * Dungeon.level.width();
+			Dungeon.level.visualMap[pos] = ((CustomTileLoader.SimpleCustomTile) visual).imageTerrain;
+			Dungeon.level.visualRegions[pos] = ((CustomTileLoader.SimpleCustomTile) visual).region;
+		}
 	}
 
 	public static void add(CustomTilemap visual) {
@@ -285,9 +297,12 @@ public abstract class DungeonScene extends PixelScene {
 
 	public static void remove(CustomTilemap visual) {
 		if (scene == null) return;
+		scene.removeImpl(visual);
 		if (visual.wallVisual) scene.customWalls.remove(visual.killVisual());
 		else scene.customTiles.remove(visual.killVisual());
 	}
+
+	protected void removeImpl(CustomTilemap visual) {}
 
 	public static void revalidateCustomTiles(){
 		if (scene == null) return;
@@ -528,6 +543,33 @@ public abstract class DungeonScene extends PixelScene {
 		}
 
 		return false;
+	}
+
+	private final List<Window> temporarilyHiddenWindows = new ArrayList<>(5);
+
+	public static synchronized void hideWindowsTemporarily() {
+		if (scene == null) return;
+
+		for (Gizmo g : scene.members.toArray(new Gizmo[0])) {
+			if (g instanceof Window) {
+				scene.remove(g);
+				g.active = false;
+				if (g instanceof WndTabbed)
+					((WndTabbed) g).setBlockLevelForTabs(PointerArea.NEVER_BLOCK);
+				scene.temporarilyHiddenWindows.add((Window) g);
+			}
+		}
+	}
+
+	public static synchronized void reshowWindows() {
+		if (scene == null) return;
+		for (Window w : scene.temporarilyHiddenWindows) {
+			scene.addToFront(w);
+			w.active = true;
+			if (w instanceof WndTabbed)
+				((WndTabbed) w).setBlockLevelForTabs(PointerArea.ALWAYS_BLOCK);
+		}
+		scene.temporarilyHiddenWindows.clear();
 	}
 
 
