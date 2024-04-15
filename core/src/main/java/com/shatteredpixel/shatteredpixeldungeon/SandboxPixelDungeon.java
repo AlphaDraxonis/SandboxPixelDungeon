@@ -44,6 +44,11 @@ public class SandboxPixelDungeon extends Game {
 	public static final int _0_8_v2_2_0  = 755;
 	public static final int _1_0_v2_3_0  = 766;
 
+	public static final int v2_0_2 = 700;
+	public static final int v2_1_4 = 737; //iOS was 737, other platforms were 736
+	public static final int v2_2_1 = 755; //iOS was 755 (also called v2.2.2), other platforms were 754
+	public static final int v2_3_2 = 768;
+	
 	static {
 		Music.getExternalAudioFile = CustomDungeonSaves::getExternalFile;
 		ScrollArea.checkIfGizmoIsInstanceofWindow = g -> g instanceof Window || g == null && DungeonScene.showingWindow();
