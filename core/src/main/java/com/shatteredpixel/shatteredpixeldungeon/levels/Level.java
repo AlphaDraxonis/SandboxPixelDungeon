@@ -57,6 +57,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MossyClump;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrapMechanism;
@@ -243,24 +245,35 @@ public abstract class Level implements Bundlable {
 
 				addItemToSpawn(Generator.random(Generator.Category.FOOD));
 
-				if (Dungeon.posNeeded()) {
-					Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
-					addItemToSpawn(new PotionOfStrength());
+			if (Dungeon.posNeeded()) {
+				Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
+				addItemToSpawn( new PotionOfStrength() );
+			}
+			if (Dungeon.souNeeded()) {
+				Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
+				//every 2nd scroll of upgrade is removed with forbidden runes challenge on
+				//TODO while this does significantly reduce this challenge's levelgen impact, it doesn't quite remove it
+				//for 0 levelgen impact, we need to do something like give the player all SOU, but nerf them
+				//or give a random scroll (from a separate RNG) instead of every 2nd SOU
+				if (!Dungeon.isChallenged(Challenges.NO_SCROLLS) || Dungeon.LimitedDrops.UPGRADE_SCROLLS.count%2 != 0){
+					addItemToSpawn(new ScrollOfUpgrade());
 				}
-				if (Dungeon.souNeeded()) {
-					Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
-					//every 2nd scroll of upgrade is removed with forbidden runes challenge on
-					//TODO while this does significantly reduce this challenge's levelgen impact, it doesn't quite remove it
-					//for 0 levelgen impact, we need to do something like give the player all SOU, but nerf them
-					//or give a random scroll (from a separate RNG) instead of every 2nd SOU
-					if (!Dungeon.isChallenged(Challenges.NO_SCROLLS) || Dungeon.LimitedDrops.UPGRADE_SCROLLS.count % 2 != 0) {
-						addItemToSpawn(new ScrollOfUpgrade());
-					}
-				}
-				if (Dungeon.asNeeded()) {
-					Dungeon.LimitedDrops.ARCANE_STYLI.count++;
-					addItemToSpawn(new Stylus());
-				}
+			}
+			if (Dungeon.asNeeded()) {
+				Dungeon.LimitedDrops.ARCANE_STYLI.count++;
+				addItemToSpawn( new Stylus() );
+			}
+			if ( Dungeon.enchStoneNeeded() ){
+				Dungeon.LimitedDrops.ENCH_STONE.drop();
+				addItemToSpawn( new StoneOfEnchantment() );
+			}
+			if ( Dungeon.intStoneNeeded() ){
+				Dungeon.LimitedDrops.INT_STONE.drop();
+				addItemToSpawn( new StoneOfIntuition() );
+			}
+			if ( Dungeon.trinketCataNeeded() ){
+				Dungeon.LimitedDrops.TRINKET_CATA.drop();
+				addItemToSpawn( new TrinketCatalyst());
 			}
 			
 			if (Dungeon.depth > 1 && feeling == null) {

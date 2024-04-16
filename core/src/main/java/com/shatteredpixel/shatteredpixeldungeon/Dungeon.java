@@ -88,6 +88,10 @@ public class Dungeon {
 		STRENGTH_POTIONS,
 		UPGRADE_SCROLLS,
 		ARCANE_STYLI,
+		ENCH_STONE,
+		INT_STONE,
+		TRINKET_CATA,
+		LAB_ROOM, //actually a room, but logic is the same
 
 		//Health potion sources
 		//enemies
@@ -319,7 +323,7 @@ public class Dungeon {
 		Badges.reset();
 
 		CustomObject.loadScripts();
-		
+
 		GamesInProgress.selectedClass.initHero( hero );
 	}
 
@@ -582,7 +586,63 @@ public class Dungeon {
 //        return Random.Int(5 - floorThisSet) < asLeftThisSet;
     }
 
-    private static final String INIT_VER = "init_ver";
+    public static boolean enchStoneNeeded(){
+		if (CustomDungeon.isEditing()) {
+			if (region() == LevelScheme.REGION_PRISON || region() == LevelScheme.REGION_CAVES)
+				return Random.Int(4) == 0;
+		}
+		if (visitedDepths.contains(Dungeon.depth)) return false;
+		return false;//uses ItemDistribution
+//		//1 enchantment stone, spawns on chapter 2 or 3
+//		if (!LimitedDrops.ENCH_STONE.dropped()){
+//			int region = 1+depth/5;
+//			if (region > 1){
+//				int floorsVisited = depth - 5;
+//				if (floorsVisited > 4) floorsVisited--; //skip floor 10
+//				return Random.Int(9-floorsVisited) == 0; //1/8 chance each floor
+//			}
+//		}
+//		return false;
+	}
+
+	public static boolean intStoneNeeded(){
+		if (CustomDungeon.isEditing()) {
+			if (getSimulatedDepth() <= 3)
+				return Random.Int(3) == 0;
+		}
+		if (visitedDepths.contains(Dungeon.depth)) return false;
+		return false;//uses ItemDistribution
+//		//one stone on floors 1-3
+//		return !LimitedDrops.INT_STONE.dropped() && Random.Int(4-depth) == 0;
+	}
+
+	public static boolean trinketCataNeeded(){
+		if (CustomDungeon.isEditing()) {
+			if (getSimulatedDepth() <= 3)
+				return Random.Int(3) == 0;
+		}
+		if (visitedDepths.contains(Dungeon.depth)) return false;
+		return false;//uses ItemDistribution
+//		//one trinket catalyst on floors 1-3
+//		return !LimitedDrops.TRINKET_CATA.dropped() && Random.Int(4-depth) == 0;
+	}
+
+	public static boolean labRoomNeeded(){
+		//one laboratory each floor set, in floor 3 or 4, 1/2 chance each floor
+		int region = 1+depth/5;
+		if (region > LimitedDrops.LAB_ROOM.count){
+			int floorThisRegion = depth%5;
+			if (floorThisRegion >= 4 || (floorThisRegion == 3 && Random.Int(2) == 0)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// 1/4
+	// 3/4 * 1/3 = 3/12 = 1/4
+	// 3/4 * 2/3 * 1/2 = 6/24 = 1/4
+	// 1/4private static final String INIT_VER = "init_ver";
     private static final String VERSION = "version";
     private static final String SEED = "seed";
     private static final String CUSTOM_SEED = "custom_seed";
