@@ -26,38 +26,28 @@ package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references;
 
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector.FieldLike;
 
-public class DynamicReference extends StandardReference {
+public class StandardReference extends Reference {
 
-	public DynamicReference(Class<?> type, String name, Reference parent, FieldLike parentField) {
-		super(type, null, name, parent, parentField);
+	private final Reference parent;
+	private final FieldLike parentField;
+
+	public StandardReference(Class<?> type, Object value, String name, Reference parent, FieldLike parentField) {
+		super(type, value, name);
+		this.parent = parent;
+		this.parentField = parentField;
 	}
 
-	@Override
-	public Object getValue() {
+	public Reference getParent() {
+		return parent;
+	}
+
+	public Object valueViaParent() throws ReferenceNotFoundException {
+		Object parentValue = parent.valueViaParent();
 		try {
-			return valueViaParent();
-		} catch (ReferenceNotFoundException e) {
-			return new ReferenceNotFoundException.ReturnPlaceholder();
+			return parentField.get(parentValue);
+		} catch (Exception e) {
+			throw new ReferenceNotFoundException(e);
 		}
 	}
 
-//	private final WeakReference<Object> ref;
-//
-//	public DynamicReference(FieldLike field, Object obj, String name) {
-//		super(field.getType(), field, name);
-//		this.ref = new WeakReference<>(obj);
-//	}
-//
-//	@Override
-//	public Object getValue() {
-//		try {
-//			return ((FieldLike) super.getValue()).get(ref.get());
-//		} catch (Exception e) {
-//			return null;
-//		}
-//	}
-//
-//	public boolean hasNoReference() {
-//		return ref.get() == null;
-//	}
 }

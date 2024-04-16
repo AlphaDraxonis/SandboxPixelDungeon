@@ -79,4 +79,11 @@ public abstract class ObjInspectorTab extends Component {
 
 	protected void updateValues() {
 	}
+
+	@Override
+	public synchronized void destroy() {
+		super.destroy();
+		searchBar.destroy();
+	}
+
 }

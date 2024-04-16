@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector.FieldLike;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.DynamicReference;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.StandardReference;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -48,7 +49,7 @@ public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
 	private TextInput nameInput;
 	private StyledCheckBox asReference, asValue;
 
-	public WndStoreReference(FieldLike field, Object obj) {
+	public WndStoreReference(Reference reference, FieldLike field, Object obj) {
 
 		super();
 
@@ -62,6 +63,7 @@ public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
 				nameInput.setMaxLength(100);
 				add(nameInput);
 
+				//TODO tzz dont allow as reference if parent reference is null (e.g. return value from a method)
 				asReference = new StyledCheckBox(Messages.get(WndStoreReference.class, "as_reference")) {
 					@Override
 					public void checked(boolean value) {
@@ -104,7 +106,7 @@ public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
 						hide();
 						Reference ref;
 						if (asReference.checked()) {
-							ref = new DynamicReference(field, obj, nameInput.getText());
+							ref = new DynamicReference(field.getType(), nameInput.getText(), reference, field);
 						} else {
 							Object val;
 							try {
@@ -112,7 +114,7 @@ public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
 							} catch (IllegalAccessException e) {
 								return;
 							}
-							ref = new Reference(val.getClass(), val, nameInput.getText());
+							ref = new StandardReference(val.getClass(), val, nameInput.getText(), reference, field);
 						}
 						WndScrollOfDebug.addReference(ref);
 

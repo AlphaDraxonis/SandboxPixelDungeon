@@ -7,6 +7,8 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndSetValue;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndStoreReference;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.ReferenceNotFoundException;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.StandardReference;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -21,6 +23,7 @@ import java.util.Set;
 
 public class FieldComp extends ObjInspectorTabComp {
 
+	private final Reference reference;
 	private final FieldLike field;
 
 	private Spinner.SpinnerTextBlock value;
@@ -30,12 +33,13 @@ public class FieldComp extends ObjInspectorTabComp {
 	private Button valueBoxBtn;
 	private Button inspectType;
 
-	public FieldComp(FieldLike field, Object obj) {
+	public FieldComp(Reference reference, FieldLike field, Object obj) {
 		super(obj);
+		this.reference = reference;
 		this.field = field;
 
 		int mod = field.getModifiers();
-		modifiersTxt.text((mod == 0) ? "" : (Modifier.toString(mod).replace("public ", "") + " "));
+		modifiersTxt.text(Modifier.toString(mod).replace("public ", "") + " ");
 		typeTxt.text("_" + field.getType().getSimpleName() + "_");
 		nameTxt.text(" " + field.getName());
 
@@ -147,13 +151,13 @@ public class FieldComp extends ObjInspectorTabComp {
 	protected void onInspectType() { //clicked on the type name or value box
 		if (field.getType().isPrimitive() || field.getType() == String.class) return;
 
-		Reference ref = new Reference(field.getType(), fieldValueCatchException(field, obj), field.getName());
+		Reference ref = new StandardReference(field.getType(), fieldValueCatchException(field, obj), field.getName(), reference, field);
 		ref.setActualTypeArguments(field.getActualTypeArguments());
 		openDifferentInspectWnd(ref);
 	}
 
 	protected void onTake() { //clicked on take btn
-		GameScene.show(new WndStoreReference(field, obj));
+		GameScene.show(new WndStoreReference(reference, field, obj));
 	}
 
 	protected void onChangeValue() { //clicked on change value
@@ -181,6 +185,8 @@ public class FieldComp extends ObjInspectorTabComp {
 	}
 
 	public static String fieldValueAsString(FieldLike field, Object obj) {
+		if (obj instanceof ReferenceNotFoundException.ReturnPlaceholder)
+			return obj.toString();
 		try {
 			return valueAsString(field.get(obj));
 		} catch (Exception e) {

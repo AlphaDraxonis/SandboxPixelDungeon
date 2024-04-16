@@ -15,4 +15,9 @@ public class StaticReference extends Reference {
         if (getType() == Dungeon.class) return Icons.ENTER.get();
         return super.createIcon();
     }
+
+    @Override
+    public Object valueViaParent() throws ReferenceNotFoundException {
+        return null;//tzz maybe not correct
+    }
 }

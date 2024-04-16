@@ -4,7 +4,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSe
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector.ObjInspector;
-import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.DynamicReference;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -44,8 +43,9 @@ public class ReferenceTable extends MultiWindowTabComp {
         Set<Reference> toRemove = new HashSet<>(3);
         System.gc();
         for (Reference r : WndScrollOfDebug.references) {
-            if (r instanceof DynamicReference && ((DynamicReference) r).hasNoReference()) toRemove.add(r);
-            else addReferenceToUI(r);
+//            if (r instanceof DynamicReference && ((DynamicReference) r).hasNoReference()) toRemove.add(r);
+//            else  tzz maybe add logic to handle invalid references!
+                addReferenceToUI(r);
         }
         WndScrollOfDebug.references.removeAll(toRemove);
     }

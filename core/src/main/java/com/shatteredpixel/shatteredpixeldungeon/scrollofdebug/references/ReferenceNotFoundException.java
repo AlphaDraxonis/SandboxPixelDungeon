@@ -24,40 +24,18 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references;
 
-import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector.FieldLike;
-
-public class DynamicReference extends StandardReference {
-
-	public DynamicReference(Class<?> type, String name, Reference parent, FieldLike parentField) {
-		super(type, null, name, parent, parentField);
+public final class ReferenceNotFoundException extends Exception {
+	public ReferenceNotFoundException(Exception ex) {
+		super(ex);
 	}
 
-	@Override
-	public Object getValue() {
-		try {
-			return valueViaParent();
-		} catch (ReferenceNotFoundException e) {
-			return new ReferenceNotFoundException.ReturnPlaceholder();
+	public static final class ReturnPlaceholder {
+
+		private final Object object = null;
+
+		@Override
+		public String toString() {
+			return "<Reference invalid>";
 		}
 	}
-
-//	private final WeakReference<Object> ref;
-//
-//	public DynamicReference(FieldLike field, Object obj, String name) {
-//		super(field.getType(), field, name);
-//		this.ref = new WeakReference<>(obj);
-//	}
-//
-//	@Override
-//	public Object getValue() {
-//		try {
-//			return ((FieldLike) super.getValue()).get(ref.get());
-//		} catch (Exception e) {
-//			return null;
-//		}
-//	}
-//
-//	public boolean hasNoReference() {
-//		return ref.get() == null;
-//	}
 }

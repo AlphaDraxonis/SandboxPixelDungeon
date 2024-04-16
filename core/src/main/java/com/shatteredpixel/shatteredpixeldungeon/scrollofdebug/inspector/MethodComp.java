@@ -2,7 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
-import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.StandardReference;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
@@ -38,7 +38,7 @@ public class MethodComp extends ObjInspectorTabComp {
             inspectType = new Button() {
                 @Override
                 protected void onClick() {
-                    openDifferentInspectWnd(new Reference(method.getReturnType(), null, method.getName()));
+                    openDifferentInspectWnd(new StandardReference(method.getReturnType(), null, method.getName(), null, null));
                 }
             };
             add(inspectType);

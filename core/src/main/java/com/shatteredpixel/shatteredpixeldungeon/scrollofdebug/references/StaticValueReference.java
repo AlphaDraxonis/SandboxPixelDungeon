@@ -9,4 +9,9 @@ public abstract class StaticValueReference<T> extends Reference {
     @Override
     public abstract T getValue();
 
+    @Override
+    public Object valueViaParent() {
+        return getValue();
+    }
+
 }

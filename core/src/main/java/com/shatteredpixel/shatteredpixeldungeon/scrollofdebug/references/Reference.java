@@ -14,7 +14,7 @@ import com.watabou.utils.Reflection;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
-public class Reference {
+public abstract class Reference {
 
     private final String name;
 
@@ -27,6 +27,8 @@ public class Reference {
         this.value = value;
         this.name = name;
     }
+
+    public abstract Object valueViaParent() throws ReferenceNotFoundException;
 
     public Class<?> getType() {
         return type;

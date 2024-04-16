@@ -54,7 +54,7 @@ public class FieldsTab extends ObjInspectorTab {
 		comps = new FieldComp[allFields.size()];
 		int i = 0;
 		for (FieldLike f : allFields) {
-			FieldComp c = new FieldComp(f, object);
+			FieldComp c = new FieldComp(reference, f, object);
 			comps[i++] = c;
 			add(c);
 		}
