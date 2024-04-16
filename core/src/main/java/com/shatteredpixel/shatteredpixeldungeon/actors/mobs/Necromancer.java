@@ -89,7 +89,17 @@ public class Necromancer extends SpawnerMob {
 		}
 		return super.act();
 	}
-	
+
+	@Override
+	public void aggro(Char ch) {
+		super.aggro(ch);
+		if (mySummon != null && mySummon.isAlive()
+				&& Dungeon.level.mobs.contains(mySummon)
+				&& mySummon.alignment == alignment){
+			mySummon.aggro(ch);
+		}
+	}
+
 //	@Override
 //	public int drRoll() {
 //		return super.drRoll() + Char.combatRoll(0, 5);
