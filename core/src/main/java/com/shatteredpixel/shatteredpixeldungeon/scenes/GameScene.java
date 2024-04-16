@@ -118,6 +118,8 @@ public class GameScene extends DungeonScene {
 	{
 		inGameScene = true;
 	}
+
+	private static PointF mainCameraPos;
 	
 	@Override
 	public void create() {
@@ -386,7 +388,8 @@ public class GameScene extends DungeonScene {
 			default:
 				Camera.main.snapTo(hero.center().x, hero.center().y);
 		}
-		Camera.main.panTo(hero.center(), 2.5f);
+		if (mainCameraPos == null || InterlevelScene.mode != InterlevelScene.Mode.NONE)
+			Camera.main.panTo(hero.center(), 2.5f);
 		mainCameraPos = Camera.main.scroll;
 
 		if (InterlevelScene.mode != InterlevelScene.Mode.NONE) {

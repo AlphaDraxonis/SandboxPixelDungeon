@@ -62,7 +62,6 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
-import com.watabou.utils.PointF;
 
 import java.util.*;
 
@@ -102,16 +101,10 @@ public abstract class DungeonScene extends PixelScene {
 
 	protected InventoryPane inventory;
 
-	protected static PointF mainCameraPos;
-
 
 	//sometimes UI changes can be prompted by the actor thread.
 	// We queue any removed element destruction, rather than destroying them in the actor thread.
 	protected ArrayList<Gizmo> toDestroy = new ArrayList<>();
-
-	public static void resetCameraPos() {
-		mainCameraPos = null;
-	}
 
 	@Override
 	public void create() {

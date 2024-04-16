@@ -92,6 +92,7 @@ public class EditorScene extends DungeonScene {
     private static boolean firstTimeOpening = true;
     public static boolean openDifferentLevel = true;
     public static float setCameraZoomWhenOpen = -1;
+    private static PointF mainCameraPos;
 
     public static void open(CustomLevel customLevel) {
         displayZones = false;
@@ -122,6 +123,10 @@ public class EditorScene extends DungeonScene {
             EditorScene.customLevel.levelScheme.unloadLevel();
             customLevel = null;
         }
+    }
+
+    public static void resetCameraPos() {
+        mainCameraPos = null;
     }
 
     @Override
