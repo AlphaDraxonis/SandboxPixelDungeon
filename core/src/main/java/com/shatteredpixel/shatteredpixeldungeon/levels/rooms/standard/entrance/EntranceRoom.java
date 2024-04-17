@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
+package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
@@ -43,6 +44,11 @@ public class EntranceRoom extends StandardRoom {
 	@Override
 	public int minHeight() {
 		return Math.max(super.minHeight(), 5);
+	}
+
+	@Override
+	public boolean isEntrance() {
+		return true;
 	}
 
 	@Override
@@ -114,8 +120,8 @@ public class EntranceRoom extends StandardRoom {
 	@Override
 	public boolean connect(Room room) {
 		//cannot connect to exit, otherwise works normally
-		if (room instanceof ExitRoom)   return false;
-		else                            return super.connect(room);
+		if (room.isExit())  return false;
+		else                return super.connect(room);
 	}
 	
 }

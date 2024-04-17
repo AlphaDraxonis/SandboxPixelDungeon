@@ -24,12 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Graph;
-import com.watabou.utils.Point;
-import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
+import com.watabou.utils.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -282,6 +277,14 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable, Copyab
 			r.connected.remove(this);
 		}
 		connected.clear();
+	}
+
+	public boolean isEntrance(){
+		return false;
+	}
+
+	public boolean isExit(){
+		return false;
 	}
 	
 	// **** Painter Logic ****

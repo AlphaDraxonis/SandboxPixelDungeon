@@ -19,49 +19,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
+package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.watabou.utils.Point;
 
 public class ExitRoom extends StandardRoom {
+	
+	@Override
+	public int minWidth() {
+		return Math.max(super.minWidth(), 5);
+	}
+	
+	@Override
+	public int minHeight() {
+		return Math.max(super.minHeight(), 5);
+	}
+	
+	public void paint(Level level) {
 
-    @Override
-    public int minWidth() {
-        return Math.max(super.minWidth(), 5);
-    }
+		Painter.fill( level, this, Terrain.WALL );
+		Painter.fill( level, this, 1, Terrain.EMPTY );
+		
+		for (Room.Door door : connected.values()) {
+			door.set( Room.Door.Type.REGULAR );
+		}
+		
+		int exit = level.pointToCell(random( 2 ));
+		Painter.set( level, exit, Terrain.EXIT );
+		level.addRegularExit(exit);
+	}
+	
+	@Override
+	public boolean canPlaceCharacter(Point p, Level l) {
+		return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
+	}
 
-    @Override
-    public int minHeight() {
-        return Math.max(super.minHeight(), 5);
-    }
-
-    public void paint(Level level) {
-
-        Painter.fill(level, this, Terrain.WALL);
-        Painter.fill(level, this, 1, Terrain.EMPTY);
-
-        for (Room.Door door : connected.values()) {
-            door.set(Room.Door.Type.REGULAR);
-        }
-
-        int exit = level.pointToCell(random(2));
-        Painter.set(level, exit, Terrain.EXIT);
-        level.addRegularExit(exit);
-    }
-
-    @Override
-    public boolean canPlaceCharacter(Point p, Level l) {
-        return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
-    }
-
-    @Override
-    public boolean connect(Room room) {
-        //cannot connect to entrance, otherwise works normally
-        if (room instanceof EntranceRoom) return false;
-        else return super.connect(room);
-    }
+	@Override
+	public boolean connect(Room room) {
+		//cannot connect to entrance, otherwise works normally
+		if (room.isEntrance())  return false;
+		else                    return super.connect(room);
+	}
 }
