@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -42,7 +43,7 @@ public abstract class GooBossRoom extends StandardRoom {
 	}
 
 	@Override
-	public boolean canMerge(Level l, Point p, int mergeTerrain) {
+	public boolean canMerge(Level l, Room other, Point p, int mergeTerrain) {
 		return false;
 	}
 
@@ -70,7 +71,7 @@ public abstract class GooBossRoom extends StandardRoom {
 		boss.pos = level.pointToCell(center());
 		level.mobs.add( boss );
 	}
-	
+
 	public static class GooNest extends CustomTilemap {
 		
 		{
@@ -79,7 +80,7 @@ public abstract class GooBossRoom extends StandardRoom {
 
 		public GooNest() {
 		}
-		
+
 		@Override
 		public Tilemap create() {
 			Tilemap v = super.create();
