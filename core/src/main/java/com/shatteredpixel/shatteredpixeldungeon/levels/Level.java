@@ -2128,7 +2128,7 @@ public abstract class Level implements Bundlable {
 				viewDist *= 1f + 0.25f*((Hero) c).pointsInTalent(Talent.FARSIGHT);
 			}
 			
-			ShadowCaster.castShadow( cx, cy, fieldOfView, blocking, viewDist, c instanceof Hero );
+			ShadowCaster.castShadow( cx, cy, width(), fieldOfView, blocking, viewDist, c instanceof Hero );
 		} else {
 			BArray.setFalse(fieldOfView);
 		}

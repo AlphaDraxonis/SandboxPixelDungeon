@@ -67,6 +67,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRo
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance.EntranceRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit.ExitRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
+import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
@@ -267,7 +268,7 @@ public abstract class RegularLevel extends Level {
 
 			ArrayList<Room> stdRooms = new ArrayList<>();
 			for (Room room : rooms) {
-				if (room instanceof StandardRoom && room != roomEntrance) {
+				if (room instanceof StandardRoom) {
 					for (int i = 0; i < ((StandardRoom) room).mobSpawnWeight(); i++) {
 						stdRooms.add(room);
 					}
@@ -276,7 +277,9 @@ public abstract class RegularLevel extends Level {
 			Random.shuffle(stdRooms);
 			Iterator<Room> stdRoomIter = stdRooms.iterator();
 
-			while (mobsToSpawn > 0) {
+			boolean[] entranceFOV = new boolean[length()];
+		Point c = cellToPoint(entrance());
+		ShadowCaster.castShadow(c.x, c.y, width(), entranceFOV, losBlocking, 8);while (mobsToSpawn > 0) {
 				Mob mob = createMob();
 				Room roomToSpawn;
 
@@ -290,7 +293,8 @@ public abstract class RegularLevel extends Level {
 					mob.pos = pointToCell(roomToSpawn.random());
 					tries--;
 				} while (tries >= 0 && (findMob(mob.pos) != null
-						|| !isPassable(mob.pos, mob)
+						|| entranceFOV[mob.pos] || (roomToSpawn.isEntrance() && distance(entrance(), mob.pos) <= 5)
+					|| !isPassable(mob.pos, mob)
 						|| solid[mob.pos]
 						|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
 						|| mob.pos == exit()
@@ -310,7 +314,8 @@ public abstract class RegularLevel extends Level {
 							mob.pos = pointToCell(roomToSpawn.random());
 							tries--;
 						} while (tries >= 0 && (findMob(mob.pos) != null
-								|| !isPassable(mob.pos, mob)
+								|| entranceFOV[mob.pos] || (roomToSpawn.isEntrance() && distance(entrance(), mob.pos) <= 5)
+							|| !isPassable(mob.pos, mob)
 								|| solid[mob.pos]
 								|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
 								|| mob.pos == exit()
