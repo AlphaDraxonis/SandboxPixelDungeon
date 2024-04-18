@@ -82,10 +82,13 @@ public interface FieldLike extends Member {
 		private final String name;
 		private final int modifiers;
 
-		protected FakeField(Class<?> clazz, String name, int modifiers) {
+		private final Type[] actualTypeArguments;
+
+		protected FakeField(Class<?> clazz, String name, int modifiers, Type[] actualTypeArguments) {
 			this.clazz = clazz;
 			this.name = name;
 			this.modifiers = modifiers;
+			this.actualTypeArguments = actualTypeArguments;
 		}
 
 		@Override
@@ -111,6 +114,11 @@ public interface FieldLike extends Member {
 		@Override
 		public Class<?> getDeclaringClass() {
 			return null;
+		}
+
+		@Override
+		public Type[] getActualTypeArguments() {
+			return actualTypeArguments;
 		}
 	}
 

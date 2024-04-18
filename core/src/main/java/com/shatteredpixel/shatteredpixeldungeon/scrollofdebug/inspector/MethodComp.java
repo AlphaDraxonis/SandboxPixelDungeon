@@ -2,13 +2,13 @@ package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndScrollOfDebug;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.StandardReference;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Locale;
 
 public class MethodComp extends ObjInspectorTabComp {
@@ -26,8 +26,7 @@ public class MethodComp extends ObjInspectorTabComp {
         super(obj);
         this.method = method;
 
-        int mod = method.getModifiers();
-        modifiersTxt.text((mod == 0) ? "" : (Modifier.toString(mod).replace("public ", "") + " "));
+        modifiersTxt.text(WndScrollOfDebug.modifiersToString(method.getModifiers()));
         typeTxt.text("_" + method.getReturnType().getSimpleName() + "_");
         nameTxt.text(" " + method.getName());
 

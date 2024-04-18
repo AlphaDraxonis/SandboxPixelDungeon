@@ -3,7 +3,9 @@ package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndScrollOfDebug;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndSetValue;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndStoreReference;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
@@ -12,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Standar
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.utils.SparseArray;
 
 import java.lang.reflect.Array;
@@ -28,7 +31,7 @@ public class FieldComp extends ObjInspectorTabComp {
 
 	private Spinner.SpinnerTextBlock value;
 
-	private IconButton take;
+	private IconButton take, setToNull;
 
 	private Button valueBoxBtn;
 	private Button inspectType;
@@ -38,8 +41,17 @@ public class FieldComp extends ObjInspectorTabComp {
 		this.reference = reference;
 		this.field = field;
 
-		int mod = field.getModifiers();
-		modifiersTxt.text(Modifier.toString(mod).replace("public ", "") + " ");
+		if (!WndSetValue.isPrimitiveLike(field.getType())) {
+			setToNull = new IconButton(Icons.CLOSE.get()) {
+				@Override
+				protected void onClick() {
+					setToNull();
+				}
+			};
+			add(setToNull);
+		}
+
+		modifiersTxt.text(WndScrollOfDebug.modifiersToString(field.getModifiers()));
 		typeTxt.text("_" + field.getType().getSimpleName() + "_");
 		nameTxt.text(" " + field.getName());
 
@@ -134,9 +146,15 @@ public class FieldComp extends ObjInspectorTabComp {
 			nameTxt.setPos(nameTxt.left(), nameTxt.top() + addY);
 		}
 
+		float widthForButtons = 0;
 		take.setRect(x + width - take.icon().width() - 2, y + (height - take.icon().height()) * 0.5f, take.icon().width(), take.icon().height());
+		widthForButtons = take.width() + 2;
+		if (setToNull != null) {
+			setToNull.setRect(take.left() - setToNull.icon().width() - 1, y + (height - setToNull.icon().height()) * 0.5f, setToNull.icon().width(), setToNull.icon().height());
+			widthForButtons += setToNull.width() + 1;
+		}
 
-		float valueFieldWidth = Math.min(100, Math.max(20, take.left() - nameTxt.right()));
+		float valueFieldWidth = Math.min(100, Math.max(20, take.right() - nameTxt.right()));
 		value.setRect(x + width - valueFieldWidth, y, valueFieldWidth, height);
 
 		if (inspectType != null) {
@@ -144,8 +162,25 @@ public class FieldComp extends ObjInspectorTabComp {
 		}
 
 		if (valueBoxBtn != null) {
-			valueBoxBtn.setRect(value.left() - 2, value.top() - 2, take.left() - 2 - value.left(), value.height() + 4);
+			valueBoxBtn.setRect(value.left() - 2, value.top() - 2, take.right() - widthForButtons - value.left(), value.height() + 4);
 		}
+	}
+
+	protected void setToNull() {
+		if (WndSetValue.isPrimitiveLike(field.getType())) return;
+
+		DungeonScene.show(new WndOptions(Icons.WARNING.get(), "Set to null tzz?", "Set to null can result in a game crash!", "Yes", "No") {
+			@Override
+			protected void onSelect(int index) {
+				if (index == 0) {
+					try {
+						field.set(obj, null);
+						updateValueText();
+					} catch (Exception ignored) {
+					}
+				}
+			}
+		});
 	}
 
 	protected void onInspectType() { //clicked on the type name or value box
@@ -162,7 +197,13 @@ public class FieldComp extends ObjInspectorTabComp {
 
 	protected void onChangeValue() { //clicked on change value
 		if (!Modifier.isFinal(field.getModifiers()) && value.active) {
-			WndSetValue.show(field, obj, fieldValueCatchException(field, obj), () -> updateValueText());
+			WndSetValue.show(field, fieldValueCatchException(field, obj), newVal -> {
+				try {
+					field.set(obj, newVal);
+					updateValueText();
+				} catch (Exception ignored) {
+				}
+			});
 		}
 	}
 
@@ -174,6 +215,7 @@ public class FieldComp extends ObjInspectorTabComp {
 
 	public void updateValueText() {
 		value.setText(fieldValueAsString(field, obj));
+		if (setToNull != null) setToNull.enable(fieldValueCatchException(field, obj) != null);
 	}
 
 	public static Object fieldValueCatchException(FieldLike field, Object obj) {

@@ -17,6 +17,8 @@ import java.util.*;
 
 public class ReferenceTable extends MultiWindowTabComp {
 
+    //TODO add option to select from this first tab!
+
     //A long list of all available references
     //Show icon: -> use EditorItem methods to get image
     //for items = their itemsprite (TODO what about rings?)

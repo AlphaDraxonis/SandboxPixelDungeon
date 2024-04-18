@@ -106,4 +106,11 @@ public class WndScrollOfDebug extends Window {
 
         return minAccessLevel <= accessLevel;
     }
+
+    public static String modifiersToString(int mods) {
+        if (mods == 0) return "";
+        if ((mods & (Modifier.PUBLIC + Modifier.PROTECTED + Modifier.PRIVATE)) == 0) //package-private
+             return "private " + Modifier.toString(mods) + " ";
+        else return Modifier.toString(mods).replace("public ", "") + " ";
+    }
 }

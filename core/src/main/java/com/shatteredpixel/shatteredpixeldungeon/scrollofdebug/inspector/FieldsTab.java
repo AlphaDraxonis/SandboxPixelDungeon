@@ -7,10 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Referen
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.StaticReference;
 import com.watabou.utils.SparseArray;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +20,7 @@ public class FieldsTab extends ObjInspectorTab {
 		Class<?> clazz = reference.getValue() == null ? reference.getType() : reference.getValue().getClass();
 		List<FieldLike> allFields = new LinkedList<>();
 		if (reference instanceof StaticReference) addStaticFields(clazz, accessLevel, allFields);
-		else if (clazz.isArray()) addArrayFields(clazz, reference.getValue(), accessLevel, allFields);
+		else if (clazz.isArray()) addArrayFields(clazz, reference.getValue(), reference.getActualTypeArguments(), accessLevel, allFields);
 		else if (Collection.class.isAssignableFrom(clazz))
 			addCollectionsFields(clazz, reference.getActualTypeArguments(), reference.getValue(), accessLevel, allFields);
 		else if (Map.class.isAssignableFrom(clazz))
@@ -35,7 +32,7 @@ public class FieldsTab extends ObjInspectorTab {
 
 			if (allFields.size() == 1 && allFields.get(0).getName().equals("value") || clazz == String.class) {
 				allFields.clear();
-				allFields.add(new FieldLike.FakeField(clazz,"value", Modifier.PUBLIC + Modifier.FINAL) {
+				allFields.add(new FieldLike.FakeField(clazz,"value", Modifier.PUBLIC + Modifier.FINAL, null) {
 					@Override
 					public Object get(Object obj) throws IllegalAccessException {
 						return obj;
@@ -85,7 +82,7 @@ public class FieldsTab extends ObjInspectorTab {
 
 	private void addCollectionsFields(Class<?> clazz, Type[] genericParameters, Object collection, int accessLevel, List<FieldLike> fields) {
 
-		fields.add(new FieldLike.FakeField(int.class, "length", Modifier.PUBLIC + Modifier.FINAL) {
+		fields.add(new FieldLike.FakeField(int.class, "length", Modifier.PUBLIC + Modifier.FINAL, null) {
 			@Override
 			public Object get(Object obj) throws IllegalAccessException {
 				return !(obj instanceof Collection) ? 0 : ((Collection<?>) obj).size();
@@ -99,16 +96,24 @@ public class FieldsTab extends ObjInspectorTab {
 
 		if (collection == null) return;
 
-		Class<?> componentType = genericParameters == null
-				|| genericParameters.length == 0
-				|| !(genericParameters[0] instanceof Class<?>)
-				? Object.class : (Class<?>) genericParameters[0];
+		Class<?> componentType = Object.class;
+		Type[] actualTypeArgumentForValues;
+		if (genericParameters == null || genericParameters.length == 0) {
+			//nothing, use Object.class
+			actualTypeArgumentForValues = null;
+		} else if (genericParameters[0] instanceof Class<?>){
+			componentType = (Class<?>) genericParameters[0];
+			actualTypeArgumentForValues = null;
+		} else {
+			componentType = (Class<?>) ((ParameterizedType) genericParameters[0]).getRawType();
+			actualTypeArgumentForValues = ((ParameterizedType) genericParameters[0]).getActualTypeArguments();
+		}
 
 		if (List.class.isAssignableFrom(clazz)) {
 			int length = ((Collection<?>) collection).size();
 			for (int i = 0; i < length; i++) {
 				final int index = i;
-				fields.add(new FieldLike.FakeField(componentType, "[" + index + "]", Modifier.PUBLIC) {
+				fields.add(new FieldLike.FakeField(componentType, "[" + index + "]", Modifier.PUBLIC, actualTypeArgumentForValues) {
 					@Override
 					public Object get(Object obj) throws IllegalAccessException {
 						return !(obj instanceof List) ? null : ((List<?>) obj).get(index);
@@ -126,7 +131,7 @@ public class FieldsTab extends ObjInspectorTab {
 			int length = ((Collection<?>) collection).size();
 			for (int i = 0; i < length; i++) {
 				final int index = i;
-				fields.add(new FieldLike.FakeField(componentType, "[@" + index + "]", Modifier.PUBLIC) {
+				fields.add(new FieldLike.FakeField(componentType, "[@" + index + "]", Modifier.PUBLIC, actualTypeArgumentForValues) {
 					@Override
 					public Object get(Object obj) throws IllegalAccessException {
 						return !(obj instanceof Collection) ? null : ((Collection<?>) obj).toArray()[index];
@@ -148,7 +153,7 @@ public class FieldsTab extends ObjInspectorTab {
 
 	private void addMapFields(Class<?> clazz, Type[] genericParameters, Object collection, int accessLevel, List<FieldLike> fields) {
 
-		fields.add(new FieldLike.FakeField(int.class, "length", Modifier.PUBLIC + Modifier.FINAL) {
+		fields.add(new FieldLike.FakeField(int.class, "length", Modifier.PUBLIC + Modifier.FINAL, null) {
 			@Override
 			public Object get(Object obj) throws IllegalAccessException {
 				return !(obj instanceof Map) ? 0 : ((Map<?, ?>) obj).size();
@@ -162,10 +167,21 @@ public class FieldsTab extends ObjInspectorTab {
 
 		if (collection == null) return;
 
-		if (genericParameters == null) genericParameters = new Type[]{null, Object.class};
+		Class<?> componentType = Object.class;
+		Type[] actualTypeArgumentForValues;
+		if (genericParameters == null || genericParameters.length != 2) {
+			//nothing, use Object.class
+			actualTypeArgumentForValues = null;
+		} else if (genericParameters[1] instanceof Class<?>){
+			componentType = (Class<?>) genericParameters[1];
+			actualTypeArgumentForValues = null;
+		} else {
+			componentType = (Class<?>) ((ParameterizedType) genericParameters[1]).getRawType();
+			actualTypeArgumentForValues = ((ParameterizedType) genericParameters[1]).getActualTypeArguments();
+		}
 
 		for (Map.Entry<?, ?> entry : ((Map<?, ?>) collection).entrySet()) {
-			fields.add(new FieldLike.FakeField((Class<?>) genericParameters[1], "[" + FieldComp.valueAsString(entry.getKey()) + "]", Modifier.PUBLIC) {
+			fields.add(new FieldLike.FakeField(componentType, "[" + FieldComp.valueAsString(entry.getKey()) + "]", Modifier.PUBLIC, actualTypeArgumentForValues) {
 				@Override
 				public Object get(Object obj) throws IllegalAccessException {
 					if (obj instanceof Map) return ((Map<?, ?>) obj).get(entry.getKey());
@@ -186,10 +202,21 @@ public class FieldsTab extends ObjInspectorTab {
 
 		if (sparseArray == null) return;
 
-		if (genericParameters == null) genericParameters = new Type[]{Object.class};
+		Class<?> componentType = Object.class;
+		Type[] actualTypeArgumentForValues;
+		if (genericParameters == null || genericParameters.length == 0) {
+			//nothing, use Object.class
+			actualTypeArgumentForValues = null;
+		} else if (genericParameters[0] instanceof Class<?>){
+			componentType = (Class<?>) genericParameters[0];
+			actualTypeArgumentForValues = null;
+		} else {
+			componentType = (Class<?>) ((ParameterizedType) genericParameters[0]).getRawType();
+			actualTypeArgumentForValues = ((ParameterizedType) genericParameters[0]).getActualTypeArguments();
+		}
 
 		for (IntMap.Entry<T> entry : sparseArray.entries()) {
-			fields.add(new FieldLike.FakeField((Class<?>) genericParameters[0], "[" + FieldComp.valueAsString(entry.key) + "]", Modifier.PUBLIC) {
+			fields.add(new FieldLike.FakeField(componentType, "[" + FieldComp.valueAsString(entry.key) + "]", Modifier.PUBLIC, actualTypeArgumentForValues) {
 				@Override
 				public Object get(Object obj) throws IllegalAccessException {
 					if (obj instanceof SparseArray) return ((SparseArray<?>) obj).get(entry.key);
@@ -206,9 +233,9 @@ public class FieldsTab extends ObjInspectorTab {
 
 	}
 
-	private static void addArrayFields(Class<?> clazz, Object obj, int accessLevel, List<FieldLike> fields) {
+	private static void addArrayFields(Class<?> clazz, Object obj, Type[] genericParameters, int accessLevel, List<FieldLike> fields) {
 
-		fields.add(new FieldLike.FakeField(int.class, "length", Modifier.PUBLIC + Modifier.FINAL) {
+		fields.add(new FieldLike.FakeField(int.class, "length", Modifier.PUBLIC + Modifier.FINAL, null) {
 			@Override
 			public Object get(Object obj) throws IllegalAccessException {
 				return Array.getLength(obj);
@@ -222,10 +249,20 @@ public class FieldsTab extends ObjInspectorTab {
 
 		if (obj != null) {
 			Class<?> componentType = clazz.getComponentType();
+			Type[] actualTypeArgumentForValues;
+			if (genericParameters == null || genericParameters.length == 0) {
+				//nothing, use Object.class
+				actualTypeArgumentForValues = null;
+			} else if (genericParameters[0] instanceof Class<?>){
+				actualTypeArgumentForValues = null;
+			} else {
+				actualTypeArgumentForValues = ((ParameterizedType) genericParameters[0]).getActualTypeArguments();
+			}
+
 			int length = Array.getLength(obj);
 			for (int i = 0; i < length; i++) {
 				final int index = i;
-				fields.add(new FieldLike.FakeField(componentType, "[" + index + "]", Modifier.PUBLIC) {
+				fields.add(new FieldLike.FakeField(componentType, "[" + index + "]", Modifier.PUBLIC, actualTypeArgumentForValues) {
 					@Override
 					public Object get(Object obj) throws IllegalAccessException {
 						return Array.get(obj, index);

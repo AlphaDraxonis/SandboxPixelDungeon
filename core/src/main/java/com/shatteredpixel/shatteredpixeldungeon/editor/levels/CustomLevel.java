@@ -66,7 +66,7 @@ public class CustomLevel extends Level {
     public int mobLimit = 10;
 
     //    private SparseArray<Heap> startHeaps = new SparseArray<>();
-    private int[] terrains = {//Template for new Floors
+    private static final int[] TEMPLATE = {
             WALL, WALL, WALL, WALL, WALL,
             WALL, EMPTY, EXIT, EMPTY, WALL,
             WALL, EMPTY, EMPTY, EMPTY, WALL,
@@ -423,7 +423,7 @@ public class CustomLevel extends Level {
         setSize(w, h);
         int[] newTerrain = new int[oldH * w];
         Arrays.fill(newTerrain, WALL);
-        changeArrayForMapSizeHeight(terrains, newTerrain, (h - oldH) / 2 * oldW, oldW, oldW);
+        changeArrayForMapSizeHeight(TEMPLATE, newTerrain, (h - oldH) / 2 * oldW, oldW, oldW);
         changeArrayForMapSizeWidth(newTerrain, map, (w - oldW) / 2, oldW, w);
         updateTransitionCells();
 
