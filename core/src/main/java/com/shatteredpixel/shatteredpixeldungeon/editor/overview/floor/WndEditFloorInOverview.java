@@ -173,7 +173,7 @@ public class WndEditFloorInOverview extends WndTabbed {
             };
             add(rename);
 
-            copy = new IconButton(Icons.PASTE.get()) {
+            copy = new IconButton(Icons.COPY.get()) {
                 @Override
                 protected void onClick() {
                     Window w = new WndTextInput(Messages.get(WndSelectDungeon.class, "copy_title"),
