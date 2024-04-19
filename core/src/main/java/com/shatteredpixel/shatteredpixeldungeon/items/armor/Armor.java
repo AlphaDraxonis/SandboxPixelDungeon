@@ -335,11 +335,21 @@ public class Armor extends EquipableItem {
 		
 		if (hasGlyph(Swiftness.class, owner)) {
 			boolean enemyNear = false;
+			//for each enemy, check if they are adjacent, or within 2 tiles and an adjacent cell is open
 			PathFinder.buildDistanceMap(owner.pos, Dungeon.level.getPassableVar(), 2);
 			for (Char ch : Actor.chars()){
-				if ( PathFinder.distance[ch.pos] != Integer.MAX_VALUE && owner.alignment != ch.alignment){
-					enemyNear = true;
-					break;
+				if ( Dungeon.level.distance(ch.pos, owner.pos) <= 2 && owner.alignment != ch.alignment){
+					if (Dungeon.level.adjacent(ch.pos, owner.pos)){
+						enemyNear = true;
+						break;
+					} else {
+						for (int i : PathFinder.NEIGHBOURS8){
+							if (Dungeon.level.adjacent(owner.pos+i, ch.pos) && !Dungeon.level.solid[owner.pos+i]){
+								enemyNear = true;
+								break;
+							}
+						}
+					}
 				}
 			}
 			if (!enemyNear) speed *= (1.2f + 0.04f * buffedLvl()) * glyph.procChanceMultiplier(owner);
