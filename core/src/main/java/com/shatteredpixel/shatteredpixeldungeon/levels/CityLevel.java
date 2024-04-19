@@ -27,23 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.CityPainter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BlazingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CorrosionTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CursingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisarmingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DistortionTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FlashingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FrostTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GatewayTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GeyserTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GuardianTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.RockfallTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.StormTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.SummoningTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WarpingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WeakeningTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.watabou.noosa.Group;
@@ -142,6 +126,7 @@ public class CityLevel extends RegularLevel {
 	public String tileDesc(int tile, int cell) {
 		switch (tile) {
 			case Terrain.ENTRANCE:
+			case Terrain.ENTRANCE_SP:
 				return Messages.get(CityLevel.class, "entrance_desc") + appendNoTransWarning(cell);
 			case Terrain.EXIT:
 				return Messages.get(CityLevel.class, "exit_desc") + appendNoTransWarning(cell);

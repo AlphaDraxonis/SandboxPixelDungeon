@@ -27,8 +27,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
@@ -71,7 +71,7 @@ public class Dewdrop extends Item {
 		} else {
 
 			int terr = Dungeon.level.map[pos];
-			boolean force = terr == Terrain.ENTRANCE|| terr == Terrain.EXIT || terr == Terrain.UNLOCKED_EXIT;
+			boolean force = TileItem.isExitTerrainCell(terr) || TileItem.isEntranceTerrainCell(terr);;
 			int[] lastResult = new int[1];
 			int totalHealing = 0, totalShield = 0;
 			while (quantity > 0 && (lastResult = consumeDew(1, hero, force))[0] > 0){

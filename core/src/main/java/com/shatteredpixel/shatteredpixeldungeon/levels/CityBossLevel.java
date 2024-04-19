@@ -44,12 +44,7 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.tweeners.AlphaTweener;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
-import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
+import com.watabou.utils.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -411,6 +406,7 @@ public class CityBossLevel extends Level {
 	public String tileDesc(int tile, int cell) {
 		switch (tile) {
 			case Terrain.ENTRANCE:
+			case Terrain.ENTRANCE_SP:
 				return Messages.get(CityLevel.class, "entrance_desc") + appendNoTransWarning(cell);
 			case Terrain.EXIT:
 				return Messages.get(CityLevel.class, "exit_desc") + appendNoTransWarning(cell);

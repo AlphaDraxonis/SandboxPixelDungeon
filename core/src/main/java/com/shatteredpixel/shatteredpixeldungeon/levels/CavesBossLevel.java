@@ -458,6 +458,7 @@ public class CavesBossLevel extends Level {
 			case Terrain.WATER:
 				return super.tileDesc( tile, cell ) + "\n\n" + Messages.get(CavesBossLevel.class, "water_desc");
 			case Terrain.ENTRANCE:
+			case Terrain.ENTRANCE_SP:
 				return Messages.get(CavesLevel.class, "entrance_desc") + appendNoTransWarning(cell);
 			case Terrain.EXIT:
 				//city exit is used
