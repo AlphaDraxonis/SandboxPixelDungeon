@@ -11,7 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.noosa.Game;
@@ -29,6 +29,16 @@ public class Mob_lua extends Rat implements LuaMob {
 
     private int identifier;
     private LuaTable vars;
+
+    @Override
+    public void setIdentifier(int identifier) {
+        this.identifier = identifier;
+    }
+
+    @Override
+    public int getIdentifier() {
+        return this.identifier;
+    }
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -54,1288 +64,1275 @@ public class Mob_lua extends Rat implements LuaMob {
         }
     }
 
-    @Override
-    public void setIdentifier(int identifier) {
-        this.identifier = identifier;
-    }
-
-    @Override
-    public int getIdentifier() {
-        return this.identifier;
-    }
-
-    @Override
-    public int attackSkill(Char arg0) {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("attackSkill").isnil()) {
-            LuaManager.scriptsRunning++;
-            try {
-                int ret = luaScript.get("attackSkill").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
-                LuaManager.scriptsRunning--;
-                return ret;
-            } catch (LuaError e) {
-                Game.runOnRenderThread(()->	GameScene.show(new WndError(e)));
-            }
-        }
-        return super.attackSkill(arg0);
-    }
-
-    @Override
-    public void die(Object arg0) {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("die").isnil()) {
-            LuaManager.scriptsRunning++;
-            MethodOverride.VoidA1 superMethod = a0 -> super.die(a0);
-            luaScript.get("die").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)});
-            LuaManager.scriptsRunning--;
-        } else {
-            super.die(arg0);
-        }
-    }
 
     @Override
     protected boolean canAttack(Char arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("canAttack").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("canAttack").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.canAttack(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.canAttack((Char) a0);
+                boolean ret = luaScript.get("canAttack").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.canAttack(arg0);
     }
 
     @Override
     public boolean heroShouldInteract() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("heroShouldInteract").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("heroShouldInteract").call(CoerceJavaToLua.coerce(this), vars).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.heroShouldInteract();
+            try {
+                MethodOverride.A0<Boolean> superMethod = () -> super.heroShouldInteract();
+                boolean ret = luaScript.get("heroShouldInteract").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.heroShouldInteract();
     }
 
     @Override
     protected void throwItems() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("throwItems").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("throwItems").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.throwItems();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.throwItems();
+                luaScript.get("throwItems").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.throwItems();
     }
 
     @Override
     public boolean isTargeting(Char arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isTargeting").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("isTargeting").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.isTargeting(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.isTargeting((Char) a0);
+                boolean ret = luaScript.get("isTargeting").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.isTargeting(arg0);
     }
 
     @Override
     protected void onAdd() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onAdd").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("onAdd").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.onAdd();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.onAdd();
+                luaScript.get("onAdd").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.onAdd();
     }
 
     @Override
     public void onOperateComplete() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onOperateComplete").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("onOperateComplete").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.onOperateComplete();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.onOperateComplete();
+                luaScript.get("onOperateComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.onOperateComplete();
     }
 
     @Override
     public float spawningWeight() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("spawningWeight").isnil()) {
-            LuaManager.scriptsRunning++;
-            float ret = luaScript.get("spawningWeight").call(CoerceJavaToLua.coerce(this), vars).tofloat();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.spawningWeight();
+            try {
+                MethodOverride.A0<Float> superMethod = () -> super.spawningWeight();
+                float ret = luaScript.get("spawningWeight").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.spawningWeight();
     }
 
     @Override
     public void setFlying(boolean arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("setFlying").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("setFlying").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.setFlying(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.setFlying((boolean) a0);
+                luaScript.get("setFlying").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.setFlying(arg0);
     }
 
     @Override
     public void initRandoms() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("initRandoms").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("initRandoms").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.initRandoms();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.initRandoms();
+                luaScript.get("initRandoms").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.initRandoms();
     }
 
     @Override
     public float stealth() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("stealth").isnil()) {
-            LuaManager.scriptsRunning++;
-            float ret = luaScript.get("stealth").call(CoerceJavaToLua.coerce(this), vars).tofloat();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.stealth();
+            try {
+                MethodOverride.A0<Float> superMethod = () -> super.stealth();
+                float ret = luaScript.get("stealth").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.stealth();
     }
 
     @Override
     public float cooldown() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("cooldown").isnil()) {
-            LuaManager.scriptsRunning++;
-            float ret = luaScript.get("cooldown").call(CoerceJavaToLua.coerce(this), vars).tofloat();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.cooldown();
+            try {
+                MethodOverride.A0<Float> superMethod = () -> super.cooldown();
+                float ret = luaScript.get("cooldown").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.cooldown();
     }
 
     @Override
     public synchronized LinkedHashSet buffs() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("buffs").isnil()) {
-            LuaManager.scriptsRunning++;
-            LinkedHashSet ret = (LinkedHashSet) luaScript.get("buffs").call(CoerceJavaToLua.coerce(this), vars).touserdata();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.buffs();
+            try {
+                MethodOverride.A0<LinkedHashSet> superMethod = () -> super.buffs();
+                LinkedHashSet ret = (LinkedHashSet) luaScript.get("buffs").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.buffs();
     }
 
     @Override
     public int id() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("id").isnil()) {
-            LuaManager.scriptsRunning++;
-            int ret = luaScript.get("id").call(CoerceJavaToLua.coerce(this), vars).toint();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.id();
+            try {
+                MethodOverride.A0<Integer> superMethod = () -> super.id();
+                int ret = luaScript.get("id").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.id();
     }
 
     @Override
     public void onAttackComplete() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onAttackComplete").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("onAttackComplete").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.onAttackComplete();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.onAttackComplete();
+                luaScript.get("onAttackComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.onAttackComplete();
     }
 
     @Override
     public boolean shouldSpriteBeVisible() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("shouldSpriteBeVisible").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("shouldSpriteBeVisible").call(CoerceJavaToLua.coerce(this), vars).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.shouldSpriteBeVisible();
+            try {
+                MethodOverride.A0<Boolean> superMethod = () -> super.shouldSpriteBeVisible();
+                boolean ret = luaScript.get("shouldSpriteBeVisible").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.shouldSpriteBeVisible();
     }
 
     @Override
     public void timeToNow() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("timeToNow").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("timeToNow").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.timeToNow();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.timeToNow();
+                luaScript.get("timeToNow").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.timeToNow();
     }
 
     @Override
     public float lootChance() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("lootChance").isnil()) {
-            LuaManager.scriptsRunning++;
-            float ret = luaScript.get("lootChance").call(CoerceJavaToLua.coerce(this), vars).tofloat();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.lootChance();
+            try {
+                MethodOverride.A0<Float> superMethod = () -> super.lootChance();
+                float ret = luaScript.get("lootChance").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.lootChance();
     }
 
     @Override
     protected void zap() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("zap").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("zap").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.zap();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.zap();
+                luaScript.get("zap").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.zap();
     }
 
     @Override
     public void destroy() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("destroy").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("destroy").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.destroy();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.destroy();
+                luaScript.get("destroy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.destroy();
     }
 
     @Override
     public String defenseVerb() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("defenseVerb").isnil()) {
-            LuaManager.scriptsRunning++;
-            String ret = luaScript.get("defenseVerb").call(CoerceJavaToLua.coerce(this), vars).tojstring();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.defenseVerb();
+            try {
+                MethodOverride.A0<String> superMethod = () -> super.defenseVerb();
+                String ret = luaScript.get("defenseVerb").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.defenseVerb();
     }
 
     @Override
     public boolean reset() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("reset").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("reset").call(CoerceJavaToLua.coerce(this), vars).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.reset();
+            try {
+                MethodOverride.A0<Boolean> superMethod = () -> super.reset();
+                boolean ret = luaScript.get("reset").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.reset();
     }
 
     @Override
     public int drRoll() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("drRoll").isnil()) {
-            LuaManager.scriptsRunning++;
-            int ret = luaScript.get("drRoll").call(CoerceJavaToLua.coerce(this), vars).toint();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.drRoll();
+            try {
+                MethodOverride.A0<Integer> superMethod = () -> super.drRoll();
+                int ret = luaScript.get("drRoll").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.drRoll();
     }
 
     @Override
     protected void spendConstant(float arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("spendConstant").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("spendConstant").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.spendConstant(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.spendConstant((float) a0);
+                luaScript.get("spendConstant").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
-    }
-
-    @Override
-    protected int randomDestination() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("randomDestination").isnil()) {
-            LuaManager.scriptsRunning++;
-            int ret = luaScript.get("randomDestination").call(CoerceJavaToLua.coerce(this), vars).toint();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.randomDestination();
-        }
+        super.spendConstant(arg0);
     }
 
     @Override
     protected void tellDialog() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("tellDialog").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("tellDialog").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.tellDialog();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.tellDialog();
+                luaScript.get("tellDialog").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.tellDialog();
+    }
+
+    @Override
+    protected int randomDestination() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("randomDestination").isnil()) {
+            try {
+                MethodOverride.A0<Integer> superMethod = () -> super.randomDestination();
+                int ret = luaScript.get("randomDestination").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+        }
+        return super.randomDestination();
     }
 
     @Override
     public boolean isFlying() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isFlying").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("isFlying").call(CoerceJavaToLua.coerce(this), vars).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.isFlying();
+            try {
+                MethodOverride.A0<Boolean> superMethod = () -> super.isFlying();
+                boolean ret = luaScript.get("isFlying").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.isFlying();
     }
 
     @Override
     public boolean[] modPassable(boolean[] arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("modPassable").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean[] ret = (boolean[]) luaScript.get("modPassable").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).touserdata();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.modPassable(arg0);
+            try {
+                MethodOverride.A1<boolean[]> superMethod = (a0) -> super.modPassable((boolean[]) a0);
+                boolean[] ret = (boolean[]) luaScript.get("modPassable").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.modPassable(arg0);
     }
 
     @Override
     public void damage(int arg0, Object arg1) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("damage").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("damage").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0), CoerceJavaToLua.coerce(arg1)});
-            LuaManager.scriptsRunning--;
-        } else {
-            super.damage(arg0, arg1);
+            try {
+                MethodOverride.VoidA2 superMethod = (a0, a1) -> super.damage((int) a0, a1);
+                luaScript.get("damage").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.damage(arg0, arg1);
     }
 
     @Override
     public void restoreEnemy() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("restoreEnemy").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("restoreEnemy").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.restoreEnemy();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.restoreEnemy();
+                luaScript.get("restoreEnemy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.restoreEnemy();
     }
 
     @Override
     protected boolean getFurther(int arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("getFurther").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("getFurther").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.getFurther(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.getFurther((int) a0);
+                boolean ret = luaScript.get("getFurther").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.getFurther(arg0);
     }
 
     @Override
     public void onZapComplete() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onZapComplete").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("onZapComplete").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.onZapComplete();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.onZapComplete();
+                luaScript.get("onZapComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.onZapComplete();
     }
 
     @Override
     protected boolean cellIsPathable(int arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("cellIsPathable").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("cellIsPathable").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.cellIsPathable(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.cellIsPathable((int) a0);
+                boolean ret = luaScript.get("cellIsPathable").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.cellIsPathable(arg0);
+    }
+
+    @Override
+    public int attackSkill(Char arg0) {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("attackSkill").isnil()) {
+            try {
+                MethodOverride.A1<Integer> superMethod = (a0) -> super.attackSkill((Char) a0);
+                int ret = luaScript.get("attackSkill").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+        }
+        return super.attackSkill(arg0);
     }
 
     @Override
     public ItemsWithChanceDistrComp.RandomItemData convertLootToRandomItemData() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("convertLootToRandomItemData").isnil()) {
-            LuaManager.scriptsRunning++;
-            ItemsWithChanceDistrComp.RandomItemData ret = (ItemsWithChanceDistrComp.RandomItemData) luaScript.get("convertLootToRandomItemData").call(CoerceJavaToLua.coerce(this), vars).touserdata();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.convertLootToRandomItemData();
+            try {
+                MethodOverride.A0<ItemsWithChanceDistrComp.RandomItemData> superMethod = () -> super.convertLootToRandomItemData();
+                ItemsWithChanceDistrComp.RandomItemData ret = (ItemsWithChanceDistrComp.RandomItemData) luaScript.get("convertLootToRandomItemData").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.convertLootToRandomItemData();
     }
 
     @Override
     public boolean attack(Char arg0, float arg1, float arg2, float arg3) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("attack").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("attack").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1), LuaValue.valueOf(arg2), LuaValue.valueOf(arg3)}).arg1().toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.attack(arg0, arg1, arg2, arg3);
+            try {
+                MethodOverride.A4<Boolean> superMethod = (a0, a1, a2, a3) -> super.attack((Char) a0, (float) a1, (float) a2, (float) a3);
+                boolean ret = luaScript.get("attack").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1), LuaValue.valueOf(arg2), LuaValue.valueOf(arg3)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.attack(arg0, arg1, arg2, arg3);
     }
 
     @Override
     public CharSprite sprite() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("sprite").isnil()) {
-            LuaManager.scriptsRunning++;
-            CharSprite ret = (CharSprite) luaScript.get("sprite").call(CoerceJavaToLua.coerce(this), vars).touserdata();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.sprite();
+            try {
+                MethodOverride.A0<CharSprite> superMethod = () -> super.sprite();
+                CharSprite ret = (CharSprite) luaScript.get("sprite").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.sprite();
     }
 
     @Override
     protected Item createLoot() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("createLoot").isnil()) {
-            LuaManager.scriptsRunning++;
-            Item ret = (Item) luaScript.get("createLoot").call(CoerceJavaToLua.coerce(this), vars).touserdata();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.createLoot();
+            try {
+                MethodOverride.A0<Item> superMethod = () -> super.createLoot();
+                Item ret = (Item) luaScript.get("createLoot").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.createLoot();
     }
 
     @Override
     public void updateSpriteVisibility() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("updateSpriteVisibility").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("updateSpriteVisibility").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.updateSpriteVisibility();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.updateSpriteVisibility();
+                luaScript.get("updateSpriteVisibility").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.updateSpriteVisibility();
     }
 
     @Override
     protected boolean getCloser(int arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("getCloser").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("getCloser").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.getCloser(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.getCloser((int) a0);
+                boolean ret = luaScript.get("getCloser").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.getCloser(arg0);
     }
 
     @Override
     public String getCustomName() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("getCustomName").isnil()) {
-            LuaManager.scriptsRunning++;
-            String ret = luaScript.get("getCustomName").call(CoerceJavaToLua.coerce(this), vars).tojstring();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.getCustomName();
+            try {
+                MethodOverride.A0<String> superMethod = () -> super.getCustomName();
+                String ret = luaScript.get("getCustomName").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.getCustomName();
     }
 
     @Override
     public void setPlayerAlignment(int arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("setPlayerAlignment").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("setPlayerAlignment").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.setPlayerAlignment(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.setPlayerAlignment((int) a0);
+                luaScript.get("setPlayerAlignment").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.setPlayerAlignment(arg0);
     }
 
     @Override
     protected boolean moveSprite(int arg0, int arg1) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("moveSprite").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("moveSprite").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0), LuaValue.valueOf(arg1)}).arg1().toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.moveSprite(arg0, arg1);
+            try {
+                MethodOverride.A2<Boolean> superMethod = (a0, a1) -> super.moveSprite((int) a0, (int) a1);
+                boolean ret = luaScript.get("moveSprite").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0), LuaValue.valueOf(arg1)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.moveSprite(arg0, arg1);
     }
 
     @Override
     public String getCustomDesc() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("getCustomDesc").isnil()) {
-            LuaManager.scriptsRunning++;
-            String ret = luaScript.get("getCustomDesc").call(CoerceJavaToLua.coerce(this), vars).tojstring();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.getCustomDesc();
+            try {
+                MethodOverride.A0<String> superMethod = () -> super.getCustomDesc();
+                String ret = luaScript.get("getCustomDesc").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.getCustomDesc();
     }
 
     @Override
     protected void diactivate() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("diactivate").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("diactivate").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.diactivate();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.diactivate();
+                luaScript.get("diactivate").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.diactivate();
     }
 
     @Override
     public void aggro(Char arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("aggro").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("aggro").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.aggro(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.aggro((Char) a0);
+                luaScript.get("aggro").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.aggro(arg0);
     }
 
     @Override
     public void onMotionComplete() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onMotionComplete").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("onMotionComplete").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.onMotionComplete();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.onMotionComplete();
+                luaScript.get("onMotionComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.onMotionComplete();
     }
 
     @Override
     public void updateSpriteState() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("updateSpriteState").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("updateSpriteState").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.updateSpriteState();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.updateSpriteState();
+                luaScript.get("updateSpriteState").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.updateSpriteState();
     }
 
     @Override
     protected synchronized void onRemove() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onRemove").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("onRemove").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.onRemove();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.onRemove();
+                luaScript.get("onRemove").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.onRemove();
     }
 
     @Override
     public synchronized Buff buff(Class arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("buff").isnil()) {
-            LuaManager.scriptsRunning++;
-            Buff ret = (Buff) luaScript.get("buff").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).touserdata();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.buff(arg0);
+            try {
+                MethodOverride.A1<Buff> superMethod = (a0) -> super.buff((Class) a0);
+                Buff ret = (Buff) luaScript.get("buff").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.buff(arg0);
+    }
+
+    @Override
+    public void die(Object arg0) {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("die").isnil()) {
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.die(a0);
+                luaScript.get("die").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+        }
+        super.die(arg0);
     }
 
     @Override
     public boolean blockSound(float arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("blockSound").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("blockSound").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.blockSound(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.blockSound((float) a0);
+                boolean ret = luaScript.get("blockSound").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.blockSound(arg0);
     }
 
     @Override
     public synchronized boolean isCharmedBy(Char arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isCharmedBy").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("isCharmedBy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.isCharmedBy(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.isCharmedBy((Char) a0);
+                boolean ret = luaScript.get("isCharmedBy").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.isCharmedBy(arg0);
     }
 
     @Override
     public void setCustomName(String arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("setCustomName").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("setCustomName").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.setCustomName(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.setCustomName((String) a0);
+                luaScript.get("setCustomName").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.setCustomName(arg0);
     }
 
     @Override
     public List createActualLoot() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("createActualLoot").isnil()) {
-            LuaManager.scriptsRunning++;
-            List ret = (List) luaScript.get("createActualLoot").call(CoerceJavaToLua.coerce(this), vars).touserdata();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.createActualLoot();
+            try {
+                MethodOverride.A0<List> superMethod = () -> super.createActualLoot();
+                List ret = (List) luaScript.get("createActualLoot").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.createActualLoot();
     }
 
     @Override
     public void clearTime() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("clearTime").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("clearTime").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.clearTime();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.clearTime();
+                luaScript.get("clearTime").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.clearTime();
     }
 
     @Override
     protected void doDropLoot(Item arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("doDropLoot").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("doDropLoot").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.doDropLoot(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.doDropLoot((Item) a0);
+                luaScript.get("doDropLoot").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.doDropLoot(arg0);
     }
 
     @Override
     public boolean isActive() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isActive").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("isActive").call(CoerceJavaToLua.coerce(this), vars).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.isActive();
+            try {
+                MethodOverride.A0<Boolean> superMethod = () -> super.isActive();
+                boolean ret = luaScript.get("isActive").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.isActive();
     }
 
     @Override
     protected boolean act() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("act").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("act").call(CoerceJavaToLua.coerce(this), vars).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.act();
+            try {
+                MethodOverride.A0<Boolean> superMethod = () -> super.act();
+                boolean ret = luaScript.get("act").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.act();
     }
 
     @Override
     public void onMapSizeChange(IntFunction arg0, BiPredicate arg1) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onMapSizeChange").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("onMapSizeChange").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)});
-            LuaManager.scriptsRunning--;
-        } else {
-            super.onMapSizeChange(arg0, arg1);
+            try {
+                MethodOverride.VoidA2 superMethod = (a0, a1) -> super.onMapSizeChange((IntFunction) a0, (BiPredicate) a1);
+                luaScript.get("onMapSizeChange").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.onMapSizeChange(arg0, arg1);
     }
 
     @Override
     public void hitSound(float arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("hitSound").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("hitSound").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.hitSound(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.hitSound((float) a0);
+                luaScript.get("hitSound").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.hitSound(arg0);
     }
 
     @Override
     public void spendToWhole() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("spendToWhole").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("spendToWhole").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.spendToWhole();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.spendToWhole();
+                luaScript.get("spendToWhole").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.spendToWhole();
     }
 
     @Override
     public void restoreCurrentZone(Level arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("restoreCurrentZone").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("restoreCurrentZone").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.restoreCurrentZone(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.restoreCurrentZone((Level) a0);
+                luaScript.get("restoreCurrentZone").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.restoreCurrentZone(arg0);
     }
 
     @Override
     public String info() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("info").isnil()) {
-            LuaManager.scriptsRunning++;
-            String ret = luaScript.get("info").call(CoerceJavaToLua.coerce(this), vars).tojstring();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.info();
+            try {
+                MethodOverride.A0<String> superMethod = () -> super.info();
+                String ret = luaScript.get("info").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.info();
     }
 
     @Override
     public boolean add(Buff arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("add").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("add").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.add(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.add((Buff) a0);
+                boolean ret = luaScript.get("add").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.add(arg0);
     }
 
     @Override
     public boolean canInteract(Char arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("canInteract").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("canInteract").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.canInteract(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.canInteract((Char) a0);
+                boolean ret = luaScript.get("canInteract").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.canInteract(arg0);
     }
 
     @Override
     public void increaseLimitedDropCount(Item arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("increaseLimitedDropCount").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("increaseLimitedDropCount").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.increaseLimitedDropCount(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.increaseLimitedDropCount((Item) a0);
+                luaScript.get("increaseLimitedDropCount").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.increaseLimitedDropCount(arg0);
     }
 
     @Override
     public float resist(Class arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("resist").isnil()) {
-            LuaManager.scriptsRunning++;
-            float ret = luaScript.get("resist").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).tofloat();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.resist(arg0);
+            try {
+                MethodOverride.A1<Float> superMethod = (a0) -> super.resist((Class) a0);
+                float ret = luaScript.get("resist").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().tofloat();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.resist(arg0);
     }
 
     @Override
     public int attackProc(Char arg0, int arg1) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("attackProc").isnil()) {
-            LuaManager.scriptsRunning++;
-            int ret = luaScript.get("attackProc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.attackProc(arg0, arg1);
+            try {
+                MethodOverride.A2<Integer> superMethod = (a0, a1) -> super.attackProc((Char) a0, (int) a1);
+                int ret = luaScript.get("attackProc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.attackProc(arg0, arg1);
     }
 
     @Override
     public boolean isAlive() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isAlive").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("isAlive").call(CoerceJavaToLua.coerce(this), vars).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.isAlive();
+            try {
+                MethodOverride.A0<Boolean> superMethod = () -> super.isAlive();
+                boolean ret = luaScript.get("isAlive").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.isAlive();
     }
 
     @Override
     public void setCustomDesc(String arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("setCustomDesc").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("setCustomDesc").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.setCustomDesc(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.setCustomDesc((String) a0);
+                luaScript.get("setCustomDesc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.setCustomDesc(arg0);
     }
 
     @Override
     public void yell(String arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("yell").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("yell").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.yell(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.yell((String) a0);
+                luaScript.get("yell").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.yell(arg0);
     }
 
     @Override
     public String name() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("name").isnil()) {
-            LuaManager.scriptsRunning++;
-            String ret = luaScript.get("name").call(CoerceJavaToLua.coerce(this), vars).tojstring();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.name();
+            try {
+                MethodOverride.A0<String> superMethod = () -> super.name();
+                String ret = luaScript.get("name").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.name();
     }
 
     @Override
     public int damageRoll() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("damageRoll").isnil()) {
-            LuaManager.scriptsRunning++;
-            int ret = luaScript.get("damageRoll").call(CoerceJavaToLua.coerce(this), vars).toint();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.damageRoll();
+            try {
+                MethodOverride.A0<Integer> superMethod = () -> super.damageRoll();
+                int ret = luaScript.get("damageRoll").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.damageRoll();
     }
 
     @Override
     protected void postpone(float arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("postpone").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("postpone").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.postpone(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.postpone((float) a0);
+                luaScript.get("postpone").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.postpone(arg0);
     }
 
     @Override
     public boolean isImmune(Class arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isImmune").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("isImmune").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.isImmune(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.isImmune((Class) a0);
+                boolean ret = luaScript.get("isImmune").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.isImmune(arg0);
     }
 
     @Override
     public void next() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("next").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("next").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.next();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.next();
+                luaScript.get("next").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.next();
     }
 
     @Override
     public int distance(Char arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("distance").isnil()) {
-            LuaManager.scriptsRunning++;
-            int ret = luaScript.get("distance").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.distance(arg0);
+            try {
+                MethodOverride.A1<Integer> superMethod = (a0) -> super.distance((Char) a0);
+                int ret = luaScript.get("distance").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.distance(arg0);
     }
 
     @Override
     public String description() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("description").isnil()) {
-            LuaManager.scriptsRunning++;
-            String ret = luaScript.get("description").call(CoerceJavaToLua.coerce(this), vars).tojstring();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.description();
+            try {
+                MethodOverride.A0<String> superMethod = () -> super.description();
+                String ret = luaScript.get("description").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.description();
     }
 
     @Override
     public boolean interact(Char arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("interact").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("interact").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.interact(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.interact((Char) a0);
+                boolean ret = luaScript.get("interact").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.interact(arg0);
     }
 
     @Override
     public float attackDelay() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("attackDelay").isnil()) {
-            LuaManager.scriptsRunning++;
-            float ret = luaScript.get("attackDelay").call(CoerceJavaToLua.coerce(this), vars).tofloat();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.attackDelay();
+            try {
+                MethodOverride.A0<Float> superMethod = () -> super.attackDelay();
+                float ret = luaScript.get("attackDelay").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.attackDelay();
     }
 
     @Override
     public boolean remove(Buff arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("remove").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("remove").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.remove(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.remove((Buff) a0);
+                boolean ret = luaScript.get("remove").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.remove(arg0);
     }
 
     @Override
     public float speed() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("speed").isnil()) {
-            LuaManager.scriptsRunning++;
-            float ret = luaScript.get("speed").call(CoerceJavaToLua.coerce(this), vars).tofloat();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.speed();
+            try {
+                MethodOverride.A0<Float> superMethod = () -> super.speed();
+                float ret = luaScript.get("speed").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.speed();
     }
 
     @Override
     public boolean surprisedBy(Char arg0, boolean arg1) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("surprisedBy").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("surprisedBy").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.surprisedBy(arg0, arg1);
+            try {
+                MethodOverride.A2<Boolean> superMethod = (a0, a1) -> super.surprisedBy((Char) a0, (boolean) a1);
+                boolean ret = luaScript.get("surprisedBy").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.surprisedBy(arg0, arg1);
     }
 
     @Override
     protected void spend(float arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("spend").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("spend").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.spend(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.spend((float) a0);
+                luaScript.get("spend").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.spend(arg0);
     }
 
     @Override
     public void clearEnemy() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("clearEnemy").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("clearEnemy").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.clearEnemy();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.clearEnemy();
+                luaScript.get("clearEnemy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.clearEnemy();
     }
 
     @Override
     public int defenseSkill(Char arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("defenseSkill").isnil()) {
-            LuaManager.scriptsRunning++;
-            int ret = luaScript.get("defenseSkill").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.defenseSkill(arg0);
+            try {
+                MethodOverride.A1<Integer> superMethod = (a0) -> super.defenseSkill((Char) a0);
+                int ret = luaScript.get("defenseSkill").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.defenseSkill(arg0);
     }
 
     @Override
     public void notice() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("notice").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("notice").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.notice();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.notice();
+                luaScript.get("notice").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.notice();
     }
 
     @Override
     public void move(int arg0, boolean arg1) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("move").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("move").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0), LuaValue.valueOf(arg1)});
-            LuaManager.scriptsRunning--;
-        } else {
-            super.move(arg0, arg1);
+            try {
+                MethodOverride.VoidA2 superMethod = (a0, a1) -> super.move((int) a0, (boolean) a1);
+                luaScript.get("move").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0), LuaValue.valueOf(arg1)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.move(arg0, arg1);
     }
 
     @Override
     protected void playBossMusic(String arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("playBossMusic").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("playBossMusic").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.playBossMusic(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.playBossMusic((String) a0);
+                luaScript.get("playBossMusic").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.playBossMusic(arg0);
     }
 
     @Override
     protected Char chooseEnemy() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("chooseEnemy").isnil()) {
-            LuaManager.scriptsRunning++;
-            Char ret = (Char) luaScript.get("chooseEnemy").call(CoerceJavaToLua.coerce(this), vars).touserdata();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.chooseEnemy();
+            try {
+                MethodOverride.A0<Char> superMethod = () -> super.chooseEnemy();
+                Char ret = (Char) luaScript.get("chooseEnemy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.chooseEnemy();
     }
 
     @Override
     public boolean isInvulnerable(Class arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isInvulnerable").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("isInvulnerable").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.isInvulnerable(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.isInvulnerable((Class) a0);
+                boolean ret = luaScript.get("isInvulnerable").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.isInvulnerable(arg0);
     }
 
     @Override
     public void addBossProperty() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("addBossProperty").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("addBossProperty").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.addBossProperty();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.addBossProperty();
+                luaScript.get("addBossProperty").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.addBossProperty();
     }
 
     @Override
     public void beckon(int arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("beckon").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("beckon").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-            LuaManager.scriptsRunning--;
-        } else {
-            super.beckon(arg0);
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.beckon((int) a0);
+                luaScript.get("beckon").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.beckon(arg0);
     }
 
     @Override
     public boolean areStatsEqual(Mob arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("areStatsEqual").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("areStatsEqual").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.areStatsEqual(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.areStatsEqual((Mob) a0);
+                boolean ret = luaScript.get("areStatsEqual").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
-    }
-
-    @Override
-    public boolean canSurpriseAttack() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("canSurpriseAttack").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("canSurpriseAttack").call(CoerceJavaToLua.coerce(this), vars).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.canSurpriseAttack();
-        }
+        return super.areStatsEqual(arg0);
     }
 
     @Override
     public int shielding() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("shielding").isnil()) {
-            LuaManager.scriptsRunning++;
-            int ret = luaScript.get("shielding").call(CoerceJavaToLua.coerce(this), vars).toint();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.shielding();
+            try {
+                MethodOverride.A0<Integer> superMethod = () -> super.shielding();
+                int ret = luaScript.get("shielding").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.shielding();
+    }
+
+    @Override
+    public boolean canSurpriseAttack() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("canSurpriseAttack").isnil()) {
+            try {
+                MethodOverride.A0<Boolean> superMethod = () -> super.canSurpriseAttack();
+                boolean ret = luaScript.get("canSurpriseAttack").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+        }
+        return super.canSurpriseAttack();
     }
 
     @Override
     public void rollToDropLoot() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("rollToDropLoot").isnil()) {
-            LuaManager.scriptsRunning++;
-            luaScript.get("rollToDropLoot").call(CoerceJavaToLua.coerce(this), vars);
-            LuaManager.scriptsRunning--;
-        } else {
-            super.rollToDropLoot();
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.rollToDropLoot();
+                luaScript.get("rollToDropLoot").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        super.rollToDropLoot();
     }
 
     @Override
     public int defenseProc(Char arg0, int arg1) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("defenseProc").isnil()) {
-            LuaManager.scriptsRunning++;
-            int ret = luaScript.get("defenseProc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.defenseProc(arg0, arg1);
+            try {
+                MethodOverride.A2<Integer> superMethod = (a0, a1) -> super.defenseProc((Char) a0, (int) a1);
+                int ret = luaScript.get("defenseProc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.defenseProc(arg0, arg1);
     }
 
     @Override
     public boolean avoidsHazards() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("avoidsHazards").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("avoidsHazards").call(CoerceJavaToLua.coerce(this), vars).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.avoidsHazards();
+            try {
+                MethodOverride.A0<Boolean> superMethod = () -> super.avoidsHazards();
+                boolean ret = luaScript.get("avoidsHazards").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.avoidsHazards();
     }
 
     @Override
     protected boolean doAttack(Char arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("doAttack").isnil()) {
-            LuaManager.scriptsRunning++;
-            boolean ret = luaScript.get("doAttack").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.doAttack(arg0);
+            try {
+                MethodOverride.A1<Boolean> superMethod = (a0) -> super.doAttack((Char) a0);
+                boolean ret = luaScript.get("doAttack").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.doAttack(arg0);
     }
 
     @Override
     public HashSet properties() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("properties").isnil()) {
-            LuaManager.scriptsRunning++;
-            HashSet ret = (HashSet) luaScript.get("properties").call(CoerceJavaToLua.coerce(this), vars).touserdata();
-            LuaManager.scriptsRunning--;
-            return ret;
-        } else {
-            return super.properties();
+            try {
+                MethodOverride.A0<HashSet> superMethod = () -> super.properties();
+                HashSet ret = (HashSet) luaScript.get("properties").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
+        return super.properties();
     }
 }
