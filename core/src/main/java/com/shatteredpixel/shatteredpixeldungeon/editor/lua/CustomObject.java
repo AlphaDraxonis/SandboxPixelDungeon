@@ -168,7 +168,7 @@ public class CustomObject implements Bundlable {
 
 	}
 
-	public static void deleteCustomObject(int identifier) {
+	public static void deleteCustomObject(int identifier) {//TODO tzz what about toolbar?
 		if (customObjects.containsKey(identifier)) {
 
 			CustomObject toDelete = customObjects.get(identifier);

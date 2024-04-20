@@ -47,8 +47,6 @@ import com.watabou.noosa.ui.Component;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class IDEWindow extends Component {
 
@@ -67,6 +65,7 @@ public class IDEWindow extends Component {
 
 	private CodeInputPanel[] codeInputPanels;
 	private CodeInputPanel inputDesc, inputLocalVars, inputScriptVars;
+	private AdditionalCodePanel additionalCode;
 	private RenderedTextBlock pathLabel;
 	private TextInput pathInput;
 	private IconButton changeScript;
@@ -76,7 +75,7 @@ public class IDEWindow extends Component {
 	private final Class<?> clazz;
 	private final CustomObject customObject;
 
-	public IDEWindow(CustomObject customObject, Runnable layoutParent) {
+	public IDEWindow(CustomObject customObject, LuaScript script, Runnable layoutParent) {
 		this.customObject = customObject;
 		this.clazz = customObject.luaClass.getClass();
 
@@ -123,6 +122,9 @@ public class IDEWindow extends Component {
 					@Override
 					protected void onSelect(int index) {
 						selectScript(scripts.get(index), true);
+						LuaScript s = LuaScript.readFromFileContent(createFullScript(), scripts.get(index).pathFromRoot);
+						EditorUtilies.getParentWindow(IDEWindow.this).hide();
+						showWindow(customObject, s);
 					}
 				});
 			}
@@ -133,7 +135,7 @@ public class IDEWindow extends Component {
 
 		List<LuaMethodManager> methods = LuaMethodManager.getAllMethodsInOrder(clazz);
 
-		codeInputPanels = new CodeInputPanel[methods.size() + 3];
+		codeInputPanels = new CodeInputPanel[methods.size() + 4];
 
 		codeInputPanels[0] = inputDesc = new CodeInputPanel() {
 			{
@@ -147,7 +149,7 @@ public class IDEWindow extends Component {
 
 			@Override
 			protected String convertToLuaCode() {
-				return "--" + textInput.getText().replace('\n', (char) 29);
+				return "--" + (textInput == null ? "" : textInput.getText().replace('\n', (char) 29));
 			}
 
 			@Override
@@ -203,6 +205,14 @@ public class IDEWindow extends Component {
 		};
 		add(inputScriptVars);
 
+		codeInputPanels[codeInputPanels.length-1] = additionalCode = new AdditionalCodePanel() {
+			@Override
+			protected void layoutParent() {
+				layoutParent.run();
+			}
+		};
+		add(additionalCode);
+
 		int i = 3;
 		for (LuaMethodManager methodInfo : methods) {
 			codeInputPanels[i] = new MethodPanel(methodInfo.method, methodInfo.paramNames) {
@@ -215,7 +225,7 @@ public class IDEWindow extends Component {
 			i++;
 		}
 
-		selectScript(CustomDungeonSaves.readLuaFile(customObject.pathToScript), true);
+		selectScript(script, true);
 		inputDesc.textInput.gainFocus();
 	}
 
@@ -242,6 +252,8 @@ public class IDEWindow extends Component {
 	private String createFullScript() {
 		StringBuilder b = new StringBuilder();
 
+		if (script == null) script = new LuaScript(customObject.luaClass.getClass().getSuperclass(), null, customObject.pathToScript);
+
 		script.desc = inputDesc.convertToLuaCode().substring(2);//uncomment, removes --
 		b.append('\n');
 
@@ -260,21 +272,15 @@ public class IDEWindow extends Component {
 
 		String cleanedFunctions = LuaScript.cleanLuaCode(fullFunctions);
 
-		Matcher matcher = Pattern.compile("\\bfunction\\s+.*\\(").matcher(cleanedFunctions);
-
 		b.append("return {\n    vars = vars; static = static; ");
-
-		while (matcher.find()) {
-			String functionName = matcher.group();
-			functionName = functionName.substring(8, functionName.length() - 1);
-			if (functionName.startsWith(" ")) functionName = functionName.substring(1);
+		for (String functionName : LuaScript.allFunctionNames(cleanedFunctions)) {
 			b.append(functionName).append(" = ").append(functionName).append("; ");
 		}
 		b.append("\n}");
 
 		script.code  = b.toString();
 
-		return script.writeToFile();
+		return script.getAsFileContent();
 	}
 
 	private void compile() {
@@ -310,10 +316,14 @@ public class IDEWindow extends Component {
 	}
 
 	public static void showWindow(CustomObject customObject) {
+		showWindow(customObject, CustomDungeonSaves.readLuaFile(customObject.pathToScript));
+	}
+
+	public static void showWindow(CustomObject customObject, LuaScript script) {
 
 		SimpleWindow w = new SimpleWindow((int) (PixelScene.uiCamera.width * 0.8f),  (int) (PixelScene.uiCamera.height * 0.9f));
 
-		IDEWindow ideWindow = new IDEWindow(customObject, w::layout);
+		IDEWindow ideWindow = new IDEWindow(customObject, script, w::layout);
 
 		w.initComponents(null, ideWindow, ideWindow.getOutsideSp());
 
@@ -340,9 +350,12 @@ public class IDEWindow extends Component {
 			cleanedCode = LuaScript.cleanLuaCode(script.code);
 		}
 
+		List<String> functions = LuaScript.allFunctionNames(cleanedCode);
 		for (CodeInputPanel inputPanel : codeInputPanels) {
 			inputPanel.applyScript(force, currentScript, cleanedCode);
+			if (inputPanel instanceof MethodPanel) functions.remove(((MethodPanel) inputPanel).getMethodName());
 		}
+		additionalCode.actualApplyScript(force, currentScript, cleanedCode, functions);
 		IDEWindow.this.layout();
 	}
 

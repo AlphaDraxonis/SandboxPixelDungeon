@@ -318,7 +318,7 @@ public class CustomDungeonSaves {
         if (files == null) return result;
 
         for (FileHandle file : files) {
-            LuaScript script = LuaScript.readFromFile(file.readString(), file.path().replaceFirst(getAdditionalFilesDir().path() + "/", ""));
+            LuaScript script = LuaScript.readFromFileContent(file.readString(), file.path().replaceFirst(getAdditionalFilesDir().path() + "/", ""));
             if (script != null && (condition == null || condition.apply(script))) {
                 result.add(script);
             }
@@ -330,7 +330,7 @@ public class CustomDungeonSaves {
     public static LuaScript readLuaFile(String pathToScript) {
         FileHandle file = FileUtils.getFileHandle(getExternalFilePath(pathToScript));
         if (!file.exists() || file.isDirectory()) return null;
-        return LuaScript.readFromFile(file.readString(), file.path().replaceFirst(getAdditionalFilesDir().path() + "/", ""));
+        return LuaScript.readFromFileContent(file.readString(), file.path().replaceFirst(getAdditionalFilesDir().path() + "/", ""));
     }
 
     public static String getExternalFilePath(String pathFromRoot) {

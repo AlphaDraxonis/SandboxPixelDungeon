@@ -32,7 +32,9 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +52,7 @@ public class LuaScript implements Comparable<LuaScript>, Copyable<LuaScript> {
 		this.pathFromRoot = pathFromRoot;
 	}
 
-	public static LuaScript readFromFile(String fileContent, String pathFromRoot) {
+	public static LuaScript readFromFileContent(String fileContent, String pathFromRoot) {
 		fileContent = fileContent.replace("\r", "");
 		String[] lines = fileContent.split("\n");
 
@@ -68,7 +70,7 @@ public class LuaScript implements Comparable<LuaScript>, Copyable<LuaScript> {
 		return luaScript;
 	}
 
-	public String writeToFile() {
+	public String getAsFileContent() {
 		StringBuilder b = new StringBuilder();
 
 		b.append("--").append(type.getName()).append('\n');
@@ -117,6 +119,11 @@ public class LuaScript implements Comparable<LuaScript>, Copyable<LuaScript> {
 	}
 
 	public static String extractMethodFromScript(String cleanedCode, String originalCode, String methodName) {
+		String method = extractRawMethodFromScript(cleanedCode, originalCode, methodName);
+		return method == null ? null : cutExtractedMethod(method);
+	}
+
+	public static String extractRawMethodFromScript(String cleanedCode, String originalCode, String methodName) {
 
 		String patternString = "function\\s+" + methodName + "\\s*\\(";
 		Pattern pattern = Pattern.compile(patternString, Pattern.DOTALL);
@@ -142,7 +149,7 @@ public class LuaScript implements Comparable<LuaScript>, Copyable<LuaScript> {
 			}
 
 			if (starts.isEmpty() || ends.isEmpty()) {
-				return ends.isEmpty() ? null : cutExtractedMethod(originalCode.substring(outputStartIndex, ends.getFirst() + startIndex));
+				return ends.isEmpty() ? null : originalCode.substring(outputStartIndex, ends.getFirst() + startIndex);
 			}
 
 			int indexNextStart = starts.removeFirst();
@@ -157,7 +164,7 @@ public class LuaScript implements Comparable<LuaScript>, Copyable<LuaScript> {
 				} else {
 					nestedLevel--;
 					if (nestedLevel < 0) {
-						return cutExtractedMethod(originalCode.substring(outputStartIndex, indexNextEnd + startIndex));
+						return originalCode.substring(outputStartIndex, indexNextEnd + startIndex);
 					}
 					if (ends.isEmpty()) return originalCode.substring(outputStartIndex, indexNextEnd + startIndex);
 					indexNextEnd = ends.removeFirst();
@@ -174,6 +181,15 @@ public class LuaScript implements Comparable<LuaScript>, Copyable<LuaScript> {
 		if (cutted.startsWith("\n")) cutted = cutted.substring(1);
 		if (cutted.endsWith("\n")) cutted = cutted.substring(0, cutted.length() - 1);
 		return cutted;
+	}
+
+	public static List<String> allFunctionNames(String cleanedCode) {
+		List<String> functionNames = new ArrayList<>();
+		Matcher finder = Pattern.compile("function\\s+([\\w_]+)\\s*\\(").matcher(cleanedCode);
+		while (finder.find()) {
+			functionNames.add(finder.group(1));
+		}
+		return functionNames;
 	}
 
 	public static String extractTableFromScript(String cleanedCode, String originalCode, String tableName, boolean onlyValues) {

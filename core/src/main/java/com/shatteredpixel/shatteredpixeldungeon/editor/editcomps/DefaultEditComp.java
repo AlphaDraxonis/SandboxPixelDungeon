@@ -93,6 +93,8 @@ public abstract class DefaultEditComp<T> extends Component {
 
         desc = PixelScene.renderTextBlock(createDescription(), 6);
         add(desc);
+
+        bringToFront(title);
     }
 
     public void setDoLayoutTitle(boolean doLayoutTitle) {

@@ -6,7 +6,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomObjectComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaMob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
@@ -18,6 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public enum Mobs implements EditorInvCategory<Mob> {
@@ -225,9 +229,27 @@ public enum Mobs implements EditorInvCategory<Mob> {
     }
 
     public static void updateCustomMobsInInv() {
-        customMobsBag.clear();
-        for (Mob customMob : CustomObject.getAllCustomObjects(Mob.class)) {
-            customMobsBag.items.add(new MobItem(customMob));
+        //Need to keep the same reference for the Undo list
+        if (Undo.canUndo() || Undo.canRedo()) {
+            ArrayList<Item> newItems = new ArrayList<>();
+            oneMob:
+            for (Mob customMob : CustomObject.getAllCustomObjects(Mob.class)) {
+                int ident = ((LuaMob) customMob).getIdentifier();
+                for (Item i : customMobsBag.items) {
+                    MobItem mobItem = (MobItem) i;
+                    if (((LuaMob) mobItem.getObject()).getIdentifier() == ident) {
+                        newItems.add(mobItem);
+                        continue oneMob;
+                    }
+                }
+                newItems.add(new MobItem(customMob));
+            }
+            customMobsBag.items = newItems;
+        } else {
+            customMobsBag.clear();
+            for (Mob customMob : CustomObject.getAllCustomObjects(Mob.class)) {
+                customMobsBag.items.add(new MobItem(customMob));
+            }
         }
     }
 

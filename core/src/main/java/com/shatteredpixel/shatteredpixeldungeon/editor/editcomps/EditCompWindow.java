@@ -1,9 +1,14 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaMob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.AdvancedListPaneItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -20,6 +25,8 @@ public class EditCompWindow extends Window {
     private ScrollPane sp;
     protected final DefaultEditComp<?> content;
 
+    private MobActionPart.ModifyCustomMobInInv mobModify;
+
     public EditCompWindow(Object object) {
         this(object, null);
     }
@@ -35,6 +42,10 @@ public class EditCompWindow extends Window {
 
         if (content == null)
             throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
+
+        if (object instanceof MobItem && ((MobItem) object).getObject() instanceof LuaMob && ((LuaMob) ((MobItem) object).getObject()).isOriginal()) {
+            mobModify = new MobActionPart.ModifyCustomMobInInv(((MobItem) object).getObject());
+        }
 
         content.advancedListPaneItem = advancedListPaneItem;
         init();
@@ -91,4 +102,28 @@ public class EditCompWindow extends Window {
 //        sp.scrollToCurrentView();
     }
 
+    @Override
+    public void hide() {
+        super.hide();
+
+        if (content instanceof EditMobComp && content.getObj() instanceof LuaMob && ((LuaMob) content.getObj()).isOriginal()) {
+            Undo.startAction();
+
+            mobModify.finish();
+            Undo.addActionPart(mobModify);
+
+            Mob obj = ((EditMobComp) content).getObj();
+            int ident = ((LuaMob) obj).getIdentifier();
+            for (Mob mob : Dungeon.level.mobs) {//TODO tzz not all places where mobs could be!!! (other levels, spawning cycle, containers(summoning trap))
+                if (mob instanceof LuaMob && ((LuaMob) mob).getIdentifier() == ident && ((LuaMob) mob).getInheritsStats()) {
+                    MobActionPart.Modify modify = new MobActionPart.Modify(mob);
+                    EditMobComp.setToMakeEqual(mob, obj);
+                    EditMobComp.updateMobTexture(mob);
+                    modify.finish();
+                    Undo.addActionPart(modify);
+                }
+            }
+            Undo.endAction();
+        }
+    }
 }

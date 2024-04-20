@@ -84,8 +84,9 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 	}
 
 	protected float calculateRequiredHeight(TextArea textArea) {
-		float height = ((textArea.getLines()+2) * textArea.getStyle().font.getLineHeight()) / PixelScene.uiCamera.zoom;
-		return Math.max(height, 70); // 70 = minimum height
+//		float height = ((textArea.getLines()+2) * textArea.getStyle().font.getLineHeight()) / PixelScene.uiCamera.zoom;
+//		return Math.max(height, 70); // 70 = minimum height
+		return 100;
 	}
 
 	protected String createDescription() {
@@ -132,13 +133,13 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 					super.layout();
 				}
 
-				@Override
-				public void setText(String text) {
-					super.setText(text);
-					if (info != null) {
-						Gdx.app.postRunnable(() -> resizeTextArea((TextArea) textField));
-					}
-				}
+//				@Override
+//				public void setText(String text) {
+//					super.setText(text);
+//					if (info != null) {
+//						Gdx.app.postRunnable(() -> resizeTextArea((TextArea) textField));
+//					}
+//				}
 			};
 			add(textInput);
 

@@ -128,4 +128,7 @@ public class MethodPanel extends CodeInputPanel {
 		setCode(forceChange, LuaScript.extractMethodFromScript(cleanedCode, fullScript.code, method.getName()));
 	}
 
+	public String getMethodName() {
+		return method.getName();
+	}
 }

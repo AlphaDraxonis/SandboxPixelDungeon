@@ -46,10 +46,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -59,7 +55,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class EditItemComp extends DefaultEditComp<Item> {
-
+//TODO checkbox for armors: has seal
     public static boolean showSpreadIfLoot;
 
     private final Heap heap;
@@ -487,7 +483,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (curseBtn != null)               curseBtn.checked(obj.cursed);
         if (levelSpinner != null)           levelSpinner.setValue(obj.level());
         if (chargeSpinner != null)          chargeSpinner.updateValue(obj);
-        if (augmentationSpinner != null)   augmentationSpinner.updateValue(obj);
+        if (augmentationSpinner != null)    augmentationSpinner.updateValue(obj);
         if (autoIdentify != null)           autoIdentify.checked(obj.identifyOnStart);
         if (cursedKnown != null)            cursedKnown.checked(obj.getCursedKnownVar());
         if (spreadIfLoot != null)           spreadIfLoot.checked(obj.spreadIfLoot);

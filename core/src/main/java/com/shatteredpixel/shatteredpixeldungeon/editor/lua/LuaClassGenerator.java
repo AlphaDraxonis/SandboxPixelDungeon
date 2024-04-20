@@ -169,23 +169,28 @@ public final class LuaClassGenerator {
     //        //in storeInBundle: find a way to properly store all of that automatically
     //        //test if they are separate
 
-    private static String generateSourceCode(Class<?> inputClass) {
-        String pckge = "package " + inputClass.getPackage().getName() + ";\n\n";
-        String imprt = "import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;\n" +
-                "import com.shatteredpixel.shatteredpixeldungeon.actors.*;\n" +
-                "import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;\n" +
+    public static String generateSourceCode(Class<?> inputClass) {
+        String pckge = "package " + inputClass.getPackage().getName() + ".luamobs;\n\n";
+        String imprt = "import " + Messages.MAIN_PACKAGE_NAME + "actors.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "actors.buffs.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "actors.mobs.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.levels.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.lua.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.ui.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.util.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "items.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "levels.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "sprites.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "windows.WndError;\n" +
+                "import com.watabou.noosa.Game;\n" +
+                "import com.watabou.utils.Bundle;\n" +
                 "import org.luaj.vm2.*;\n" +
+                "import org.luaj.vm2.lib.jse.CoerceJavaToLua;\n" +
                 "import java.util.*;\n\n";
-        String classHead = "public class " + inputClass.getSimpleName() + "_lua extends " + inputClass.getSimpleName() +" implements LuaClass {\n\n";
-        String declaringVars = "    private String identifier;\n"
+        String classHead = "public class " + inputClass.getSimpleName() + "_lua extends " + inputClass.getSimpleName() +" implements LuaMob {\n\n";
+        String declaringVars = "    private int identifier;\n"
+                + "    private boolean inheritsStats = true;\n"
                 + "    private LuaTable vars;\n";
-        String initializers = "\n{\n" +
-                "        if (!CustomDungeon.isEditing() && LuaClassGenerator.luaScript != null && LuaClassGenerator.luaScript.get(\"vars\").istable()) {\n" +
-                "            vars = LuaClassGenerator.deepCopyLuaValue(LuaClassGenerator.luaScript.get(\"vars\")).checktable();\n" +
-                "            vars.set(\"static\", LuaClassGenerator.luaScript.get(\"vars\").get(\"static\"));\n" +
-//                "            vars.set(\"globals\", LuaClassGenerator.luaScript.get(\"vars\").get(\"globals\"));\n" +
-                "        }\n" +
-                "    }\n";
         String implementLuaClassStuff =
                 "\n" +
                         "    @Override\n" +
@@ -197,14 +202,24 @@ public final class LuaClassGenerator {
                         "    public int getIdentifier() {\n" +
                         "        return this.identifier;\n" +
                         "    }\n" +
-                        "\n";
+                        "\n" +
+                        "    @Override\n" +
+                        "    public void setInheritsStats(boolean inheritsStats) {\n" +
+                        "        this.inheritsStats = inheritsStats;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public boolean getInheritsStats() {\n" +
+                        "        return inheritsStats;\n" +
+                        "    }";
         String bundlingMethods =
                 "@Override\n" +
                         "    public void storeInBundle(Bundle bundle) {\n" +
                         "        super.storeInBundle(bundle);\n" +
                         "        bundle.put(LuaClass.IDENTIFIER, identifier);\n" +
+                        "        bundle.put(LuaMob.INHERITS_STATS, inheritsStats);\n" +
                         "        if (vars != null && !CustomDungeon.isEditing()) {\n" +
-                        "            LuaClassGenerator.storeVarInBundle(bundle, vars, VARS);\n" +
+                        "            LuaManager.storeVarInBundle(bundle, vars, VARS);\n" +
                         "        }\n" +
                         "    }\n" +
                         "\n" +
@@ -212,13 +227,15 @@ public final class LuaClassGenerator {
                         "    public void restoreFromBundle(Bundle bundle) {\n" +
                         "        super.restoreFromBundle(bundle);\n" +
                         "        identifier = bundle.getInt(LuaClass.IDENTIFIER);\n" +
-                        "        LuaValue loaded = LuaClassGenerator.restoreVarFromBundle(bundle, VARS);\n" +
-                        "        if (loaded != null && loaded.istable()) {\n" +
-                        "            vars = loaded.checktable();\n" +
-                        "            if (LuaClassGenerator.luaScript != null && LuaClassGenerator.luaScript.get(\"vars\").istable()) {\n" +
-                        "                vars.set(\"static\", LuaClassGenerator.luaScript.get(\"vars\").get(\"static\"));\n" +
-//                        "                vars.set(\"globals\", LuaClassGenerator.luaScript.get(\"vars\").get(\"globals\"));\n" +
-                        "            }\n" +
+                        "        inheritsStats = bundle.getBoolean(LuaMob.INHERITS_STATS);\n" +
+                        "\n" +
+                        "        LuaValue script;\n" +
+                        "        if (!CustomDungeon.isEditing() && (script = CustomObject.getScript(identifier)) != null && script.get(\"vars\").istable()) {\n" +
+                        "            vars = LuaManager.deepCopyLuaValue(script.get(\"vars\")).checktable();\n" +
+                        "\n" +
+                        "            LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, VARS);\n" +
+                        "            if (loaded != null && loaded.istable()) vars = loaded.checktable();\n" +
+                        "            if (script.get(\"static\").istable()) vars.set(\"static\", script.get(\"static\"));\n" +
                         "        }\n" +
                         "    }\n\n";
         //TODO tzz don't forget Methods from Bundlable!
@@ -241,24 +258,26 @@ public final class LuaClassGenerator {
 
         for (Method m : methods.values()) {
 
+            Class<?> returnType = m.getReturnType();
+            String returnTypeName = className(returnType);
+
             overrideMethods.append('\n');
             overrideMethods.append("    @Override\n");
             overrideMethods.append(Modifier.toString(m.getModifiers())).append(" ");
 
-            overrideMethods.append(m.getReturnType().getSimpleName()).append(" ");
+            overrideMethods.append(returnTypeName).append(" ");
             overrideMethods.append(m.getName()).append("(");
 
             Class<?>[] paramTypes = m.getParameterTypes();
             for (int i = 0; i < paramTypes.length; i++) {
-                overrideMethods.append(paramTypes[i].getSimpleName());
+                overrideMethods.append(className(paramTypes[i]));
                 overrideMethods.append(" arg").append(i);
                 if (i < paramTypes.length - 1)
                     overrideMethods.append(", ");
             }
 
-            Class<?> returnType = m.getReturnType();
-            String returnString = returnType == void.class ? "" : returnType.getSimpleName() + " ret = ";
-            if (!returnType.isPrimitive() && returnType != String.class) returnString += "(" + returnType.getSimpleName() + ") ";
+            String returnString = returnType == void.class ? "" : returnTypeName + " ret = ";
+            if (!returnType.isPrimitive() && returnType != String.class) returnString += "(" + returnTypeName + ") ";
             String returnTypeString;
             if (returnType == String.class) returnTypeString = ".tojstring()";
             else if (returnType == void.class) returnTypeString = "";
@@ -268,10 +287,11 @@ public final class LuaClassGenerator {
             boolean useInvoke = paramTypes.length >= 1;
 
             overrideMethods.append(") {\n");
-            overrideMethods.append("        LuaValue luaScript = CustomLuaObject.getScript(identifier);\n");
+            overrideMethods.append("        LuaValue luaScript = CustomObject.getScript(identifier);\n");
             overrideMethods.append("        if (luaScript != null && !luaScript.get(\"").append(m.getName()).append("\").isnil()) {\n");
 
-            overrideMethods.append("            MethodOverride");
+            overrideMethods.append("            try {\n");
+            overrideMethods.append("                MethodOverride");
             if (paramTypes.length <= 10) overrideMethods.append('.');
             if (returnType == void.class) overrideMethods.append("Void");
             if (paramTypes.length <= 10) overrideMethods.append('A').append(paramTypes.length);
@@ -280,9 +300,9 @@ public final class LuaClassGenerator {
                 if (returnType.isPrimitive()) {
                     if (returnType == int.class) overrideMethods.append("Integer");
                     else if (returnType == char.class) overrideMethods.append("Character");
-                    else overrideMethods.append(Messages.capitalize(returnType.getSimpleName()));
+                    else overrideMethods.append(Messages.capitalize(returnTypeName));
                 }
-                else overrideMethods.append(returnType.getSimpleName());
+                else overrideMethods.append(returnTypeName);
                 overrideMethods.append('>');
             }
 
@@ -296,7 +316,7 @@ public final class LuaClassGenerator {
             for (int i = 0; i < paramTypes.length; i++) {
                 if (paramTypes[i] != Object.class) {
                     overrideMethods.append('(');
-                    overrideMethods.append(paramTypes[i].getSimpleName());
+                    overrideMethods.append(className(paramTypes[i]));
                     overrideMethods.append(')');
                     overrideMethods.append(' ');
                 }
@@ -305,13 +325,13 @@ public final class LuaClassGenerator {
             }
             overrideMethods.append(");\n");
 
-            overrideMethods.append("           ").append(returnString).append("luaScript.get(\"")
+            overrideMethods.append("               ").append(returnString).append("luaScript.get(\"")
                     .append(m.getName()).append("\").").append(useInvoke ? "invoke" : "call").append('(');
 
             if (useInvoke) overrideMethods.append("new LuaValue[]{");
             overrideMethods.append("CoerceJavaToLua.coerce(this), ");
             overrideMethods.append("vars, ");
-            overrideMethods.append("CoerceJavaToLua.coerce(superMethod), ");
+            overrideMethods.append("CoerceJavaToLua.coerce(superMethod)");
             if (paramTypes.length > 0) overrideMethods.append(", ");
 
             for (int i = 0; i < paramTypes.length; i++) {
@@ -331,11 +351,12 @@ public final class LuaClassGenerator {
             if (useInvoke) overrideMethods.append(".arg1()");
             overrideMethods.append(returnTypeString).append(";\n");
             if (!returnString.isEmpty())
-                overrideMethods.append("            return ret;\n");
-            overrideMethods.append("        } else {\n");
+                overrideMethods.append("                return ret;\n");
+            overrideMethods.append("            } catch (LuaError error) { Game.runOnRenderThread(()->\tDungeonScene.show(new WndError(error))); }\n");
+            overrideMethods.append("        }\n");
 
-            overrideMethods.append("            ");
-            if (m.getReturnType() != void.class) {
+            overrideMethods.append("        ");
+            if (returnType != void.class) {
                 overrideMethods.append("return ");
             }
             overrideMethods.append("super.").append(m.getName()).append("(");
@@ -346,7 +367,6 @@ public final class LuaClassGenerator {
             }
             overrideMethods.append(");\n");
 
-            overrideMethods.append("        }\n");
             overrideMethods.append("    }\n");
 
         }
@@ -355,11 +375,18 @@ public final class LuaClassGenerator {
                 + imprt
                 + classHead
                 + declaringVars
-                + initializers
                 + implementLuaClassStuff
                 + bundlingMethods
                 + overrideMethods
                 + "}";
+    }
+
+    private static String className(Class<?> clazz) {
+        Class<?> enclosingClass = clazz.getEnclosingClass();
+        if (enclosingClass != null && Modifier.isStatic(clazz.getModifiers())) {
+            return className(enclosingClass) + "." + clazz.getSimpleName();
+        }
+        return clazz.getSimpleName();
     }
 
     private static void findAllMethodsToOverride(Class<?> currentClass, Class<?> highestClass, Map<String, Method> currentMethods) {

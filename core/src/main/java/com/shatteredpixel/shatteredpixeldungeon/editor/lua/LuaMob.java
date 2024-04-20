@@ -25,4 +25,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 public interface LuaMob extends LuaClass {
+
+	String INHERITS_STATS = "inherits_stats";
+
+	boolean getInheritsStats();
+	void setInheritsStats(boolean value);
+
 }

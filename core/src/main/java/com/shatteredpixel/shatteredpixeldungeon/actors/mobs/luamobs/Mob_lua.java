@@ -28,6 +28,7 @@ import java.util.List;
 public class Mob_lua extends Rat implements LuaMob {
 
     private int identifier;
+    private boolean inheritsStats = true;
     private LuaTable vars;
 
     @Override
@@ -41,9 +42,20 @@ public class Mob_lua extends Rat implements LuaMob {
     }
 
     @Override
+    public void setInheritsStats(boolean inheritsStats) {
+        this.inheritsStats = inheritsStats;
+    }
+
+    @Override
+    public boolean getInheritsStats() {
+        return inheritsStats;
+    }
+
+    @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         bundle.put(LuaClass.IDENTIFIER, identifier);
+        bundle.put(LuaMob.INHERITS_STATS, inheritsStats);
         if (vars != null && !CustomDungeon.isEditing()) {
             LuaManager.storeVarInBundle(bundle, vars, VARS);
         }
@@ -53,6 +65,7 @@ public class Mob_lua extends Rat implements LuaMob {
     public void restoreFromBundle(Bundle bundle) {
         super.restoreFromBundle(bundle);
         identifier = bundle.getInt(LuaClass.IDENTIFIER);
+        inheritsStats = bundle.getBoolean(LuaMob.INHERITS_STATS);
 
         LuaValue script;
         if (!CustomDungeon.isEditing() && (script = CustomObject.getScript(identifier)) != null && script.get("vars").istable()) {

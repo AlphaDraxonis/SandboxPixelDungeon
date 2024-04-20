@@ -19,11 +19,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.ChangeRegion;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.WndSelectMusic;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaMob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
@@ -53,15 +51,13 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.windows.*;
-import com.watabou.noosa.Game;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
@@ -98,6 +94,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private HeroClassSpinner heroClassSpinner;
     private HeroClassSpinner.SubclassSpinner heroSubclassSpinner;
     private StyledButton test;
+    private CheckBox inheritsStats;
 
     private final Component[] rectComps, linearComps;
 
@@ -756,15 +753,15 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
 
 
-        if (mob instanceof LuaMob && ((LuaMob) mob).isOriginal()) {
-            test = new RedButton("TEST") {
+        if (mob instanceof LuaMob) {
+            test = new RedButton("Edit code") {
                 @Override
                 protected void onClick() {
                     IDEWindow.showWindow(CustomObject.customObjects.get(((LuaMob) mob).getIdentifier()));
                 }
             };
             add(test);
-        }
+        }//TODO tzz if editing: only view code
 
 		rectComps = new Component[]{
 
@@ -800,23 +797,50 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 summonMobs,
                 yogNormalFists, yogChallengeFists,
                 blacksmithQuestRewards,
-                buffs,test
+                buffs, test
         };
 
-        //TODO might wanna add editStats to link to the original mob! tzz
-        if (mob instanceof LuaClass && !((LuaClass) mob).isOriginal()) {
-            for (Component c : rectComps) {
-                if (c != null) c.visible = c.active = false;
-            }
-            for (Component c : linearComps) {
-                if (c != null) c.visible = c.active = false;
-            }
+
+        if (CustomDungeon.isEditing() && mob instanceof LuaMob && !((LuaMob) mob).isOriginal()) {
+            inheritsStats = new CheckBox("Inherits stats") {
+                boolean initializing;
+                {
+                    initializing = true;
+                    checked(((LuaMob) mob).getInheritsStats());
+                    initializing = false;
+                }
+                @Override
+                public void checked(boolean value) {
+                    if (value != checked()) {
+                        if (value && !initializing) {
+                            setToMakeEqual(mob, (Mob) CustomObject.getLuaClass(((LuaMob) mob).getIdentifier()));
+                        }
+
+                        for (Component c : rectComps) {
+                            if (c != null) c.visible = c.active = !value;
+                        }
+                        for (Component c : linearComps) {
+                            if (c != null) c.visible = c.active = !value;
+                        }
+
+                        IconButton rename = mainTitleComp instanceof MobTitleEditor ? ((MobTitleEditor) mainTitleComp).rename : null;
+                        if (rename != null) rename.visible = rename.active = !value;
+
+                        ((LuaMob) mob).setInheritsStats(value);
+                        if (test != null) test.visible = test.active = true;
+                        updateObj();
+                    }
+                    super.checked(value);
+                }
+            };
+            add(inheritsStats);
         }
     }
 
     @Override
     protected void layout() {
         super.layout();
+        layoutCompsLinear(inheritsStats);
         layoutCompsInRectangles(rectComps);
         layoutCompsLinear(linearComps);
     }
@@ -865,13 +889,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 else sprite.hideMimic();
             }
 
-            if (obj instanceof Pylon) {
-                Pylon pylon = (Pylon) obj;
-                if (pylon.alwaysActive || pylon.alignment != Char.Alignment.NEUTRAL && obj.playerAlignment == Mob.NORMAL_ALIGNMENT)
-                    ((PylonSprite) pylon.sprite).activate();
-                else ((PylonSprite) pylon.sprite).deactivate();
-            }
-
             ((MobTitleEditor) mainTitleComp).setText(((MobTitleEditor) mainTitleComp).createTitle(obj));
             ((MobTitleEditor) mainTitleComp).layout();
         }
@@ -881,45 +898,51 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mobArmor != null) {
-
-            if (obj instanceof ArmoredStatue) {
-                Armor armor = ((ArmoredStatue) obj).armor();
-                if (obj.sprite != null)
-                    ((StatueSprite) obj.sprite).setArmor(armor == null ? 0 : armor.tier);
-            }
-
-            if (obj instanceof HeroMob) {
-                if (obj.sprite != null) {
-                    ((HeroSprite.HeroMobSprite) obj.sprite).updateHeroClass(((HeroMob) obj).hero());
-                }
-            }
-
             mobArmor.updateItem();
         }
 
-        if (obj instanceof Mimic) {
-            ((MimicSprite) obj.sprite).superHidden = ((Mimic) obj).superHidden;
-            if (obj.state != obj.PASSIVE) obj.sprite.idle();
-            else ((MimicSprite) obj.sprite).hideMimic();
-        }
-
         if (pylonAlwaysActive != null) {
-            boolean active = false;
-            Pylon pylon = (Pylon) obj;
             if (obj.playerAlignment == Mob.NORMAL_ALIGNMENT) {
                 pylonAlwaysActive.enable(true);
-                active = pylon.alignment != Char.Alignment.NEUTRAL;
             } else {
                 if (!pylonAlwaysActive.active) {
                     pylonAlwaysActive.enable(false);
                     pylonAlwaysActive.checked(true);
                 }
             }
-            if (active || pylon.alwaysActive) ((PylonSprite) pylon.sprite).activate();
+        }
+
+        updateMobTexture(obj);
+
+        super.updateObj();
+    }
+
+    public static void updateMobTexture(Mob mob) {
+
+        if (mob instanceof Pylon) {
+            Pylon pylon = (Pylon) mob;
+            if (pylon.alwaysActive || mob.playerAlignment == Mob.NORMAL_ALIGNMENT && mob.alignment != Char.Alignment.NEUTRAL)
+                ((PylonSprite) pylon.sprite).activate();
             else ((PylonSprite) pylon.sprite).deactivate();
         }
 
-        super.updateObj();
+        if (mob instanceof ArmoredStatue) {
+            Armor armor = ((ArmoredStatue) mob).armor();
+            if (mob.sprite != null)
+                ((StatueSprite) mob.sprite).setArmor(armor == null ? 0 : armor.tier);
+        }
+
+        if (mob instanceof HeroMob) {
+            if (mob.sprite != null) {
+                ((HeroSprite.HeroMobSprite) mob.sprite).updateHeroClass(((HeroMob) mob).hero());
+            }
+        }
+
+        if (mob instanceof Mimic) {
+            ((MimicSprite) mob.sprite).superHidden = ((Mimic) mob).superHidden;
+            if (mob.state != mob.PASSIVE) mob.sprite.idle();
+            else ((MimicSprite) mob.sprite).hideMimic();
+        }
     }
 
     public void updateTitleIcon() {
@@ -1013,6 +1036,11 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (h1.lvl != h2.lvl) return false;
             if (h1.STR != h2.STR) return false;
         }
+
+        if (a instanceof LuaMob) {
+            if (((LuaMob) a).getInheritsStats() != ((LuaMob) b).getInheritsStats()) return false;
+        }
+
         return true;
     }
 
@@ -1027,6 +1055,23 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             index++;
         }
         return true;
+    }
+
+    public static void setToMakeEqual(Mob change, Mob template) {
+        if (change == null || template == null) return;
+        if (change.getClass() != template.getClass()) return;
+        Bundle bundle = new Bundle();
+        bundle.put("MOB", template);
+
+        int pos = change.pos;
+        boolean replaceSprite = change.spriteClass != template.spriteClass;
+        change.restoreFromBundle(bundle.getBundle("MOB"));
+        change.pos = pos;
+        if (change instanceof LuaMob) ((LuaMob) change).setInheritsStats(true);
+
+        if (replaceSprite && change.sprite != null) {
+            EditorScene.replaceMobSprite(change, template.spriteClass);
+        }
     }
 
     private class MobTitleEditor extends WndInfoMob.MobTitle {
