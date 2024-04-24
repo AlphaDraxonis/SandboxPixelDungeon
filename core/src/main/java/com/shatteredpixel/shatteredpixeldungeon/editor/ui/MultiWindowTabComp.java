@@ -25,32 +25,21 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
     public static final int GAP = 2, BIG_GAP = GAP * 3, BUTTON_HEIGHT = 18;
 
-    protected boolean layoutOwnMenu = true;
-    protected Component otherTitle, otherBody, outsideSp;
-    protected ScrollPane spForOtherBody;
-    private float alignmentOther, titleAlignmentOther;
-    private ButtonBack buttonBack;
 
     protected Component title;
     protected ScrollPane sp;
     protected Component content;
 
+    private SubMenuComp subMenuComp;
+
     protected Component[] mainWindowComps;
 
     public MultiWindowTabComp() {
-
-        super();
-
-        sp.givePointerPriority();//Method invocation 'givePointerPriority' will NOT produce 'NullPointerException' -> see: Unable to find cause
-        add(sp);
-    }
-
-    @Override
-    protected void createChildren(Object... params) {
-        super.createChildren(params);
-
         content = new Component();
         sp = new ScrollPane(content);
+
+        sp.givePointerPriority();
+        add(sp);
     }
 
     @Override
@@ -58,7 +47,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
         float posY = y;
 
-        if (layoutOwnMenu) {
+        if (layoutOwnMenu()) {
             if (title != null) {
                 if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth((int) width);
                 title.setRect(x, posY, width, title.height());
@@ -70,31 +59,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
             sp.setRect(x, posY, width, height - posY - 1 + y);
 
         } else {
-            posY += GAP * 2;
-            float backW = buttonBack.width();
-            float backH = buttonBack.height();
-            if (otherTitle instanceof RenderedTextBlock) ((RenderedTextBlock) otherTitle).maxWidth((int) (width - GAP - backW));
-            otherTitle.setRect(x + Math.max(backW + GAP, (width - otherTitle.width()) * titleAlignmentOther), posY,
-                    width - GAP - backW, Math.max(otherTitle.height(), backH));
-            buttonBack.setPos(x, posY + (otherTitle.height() - backH) * 0.5f);
-            posY = otherTitle.bottom() + GAP * 3;
-
-            otherBody.setSize(width, -1);
-
-            float normalSpHeight;
-            if (outsideSp != null) {
-                outsideSp.setSize(width, -1);
-                float outsideSpH = outsideSp.height();
-                outsideSp.setPos(x, y + height - outsideSpH);
-                normalSpHeight = height - posY - (outsideSpH == 0 ? 1 : outsideSpH + GAP);
-            } else {
-                normalSpHeight = height - posY - 1;
-            }
-            float makeSpSmaller = Math.max(0, (normalSpHeight - otherBody.height()) * alignmentOther);
-            spForOtherBody.setRect(x, posY + makeSpSmaller, width, normalSpHeight - makeSpSmaller);
-
-            spForOtherBody.scrollToCurrentView();
-            spForOtherBody.givePointerPriority();
+            subMenuComp.setRect(x, posY, width, height);
         }
     }
 
@@ -104,85 +69,68 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
     }
 
     public float preferredHeight(){
-        float result;
-        if (layoutOwnMenu) {
-            result = title.height() + GAP + 1;//+1 is gap to bottom
+        if (layoutOwnMenu()) {
+            float result = title.height() + GAP + 1;//+1 is gap to bottom
             layoutOwnContent();
             result += content.height();
+            return result;
         } else {
-            otherBody.setSize(width, -1);
-            result = GAP * 5 + Math.max(otherTitle.height(), buttonBack.height())
-            + otherBody.height() + 1;
-
-            if (outsideSp != null) {
-                outsideSp.setSize(width, -1);
-                float outsideSpH = outsideSp.height();
-                if (outsideSpH != 0) {
-                    result += outsideSpH + GAP - 1;
-                }
-            }
+            return subMenuComp.preferredHeight();
         }
-        return result;
     }
 
     public void changeContent(Component titleBar, Component body, Component outsideSp) {
         changeContent(titleBar, body, outsideSp, 0.5f, 0.5f);
     }
 
-    public void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
+    public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
+        changeContent(new SubMenuComp(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH));
+    }
 
-        if (!layoutOwnMenu) destroyCurrentSubMenu();
+    public void changeContent(SubMenuComp subMenuComp) {
 
-        title.visible = title.active = false;
+        if (this.subMenuComp != null) destroyCurrentSubMenu();
+
+        title.visible   = title.active   = false;
         content.visible = content.active = false;
-        sp.visible = sp.active = false;
+        sp.visible      = sp.active      = false;
 
-        if (alignment != -1f) alignmentOther = alignment;
-        titleAlignmentOther = titleAlignmentX;
+        this.subMenuComp = subMenuComp;
+        if (subMenuComp.buttonBack == null)
+            subMenuComp.initBackButton(new ButtonBack());
 
-        buttonBack = new ButtonBack();
-        add(buttonBack);
-        otherTitle = titleBar;
-        otherBody = body;
-        spForOtherBody = new ScrollPane(otherBody);
-        add(spForOtherBody);
-        add(otherTitle);
-        this.outsideSp = outsideSp;
-        if (outsideSp != null) add(outsideSp);
-        layoutOwnMenu = false;
+        add(subMenuComp);
 
         layout();
     }
 
     //Update layout manually!!!
-    public void setAlignmentOther(float alignmentOther) {
-        this.alignmentOther = alignmentOther;
+    public void setSubMenuContentAlignmentV(float alignment) {
+        subMenuComp.contentAlignmentV = alignment;
     }
 
     public void closeCurrentSubMenu() {
-        layoutOwnMenu = true;
         destroyCurrentSubMenu();
 
-        title.visible = title.active = true;
+        title.visible   = title.active   = true;
         content.visible = content.active = true;
-        sp.visible = sp.active = true;
+        sp.visible      = sp.active      = true;
 
         layout();
     }
 
     protected void destroyCurrentSubMenu() {
-        otherTitle.remove();
-        otherTitle.destroy();
-        spForOtherBody.remove();
-        spForOtherBody.destroy();
-        otherBody.remove();
-        otherBody.destroy();
-        buttonBack.remove();
-        buttonBack.destroy();
-        if (outsideSp != null) {
-            outsideSp.remove();
-            outsideSp.destroy();
-        }
+        subMenuComp.remove();
+        subMenuComp.destroy();
+        subMenuComp = null;
+    }
+
+    public final boolean layoutOwnMenu() {
+        return subMenuComp == null || !subMenuComp.visible;
+    }
+
+    protected final SubMenuComp getSubMenuComp() {
+        return subMenuComp;
     }
 
     public interface BackPressImplemented {
@@ -199,7 +147,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
         @Override
         protected void onClick() {
-            if (!(otherBody instanceof BackPressImplemented) || !((BackPressImplemented) otherBody).onBackPressed()) closeCurrentSubMenu();
+            if (!(subMenuComp.body instanceof BackPressImplemented) || !((BackPressImplemented) subMenuComp.body).onBackPressed()) closeCurrentSubMenu();
         }
 
         @Override
@@ -210,6 +158,95 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
         @Override
         protected String hoverText() {
             return Messages.titleCase(Messages.get(WndKeyBindings.class, "back"));
+        }
+    }
+
+
+    public static class SubMenuComp extends Component {
+
+        protected Component title, body, outsideSp;
+        protected ScrollPane sp;
+        private ButtonBack buttonBack;
+
+        protected float contentAlignmentV, titleAlignmentH;
+
+        public SubMenuComp(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
+
+            this.contentAlignmentV = contentAlignmentV;
+            this.titleAlignmentH = titleAlignmentH;
+
+            this.title = titleBar;
+            this.body = body;
+            this.outsideSp = outsideSp;
+            sp = new ScrollPane(body);
+            add(sp);
+            add(titleBar);
+            if (outsideSp != null) add(outsideSp);
+        }
+
+        private void initBackButton(ButtonBack buttonBack) {
+            this.buttonBack = buttonBack;
+            add(buttonBack);
+        }
+
+        @Override
+        protected void layout() {
+
+            float posY = y + GAP*2;
+
+            float backW = buttonBack == null ? 0 : buttonBack.width() + GAP;
+            float backH = buttonBack == null ? 0 : buttonBack.height();
+
+            if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth((int) (width - backW));
+            title.setRect(x + Math.max(backW, (width - title.width()) * titleAlignmentH), posY,
+                    width - backW, Math.max(title.height(), backH));
+
+            if (buttonBack != null) buttonBack.setPos(x, posY + (title.height() - buttonBack.height()) * 0.5f);
+
+            posY += Math.max(title.height(), buttonBack.height()) + GAP * 3;
+
+            body.setSize(width, -1);
+
+            float normalSpHeight;
+            if (outsideSp != null) {
+                outsideSp.setSize(width, -1);
+                float outsideSpH = outsideSp.height();
+                outsideSp.setPos(x, y + height - outsideSpH);
+                normalSpHeight = height - posY - (outsideSpH == 0 ? 1 : outsideSpH + GAP);
+            } else {
+                normalSpHeight = height - posY - 1;
+            }
+            float makeSpSmaller = Math.max(0, (normalSpHeight - body.height()) * contentAlignmentV);
+            sp.setRect(x, posY + makeSpSmaller, width, normalSpHeight - makeSpSmaller);
+
+            sp.scrollToCurrentView();
+            sp.givePointerPriority();
+        }
+
+        public float preferredHeight() {
+
+            float backW = buttonBack == null ? 0 : buttonBack.width() + GAP;
+            float backH = buttonBack == null ? 0 : buttonBack.height();
+
+            if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth((int) (width - backW));
+
+            float result = GAP*2 + Math.max(title.height(), backH) + GAP*3;
+
+            body.setSize(width, -1);
+
+            if (outsideSp != null) {
+                outsideSp.setSize(width, -1);
+                float outsideSpH = outsideSp.height();
+                if (outsideSpH != 0) {
+                    result += outsideSpH + GAP - 1;
+                }
+            }
+
+            return result;
+        }
+
+        public void scrollTo(float x, float y) {
+            sp.scrollTo(x, y);
         }
     }
 

@@ -237,7 +237,8 @@ public abstract class Mob extends Char implements Customizable {
 	public static final String HP_SET = "hp_set";
 
 	private static final String ENEMY_ID	= "enemy_id";
-	
+	private static final String FIRST_ADDED	= "first_added";
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		
@@ -296,6 +297,8 @@ public abstract class Mob extends Char implements Customizable {
         if (enemy != null) {
             bundle.put(ENEMY_ID, enemy.id());
         }
+
+		bundle.put(FIRST_ADDED, firstAdded);
     }
 
     @Override
@@ -327,8 +330,8 @@ public abstract class Mob extends Char implements Customizable {
 			enemyID = bundle.getInt(ENEMY_ID);
 		}
 
-		//no need to actually save this, must be false
-		firstAdded = false;
+		//do need to actually save this, might be true or false
+		firstAdded = bundle.getBoolean(FIRST_ADDED);
 
 		if (bundle.contains(DEFENSE_SKILL)) defenseSkill = bundle.getInt(DEFENSE_SKILL);
 		if (bundle.contains(ATTACK_SKILL)) attackSkill = bundle.getInt(ATTACK_SKILL);

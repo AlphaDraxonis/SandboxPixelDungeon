@@ -45,7 +45,7 @@ public class EditPlantComp extends DefaultEditComp<Plant> {
             @Override
             public void setSelectedItem(Item selectedItem) {
                 super.setSelectedItem(selectedItem);
-                plant.dropItem = selectedItem == null ? null : selectedItem.getCopy();
+                plant.dropItem = selectedItem;
             }
 
             @Override
@@ -110,6 +110,8 @@ public class EditPlantComp extends DefaultEditComp<Plant> {
 
         if (!Objects.equals(a.getCustomName(), b.getCustomName())) return false;
         if (!Objects.equals(a.getCustomDesc(), b.getCustomDesc())) return false;
+
+        if (!EditItemComp.areEqual(a.dropItem, b.dropItem)) return false;
 
         return true;
     }

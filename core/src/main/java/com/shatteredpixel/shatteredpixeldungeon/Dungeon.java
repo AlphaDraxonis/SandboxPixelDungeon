@@ -361,6 +361,7 @@ public class Dungeon {
 
     public static Level newLevel(String oldLvlName, int oldBranch) {
 
+		if (Dungeon.level != null) Dungeon.level.levelScheme.unloadLevel();
         Dungeon.level = null;
         Actor.clear();
 

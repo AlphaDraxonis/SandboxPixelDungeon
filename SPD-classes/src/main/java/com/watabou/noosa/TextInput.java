@@ -244,6 +244,15 @@ public class TextInput extends Component {
 		hasFocus = false;
 	}
 
+	protected static void focusToFirstVisible() {
+		for (TextInput textInput : activeTextInputs.toArray(new TextInput[0])) {
+			if (textInput.isVisible() && textInput.isActive()) {
+				textInput.gainFocus();
+				break;
+			}
+		}
+	}
+
 	public static Function<Gizmo, Boolean> checkIfGizmoIsInstanceofWindow;
 	private boolean isInTopWindow() {
 		Gizmo ownWindow = this;
@@ -366,7 +375,8 @@ public class TextInput extends Component {
 		layoutContainer(true);
 	}
 
-	private float lastScrollX = 99999, lastScrollY = 99999;
+	private static final float SCROLL_NOT_SET = 999999;
+	private float lastScrollX = SCROLL_NOT_SET, lastScrollY = SCROLL_NOT_SET;
 
 	private void layoutContainer(boolean force) {
 
@@ -407,7 +417,7 @@ public class TextInput extends Component {
 			}
 
 		} else {
-			lastScrollX = lastScrollY = 99999;
+			lastScrollX = lastScrollY = SCROLL_NOT_SET;
 		}
 
 		container.align(Align.topLeft);
@@ -454,13 +464,8 @@ public class TextInput extends Component {
 			if (!DeviceCompat.isDesktop()) Game.platform.updateSystemUI();
 		}
 		activeTextInputs.remove(this);
-		if (hasFocus) {//TODO test!
-			for (TextInput textInput : activeTextInputs.toArray(new TextInput[0])) {
-				if (textInput.isActive()) {
-					textInput.gainFocus();
-					break;
-				}
-			}
+		if (hasFocus) {
+			focusToFirstVisible();
 		}
 	}
 

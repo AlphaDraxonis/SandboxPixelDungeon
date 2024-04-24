@@ -37,10 +37,6 @@ public class StandardReference extends Reference {
 		this.parentField = parentField;
 	}
 
-	public Reference getParent() {
-		return parent;
-	}
-
 	public Object valueViaParent() throws ReferenceNotFoundException {
 		Object parentValue = parent.valueViaParent();
 		try {

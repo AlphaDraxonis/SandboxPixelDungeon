@@ -14,5 +14,8 @@ Please look at the [help document](https://docs.google.com/document/d/1LEx8uZYdv
 
 Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome.
 
-Please visit the [Shattered Pixel Dungeon github page](https://github.com/00-Evan/shattered-pixel-dungeon) for more information about that game.
+Please visit the [Shattered Pixel Dungeon GitHub page](https://github.com/00-Evan/shattered-pixel-dungeon) for more information about that game.
 You might also want to consider supporting the author of Shattered Pixel Dungeon (not me) via [Patreon](https://www.patreon.com/ShatteredPixel) or [Liberpay](https://liberapay.com/Shattered_Pixel).
+
+<hr>
+<p style="font-size: 10px;">This project utilizes <a href="https://github.com/luaj/luaj">LuaJ</a> provided under the terms of the MIT License. See the <a href="https://github.com/AlphaDraxonis/SandboxPixelDungeon/blob/master/LICENSE_LuaJ.txt">LICENSE_LuaJ</a> file for details.</p>

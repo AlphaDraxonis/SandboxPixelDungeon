@@ -111,7 +111,7 @@ public /*sealed*/ abstract class PlantActionPart extends TileItem.PlaceTileActio
         private Plant after;
 
         public Modify(Plant plant) {
-            before = (Plant) plant.getCopy();
+            before = plant.getCopy();
             after = plant;
         }
 

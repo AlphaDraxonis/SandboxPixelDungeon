@@ -67,7 +67,7 @@ public class LevelTab extends MultiWindowTabComp {
             @Override
             protected void onClick() {
                 MobSettings ms = new MobSettings();
-                changeContent(ms.createTitle(), ms, ms.getOutsideSp(), -1f, 0f);
+                changeContent(ms.createTitle(), ms, ms.getOutsideSp(), 0f, 0f);
             }
         };
         mobSpawn.icon(new GnollSprite());

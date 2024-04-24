@@ -611,7 +611,6 @@ public class GameScene extends DungeonScene {
 	
 	@Override
 	public synchronized void update() {
-		lastOffset = null;
 
 		if (updateItemDisplays){
 			updateItemDisplays = false;

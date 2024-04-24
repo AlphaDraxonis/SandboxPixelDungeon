@@ -46,6 +46,7 @@ public class EditCompWindowTabbed extends WndTabbed {
         if (heap != null) actionPartModifyList.add(new HeapActionPart.Modify(heap));
         if (mob != null) actionPartModifyList.add(new MobActionPart.Modify(mob));
         if (trap != null) actionPartModifyList.add(new TrapActionPart.Modify(trap));
+        if (plant != null) actionPartModifyList.add(new PlantActionPart.Modify(plant));
         if (barrier != null) actionPartModifyList.add(new BarrierActionPart.Modify(barrier));
         if (tileItem != null) actionPartModifyList.add(new TileModify(tileItem.cell()));
 

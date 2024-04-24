@@ -10,11 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.DungeonPreview;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
@@ -128,9 +124,9 @@ public class ServerDungeonList extends MultiWindowTabComp {
     }
 
     @Override
-    public void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
+    public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
         upload.visible = upload.active = false;
-        super.changeContent(titleBar, body, outsideSp, alignment, titleAlignmentX);
+        super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
     }
 
     @Override
@@ -283,8 +279,8 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
             add(serverDungeonList = new ServerDungeonList(previews) {
                 @Override
-                public void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
-                    super.changeContent(titleBar, body, outsideSp, alignment, titleAlignmentX);
+                public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
+                    super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
                     if (WndServerDungeonList.this.outsideSp != null) {
                         WndServerDungeonList.this.outsideSp.visible
                                 = WndServerDungeonList.this.outsideSp.active = false;

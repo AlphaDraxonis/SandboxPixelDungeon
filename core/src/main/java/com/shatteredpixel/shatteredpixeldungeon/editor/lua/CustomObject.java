@@ -266,6 +266,10 @@ public class CustomObject implements Bundlable {
 		}
 	}
 
+	public static void overrideOriginal(LuaClass luaClass) {
+		customObjects.get(luaClass.getIdentifier()).luaClass = luaClass;
+	}
+
 	public static void reset() {
 		customObjects.clear();
 		nextCustomObjectID = 1;

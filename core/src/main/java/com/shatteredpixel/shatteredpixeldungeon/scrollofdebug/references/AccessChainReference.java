@@ -24,22 +24,20 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references;
 
-public final class ReferenceNotFoundException extends Exception {
-	public ReferenceNotFoundException(Exception ex) {
-		super(ex);
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector.FieldLike;
+
+public class AccessChainReference extends StandardReference {
+
+	public AccessChainReference(Class<?> type, String name, Reference parent, FieldLike parentField) {
+		super(type, null, name, parent, parentField);
 	}
 
-	public ReferenceNotFoundException(String msg) {
-		super(msg);
-	}
-
-	public static final class ReturnPlaceholder {
-
-		private final Object object = null;
-
-		@Override
-		public String toString() {
-			return "<Reference invalid>";
+	@Override
+	public Object getValue() {
+		try {
+			return valueViaParent();
+		} catch (ReferenceNotFoundException e) {
+			return new ReferenceNotFoundException.ReturnPlaceholder();
 		}
 	}
 }

@@ -25,6 +25,16 @@ public class SearchBar extends Component {
 				onTextChanged(lastText, text);
 				if (!lastText.equals(text)) lastText = text;
 			}
+
+			@Override
+			protected void layout() {
+				super.layout();
+
+				TextInput withFocus = getWithFocus();
+				if (withFocus == null || !withFocus.isVisible()) {
+					focusToFirstVisible();
+				}
+			}
 		};
 		add(input);
 	}

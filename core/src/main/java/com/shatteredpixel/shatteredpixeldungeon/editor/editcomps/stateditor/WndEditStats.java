@@ -4,17 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.PropertyListContainer;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Brute;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalWisp;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGuard;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Skeleton;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
@@ -254,9 +244,9 @@ public class WndEditStats extends MultiWindowTabComp {
     }
 
     @Override
-    public void changeContent(Component titleBar, Component body, Component outsideSp, float alignment, float titleAlignmentX) {
+    public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
         restoreDefaults.visible = restoreDefaults.active = false;
-        super.changeContent(titleBar, body, outsideSp, alignment, titleAlignmentX);
+        super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
     }
 
     @Override
@@ -293,13 +283,13 @@ public class WndEditStats extends MultiWindowTabComp {
     @Override
     public float preferredHeight() {
         return Math.min(super.preferredHeight(), PixelScene.uiCamera.height * 0.73f)
-                + (layoutOwnMenu ? WndMenuEditor.BTN_HEIGHT + GAP - 1 : 0);
+                + (layoutOwnMenu() ? WndMenuEditor.BTN_HEIGHT + GAP - 1 : 0);
     }
 
     @Override
     public void layout() {
         super.layout();
-        if (layoutOwnMenu) {
+        if (layoutOwnMenu()) {
             sp.setRect(sp.left(), sp.top(), width, height - title.bottom() - GAP * 2 - WndMenuEditor.BTN_HEIGHT);
             restoreDefaults.setRect(x, sp.bottom() + GAP, width, WndMenuEditor.BTN_HEIGHT);
         }

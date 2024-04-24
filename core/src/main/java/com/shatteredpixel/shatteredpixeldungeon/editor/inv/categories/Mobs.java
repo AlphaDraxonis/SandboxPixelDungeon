@@ -239,6 +239,7 @@ public enum Mobs implements EditorInvCategory<Mob> {
                     MobItem mobItem = (MobItem) i;
                     if (((LuaMob) mobItem.getObject()).getIdentifier() == ident) {
                         newItems.add(mobItem);
+                        CustomObject.overrideOriginal(((LuaMob) customMob));
                         continue oneMob;
                     }
                 }

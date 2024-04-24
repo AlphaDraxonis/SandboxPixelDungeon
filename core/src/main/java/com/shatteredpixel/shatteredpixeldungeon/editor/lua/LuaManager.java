@@ -25,9 +25,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
@@ -40,25 +38,7 @@ public class LuaManager {
 	public static void callStaticInitializers() {
 	}
 
-	{
-		String code = "local restrictedEnv = {}\n" +
-				"\n" +
-				"for k, v in pairs(_G) do\n" +
-				"    restrictedEnv[k] = v\n" +
-				"end\n" +
-				"\n" +
-				"restrictedEnv.io.open = nil\n" +
-				"restrictedEnv.io.close = nil\n" +
-				"restrictedEnv.io.read = nil\n" +
-				"restrictedEnv.io.write = nil\n" +
-				"restrictedEnv.os.execute = nil\n" +
-				"\n" +
-				"setmetatable(restrictedEnv, {__index = restrictedEnv})";
-	}
-
-	static final Globals globals;
-
-	public static int scriptsRunning = 0;//TODO tzz restrict certain methods (e.g. file reading/writing) -> throw an exception if any method is invoked
+	static final Globals globals = new LuaGlobals();
 
 	public static boolean areScriptsRunning() {
 		for (StackTraceElement[] stackTrace : Thread.getAllStackTraces().values()) {
@@ -72,11 +52,9 @@ public class LuaManager {
 	}
 
 	private static void showScriptRunningWarning(String methodName) {
-		Window w = new WndError("tzz A script tried to call the method " + methodName + "(), " +
+		DungeonScene.show( new WndError("tzz A script tried to call the method " + methodName + "(), " +
 				"but the access couldn't be granted due to security reasons (the effects would go beyond the current game)." +
-				"\n\n_The fact that a script even tried this is alarming and you should definitely be careful!_");
-		if (Game.scene() instanceof GameScene) GameScene.show(w);
-		else EditorScene.show(w);
+				"\n\n_The fact that a script even tried this is alarming and you should definitely be careful!_") );
 	}
 
 	public static boolean checkAccess(String methodName) {
@@ -86,22 +64,6 @@ public class LuaManager {
 		}
 		return true;
 	}
-
-	static {
-		globals = new LuaGlobals();
-
-//		globals.set("load", LuaValue.NIL);
-//		globals.set("loadstring", LuaValue.NIL);
-//		globals.set("dofile", LuaValue.NIL);
-//		globals.set("loadfile", LuaValue.NIL);
-//		globals.set("loadstring", LuaValue.NIL);
-//		globals.set("debug", LuaValue.NIL);
-//		globals.set("os", LuaValue.NIL);
-//		globals.set("io", LuaValue.NIL);
-//		globals.set("socket", LuaValue.NIL);
-//		globals.set("_ENV", LuaValue.NIL);
-	}
-
 
 	public static void updateGlobalVars() {
 		if (Dungeon.hero != null) {

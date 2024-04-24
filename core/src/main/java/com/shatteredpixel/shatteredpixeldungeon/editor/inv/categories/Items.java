@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.TormentedSpirit;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
@@ -31,6 +32,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.SummoningTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.*;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.noosa.Image;
@@ -373,16 +376,27 @@ public enum Items implements EditorInvCategory<Item> {
             if (bag instanceof Bag) {
                 for (Item mobItem : ((Bag) bag).items) {
                     if (mobItem instanceof MobItem) {
-                        updateKeysInMobContainer((MobItem) mobItem, oldLvlName, newLvlName);
+                        updateKeysInMobContainer(((MobItem) mobItem).getObject(), oldLvlName, newLvlName);
                     }
                 }
             } else if (bag instanceof MobItem) {
-                updateKeysInMobContainer((MobItem) bag, oldLvlName, newLvlName);
+                updateKeysInMobContainer(((MobItem) bag).getObject(), oldLvlName, newLvlName);
+            }
+        }
+        for (Item bag : Traps.bag.items){
+            if (bag instanceof Bag) {
+                for (Item trapItem : ((Bag) bag).items) {
+                    if (trapItem instanceof TrapItem) {
+                        updateKeysInTrapContainer(((TrapItem) trapItem).getObject(), oldLvlName, newLvlName);
+                    }
+                }
+            } else if (bag instanceof TrapItem) {
+                updateKeysInTrapContainer(((TrapItem) bag).getObject(), oldLvlName, newLvlName);
             }
         }
     }
 
-    public static void maybeUpdateKeyLevel(Item i, String oldLvlName, String newLvlName){
+    public static void maybeUpdateKeyLevel(Item i, String oldLvlName, String newLvlName) {
         if (i instanceof Key && (oldLvlName == null || ((Key) i).levelName == null || ((Key) i).levelName.equals(oldLvlName))) {
             ((Key) i).levelName = newLvlName;
         } else if (i instanceof RandomItem<?>){
@@ -390,8 +404,7 @@ public enum Items implements EditorInvCategory<Item> {
         }
     }
 
-    private static void updateKeysInMobContainer(MobItem mobItem, String oldLvlName, String newLvlName){
-        Mob m = mobItem.mob();
+    private static void updateKeysInMobContainer(Mob m, String oldLvlName, String newLvlName) {
         if (m instanceof Mimic && ((Mimic) m).items != null) {
             for (Item item : ((Mimic) m).items) {
                 maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
@@ -408,6 +421,14 @@ public enum Items implements EditorInvCategory<Item> {
                 for (Item item : itemsWithCount.items) {
                     maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
                 }
+            }
+        }
+    }
+
+    private static void updateKeysInTrapContainer(Trap t, String oldLvlName, String newLvlName){
+        if (t instanceof SummoningTrap) {
+            for (Mob m : ((SummoningTrap) t).spawnMobs) {
+                updateKeysInMobContainer(m, oldLvlName, newLvlName);
             }
         }
     }

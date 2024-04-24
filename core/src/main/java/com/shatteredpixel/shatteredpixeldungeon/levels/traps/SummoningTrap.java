@@ -107,6 +107,7 @@ public class SummoningTrap extends Trap {
 			if (mob != null) {
 				mob.state = mob.WANDERING;
 				mob.pos = point;
+				mob.setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME();
 				GameScene.add(mob, DELAY);
 				mobs.add(mob);
 			}

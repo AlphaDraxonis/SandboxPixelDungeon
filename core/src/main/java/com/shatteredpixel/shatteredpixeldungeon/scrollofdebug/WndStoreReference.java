@@ -35,7 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector.FieldLike;
-import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.DynamicReference;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.AccessChainReference;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.StandardReference;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -47,7 +47,7 @@ import com.watabou.noosa.ui.Component;
 public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
 
 	private TextInput nameInput;
-	private StyledCheckBox asReference, asValue;
+	private StyledCheckBox asAccessChain, asValue;
 
 	public WndStoreReference(Reference reference, FieldLike field, Object obj) {
 
@@ -64,20 +64,20 @@ public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
 				add(nameInput);
 
 				//TODO tzz dont allow as reference if parent reference is null (e.g. return value from a method)
-				asReference = new StyledCheckBox(Messages.get(WndStoreReference.class, "as_reference")) {
+				asAccessChain = new StyledCheckBox(Messages.get(WndStoreReference.class, "as_reference")) {
 					@Override
 					public void checked(boolean value) {
 						super.checked(value);
 						if (asValue != null && asValue.checked() == value) asValue.checked(!value);
 					}
 				};
-				add(asReference);
+				add(asAccessChain);
 
 				asValue = new StyledCheckBox(Messages.get(WndStoreReference.class, "as_value")) {
 					@Override
 					public void checked(boolean value) {
 						super.checked(value);
-						if (asReference != null && asReference.checked() == value) asReference.checked(!value);
+						if (asAccessChain != null && asAccessChain.checked() == value) asAccessChain.checked(!value);
 					}
 				};
 				add(asValue);
@@ -90,7 +90,7 @@ public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
 			protected void layout() {
 				height = 0;
 				height = EditorUtilies.layoutCompsLinear(2, this, nameInput) + 3;
-				height = EditorUtilies.layoutStyledCompsInRectangles(2, width,2, this, asValue, asReference);
+				height = EditorUtilies.layoutStyledCompsInRectangles(2, width,2, this, asValue, asAccessChain);
 			}
 		};
 
@@ -105,8 +105,15 @@ public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
 					protected void onClick() {
 						hide();
 						Reference ref;
-						if (asReference.checked()) {
-							ref = new DynamicReference(field.getType(), nameInput.getText(), reference, field);
+						if (asAccessChain.checked()) {
+							ref = new AccessChainReference(field.getType(), nameInput.getText(), reference, field);
+//							Object val;
+//							try {
+//								val = field.get(obj);
+//							} catch (IllegalAccessException e) {
+//								return;
+//							}
+//							ref = new PointerReference(field, val, nameInput.getText());
 						} else {
 							Object val;
 							try {

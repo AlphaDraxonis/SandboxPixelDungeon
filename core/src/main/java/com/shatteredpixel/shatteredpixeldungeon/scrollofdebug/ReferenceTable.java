@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSe
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector.ObjInspector;
+import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.PointerReference;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -33,11 +34,7 @@ public class ReferenceTable extends MultiWindowTabComp {
 
     private List<ReferenceListItem> items;
 
-    @Override
-    protected void createChildren(Object... params) {
-
-        super.createChildren(params);
-
+    public ReferenceTable() {
         title = new IconTitle(new ItemSprite(ItemSpriteSheet.KIT), Messages.get(this, "title"));
         add(title);
 
@@ -45,9 +42,9 @@ public class ReferenceTable extends MultiWindowTabComp {
         Set<Reference> toRemove = new HashSet<>(3);
         System.gc();
         for (Reference r : WndScrollOfDebug.references) {
-//            if (r instanceof DynamicReference && ((DynamicReference) r).hasNoReference()) toRemove.add(r);
+            if (r instanceof PointerReference && ((PointerReference) r).hasNoReference()) toRemove.add(r);
 //            else  tzz maybe add logic to handle invalid references!
-                addReferenceToUI(r);
+            else    addReferenceToUI(r);
         }
         WndScrollOfDebug.references.removeAll(toRemove);
     }
@@ -58,15 +55,9 @@ public class ReferenceTable extends MultiWindowTabComp {
         content.add(item);
     }
 
-    private final LinkedList<Reference> lastInspectedObjects = new LinkedList<>();
-    private final LinkedList<Float> lastInspectedObjectsScrollPos = new LinkedList<>();
-    private Reference currentReference;
+    private final LinkedList<SubMenuComp> lastInspectedObjects = new LinkedList<>();
 
     public void inspectObj(Reference reference) {
-        if (!backPressed && currentReference != null) {
-            lastInspectedObjects.add(currentReference);
-            lastInspectedObjectsScrollPos.add(otherBody.camera().scroll.y);
-        }
         ObjInspector objInspector = new ObjInspector(reference) {
             @Override
             protected void updateParentLayout() {
@@ -80,17 +71,41 @@ public class ReferenceTable extends MultiWindowTabComp {
 
             @Override
             protected void scrollTo(float x, float y) {
-                spForOtherBody.scrollTo(x, y);
+                getSubMenuComp().scrollTo(x, y);
             }
         };
-        currentReference = reference;
         changeContent(objInspector.createTitle(), objInspector, objInspector.getOutsideSp(), 0, 0);
-        if (backPressed) {
-            objInspector.selectFieldsTab();
-            spForOtherBody.scrollTo(0, lastInspectedObjectsScrollPos.removeLast());
+    }
+
+    private void restoreLastInspectObjectView() {
+
+        if (getSubMenuComp() != null) {
+            destroyCurrentSubMenu();
+        }
+
+        SubMenuComp subMenuComp = lastInspectedObjects.removeLast();
+        subMenuComp.visible = subMenuComp.active = true;
+        changeContent(subMenuComp);
+    }
+
+    @Override
+    protected void destroyCurrentSubMenu() {
+        if (backPressed) super.destroyCurrentSubMenu();
+        else {
+            SubMenuComp subMenuComp = getSubMenuComp();
+            lastInspectedObjects.add(subMenuComp);
+            subMenuComp.visible = subMenuComp.active = false;
+            remove(subMenuComp);
         }
     }
 
+    @Override
+    public synchronized void destroy() {
+        super.destroy();
+        for (SubMenuComp subMenuComp : lastInspectedObjects) {
+            subMenuComp.destroy();
+        }
+    }
 
     protected void layoutOwnContent() {
         float pos = 0;
@@ -141,15 +156,15 @@ public class ReferenceTable extends MultiWindowTabComp {
     private boolean backPressed;
     @Override
     public void closeCurrentSubMenu() {
+
         backPressed = true;
+
         super.closeCurrentSubMenu();
 
         if (!lastInspectedObjects.isEmpty()) {
-            inspectObj(lastInspectedObjects.removeLast());
-        } else {
-            currentReference = null;
-            layout();
+            restoreLastInspectObjectView();
         }
+
         backPressed = false;
     }
 }

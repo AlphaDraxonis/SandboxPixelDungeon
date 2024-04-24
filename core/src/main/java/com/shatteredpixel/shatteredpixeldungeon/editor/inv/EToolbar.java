@@ -189,7 +189,7 @@ public class EToolbar extends Component {
             @Override
             protected void onClick() {
                 if (!EditorScene.cancel()) {
-                    EditorScene.show(new WndEditorInv(EditorItemBag.getLastBag()));
+                    EditorScene.show(new WndEditorInv(EditorItemBag.getLastBag(EditorItemBag.getMainBags())));
                 }
             }
 

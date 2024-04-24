@@ -25,7 +25,7 @@ public class EditCompWindow extends Window {
     private ScrollPane sp;
     protected final DefaultEditComp<?> content;
 
-    private MobActionPart.ModifyCustomMobInInv mobModify;
+    private MobActionPart.Modify mobModify;
 
     public EditCompWindow(Object object) {
         this(object, null);
@@ -44,7 +44,7 @@ public class EditCompWindow extends Window {
             throw new IllegalArgumentException("Invalid object: " + object + " (class " + object.getClass().getName() + ")");
 
         if (object instanceof MobItem && ((MobItem) object).getObject() instanceof LuaMob && ((LuaMob) ((MobItem) object).getObject()).isOriginal()) {
-            mobModify = new MobActionPart.ModifyCustomMobInInv(((MobItem) object).getObject());
+            mobModify = new MobActionPart.Modify(((MobItem) object).getObject());
         }
 
         content.advancedListPaneItem = advancedListPaneItem;
@@ -107,22 +107,14 @@ public class EditCompWindow extends Window {
         super.hide();
 
         if (content instanceof EditMobComp && content.getObj() instanceof LuaMob && ((LuaMob) content.getObj()).isOriginal()) {
+
             Undo.startAction();
 
             mobModify.finish();
             Undo.addActionPart(mobModify);
 
-            Mob obj = ((EditMobComp) content).getObj();
-            int ident = ((LuaMob) obj).getIdentifier();
-            for (Mob mob : Dungeon.level.mobs) {//TODO tzz not all places where mobs could be!!! (other levels, spawning cycle, containers(summoning trap))
-                if (mob instanceof LuaMob && ((LuaMob) mob).getIdentifier() == ident && ((LuaMob) mob).getInheritsStats()) {
-                    MobActionPart.Modify modify = new MobActionPart.Modify(mob);
-                    EditMobComp.setToMakeEqual(mob, obj);
-                    EditMobComp.updateMobTexture(mob);
-                    modify.finish();
-                    Undo.addActionPart(modify);
-                }
-            }
+            ((LuaMob) content.getObj()).updateInheritStats(Dungeon.level);
+
             Undo.endAction();
         }
     }

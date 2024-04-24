@@ -26,38 +26,40 @@ package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references;
 
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.inspector.FieldLike;
 
-public class DynamicReference extends StandardReference {
+import java.lang.ref.WeakReference;
 
-	public DynamicReference(Class<?> type, String name, Reference parent, FieldLike parentField) {
-		super(type, null, name, parent, parentField);
+public class PointerReference extends StandardReference {
+
+	private final WeakReference<Object> ref;
+
+	/**
+	 * <b>Should not be available for <u>Primitives</u> and <u>String</u>!</b>
+	 */
+	public PointerReference(FieldLike field, Object obj, String name) {
+		super(field.getType(), null, name, null, null);
+		this.ref = new WeakReference<>(obj);
 	}
 
 	@Override
 	public Object getValue() {
 		try {
-			return valueViaParent();
-		} catch (ReferenceNotFoundException e) {
-			return new ReferenceNotFoundException.ReturnPlaceholder();
+			return ref.get();
+		} catch (Exception e) {
+			return null;
 		}
 	}
 
-//	private final WeakReference<Object> ref;
-//
-//	public DynamicReference(FieldLike field, Object obj, String name) {
-//		super(field.getType(), field, name);
-//		this.ref = new WeakReference<>(obj);
-//	}
-//
-//	@Override
-//	public Object getValue() {
-//		try {
-//			return ((FieldLike) super.getValue()).get(ref.get());
-//		} catch (Exception e) {
-//			return null;
-//		}
-//	}
-//
-//	public boolean hasNoReference() {
-//		return ref.get() == null;
-//	}
+	/**
+	 * IMPORTANT: call <code>System.gc()</code> before!
+	 */
+	public boolean hasNoReference() {
+		return ref.get() == null;
+	}
+
+	public Object valueViaParent() throws ReferenceNotFoundException {
+		Object parentValue = ref.get();
+		if (parentValue == null) throw new ReferenceNotFoundException("Reference is null!");
+		return parentValue;
+	}
+
 }

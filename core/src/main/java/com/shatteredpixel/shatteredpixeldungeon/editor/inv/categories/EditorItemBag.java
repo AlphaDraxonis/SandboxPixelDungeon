@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EditorItemBag extends Bag {
 
@@ -91,10 +92,10 @@ public class EditorItemBag extends Bag {
         mainBag.items.add(Plants.bag);
     }
 
-    public static EditorItemBag getLastBag() {
+    public static EditorItemBag getLastBag(List<Bag> availableBags) {
         EditorItemBag lastBag = WndEditorInv.lastBag();
-        if (lastBag != null && getBags().contains(lastBag)) return lastBag;
-        return getBag(EditorItemBag.class);
+        if (lastBag != null && availableBags.contains(lastBag)) return lastBag;
+        return (EditorItemBag) availableBags.get(0);
     }
 
     @SuppressWarnings("unchecked")
@@ -118,11 +119,11 @@ public class EditorItemBag extends Bag {
     }
 
 
-    public static ArrayList<Bag> getBags() {
-        return getBags(mainBag);
+    public static ArrayList<Bag> getMainBags() {
+        return getMainBags(mainBag);
     }
 
-    public static ArrayList<Bag> getBags(Bag bag) {
+    public static ArrayList<Bag> getMainBags(Bag bag) {
         ArrayList<Bag> list = new ArrayList<>();
         for (Item item : bag.items) {
             if (item instanceof Bag) list.add((Bag) item);

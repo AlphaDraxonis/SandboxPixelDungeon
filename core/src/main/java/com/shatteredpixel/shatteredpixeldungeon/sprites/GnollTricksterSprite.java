@@ -67,7 +67,7 @@ public class GnollTricksterSprite extends MobSprite {
 			sprite.zap(cell);
 			sprite.turnTo( sprite.ch.pos , cell );
 		} else {
-			if (sprite instanceof FungalSentrySprite) return false;
+			if (sprite instanceof GnollTricksterSprite) return false;
 			sprite.attack( cell );
 		}
 		return true;

@@ -1,7 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -32,7 +31,6 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTabbed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
@@ -189,7 +187,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
                     add(mobSpawning);
                 }
                 select(mobSpawning);
-                WndEditorSettings.getInstance().getLevelTab().setAlignmentOther(0.5f);
+                WndEditorSettings.getInstance().getLevelTab().setSubMenuContentAlignmentV(0.5f);
                 break;
             case 1:
                 titleText.text(Messages.get(MobSettings.class, "overview"));
@@ -199,7 +197,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
                 }
                 select(mobOverview);
 
-                WndEditorSettings.getInstance().getLevelTab().setAlignmentOther(0f);
+                WndEditorSettings.getInstance().getLevelTab().setSubMenuContentAlignmentV(0f);
                 break;
             case 2:
                 titleText.text(Messages.get(MobSettings.class, "mob_rot"));
@@ -222,7 +220,7 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
                 };
                 title.add(buttonInTitle);
 
-                WndEditorSettings.getInstance().getLevelTab().setAlignmentOther(0f);
+                WndEditorSettings.getInstance().getLevelTab().setSubMenuContentAlignmentV(0f);
                 break;
         }
         LevelTab.updateLayout();

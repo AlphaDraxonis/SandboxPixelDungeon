@@ -24,6 +24,14 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
+import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.Function;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+
 public interface LuaMob extends LuaClass {
 
 	String INHERITS_STATS = "inherits_stats";
@@ -31,4 +39,26 @@ public interface LuaMob extends LuaClass {
 	boolean getInheritsStats();
 	void setInheritsStats(boolean value);
 
+	default void updateInheritStats(Level level) {
+		if (isOriginal()) {
+
+			final int ident = getIdentifier();
+			final Mob template = (Mob) this;
+
+			Function<Mob, Boolean> whatToDo = mob -> {
+				if (mob instanceof LuaMob && ((LuaMob) mob).getIdentifier() == ident && ((LuaMob) mob).getInheritsStats()) {
+					MobActionPart.Modify modify = new MobActionPart.Modify(mob);
+					EditMobComp.setToMakeEqual(mob, template);
+					EditMobComp.updateMobTexture(mob);
+					modify.finish();
+					Undo.addActionPart(modify);
+				}
+				return false;
+			};
+
+			for (Mob m : level.levelScheme.mobsToSpawn) whatToDo.apply(m);
+
+			CustomDungeon.doOnAllMobs(level, whatToDo);
+		}
+	}
 }

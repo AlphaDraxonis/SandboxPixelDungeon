@@ -7,7 +7,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 
 public /*sealed*/ abstract class MobActionPart implements ActionPart {
 
@@ -92,52 +91,11 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
 
     public static final class Modify implements ActionPartModify {
 
+        private final Mob realMob;
         private final Mob before;
         private Mob after;
 
         public Modify(Mob mob) {
-            before = (Mob) mob.getCopy();
-            after = mob;
-        }
-
-        @Override
-        public void undo() {
-
-            Mob mobAtCell = Dungeon.level.findMob(after.pos);
-
-            remove(mobAtCell);
-
-            place((Mob) before.getCopy());
-        }
-
-        @Override
-        public void redo() {
-            Mob mobAtCell = Dungeon.level.findMob(after.pos);
-
-            if (mobAtCell != null) remove(mobAtCell);
-
-            place((Mob) after.getCopy());
-
-        }
-
-        @Override
-        public boolean hasContent() {
-            return !EditMobComp.areEqual(before, after);
-        }
-
-        @Override
-        public void finish() {
-            after = (Mob) after.getCopy();
-        }
-    }
-
-    public static final class ModifyCustomMobInInv implements ActionPartModify {
-
-        private final Mob before;
-        private Mob after;
-        private final Mob realMob;
-
-        public ModifyCustomMobInInv(Mob mob) {
             before = (Mob) mob.getCopy();
             realMob = mob;
         }
@@ -145,13 +103,11 @@ public /*sealed*/ abstract class MobActionPart implements ActionPart {
         @Override
         public void undo() {
             EditMobComp.setToMakeEqual(realMob, before);
-            QuickSlotButton.refresh();
         }
 
         @Override
         public void redo() {
             EditMobComp.setToMakeEqual(realMob, after);
-            QuickSlotButton.refresh();
         }
 
         @Override

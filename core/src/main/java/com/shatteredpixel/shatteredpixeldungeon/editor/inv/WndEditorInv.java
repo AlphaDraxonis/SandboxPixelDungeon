@@ -110,15 +110,15 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
     }
 
     protected List<Bag> getBags() {
-        if (selector == null) return EditorItemBag.getBags();
+        if (selector == null) return EditorItemBag.getMainBags();
         else {
             List<Bag> result = selector.getBags();
-            return result == null ? EditorItemBag.getBags() : result;
+            return result == null ? EditorItemBag.getMainBags() : result;
         }
     }
 
     private CategoryScroller createBody(EditorItemBag bag) {
-        List<Bag> bags = EditorItemBag.getBags(bag);
+        List<Bag> bags = EditorItemBag.getMainBags(bag);
 
         CategoryScroller.Category[] cats = new CategoryScroller.Category[bags.size()];
 
@@ -363,7 +363,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
             EditorItemBag bag = (EditorItemBag) EditorItemBag.getBag(selector.preferredBag());
             if (bag != null) return new WndEditorInv(bag, selector);
         }
-        return new WndEditorInv(EditorItemBag.getLastBag(), selector);
+        return new WndEditorInv(EditorItemBag.getLastBag(selector.getBags()), selector);
     }
 
 }

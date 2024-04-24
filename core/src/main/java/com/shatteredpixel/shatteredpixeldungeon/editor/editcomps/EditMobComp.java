@@ -1067,7 +1067,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         boolean replaceSprite = change.spriteClass != template.spriteClass;
         change.restoreFromBundle(bundle.getBundle("MOB"));
         change.pos = pos;
-        if (change instanceof LuaMob) ((LuaMob) change).setInheritsStats(true);
 
         if (replaceSprite && change.sprite != null) {
             EditorScene.replaceMobSprite(change, template.spriteClass);

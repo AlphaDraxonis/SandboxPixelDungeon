@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo;
 
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -68,6 +69,7 @@ public final class Undo {
             action.undo();
             redoStack.push(action);
             EditorScene.updateUndoButtons();
+            QuickSlotButton.refresh();
         }
     }
 
@@ -77,6 +79,7 @@ public final class Undo {
             action.redo();
             undoStack.push(action);
             EditorScene.updateUndoButtons();
+            QuickSlotButton.refresh();
         }
     }
 
