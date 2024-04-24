@@ -226,10 +226,6 @@ public class Dungeon {
 //            }
 //        }
 
-        for (CustomRecipe recipe : Dungeon.customDungeon.recipes.toArray(new CustomRecipe[0])) {
-            if (!recipe.isRecipeValid()) Dungeon.customDungeon.recipes.remove(recipe);
-        }
-
         visited = new String[]{};
         completed = new String[]{};
 //
@@ -264,23 +260,28 @@ public class Dungeon {
 		//offset seed slightly to avoid output patterns
 		Random.pushGenerator( seed+1 );
 
-        customDungeon.initSeeds();
-        //TODO assign groups here to the different levels
+        	customDungeon.initSeeds();
+        	//TODO assign groups here to the different levels
 
-        customDungeon.initDistribution();
+        	customDungeon.initDistribution();
 
-        SpecialRoom.initForRun();
-        SecretRoom.initForRun();
+        	SpecialRoom.initForRun();
+       		 SecretRoom.initForRun();
 
-        Generator.fullReset();
+        	Generator.fullReset();
 
-        int indexCurHero =  GamesInProgress.selectedClass.getIndex();
-        Dungeon.customDungeon.startItems[0].initRandoms();
-        Dungeon.customDungeon.startItems[indexCurHero + 1].initRandoms();
+        	int indexCurHero =  GamesInProgress.selectedClass.getIndex();
+       		Dungeon.customDungeon.startItems[0].initRandoms();
+        	Dungeon.customDungeon.startItems[indexCurHero + 1].initRandoms();
 
-        Scroll.initLabels();
-        Potion.initColors();
-        Ring.initGems();
+			for (CustomRecipe recipe : Dungeon.customDungeon.recipes.toArray(new CustomRecipe[0])) {
+				recipe.initRandom();
+				if (!recipe.isRecipeValid()) Dungeon.customDungeon.recipes.remove(recipe);
+			}
+
+       		Scroll.initLabels();
+       		Potion.initColors();
+        	Ring.initGems();
 
         Random.resetGenerators();
 

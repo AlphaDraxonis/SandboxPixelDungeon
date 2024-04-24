@@ -141,6 +141,42 @@ public interface RandomItem<T> {
         return AugmentationSpinner.assignRandomAugmentation(item);
     }
 
+    public static void fillArrayAsGoodAsPossibleUsingRandomItems(Item[] items) {
+        Item[][] generatedItems = new Item[items.length][];
+        for (int i = 0; i < items.length; i++) {
+            if (items[i] instanceof RandomItem) {
+                Item randomItem = items[i];
+                items[i] = null;
+                generatedItems[i] = ((RandomItem<Item>) randomItem).generateItems();
+                if (generatedItems[i] == null) continue;
+                for (int j = 0; j < generatedItems[i].length; j++) {
+                    generatedItems[i][j] = AugmentationSpinner.assignRandomAugmentation(generatedItems[i][j]);
+                    generatedItems[i][j].spreadIfLoot = randomItem.spreadIfLoot;
+                }
+                if (generatedItems[i].length > 0) items[i] = generatedItems[i][0];
+            }
+        }
+        int indexOne = 0;
+        int indexTwo = 1;
+        for (int i = 0; i < items.length; i++) {
+            if (items[i] == null) {
+                while (indexTwo < items.length) {
+                    while (indexOne < generatedItems.length
+                            && (generatedItems[indexOne] == null || generatedItems[indexOne].length <= indexTwo)) indexOne++;
+                    if (indexOne >= generatedItems.length) {
+                        indexOne = 0;
+                        indexTwo++;
+                        continue;
+                    }
+                    items[i] = generatedItems[indexOne][indexTwo];
+                    indexOne++;
+                    break;
+                }
+
+            }
+        }
+    }
+
     class RandomItemAny extends Item implements RandomItem<Item> {
 
         {

@@ -13,7 +13,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
@@ -29,7 +28,7 @@ public class CustomRecipeList extends Component {
 
     private final Component outsideSp;
 
-    protected List<RecipeListItem> recipeListItems;
+    private List<RecipeListItem> recipeListItems;
 
     public CustomRecipeList() {
 
@@ -110,7 +109,9 @@ public class CustomRecipeList extends Component {
         return title;
     }
 
-    public class RecipeListItem extends Component {
+    private class RecipeListItem extends Component {
+
+        private static final int INDEX_OUTPUT = 9999;
 
         protected IconButton remove;
         protected IngredientSlot[] ingredients;
@@ -165,7 +166,7 @@ public class CustomRecipeList extends Component {
             arrow.angle = 180;
             add(arrow);
 
-            output = new IngredientSlot(null, 999);
+            output = new IngredientSlot(null, INDEX_OUTPUT);
             add(output);
 
             ingredients = new IngredientSlot[3];
@@ -253,7 +254,7 @@ public class CustomRecipeList extends Component {
             protected void onClick() {
                 if (item != null) {
                     boolean wasStackable = item.stackable;
-                    if (slot != 999) item.stackable = false;
+                    if (slot != INDEX_OUTPUT) item.stackable = false;
                     EditorScene.show(new EditCompWindow(item) {
                         {
                             item.stackable = wasStackable;//don't show quantity spinner
@@ -296,7 +297,7 @@ public class CustomRecipeList extends Component {
                         if (item == EditorItem.NULL_ITEM) item = null;
                         else if (item instanceof ItemItem) item = ((ItemItem) item).item();
                         if (item != null) item = item.getCopy();
-                        if (slot == 999) recipe.itemOutput = item;
+                        if (slot == INDEX_OUTPUT) recipe.itemOutput = item;
                         else recipe.setInput(slot, item);
                         item(item);
                     }
@@ -311,16 +312,14 @@ public class CustomRecipeList extends Component {
 
             @Override
             public void item(Item item) {
-                if (item == null)
-                    ((ItemSprite) sprite).view(ItemSpriteSheet.SOMETHING, null);
-                else
+                if (item != null)
                     item.image = Dungeon.customDungeon.getItemSpriteOnSheet(item);
                 super.item(item);
 
+                sprite.visible = sprite.active = item != null;
+
                 bg.visible = true;
                 enable(visible);
-
-                if (item == null) layout();
             }
         }
 

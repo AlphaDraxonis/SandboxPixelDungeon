@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.recipes;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
@@ -164,18 +165,21 @@ public class CustomRecipe extends Recipe implements Bundlable {
     private void initRecipe() {
         //sets numIngredients
         //combines same items in input and changes quantity accordingly
-        numIngredients = 3;
         for (int i = 0; i < itemInputs.length; i++) {
-            if (itemInputs[i] == null) numIngredients--;
-            else {
+            if (itemInputs[i] != null) {
                 for (int j = 0; j < i; j++) {
                     if (EditItemComp.areEqual(itemInputs[j], itemInputs[i], true)) {
-                        itemInputs[j].quantity(itemInputs[j].quantity() + 1);
+                        itemInputs[j].merge(itemInputs[i]);
                         itemInputs[i] = null;
                         break;
                     }
                 }
             }
+        }
+        numIngredients = 0;
+        for (int i = 0; i < itemInputs.length; i++) {
+            if (itemInputs[i] != null)
+                numIngredients += itemInputs[i].quantity();
         }
     }
 
@@ -189,4 +193,9 @@ public class CustomRecipe extends Recipe implements Bundlable {
         }
         itemInputs[slot] = item;
     }
+
+	public void initRandom() {
+        RandomItem.fillArrayAsGoodAsPossibleUsingRandomItems(itemInputs);
+        itemOutput = RandomItem.initRandomStatsForItemSubclasses(itemOutput);
+	}
 }
