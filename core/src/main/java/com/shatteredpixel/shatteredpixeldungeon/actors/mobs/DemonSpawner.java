@@ -25,7 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
@@ -62,6 +62,7 @@ public class DemonSpawner extends SpawnerMob implements MobBasedOnDepth {
 		properties.add(Property.IMMOVABLE);
 		properties.add(Property.MINIBOSS);
 		properties.add(Property.DEMONIC);
+		properties.add(Property.STATIC);
 	}
 
 	{
@@ -187,15 +188,6 @@ public class DemonSpawner extends SpawnerMob implements MobBasedOnDepth {
 		spawnCooldown = bundle.getFloat(SPAWN_COOLDOWN);
 		maxSpawnCooldown = bundle.getFloat(MAX_SPAWN_COOLDOWN);
 		spawnRecorded = bundle.getBoolean(SPAWN_RECORDED);
-	}
-
-	{
-		immunities.add( Paralysis.class );
-		immunities.add( Amok.class );
-		immunities.add( Sleep.class );
-		immunities.add( Dread.class );
-		immunities.add( Terror.class );
-		immunities.add( Vertigo.class );
 	}
 
 	@Override

@@ -1232,7 +1232,8 @@ public abstract class Char extends Actor {
 		//WARNING keeping the same ordinal order is very important!
 		PERMEABLE,//walls become passable (barriers not), excluding walls at the level border
 		LARGE,
-		IMMOVABLE,
+		IMMOVABLE ( new HashSet<Class>(),
+				new HashSet<Class>( Arrays.asList(Vertigo.class) )),
 		BOSS ( new HashSet<Class>( Arrays.asList(Grim.class, GrimTrap.class, ScrollOfRetribution.class, ScrollOfPsionicBlast.class)),
 				new HashSet<Class>( Arrays.asList(AllyBuff.class, Dread.class) )),
 		MINIBOSS ( new HashSet<Class>(),
@@ -1250,11 +1251,15 @@ public abstract class Char extends Actor {
 				new HashSet<Class>( Arrays.asList(Ooze.class))),
 		ELECTRIC ( new HashSet<Class>( Arrays.asList(WandOfLightning.class, Shocking.class, Potential.class, Electricity.class, ShockingDart.class, Elemental.ShockElemental.class )),
 				new HashSet<Class>()),
-        FLYING;//just like normal flying attribute
+		FLYING,//just like normal flying attribute
+		//A character that acts in an unchanging manner. immune to AI state debuffs or stuns/slows
+		STATIC( new HashSet<Class>(),
+				new HashSet<Class>( Arrays.asList(Paralysis.class, Frost.class, Chill.class, Slow.class, Speed.class) ));
+
 
 		static {
 			//WARNING keeping the same ordinal order is very important for bundling
-			if (FLYING.ordinal() != 13) throw new RuntimeException("Char.Property: PLEASE MAKE SURE THAT THE ORDINALS ARE ALWAYS IN THE CORRECT ORDER!!!");
+			if (STATIC.ordinal() != 14) throw new RuntimeException("Char.Property: PLEASE MAKE SURE THAT THE ORDINALS ARE ALWAYS IN THE CORRECT ORDER!!!");
 		}
 
 		private HashSet<Class> resistances;

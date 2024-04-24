@@ -68,6 +68,7 @@ public class CrystalSpire extends Mob {
 		properties.add(Property.IMMOVABLE);
 		properties.add(Property.BOSS);
 		properties.add(Property.INORGANIC);
+		properties.add(Property.STATIC);
 	}
 
 	private float abilityCooldown;
@@ -508,13 +509,6 @@ public class CrystalSpire extends Mob {
 
 	{
 		immunities.add( Blindness.class );
-
-		immunities.add( Paralysis.class );
-		immunities.add( Amok.class );
-		immunities.add( Sleep.class );
-		immunities.add( Terror.class );
-		immunities.add( Dread.class );
-		immunities.add( Vertigo.class );
 	}
 
 }
