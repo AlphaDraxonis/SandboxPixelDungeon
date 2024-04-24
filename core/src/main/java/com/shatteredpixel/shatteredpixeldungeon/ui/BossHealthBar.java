@@ -101,12 +101,12 @@ public class BossHealthBar extends Component {
         updateLayout();
     }
 
-    public static void removeBoss(Mob boss, BossHealthBarComp bossBar) {
+    private static void removeBoss(Mob boss, BossHealthBarComp bossBar) {
         bosses.remove(boss);
         if (bossBar != null) {
             instance.remove(bossBar);
             bars.remove(bossBar);
-            bossBar.killAndErase();
+            bossBar.destroy();
             updateLayout();
         }
         instance.visible = instance.active = !bosses.isEmpty();
