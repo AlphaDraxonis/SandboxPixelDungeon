@@ -35,10 +35,7 @@ public class LevelTab extends MultiWindowTabComp {
     //boolean ignoreTerrainForScore
     //DecorationPainter
 
-    @Override
-    protected void createChildren(Object... params) {
-
-        super.createChildren(params);
+    public LevelTab() {
 
         title = new IconTitle(Icons.get(Icons.PREFS), Messages.get(this, "title"));
         add(title);

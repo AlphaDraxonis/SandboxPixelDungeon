@@ -907,6 +907,17 @@ public class GameScene extends DungeonScene {
 	}
 
 	public static void resetMap() {
+		if (Dungeon.level != null) {
+			System.arraycopy(Dungeon.level.map, 0, Dungeon.level.visualMap, 0, Dungeon.level.map.length);
+			Arrays.fill(Dungeon.level.visualRegions, LevelScheme.REGION_NONE);
+			for (CustomTilemap vis : Dungeon.level.customTiles) {
+				if (vis instanceof CustomTileLoader.SimpleCustomTile) {
+					int cell = vis.tileX + vis.tileY * Dungeon.level.width();
+					Dungeon.level.visualMap[cell] = ((CustomTileLoader.SimpleCustomTile) vis).imageTerrain;
+					Dungeon.level.visualRegions[cell] = ((CustomTileLoader.SimpleCustomTile) vis).region;
+				}
+			}
+		}
 		if (scene != null) {
 			for (int i = 1; i < scene.tiles.length; i++) {
 				scene.tiles[i].map(Dungeon.level.visualMap, Dungeon.level.width() );

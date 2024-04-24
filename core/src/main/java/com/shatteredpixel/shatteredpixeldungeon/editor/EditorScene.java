@@ -584,6 +584,8 @@ public class EditorScene extends DungeonScene {
     @Override
     public void destroy() {
 
+        if (scene == this) scene = null;
+
         //tell the actor thread to finish, then wait for it to complete any actions it may be doing.
 //        if (!waitForActorThread( 4500, true )){
 //            Throwable t = new Throwable();

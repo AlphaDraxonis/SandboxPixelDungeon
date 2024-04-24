@@ -27,10 +27,7 @@ import com.watabou.noosa.ui.Component;
 
 public class DungeonTab extends MultiWindowTabComp {
 
-    @Override
-    protected void createChildren(Object... params) {
-
-        super.createChildren(params);
+    public DungeonTab() {
 
         title = new IconTitle(Icons.get(Icons.PREFS), Messages.get(DungeonTab.class, "title"));
         add(title);

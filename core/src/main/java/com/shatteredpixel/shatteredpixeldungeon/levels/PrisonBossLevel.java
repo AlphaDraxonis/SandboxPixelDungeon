@@ -357,7 +357,10 @@ public class PrisonBossLevel extends Level {
 		for (Blob blob: blobs.values()){
 			blob.fullyClear();
 		}
+		int[] oldVisualMap = visualMap;
+		visualMap = map;//all values in map and visualMap must be equal, but it is only properly updated in GameScene.resetMap()
 		addVisuals(); //this also resets existing visuals
+		visualMap = oldVisualMap;
 		traps.clear();
 
 		for (CustomTilemap t : customTiles){
