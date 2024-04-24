@@ -17,11 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerInteger
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
-import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
-import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
-import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
+import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
@@ -30,12 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.AbstractWndChooseSubclass;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
@@ -313,15 +304,25 @@ public class HeroSettings extends Component {
                 }
 
                 @Override
+                protected void doAddItem(Item item) {
+                    if (item.stackable) {
+                        for (Item i : itemList) {
+                            if (item.isSimilar( i )) {
+                                i.merge( item );
+                                return;
+                            }
+                        }
+                    }
+                    super.doAddItem(item);
+                }
+
+                @Override
                 protected void addItemToUI(Item item, boolean last) {
                     super.addItemToUI(item, last);
-                    if (item != null && item.reservedQuickslot == 0) item.reservedQuickslot = -1;
+                    if (item.reservedQuickslot == 0) item.reservedQuickslot = -1;
                 }
             };
             add(startItems);
-//            if (startItems.getStartColumnPos() > startBags.getStartColumnPos())
-//                startBags.setStartColumnPos(startItems.getStartColumnPos());
-//            else startItems.setStartColumnPos(startBags.getStartColumnPos());
         }
 
         @Override

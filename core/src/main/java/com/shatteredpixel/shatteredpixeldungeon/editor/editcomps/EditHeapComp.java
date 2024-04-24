@@ -25,6 +25,8 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
+import java.util.Collections;
+
 public class EditHeapComp extends DefaultEditComp<Heap> {
 
     protected CheckBox autoExplored;
@@ -104,11 +106,18 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         heapType = new HeapTypeSpinner(heap);
         add(heapType);
 
-        itemContainer = new ItemContainer<Item>(heap.items, this, false, 1, Integer.MAX_VALUE) {
+        itemContainer = new ItemContainer<Item>(heap.items, this, true, 1, Integer.MAX_VALUE) {
             @Override
             protected void doAddItem(Item item) {
                 EditHeapComp.this.obj.drop(item);
                 updateObj();
+            }
+
+            @Override
+            protected void updateItemListOrder() {
+                super.updateItemListOrder();
+                Collections.reverse(slots);
+                layout();
             }
 
             @Override

@@ -1,7 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.MARGIN;
-
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -31,13 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
@@ -45,6 +37,8 @@ import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.MARGIN;
 
 //If you wanna see trash, then this file is the perfect place (FIXME)
 public class LevelGenComp extends WndNewFloor.OwnTab {
@@ -230,7 +224,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         content.add(challengeSettings);
 
         if (newLevelScheme.getName() == null || newLevelScheme.getType() != CustomLevel.class) {
-            sectionItems = new SpawnSectionMore<Item>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn, null, true) {
+            sectionItems = new SpawnSectionMore<Item>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn) {
 
                 @Override
                 protected void onSlotNumChange() {
@@ -253,7 +247,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
             List<MobItem> listMobs = new ArrayList<>();
             for (Mob mob : newLevelScheme.mobsToSpawn) listMobs.add(new MobItem(mob));
-            sectionMobs = new SpawnSectionMore<MobItem>("mobs", new ItemContainer<MobItem>(listMobs, null, true) {
+            sectionMobs = new SpawnSectionMore<MobItem>("mobs", new ItemContainer<MobItem>(listMobs) {
 
                 @Override
                 protected void onSlotNumChange() {
@@ -305,7 +299,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                 }
             };
         } else {
-            sectionItems = new SpawnSection<>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn, null, true) {
+            sectionItems = new SpawnSection<>("items", new ItemContainer<Item>(newLevelScheme.itemsToSpawn) {
 
                 @Override
                 protected void onSlotNumChange() {
@@ -318,7 +312,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
 
             List<MobItem> listMobs = new ArrayList<>();
             for (Mob mob : newLevelScheme.mobsToSpawn) listMobs.add(new MobItem(mob));
-            sectionMobs = new SpawnSection<>("mobs", new ItemContainer<MobItem>(listMobs, null, true) {
+            sectionMobs = new SpawnSection<>("mobs", new ItemContainer<MobItem>(listMobs) {
 
                 @Override
                 protected void onSlotNumChange() {
@@ -367,7 +361,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         if (newLevelScheme.getName() == null || newLevelScheme.getType() != CustomLevel.class) {
             List<RoomItem> listRooms = new ArrayList<>();
             for (Room room : newLevelScheme.roomsToSpawn) listRooms.add(new RoomItem(room));
-            sectionRooms = new SpawnSectionMore<RoomItem>("rooms", new ItemContainer<RoomItem>(listRooms, null, true) {
+            sectionRooms = new SpawnSectionMore<RoomItem>("rooms", new ItemContainer<RoomItem>(listRooms) {
                 @Override
                 protected void onSlotNumChange() {
                     if (sectionRooms != null) sectionRooms.updateTitle(getNumSlots());

@@ -19,7 +19,7 @@ import java.util.Set;
 public abstract class BuffListContainer extends ItemContainerWithLabel<BuffItem> {
 
     public BuffListContainer(List<BuffItem> itemList, DefaultEditComp<?> editComp, String label) {
-        super(itemList, editComp, true, label);
+        super(itemList, editComp, false, label);
     }
 
     @Override

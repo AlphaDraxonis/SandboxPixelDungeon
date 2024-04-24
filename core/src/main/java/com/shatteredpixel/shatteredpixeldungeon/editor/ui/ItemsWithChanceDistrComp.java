@@ -235,7 +235,7 @@ public abstract class ItemsWithChanceDistrComp extends Component {
             } else {
                 text = null;
 
-                items = new ItemContainer<Item>(item.items, null, true, minSlots, maxSlots) {
+                items = new ItemContainer<Item>(item.items, null, false, minSlots, maxSlots) {
                     @Override
                     protected void onSlotNumChange() {
                         ItemsWithChanceDistrComp.Slot.this.layout();

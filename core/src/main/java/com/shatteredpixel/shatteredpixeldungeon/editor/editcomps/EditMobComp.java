@@ -498,7 +498,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     asMobItems.add(new MobItem(m));
                 }
             }
-            summonMobs = new ItemContainerWithLabel<MobItem>(asMobItems, null, true, label("summon_mob")) {
+            summonMobs = new ItemContainerWithLabel<MobItem>(asMobItems, label("summon_mob")) {
                 @Override
                 public boolean itemSelectable(Item item) {
                     return item instanceof MobItem;

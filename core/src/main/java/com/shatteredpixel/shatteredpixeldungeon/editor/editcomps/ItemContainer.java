@@ -26,7 +26,7 @@ import java.util.*;
 public class ItemContainer<T extends Item> extends Component implements WndBag.ItemSelectorInterface { // needs access to protected methods
 
     protected final DefaultEditComp<?> editComp;
-    protected final boolean reverseUiOrder;
+    protected final boolean reverseUiOrder;//if true, newly added items are added in the front in ui (index=0), but ALWAYS last in logic
     protected final int minSlots, maxSlots;
 
     public final Class<T> typeParameterClass;
@@ -82,14 +82,13 @@ public class ItemContainer<T extends Item> extends Component implements WndBag.I
         int sizePrev = itemList.size();
         doAddItem((T) item);
         if (itemList.size() > sizePrev)//if it wasn't stacked
-            addItemToUI(item, false);
+            addItemToUI(item, !reverseUiOrder);
         else {
             updateItemListOrder();
         }
     }
 
     protected void addItemToUI(Item item, boolean last) {
-        if (reverseUiOrder) last = !last;
         item.image = Dungeon.customDungeon.getItemSpriteOnSheet(item);
         Slot slot = new Slot(item);
         if (last) slots.add(slot);
