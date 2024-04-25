@@ -31,8 +31,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EntranceRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Rotberry;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -61,7 +61,7 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 	public Wandmaker(WandmakerQuest quest) {
 		super(quest);
 	}
-	
+
 	@Override
 	protected boolean act() {
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
@@ -73,7 +73,7 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 		}
 		return super.act();
 	}
-	
+
 	@Override
 	public boolean interact(Char c) {
 		sprite.turnTo( pos, Dungeon.hero.pos );
@@ -157,7 +157,7 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 //        }
 		Room roomEntrance = null;
 		for (Room room : rooms) {
-			if (room instanceof EntranceRoom) {
+			if (room.isEntrance()) {
 				roomEntrance = room;
 				break;
 			}
@@ -180,7 +180,7 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 					validPos = false;
 				}
 			}
-			if (level.traps.get(pos) != null) {
+			if (level.traps.get(pos) != null || level.map[pos] == Terrain.CHASM) {
 				validPos = false;
 			}
 			tries--;
