@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.ItemStatusHandler;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.AquaBrew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfHoneyedHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.*;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
@@ -289,7 +290,10 @@ public class Potion extends Item {
 			
 		} else  {
 
-			Dungeon.level.pressCell( cell );
+			//aqua brew specifically doesn't press cells, so it can disarm traps
+			if (!(this instanceof AquaBrew)){
+				Dungeon.level.pressCell( cell );
+			}
 			shatter( cell );
 
 			if (!anonymous && Random.Float() < talentChance){
