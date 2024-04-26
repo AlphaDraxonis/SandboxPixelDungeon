@@ -325,7 +325,7 @@ public class IDEWindow extends Component {
 
 		IDEWindow ideWindow = new IDEWindow(customObject, script, w::layout);
 
-		w.initComponents(null, ideWindow, ideWindow.getOutsideSp());
+		w.initComponents(null, ideWindow, ideWindow.getOutsideSp(), 0f, 0f, new ScrollPaneWithScrollbar(ideWindow));
 
 		EditorScene.show(w);
 

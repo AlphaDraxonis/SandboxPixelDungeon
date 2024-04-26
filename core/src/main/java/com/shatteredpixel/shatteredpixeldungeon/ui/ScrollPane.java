@@ -23,11 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.watabou.input.GameAction;
-import com.watabou.input.KeyBindings;
-import com.watabou.input.KeyEvent;
-import com.watabou.input.PointerEvent;
-import com.watabou.input.ScrollEvent;
+import com.watabou.input.*;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
@@ -153,11 +149,15 @@ public class ScrollPane extends Component {
 
     protected void layout(boolean modifyContentCameraPosition) {
 
+        //If you edit this, also check out ALL overrides!
+
         content.setPos(0, 0);
         controller.x = x;
         controller.y = y;
         controller.width = width;
         controller.height = height;
+
+        //If you edit this, also check out ALL overrides!
 
         Camera cs = content.camera;
         if (modifyContentCameraPosition) {
@@ -167,18 +167,27 @@ public class ScrollPane extends Component {
         }
         cs.resize((int) width, (int) height);
 
+        //If you edit this, also check out ALL overrides!
+
         thumbVer.visible = height < content.height();
         thumbHor.visible = width < content.width();
         if (thumbVer.visible) {
             thumbVer.scale.set(2, height * height / content.height());
             thumbVer.x = right() - thumbVer.width();
-            thumbVer.y = y + height * content.camera.scroll.y / content.height();
         }
         if (thumbHor.visible) {
             thumbHor.scale.set(width * width / content.width(), 2);
             thumbHor.y = bottom() - thumbHor.height();
-            thumbHor.x = x + width * content.camera.scroll.x / content.width();
         }
+        layoutThumbs();
+
+        //If you edit this, also check out ALL overrides!
+    }
+
+    protected void layoutThumbs() {
+        Camera c = content.camera;
+        thumbVer.y = y + height * c.scroll.y / content.height();
+        thumbHor.x = x + width * c.scroll.x / content.width();
     }
 
     public Component content() {
@@ -207,11 +216,6 @@ public class ScrollPane extends Component {
 
     public void givePointerPriority(){//call this after new content members were added (like revalidate() in Swing)
         controller.givePointerPriority();
-    }
-
-    public void setControllerSize(float width, float height) {
-        controller.width = width;
-        controller.height = height;
     }
 
     public class PointerController extends ScrollArea {
@@ -327,8 +331,7 @@ public class ScrollPane extends Component {
                 c.scroll.y = 0;
             }
 
-            thumbVer.y = y + height * c.scroll.y / content.height();
-            thumbHor.x = x + width * c.scroll.x / content.width();
+            layoutThumbs();
 
             lastPos.set(current);
 

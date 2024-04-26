@@ -31,6 +31,16 @@ public class SimpleWindow extends Window {
     }
 
     public void initComponents(Component title, Component body, Component outsideSp, float alignment, float titleAlignmentX){
+        initComponents(title, body, outsideSp, alignment, titleAlignmentX, new ScrollPane(body) {
+            @Override
+            protected void onScroll() {
+                super.onScroll();
+                SimpleWindow.this.onScroll(this);
+            }
+        });
+    }
+
+    public void initComponents(Component title, Component body, Component outsideSp, float alignment, float titleAlignmentX, ScrollPane sp){
 
         this.title = title;
         this.body = body;
@@ -38,13 +48,7 @@ public class SimpleWindow extends Window {
         this.contentAlignment = alignment;
         this.titleAlignment = titleAlignmentX;
 
-        sp = new ScrollPane(body) {
-            @Override
-            protected void onScroll() {
-                super.onScroll();
-                SimpleWindow.this.onScroll(this);
-            }
-        };
+        this.sp = sp;
         add(sp);
 
         if (title != null) add(title);

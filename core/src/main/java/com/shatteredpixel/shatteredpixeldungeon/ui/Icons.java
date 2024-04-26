@@ -92,6 +92,7 @@ public enum Icons {
     EDIT,
     TRASH,
     BOOKMARK,
+    SCROLL_BAR_THUMB_TOP,
     BACK,
     SWAP,
     RULER,
@@ -320,6 +321,9 @@ public enum Icons {
                 break;
             case BOOKMARK:
                 icon.frame(icon.texture.uvRectBySize(208, 112, 11, 11));
+                break;
+            case SCROLL_BAR_THUMB_TOP:
+                icon.frame(icon.texture.uvRectBySize(219, 81, 5, 9));
                 break;
             case BACK:
                 icon.frame(icon.texture.uvRectBySize(236, 80, 20, 13));
