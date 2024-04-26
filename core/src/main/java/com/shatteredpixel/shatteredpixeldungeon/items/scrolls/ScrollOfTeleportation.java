@@ -228,6 +228,7 @@ public class ScrollOfTeleportation extends Scroll {
 
 		int pos = teleportInNonRegularLevel(ch.pos, preferNotSeen, Char.hasProp(ch, Char.Property.LARGE)
 				? Dungeon.level.getPassableAndAnyVarForBoth(ch, null, Dungeon.level.openSpace) : Dungeon.level.getPassableVar(ch), ch instanceof Hero);
+//tzz here is BArray.and, not BArray.or if Large
 
 		if (pos == -1) return false;
 
