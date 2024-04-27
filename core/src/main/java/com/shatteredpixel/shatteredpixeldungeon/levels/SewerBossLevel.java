@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Bones;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
@@ -36,6 +37,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.RatKingRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.GooBossRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.SewerBossEntranceRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.SewerBossExitRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -63,7 +66,7 @@ public class SewerBossLevel extends SewerLevel {
 		initRooms.add( roomEntrance = new SewerBossEntranceRoom() );
 		initRooms.add( roomExit = new SewerBossExitRoom() );
 
-		if (levelScheme.spawnStandartRooms) {
+		if (levelScheme.spawnStandardRooms) {
 			int standards = standardRooms(true);
 			for (int i = 0; i < standards; i++) {
 				StandardRoom s = StandardRoom.createRoom();
@@ -72,11 +75,27 @@ public class SewerBossLevel extends SewerLevel {
 				initRooms.add(s);
 			}
 		}
-		
-		GooBossRoom gooRoom = GooBossRoom.randomGooRoom();
-		initRooms.add(gooRoom);
-		((FigureEightBuilder)builder).setLandmarkRoom(gooRoom);
-		initRooms.add(new RatKingRoom());
+
+		if (levelScheme.spawnSpecialRooms) {
+			GooBossRoom gooRoom = GooBossRoom.randomGooRoom();
+			initRooms.add(gooRoom);
+			((FigureEightBuilder) builder).setLandmarkRoom(gooRoom);
+		}
+
+		if (levelScheme.spawnSecretRooms) {
+			initRooms.add(new RatKingRoom());
+		}
+
+		initRooms.addAll(levelScheme.roomsToSpawn);
+
+		if (!name.equals(Level.NONE)) {
+			for (Room r : initRooms) {
+				if (r instanceof WeakFloorRoom) {
+					SpecialRoom.increasePitNeededCount(name);
+				}
+			}
+		}
+
 		return initRooms;
 	}
 	
@@ -108,6 +127,9 @@ public class SewerBossLevel extends SewerLevel {
 
 	@Override
 	protected void createMobs() {
+		for (Room r : rooms) {
+			if (r instanceof GooBossRoom) ((GooBossRoom) r).placeBoss(this, new Goo());
+		}
 	}
 	
 	public Actor addRespawner() {

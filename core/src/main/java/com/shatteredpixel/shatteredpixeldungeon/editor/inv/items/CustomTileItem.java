@@ -16,7 +16,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.GooBossRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
@@ -50,13 +52,18 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
 
     public static String getName(CustomTilemap customTile, int cell) {
         String defaultName = customTile.name(0, 0);
+
+        if (customTile instanceof GooBossRoom.GooNest) {
+            return customTile.tileW + "x" + customTile.tileH + " GooNest " + (defaultName == null ? TileItem.getName(customTile.terrain, cell) : Messages.titleCase(defaultName));
+        }
+
         if (defaultName != null) return Messages.titleCase(defaultName) + EditorUtilies.appendCellToString(cell);
         return TileItem.getName(customTile.terrain, cell);
     }
 
     public static Image createImage(CustomTilemap cust) {
         Image img = cust instanceof CustomTileLoader.OwnCustomTile ? new Image(cust.getTexture()) : cust.fullImage();
-        img.scale.set(Math.min(1f / cust.tileW, 1f / cust.tileH));
+        img.scale.set(Math.min(1f / img.width(), 1f / img.height()) * ItemSpriteSheet.SIZE);
         return img;
     }
 

@@ -124,7 +124,7 @@ public class CustomLevel extends Level {
             LevelScheme temp = new LevelScheme(null, numInRegion);
             temp.setSeed(seed);
             temp.roomsToSpawn = levelScheme.roomsToSpawn;
-            temp.spawnStandartRooms = levelScheme.spawnStandartRooms;
+            temp.spawnStandardRooms = levelScheme.spawnStandardRooms;
             temp.spawnSpecialRooms = levelScheme.spawnSpecialRooms;
             temp.spawnSecretRooms = levelScheme.spawnSecretRooms;
             temp.spawnMobs = levelScheme.spawnMobs;

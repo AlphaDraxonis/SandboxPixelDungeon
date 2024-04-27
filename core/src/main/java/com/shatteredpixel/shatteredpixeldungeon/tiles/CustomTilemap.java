@@ -47,7 +47,7 @@ public abstract class CustomTilemap implements Bundlable, Copyable<CustomTilemap
 	public boolean wallVisual;
 
 	//for boss level custom tiles, so the EditorScene just ignores them, a level should only have one of each, should always fill the full map
-	public interface BossLevelVisuals{
+	public interface BossLevelVisuals {
 		void updateState();
 	}
 

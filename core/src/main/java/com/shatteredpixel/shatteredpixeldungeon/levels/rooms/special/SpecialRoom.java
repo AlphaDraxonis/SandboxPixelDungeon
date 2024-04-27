@@ -211,8 +211,8 @@ public abstract class SpecialRoom extends Room {
         }
     }
 
-    public static void increasePitNeededCount(){
-        String chasm = Dungeon.customDungeon.getFloor(Dungeon.levelName).getChasm();
+    public static void increasePitNeededCount(String levelName) {
+        String chasm = Dungeon.customDungeon.getFloor(levelName).getChasm();
         Integer prev = SpecialRoom.pitNeededLevel.get(chasm);
         if (prev == null) prev = 0;
         prev++;

@@ -11,6 +11,10 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RotGardenRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.DiamondGooRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.ThickPillarsGooRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.ThinPillarsGooRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.WalledGooRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -80,7 +84,13 @@ public enum Rooms implements EditorInvCategory<Room> {
         SEWER.classes = new Class[] {
                 SewerPipeRoom.class,
                 RingRoom.class,
-                CircleBasinRoom.class
+                CircleBasinRoom.class,
+
+                //TODO add descriptions tzzz
+                DiamondGooRoom.class,
+                WalledGooRoom.class,
+                ThinPillarsGooRoom.class,
+                ThickPillarsGooRoom.class
         };
 
         PRISON.classes = new Class[] {

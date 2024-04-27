@@ -16,6 +16,7 @@ import com.watabou.input.KeyEvent;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Reflection;
 import com.watabou.utils.Signal;
 
 import java.util.List;
@@ -238,7 +239,10 @@ public class CategoryScroller extends Component {
 
 
         for (Object o : categories[selectedCatIndex].items(true)) {
-            //TODO maybe some titles here aswell?
+            //TODO maybe some titles here as well?
+            if (o instanceof ScrollingListPane.ListButton) {
+                if (((ScrollingListPane.ListButton) o).isDestroyed()) o = Reflection.newInstance(o.getClass());
+            }
             list.addItem(categories[selectedCatIndex].createListItem(o));
         }
 

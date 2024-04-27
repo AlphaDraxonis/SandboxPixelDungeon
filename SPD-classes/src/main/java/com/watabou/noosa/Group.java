@@ -58,6 +58,10 @@ public class Group extends Gizmo {
 		}
 		length = 0;
 	}
+
+	public boolean isDestroyed() {
+		return members == null;
+	}
 	
 	@Override
 	public synchronized void update() {

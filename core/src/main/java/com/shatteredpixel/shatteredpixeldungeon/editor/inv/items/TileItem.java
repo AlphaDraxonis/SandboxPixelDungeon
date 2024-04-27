@@ -314,13 +314,11 @@ public class TileItem extends EditorItem {
                 signActionPart.redo();
             }
 
-            if (BlobItem.invalidPlacement(cell) || terrainType == WELL) {
-                ActionPartModify blobEditPart = new BlobActionPart.Modify(cell);
-                if (BlobItem.invalidPlacement(cell)) BlobActionPart.clearAllAtCell(cell);
-                else BlobActionPart.clearWellWaterAtCell(cell);
-                blobEditPart.finish();
-                moreActions.addActionPart(blobEditPart);
-            }
+            ActionPartModify blobEditPart = new BlobActionPart.Modify(cell);
+            if (BlobItem.invalidPlacement(cell)) BlobActionPart.clearNormalAtCell(cell);
+            if (terrainType != WELL) BlobActionPart.clearWellWaterAtCell(cell);
+            blobEditPart.finish();
+            moreActions.addActionPart(blobEditPart);
 
             if (ParticleItem.invalidPlacement(cell)) {
                 ActionPartModify particleEditPart = new ParticleActionPart.Modify(cell);

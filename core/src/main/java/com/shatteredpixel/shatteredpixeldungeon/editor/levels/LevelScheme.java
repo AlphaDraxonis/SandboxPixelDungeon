@@ -79,7 +79,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public List<Room> roomsToSpawn;//TODO also choose builder
     public List<Item> itemsToSpawn, prizeItemsToSpawn;
 
-    public boolean spawnStandartRooms = true, spawnSecretRooms = true, spawnSpecialRooms = true;
+    public boolean spawnStandardRooms = true, spawnSecretRooms = true, spawnSpecialRooms = true;
     public boolean spawnMobs = true, spawnItems = true;
     public boolean hungerDepletion = true, naturalRegeneration = true;
     public boolean allowPickaxeMining = false;
@@ -715,7 +715,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(ITEMS_TO_SPAWN, itemsToSpawn);
         bundle.put(PRIZE_ITEMS_TO_SPAWN, prizeItemsToSpawn);
         bundle.put(ROOMS_TO_SPAWN, roomsToSpawn);
-        bundle.put(SPAWN_STANDART_ROOMS, spawnStandartRooms);
+        bundle.put(SPAWN_STANDART_ROOMS, spawnStandardRooms);
         bundle.put(SPAWN_SPECIAL_ROOMS, spawnSpecialRooms);
         bundle.put(SPAWN_SECRET_ROOMS, spawnSecretRooms);
         bundle.put(SPAWN_MOBS, spawnMobs);
@@ -802,7 +802,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (bundle.contains(ROOMS_TO_SPAWN))
             for (Bundlable l : bundle.getCollection(ROOMS_TO_SPAWN)) roomsToSpawn.add((Room) l);
 
-        spawnStandartRooms = bundle.getBoolean(SPAWN_STANDART_ROOMS);
+        spawnStandardRooms = bundle.getBoolean(SPAWN_STANDART_ROOMS);
         spawnSecretRooms = bundle.getBoolean(SPAWN_SECRET_ROOMS);
         spawnSpecialRooms = bundle.getBoolean(SPAWN_SPECIAL_ROOMS);
         spawnMobs = bundle.getBoolean(SPAWN_MOBS);

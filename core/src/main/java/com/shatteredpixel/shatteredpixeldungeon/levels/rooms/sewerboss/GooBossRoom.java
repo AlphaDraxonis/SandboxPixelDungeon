@@ -22,8 +22,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.Tilemap;
@@ -61,11 +65,19 @@ public abstract class GooBossRoom extends StandardRoom {
 		
 		level.customTiles.add(nest);
 	}
+
+	public void placeBoss(Level level, Mob boss) {
+		boss.pos = level.pointToCell(center());
+		level.mobs.add( boss );
+	}
 	
 	public static class GooNest extends CustomTilemap {
 		
 		{
 			texture = Assets.Environment.SEWER_BOSS;
+		}
+
+		public GooNest() {
 		}
 		
 		@Override
@@ -118,7 +130,42 @@ public abstract class GooBossRoom extends StandardRoom {
 		
 		@Override
 		public Image image(int tileX, int tileY) {
-			return null;
+			return Dungeon.level instanceof SewerBossLevel ? null : super.image(tileX, tileY);
+		}
+
+		@Override
+		public Image fullImage() {
+			return new ItemSprite();
 		}
 	}
+
+	public static class GooNest44 extends GooNest {
+		{
+			tileW = tileH = 4;
+			offsetCenterX = offsetCenterY = 1;
+		}
+	}
+	public static class GooNest45 extends GooNest {
+		{
+			tileW = 4;
+			tileH = 5;
+			offsetCenterX = 1;
+			offsetCenterY = 2;
+		}
+	}
+	public static class GooNest54 extends GooNest {
+		{
+			tileW = 5;
+			tileH = 4;
+			offsetCenterX = 2;
+			offsetCenterY = 1;
+		}
+	}
+	public static class GooNest55 extends GooNest {
+		{
+			tileW = tileH = 5;
+			offsetCenterX = offsetCenterY = 2;
+		}
+	}
+
 }

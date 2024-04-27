@@ -402,10 +402,10 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
             }) {
                 @Override
                 protected void onAddClick() {
-                    EditorScene.show( new WndRoomSettings(newLevelScheme.spawnStandartRooms, newLevelScheme.spawnSecretRooms, newLevelScheme.spawnSpecialRooms) {
+                    EditorScene.show( new WndRoomSettings(newLevelScheme.spawnStandardRooms, newLevelScheme.spawnSecretRooms, newLevelScheme.spawnSpecialRooms) {
                         @Override
                         protected void finish() {
-                            newLevelScheme.spawnStandartRooms = stand.checked();
+                            newLevelScheme.spawnStandardRooms = stand.checked();
                             newLevelScheme.spawnSecretRooms = sec.checked();
                             newLevelScheme.spawnSpecialRooms = spec.checked();
                         }

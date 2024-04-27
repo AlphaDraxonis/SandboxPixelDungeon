@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.MassGraveRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RitualSiteRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.sewerboss.GooBossRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.DemonSpawnerRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
@@ -252,6 +253,10 @@ public enum Tiles {
 //        customTileBag.items.add(new CustomTileItem(new DemonSpawnerRoom.CustomFloor(), -1));
 //        customTileBag.items.add(new CustomTileItem(new LastLevel.CustomFloor(), -1));
         customTileBag.items.add(new CustomTileItem(new WeakFloorRoom.HiddenWell(), -1));
+        customTileBag.items.add(new CustomTileItem(new GooBossRoom.GooNest44(), -1));
+        customTileBag.items.add(new CustomTileItem(new GooBossRoom.GooNest45(), -1));
+        customTileBag.items.add(new CustomTileItem(new GooBossRoom.GooNest54(), -1));
+        customTileBag.items.add(new CustomTileItem(new GooBossRoom.GooNest55(), -1));
         customTileBag.items.add(new CustomTileItem(new CavesBossLevel.TrapTile(), -1));
         customTileBag.items.add(new CustomTileItem(new CityBossLevel.KingsThrone(), -1));
 //        customTileBag.items.add(new CustomTileItem(new SewerBossExitRoom.SewerExit(), -1));
