@@ -45,7 +45,7 @@ public class DurabilitySpinner extends StyledSpinner {
 	public static class DurabilitySpinnerModel extends SpinnerIntegerModel {
 
 		public DurabilitySpinnerModel(int durability) {
-			super(1, (int) MissileWeapon.MAX_DURABILITY, durability, 1, false, null);
+			super(1, (int) MissileWeapon.MAX_DURABILITY, durability);
 			setAbsoluteMaximum(MissileWeapon.MAX_DURABILITY);
 		}
 

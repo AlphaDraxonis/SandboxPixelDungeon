@@ -65,13 +65,13 @@ public class ChangeMapSize extends Component {
         info = PixelScene.renderTextBlock(Messages.get(ChangeMapSize.class, "info"), 6);
         add(info);
 
-        topSpinner = new Spinner(new OwnSpinnerModel(1, 65, startTop = (int) Math.ceil((Dungeon.level.height() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "n") + " ", 9);
+        topSpinner = new Spinner(new OwnSpinnerModel(1, 65, startTop = (int) Math.ceil((Dungeon.level.height() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "n") + " ", 9);
         add(topSpinner);
-        bottomSpinner = new Spinner(new OwnSpinnerModel(1, 65, startBottom = (int) ((Dungeon.level.height() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "s") + " ", 9);
+        bottomSpinner = new Spinner(new OwnSpinnerModel(1, 65, startBottom = (int) ((Dungeon.level.height() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "s") + " ", 9);
         add(bottomSpinner);
-        leftSpinner = new Spinner(new OwnSpinnerModel(1, 65, startLeft = (int) Math.ceil((Dungeon.level.width() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "w") + " ", 9);
+        leftSpinner = new Spinner(new OwnSpinnerModel(1, 65, startLeft = (int) Math.ceil((Dungeon.level.width() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "w") + " ", 9);
         add(leftSpinner);
-        rightSpinner = new Spinner(new OwnSpinnerModel(1, 65, startRight = (int) ((Dungeon.level.width() - 1) * 0.5f), 1, false, null), Messages.get(ChangeMapSize.class, "e") + " ", 9);
+        rightSpinner = new Spinner(new OwnSpinnerModel(1, 65, startRight = (int) ((Dungeon.level.width() - 1) * 0.5f)), Messages.get(ChangeMapSize.class, "e") + " ", 9);
         add(rightSpinner);
     }
 
@@ -135,8 +135,8 @@ public class ChangeMapSize extends Component {
     }
 
     private static class OwnSpinnerModel extends SpinnerIntegerModel {
-        public OwnSpinnerModel(Integer minimum, Integer maximum, Integer value, int stepSize, boolean cycle, String showWhenNull) {
-            super(minimum, maximum, value, stepSize, cycle, showWhenNull);
+        public OwnSpinnerModel(Integer minimum, Integer maximum, Integer value) {
+            super(minimum, maximum, value);
 
             setAbsoluteMinAndMax(1f, 60f);
         }

@@ -27,7 +27,7 @@ public abstract class DepthSpinner extends Spinner {
     }
 
     public static SpinnerModel createModel(int depth, Function<Float, Float> getInputFieldWith) {
-        return new SpinnerIntegerModel(0, 26, depth, 1, true, null) {
+        return new SpinnerIntegerModel(0, 26, depth, true) {
             {
                 setAbsoluteMaximum(999f);
             }

@@ -125,7 +125,7 @@ public class NewFloorComp extends WndNewFloor.OwnTab {
             }
         };
         add(infoNumInRegion);
-        numInRegion = new Spinner(new SpinnerIntegerModel(1, 5, newLevelScheme.getNumInRegion(), 1, true, null) {
+        numInRegion = new Spinner(new SpinnerIntegerModel(1, 5, newLevelScheme.getNumInRegion(), true) {
             @Override
             public float getInputFieldWidth(float height) {
                 return height * 1.3f;

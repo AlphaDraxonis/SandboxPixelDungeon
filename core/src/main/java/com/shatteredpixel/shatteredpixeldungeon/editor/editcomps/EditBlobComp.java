@@ -62,7 +62,7 @@ public class EditBlobComp extends DefaultEditComp<Class<? extends Blob>> {
     public static class VolumeSpinner extends Spinner {
 
         public VolumeSpinner(Integer currentVolume) {
-            super(new SpinnerIntegerModel(1, 100, currentVolume == null ? 1 : currentVolume, 1, false, null){
+            super(new SpinnerIntegerModel(1, 100, currentVolume == null ? 1 : currentVolume){
                 {
                     setAbsoluteMinimum(1);
                 }

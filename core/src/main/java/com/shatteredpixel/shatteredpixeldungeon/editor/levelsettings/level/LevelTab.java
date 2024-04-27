@@ -173,7 +173,7 @@ public class LevelTab extends MultiWindowTabComp {
         content.add(bossLevelRetexture);
 
 
-        viewDistance = new StyledSpinner(new SpinnerIntegerModel(1, ShadowCaster.MAX_DISTANCE, level.viewDistance, 1, false, null) {
+        viewDistance = new StyledSpinner(new SpinnerIntegerModel(1, ShadowCaster.MAX_DISTANCE, level.viewDistance) {
             {
                 setAbsoluteMaximum(ShadowCaster.MAX_DISTANCE);
             }
@@ -190,7 +190,7 @@ public class LevelTab extends MultiWindowTabComp {
         depth.addChangeListener(() -> level.levelScheme.setDepth((Integer) depth.getValue()));
         content.add(depth);
 
-        shopPrice = new StyledSpinner(new SpinnerFloatModel(0.1f, 10f, level.levelScheme.getPriceMultiplier(),2,0.1f, false) {
+        shopPrice = new StyledSpinner(new SpinnerFloatModel(0.1f, 10f, level.levelScheme.getPriceMultiplier(),2,0.1f) {
             @Override
             public float getInputFieldWidth(float height) {
                 return Spinner.FILL;

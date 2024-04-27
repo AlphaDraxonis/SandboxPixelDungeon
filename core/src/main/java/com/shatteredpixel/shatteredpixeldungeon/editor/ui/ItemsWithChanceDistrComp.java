@@ -339,7 +339,7 @@ public abstract class ItemsWithChanceDistrComp extends Component {
     private class SModel extends SpinnerIntegerModel {
 
         public SModel(int count) {
-            super(1, 10000, count, 1, false, null);
+            super(1, 10000, count);
         }
 
         @Override

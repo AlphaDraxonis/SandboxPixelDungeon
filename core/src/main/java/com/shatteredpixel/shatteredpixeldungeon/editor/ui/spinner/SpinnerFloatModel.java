@@ -12,13 +12,13 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
     private final int precision;
     private final String precisionFormat;
 
-    public SpinnerFloatModel(float minimum, float maximum, float value, boolean includeInfinity) {
-        this(minimum, maximum, value, 1, 0.1f, includeInfinity);
+    public SpinnerFloatModel(float minimum, float maximum, float value) {
+        this(minimum, maximum, value, 1, 0.1f);
     }
 
-    public SpinnerFloatModel(float minimum, float maximum, float value, int precision, float stepSize, boolean includeInfinity) {
+    public SpinnerFloatModel(float minimum, float maximum, float value, int precision, float stepSize) {
         super(convertToInt(minimum, precision), convertToInt(maximum, precision), convertToInt(value, precision),
-                convertToInt(stepSize, precision), includeInfinity, includeInfinity ? INFINITY : null);
+                convertToInt(stepSize, precision), false);
         this.precision = precision;
         precisionFormat = "%." + precision + "f";
         setAbsoluteMinAndMax(minimum, ABSOLUTE_MAXIMUM);

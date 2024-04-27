@@ -38,7 +38,7 @@ public class LevelSpinner extends StyledSpinner {
         }
 
         public LevelSpinnerModel(int level, int max) {
-            super(-10, max, level, 1, false, null);
+            super(-10, max, level);
         }
 
         @Override

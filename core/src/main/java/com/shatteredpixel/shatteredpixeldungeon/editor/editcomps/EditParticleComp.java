@@ -67,7 +67,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
         });
         add(type);
 
-        interval = new StyledSpinner(new SpinnerFloatModel(0.01f, 20f, particle.interval, 2, 0.1f, false) {
+        interval = new StyledSpinner(new SpinnerFloatModel(0.01f, 20f, particle.interval, 2, 0.1f) {
             {
                 setAbsoluteMaximum(250f);
             }
@@ -79,7 +79,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
         add(interval);
 
         //Should not be able to set quantity
-//        quantity = new StyledSpinner(new SpinnerIntegerModel(0, 100, particle.quantity, 1, false, null),
+//        quantity = new StyledSpinner(new SpinnerIntegerModel(0, 100, particle.quantity),
 //                "QUANTITY", 9);
 //        quantity.addChangeListener(() -> {
 //            particle.quantity = (int) quantity.getValue();

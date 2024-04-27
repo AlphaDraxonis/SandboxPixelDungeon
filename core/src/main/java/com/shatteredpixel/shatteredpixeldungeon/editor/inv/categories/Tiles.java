@@ -359,7 +359,7 @@ public enum Tiles {
             descSet = customTile != null && !Level.getFullMessageKey(customTile.region, customTile.imageTerrain, true).equals(customTile.desc);
 
             region = new Spinner(new SpinnerIntegerModel(LevelScheme.REGION_SEWERS, LevelScheme.REGION_HALLS,
-                    customTile == null ? Dungeon.level.levelScheme.getRegion() : customTile.region, 1, true, null) {
+                    customTile == null ? Dungeon.level.levelScheme.getRegion() : customTile.region, true) {
                 @Override
                 public String getDisplayString() {
                     if (imageTerrain != null) imageTerrain.setValue(imageTerrain.getValue());

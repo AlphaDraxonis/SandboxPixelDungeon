@@ -82,7 +82,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
         };
         add(hauntedInfo);
 
-        priceMultiplier = new Spinner(new SpinnerFloatModel(0.1f, 10f, heap.priceMultiplier, 2, 0.1f,false) {
+        priceMultiplier = new Spinner(new SpinnerFloatModel(0.1f, 10f, heap.priceMultiplier, 2, 0.1f) {
             @Override
             public float getInputFieldWidth(float height) {
                 return Spinner.FILL;

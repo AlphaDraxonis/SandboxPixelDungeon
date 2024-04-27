@@ -237,7 +237,7 @@ public class HeroSettings extends Component {
             startMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
             itemSelectorParent.add(startMisc);
 
-            startGold = new StyledSpinner(new SpinnerIntegerModel(0, 10000, data.gold, 1, false, null) {
+            startGold = new StyledSpinner(new SpinnerIntegerModel(0, 10000, data.gold) {
                 @Override
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
@@ -251,7 +251,7 @@ public class HeroSettings extends Component {
             startGold.icon().scale = new PointF(0.5f, 0.5f);
             startGold.addChangeListener(() -> data.gold = (int) startGold.getValue());
             itemSelectorParent.add(startGold);
-            startEnergy = new StyledSpinner(new SpinnerIntegerModel(0, 1000, data.energy, 1, false, null) {
+            startEnergy = new StyledSpinner(new SpinnerIntegerModel(0, 1000, data.energy) {
                 @Override
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
@@ -266,7 +266,7 @@ public class HeroSettings extends Component {
             startEnergy.addChangeListener(() -> data.energy = (int) startEnergy.getValue());
             itemSelectorParent.add(startEnergy);
 
-            plusLvl = new StyledSpinner(new SpinnerIntegerModel(1, 30, 1 + data.plusLvl, 1, false, null) {
+            plusLvl = new StyledSpinner(new SpinnerIntegerModel(1, 30, 1 + data.plusLvl) {
                 {
                     setAbsoluteMinimum(1);
                 }
@@ -278,7 +278,7 @@ public class HeroSettings extends Component {
             plusLvl.addChangeListener(() -> data.plusLvl = (int) plusLvl.getValue() - 1);
             itemSelectorParent.add(plusLvl);
 
-            plusStr = new StyledSpinner(new SpinnerIntegerModel(0, 50, Hero.STARTING_STR + data.plusStr, 1, false, null) {
+            plusStr = new StyledSpinner(new SpinnerIntegerModel(0, 50, Hero.STARTING_STR + data.plusStr) {
                 @Override
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;

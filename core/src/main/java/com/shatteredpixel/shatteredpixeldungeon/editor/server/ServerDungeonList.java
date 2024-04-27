@@ -43,7 +43,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
         if (dungeons.length > PREVIEWS_PER_PAGE) {
             int numPages = dungeons.length / PREVIEWS_PER_PAGE + 1;
-            outsideSp = new Spinner(new SpinnerIntegerModel(1, numPages, 1, 1, true, null) {
+            outsideSp = new Spinner(new SpinnerIntegerModel(1, numPages, 1, true) {
                 {
                     setAbsoluteMinAndMax(getMinimum(), getMaximum());
                 }

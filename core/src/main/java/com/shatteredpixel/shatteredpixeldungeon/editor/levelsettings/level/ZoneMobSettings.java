@@ -1,7 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab.GAP;
-
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
@@ -17,6 +15,8 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.ui.Component;
+
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab.GAP;
 
 public class ZoneMobSettings extends Component {
 
@@ -42,7 +42,7 @@ public class ZoneMobSettings extends Component {
 
         outsideSp = changeMobRotation.getOutsideSp();
 
-        respawnTime = new StyledSpinner(new SpinnerIntegerModel(1, 100, (int) z.respawnCooldown, 1, false, null) {
+        respawnTime = new StyledSpinner(new SpinnerIntegerModel(1, 100, (int) z.respawnCooldown) {
             @Override
             public void displayInputAnyNumberDialog() {
                 displayInputAnyNumberDialog(1, Integer.MAX_VALUE);

@@ -201,7 +201,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
         }
 
         if (item.terrainType() == Terrain.COIN_DOOR) {
-            coinDoorCost = new Spinner(new SpinnerIntegerModel(1, 100_000, Dungeon.level.getCoinDoorCost(cell), 10, false, null) {
+            coinDoorCost = new Spinner(new SpinnerIntegerModel(1, 100_000, Dungeon.level.getCoinDoorCost(cell), 10, false) {
                 @Override
                 public int getClicksPerSecondWhileHolding() {
                     return 150;

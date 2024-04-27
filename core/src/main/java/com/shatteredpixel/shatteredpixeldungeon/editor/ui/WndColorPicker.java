@@ -215,7 +215,7 @@ public class WndColorPicker extends Window {
     private static abstract class ColorSpinner extends Spinner {
 
         public ColorSpinner() {
-            super(new SpinnerIntegerModel(0, 255, 0, 1, false, null) {
+            super(new SpinnerIntegerModel(0, 255, 0) {
                 {
                     setAbsoluteMaximum(255f);
                 }

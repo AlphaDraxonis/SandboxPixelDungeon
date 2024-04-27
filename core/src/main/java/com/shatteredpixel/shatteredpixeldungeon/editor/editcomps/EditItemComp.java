@@ -110,7 +110,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
 
         if (item.stackable) {
-            quantity = new StyledSpinner(new SpinnerIntegerModel(1, item instanceof Gold ? 1000 : 100, item.quantity(), 1, false, null), label("quantity"));
+            quantity = new StyledSpinner(new SpinnerIntegerModel(1, item instanceof Gold ? 1000 : 100, item.quantity()), label("quantity"));
             ((SpinnerIntegerModel) quantity.getModel()).setAbsoluteMaximum(2_000_000_000f);
             quantity.addChangeListener(() -> {
                 item.quantity((int) quantity.getValue());
@@ -121,7 +121,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
         //only for start items
         if (item.reservedQuickslot != 0 && item.defaultAction() != null && !(item instanceof Key)) {//use -1 to indicate 0 while still enabling this
-            quickslotPos = new StyledSpinner(new SpinnerIntegerModel(0, 6, item.reservedQuickslot == -1 ? 0 : item.reservedQuickslot, 1, false, null) {
+            quickslotPos = new StyledSpinner(new SpinnerIntegerModel(0, 6, item.reservedQuickslot == -1 ? 0 : item.reservedQuickslot) {
                 @Override
                 public void displayInputAnyNumberDialog() {
                     //do nothing
@@ -296,7 +296,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             }
 
             if (item instanceof FakeTenguShocker) {
-                shockerDuration = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((FakeTenguShocker) item).duration, 1, false, null),
+                shockerDuration = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((FakeTenguShocker) item).duration),
                         label("duration"));
                 shockerDuration.addChangeListener(() -> ((FakeTenguShocker) item).duration = (int) shockerDuration.getValue());
                 add(shockerDuration);

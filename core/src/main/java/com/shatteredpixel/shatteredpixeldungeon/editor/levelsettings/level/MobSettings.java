@@ -279,12 +279,12 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
         public MobSpawningComp() {
             CustomLevel l = EditorScene.getCustomLevel();
 
-            moblimit = new StyledSpinner(new SpinnerIntegerModel(0, 100, l.mobLimit(), 1, false, null),
+            moblimit = new StyledSpinner(new SpinnerIntegerModel(0, 100, l.mobLimit()),
                     Messages.get(MobSettings.class, "limit"));
             moblimit.addChangeListener(() -> l.mobLimit = (int) moblimit.getValue());
             add(moblimit);
 
-            respawnTime = new StyledSpinner(new SpinnerIntegerModel(1, 100, (int) l.respawnCooldown(), 1, false, null),
+            respawnTime = new StyledSpinner(new SpinnerIntegerModel(1, 100, (int) l.respawnCooldown()),
                     Messages.get(MobSettings.class, "respawn_time"));
             respawnTime.addChangeListener(() -> l.respawnCooldown((int) respawnTime.getValue()));
             add(respawnTime);

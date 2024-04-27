@@ -114,7 +114,7 @@ public class WndEditStats extends MultiWindowTabComp {
             if (DefaultStatsCache.useStatsScale(current)) {
 
                 statsScale = new FloatSpinner(Messages.get(Mob.class, "stats_scale"),
-                        0.1f, Math.max(10, def.statsScale * 10), current.statsScale, false);
+                        0.1f, Math.max(10, def.statsScale * 10), current.statsScale);
                 statsScale.addChangeListener(() -> current.statsScale = statsScale.getAsFloat());
                 content.add(statsScale);
 
@@ -127,43 +127,43 @@ public class WndEditStats extends MultiWindowTabComp {
                 addHPAccuracyEvasionArmorSpinner(def, current);
 
                 dmgMin = new IntegerSpinner(Messages.get(Mob.class, "dmg_min"),
-                        0, Math.max(10, def.damageRollMin * 10), current.damageRollMin, false);
+                        0, Math.max(10, def.damageRollMin * 10), current.damageRollMin);
                 dmgMin.addChangeListener(() -> current.damageRollMin = dmgMin.getAsInt());
                 content.add(dmgMin);
 
                 dmgMax = new IntegerSpinner(Messages.get(Mob.class, "dmg_max"),
-                        0, Math.max(10, def.damageRollMax * 10), current.damageRollMax, false);
+                        0, Math.max(10, def.damageRollMax * 10), current.damageRollMax);
                 dmgMax.addChangeListener(() -> current.damageRollMax = dmgMax.getAsInt());
                 content.add(dmgMax);
 
                 if (current instanceof Skeleton || current instanceof Warlock || current instanceof Brute || current instanceof DM100
                         || current instanceof Goo || current instanceof CrystalWisp || current instanceof Eye || current instanceof GnollGuard) {
                     specialDmgMin = new IntegerSpinner(Messages.get(Mob.class, "special_dmg_min"),
-                            0, Math.max(10, def.specialDamageRollMin * 10), current.specialDamageRollMin, false);
+                            0, Math.max(10, def.specialDamageRollMin * 10), current.specialDamageRollMin);
                     specialDmgMin.addChangeListener(() -> current.specialDamageRollMin = specialDmgMin.getAsInt());
                     content.add(specialDmgMin);
 
                     specialDmgMax = new IntegerSpinner(Messages.get(Mob.class, "special_dmg_max"),
-                            0, Math.max(10, def.specialDamageRollMax * 10), current.specialDamageRollMax, false);
+                            0, Math.max(10, def.specialDamageRollMax * 10), current.specialDamageRollMax);
                     specialDmgMax.addChangeListener(() -> current.specialDamageRollMax = specialDmgMax.getAsInt());
                     content.add(specialDmgMax);
                 }
 
             }
             tilesBeforeWakingUp = new IntegerSpinner(Messages.get(Mob.class, "tiles_before_waking_up"),
-                    0, Math.max(10, def.tilesBeforeWakingUp * 10), current.tilesBeforeWakingUp, false);
+                    0, Math.max(10, def.tilesBeforeWakingUp * 10), current.tilesBeforeWakingUp);
             tilesBeforeWakingUp.addChangeListener(() -> current.tilesBeforeWakingUp = tilesBeforeWakingUp.getAsInt());
             content.add(tilesBeforeWakingUp);
 
             if (!(current instanceof HeroMob)) {
                 xp = new IntegerSpinner(Messages.get(Mob.class, "xp"),
-                        0, Math.max(10, def.EXP * 10), current.EXP, false);
+                        0, Math.max(10, def.EXP * 10), current.EXP);
                 xp.addChangeListener(() -> current.EXP = xp.getAsInt());
                 content.add(xp);
             }
 
             maxLvl = new IntegerSpinner(Messages.get(Mob.class, "max_lvl"),
-                    0, 30, current.maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL, false);
+                    0, 30, current.maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL);
             maxLvl.addChangeListener(() -> current.maxLvl = maxLvl.getAsInt() - Mob.DROP_LOOT_IF_ABOVE_MAX_LVL);
             content.add(maxLvl);
 
@@ -303,12 +303,12 @@ public class WndEditStats extends MultiWindowTabComp {
 
     private void addSpeedViewDistanceSpinner(Mob def, Mob current) {
         speed = new FloatSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "speed"),
-                0.1f, Math.max(10, def.baseSpeed * 10), current.baseSpeed, false);
+                0.1f, Math.max(10, def.baseSpeed * 10), current.baseSpeed);
         speed.addChangeListener(() -> current.baseSpeed = speed.getAsFloat());
         content.add(speed);
 
         viewDistance = new IntegerSpinner(Messages.get(Mob.class, "view_distance"),
-                1, Math.min(Math.max(10, def.viewDistance * 10), ShadowCaster.MAX_DISTANCE), current.viewDistance, false);
+                1, Math.min(Math.max(10, def.viewDistance * 10), ShadowCaster.MAX_DISTANCE), current.viewDistance);
         ((SpinnerIntegerModel) viewDistance.getModel()).setAbsoluteMaximum(ShadowCaster.MAX_DISTANCE);
         viewDistance.addChangeListener(() -> current.viewDistance = viewDistance.getAsInt());
         content.add(viewDistance);
@@ -320,7 +320,7 @@ public class WndEditStats extends MultiWindowTabComp {
                 1, Math.max(10, def.HT * 10), current.HT, true);
         hp.addChangeListener(() -> {
             int val = hp.getAsInt();
-            if (val == -1) val = Char.INFINITE_HP;
+            if (hp.isInfinity(val)) val = Char.INFINITE_HP;
             current.HT = current.HP = val;
         });
         content.add(hp);
@@ -329,7 +329,7 @@ public class WndEditStats extends MultiWindowTabComp {
                 0, Math.max(10, def.attackSkill * 10), current.attackSkill, true);
         attackSkill.addChangeListener(() -> {
             int val = attackSkill.getAsInt();
-            if (val == -1) val = Char.INFINITE_ACCURACY;
+            if (attackSkill.isInfinity(val)) val = Char.INFINITE_ACCURACY;
             current.attackSkill = val;
         });
         content.add(attackSkill);
@@ -338,13 +338,13 @@ public class WndEditStats extends MultiWindowTabComp {
                 0, Math.max(10, def.defenseSkill * 10), current.defenseSkill, true);
         defenseSkill.addChangeListener(() -> {
             int val = defenseSkill.getAsInt();
-            if (val == -1) val = Char.INFINITE_EVASION;
+            if (defenseSkill.isInfinity(val)) val = Char.INFINITE_EVASION;
             current.defenseSkill = val;
         });
         content.add(defenseSkill);
 
         armor = new IntegerSpinner(Messages.get(Mob.class, "armor"),
-                0, Math.max(10, def.damageReductionMax * 10), current.damageReductionMax, false);
+                0, Math.max(10, def.damageReductionMax * 10), current.damageReductionMax);
         armor.addChangeListener(() -> current.damageReductionMax = armor.getAsInt());
         content.add(armor);
     }
@@ -382,8 +382,8 @@ public class WndEditStats extends MultiWindowTabComp {
 
     private static class FloatSpinner extends StyledSpinner {
 
-        public FloatSpinner(String name, float minimum, float maximum, float value, boolean includeInfinity) {
-            super(new SpinnerFloatModel(minimum, maximum, value, false) {
+        public FloatSpinner(String name, float minimum, float maximum, float value) {
+            super(new SpinnerFloatModel(minimum, maximum, value) {
                 @Override
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
@@ -399,30 +399,47 @@ public class WndEditStats extends MultiWindowTabComp {
 
     private static class IntegerSpinner extends StyledSpinner {
 
+        public IntegerSpinner(String name, int minimum, int maximum, int value) {
+            this(name, minimum, maximum, value, false);
+        }
+
         public IntegerSpinner(String name, int minimum, int maximum, int value, boolean includeInfinity) {
-            super(new IntegerSpinnerModel(minimum, maximum, value, false), name, 9);
+            super(new IntegerSpinnerModel(minimum, maximum, value, includeInfinity), name, 9);
         }
 
         protected int getAsInt() {
             return ((IntegerSpinnerModel) getModel()).getAsInt();
+        }
+
+        protected boolean isInfinity(int val) {
+            return val == ((IntegerSpinnerModel) getModel()).inifity;
         }
     }
 
 
     private static class IntegerSpinnerModel extends SpinnerIntegerModel {
 
+        private int inifity;
+
         public IntegerSpinnerModel(int minimum, int maximum, int value, boolean includeInfinity) {
-            super(minimum, maximum, value, 1, includeInfinity, includeInfinity ? INFINITY : null);
+            super(minimum, maximum + (includeInfinity ? 1 : 0), value, includeInfinity);
+            setMaximum(maximum);
+        }
+
+        @Override
+        public void setMaximum(Integer maximum) {
+            super.setMaximum(maximum);
+            inifity = maximum + 1;
         }
 
         protected int getAsInt() {
-            if (getValue() == null) return -1;
             return (int) getValue();
         }
 
         @Override
         public String getDisplayString() {
-            return getValue() == null ? super.getDisplayString() : Integer.toString(getAsInt());
+            if (getAsInt() == inifity) return INFINITY;
+            return Integer.toString(getAsInt());
         }
 
         @Override

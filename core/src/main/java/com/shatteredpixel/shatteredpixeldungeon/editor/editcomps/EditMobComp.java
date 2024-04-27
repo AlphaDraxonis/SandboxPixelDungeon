@@ -198,7 +198,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             mobMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
             add(mobMisc);
 
-            heroMobLvl = new StyledSpinner(new SpinnerIntegerModel(1, 30, hero.lvl, 1, false, null) {
+            heroMobLvl = new StyledSpinner(new SpinnerIntegerModel(1, 30, hero.lvl) {
                 {
                     setAbsoluteMinimum(1);
                 }
@@ -210,7 +210,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             heroMobLvl.addChangeListener(() -> ((HeroMob) mob).setHeroLvl((int) heroMobLvl.getValue()));
             add(heroMobLvl);
 
-            heroMobStr = new StyledSpinner(new SpinnerIntegerModel(1, 50, hero.STR, 1, false, null) {
+            heroMobStr = new StyledSpinner(new SpinnerIntegerModel(1, 50, hero.STR) {
                 @Override
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
@@ -287,7 +287,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof Sheep) {
-            sheepLifespan = new StyledSpinner(new SpinnerIntegerModel(0, 600, (int) ((Sheep) mob).lifespan, 1, false, null) {
+            sheepLifespan = new StyledSpinner(new SpinnerIntegerModel(0, 600, (int) ((Sheep) mob).lifespan) {
                 @Override
                 public int getClicksPerSecondWhileHolding() {
                     return super.getClicksPerSecondWhileHolding() / 3;
@@ -438,43 +438,43 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof SentryRoom.Sentry) {
-            sentryRange = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((SentryRoom.Sentry) mob).range, 1, false, null),
+            sentryRange = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((SentryRoom.Sentry) mob).range),
                     label("range"));
             sentryRange.addChangeListener(() -> ((SentryRoom.Sentry) mob).range = (int) sentryRange.getValue());
             add(sentryRange);
-            sentryDelay = new StyledSpinner(new SpinnerFloatModel(0f, 100f, ((SentryRoom.Sentry) mob).getInitialChargeDelay() - 1, false),
+            sentryDelay = new StyledSpinner(new SpinnerFloatModel(0f, 100f, ((SentryRoom.Sentry) mob).getInitialChargeDelay() - 1),
                     label("delay"));
             sentryDelay.addChangeListener(() -> ((SentryRoom.Sentry) mob).setInitialChargeDelay(((SpinnerFloatModel) sentryDelay.getModel()).getAsFloat() + 1));
             add(sentryDelay);
         }
 
         if (mob instanceof Guard) {
-            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Guard) mob).maxChainCooldown, 1, false, null),
+            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Guard) mob).maxChainCooldown),
                     label("chains_cd"), 8, new ItemSprite(ItemSpriteSheet.ARTIFACT_CHAINS));
             abilityCooldown.addChangeListener(() -> ((Guard) mob).maxChainCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
 
         } else if (mob instanceof DM200) {
-            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((DM200) mob).maxVentCooldown, 1, false, null),
+            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((DM200) mob).maxVentCooldown),
                     label("vent_cd"), 8, BlobItem.createIcon(mob instanceof DM201 ? PermaGas.PCorrosiveGas.class : PermaGas.PToxicGas.class));
             abilityCooldown.addChangeListener(() -> ((DM200) mob).maxVentCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
 
         } else if (mob instanceof Golem) {
-            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Golem) mob).maxTeleCooldown, 1, false, null),
+            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, ((Golem) mob).maxTeleCooldown),
                     label("tele_cd"), 8);
             abilityCooldown.addChangeListener(() -> ((Golem) mob).maxTeleCooldown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
 
         } else if (mob instanceof com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) {
             com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner m = (com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Spinner) mob;
-            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, m.maxWebCoolDown, 1, false, null),
+            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(1, Integer.MAX_VALUE, m.maxWebCoolDown),
                     label("web_cd"), 8);
             abilityCooldown.addChangeListener(() -> m.maxWebCoolDown = (int) abilityCooldown.getValue());
             add(abilityCooldown);
 
         } else if (mob instanceof DemonSpawner) {
-            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(0, Integer.MAX_VALUE, (int) ((DemonSpawner) mob).maxSpawnCooldown, 1, false, null) {
+            abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(0, Integer.MAX_VALUE, (int) ((DemonSpawner) mob).maxSpawnCooldown) {
                 @Override
                 public String getDisplayString() {
                     if ((int) getValue() == 0) return label("by_depth");
@@ -535,7 +535,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         }
 
         if (mob instanceof Tengu) {
-            tenguPhase = new StyledSpinner(new SpinnerIntegerModel(1, 2, ((Tengu) mob).phase, 1, true, null) {
+            tenguPhase = new StyledSpinner(new SpinnerIntegerModel(1, 2, ((Tengu) mob).phase, true) {
                 @Override
                 public void displayInputAnyNumberDialog() {
                     //disabled
@@ -543,7 +543,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             }, label("phase"));
             tenguPhase.addChangeListener(() -> ((Tengu) mob).phase = (int) tenguPhase.getValue());
             add(tenguPhase);
-            tenguRange = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((Tengu) mob).arenaRadius, 1, false, null),
+            tenguRange = new StyledSpinner(new SpinnerIntegerModel(1, 100, ((Tengu) mob).arenaRadius),
                     label("range"));
             tenguRange.addChangeListener(() -> ((Tengu) mob).arenaRadius = (int) tenguRange.getValue());
             add(tenguRange);
@@ -556,7 +556,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             dm300destroyWalls.addChangeListener(v -> ((DM300) mob).destroyWalls = v);
             add(dm300destroyWalls);
 
-            dm300pylonsNeeded = new StyledSpinner(new SpinnerIntegerModel(0, 4, ((DM300) mob).pylonsNeeded, 1, false, null),
+            dm300pylonsNeeded = new StyledSpinner(new SpinnerIntegerModel(0, 4, ((DM300) mob).pylonsNeeded),
                     label("dm300_pylons_needed"));
             dm300pylonsNeeded.addChangeListener(() -> ((DM300) mob).pylonsNeeded = (int) dm300pylonsNeeded.getValue());
             add(dm300pylonsNeeded);
@@ -565,10 +565,15 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (mob instanceof YogDzewa) {
             int spAlive = ((YogDzewa) mob).spawnersAlive;
-            yogSpawnersAlive = new StyledSpinner(new SpinnerIntegerModel(0, 4, spAlive == -1 ? null : spAlive, 1, true,
-                    Messages.get(DestCellSpinner.class, "default")) {
+            yogSpawnersAlive = new StyledSpinner(new SpinnerIntegerModel(-1, 4, spAlive, true) {
                 @Override
                 public void displayInputAnyNumberDialog() {
+                }
+
+                @Override
+                public String getDisplayString() {
+                    if (((int) getValue()) == -1) return Messages.get(DestCellSpinner.class, "default");
+                    return super.getDisplayString();
                 }
 
                 @Override
@@ -576,11 +581,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     return Spinner.FILL;
                 }
             }, label("spawners_alive"), 6 + (PixelScene.landscape() ? 2 : 0), new SpawnerSprite());
-            yogSpawnersAlive.addChangeListener(() -> {
-                Integer val = (Integer) yogSpawnersAlive.getValue();
-                if (val == null) val = -1;
-                ((YogDzewa) mob).spawnersAlive = val;
-            });
+            yogSpawnersAlive.addChangeListener(() -> ((YogDzewa) mob).spawnersAlive = (int) yogSpawnersAlive.getValue());
             yogSpawnersAlive.setButtonWidth(9f);
             add(yogSpawnersAlive);
 
@@ -630,7 +631,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 mob instanceof WandOfRegrowth.Lotus || mob instanceof Shopkeeper || mob instanceof SentryRoom.Sentry)) {
 
             if (!(mob instanceof YogFist || mob instanceof Mimic || mob instanceof CrystalSpire)) {
-                playerAlignment = new StyledSpinner(new SpinnerIntegerModel(Mob.NORMAL_ALIGNMENT, Mob.FRIENDLY_ALIGNMENT, mob.playerAlignment, 1, true, null) {
+                playerAlignment = new StyledSpinner(new SpinnerIntegerModel(Mob.NORMAL_ALIGNMENT, Mob.FRIENDLY_ALIGNMENT, mob.playerAlignment, true) {
                     @Override
                     public void displayInputAnyNumberDialog() {
                     }

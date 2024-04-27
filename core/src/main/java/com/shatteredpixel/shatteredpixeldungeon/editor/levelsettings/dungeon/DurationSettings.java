@@ -1,17 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FireImbue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FrostImbue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Levitation;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Stamina;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ToxicImbue;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.stateditor.WndEditStats;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
@@ -172,7 +162,7 @@ public class DurationSettings extends Component {
         }
 
         protected static SpinnerModel createSpinnerModel(float defaultVal, float currentVal) {
-            return new SpinnerIntegerModel(1, (int) (defaultVal * 10), (int) currentVal, 1, false, null) {
+            return new SpinnerIntegerModel(1, (int) (defaultVal * 10), (int) currentVal) {
                 {
                     setAbsoluteMinimum((float) getMinimum());
                 }

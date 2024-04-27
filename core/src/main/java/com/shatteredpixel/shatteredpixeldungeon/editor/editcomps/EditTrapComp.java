@@ -176,7 +176,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
                     listener = () -> ((RageTrap) obj).radius = (int) radius.getValue();
                 }
 
-                radius = new StyledSpinner(new SpinnerIntegerModel(0, 100, initValue, 1, false, null) {
+                radius = new StyledSpinner(new SpinnerIntegerModel(0, 100, initValue) {
                     {
                         setAbsoluteMaximum(100f);
                     }
@@ -187,7 +187,7 @@ public class EditTrapComp extends DefaultEditComp<Trap> {
             }
 
             if (obj instanceof PitfallTrap) {
-                    pitfallDelay = new StyledSpinner(new SpinnerIntegerModel(0, 100, ((PitfallTrap) obj).delay, 1, false, null),
+                    pitfallDelay = new StyledSpinner(new SpinnerIntegerModel(0, 100, ((PitfallTrap) obj).delay),
                         Messages.get(EditMobComp.class, "delay"));
                 pitfallDelay.addChangeListener(() -> ((PitfallTrap) obj).delay = (int) pitfallDelay.getValue());
                 add(pitfallDelay);

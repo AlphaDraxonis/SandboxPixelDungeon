@@ -14,31 +14,29 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     private int absoluteMinimum, absoluteMaximum;
     private int stepSize;
     private boolean cycle;
-    private String showWhenNull;
 
     public SpinnerIntegerModel() {
         this(0);
     }
 
     public SpinnerIntegerModel(Integer value) {
-        this(Integer.MIN_VALUE, Integer.MAX_VALUE, value, 1, true, INFINITY);
+        this(Integer.MIN_VALUE, Integer.MAX_VALUE, value);
     }
 
-    public SpinnerIntegerModel(Integer minimum, Integer maximum, Integer value, int stepSize) {
-        this(minimum, maximum, value, stepSize, true, INFINITY);
+    public SpinnerIntegerModel(Integer minimum, Integer maximum, Integer value) {
+        this(minimum, maximum, value, false);
     }
 
-    public SpinnerIntegerModel(Integer value, int stepSize, boolean cycle) {
-        this(Integer.MIN_VALUE, Integer.MAX_VALUE, value, stepSize, cycle, INFINITY);
+    public SpinnerIntegerModel(Integer minimum, Integer maximum, Integer value, boolean cycle) {
+        this(minimum, maximum, value, 1, cycle);
     }
 
-    public SpinnerIntegerModel(Integer minimum, Integer maximum, Integer value, int stepSize, boolean cycle, String showWhenNull) {
+    public SpinnerIntegerModel(Integer minimum, Integer maximum, Integer value, int stepSize, boolean cycle) {
         this.maximum = maximum;
         this.minimum = minimum;
         this.value = value;
         this.stepSize = stepSize;
         this.cycle = cycle;
-        this.showWhenNull = showWhenNull;
 
         absoluteMaximum = Integer.MAX_VALUE;
         absoluteMinimum = minimum;
@@ -86,21 +84,17 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
     }
 
     public String getDisplayString() {
-        return value == null ? showWhenNull : value.toString();
+        return value.toString();
     }
 
     @Override
     public void setValue(Object value) {
         if (value == null || value instanceof Integer) {
-            boolean oneWasNull = value == null || this.value == null;
             boolean changed = (this.value == null && value != null) || this.value != null && !this.value.equals(value);
             changeValue(this.value, value);
             if (inputField instanceof Spinner.SpinnerTextBlock) {
                 Spinner.SpinnerTextBlock casted = (Spinner.SpinnerTextBlock) inputField;
                 casted.setText(getDisplayString());
-                if (oneWasNull) {
-                    changeOffsetOfTextWhenValueIsNull(casted, value == null);
-                }
                 casted.layout();
             } else
                 System.out.println("failed show the value because the input field is not a Spinner.SpinnerTextBlock");
@@ -115,14 +109,10 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         this.value = (Integer) newValue;
     }
 
-    protected void changeOffsetOfTextWhenValueIsNull(Spinner.SpinnerTextBlock inputField, boolean nowNull) {
-        inputField.setTextOffsetY((nowNull ? -1 : 0));
-    }
-
     @Override
     public Object getNextValue() {
-        if (value == null) return cycle ? minimum : goToNull(minimum);
-        if (value.equals(maximum)) return cycle ? goToNull(minimum) : value;
+        if (value == null) return minimum;
+        if (value.equals(maximum)) return cycle ? minimum : value;
         long newValue = value + stepSize;
         if (value < maximum && newValue > (long) maximum) return maximum;
         if (newValue > getAbsoluteMaximum()) return getAbsoluteMaximum();
@@ -131,16 +121,12 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
 
     @Override
     public Object getPreviousValue() {
-        if (value == null) return cycle ? maximum : goToNull(maximum);
-        if (value.equals(minimum)) return goToNull(cycle ? maximum : value);
+        if (value == null) return maximum;
+        if (value.equals(minimum)) return (cycle ? maximum : value);
         long newValue = value - stepSize;
         if (value > minimum && newValue < (long) minimum) return minimum;
         if (newValue < getAbsoluteMinimum()) return getAbsoluteMinimum();
         return (int) newValue;
-    }
-
-    private Object goToNull(Object alternative) {
-        return showWhenNull != null ? null : alternative;
     }
 
     public void setStepSize(int stepSize) {
@@ -175,10 +161,6 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         }
     }
 
-    public void setShowWhenNull(String showWhenNull) {
-        this.showWhenNull = showWhenNull;
-    }
-
     public final Integer getMaximum() {
         return maximum;
     }
@@ -193,10 +175,6 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
 
     public boolean isCycle() {
         return cycle;
-    }
-
-    public String getShowWhenNull() {
-        return showWhenNull;
     }
 
     @Override

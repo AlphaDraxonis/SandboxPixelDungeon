@@ -127,7 +127,7 @@ public class CustomRecipeList extends Component {
         public RecipeListItem(CustomRecipe recipe) {
             this.recipe = recipe;
 
-            cost = new Spinner(new SpinnerIntegerModel(0, 100, recipe.cost(null), 1, false, null) {
+            cost = new Spinner(new SpinnerIntegerModel(0, 100, recipe.cost(null)) {
                 @Override
                 public int getClicksPerSecondWhileHolding() {
                     return super.getClicksPerSecondWhileHolding() / 2;
