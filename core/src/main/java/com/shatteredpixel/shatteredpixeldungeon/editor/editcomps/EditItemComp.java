@@ -18,10 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
-import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
-import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
@@ -53,7 +50,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class EditItemComp extends DefaultEditComp<Item> {
-//TODO checkbox for armors: has seal
+
     public static boolean showSpreadIfLoot;
 
     private final Heap heap;
@@ -67,6 +64,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected LevelSpinner levelSpinner;
     protected ChargeSpinner chargeSpinner;
     protected StyledItemSelector magesStaffWand;
+    protected StyledCheckBox hasSeal;
 
     protected StyledCheckBox autoIdentify;
     protected StyledCheckBox cursedKnown;
@@ -251,6 +249,19 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 add(magesStaffWand);
             }
 
+            if (item instanceof Armor) {
+                //cannot change properties of the seal! (not compared in areEqual!)
+                hasSeal = new StyledCheckBox(label("has_seal"));
+                hasSeal.icon(new ItemSprite(ItemSpriteSheet.SEAL));
+                hasSeal.checked(((Armor) item).checkSeal() != null);
+                hasSeal.addChangeListener(v -> {
+                    if (v) ((Armor) item).affixSeal(new BrokenSeal());
+                    else ((Armor) item).detachSeal(null);
+                    updateObj();
+                });
+                add(hasSeal);
+            }
+
             if (item instanceof Ankh) {
                 blessed = new StyledCheckBox(label("blessed"));
                 blessed.icon(Icons.TALENT.get());
@@ -385,7 +396,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
 
         rectComps = new Component[]{quantity, quickslotPos, shockerDuration, chargeSpinner, levelSpinner, augmentationSpinner,
-                curseBtn, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, blessed, igniteBombOnDrop, spreadIfLoot};
+                curseBtn, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, spreadIfLoot};
         linearComps = new Component[]{bagItems, randomItem, keylevel, keyCell};
     }
 
@@ -575,6 +586,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (a instanceof Armor) {
             Armor aa = (Armor) a, bb = (Armor) b;
             if (aa.augment != bb.augment) return false;
+            if ((aa.checkSeal() == null) != (bb.checkSeal() == null)) return false;//do not compare seal properties
 
             if (aa.glyph != null && bb.glyph != null) {
                 if (aa.glyph.getClass() != bb.glyph.getClass()) return false;
