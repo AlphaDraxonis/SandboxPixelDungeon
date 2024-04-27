@@ -228,7 +228,8 @@ public class Spinner extends Component {
 
             float w = textBlock.width();
             float h = textBlock.height();
-            textBlock.setRect((contW - w) / 2 + contX + textOffsetX, (contH - h) / 2 + contY + textOffsetY, w, h);
+            float plusOffsetY = textBlock.text().equals(SpinnerIntegerModel.INFINITY) ? -1 : 0;
+            textBlock.setRect((contW - w) / 2 + contX + textOffsetX, (contH - h) / 2 + contY + textOffsetY + plusOffsetY, w, h);
         }
 
         public void setTextOffsetX(float textOffsetX) {

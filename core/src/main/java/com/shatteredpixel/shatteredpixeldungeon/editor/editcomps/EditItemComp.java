@@ -63,6 +63,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected CurseButton curseBtn;
     protected LevelSpinner levelSpinner;
     protected ChargeSpinner chargeSpinner;
+    protected DurabilitySpinner durabilitySpinner;
     protected StyledItemSelector magesStaffWand;
     protected StyledCheckBox hasSeal;
 
@@ -236,6 +237,16 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 add(augmentationSpinner);
             }
 
+            if (item instanceof MissileWeapon) {
+                durabilitySpinner = new DurabilitySpinner((MissileWeapon) item) {
+                    @Override
+                    protected void onChange() {
+                        updateObj();
+                    }
+                };
+                add(durabilitySpinner);
+            }
+
             if (item instanceof MagesStaff) {
                 magesStaffWand = new StyledItemSelector(label("imbued_wand"), Wand.class, ((MagesStaff) item).wand, ItemSelector.NullTypeSelector.NOTHING) {
                     @Override
@@ -395,7 +406,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(randomItem);
         }
 
-        rectComps = new Component[]{quantity, quickslotPos, shockerDuration, chargeSpinner, levelSpinner, augmentationSpinner,
+        rectComps = new Component[]{quantity, quickslotPos, shockerDuration, chargeSpinner, levelSpinner, durabilitySpinner, augmentationSpinner,
                 curseBtn, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, spreadIfLoot};
         linearComps = new Component[]{bagItems, randomItem, keylevel, keyCell};
     }
@@ -506,10 +517,13 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (curseBtn != null)               curseBtn.checked(obj.cursed);
         if (levelSpinner != null)           levelSpinner.setValue(obj.level());
         if (chargeSpinner != null)          chargeSpinner.updateValue(obj);
+        if (durabilitySpinner != null)      durabilitySpinner.updateValue(obj);
         if (augmentationSpinner != null)    augmentationSpinner.updateValue(obj);
         if (autoIdentify != null)           autoIdentify.checked(obj.identifyOnStart);
         if (cursedKnown != null)            cursedKnown.checked(obj.getCursedKnownVar());
         if (spreadIfLoot != null)           spreadIfLoot.checked(obj.spreadIfLoot);
+        if (magesStaffWand != null)         magesStaffWand.setSelectedItem(((MagesStaff) obj).wand);
+        if (hasSeal != null)                hasSeal.checked(((Armor) obj).checkSeal() != null);
         if (blessed != null)                blessed.checked(((Ankh) obj).blessed);
         if (igniteBombOnDrop != null)       igniteBombOnDrop.checked(((Bomb) obj).igniteOnDrop);
         if (shockerDuration != null)        shockerDuration.setValue(((FakeTenguShocker) obj).duration);
@@ -593,6 +607,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
             } else {
                 if (aa.glyph != bb.glyph) return false;
             }
+        }
+        if (a instanceof MissileWeapon) {
+            if (((MissileWeapon) a).baseUses != ((MissileWeapon) b).baseUses) return false;
         }
         if (a instanceof MagesStaff) {
             if (areEqual(((MagesStaff) a).wand, ((MagesStaff) b).wand)) return false;

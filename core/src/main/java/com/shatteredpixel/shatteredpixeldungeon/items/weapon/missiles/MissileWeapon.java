@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
@@ -62,7 +63,7 @@ abstract public class MissileWeapon extends Weapon {
 	
 	public static final float MAX_DURABILITY = 100;
 	protected float durability = MAX_DURABILITY;
-	protected float baseUses = 10;
+	public float baseUses = 10;
 	
 	public boolean holster;
 	
@@ -330,7 +331,7 @@ abstract public class MissileWeapon extends Weapon {
 		usages *= RingOfSharpshooting.durabilityMultiplier( Dungeon.hero );
 
 		//at 100 uses, items just last forever.
-		if (usages >= 100f) return 0;
+		if (usages >= MAX_DURABILITY) return 0;
 
 		if (rounded){
 			usages = Math.round(usages);
@@ -485,11 +486,17 @@ abstract public class MissileWeapon extends Weapon {
 	}
 	
 	private static final String DURABILITY = "durability";
-	
+	private static final String BASE_USES = "base_uses";
+
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(DURABILITY, durability);
+
+		MissileWeapon def = DefaultStatsCache.getDefaultObject(getClass());
+		if (def != null) {
+			if (baseUses != def.baseUses) bundle.put(BASE_USES, baseUses);
+		}
 	}
 	
 	private static boolean bundleRestoring = false;
@@ -501,7 +508,14 @@ abstract public class MissileWeapon extends Weapon {
 		bundleRestoring = false;
 		durability = bundle.getFloat(DURABILITY);
 
+		if (bundle.contains(BASE_USES)) baseUses = bundle.getFloat(BASE_USES);
+
 		setCursedKnown(true);
+	}
+
+	@Override
+	public boolean isSimilar(Item item) {
+		return super.isSimilar(item) && baseUses == ((MissileWeapon) item).baseUses;
 	}
 
 	public static class PlaceHolder extends MissileWeapon {
