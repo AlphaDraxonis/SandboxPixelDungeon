@@ -943,11 +943,19 @@ public class Hero extends Char {
 				return false;
 			}
 			if (buff(Blindness.class) != null) {
-				GLog.w(Messages.get(Scroll.class, "blinded"));
+				GLog.w(Messages.get(Sign.class, "blinded"));
 				return false;
 			}
 
-			Game.runOnRenderThread(() -> GameScene.show(new WndMessage(sign.text)));
+			Game.runOnRenderThread(() -> GameScene.show(new WndMessage(sign.text) {
+				@Override
+				public void hide() {
+					super.hide();
+					if (sign.burnOnRead) {
+						sign.burn();
+					}
+				}
+			}));
 
 			return false;
 

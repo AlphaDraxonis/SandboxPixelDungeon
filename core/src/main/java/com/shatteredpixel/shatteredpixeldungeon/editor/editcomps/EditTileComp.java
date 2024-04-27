@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.WellWaterSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ParticleItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -24,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.BlobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.SignActionPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
@@ -32,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.MagicalFireRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
@@ -53,6 +56,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     private TransitionEditPart transitionEdit;
     private RedButton addTransition;
     private RedButton editSignText;
+    private StyledCheckBox signBurnOnRead;
     private WellWaterSpinner wellWaterSpinner;
     private EditBlobComp.VolumeSpinner volumeSpinner;
     private EditBlobComp.SacrificialFirePrize sacrificialFirePrize;
@@ -81,14 +85,23 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
             } else if (TileItem.isSignTerrainCell(item.terrainType())) {
 
+                Sign sign = Dungeon.level.signs.get(cell);
+                final Sign oldSign;
+                if (sign != null) oldSign = sign.getCopy();
+                else oldSign = null;
+
+                if (sign != null) {
+                    signBurnOnRead = new StyledCheckBox(Messages.get(EditTileComp.class, "burn_sign_on_read"));
+                    signBurnOnRead.icon(BlobItem.createIcon(MagicalFireRoom.EternalFire.class));
+                    signBurnOnRead.checked(sign.burnOnRead);
+                    signBurnOnRead.addChangeListener(v -> sign.burnOnRead = v);
+                    add(signBurnOnRead);
+                }
+
                 editSignText = new RedButton(Messages.get(EditTileComp.class, "edit_sign_title"), 9) {
 
                     @Override
                     protected void onClick() {
-                        Sign sign = Dungeon.level.signs.get(cell);
-                        final Sign oldSign;
-                        if (sign != null) oldSign = sign.getCopy();
-                        else oldSign = null;
                         EditorScene.show(new WndTextInput(
                                 Messages.get(EditTileComp.class, "edit_sign_title"),
                                 Messages.get(EditTileComp.class, "edit_sign_body"),
@@ -245,6 +258,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     @Override
     protected void layout() {
         super.layout();
+        layoutCompsInRectangles(signBurnOnRead);
         layoutCompsLinear(//transitionEdit is later instantiated
                 transitionEdit, addTransition, editSignText, wellWaterSpinner, volumeSpinner, sacrificialFirePrize, coinDoorCost
         );
