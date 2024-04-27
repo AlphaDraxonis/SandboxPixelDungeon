@@ -14,10 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItemDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.IconTitleWithSubIcon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
@@ -38,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -68,6 +66,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected CurseButton curseBtn;
     protected LevelSpinner levelSpinner;
     protected ChargeSpinner chargeSpinner;
+    protected StyledItemSelector magesStaffWand;
 
     protected StyledCheckBox autoIdentify;
     protected StyledCheckBox cursedKnown;
@@ -239,6 +238,19 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 add(augmentationSpinner);
             }
 
+            if (item instanceof MagesStaff) {
+                magesStaffWand = new StyledItemSelector(label("imbued_wand"), Wand.class, ((MagesStaff) item).wand, ItemSelector.NullTypeSelector.NOTHING) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+                        super.setSelectedItem(selectedItem);
+                        ((MagesStaff) item).wand = (Wand) selectedItem;
+                        updateObj();
+                    }
+                };
+                magesStaffWand.setShowWhenNull(ItemSpriteSheet.WAND_HOLDER);
+                add(magesStaffWand);
+            }
+
             if (item instanceof Ankh) {
                 blessed = new StyledCheckBox(label("blessed"));
                 blessed.icon(Icons.TALENT.get());
@@ -373,7 +385,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
 
         rectComps = new Component[]{quantity, quickslotPos, shockerDuration, chargeSpinner, levelSpinner, augmentationSpinner,
-                curseBtn, cursedKnown, autoIdentify, enchantBtn, blessed, igniteBombOnDrop, spreadIfLoot};
+                curseBtn, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, blessed, igniteBombOnDrop, spreadIfLoot};
         linearComps = new Component[]{bagItems, randomItem, keylevel, keyCell};
     }
 
@@ -569,6 +581,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
             } else {
                 if (aa.glyph != bb.glyph) return false;
             }
+        }
+        if (a instanceof MagesStaff) {
+            if (areEqual(((MagesStaff) a).wand, ((MagesStaff) b).wand)) return false;
         }
         if (a instanceof Key) {
             if (!((Key) a).levelName.equals(((Key) b).levelName)) return false;
