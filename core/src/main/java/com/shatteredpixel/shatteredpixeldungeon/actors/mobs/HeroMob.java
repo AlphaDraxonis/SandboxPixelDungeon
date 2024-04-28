@@ -8,26 +8,52 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledItemSelector;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundle;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, ItemSelectables.ArmorSelectable, MobBasedOnDepth {
+
+    private DirectableAlly directableAlly;
 
     {
         spriteClass = null;
@@ -37,12 +63,17 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
     private InternalHero internalHero;
 
+    public boolean bindEquipment;//if true, the player can't change the equipment of this hero when it is allied
+
     public HeroMob() {
         setInternalHero(new InternalHero());
     }
 
     @Override
     public void setLevel(int depth) {
+
+        if (alignment == Alignment.ALLY) directableAlly = new DriedRose.GhostHero.GhostHeroDirectableAlly(this);
+
         internalHero.baseSpeed = baseSpeed;
         if (internalHero.belongings.weapon != null)
             internalHero.belongings.weapon.activate(internalHero);
@@ -76,6 +107,22 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         belongings.ring = RandomItem.initRandomStatsForItemSubclasses(belongings.ring);
         belongings.artifact = RandomItem.initRandomStatsForItemSubclasses(belongings.artifact);
         belongings.misc = RandomItem.initRandomStatsForItemSubclasses(belongings.misc);
+    }
+
+    @Override
+    public boolean interact(Char c) {
+        if (directableAlly != null && state == SLEEPING) {
+            sprite.turnTo(pos, c.pos);
+            if (c == Dungeon.hero) {
+                if (state == SLEEPING) {
+                    notice();
+                    yell(Messages.get(RatKing.class, "not_sleeping"));
+                    state = WANDERING;
+                }
+            }
+            return true;
+        }
+        return super.interact(c);
     }
 
     @Override
@@ -323,6 +370,18 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     }
 
     @Override
+    public void die(Object cause) {
+        super.die(cause);
+        if (directableAlly != null && !bindEquipment) {
+            if (weapon() != null) Dungeon.level.drop(weapon(), pos);
+            if (armor() != null) Dungeon.level.drop(armor(), pos);
+            if (internalHero.belongings.ring != null) Dungeon.level.drop(internalHero.belongings.ring, pos);
+            if (internalHero.belongings.artifact != null) Dungeon.level.drop(internalHero.belongings.artifact, pos);
+            if (internalHero.belongings.misc != null) Dungeon.level.drop(internalHero.belongings.misc, pos);
+        }
+    }
+
+    @Override
     protected void spend(float time) {
         updateInternalStats();
         super.spend(time);
@@ -396,19 +455,44 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     }
 
     private static final String INTERNAL_HERO = "internal_hero";
+    private static final String BIND_EQUIPMENT = "bind_equipment";
 
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         bundle.put(INTERNAL_HERO, internalHero);
+        bundle.put(BIND_EQUIPMENT, bindEquipment);
+        if (directableAlly != null) directableAlly.store(bundle);
     }
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
+        if (alignment == Alignment.ALLY) {
+            directableAlly = new DirectableAlly(this);
+            directableAlly.restore(bundle);
+        }
         internalHero = null;
         super.restoreFromBundle(bundle);
+        bindEquipment = bundle.getBoolean(BIND_EQUIPMENT);
         internalHero = (InternalHero) bundle.get(INTERNAL_HERO);
         internalHero.owner = this;
+    }
+
+    @Override
+    public void aggro(Char ch) {
+        if (directableAlly != null) directableAlly.aggroOverride(ch);
+        else super.aggro(ch);
+    }
+
+    @Override
+    public void beckon(int cell) {
+        if (directableAlly != null) directableAlly.beckonOverride(cell);
+        else super.beckon(cell);
+    }
+
+    @Override
+    public DirectableAlly getDirectableAlly() {
+        return directableAlly;
     }
 
     public static class InternalHero extends Hero {
@@ -486,4 +570,349 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             return false;
         }
     }
+
+    public Window mobInfoWindow() {
+        if (directableAlly == null) return null;
+        return new EditCompWindow(new EquipHeroMobComp(this));
+    }
+
+    private static class EquipHeroMobComp extends DefaultEditComp<HeroMob> {
+
+        private StyledItemSelector mobWeapon, mobArmor;
+        private StyledItemSelector mobRing, mobArti, mobMisc;
+        private RedButton direct;
+
+        private final Component[] rectComps, linearComps;
+
+        public EquipHeroMobComp(HeroMob hero) {
+            super(hero);
+
+            if (!hero.bindEquipment) {
+
+                mobWeapon = new HeroEqSelector(Messages.get(EditMobComp.class, "weapon"),
+                        MeleeWeapon.class, hero.weapon(), new HeroEqSelector.Selector() {
+                    @Override
+                    public void actuallyOnSelectAfterConditions(Item item) {
+                        mobWeapon.setSelectedItem(item);
+                    }
+
+                    @Override
+                    public String textPrompt() {
+                        return Messages.get(DriedRose.WndGhostHero.class, "weapon_prompt");
+                    }
+
+                    @Override
+                    public boolean itemSelectable(Item item) {
+                        return item instanceof MeleeWeapon;
+                    }
+
+                    @Override
+                    public boolean passMoreConditions(Item item) {
+                        if (((MeleeWeapon) item).STRReq() > hero.internalHero.STR) {
+                            GLog.w(Messages.get(HeroMob.class, "cant_strength"));
+                            return false;
+                        }
+                        return true;
+                    }
+                }) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+
+                        maybeDetachItem(selectedItem, hero.weapon());
+
+                        super.setSelectedItem(selectedItem);
+                        hero.weapon((Weapon) selectedItem);
+                        EquipHeroMobComp.this.updateObj();
+                    }
+                };
+                mobWeapon.setShowWhenNull(ItemSpriteSheet.WEAPON_HOLDER);
+                add(mobWeapon);
+
+                mobArmor = new HeroEqSelector(Messages.get(EditMobComp.class, "armor"),
+                        Armor.class, hero.armor(), new HeroEqSelector.Selector() {
+                    @Override
+                    public void actuallyOnSelectAfterConditions(Item item) {
+                        mobArmor.setSelectedItem(item);
+                    }
+
+                    @Override
+                    public String textPrompt() {
+                        return Messages.get(DriedRose.WndGhostHero.class, "armor_prompt");
+                    }
+
+                    @Override
+                    public boolean itemSelectable(Item item) {
+                        return item instanceof Armor;
+                    }
+
+                    @Override
+                    public boolean passMoreConditions(Item item) {
+                        if (((Armor) item).checkSeal() != null) {
+                            GLog.w(Messages.get(HeroMob.class, "cant_unique"));
+                            return false;
+                        }
+                        if (((Armor) item).STRReq() > hero.internalHero.STR) {
+                            GLog.w(Messages.get(HeroMob.class, "cant_strength"));
+                            return false;
+                        }
+                        return true;
+                    }
+                }) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+
+                        maybeDetachItem(selectedItem, hero.armor());
+
+                        super.setSelectedItem(selectedItem);
+                        hero.armor((Armor) selectedItem);
+                        EquipHeroMobComp.this.updateObj();
+                    }
+                };
+                mobArmor.setShowWhenNull(ItemSpriteSheet.ARMOR_HOLDER);
+                add(mobArmor);
+
+                Hero h = hero.internalHero;
+                mobRing = new HeroEqSelector(Messages.get(HeroSettings.class, "ring"),
+                        Ring.class, h.belongings.ring, new HeroEqSelector.Selector() {
+                    @Override
+                    public void actuallyOnSelectAfterConditions(Item item) {
+                        mobRing.setSelectedItem(item);
+                    }
+
+                    @Override
+                    public String textPrompt() {
+                        return Messages.get(HeroMob.class, "ring_prompt");
+                    }
+
+                    @Override
+                    public boolean itemSelectable(Item item) {
+                        return item instanceof Ring;
+                    }
+                }) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+
+                        maybeDetachItem(selectedItem, h.belongings.ring);
+
+                        super.setSelectedItem(selectedItem);
+                        h.belongings.ring = (Ring) selectedItem;
+                        EquipHeroMobComp.this.updateObj();
+                    }
+                };
+                mobRing.setShowWhenNull(ItemSpriteSheet.RING_HOLDER);
+                add(mobRing);
+
+                mobArti = new HeroEqSelector(Messages.get(HeroSettings.class, "artifact"), Artifact.class, h.belongings.artifact, new HeroEqSelector.Selector() {
+                    @Override
+                    public void actuallyOnSelectAfterConditions(Item item) {
+                        mobArti.setSelectedItem(item);
+                    }
+
+                    @Override
+                    public String textPrompt() {
+                        return Messages.get(HeroMob.class, "artifact_prompt");
+                    }
+
+                    @Override
+                    public boolean itemSelectable(Item item) {
+                        return item instanceof Artifact;
+                    }
+                }) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+
+                        maybeDetachItem(selectedItem, h.belongings.artifact);
+
+                        super.setSelectedItem(selectedItem);
+                        h.belongings.artifact = (Artifact) selectedItem;
+                        EquipHeroMobComp.this.updateObj();
+                    }
+                };
+                mobArti.setShowWhenNull(ItemSpriteSheet.ARTIFACT_HOLDER);
+                add(mobArti);
+
+                mobMisc = new HeroEqSelector(Messages.get(HeroSettings.class, "misc"), KindofMisc.class, h.belongings.misc, new HeroEqSelector.Selector() {
+                    @Override
+                    public void actuallyOnSelectAfterConditions(Item item) {
+                        mobMisc.setSelectedItem(item);
+                    }
+
+                    @Override
+                    public String textPrompt() {
+                        return Messages.get(HeroMob.class, "misc_prompt");
+                    }
+
+                    @Override
+                    public boolean itemSelectable(Item item) {
+                        return item instanceof KindofMisc;
+                    }
+                }) {
+                    @Override
+                    public void setSelectedItem(Item selectedItem) {
+
+                        maybeDetachItem(selectedItem, h.belongings.misc);
+
+                        super.setSelectedItem(selectedItem);
+                        h.belongings.misc = (KindofMisc) selectedItem;
+                        EquipHeroMobComp.this.updateObj();
+                    }
+                };
+                mobMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
+                add(mobMisc);
+
+            }
+
+            direct = new RedButton(Messages.get(DriedRose.class, "ac_direct")) {
+                @Override
+                protected void onClick() {
+                    EditorUtilies.getParentWindow(this).hide();
+                    GameScene.selectCell(new CellSelector.Listener(){
+                        @Override
+                        public void onSelect(Integer cell) {
+                            if (cell == null) return;
+                            hero.directableAlly.directTocell(cell);
+                        }
+
+                        @Override
+                        public String prompt() {
+                            return  "\"" + Messages.get(DriedRose.GhostHero.class, "direct_prompt") + "\"";
+                        }
+                    });
+                }
+            };
+            add(direct);
+
+            rectComps = new Component[] {
+                  mobWeapon, mobArmor, mobRing, mobArti, mobMisc
+            };
+
+            linearComps = new Component[] {
+                    direct
+            };
+        }
+
+        @Override
+        protected void layout() {
+            super.layout();
+            layoutCompsInRectangles(rectComps);
+            layoutCompsLinear(linearComps);
+        }
+
+        @Override
+        public void updateObj() {
+            if (mainTitleComp instanceof WndInfoMob.MobTitle) {
+
+                ((HeroSprite.HeroMobSprite) ((WndInfoMob.MobTitle) mainTitleComp).image).updateHeroClass(obj.hero());
+
+                ((WndInfoMob.MobTitle) mainTitleComp).setText(((WndInfoMob.MobTitle) mainTitleComp).createTitle(obj));
+                mainTitleComp.setPos(mainTitleComp.left(), mainTitleComp.top());
+            }
+
+            if (mobWeapon != null) {
+                mobWeapon.updateItem();
+            }
+
+            if (mobArmor != null) {
+                mobArmor.updateItem();
+            }
+
+            ((HeroSprite.HeroMobSprite) obj.sprite).updateHeroClass(obj.hero());
+
+            super.updateObj();
+        }
+
+        private void maybeDetachItem(Item newItem, Item item) {
+            if (newItem != item && item != null) {
+                if (!item.doPickUp(Dungeon.hero)) {
+                    Dungeon.level.drop(item, Dungeon.hero.pos);
+                }
+            }
+        }
+
+        @Override
+        protected Component createTitle() {
+            return new WndInfoMob.MobTitle(obj, Mimic.isLikeMob(obj));
+        }
+
+        @Override
+        protected String createTitleText() {
+            return null;
+        }
+
+        @Override
+        protected String createDescription() {
+            return obj.info();
+        }
+
+        @Override
+        public Image getIcon() {
+            return obj.sprite();
+        }
+
+        private static class HeroEqSelector extends StyledItemSelector {
+
+            private final WndBag.ItemSelector selector;
+
+            public HeroEqSelector(String text, Class<? extends Item> itemClasses, Item startItem, WndBag.ItemSelector selector) {
+                super(text, itemClasses, startItem, null);
+                this.selector = selector;
+            }
+
+            private static abstract class Selector extends WndBag.ItemSelector {
+
+                public abstract void actuallyOnSelectAfterConditions(Item item);
+
+                @Override
+                public Class<?extends Bag> preferredBag(){
+                    return Belongings.Backpack.class;
+                }
+
+                public boolean passMoreConditions(Item item) {
+                    return true;
+                }
+
+                @Override
+                public void onSelect(Item item) {
+                    if (!itemSelectable(item)) {
+                        //do nothing, should only happen when window is cancelled
+                        return;
+                    }
+
+                    if (item.unique) {
+                        GLog.w( Messages.get(HeroMob.class, "cant_unique"));
+                        return;
+                    }
+
+                    if (!item.isIdentified()) {
+                        GLog.w( Messages.get(DriedRose.WndGhostHero.class, "cant_unidentified"));
+                        return;
+                    }
+
+                    if (item.cursed) {
+                        GLog.w( Messages.get(HeroMob.class, "cant_cursed"));
+                        return;
+                    }
+
+                    if (!passMoreConditions(item)) {
+                        return;
+                    }
+
+                    if (item instanceof EquipableItem && item.isEquipped(Dungeon.hero)) {
+                        ((EquipableItem) item).doUnequip(Dungeon.hero, false, false);
+                    } else {
+                        item.detach(Dungeon.hero.belongings.backpack);
+                    }
+                    actuallyOnSelectAfterConditions(item);
+
+                }
+            }
+
+            @Override
+            public void change() {
+                GameScene.selectItem(selector);
+            }
+
+        }
+    }
+
 }

@@ -27,20 +27,12 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Regeneration;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -71,11 +63,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ItemButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoItem;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuest;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
+import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -471,7 +459,7 @@ public class DriedRose extends Artifact {
 			
 			Sample.INSTANCE.play( Assets.Sounds.GHOST );
 
-			ghost.directTocell(cell);
+			ghost.directableAlly.directTocell(cell);
 
 		}
 		
@@ -529,9 +517,15 @@ public class DriedRose extends Artifact {
 
 	}
 
-	public static class GhostHero extends DirectableAlly {
+	public static class GhostHero extends NPC {
+
+		private DirectableAlly directableAlly;
 
 		{
+			alignment = Alignment.ALLY;
+			directableAlly = new GhostHeroDirectableAlly(this);
+			state = WANDERING;
+
 			spriteClass = GhostSprite.class;
 
 			setFlying(true);
@@ -555,22 +549,42 @@ public class DriedRose extends Artifact {
 			HP = HT;
 		}
 
-		@Override
-		public void defendPos(int cell) {
-			yell(Messages.get(this, "directed_position_" + Random.IntRange(1, 5)));
-			super.defendPos(cell);
+		public static class GhostHeroDirectableAlly extends DirectableAlly {
+
+			public GhostHeroDirectableAlly(Mob mob) {
+				super(mob);
+			}
+
+			@Override
+			public void defendPos(int cell) {
+				String msg = Messages.get(mob.getClass(), "directed_position_" + Random.IntRange(1, 5));
+				mob.yell(msg == Messages.NO_TEXT_FOUND ? Messages.get(GhostHero.class, "directed_position_" + Random.IntRange(1, 5)) : msg);
+				super.defendPos(cell);
+			}
+
+			@Override
+			public void followHero() {
+				String msg = Messages.get(mob.getClass(), "directed_follow_" + Random.IntRange(1, 5));
+				mob.yell(msg == Messages.NO_TEXT_FOUND ? Messages.get(GhostHero.class, "directed_follow_" + Random.IntRange(1, 5)) : msg);
+				super.followHero();
+			}
+
+			@Override
+			public void targetChar(Char ch) {
+				String msg = Messages.get(mob.getClass(), "directed_attack_" + Random.IntRange(1, 5));
+				mob.yell(msg == Messages.NO_TEXT_FOUND ? Messages.get(GhostHero.class, "directed_attack_" + Random.IntRange(1, 5)) : msg);
+				super.targetChar(ch);
+			}
 		}
 
 		@Override
-		public void followHero() {
-			yell(Messages.get(this, "directed_follow_" + Random.IntRange(1, 5)));
-			super.followHero();
+		public void aggro(Char ch) {
+			directableAlly.aggroOverride(ch);
 		}
 
 		@Override
-		public void targetChar(Char ch) {
-			yell(Messages.get(this, "directed_attack_" + Random.IntRange(1, 5)));
-			super.targetChar(ch);
+		public DirectableAlly getDirectableAlly() {
+			return directableAlly;
 		}
 
 		private void updateRose(){
@@ -686,7 +700,7 @@ public class DriedRose extends Artifact {
 
 			//moves 2 tiles at a time when returning to the hero
 			if (state == WANDERING
-					&& defendingPos == -1
+					&& directableAlly.defendingPos == -1
 					&& Dungeon.level.distance(pos, Dungeon.hero.pos) > 1){
 				speed *= 2;
 			}
@@ -859,9 +873,20 @@ public class DriedRose extends Artifact {
 			immunities.add( AllyBuff.class );
 		}
 
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			directableAlly.restore(bundle);
+		}
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			directableAlly.store(bundle);
+		}
 	}
 	
-	private static class WndGhostHero extends Window{
+	public static class WndGhostHero extends Window{
 		
 		private static final int BTN_SIZE	= 32;
 		private static final float GAP		= 2;
@@ -952,7 +977,7 @@ public class DriedRose extends Artifact {
 					return false;
 				}
 			};
-			btnWeapon.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.top() + message.height() + GAP, BTN_SIZE, BTN_SIZE );
+			btnWeapon.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.top() + message.height() + GAP*2, BTN_SIZE, BTN_SIZE );
 			if (rose.weapon != null) {
 				btnWeapon.item(rose.weapon);
 			} else {

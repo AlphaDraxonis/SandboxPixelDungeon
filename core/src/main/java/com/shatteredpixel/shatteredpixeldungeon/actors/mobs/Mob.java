@@ -31,7 +31,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Feint;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
@@ -852,7 +851,17 @@ public abstract class Mob extends Char implements Customizable {
 				|| Dungeon.hero.buff(Swiftthistle.TimeBubble.class) != null))
 			sprite.add( CharSprite.State.PARALYSED );
 	}
-	
+
+	//only required so DirectableAlly can access it
+	@Override
+	protected boolean moveSprite(int from, int to) {
+		return super.moveSprite(from, to);
+	}
+
+	public DirectableAlly getDirectableAlly() {
+		return null;
+	}
+
 	public float attackDelay() {
 		float delay = 1f;
 		if ( buff(Adrenaline.class) != null) delay /= 1.5f;
@@ -1810,8 +1819,8 @@ public abstract class Mob extends Char implements Customizable {
 		heldAllies.clear();
 		for (Mob mob : level.mobs.toArray( new Mob[0] )) {
 			//preserve directable allies no matter where they are
-			if (mob instanceof DirectableAlly) {
-				((DirectableAlly) mob).clearDefensingPos();
+			if (mob.getDirectableAlly() != null) {
+				mob.getDirectableAlly().clearDefensingPos();
 				level.mobs.remove( mob );
 				heldAllies.add(mob);
 				

@@ -48,6 +48,12 @@ public class EditCompWindow extends Window {
         }
 
         content.advancedListPaneItem = advancedListPaneItem;
+
+        init();
+    }
+
+    public EditCompWindow(DefaultEditComp<?> content) {
+        this.content = content;
         init();
     }
 

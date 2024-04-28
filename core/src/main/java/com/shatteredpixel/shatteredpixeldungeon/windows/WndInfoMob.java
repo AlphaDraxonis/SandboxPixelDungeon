@@ -41,7 +41,11 @@ public class WndInfoMob extends WndTitledMessage {
     }
 
     public WndInfoMob(Mob mob, boolean includeHealthBar) {
-        super(new MobTitle(mob, includeHealthBar), mob.info() + (!mob.dialogs.isEmpty() ? "\n\n_" + Messages.get(ChangeMobCustomizable.class, "dialog_label") + ":_\n" + mob.dialogs.get(mob.nextDialog) : ""));
+        super(new MobTitle(mob, includeHealthBar), text(mob));
+    }
+
+    public static String text(Mob mob) {
+        return mob.info() + (!mob.dialogs.isEmpty() ? "\n\n_" + Messages.get(ChangeMobCustomizable.class, "dialog_label") + ":_\n" + mob.dialogs.get(mob.nextDialog) : "");
     }
 
     public static class MobTitle extends Component {
@@ -73,9 +77,10 @@ public class WndInfoMob extends WndTitledMessage {
         }
 
         protected BuffIndicator createBuffIndicator(Mob mob, boolean large){
-            return  new BuffIndicator(mob,large);
+            return new BuffIndicator(mob,large);
         }
-        protected String createTitle(Mob mob){
+
+        public String createTitle(Mob mob){
             return Messages.titleCase(mob.name());
         }
 

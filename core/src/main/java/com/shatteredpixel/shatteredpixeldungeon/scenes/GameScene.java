@@ -29,10 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -1212,7 +1209,10 @@ public class GameScene extends DungeonScene {
 			return;
 		}
 
-		if (Dungeon.isLevelTesting()) {
+		Char charAtCell = Actor.findChar(cell);
+
+		if (Dungeon.isLevelTesting()
+			&& (!(charAtCell instanceof HeroMob) || ((HeroMob) charAtCell).getDirectableAlly() == null)) {
 			showEditCellWindow( cell );
 			return;
 		}
@@ -1284,7 +1284,9 @@ public class GameScene extends DungeonScene {
 		if (o == Dungeon.hero){
 			GameScene.show( new WndHero() );
 		} else if ( o instanceof Mob && ((Mob) o).isActive() ){
-			GameScene.show(new WndInfoMob((Mob) o));
+			if (o instanceof HeroMob && ((HeroMob) o).getDirectableAlly() != null)
+				GameScene.show(((HeroMob) o).mobInfoWindow());
+			else GameScene.show(new WndInfoMob((Mob) o));
 			if (o instanceof Snake && !Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_SURPRISE_ATKS)){
 				GLog.p(Messages.get(Guidebook.class, "hint"));
 				GameScene.flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_SURPRISE_ATKS);
@@ -1402,12 +1404,13 @@ public class GameScene extends DungeonScene {
 					if (index == 0){
 						handleCell(cell);
 					} else {
-						if (Dungeon.isLevelTesting()) {
-							showEditCellWindow( cell );
-						} else if (objects.size() == 0){
+						if (objects.isEmpty()){
 							GameScene.show(new WndInfoCell(cell));
-						} else {
+						} else if (!Dungeon.isLevelTesting()
+								|| objects.get(index-1) instanceof HeroMob && ((HeroMob) objects.get(index-1)).getDirectableAlly() != null) {
 							examineObject(objects.get(index-1));
+						} else {
+							showEditCellWindow( cell );
 						}
 					}
 				}

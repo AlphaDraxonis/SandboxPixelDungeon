@@ -25,16 +25,13 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DirectableAlly;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
@@ -90,7 +87,7 @@ public class SpiritHawk extends ArmorAbility {
 			if (target == null){
 				return;
 			} else {
-				ally.directTocell(target);
+				ally.directableAlly.directTocell(target);
 			}
 		} else {
 			ArrayList<Integer> spawnPoints = new ArrayList<>();
@@ -141,9 +138,15 @@ public class SpiritHawk extends ArmorAbility {
 		return null;
 	}
 
-	public static class HawkAlly extends DirectableAlly {
+	public static class HawkAlly extends NPC {
+
+		private DirectableAlly directableAlly;
 
 		{
+			alignment = Alignment.ALLY;
+			directableAlly = new HawkDirectableAlly(this);
+			state = WANDERING;
+
 			spriteClass = HawkSprite.class;
 
 			HP = HT = 10;
@@ -152,7 +155,6 @@ public class SpiritHawk extends ArmorAbility {
 			setFlying(true);
 			viewDistance = (int)GameMath.gate(6, 6+Dungeon.hero.pointsInTalent(Talent.EAGLE_EYE), 8);
 			baseSpeed = 2f + Dungeon.hero.pointsInTalent(Talent.SWIFT_SPIRIT)/2f;
-			attacksAutomatically = false;
 
 			immunities.addAll(new BlobImmunity().immunities());
 			immunities.add(AllyBuff.class);
@@ -234,22 +236,40 @@ public class SpiritHawk extends ArmorAbility {
 			GameScene.updateFog();
 		}
 
-		@Override
-		public void defendPos(int cell) {
-			GLog.i(Messages.get(this, "direct_defend"));
-			super.defendPos(cell);
+		public static class HawkDirectableAlly extends DirectableAlly {
+
+			public HawkDirectableAlly(Mob mob) {
+				super(mob);
+				attacksAutomatically = false;
+			}
+
+			@Override
+			public void defendPos(int cell) {
+				GLog.i(Messages.get(mob.getClass(), "direct_defend"));
+				super.defendPos(cell);
+			}
+
+			@Override
+			public void followHero() {
+				GLog.i(Messages.get(mob.getClass(), "direct_follow"));
+				super.followHero();
+			}
+
+			@Override
+			public void targetChar(Char ch) {
+				GLog.i(Messages.get(mob.getClass(), "direct_attack"));
+				super.targetChar(ch);
+			}
 		}
 
 		@Override
-		public void followHero() {
-			GLog.i(Messages.get(this, "direct_follow"));
-			super.followHero();
+		public void aggro(Char ch) {
+			directableAlly.aggroOverride(ch);
 		}
 
 		@Override
-		public void targetChar(Char ch) {
-			GLog.i(Messages.get(this, "direct_attack"));
-			super.targetChar(ch);
+		public DirectableAlly getDirectableAlly() {
+			return directableAlly;
 		}
 
 		@Override
@@ -271,6 +291,7 @@ public class SpiritHawk extends ArmorAbility {
 			super.storeInBundle(bundle);
 			bundle.put(DODGES_USED, dodgesUsed);
 			bundle.put(TIME_REMAINING, timeRemaining);
+			directableAlly.store(bundle);
 		}
 
 		@Override
@@ -278,6 +299,7 @@ public class SpiritHawk extends ArmorAbility {
 			super.restoreFromBundle(bundle);
 			dodgesUsed = bundle.getInt(DODGES_USED);
 			timeRemaining = bundle.getFloat(TIME_REMAINING);
+			directableAlly.restore(bundle);
 		}
 	}
 

@@ -32,7 +32,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DirectableAlly;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.SmokeParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.AntiMagic;
@@ -91,7 +93,7 @@ public class ShadowClone extends ArmorAbility {
 			if (target == null){
 				return;
 			} else {
-				ally.directTocell(target);
+				ally.directableAlly.directTocell(target);
 			}
 		} else {
 			ArrayList<Integer> spawnPoints = new ArrayList<>();
@@ -141,9 +143,15 @@ public class ShadowClone extends ArmorAbility {
 		return null;
 	}
 
-	public static class ShadowAlly extends DirectableAlly {
+	public static class ShadowAlly extends NPC {
+
+		private DirectableAlly directableAlly;
 
 		{
+			alignment = Alignment.ALLY;
+			directableAlly = new ShadowDirectableAlly(this);
+			state = WANDERING;
+
 			spriteClass = ShadowSprite.class;
 
 			HP = HT = 80;
@@ -179,22 +187,39 @@ public class ShadowClone extends ArmorAbility {
 			return result;
 		}
 
-		@Override
-		public void defendPos(int cell) {
-			GLog.i(Messages.get(this, "direct_defend"));
-			super.defendPos(cell);
+		public static class ShadowDirectableAlly extends DirectableAlly {
+
+			public ShadowDirectableAlly(Mob mob) {
+				super(mob);
+			}
+
+			@Override
+			public void defendPos(int cell) {
+				GLog.i(Messages.get(mob.getClass(), "direct_defend"));
+				super.defendPos(cell);
+			}
+
+			@Override
+			public void followHero() {
+				GLog.i(Messages.get(mob.getClass(), "direct_follow"));
+				super.followHero();
+			}
+
+			@Override
+			public void targetChar(Char ch) {
+				GLog.i(Messages.get(mob.getClass(), "direct_attack"));
+				super.targetChar(ch);
+			}
 		}
 
 		@Override
-		public void followHero() {
-			GLog.i(Messages.get(this, "direct_follow"));
-			super.followHero();
+		public void aggro(Char ch) {
+			directableAlly.aggroOverride(ch);
 		}
 
 		@Override
-		public void targetChar(Char ch) {
-			GLog.i(Messages.get(this, "direct_attack"));
-			super.targetChar(ch);
+		public DirectableAlly getDirectableAlly() {
+			return directableAlly;
 		}
 
 		@Override
@@ -279,7 +304,7 @@ public class ShadowClone extends ArmorAbility {
 
 			//moves 2 tiles at a time when returning to the hero
 			if (state == WANDERING
-					&& defendingPos == -1
+					&& directableAlly.defendingPos == -1
 					&& Dungeon.level.distance(pos, Dungeon.hero.pos) > 1){
 				speed *= 2;
 			}
@@ -352,12 +377,14 @@ public class ShadowClone extends ArmorAbility {
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put(DEF_SKILL, defenseSkill);
+			directableAlly.store(bundle);
 		}
 
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			defenseSkill = bundle.getInt(DEF_SKILL);
+			directableAlly.restore(bundle);
 		}
 	}
 

@@ -74,6 +74,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private ItemContainer<Item> mimicItems;
     private StyledItemSelector mobWeapon, mobArmor, thiefItem, tormentedSpiritPrize;
     private StyledItemSelector mobRing, mobArti, mobMisc;
+    private StyledCheckBox heroBindEquipment;
     private LotusLevelSpinner lotusLevelSpinner;
     private StyledSpinner sheepLifespan;
     private QuestSpinner questSpinner;
@@ -183,16 +184,19 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     super.setSelectedItem(selectedItem);
                     hero.belongings.artifact = (Artifact) selectedItem;
                     if (selectedItem != null && selectedItem.reservedQuickslot == 0) selectedItem.reservedQuickslot = -1;
+                    EditMobComp.this.updateObj();
                 }
             };
             mobArti.setShowWhenNull(ItemSpriteSheet.ARTIFACT_HOLDER);
             add(mobArti);
+
             mobMisc = new StyledItemSelector(Messages.get(HeroSettings.class, "misc"), KindofMisc.class, hero.belongings.misc, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
                     hero.belongings.misc = (KindofMisc) selectedItem;
                     if (selectedItem != null && selectedItem.reservedQuickslot == 0) selectedItem.reservedQuickslot = -1;
+                    EditMobComp.this.updateObj();
                 }
             };
             mobMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
@@ -225,6 +229,12 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             heroSubclassSpinner = new HeroClassSpinner.SubclassSpinner(hero);
             heroSubclassSpinner.addChangeListener(this::updateObj);
             add(heroSubclassSpinner);
+
+            heroBindEquipment = new StyledCheckBox(label("hero_bind_equipment"));
+            heroBindEquipment.checked(((HeroMob) mob).bindEquipment);
+            heroBindEquipment.addChangeListener(v -> ((HeroMob) mob).bindEquipment = v);
+            heroBindEquipment.visible = heroBindEquipment.active = obj.playerAlignment == Mob.FRIENDLY_ALIGNMENT;
+            add(heroBindEquipment);
         }
 
         if (mob instanceof Thief) {
@@ -788,7 +798,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 tenguPhase,
 
                 heroClassSpinner, heroSubclassSpinner,
-                heroMobLvl, heroMobStr,
+                heroMobLvl, heroMobStr, heroBindEquipment,
 
                 mob instanceof Ghost ? null : questSpinner, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE, questItem1, questItem2, spawnQuestRoom,
 
@@ -900,6 +910,10 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (mobArmor != null) {
             mobArmor.updateItem();
+        }
+
+        if (heroBindEquipment != null) {
+            heroBindEquipment.visible = heroBindEquipment.active = obj.playerAlignment == Mob.FRIENDLY_ALIGNMENT;
         }
 
         if (pylonAlwaysActive != null) {
@@ -1110,7 +1124,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             return new BuffIndicatorEditor(mob, large, EditMobComp.this);
         }
 
-        protected String createTitle(Mob mob) {
+        @Override
+        public String createTitle(Mob mob) {
             if (MobSpriteItem.canChangeSprite(mob)) {
                 Mob defaultMob = DefaultStatsCache.getDefaultObject(mob.getClass());
                 if (defaultMob == null && MobSpriteItem.canChangeSprite(mob)) defaultMob = Reflection.newInstance(mob.getClass());

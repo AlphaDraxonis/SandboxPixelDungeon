@@ -218,6 +218,7 @@ public enum HeroClass {
 
         data.armor = new ClothArmor();
         data.armor.affixSeal(new BrokenSeal());
+        data.armor.identifyOnStart = true;
 
         ThrowingStone stones = new ThrowingStone();
         stones.quantity(3);
