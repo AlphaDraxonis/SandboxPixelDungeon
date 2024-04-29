@@ -31,10 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Ch
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.ElementalStrike;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.NaturesPower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.Endure;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Snake;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -801,9 +798,16 @@ public class Hero extends Char {
 		ready = true;
 		canSelfTrample = true;
 
-		AttackIndicator.updateState();
-		
-		GameScene.ready();
+		if (this == Dungeon.hero) {
+
+			for (Mob m : Dungeon.level.mobs) {
+				if (m instanceof HeroMob) ((Hero) ((HeroMob) m).hero()).ready();
+			}
+
+			AttackIndicator.updateState();
+
+			GameScene.ready();
+		}
 	}
 	
 	public void interrupt() {

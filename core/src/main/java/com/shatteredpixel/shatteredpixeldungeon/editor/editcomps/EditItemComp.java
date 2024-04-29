@@ -580,8 +580,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (!ignoreQuantity && a.quantity() != b.quantity()) return false;
         if (a.cursed != b.cursed) return false;
         if (a.level() != b.level()) return false;
-        if (a.getCursedKnownVar() != b.getCursedKnownVar()) return false;
-        if (a.levelKnown != b.levelKnown) return false;
+        if ((a.getCursedKnownVar() || a.identifyOnStart) != (b.getCursedKnownVar() || b.identifyOnStart)) return false;
+        if ((a.levelKnown || a.identifyOnStart) != (b.levelKnown || b.identifyOnStart)) return false;
         if (a.spreadIfLoot != b.spreadIfLoot) return false;
 
         if (!Objects.equals(a.getCustomName(), b.getCustomName())) return false;

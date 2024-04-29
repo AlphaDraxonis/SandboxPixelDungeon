@@ -479,8 +479,13 @@ public abstract class Mob extends Char implements Customizable {
 
 	//FIXME this is sort of a band-aid correction for allies needing more intelligent behaviour
 	public boolean intelligentAlly = false;
-	
-	protected Char chooseEnemy() {
+
+	protected final Char chooseEnemy() {
+		Char enemy = chooseEnemyImpl();
+		return enemy instanceof HeroMob ? ((HeroMob) enemy).hero() : enemy;
+	}
+
+	protected Char chooseEnemyImpl() {
 
 		Dread dread = buff( Dread.class );
 		if (dread != null) {
@@ -1017,6 +1022,7 @@ public abstract class Mob extends Char implements Customizable {
 
 	public void aggro( Char ch ) {
 		enemy = ch;
+		if (enemy instanceof HeroMob) enemy = ((HeroMob) enemy).hero();
 		if (state != PASSIVE){
 			state = HUNTING;
 		}

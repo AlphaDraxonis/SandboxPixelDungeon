@@ -56,7 +56,7 @@ public class RatKing extends NPC {
 	}
 	
 	@Override
-	protected Char chooseEnemy() {
+	protected Char chooseEnemyImpl() {
 		return null;
 	}
 

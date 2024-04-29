@@ -517,6 +517,12 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         }
 
         @Override
+        public void damage(int dmg, Object src) {
+            super.damage(dmg, src);
+            owner.updateStats();
+        }
+
+        @Override
         public void die(Object cause) {
             owner.die(cause);
         }
@@ -873,6 +879,12 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
                 @Override
                 public void onSelect(Item item) {
+
+                    if (item == null) {
+                        actuallyOnSelectAfterConditions(item);
+                        return;
+                    }
+
                     if (!itemSelectable(item)) {
                         //do nothing, should only happen when window is cancelled
                         return;
@@ -912,6 +924,16 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                 GameScene.selectItem(selector);
             }
 
+            @Override
+            protected void onItemSlotClick() {
+                GameScene.examineObject(getSelectedItem());
+            }
+
+            @Override
+            protected boolean onItemSlotLongClick() {
+                selector.onSelect(null);
+                return true;
+            }
         }
     }
 

@@ -97,7 +97,7 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(63, Mob.class.getDeclaredMethod("cellIsPathable", int.class), "cell");//whether it can walk onto a passable cell
 			addMethod(64, Mob.class.getMethod("beckon", int.class), "cell");//makes the mob walk torwards to that cell, e.g. called by alarming trap
 			addMethod(65, Mob.class.getMethod("aggro", Char.class), "ch");//will target ch
-			addMethod(66, Mob.class.getDeclaredMethod("chooseEnemy"));//use to set to a certain enemy, return null if there is no enemy
+			addMethod(66, Mob.class.getDeclaredMethod("chooseEnemyImpl"));//use to set to a certain enemy, return null if there is no enemy
 			addMethod(67, Mob.class.getMethod("clearEnemy"));//forgets current enemy
 			addMethod(68, Mob.class.getMethod("restoreEnemy"));//restore any actors if only id was stored
 

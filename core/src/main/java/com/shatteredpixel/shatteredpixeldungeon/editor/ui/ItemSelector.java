@@ -78,8 +78,7 @@ public class ItemSelector extends Component {
 
             @Override
             protected boolean onLongClick() {
-                change();
-                return true;
+                return onItemSlotLongClick();
             }
 
             @Override
@@ -124,6 +123,11 @@ public class ItemSelector extends Component {
                 updateItem();
             }
         });
+    }
+
+    protected boolean onItemSlotLongClick() {
+        change();
+        return true;
     }
 
     @Override

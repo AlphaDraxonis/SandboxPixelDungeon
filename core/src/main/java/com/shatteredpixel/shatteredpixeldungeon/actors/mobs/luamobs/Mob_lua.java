@@ -1197,12 +1197,12 @@ public class Mob_lua extends Rat implements LuaMob {
     }
 
     @Override
-    protected Char chooseEnemy() {
+    protected Char chooseEnemyImpl() {
         LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("chooseEnemy").isnil()) {
+        if (luaScript != null && !luaScript.get("chooseEnemyImpl").isnil()) {
             try {
-                MethodOverride.A0<Char> superMethod = () -> super.chooseEnemy();
-                Char ret = (Char) luaScript.get("chooseEnemy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                MethodOverride.A0<Char> superMethod = () -> super.chooseEnemyImpl();
+                Char ret = (Char) luaScript.get("chooseEnemyImpl").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }

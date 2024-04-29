@@ -200,10 +200,24 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 		}
 
 		public void updateHeroClass(Hero hero) {
+
+			Animation play;
+			if (curAnim == idle) play = null;
+			else if (curAnim == run) play = run;
+			else if (curAnim == die) play = die;
+			else if (curAnim == attack) play = attack;
+			else if (curAnim == zap) play = zap;
+			else if (curAnim == operate) play = operate;
+			else if (curAnim == fly) play = fly;
+			else play = null;
+
 			texture( hero.heroClass.spritesheet() );
 			updateArmor(hero);
 
-			if (hero.isAlive()) idle();
+			if (hero.isAlive()) {
+				if (play == null) idle();
+				else play(play);
+			}
 			else die();
 		}
 

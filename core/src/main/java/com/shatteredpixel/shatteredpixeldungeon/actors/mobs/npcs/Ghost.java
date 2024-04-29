@@ -122,7 +122,7 @@ public class Ghost extends QuestNPC<GhostQuest> {
 	}
 	
 	@Override
-	protected Char chooseEnemy() {
+	protected Char chooseEnemyImpl() {
 		return null;
 	}
 

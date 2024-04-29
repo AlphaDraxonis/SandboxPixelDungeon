@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.LevelColoring;
@@ -1281,6 +1282,13 @@ public class GameScene extends DungeonScene {
 	}
 
 	public static void examineObject(Object o){
+
+		if (Dungeon.isLevelTesting()
+				&& (!(o instanceof HeroMob) || ((HeroMob) o).getDirectableAlly() == null)) {
+			show(new EditCompWindow( o ));
+			return;
+		}
+
 		if (o == Dungeon.hero){
 			GameScene.show( new WndHero() );
 		} else if ( o instanceof Mob && ((Mob) o).isActive() ){
@@ -1299,6 +1307,8 @@ public class GameScene extends DungeonScene {
 			GameScene.show( new WndInfoTrap((Trap) o));
 		} else if ( o instanceof Barrier ){
 			GameScene.show( new WndInfoBarrier((Barrier) o));
+		} else if ( o instanceof Item ){
+			GameScene.show( new WndInfoItem((Item) o));
 		} else {
 			GameScene.show( new WndMessage( Messages.get(GameScene.class, "dont_know") ) ) ;
 		}

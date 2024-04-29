@@ -148,10 +148,10 @@ public class Bee extends Mob implements MobBasedOnDepth {
 	}
 
 	@Override
-	protected Char chooseEnemy() {
+	protected Char chooseEnemyImpl() {
 		//if the pot is no longer present, default to regular AI behaviour
 		if (alignment == Alignment.ALLY || (potHolder == -1 && potPos == -1)){
-			return super.chooseEnemy();
+			return super.chooseEnemyImpl();
 		
 		//if something is holding the pot, target that
 		}else if (Actor.findById(potHolder) != null){
