@@ -285,7 +285,7 @@ public class EditorScene extends DungeonScene {
 
         scene.changeDisplayZoneModeButNoPrompt(enable);
 
-        if (displayZones) {
+        if (enable) {
             selectCell(zonesCellListener);
             scene.prompt(new ZonePrompt());
         } else scene.prompt((Component) null);
@@ -520,7 +520,8 @@ public class EditorScene extends DungeonScene {
         }
         cellSelector.listener = listener;
         cellSelector.enabled = true;
-        prompt(listener.prompt());
+        if (listener.prompt() != null) prompt(listener.prompt());
+        else prompt(listener.promptComp());
     }
 
     @Override
@@ -684,6 +685,11 @@ public class EditorScene extends DungeonScene {
         @Override
         public String prompt() {
             return null;
+        }
+
+        @Override
+        public Component promptComp() {
+            return new ZonePrompt();
         }
 
         @Override

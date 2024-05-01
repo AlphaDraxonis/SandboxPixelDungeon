@@ -35,6 +35,7 @@ import com.watabou.input.*;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.ScrollArea;
+import com.watabou.noosa.ui.Component;
 import com.watabou.utils.*;
 
 import java.util.HashSet;
@@ -641,6 +642,7 @@ public class CellSelector extends ScrollArea {
 		}
 
 		public abstract String prompt();
+		public Component promptComp() {return null;}
 
 		protected boolean dragClickEnabled() {
 			return false;
