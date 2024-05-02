@@ -4,18 +4,22 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.ItemContainer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
@@ -27,10 +31,22 @@ import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.UnlimitedCapacityBag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FakeTenguBomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.*;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -39,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
+import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -47,9 +64,12 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, ItemSelectables.ArmorSelectable, MobBasedOnDepth {
 
@@ -65,6 +85,8 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
     public boolean bindEquipment;//if true, the player can't change the equipment of this hero when it is allied
 
+    private float wandCD, potionCD, utilItemCD;
+
     public HeroMob() {
         setInternalHero(new InternalHero());
     }
@@ -75,16 +97,37 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         if (alignment == Alignment.ALLY) directableAlly = new DriedRose.GhostHero.GhostHeroDirectableAlly(this);
 
         internalHero.baseSpeed = baseSpeed;
-        if (internalHero.belongings.weapon != null)
+        if (internalHero.belongings.weapon != null) {
             internalHero.belongings.weapon.activate(internalHero);
-        if (internalHero.belongings.armor != null)
+            if (internalHero.belongings.weapon.identifyOnStart) internalHero.belongings.weapon.identify(false);
+        }
+        if (internalHero.belongings.armor != null) {
             internalHero.belongings.armor.activate(internalHero);
-        if (internalHero.belongings.ring != null)
+            if (internalHero.belongings.armor.identifyOnStart) internalHero.belongings.armor.identify(false);
+        }
+        if (internalHero.belongings.ring != null) {
             internalHero.belongings.ring.activate(internalHero);
-        if (internalHero.belongings.artifact != null)
+            if (internalHero.belongings.ring.identifyOnStart) internalHero.belongings.ring.identify(false);
+        }
+        if (internalHero.belongings.artifact != null) {
             internalHero.belongings.artifact.activate(internalHero);
-        if (internalHero.belongings.misc != null)
+            if (internalHero.belongings.artifact.identifyOnStart) internalHero.belongings.artifact.identify(false);
+        }
+        if (internalHero.belongings.misc != null) {
             internalHero.belongings.misc.activate(internalHero);
+            if (internalHero.belongings.misc.identifyOnStart) internalHero.belongings.misc.identify(false);
+        }
+
+        for (Item i : internalHero.wands()) {
+            if (i.identifyOnStart) i.identify(false);
+            ((Wand) i).charge(internalHero);
+        }
+        for (Item i : internalHero.potions()) {
+            if (i.identifyOnStart) i.identify(false);
+        }
+        for (Item i : internalHero.utilItems()) {
+            if (i.identifyOnStart) i.identify(false);
+        }
 
         if (!hpSet) {
             HP = HT = internalHero.HP = internalHero.HT = (int) (internalHero.HT * statsScale);
@@ -107,6 +150,9 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         belongings.ring = RandomItem.initRandomStatsForItemSubclasses(belongings.ring);
         belongings.artifact = RandomItem.initRandomStatsForItemSubclasses(belongings.artifact);
         belongings.misc = RandomItem.initRandomStatsForItemSubclasses(belongings.misc);
+        RandomItem.replaceRandomItemsInList(internalHero.wands());
+        RandomItem.replaceRandomItemsInList(internalHero.potions());
+        RandomItem.replaceRandomItemsInList(internalHero.utilItems());
     }
 
     @Override
@@ -197,6 +243,171 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         return ret;
     }
 
+    private Item nextUseMeleeAttackItem() {
+        for (Item item : internalHero.potions()) {
+            Potion potion = (Potion) item;
+
+            if (!potion.isIdentified()) continue;
+
+            Class<? extends Potion> c = potion.getClass();
+            if ((c == PotionOfHealing.class || c == PotionOfShielding.class) && internalHero.HP < 4 + internalHero.lvl && buff(Healing.class) == null) return potion;
+
+            if (c == PotionOfPurity.class && internalHero.buff(BlobImmunity.class) == null) {
+                HashSet<Class> immunities = new BlobImmunity().immunities();
+                for (Blob b : Dungeon.level.blobs.values()) {
+                    if (b != null && b.volume > 0 && b.cur[pos] > 0) {
+                        if (immunities.contains(b.getClass())) return potion;
+                    }
+                }
+                continue;
+            }
+            if (c == PotionOfCleansing.class && internalHero.buff(BlobImmunity.class) == null) {
+                //only use on self
+                for (Buff b : internalHero.buffs()) {
+                    if (b.type == Buff.buffType.NEGATIVE
+                            && !(b instanceof AllyBuff)
+                            && !(b instanceof LostInventory)) return potion;
+                }
+                continue;
+            }
+
+            if (potion instanceof Elixir) {
+                if (c == ElixirOfAquaticRejuvenation.class && buff(ElixirOfAquaticRejuvenation.AquaHealing.class) != null) return potion;
+                if (c == ElixirOfArcaneArmor.class && buff(ArcaneArmor.class) != null) return potion;
+                if (c == ElixirOfDragonsBlood.class && buff(FireImbue.class) != null) return potion;
+                if (c == ElixirOfIcyTouch.class && buff(FrostImbue.class) != null) return potion;
+                if (c == ElixirOfMight.class && buff(ElixirOfMight.HTBoost.class) != null) return potion;
+                if (c == ElixirOfToxicEssence.class && buff(ToxicImbue.class) != null) return potion;
+                if (c == ElixirOfIcyTouch.class && buff(FireImbue.class) != null) return potion;
+            }
+        }
+
+        if (hero().belongings.weapon == null) {
+            for (Item item : internalHero.wands()) {
+                if (!(item instanceof WandOfLightning) && useWandForAttack((Wand) item)) return item;
+            }
+        }
+
+        return null;
+    }
+
+    private Item nextUseDistanceAttackItem(int target, boolean justCheck) {
+
+        Ballistica shot = new Ballistica( pos, target, Ballistica.REAL_PROJECTILE, null);
+
+        if (justCheck) {
+            if (internalHero.belongings.weapon() instanceof SpiritBow && shot.collisionPos == target)
+                return internalHero.belongings.weapon();
+        }
+
+        if (potionCD <= 0 && shot.collisionPos == target) {
+            for (Item item : internalHero.potions()) {
+                Potion potion = (Potion) item;
+
+                if (!potion.isIdentified()) continue;
+
+                Class<? extends Potion> c = potion.getClass();
+                if (c == PotionOfStrength.class) return potion;
+                if (c == PotionOfExperience.class) return potion;
+                if (c == PotionOfHaste.class && internalHero.buff(Haste.class) == null) return potion;
+                if (c == PotionOfStamina.class && internalHero.buff(Stamina.class) == null) return potion;
+                if (c == PotionOfMindVision.class && internalHero.buff(MindVision.class) == null) return potion;
+                if (c == PotionOfMagicalSight.class && internalHero.buff(MagicalSight.class) == null) return potion;
+                if (c == PotionOfEarthenArmor.class && internalHero.buff(Barkskin.class) == null) return potion;
+                if ((c == PotionOfInvisibility.class || c == PotionOfShroudingFog.class) && internalHero.invisible <= 0) return potion;
+                if (c == PotionOfLevitation.class && internalHero.buff(Levitation.class) == null) return potion;//do not throw; maybe check for Chasms?
+
+                if (c == PotionOfStormClouds.class && !Dungeon.level.water[target]) return potion;
+
+                if (c == PotionOfFrost.class && enemy != null && !enemy.isImmune(Frost.class)) return potion;
+                if ((c == PotionOfLiquidFlame.class || c == PotionOfDragonsBreath.class) && enemy != null && !enemy.isImmune(Fire.class) && !Dungeon.level.water[target]) return potion;
+
+                if (enemy != null && (c == PotionOfToxicGas.class && !enemy.isImmune(ToxicGas.class) || c == PotionOfParalyticGas.class && !enemy.isImmune(Paralysis.class)
+                        || c == PotionOfCorrosiveGas.class && !enemy.isImmune(CorrosiveGas.class) || c == PotionOfSnapFreeze.class && !enemy.isImmune(Freezing.class))
+                        && shot.dist > 4
+                        /*&& new Ballistica(pos, target, Ballistica.STOP_BARRIER_BLOBS, null).dist*/) return potion;
+
+                if (potion instanceof AlchemicalCatalyst) return potion;//always throw
+
+                if (potion instanceof Brew && shot.dist > 3) {
+                    if (c == BlizzardBrew.class && enemy != null && !enemy.isImmune(Frost.class)) return potion;
+                    if (c == CausticBrew.class && enemy != null && !enemy.isImmune(Ooze.class) && !Dungeon.level.water[target]) return potion;
+                    if (c == InfernalBrew.class && enemy != null && !enemy.isImmune(Fire.class) && !Dungeon.level.water[target]) return potion;
+                    if (c == ShockingBrew.class && enemy != null && !enemy.isImmune(Electricity.class)) return potion;
+                }
+
+                if (c == ElixirOfHoneyedHealing.class && (internalHero.HP < 6 + internalHero.lvl/2 || enemy instanceof Bee && enemy.alignment == Alignment.ENEMY)) return potion;
+
+                //don't use: Mastery, DivineInspiration, Placeholder
+            }
+        }
+
+        if (utilItemCD <= 0) {
+            for (Item item : internalHero.utilItems()) {
+
+                if (item instanceof MissileWeapon) {
+                    if (item.throwPos(internalHero, target) != target) continue;
+
+                    if (enemy != null && item instanceof TippedDart) {
+                        if (item instanceof AdrenalineDart && enemy.isImmune(Cripple.class)) continue;
+                        if (item instanceof BlindingDart && enemy.isImmune(Blindness.class)) continue;
+                        if (item instanceof ChillingDart && enemy.isImmune(Chill.class)) continue;
+                        if (item instanceof HealingDart && enemy.isImmune(Healing.class)) continue;
+                        if (item instanceof IncendiaryDart && (enemy.isImmune(Fire.class) || Dungeon.level.water[target])) continue;
+                    }
+
+                    if (enemy == null || !enemy.isImmune(item.getClass())) return item;
+                }
+
+                if (item instanceof Bomb) {
+
+                    if (shot.dist <= 2) continue;
+
+                    if (item instanceof FakeTenguBomb && shot.dist < 4) continue;
+
+                    return item;
+
+                }
+
+            }
+        }
+
+        if (wandCD <= 0) {
+            for (Item item : internalHero.wands()) {
+                if (useWandForAttack((Wand) item)) return item;
+            }
+        }
+
+        if (internalHero.belongings.weapon() instanceof SpiritBow
+                && new Ballistica( pos, target, Ballistica.REAL_PROJECTILE, null).collisionPos == target)
+            return internalHero.belongings.weapon();
+
+        return null;
+    }
+
+    private boolean useWandForAttack(Wand wand) {
+        if (wand.curCharges > 0) {
+            final Ballistica wandShot = new Ballistica(pos, target, wand.collisionProperties(target), null);
+            if (target == pos || wandShot.collisionPos == pos) {
+                if (target != pos || !hero().hasTalent(Talent.SHIELD_BATTERY)) {
+                    return false;
+                }
+                if (buff(MagicImmune.class) != null) {
+                    return false;
+                }
+				return enemy == null || !enemy.isImmune(wand.getClass());
+            } else {
+                int distance = wand instanceof WandOfDisintegration ? ((WandOfDisintegration) wand).distance() : Integer.MAX_VALUE;
+                int indexTarget = wandShot.path.indexOf(target);
+                if (indexTarget >= 0 && indexTarget <= distance) {
+					return enemy == null || !enemy.isImmune(wand.getClass());
+                }
+            }
+
+        }
+        return false;
+    }
+
     @Override
     public boolean canSurpriseAttack() {
         updateInternalStats();
@@ -207,21 +418,24 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
     @Override
     protected boolean canAttack( Char enemy ) {
-        return super.canAttack(enemy)
-                || internalHero.belongings.weapon() instanceof SpiritBow
-                    && new Ballistica( pos, enemy.pos, Ballistica.REAL_PROJECTILE, null).collisionPos == enemy.pos;
+        return super.canAttack(enemy) || nextUseMeleeAttackItem() != null || nextUseDistanceAttackItem(enemy.pos, true) != null;
     }
 
     @Override
     protected boolean doAttack(Char enemy) {
-        if (Dungeon.level.adjacent( pos, enemy.pos ) || !(internalHero.belongings.weapon() instanceof SpiritBow)
-                || new Ballistica( pos, enemy.pos, Ballistica.REAL_PROJECTILE, null).collisionPos != enemy.pos) {
+        Item meleeAttackItem = nextUseMeleeAttackItem();
+        if (meleeAttackItem != null && !(meleeAttackItem instanceof Wand)) {
+            useMeleeAttackItem();
+			return sprite == null || (!sprite.visible && !enemy.sprite.visible);
+        }
+
+        if (Dungeon.level.adjacent( pos, enemy.pos ) || nextUseDistanceAttackItem(enemy.pos, true) == null) {
 
             return super.doAttack( enemy );
 
         } else {
 
-            shootMissile();
+            useDistanceAttackItem();
 
             if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
                 return false;
@@ -231,17 +445,95 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         }
     }
 
-    protected void shootMissile() {
+    protected void useMeleeAttackItem() {
+        Item item = nextUseMeleeAttackItem();
 
-        if (!(internalHero.belongings.weapon() instanceof SpiritBow)) {
-            return;
-        }
+        if (item == null) return;
 
         Invisibility.dispel(this);
 
-        SpiritBow bow = (SpiritBow) internalHero.belongings.weapon();
+        if (item instanceof Potion) {
+            Random.shuffleWithChances(internalHero.potions(), Item::quantity);
+            Potion potion = (Potion) (item.quantity() > 1 ? item.split(1) : item);
+            potion.doDrink(internalHero);
+            if (item.quantity() <= 1) internalHero.potions().remove(item);
+            return;
+        }
+    }
 
-        bow.knockArrow().cast(internalHero, target);
+    protected void useDistanceAttackItem() {
+
+        Item item = nextUseDistanceAttackItem(target, false);
+
+        if (item == null) return;
+
+        Invisibility.dispel(this);
+
+        if (item instanceof Potion) {
+
+            Potion potion = (Potion) (item.quantity() > 1 ? item.split(1) : item);
+
+            //throw:
+            if (potion instanceof Brew || potion instanceof PotionOfFrost || potion instanceof PotionOfLiquidFlame  || potion instanceof PotionOfDragonsBreath
+                    || potion instanceof PotionOfStormClouds || potion instanceof AlchemicalCatalyst
+                || potion instanceof ElixirOfHoneyedHealing && enemy instanceof Bee && enemy.alignment == Alignment.ENEMY) {
+                potion.cast(internalHero, target);
+            }
+
+            else if (potion instanceof PotionOfToxicGas || potion instanceof PotionOfParalyticGas || potion instanceof PotionOfCorrosiveGas || potion instanceof PotionOfSnapFreeze) {
+                Ballistica shot = new Ballistica( pos, target, Ballistica.REAL_PROJECTILE, null);
+                if (shot.dist <= 2) potion.cast(internalHero, target);
+                else potion.cast(internalHero, shot.path.get(shot.dist-2));
+            }
+
+            //drink:
+            else potion.doDrink(internalHero);
+
+            if (item.quantity() <= 1) internalHero.potions().remove(item);
+
+
+            if (internalHero.belongings.weapon == null) potionCD = 0;
+            else potionCD += Random.Float(5f, 8f);
+
+            Random.shuffleWithChances(internalHero.potions(), Item::quantity);
+            return;
+        }
+
+        if (item instanceof Bomb) {
+            Ballistica shot = new Ballistica( pos, target, Ballistica.REAL_PROJECTILE, null);
+            ((Bomb) item).shoot(internalHero, shot.path.get(shot.path.size()-2));
+
+            if (internalHero.belongings.weapon == null) utilItemCD = 0;
+            else utilItemCD += Random.Float(1.9f, 3.3f);
+
+            Random.shuffleWithChances(internalHero.utilItems(), Item::quantity);
+            return;
+        }
+
+        if (item instanceof MissileWeapon) {
+            item.cast(internalHero, target);
+
+            if (internalHero.belongings.weapon == null) utilItemCD = 0;
+            else utilItemCD += Random.Float(1.4f, 1.9f);
+
+            Random.shuffleWithChances(internalHero.utilItems(), Item::quantity);
+            return;
+        }
+
+        if (item instanceof Wand) {
+            ((Wand) item).performZap(target, hero());
+
+            if (internalHero.belongings.weapon == null) wandCD = 0;
+            else wandCD += Random.Float(1.2f, 1.7f);
+
+            Random.shuffleWithChances(internalHero.wands(), wand -> ((Wand) wand).curCharges);
+            return;
+        }
+
+        if (item instanceof SpiritBow) {//TODO tzz what if projecting enchantment???!!!
+            ((SpiritBow) item).knockArrow().cast(internalHero, target);
+            return;
+        }
     }
 
     @Override
@@ -373,11 +665,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     public void die(Object cause) {
         super.die(cause);
         if (directableAlly != null && !bindEquipment) {
-            if (weapon() != null) Dungeon.level.drop(weapon(), pos);
-            if (armor() != null) Dungeon.level.drop(armor(), pos);
-            if (internalHero.belongings.ring != null) Dungeon.level.drop(internalHero.belongings.ring, pos);
-            if (internalHero.belongings.artifact != null) Dungeon.level.drop(internalHero.belongings.artifact, pos);
-            if (internalHero.belongings.misc != null) Dungeon.level.drop(internalHero.belongings.misc, pos);
+            for (Item i : internalHero.belongings) Dungeon.level.drop(i, pos);
         }
     }
 
@@ -387,6 +675,10 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         super.spend(time);
         internalHero.superSpend(time);
         updateStats();
+
+        wandCD -= wandCD < 0 ? 0.1f : 1f;
+        potionCD -= potionCD < 0 ? 0.1f : 1f;
+        utilItemCD -= utilItemCD < 0 ? 0.1f : 1f;
     }
 
     public boolean killedMob(Object cause) {
@@ -457,12 +749,20 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     private static final String INTERNAL_HERO = "internal_hero";
     private static final String BIND_EQUIPMENT = "bind_equipment";
 
+    private static final String WANDS = "wands";
+    private static final String POTIONS = "potions";
+    private static final String UTIL_ITEMS = "util_items";
+
     @Override
     public void storeInBundle(Bundle bundle) {
         super.storeInBundle(bundle);
         bundle.put(INTERNAL_HERO, internalHero);
         bundle.put(BIND_EQUIPMENT, bindEquipment);
         if (directableAlly != null) directableAlly.store(bundle);
+
+        bundle.put(WANDS + "_cd", wandCD);
+        bundle.put(POTIONS + "_cd", potionCD);
+        bundle.put(UTIL_ITEMS + "_cd", utilItemCD);
     }
 
     @Override
@@ -476,6 +776,10 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         bindEquipment = bundle.getBoolean(BIND_EQUIPMENT);
         internalHero = (InternalHero) bundle.get(INTERNAL_HERO);
         internalHero.owner = this;
+
+        wandCD = bundle.getFloat(WANDS + "_cd");
+        potionCD = bundle.getFloat(POTIONS + "_cd");
+        utilItemCD = bundle.getFloat(UTIL_ITEMS + "_cd");
     }
 
     @Override
@@ -496,6 +800,11 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     }
 
     public static class InternalHero extends Hero {
+
+        public InternalHero() {
+            super();
+            belongings = new InternalHeroBelongings(this);
+        }
 
         private HeroMob owner;
 
@@ -575,6 +884,51 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             }
             return false;
         }
+
+        public List<Item> wands() {
+            return ((InternalHeroBelongings) belongings).wands.items;
+        }
+
+        public List<Item> potions() {
+            return ((InternalHeroBelongings) belongings).potions.items;
+        }
+
+        public List<Item> utilItems() {
+            return ((InternalHeroBelongings) belongings).utilItems.items;
+        }
+
+        public static class InternalHeroBelongings extends Belongings {
+            //Will occasionally use these items
+            public Bag wands;//need to call stopCharging() and charge()!
+            public Bag potions;
+            public Bag utilItems;
+
+            public InternalHeroBelongings(Hero owner) {
+                super(owner);
+                backpack.items.add(wands = new UnlimitedCapacityBag());//TODO tzz make backpack not collect these bags!
+                backpack.items.add(potions = new UnlimitedCapacityBag());
+                backpack.items.add(utilItems = new UnlimitedCapacityBag());
+            }
+
+            @Override
+            public void storeInBundle(Bundle bundle) {
+                super.storeInBundle(bundle);
+            }
+
+            @Override
+            public void restoreFromBundle(Bundle bundle) {
+                super.restoreFromBundle(bundle);
+                if (!backpack.items.isEmpty()) {
+                    wands = (Bag) backpack.items.get(0);
+                    potions = (Bag) backpack.items.get(1);
+                    utilItems = (Bag) backpack.items.get(2);
+                } else {
+                    backpack.items.add(wands = new UnlimitedCapacityBag());
+                    backpack.items.add(potions = new UnlimitedCapacityBag());
+                    backpack.items.add(utilItems = new UnlimitedCapacityBag());
+                }
+            }
+        }
     }
 
     public Window mobInfoWindow() {
@@ -586,6 +940,8 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
         private StyledItemSelector mobWeapon, mobArmor;
         private StyledItemSelector mobRing, mobArti, mobMisc;
+        private ItemContainer<Item> wands;
+        private ItemContainer<Item> utilItems;
         private RedButton direct;
 
         private final Component[] rectComps, linearComps;
@@ -766,6 +1122,113 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                 mobMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
                 add(mobMisc);
 
+                wands = new ItemContainerWithLabel<Item>(hero.hero().wands(), this, Messages.get(HeroMob.class, "wands"), false, 0, 3) {
+                    @Override
+                    protected boolean removeSlot(ItemContainer<Item>.Slot slot) {
+                        if (super.removeSlot(slot)) {
+                            Wand wand = ((Wand) slot.item());
+                            wand.stopCharging();
+                            maybeDetachItem(null, wand);
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    protected void showSelectWindow() {
+                        GameScene.selectItem(new WndBag.ItemSelector() {
+                            @Override
+                            public String textPrompt() {
+                                return Messages.get(HeroMob.class, "wands_prompt");
+                            }
+
+                            @Override
+                            public boolean itemSelectable(Item item) {
+                                return item instanceof Wand;
+                            }
+
+                            @Override
+                            public void onSelect(Item item) {
+                                if (item instanceof Wand) {
+                                    unequipItemFromDungeonHero(item);
+                                    ((Wand) item).charge(hero.hero());
+                                    addNewItem(item);
+                                }
+                            }
+                        });
+                    }
+                };
+                add(wands);
+
+                List<Item> utilItemList = new ArrayList<>(hero.hero().potions());
+                utilItemList.addAll(hero.hero().utilItems());
+                utilItems = new ItemContainerWithLabel<Item>(utilItemList, this, Messages.get(HeroMob.class, "utils")) {
+                    @Override
+                    protected boolean removeSlot(ItemContainer<Item>.Slot slot) {
+                        Item item = slot.item();
+                        if (item.quantity() <= 1) {
+                            if (!super.removeSlot(slot)) return false;
+                        } else {
+                            item = item.split(1);
+                            slot.item(slot.item());
+                        }
+                        maybeDetachItem(null, item);
+                        return true;
+                    }
+
+                    @Override
+                    protected void doAddItem(Item item) {
+                        if (item.stackable) {
+                            for (Item i : itemList) {
+                                if (item.isSimilar( i )) {
+                                    i.merge( item );
+                                    return;
+                                }
+                            }
+                        }
+                        super.doAddItem(item);
+                    }
+
+                    @Override
+                    public synchronized void destroy() {
+                        super.destroy();
+                        hero.hero().potions().clear();
+                        hero.hero().utilItems().clear();
+                        for (Item i : utilItemList) {
+                            if (i instanceof Potion) hero.hero().potions().add(((Potion) i));
+                            else hero.hero().utilItems().add(i);
+                        }
+                    }
+
+                    protected void showSelectWindow() {
+                        GameScene.selectItem(new WndBag.ItemSelector() {
+                            @Override
+                            public String textPrompt() {
+                                return Messages.get(HeroMob.class, "util_prompt");
+                            }
+
+                            @Override
+                            public boolean itemSelectable(Item item) {
+                                return item instanceof Potion && !(item instanceof PotionOfMastery) && !(item instanceof PotionOfDivineInspiration)
+                                        || item instanceof MissileWeapon || item instanceof Bomb;
+                            }
+
+                            @Override
+                            public void onSelect(Item item) {
+                                if (itemSelectable(item)) {
+                                    if (item.quantity() == 1) unequipItemFromDungeonHero(item);
+                                    else {
+                                        item = item.split(1);
+                                        QuickSlotButton.refresh();
+                                    }
+                                    if (item instanceof MissileWeapon) ((MissileWeapon) item).resetParent();
+                                    addNewItem(item);
+                                }
+                            }
+                        });
+                    }
+                };
+                add(utilItems);
+
             }
 
             direct = new RedButton(Messages.get(DriedRose.class, "ac_direct")) {
@@ -793,7 +1256,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             };
 
             linearComps = new Component[] {
-                    direct
+                    wands, utilItems, direct
             };
         }
 
@@ -831,6 +1294,8 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             if (newItem != item && item != null) {
                 if (!item.doPickUp(Dungeon.hero)) {
                     Dungeon.level.drop(item, Dungeon.hero.pos);
+                } else {
+                    QuickSlotButton.refresh();
                 }
             }
         }
@@ -909,11 +1374,8 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                         return;
                     }
 
-                    if (item instanceof EquipableItem && item.isEquipped(Dungeon.hero)) {
-                        ((EquipableItem) item).doUnequip(Dungeon.hero, false, false);
-                    } else {
-                        item.detach(Dungeon.hero.belongings.backpack);
-                    }
+                    unequipItemFromDungeonHero(item);
+
                     actuallyOnSelectAfterConditions(item);
 
                 }
@@ -934,6 +1396,15 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                 selector.onSelect(null);
                 return true;
             }
+        }
+
+        static void unequipItemFromDungeonHero(Item item) {
+            if (item instanceof EquipableItem && item.isEquipped(Dungeon.hero)) {
+                ((EquipableItem) item).doUnequip(Dungeon.hero, false, false);
+            } else {
+                item.detach(Dungeon.hero.belongings.backpack);
+            }
+            QuickSlotButton.refresh();
         }
     }
 

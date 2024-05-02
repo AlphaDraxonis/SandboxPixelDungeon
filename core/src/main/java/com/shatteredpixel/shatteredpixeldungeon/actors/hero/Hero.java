@@ -1915,6 +1915,14 @@ public class Hero extends Char {
 			
 			Badges.validateLevelReached();
 		}
+
+		if (this == Dungeon.hero) {
+			for (Mob m : Dungeon.level.mobs) {
+				if (m instanceof HeroMob && m.alignment == Alignment.ALLY && m.isAlive()) {
+					((HeroMob) m).earnExp(Random.Int(exp/2, (int) Math.ceil(exp/2f)+1), getClass());
+				}
+			}
+		}
 	}
 
 	public void setLvl(int lvl) {

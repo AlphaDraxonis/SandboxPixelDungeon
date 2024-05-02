@@ -24,15 +24,19 @@ public class ItemContainerWithLabel<T extends Item> extends ItemContainer<T> {
     }
 
     public ItemContainerWithLabel(List<T> itemList, DefaultEditComp<?> editComp, boolean reverseUiOrder, String label) {
-        super(itemList, editComp, reverseUiOrder);
+        this(itemList, editComp, label, reverseUiOrder, 0, Integer.MAX_VALUE);
+    }
+
+	public ItemContainerWithLabel(List<T> itemList, DefaultEditComp<?> editComp, String label, boolean reversceUiOrder, int minSlots, int maxSlots) {
+		super(itemList, editComp, reversceUiOrder, minSlots, maxSlots);
 
         this.label = PixelScene.renderTextBlock(label, 9);
         add(this.label);
         startColumnPos = this.label.width() + GAP;
-    }
+	}
 
 
-    @Override
+	@Override
     protected void layout() {
         float posY = y;
         float posX = x + GAP;

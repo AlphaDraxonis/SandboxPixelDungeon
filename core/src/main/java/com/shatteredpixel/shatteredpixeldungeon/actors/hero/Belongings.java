@@ -387,7 +387,7 @@ public class Belongings implements Iterable<Item> {
 		return new ItemIterator();
 	}
 	
-	private class ItemIterator implements Iterator<Item> {
+	protected class ItemIterator implements Iterator<Item> {
 
 		private int index = 0;
 		

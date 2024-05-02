@@ -54,11 +54,6 @@ public class FistSelector extends ItemSelectorList<MobItem> {
             }
 
             @Override
-            public Class<? extends Bag> preferredBag() {
-                return Mobs.bag.getClass();
-            }
-
-            @Override
             public List<Bag> getBags() {
                 return Collections.singletonList(Mobs.bag);
             }

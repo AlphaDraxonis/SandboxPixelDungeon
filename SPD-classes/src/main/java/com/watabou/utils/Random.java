@@ -23,11 +23,7 @@ package com.watabou.utils;
 
 import com.watabou.noosa.Game;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Random {
 
@@ -205,6 +201,31 @@ public class Random {
 
 	public synchronized static<T> void shuffle( List<?extends T> list){
 		Collections.shuffle(list, generators.peek());
+	}
+
+	public static <T> void shuffleWithChances(List<T> list, IntFunction<T> getChance) {
+		float totalProb = 0;
+		for (T obj : list) {
+			totalProb += getChance.apply(obj);
+		}
+
+		float[] relativeProbs = new float[list.size()];
+		int i = 0;
+		for (T obj : list) {
+			relativeProbs[i++] = getChance.apply(obj) / totalProb;
+		}
+
+		for (i = 0; i < relativeProbs.length; i++) {
+			float rand = Float();
+			double cumulativeProbability = 0.0;
+			for (int j = 0; j < relativeProbs.length; j++) {
+				cumulativeProbability += relativeProbs[j];
+				if (rand < cumulativeProbability) {
+					Collections.swap(list, i, j);
+					break;
+				}
+			}
+		}
 	}
 	
 	public static<T> void shuffle( T[] array ) {

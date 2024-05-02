@@ -90,6 +90,11 @@ public class Bomb extends Item {
 		return true;
 	}
 
+	public final void shoot(Hero user, int target) {
+		lightingFuse = true;
+		cast(user, target);
+	}
+
 	@Override
 	public ArrayList<String> actions(Hero hero) {
 		ArrayList<String> actions = super.actions( hero );

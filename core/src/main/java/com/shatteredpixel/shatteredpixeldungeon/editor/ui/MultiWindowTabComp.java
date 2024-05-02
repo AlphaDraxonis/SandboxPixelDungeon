@@ -101,12 +101,20 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
         add(subMenuComp);
 
+        if (setSubMenuContentAlignmentV >= 0) {
+            subMenuComp.contentAlignmentV = setSubMenuContentAlignmentV;
+            setSubMenuContentAlignmentV = -1;
+        }
+
         layout();
     }
 
+    private float setSubMenuContentAlignmentV = -1;
+
     //Update layout manually!!!
     public void setSubMenuContentAlignmentV(float alignment) {
-        subMenuComp.contentAlignmentV = alignment;
+        if (subMenuComp == null) setSubMenuContentAlignmentV = alignment;
+        else subMenuComp.contentAlignmentV = alignment;
     }
 
     public void closeCurrentSubMenu() {

@@ -733,7 +733,7 @@ public class Item implements Bundlable, Customizable, Copyable<Item> {
 		throwSound();
 
 		Char enemy = Actor.findChar( cell );
-		QuickSlotButton.target(enemy);
+		if (user == Dungeon.hero) QuickSlotButton.target(enemy);
 		
 		final float delay = castDelay(user, dst);
 

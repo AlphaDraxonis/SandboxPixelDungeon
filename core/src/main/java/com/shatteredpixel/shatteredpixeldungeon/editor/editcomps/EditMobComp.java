@@ -6,7 +6,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -37,6 +36,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfDivineInspiration;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfMastery;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
@@ -75,6 +78,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
     private StyledItemSelector mobWeapon, mobArmor, thiefItem, tormentedSpiritPrize;
     private StyledItemSelector mobRing, mobArti, mobMisc;
     private StyledCheckBox heroBindEquipment;
+    private ItemContainer<Item> heroWands, heroUtilityItems;
     private LotusLevelSpinner lotusLevelSpinner;
     private StyledSpinner sheepLifespan;
     private QuestSpinner questSpinner;
@@ -164,7 +168,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             add(mobArmor);
         }
         if (mob instanceof HeroMob) {
-            Hero hero = ((HeroMob) mob).hero();
+            HeroMob.InternalHero hero = ((HeroMob) mob).hero();
 
             mobRing = new StyledItemSelector(Messages.get(HeroSettings.class, "ring"),
                     Ring.class, hero.belongings.ring, ItemSelector.NullTypeSelector.DISABLED) {
@@ -235,6 +239,83 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             heroBindEquipment.addChangeListener(v -> ((HeroMob) mob).bindEquipment = v);
             heroBindEquipment.visible = heroBindEquipment.active = obj.playerAlignment == Mob.FRIENDLY_ALIGNMENT;
             add(heroBindEquipment);
+
+            heroWands = new ItemContainerWithLabel<Item>(hero.wands(), this, Messages.get(HeroMob.class, "wands"), false, 0, 3) {
+
+                @Override
+                public boolean itemSelectable(Item item) {
+                    if (item instanceof ItemItem) item = ((ItemItem) item).item();
+                    return item instanceof Wand;
+                }
+
+                @Override
+                protected void doAddItem(Item item) {
+                    super.doAddItem(item);
+                    if (Dungeon.isLevelTesting()) {
+                        ((Wand) item).charge(hero);
+                    }
+                }
+
+                @Override
+                protected boolean removeSlot(ItemContainer<Item>.Slot slot) {
+                    if (super.removeSlot(slot)) {
+                        if (Dungeon.isLevelTesting()) {
+                            Wand wand = ((Wand) slot.item());
+                            wand.stopCharging();
+                        }
+                        return true;
+                    }
+                    return false;
+                }
+
+                protected void showSelectWindow() {
+                    ItemSelector.showSelectWindow(this, ItemSelector.NullTypeSelector.DISABLED, Wand.class, Items.bag, new HashSet<>(0));
+                }
+            };
+            add(heroWands);
+
+            List<Item> utilItemList = new ArrayList<>(hero.potions());
+            utilItemList.addAll(hero.utilItems());
+            heroUtilityItems = new ItemContainerWithLabel<Item>(utilItemList, this, Messages.get(HeroMob.class, "utils")) {
+                @Override
+                protected void doAddItem(Item item) {
+                    if (item.stackable) {
+                        for (Item i : itemList) {
+                            if (item.isSimilar( i )) {
+                                i.merge( item );
+                                return;
+                            }
+                        }
+                    }
+                    if (item instanceof MissileWeapon) ((MissileWeapon) item).resetParent();
+                    super.doAddItem(item);
+                }
+
+                @Override
+                protected void onSlotNumChange() {
+                    if (heroUtilityItems != null) {
+                        updateObj();
+                    }
+                }
+
+                @Override
+                public synchronized void destroy() {
+                    super.destroy();
+                    hero.potions().clear();
+                    hero.utilItems().clear();
+                    for (Item i : utilItemList) {
+                        if (i instanceof Potion) hero.potions().add(((Potion) i));
+                        else hero.utilItems().add(i);
+                    }
+                }
+
+                @Override
+                public boolean itemSelectable(Item item) {
+                    return item instanceof Potion && !(item instanceof PotionOfMastery) && !(item instanceof PotionOfDivineInspiration)
+                            || item instanceof MissileWeapon || item instanceof Bomb;
+                }
+            };
+            add(heroUtilityItems);
         }
 
         if (mob instanceof Thief) {
@@ -688,7 +769,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
                 List<BuffItem> asBuffItems = new ArrayList<>();
                 for (Buff b : mob.buffs()) {
-                    asBuffItems.add(new BuffItem(b));
+                    if (b.icon() != BuffIndicator.NONE) asBuffItems.add(new BuffItem(b));
                 }
                 buffs = new BuffListContainer(asBuffItems, EditMobComp.this, label("buffs")) {
                     @Override
@@ -808,6 +889,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 summonMobs,
                 yogNormalFists, yogChallengeFists,
                 blacksmithQuestRewards,
+                heroWands, heroUtilityItems,
                 buffs, test
         };
 
@@ -1041,15 +1123,21 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             if (((Pylon) a).alwaysActive != ((Pylon) b).alwaysActive) return false;
         }
         if (a instanceof HeroMob) {
-            Hero h1 = ((HeroMob) a).hero();
-            Hero h2 = ((HeroMob) b).hero();
+            HeroMob.InternalHero h1 = ((HeroMob) a).hero();
+            HeroMob.InternalHero h2 = ((HeroMob) b).hero();
             if (h1.heroClass != h2.heroClass) return false;
             if (h1.subClass != h2.subClass) return false;
+            if (h1.lvl != h2.lvl) return false;
+            if (h1.STR != h2.STR) return false;
+            if (!EditItemComp.areEqual(h1.belongings.weapon, h2.belongings.weapon)) return false;
+            if (!EditItemComp.areEqual(h1.belongings.armor, h2.belongings.armor)) return false;
             if (!EditItemComp.areEqual(h1.belongings.ring, h2.belongings.ring)) return false;
             if (!EditItemComp.areEqual(h1.belongings.artifact, h2.belongings.artifact)) return false;
             if (!EditItemComp.areEqual(h1.belongings.misc, h2.belongings.misc)) return false;
-            if (h1.lvl != h2.lvl) return false;
-            if (h1.STR != h2.STR) return false;
+
+            if (!EditItemComp.isItemListEqual(h1.wands(), h2.wands())) return false;
+            if (!EditItemComp.isItemListEqual(h1.potions(), h2.potions())) return false;
+            if (!EditItemComp.isItemListEqual(h1.utilItems(), h2.utilItems())) return false;
         }
 
         if (a instanceof LuaMob) {
@@ -1063,7 +1151,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         int sizeA = a == null ? 0 : a.size();
         int sizeB = b == null ? 0 : b.size();
         if (sizeA != sizeB) return false;
-        if (a == null) return true;
+        if (a == null || b == null) return true;
         int index = 0;
         for (Mob m : a) {
             if (!EditMobComp.areEqual(m, b.get(index))) return false;

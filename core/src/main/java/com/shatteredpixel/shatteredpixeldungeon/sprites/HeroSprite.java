@@ -189,6 +189,13 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 
 		private Animation fly;
 
+		public HeroMobSprite() {
+			//for reflection
+			texture(HeroClass.WARRIOR.spritesheet());
+			updateArmor(new Hero());
+			idle();
+		}
+
 		public HeroMobSprite(Hero hero) {
 			super();
 
@@ -201,22 +208,30 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 
 		public void updateHeroClass(Hero hero) {
 
-			Animation play;
-			if (curAnim == idle) play = null;
-			else if (curAnim == run) play = run;
-			else if (curAnim == die) play = die;
-			else if (curAnim == attack) play = attack;
-			else if (curAnim == zap) play = zap;
-			else if (curAnim == operate) play = operate;
-			else if (curAnim == fly) play = fly;
-			else play = null;
+			int play;
+			if (curAnim == idle) play = 0;
+			else if (curAnim == run) play = 1;
+			else if (curAnim == die) play = 2;
+			else if (curAnim == attack) play = 3;
+			else if (curAnim == zap) play = 4;
+			else if (curAnim == operate) play = 5;
+			else if (curAnim == fly) play = 6;
+			else play = 0;
 
 			texture( hero.heroClass.spritesheet() );
 			updateArmor(hero);
 
 			if (hero.isAlive()) {
-				if (play == null) idle();
-				else play(play);
+				switch (play) {
+					default:
+					case 0: idle(); break;
+					case 1: play(run); break;
+					case 2: play(die); break;
+					case 3: play(attack); break;
+					case 4: play(zap); break;
+					case 5: play(operate); break;
+					case 6: play(fly); break;
+				}
 			}
 			else die();
 		}

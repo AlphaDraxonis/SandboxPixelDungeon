@@ -124,7 +124,7 @@ public class WandOfDisintegration extends DamageWand {
 		//no direct effect, see magesStaff.reachfactor
 	}
 
-	private int distance() {
+	public int distance() {
 		return buffedLvl()*2 + 6;
 	}
 	

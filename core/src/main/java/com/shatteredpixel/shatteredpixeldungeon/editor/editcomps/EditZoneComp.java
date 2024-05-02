@@ -221,8 +221,10 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         List<BuffItem> asBuffItems = new ArrayList<>();
         for (Class<? extends Buff> b : zone.heroBuffs) {
             Buff buff = Reflection.newInstance(b);
-            buff.zoneBuff = buff.permanent = true;
-            asBuffItems.add(new BuffItem(buff));
+            if (buff.icon() != BuffIndicator.NONE) {
+                buff.zoneBuff = buff.permanent = true;
+                asBuffItems.add(new BuffItem(buff));
+             }
         }
         heroBuffs = new BuffListContainer(asBuffItems, EditZoneComp.this, Messages.get(EditZoneComp.class, "hero_buffs")) {
             @Override
@@ -257,8 +259,10 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         asBuffItems = new ArrayList<>();
         for (Class<? extends Buff> b : zone.mobBuffs) {
             Buff buff = Reflection.newInstance(b);
-            buff.zoneBuff = buff.permanent = true;
-            asBuffItems.add(new BuffItem(buff));
+            if (buff.icon() != BuffIndicator.NONE) {
+                buff.zoneBuff = buff.permanent = true;
+                asBuffItems.add(new BuffItem(buff));
+            }
         }
         mobBuffs = new BuffListContainer(asBuffItems, EditZoneComp.this, Messages.get(EditZoneComp.class, "mob_buffs")) {
             @Override

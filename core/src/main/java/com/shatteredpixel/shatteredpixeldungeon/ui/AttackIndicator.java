@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -148,9 +149,12 @@ public class AttackIndicator extends Tag {
 			sprite.killAndErase();
 			sprite = null;
 		}
-		
-		sprite = Reflection.newInstance(lastTarget.spriteClass);
-		if (sprite == null) sprite = lastTarget.sprite();
+
+		if (lastTarget instanceof HeroMob) sprite = lastTarget.sprite();
+		else {
+			sprite = Reflection.newInstance(lastTarget.spriteClass);
+			if (sprite == null) sprite = lastTarget.sprite();
+		}
 		active = true;
 		sprite.linkVisuals(lastTarget);
 		sprite.idle();

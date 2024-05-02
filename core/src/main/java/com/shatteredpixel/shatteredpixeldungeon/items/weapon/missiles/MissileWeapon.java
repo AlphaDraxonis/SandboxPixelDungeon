@@ -210,6 +210,11 @@ abstract public class MissileWeapon extends Weapon {
 		super.doThrow(hero);
 	}
 
+	public final void shoot(Hero hero, int cell) {
+		curUser = hero;
+		onThrow(cell);
+	}
+
 	@Override
 	protected void onThrow( int cell ) {
 		Char enemy = Actor.findChar( cell );
@@ -242,12 +247,12 @@ abstract public class MissileWeapon extends Weapon {
 
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
-		if (attacker == Dungeon.hero && Random.Int(3) < Dungeon.hero.pointsInTalent(Talent.SHARED_ENCHANTMENT)){
-			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.hero)){
+		if (attacker instanceof Hero && Random.Int(3) < ((Hero) attacker).pointsInTalent(Talent.SHARED_ENCHANTMENT)){
+			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(attacker)){
 				//do nothing
 			} else {
-				SpiritBow bow = Dungeon.hero.belongings.getItem(SpiritBow.class);
-				if (bow != null && bow.enchantment != null && Dungeon.hero.buff(MagicImmune.class) == null) {
+				SpiritBow bow = ((Hero) attacker).belongings.getItem(SpiritBow.class);
+				if (bow != null && bow.enchantment != null && attacker.buff(MagicImmune.class) == null) {
 					damage = bow.enchantment.proc(this, attacker, defender, damage);
 				}
 			}
@@ -388,6 +393,10 @@ abstract public class MissileWeapon extends Weapon {
 	public void reset() {
 		super.reset();
 		durability = MAX_DURABILITY;
+	}
+
+	public final void resetParent() {
+		parent = null;
 	}
 	
 	@Override
