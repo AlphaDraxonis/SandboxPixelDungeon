@@ -470,6 +470,7 @@ public class SpiritBow extends Weapon {
 					if (Actor.findChar(shotPos) == null) {
 						RevealedArea a = Buff.affect(user, RevealedArea.class, 5 * user.pointsInTalent(Talent.SEER_SHOT));
 						a.level = Dungeon.levelName;
+						a.branch = Dungeon.branch;
 						a.pos = shotPos;
 						Buff.affect(user, Talent.SeerShotCooldown.class, 20f);
 					}
