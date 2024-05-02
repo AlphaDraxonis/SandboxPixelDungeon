@@ -27,11 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RipperDemon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogDzewa;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
@@ -358,7 +354,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 				UnarmedAbilityTracker tracker = Buff.affect(hero, UnarmedAbilityTracker.class);
 				if (!hero.canAttack(enemy)){
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_target_range"));
 					tracker.detach();
 					if (hero.buff(FlurryEmpowerTracker.class) != null){
 						hero.buff(FlurryEmpowerTracker.class).detach();
@@ -495,21 +491,24 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 				if (Dungeon.hero.rooted){
 					PixelScene.shake( 1, 1f );
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_target_range"));
 					return;
 				}
 
 				if (Dungeon.level.distance(hero.pos, target) > range){
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_target_range"));
 					return;
+				}
+
+				if (Actor.findChar(target) != null){
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_occupied"));
 				}
 
 				Ballistica dash = new Ballistica(hero.pos, target, Ballistica.PROJECTILE, hero);
 
 				if (!dash.collisionPos.equals(target)
-						|| Actor.findChar(target) != null
 						|| (Dungeon.level.solid[target] && !Dungeon.level.isPassable(target, hero))){
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_target_range"));
 					return;
 				}
 
@@ -574,7 +573,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 				UnarmedAbilityTracker tracker = Buff.affect(hero, UnarmedAbilityTracker.class);
 				if (!hero.canAttack(enemy)){
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
+					GLog.w(Messages.get(MeleeWeapon.class, "ability_target_range"));
 					tracker.detach();
 					return;
 				}

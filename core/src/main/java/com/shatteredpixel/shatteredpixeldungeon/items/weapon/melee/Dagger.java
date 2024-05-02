@@ -106,15 +106,15 @@ public class Dagger extends MeleeWeapon {
 			return;
 		}
 
-		if (Actor.findChar(target) != null || !Dungeon.level.heroFOV[target] || hero.rooted) {
-			GLog.w(Messages.get(wep, "ability_bad_position"));
-			if (Dungeon.hero.rooted) PixelScene.shake( 1, 1f );
+		PathFinder.buildDistanceMap(hero.pos, Dungeon.level.getPassableAndAvoidVar(hero), maxDist);
+		if (PathFinder.distance[target] == Integer.MAX_VALUE || !Dungeon.level.heroFOV[target] || hero.rooted) {
+			GLog.w(Messages.get(wep, "ability_target_range"));
+			if (hero.rooted) PixelScene.shake( 1, 1f );
 			return;
 		}
 
-		PathFinder.buildDistanceMap(Dungeon.hero.pos, Dungeon.level.getPassableAndAvoidVar(hero), maxDist);
-		if (PathFinder.distance[target] == Integer.MAX_VALUE) {
-			GLog.w(Messages.get(wep, "ability_bad_position"));
+		if (Actor.findChar(target) != null) {
+			GLog.w(Messages.get(wep, "ability_occupied"));
 			return;
 		}
 
