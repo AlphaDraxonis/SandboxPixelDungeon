@@ -168,10 +168,10 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 
 		boolean validPos;
 		int tries = level.length();
-		//Do not spawn wandmaker on the entrance, a trap, or in front of a door.
+		//Do not spawn wandmaker on the entrance, a trap, or on bad terrain.
 		do {
 			validPos = true;
-			pos = level.pointToCell(roomEntrance.random());
+			pos = level.pointToCell(roomEntrance.random((roomEntrance.width() > 6 && roomEntrance.height() > 6) ? 2 : 1));
 			if (pos == level.entrance()) {
 				validPos = false;
 			}
@@ -180,7 +180,9 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 					validPos = false;
 				}
 			}
-			if (level.traps.get(pos) != null || level.map[pos] == Terrain.CHASM) {
+			if (level.traps.get(pos) != null
+					|| !level.passable[pos]
+					|| level.map[pos] == Terrain.EMPTY_SP) {
 				validPos = false;
 			}
 			tries--;
