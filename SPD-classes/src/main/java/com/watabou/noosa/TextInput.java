@@ -253,20 +253,8 @@ public class TextInput extends Component {
 		}
 	}
 
-	public static Function<Gizmo, Boolean> checkIfGizmoIsInstanceofWindow;
 	private boolean isInTopWindow() {
-		Gizmo ownWindow = this;
-		do {
-			ownWindow = ownWindow.parent;
-		} while (ownWindow != null && !checkIfGizmoIsInstanceofWindow.apply(ownWindow));
-		if (!checkIfGizmoIsInstanceofWindow.apply(ownWindow)) return true;
-		int startIndex = Game.scene().members.indexOf(ownWindow) + 1;
-		int memberCount = Game.scene().members.size();
-		for (int i = startIndex; i < memberCount; i++) {
-			Gizmo g = Game.scene().members.get(i);
-			if (checkIfGizmoIsInstanceofWindow.apply(g) && g != ownWindow) return false;
-		}
-		return true;
+		return ScrollArea.isInTopWindow(this);
 	}
 
 	public static TextInput getWithFocus() {

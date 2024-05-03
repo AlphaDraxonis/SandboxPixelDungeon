@@ -341,6 +341,5 @@ public class ScrollPane extends Component {
         private void resetCurrentEvent() {
             controller.curEvent = null;
         }
-
     }
 }

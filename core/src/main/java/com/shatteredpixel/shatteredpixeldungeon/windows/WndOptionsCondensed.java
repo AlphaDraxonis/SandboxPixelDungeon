@@ -40,7 +40,7 @@ public class WndOptionsCondensed extends WndOptions {
 	}
 
 	@Override
-	protected void layoutBody(String... options) {
+	protected void initBody(String... options) {
 
 		float pos = 0;
 

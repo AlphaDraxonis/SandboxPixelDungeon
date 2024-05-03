@@ -22,12 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -58,7 +53,7 @@ public class WndOptions extends Window {
 		tfMessage = PixelScene.renderTextBlock( message, 6 );
 		add(tfMessage);
 
-		layoutBody(options);
+		initBody(options);
 	}
 	
 	public WndOptions( String title, String message, String... options ) {
@@ -77,10 +72,10 @@ public class WndOptions extends Window {
 		tfMessage = PixelScene.renderTextBlock( message, 6 );
 		add(tfMessage);
 		
-		layoutBody(options);
+		initBody(options);
 	}
 
-	protected void layoutBody(String... options){
+	protected void initBody(String... options){
 
 		content = new Component();
 
@@ -158,7 +153,13 @@ public class WndOptions extends Window {
 
 	}
 
-	protected boolean enabled( int index ){
+	@Override
+	public void offset(int xOffset, int yOffset) {
+		super.offset(xOffset, yOffset);
+		layout(width);
+	}
+
+	protected boolean enabled( int index ) {
 		return true;
 	}
 	

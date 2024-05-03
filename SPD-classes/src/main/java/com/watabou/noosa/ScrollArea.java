@@ -22,6 +22,7 @@
 package com.watabou.noosa;
 
 import com.watabou.input.ScrollEvent;
+import com.watabou.utils.Function;
 import com.watabou.utils.Signal;
 
 //pointer area with additional support for detecting scrolling events
@@ -61,5 +62,26 @@ public class ScrollArea extends PointerArea {
 	public void destroy() {
 		super.destroy();
 		ScrollEvent.removeScrollListener( scrollListener );
+	}
+
+	@Override
+	public boolean isActive() {
+		return super.isActive() && isInTopWindow(this);
+	}
+
+	public static Function<Gizmo, Boolean> checkIfGizmoIsInstanceofWindow;
+	public static boolean isInTopWindow(Gizmo gizmo) {
+		Gizmo ownWindow = gizmo;
+		do {
+			ownWindow = ownWindow.parent;
+		} while (ownWindow != null && !checkIfGizmoIsInstanceofWindow.apply(ownWindow));
+		if (!checkIfGizmoIsInstanceofWindow.apply(ownWindow)) return true;
+		int startIndex = Game.scene().members.indexOf(ownWindow) + 1;
+		int memberCount = Game.scene().members.size();
+		for (int i = startIndex; i < memberCount; i++) {
+			Gizmo g = Game.scene().members.get(i);
+			if (g != null && checkIfGizmoIsInstanceofWindow.apply(g) && g != ownWindow) return false;
+		}
+		return startIndex < memberCount;
 	}
 }

@@ -140,6 +140,13 @@ public class WndTitledMessage extends Window {
         resize((int) Math.ceil(content.width()), (int) Math.ceil(content.height()));
     }
 
+    @Override
+    public void offset(int xOffset, int yOffset) {
+        super.offset(xOffset, yOffset);
+        content.layout();
+        resize((int) Math.ceil(content.width()), (int) Math.ceil(content.height()));
+    }
+
     protected static class WindowContent extends Component {
 
         protected Component titlebar;
