@@ -179,7 +179,7 @@ public class Armor extends EquipableItem {
 			((HeroSprite)hero.sprite).updateArmor(hero);
 			activate(hero);
 			Talent.onItemEquipped(hero, this);
-			hero.spendAndNext( time2equip( hero ) );
+			hero.spendAndNext( timeToEquip( hero ) );
 			return true;
 			
 		} else {
@@ -245,8 +245,8 @@ public class Armor extends EquipableItem {
 	}
 
 	@Override
-	protected float time2equip( Hero hero ) {
-		return 2 / hero.speed();
+	protected float timeToEquip(Hero hero ) {
+		return 2f / hero.speed();
 	}
 
 	@Override
