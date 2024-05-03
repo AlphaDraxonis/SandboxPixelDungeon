@@ -135,8 +135,9 @@ public class WndTitledMessage extends Window {
         PixelScene.align(titlebar);
     }
 
-    public void setHighligtingEnabled(boolean enableHighligthing){
+    public void setHighligtingEnabled(boolean enableHighligthing) {
         content.setHighligtingEnabled(enableHighligthing);
+        resize((int) Math.ceil(content.width()), (int) Math.ceil(content.height()));
     }
 
     protected static class WindowContent extends Component {
@@ -196,6 +197,7 @@ public class WndTitledMessage extends Window {
 
         public void setHighligtingEnabled(boolean enableHighligthing){
             text.setHighlighting(enableHighligthing);
+            layout();
         }
 
     }

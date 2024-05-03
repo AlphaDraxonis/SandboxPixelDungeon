@@ -9,6 +9,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Referen
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.watabou.noosa.Image;
@@ -141,8 +142,7 @@ public class ReferenceTable extends MultiWindowTabComp {
         private final Reference reference;
 
         public ReferenceListItem(Reference reference) {
-            super(reference.createIcon(), reference.getType().getSimpleName() + ": " + "_" + reference.getName() + "_");
-//            super(reference.createIcon(), reference.getType().getSimpleName() + ": " + RenderedTextBlock.MARKER + reference.getName() + RenderedTextBlock.MARKER);
+            super(reference.createIcon(), reference.getType().getSimpleName() + ": " + RenderedTextBlock.MARKER + reference.getName() + RenderedTextBlock.MARKER);
             label.setHighlighting(false);
             this.reference = reference;
         }

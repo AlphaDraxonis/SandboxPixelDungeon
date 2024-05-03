@@ -336,7 +336,7 @@ public enum Tiles {
                 identifier.setHighlightingEnabled(false);
                 add(identifier);
             } else {
-                info = PixelScene.renderTextBlock(Messages.get(WndCreateCustomTile.class, "identifier_label") + " " + customTile.identifier,6);
+                info = PixelScene.renderTextBlock(Messages.get(WndCreateCustomTile.class, "identifier_label", customTile.identifier),6);
                 info.setHighlighting(false);
                 add(info);
             }

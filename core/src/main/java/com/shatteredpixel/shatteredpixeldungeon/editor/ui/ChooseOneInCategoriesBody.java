@@ -1,18 +1,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Reflection;
@@ -224,7 +217,7 @@ public abstract class ChooseOneInCategoriesBody extends Component {
         protected StyledButton btn;
         private IconButton infoBtn;
 
-        private String name, info;
+        protected final String name, info;
         private Image icon;
 
         public BtnRow(String name, String info) {
@@ -297,8 +290,7 @@ public abstract class ChooseOneInCategoriesBody extends Component {
                     img.copy(icon);
                 }
             } else img = Icons.get(Icons.INFO);
-            if(Game.scene() instanceof EditorScene) EditorScene.show(new WndTitledMessage(img, name, info()));
-            else Game.scene().addToFront(new WndTitledMessage(img, name, info()));
+            DungeonScene.show(new WndTitledMessage(img, name, info()));
         }
 
         @Override

@@ -37,7 +37,7 @@ public class RenderedTextBlock extends Component {
 
 	private static final RenderedText SPACE = new RenderedText();
 	private static final RenderedText NEWLINE = new RenderedText();
-	
+
 	protected String text;
 	protected String[] tokens = null;
 	protected ArrayList<RenderedText> words = new ArrayList<>();
@@ -49,6 +49,7 @@ public class RenderedTextBlock extends Component {
 	
 	private int hightlightColor = Window.TITLE_COLOR;
 	private boolean highlightingEnabled = true;
+	public static final String MARKER = " ";
 
 	public static final int LEFT_ALIGN = 1;
 	public static final int CENTER_ALIGN = 2;
@@ -117,7 +118,7 @@ public class RenderedTextBlock extends Component {
 		boolean highlighting = false;
 		for (String str : tokens){
 			
-			if (str.equals("_") && highlightingEnabled){
+			if (str.equals("_") && highlightingEnabled || str.equals(MARKER)){
 				highlighting = !highlighting;
 			} else if (str.equals("\n")){
 				words.add(NEWLINE);
@@ -234,12 +235,15 @@ public class RenderedTextBlock extends Component {
 				float fullWidth = word.width();
 				int j = i+1;
 
-				//this is so that words split only by highlighting are still grouped in layout
-				//Chinese/Japanese always render every character separately without spaces however
-				while (Messages.lang() != Languages.CHINESE && Messages.lang() != Languages.JAPANESE
-						&& j < words.size() && words.get(j) != SPACE && words.get(j) != NEWLINE){
-					fullWidth += words.get(j).width() - 0.667f;
-					j++;
+				if (!"/".equals(word.text()) && !"\\".equals(word.text())) {
+					//this is so that words split only by highlighting are still grouped in layout
+					//Chinese/Japanese always render every character separately without spaces however
+					while (Messages.lang() != Languages.CHINESE && Messages.lang() != Languages.JAPANESE
+							&& j < words.size() && words.get(j) != SPACE && words.get(j) != NEWLINE
+							&& !words.get(j).text().equals("/") && !words.get(j).text().equals("\\")) {
+						fullWidth += words.get(j).width() - 0.667f;
+						j++;
+					}
 				}
 
 				if ((x - this.x) + fullWidth - 0.001f > maxWidth && !curLine.isEmpty()){

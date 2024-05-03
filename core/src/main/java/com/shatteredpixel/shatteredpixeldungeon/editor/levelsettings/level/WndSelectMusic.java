@@ -8,7 +8,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategori
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 
 import java.util.List;
 
@@ -144,6 +147,15 @@ public class WndSelectMusic extends WndChooseOneInCategories {
         if (cat[0] == null) {
             ret[0] = new ChooseOneInCategoriesBody.BtnRow(Messages.get(WndSelectMusic.class, "custom_music"),
                     Messages.get(WndSelectMusic.class, "custom_music_info", CustomDungeonSaves.getAdditionalFilesDir().file().getAbsolutePath())) {
+                @Override
+                protected void onInfo() {
+                    DungeonScene.show(new WndTitledMessage(Icons.get(Icons.INFO), name, info()) {
+                        {
+                            setHighligtingEnabled(false);
+                        }
+                    });
+                }
+
                 @Override
                 protected void onClick() {
                     onSelect(null);
