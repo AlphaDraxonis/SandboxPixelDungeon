@@ -27,12 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.RankingsScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.StartScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.*;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -75,32 +70,50 @@ public class WndGame extends Window {
 			curBtn.icon(Icons.get(Icons.CHALLENGE_ON));
 		}
 
+		boolean heroDead = Dungeon.hero == null || !Dungeon.hero.isAlive();
 		// Restart
-		if (Dungeon.hero == null || !Dungeon.hero.isAlive()) {
-
-			addButton( curBtn = new RedButton( Messages.get(this, "start") ) {
-				@Override
-				protected void onClick() {
-					if (Dungeon.isLevelTesting()) {
-						try {
-							Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(Dungeon.customDungeon.getName());
-							SandboxPixelDungeon.switchScene(HeroSelectScene.class);
-						} catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
-							SandboxPixelDungeon.reportException(e);
+		addButton( curBtn = new RedButton( Messages.get(this, "start") ) {
+			@Override
+			protected void onClick() {
+				if (!heroDead) {
+					DungeonScene.show(new WndOptions(Icons.WARNING.get(),
+							Messages.get(WndGame.class, "restart_title"),
+							Messages.get(WndGame.class, "restart_body"),
+							Messages.get(WndGame.class, "restart_yes"),
+							Messages.get(WndGameInProgress.class, "erase_warn_no")) {
+						@Override
+						protected void onSelect(int index) {
+							if (index == 0) {
+								try {
+									Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(Dungeon.customDungeon.getName());
+									SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+								} catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
+									SandboxPixelDungeon.reportException(e);
+								}
+							}
 						}
-					} else StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass);
-				}
-			} );
-			curBtn.icon(Icons.get(Icons.ENTER));
-			curBtn.textColor(Window.TITLE_COLOR);
-			
-			addButton( curBtn = new RedButton( Messages.get(this, "rankings") ) {
+					});
+				} else if (Dungeon.isLevelTesting()) {
+					try {
+						Dungeon.customDungeon = CustomDungeonSaves.loadDungeon(Dungeon.customDungeon.getName());
+						SandboxPixelDungeon.switchScene(HeroSelectScene.class);
+					} catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
+						SandboxPixelDungeon.reportException(e);
+					}
+				} else StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass);
+			}
+		});
+		curBtn.icon(Icons.get(Icons.ENTER));
+		if (heroDead) curBtn.textColor(Window.TITLE_COLOR);
+
+		if (heroDead) {
+			addButton(curBtn = new RedButton(Messages.get(this, "rankings")) {
 				@Override
 				protected void onClick() {
 					InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
-					Game.switchScene( RankingsScene.class );
+					Game.switchScene(RankingsScene.class);
 				}
-			} );
+			});
 			curBtn.icon(Icons.get(Icons.RANKINGS));
 		}
 
