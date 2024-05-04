@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRemoverComp;
@@ -188,6 +189,7 @@ public abstract class EditorItem<T> extends Item {
         ITEM,
         PLANT,
         TRAP,
+        ARROW_CELL,
         BARRIER,
         CUSTOM_TILE,
         PARTICLE;
@@ -200,6 +202,7 @@ public abstract class EditorItem<T> extends Item {
                 case ITEM: return ItemItem.remove(cell);
                 case PLANT: return PlantItem.remove(cell);
                 case TRAP: return TrapItem.remove(level.traps.get(cell));
+                case ARROW_CELL: return ArrowCellItem.remove(cell);
                 case BARRIER: return BarrierItem.remove(cell);
                 case CUSTOM_TILE: return CustomTileItem.remove(cell);
                 case PARTICLE: return ParticleItem.remove(cell);
@@ -214,6 +217,7 @@ public abstract class EditorItem<T> extends Item {
                 case ITEM: return Items.bag.name();
                 case PLANT: return Plants.bag.name();
                 case TRAP: return Traps.bag.name();
+                case ARROW_CELL: return Messages.get(ArrowCell.class, "name");
                 case BARRIER: return Messages.get(Barrier.class, "name");
                 case CUSTOM_TILE: return Messages.get(Tiles.CustomTileBag.class, "name");
                 case PARTICLE: return Tiles.particleBag.name();
@@ -234,6 +238,7 @@ public abstract class EditorItem<T> extends Item {
                     Trap t = Reflection.newInstance(EditorInvCategory.getRandom(Traps.values()));
                     t.visible = true;
                     return t.getSprite();
+                case ARROW_CELL: return EditorUtilies.getBarrierTexture(1);//tzz different sprite
                 case BARRIER: return EditorUtilies.getBarrierTexture(1);
                 case CUSTOM_TILE: return Icons.TALENT.get();
                 case PARTICLE: return Tiles.particleBag.getCategoryImage();

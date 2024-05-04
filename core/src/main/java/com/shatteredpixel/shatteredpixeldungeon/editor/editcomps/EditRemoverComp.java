@@ -6,11 +6,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.InventorySlot;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
@@ -150,7 +146,7 @@ public class EditRemoverComp extends DefaultEditComp<EditorItem.NullItemClass> {
             protected final String name;
 
             public Slot(String name, Image image) {
-                this.name = name;
+                this.name = Messages.titleCase(name);
 
                 if (image != null) {
                     add(this.image = image);

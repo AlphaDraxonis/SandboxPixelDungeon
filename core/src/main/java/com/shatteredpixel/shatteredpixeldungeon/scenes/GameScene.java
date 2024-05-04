@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
@@ -923,6 +924,7 @@ public class GameScene extends DungeonScene {
 			scene.visualGrid.map(Dungeon.level.visualMap, Dungeon.level.width() );
 			scene.terrainFeatures.map(Dungeon.level.visualMap, Dungeon.level.width() );
 			scene.barriers.map(Dungeon.level.visualMap, Dungeon.level.width() );
+			scene.arrowCells.map(Dungeon.level.visualMap, Dungeon.level.width() );
 			if (!Dungeon.customDungeon.view2d) {
 			    for (int i = 1; i < scene.walls.length; i++) {
 					scene.raisedTerrain[i].map(Dungeon.level.visualMap, Dungeon.level.width() );
@@ -955,6 +957,7 @@ public class GameScene extends DungeonScene {
 			scene.visualGrid.updateMap();
 			scene.terrainFeatures.updateMap();
 			scene.barriers.updateMap();
+			scene.arrowCells.updateMap();
 			if (!Dungeon.customDungeon.view2d) {
 				for (int i = 1; i < scene.walls.length; i++) {
 					scene.raisedTerrain[i].updateMap();
@@ -978,6 +981,7 @@ public class GameScene extends DungeonScene {
 			scene.visualGrid.updateMapCell( cell );
 			scene.terrainFeatures.updateMapCell( cell );
 			scene.barriers.updateMapCell( cell );
+			scene.arrowCells.updateMapCell( cell );
 			if (!Dungeon.customDungeon.view2d) {
 				for (int i = 1; i < scene.walls.length; i++) {
 					scene.raisedTerrain[i].updateMapCell(cell);
@@ -1263,6 +1267,9 @@ public class GameScene extends DungeonScene {
 		Barrier barrier = Dungeon.level.barriers.get( cell );
 		if (barrier != null && barrier.visible) objects.add(barrier);
 
+		ArrowCell arrowCell = Dungeon.level.arrowCells.get( cell );
+		if (arrowCell != null && arrowCell.visible) objects.add(arrowCell);
+
 		return objects;
 	}
 
@@ -1277,6 +1284,8 @@ public class GameScene extends DungeonScene {
 			else if (obj instanceof Trap)   names.add(Messages.titleCase( ((Trap) obj).name() ));
 			else if (obj instanceof Barrier
 				&& ((Barrier) obj).visible) names.add(Messages.titleCase( ((Barrier) obj).name() ));
+			else if (obj instanceof ArrowCell
+					&& ((ArrowCell) obj).visible) names.add(Messages.titleCase( ((ArrowCell) obj).name() ));
 		}
 		return names;
 	}
@@ -1307,6 +1316,8 @@ public class GameScene extends DungeonScene {
 			GameScene.show( new WndInfoTrap((Trap) o));
 		} else if ( o instanceof Barrier ){
 			GameScene.show( new WndInfoBarrier((Barrier) o));
+		} else if ( o instanceof ArrowCell ){
+			GameScene.show( new WndInfoArrowCell((ArrowCell) o));
 		} else if ( o instanceof Item ){
 			GameScene.show( new WndInfoItem((Item) o));
 		} else {
@@ -1362,6 +1373,9 @@ public class GameScene extends DungeonScene {
 			} else if (objects.get(0) instanceof Barrier) {
 				title = textLines.remove(0);
 				image = ((Barrier) objects.get(0)).getSprite();
+			} else if (objects.get(0) instanceof ArrowCell) {
+				title = textLines.remove(0);
+				image = ((ArrowCell) objects.get(0)).getSprite();
 			}
 
 			//determine first text line
@@ -1392,6 +1406,8 @@ public class GameScene extends DungeonScene {
 			} else if (objects.get(0) instanceof Trap) {
 				textLines.add(0, Messages.get(GameScene.class, "interact"));
 			} else if (objects.get(0) instanceof Barrier) {
+				textLines.add(0, Messages.get(GameScene.class, "go_here"));
+			} else if (objects.get(0) instanceof ArrowCell) {
 				textLines.add(0, Messages.get(GameScene.class, "go_here"));
 			}
 

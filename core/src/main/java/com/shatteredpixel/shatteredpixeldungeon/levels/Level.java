@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
@@ -165,6 +166,7 @@ public abstract class Level implements Bundlable {
 	public SparseArray<Trap> traps;
 	public SparseArray<Sign> signs;
 	public SparseArray<Barrier> barriers;
+	public SparseArray<ArrowCell> arrowCells;
 	public HashSet<CustomTilemap> customTiles;
 	public HashSet<CustomTilemap> customWalls;
 	public SparseArray<CoinDoor> coinDoors;
@@ -203,6 +205,7 @@ public abstract class Level implements Bundlable {
 	private static final String TRAPS       = "traps";
 	private static final String SIGNS       = "signs";
 	private static final String BARRIERS    = "barriers";
+	private static final String ARROW_CELLS = "arrow_cells";
 	private static final String CUSTOM_TILES= "customTiles";
 	private static final String CUSTOM_WALLS= "customWalls";
 	private static final String COIN_DOORS = "coin_door";
@@ -314,6 +317,7 @@ public abstract class Level implements Bundlable {
 			traps = new SparseArray<>();
 			signs = new SparseArray<>();
 			barriers = new SparseArray<>();
+			arrowCells = new SparseArray<>();
 			customTiles = new HashSet<>();
 			customWalls = new HashSet<>();
 			coinDoors = new SparseArray<>();
@@ -521,6 +525,7 @@ public abstract class Level implements Bundlable {
 		traps = new SparseArray<>();
 		signs = new SparseArray<>();
 		barriers = new SparseArray<>();
+		arrowCells = new SparseArray<>();
 		customTiles = new HashSet<>();
 		customWalls = new HashSet<>();
 		coinDoors = new SparseArray<>();
@@ -613,6 +618,12 @@ public abstract class Level implements Bundlable {
 			barriers.put(barrier.pos, barrier);
 		}
 
+		collection = bundle.getCollection(ARROW_CELLS);
+		for (Bundlable p : collection) {
+			ArrowCell arrowCell = (ArrowCell) p;
+			arrowCells.put(arrowCell.pos, arrowCell);
+		}
+
 		visualMap = map.clone();
 		visualRegions = new int[map.length];
 		collection = bundle.getCollection( CUSTOM_TILES );
@@ -703,6 +714,7 @@ public abstract class Level implements Bundlable {
 		bundle.put( TRAPS, traps.valueList() );
 		bundle.put( SIGNS, signs.valueList() );
 		bundle.put( BARRIERS, barriers.valueList() );
+		bundle.put( ARROW_CELLS, arrowCells.valueList() );
 		bundle.put( CUSTOM_TILES, customTiles );
 		bundle.put( CUSTOM_WALLS, customWalls );
 		bundle.put( COIN_DOORS, coinDoors.valueList() );

@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
@@ -218,6 +219,8 @@ public enum Tiles {
         bag.items.add(customTileBag = new CustomTileBag());
 
         wallBag.items.add(2, new BarrierItem(new Barrier(-1)));
+
+        wallBag.items.add(2, new ArrowCellItem(new ArrowCell(-1)));//TODO tzz move to another location!
 
         bag.items.add(new BlobBag(
                 PermaGas.PFire.class,

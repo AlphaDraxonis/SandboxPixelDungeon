@@ -12,10 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
+import com.shatteredpixel.shatteredpixeldungeon.editor.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
@@ -223,6 +220,7 @@ public class CustomLevel extends Level {
             traps = level.traps;
             signs = level.signs;
             barriers = level.barriers;
+            arrowCells = level.arrowCells;
             coinDoors = level.coinDoors;
             blobs = level.blobs;
             particles = level.particles;
@@ -858,6 +856,17 @@ public class CustomLevel extends Level {
         }
         level.barriers.clear();
         level.barriers.putAll(nBarriers);
+
+        SparseArray<ArrowCell> nArrowCells = new SparseArray<>();
+        for (ArrowCell ac : level.arrowCells.valueList()) {
+            int nPos = newPosition.get(ac.pos);
+            if (isPositionValid.test(ac.pos, nPos)) {
+                nArrowCells.put(nPos, ac);
+                ac.pos = nPos;
+            }
+        }
+        level.arrowCells.clear();
+        level.arrowCells.putAll(nArrowCells);
 
         SparseArray<CoinDoor> nCoinDoors = new SparseArray<>();
         for (CoinDoor c : level.coinDoors.valueList()) {

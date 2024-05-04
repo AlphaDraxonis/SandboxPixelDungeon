@@ -345,6 +345,7 @@ public class EditorScene extends DungeonScene {
             scene.visualGrid.updateMap();
             scene.terrainFeatures.updateMap();
             scene.barriers.updateMap();
+            scene.arrowCells.updateMap();
             LevelColoring.allUpdateMap();
         }
     }
@@ -360,6 +361,7 @@ public class EditorScene extends DungeonScene {
             scene.visualGrid.updateMapCell(cell);
             scene.terrainFeatures.updateMapCell(cell);
             scene.barriers.updateMapCell(cell);
+            scene.arrowCells.updateMapCell(cell);
             LevelColoring.allUpdateMapCell(cell);
         }
     }

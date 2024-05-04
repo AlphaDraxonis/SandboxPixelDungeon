@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -15,12 +16,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
@@ -209,7 +210,7 @@ public abstract class DefaultEditComp<T> extends Component {
     }
 
 
-    public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap, Plant plant, Barrier barrier, int cell) {
+    public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap, Plant plant, Barrier barrier, ArrowCell arrowCell, int cell) {
 
         CustomDungeon.knowsEverything = true;
 
@@ -226,10 +227,11 @@ public abstract class DefaultEditComp<T> extends Component {
         if (trap != null) numTabs++;
         if (plant != null) numTabs++;
         if (barrier != null) numTabs++;
+        if (arrowCell != null) numTabs++;
 
         if (numTabs == 0) return;
         if (numTabs > 1 || (heap != null && !heap.items.isEmpty())) {
-            EditorScene.show(new EditCompWindowTabbed(tileItem, heap, mob, trap, plant, barrier, numTabs));
+            EditorScene.show(new EditCompWindowTabbed(tileItem, heap, mob, trap, plant, barrier, arrowCell, numTabs));
             return;
         }
 
@@ -250,9 +252,12 @@ public abstract class DefaultEditComp<T> extends Component {
         } else if (plant != null) {
             content = new EditPlantComp(plant);
             actionPart = new PlantActionPart.Modify(plant);
-        } else {
-            content = new EditPlantComp(plant);
+        } else if (barrier != null) {
+            content = new EditBarrierComp(barrier);
             actionPart = new BarrierActionPart.Modify(barrier);
+        } else {
+            content = new EditArrowCellComp(arrowCell);
+            actionPart = new ArrowCellActionPart.Modify(arrowCell);
         }
 
         showSingleWindow(content, actionPart);
@@ -300,8 +305,7 @@ public abstract class DefaultEditComp<T> extends Component {
 
         sp.givePointerPriority();
 
-        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-        else Game.scene().addToFront(w);
+        DungeonScene.show(w);
     }
 
 }

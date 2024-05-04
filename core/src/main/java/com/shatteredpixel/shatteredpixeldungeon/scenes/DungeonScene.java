@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
@@ -73,6 +74,7 @@ public abstract class DungeonScene extends PixelScene {
 	protected GridTileMap visualGrid;
 	protected TerrainFeaturesTilemap terrainFeatures;
 	protected BarrierTilemap barriers;
+	protected ArrowCellTilemap arrowCells;
 
 	protected Group terrain;
 	protected Group customTiles;
@@ -159,6 +161,9 @@ public abstract class DungeonScene extends PixelScene {
 
 		terrainFeatures = new TerrainFeaturesTilemap(Dungeon.level.plants, Dungeon.level.traps);
 		terrain.add(terrainFeatures);
+
+		arrowCells = new ArrowCellTilemap(Dungeon.level.arrowCells);
+		terrain.add(arrowCells);
 
 		barriers = new BarrierTilemap(Dungeon.level.barriers);
 		terrain.add(barriers);
@@ -578,8 +583,9 @@ public abstract class DungeonScene extends PixelScene {
 		Mob mob = level.findMob(cell);
 		Plant plant = level.plants.get(cell);
 		Barrier barrier = level.barriers.get(cell);
+		ArrowCell arrowCell = level.arrowCells.get(cell);
 
-		DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, plant, barrier, cell);
+		DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, plant, barrier, arrowCell, cell);
 	}
 
 
