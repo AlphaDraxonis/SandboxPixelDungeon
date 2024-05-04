@@ -29,6 +29,7 @@ import com.watabou.noosa.ScrollArea;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.PlatformSupport;
 
 public class SandboxPixelDungeon extends Game {
@@ -46,6 +47,7 @@ public class SandboxPixelDungeon extends Game {
 	static {
 		Music.getExternalAudioFile = CustomDungeonSaves::getExternalFile;
 		ScrollArea.checkIfGizmoIsInstanceofWindow = g -> g instanceof Window || g == null && DungeonScene.showingWindow();
+		PathFinder.getArrowCellAt = cell -> Dungeon.level.arrowCells.get(cell);
 	}
 
 	public SandboxPixelDungeon( PlatformSupport platform ) {

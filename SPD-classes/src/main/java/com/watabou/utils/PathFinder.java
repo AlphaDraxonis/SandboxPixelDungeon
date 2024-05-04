@@ -98,7 +98,7 @@ public class PathFinder {
 				int n = s + dir[i];
 				
 				int thisD = distance[n];
-				if (thisD < minD) {
+				if (thisD < minD && ArrowCellInterface.allowsStep(s, n)) {
 					minD = thisD;
 					mins = n;
 				}
@@ -157,11 +157,19 @@ public class PathFinder {
 					newD = distance[step];
 				}
 
+				ArrowCellInterface arrowCellFrom = getArrowCellAt.apply(step);
+
 				int start = (step % width == 0 ? 3 : 0);
 				int end = ((step + 1) % width == 0 ? 3 : 0);
 				for (int i = start; i < dirLR.length - end; i++) {
 
+					if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(dirLR[i])) continue;//TODO test this here!, and add entering check!
+
 					int n = step + dirLR[i];
+
+					ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
+					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
+
 					if (n >= 0 && n < size && passable[n]) {
 						if (distance[n] < distance[cur]) {
 							passable[n] = false;
@@ -196,7 +204,7 @@ public class PathFinder {
 			int n = s + dir[i];
 			int thisD = distance[n];
 			
-			if (thisD < minD) {
+			if (thisD < minD && ArrowCellInterface.allowsStep(s, n)) {
 				minD = thisD;
 				mins = n;
 			}
@@ -204,6 +212,8 @@ public class PathFinder {
 
 		return mins;
 	}
+
+	public static Function<Integer, ArrowCellInterface> getArrowCellAt;
 	
 	private static boolean buildDistanceMap( int from, int to, boolean[] passable ) {
 		
@@ -231,13 +241,19 @@ public class PathFinder {
 				break;
 			}
 			int nextDistance = distance[step] + 1;
+
+			ArrowCellInterface arrowCellFrom = getArrowCellAt.apply(step);
 			
 			int start = (step % width == 0 ? 3 : 0);
 			int end   = ((step+1) % width == 0 ? 3 : 0);
 			for (int i = start; i < dirLR.length - end; i++) {
 
+				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(-dirLR[i])) continue;
+
 				int n = step + dirLR[i];
+				ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
 				if (n == from || (n >= 0 && n < size && passable[n] && (distance[n] > nextDistance))) {
+					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
 					// Add to queue
 					queue[tail++] = n;
 					distance[n] = nextDistance;
@@ -269,13 +285,19 @@ public class PathFinder {
 			if (nextDistance > limit) {
 				return;
 			}
+
+			ArrowCellInterface arrowCellFrom = getArrowCellAt.apply(step);
 			
 			int start = (step % width == 0 ? 3 : 0);
 			int end   = ((step+1) % width == 0 ? 3 : 0);
 			for (int i = start; i < dirLR.length - end; i++) {
 
+				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(-dirLR[i])) continue;
+
 				int n = step + dirLR[i];
+				ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
 				if (n >= 0 && n < size && passable[n] && (distance[n] > nextDistance)) {
+					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
 					// Add to queue
 					queue[tail++] = n;
 					distance[n] = nextDistance;
@@ -315,13 +337,19 @@ public class PathFinder {
 				break;
 			}
 			int nextDistance = distance[step] + 1;
+
+			ArrowCellInterface arrowCellFrom = getArrowCellAt.apply(step);
 			
 			int start = (step % width == 0 ? 3 : 0);
 			int end   = ((step+1) % width == 0 ? 3 : 0);
 			for (int i = start; i < dirLR.length - end; i++) {
 
+				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(-dirLR[i])) continue;
+
 				int n = step + dirLR[i];
+				ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
 				if (n == from || (n >= 0 && n < size && passable[n] && (distance[n] > nextDistance))) {
+					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
 					// Add to queue
 					queue[tail++] = n;
 					distance[n] = nextDistance;
@@ -355,6 +383,8 @@ public class PathFinder {
 			// Remove from queue
 			int step = queue[head++];
 			dist = distance[step];
+
+			ArrowCellInterface arrowCellFrom = getArrowCellAt.apply(step);
 			
 			if (dist > destDist) {
 				return destDist;
@@ -370,8 +400,12 @@ public class PathFinder {
 			int end   = ((step+1) % width == 0 ? 3 : 0);
 			for (int i = start; i < dirLR.length - end; i++) {
 
+				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(-dirLR[i])) continue;
+
 				int n = step + dirLR[i];
+				ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
 				if (n >= 0 && n < size && passable[n] && distance[n] > nextDistance) {
+					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
 					// Add to queue
 					queue[tail++] = n;
 					distance[n] = nextDistance;
@@ -399,13 +433,19 @@ public class PathFinder {
 			// Remove from queue
 			int step = queue[head++];
 			int nextDistance = distance[step] + 1;
+
+			ArrowCellInterface arrowCellFrom = getArrowCellAt.apply(step);
 			
 			int start = (step % width == 0 ? 3 : 0);
 			int end   = ((step+1) % width == 0 ? 3 : 0);
 			for (int i = start; i < dirLR.length - end; i++) {
 
+				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(-dirLR[i])) continue;
+
 				int n = step + dirLR[i];
+				ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
 				if (n >= 0 && n < size && passable[n] && (distance[n] > nextDistance)) {
+					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
 					// Add to queue
 					queue[tail++] = n;
 					distance[n] = nextDistance;
@@ -438,4 +478,22 @@ public class PathFinder {
 	@SuppressWarnings("serial")
 	public static class Path extends LinkedList<Integer> {
 	}
+
+	public interface ArrowCellInterface {
+		boolean allowsDirectionLeaving(int pathfinderNeighboursValue);
+		boolean allowsDirectionEnter(int pathfinderNeighboursValue);
+
+		/**
+		 * Assumes from and to are <b><u>adjacent</u></b>!
+		 */
+		static boolean allowsStep(int from, int to) {
+			//if (!adjacent) return false;
+			ArrowCellInterface acLeave = getArrowCellAt.apply(from);
+			ArrowCellInterface acEnter = getArrowCellAt.apply(to);
+			int direction = to - from;
+			return (acLeave == null || acLeave.allowsDirectionLeaving(direction))
+					&& (acEnter == null || acEnter.allowsDirectionEnter(-direction));
+		}
+	}
+
 }

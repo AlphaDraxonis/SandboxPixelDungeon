@@ -13,16 +13,17 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     public static final int TOP_LEFT = 1;
     public static final int TOP = 2;
     public static final int TOP_RIGHT = 4;
-    public static final int RIGHT = 8;
-    public static final int BOTTOM_RIGHT = 16;
-    public static final int BOTTOM = 32;
-    public static final int BOTTOM_LEFT = 64;
-    public static final int LEFT = 128;
+    public static final int LEFT = 8;
+    public static final int RIGHT = 16;
+    public static final int BOTTOM_LEFT = 32;
+    public static final int BOTTOM = 64;
+    public static final int BOTTOM_RIGHT = 128;
     public static final int ALL = 255;
 
 
     public int pos;
-    public int directionsLeave, directionsEnter;
+//    public int directionsLeave;
+    public int directionsEnter;
     public boolean allowsWaiting;
     public boolean visible;
 
@@ -31,17 +32,17 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     }
 
     public ArrowCell(int pos) {
-        this(pos, ALL, ALL);
+        this(pos, /*ALL,*/ ALL);
     }
 
-    public ArrowCell(int pos, int directionsLeave, int directionsEnter) {
+    public ArrowCell(int pos, /*int directionsLeave,*/ int directionsEnter) {
         this.pos = pos;
-        this.directionsLeave = directionsLeave;
+//        this.directionsLeave = directionsLeave;
         this.directionsEnter = directionsEnter;
     }
 
     private static final String POS = "pos";
-    private static final String DIRECTIONS_LEAVE = "directions_leave";
+//    private static final String DIRECTIONS_LEAVE = "directions_leave";
     private static final String DIRECTIONS_ENTER = "directions_enter";
     private static final String ALLOWS_WAITING = "allows_waiting";
     private static final String VISIBLE = "visible";
@@ -49,7 +50,7 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     @Override
     public void storeInBundle(Bundle bundle) {
         bundle.put(POS, pos);
-        bundle.put(DIRECTIONS_LEAVE, directionsLeave);
+//        bundle.put(DIRECTIONS_LEAVE, directionsLeave);
         bundle.put(DIRECTIONS_ENTER, directionsEnter);
         bundle.put(ALLOWS_WAITING, allowsWaiting);
         bundle.put(VISIBLE, visible);
@@ -58,17 +59,14 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     @Override
     public void restoreFromBundle(Bundle bundle) {
         pos = bundle.getInt(POS);
-        directionsLeave = bundle.getInt(DIRECTIONS_LEAVE);
+//        directionsLeave = bundle.getInt(DIRECTIONS_LEAVE);
         directionsEnter = bundle.getInt(DIRECTIONS_ENTER);
         allowsWaiting = bundle.getBoolean(ALLOWS_WAITING);
         visible = bundle.getBoolean(VISIBLE);
-
-        directionsLeave = TOP;//tzz remove
-        directionsEnter = BOTTOM;
     }
 
     public ArrowCell getCopy() {
-        ArrowCell copy = new ArrowCell(pos, directionsLeave, directionsEnter);
+        ArrowCell copy = new ArrowCell(pos, /*directionsLeave,*/ directionsEnter);
         copy.visible = visible;
         return copy;
     }
@@ -110,7 +108,8 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
 //    }
 
     public boolean allowsDirectionLeaving(int pathfinderNeighboursValue) {
-        return allowsDirection(pathfinderNeighboursValue, directionsLeave);
+//        return allowsDirection(pathfinderNeighboursValue, directionsLeave);
+        return allowsDirection(-pathfinderNeighboursValue, directionsEnter);
     }
 
     public boolean allowsDirectionEnter(int pathfinderNeighboursValue) {
@@ -128,5 +127,12 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
             directonValue *= 2;
         }
         return NONE;
+    }
+
+    /**
+     * Assumes from and to are <b><u>adjacent</u></b>!
+     */
+    public static boolean allowsStep(int from, int to) {
+       return PathFinder.ArrowCellInterface.allowsStep(from, to);
     }
 }

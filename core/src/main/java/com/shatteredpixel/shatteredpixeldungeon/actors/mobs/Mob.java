@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Fe
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.Customizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
@@ -720,7 +721,7 @@ public abstract class Mob extends Char implements Customizable {
 
 		int step = -1;
 
-		if (Dungeon.level.adjacent( pos, target )) {
+		if (Dungeon.level.adjacent( pos, target ) && ArrowCell.allowsStep( pos, target )) {
 
 			path = null;
 

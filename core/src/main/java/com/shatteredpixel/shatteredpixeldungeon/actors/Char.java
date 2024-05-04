@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.En
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
@@ -1093,6 +1094,7 @@ public abstract class Char extends Actor {
 			sprite.interruptMotion();
 			int newPos = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
 			if (!Barrier.canEnterCell(newPos, this, true, false)
+					|| !ArrowCell.allowsStep(pos, newPos)
 					|| (properties().contains(Property.LARGE) && !Dungeon.level.openSpace[newPos])
 					|| findChar( newPos ) != null)
 				return;

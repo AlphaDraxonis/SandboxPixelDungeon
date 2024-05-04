@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
@@ -1100,7 +1101,7 @@ public class Dungeon {
 	
 	public static int findStep(Char ch, int to, boolean[] pass, boolean[] visible, boolean chars ) {
 
-		if (Dungeon.level.adjacent( ch.pos, to )) {
+		if (Dungeon.level.adjacent( ch.pos, to ) && ArrowCell.allowsStep( ch.pos, to )) {
 			return Actor.findChar( to ) == null && pass[to] ? to : -1;
 		}
 

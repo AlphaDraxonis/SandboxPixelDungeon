@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.El
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.NaturesPower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.Endure;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -1617,7 +1618,7 @@ public class Hero extends Char {
 		
 		int step = -1;
 		
-		if (Dungeon.level.adjacent( pos, target )) {
+		if (Dungeon.level.adjacent( pos, target ) && ArrowCell.allowsStep( pos, target )) {
 
 			path = null;
 
