@@ -373,13 +373,13 @@ public class TimekeepersHourglass extends Artifact {
 
 		public void triggerPresses(){
 			for (int cell : presses){
-				Trap t = Dungeon.level.traps.get(cell);
-				if (t != null){
-					t.trigger();
-				}
 				Plant p = Dungeon.level.plants.get(cell);
 				if (p != null){
 					p.trigger();
+				}
+				Trap t = Dungeon.level.traps.get(cell);
+				if (t != null){
+					t.trigger();
 				}
 			}
 
@@ -388,14 +388,13 @@ public class TimekeepersHourglass extends Artifact {
 
 		public void disarmPresses(){
 			for (int cell : presses){
-				Trap t = Dungeon.level.traps.get(cell);
-				if (t != null && t.disarmedByActivation) {
-					t.disarm();
-				}
-
 				Plant p = Dungeon.level.plants.get(cell);
 				if (p != null && !(p instanceof Rotberry)) {
 					Dungeon.level.uproot(cell);
+				}
+				Trap t = Dungeon.level.traps.get(cell);
+				if (t != null && t.disarmedByActivation) {
+					t.disarm();
 				}
 			}
 
