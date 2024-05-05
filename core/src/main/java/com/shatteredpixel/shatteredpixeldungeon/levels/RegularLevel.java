@@ -71,10 +71,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit.Caves
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit.ExitRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Reflection;
+import com.watabou.utils.*;
 
 import java.util.*;
 
@@ -280,9 +278,12 @@ public abstract class RegularLevel extends Level {
 			Random.shuffle(stdRooms);
 			Iterator<Room> stdRoomIter = stdRooms.iterator();
 
-			boolean[] entranceFOV = new boolean[length()];
+			//enemies cannot be within an 8-tile FOV of the entrance
+		// or a 6-tile open space distance from the entrance
+		boolean[] entranceFOV = new boolean[length()];
 		Point c = cellToPoint(entrance());
-		ShadowCaster.castShadow(c.x, c.y, width(), entranceFOV, losBlocking, 8);while (mobsToSpawn > 0) {
+		ShadowCaster.castShadow(c.x, c.y, width(), entranceFOV, losBlocking, 6);
+		PathFinder.buildDistanceMap(entrance(), BArray.not(solid, null), 8);while (mobsToSpawn > 0) {
 				Mob mob = createMob();
 				Room roomToSpawn;
 
@@ -296,7 +297,7 @@ public abstract class RegularLevel extends Level {
 					mob.pos = pointToCell(roomToSpawn.random());
 					tries--;
 				} while (tries >= 0 && (findMob(mob.pos) != null
-						|| entranceFOV[mob.pos] || (roomToSpawn.isEntrance() && distance(entrance(), mob.pos) <= 5)
+						|| entranceFOV[mob.pos] || PathFinder.distance[mob.pos] != Integer.MAX_VALUE
 					|| !isPassable(mob.pos, mob)
 						|| solid[mob.pos]
 						|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
@@ -317,7 +318,7 @@ public abstract class RegularLevel extends Level {
 							mob.pos = pointToCell(roomToSpawn.random());
 							tries--;
 						} while (tries >= 0 && (findMob(mob.pos) != null
-								|| entranceFOV[mob.pos] || (roomToSpawn.isEntrance() && distance(entrance(), mob.pos) <= 5)
+								|| entranceFOV[mob.pos] || PathFinder.distance[mob.pos] != Integer.MAX_VALUE
 							|| !isPassable(mob.pos, mob)
 								|| solid[mob.pos]
 								|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
