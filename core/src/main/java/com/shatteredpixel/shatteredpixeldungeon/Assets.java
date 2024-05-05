@@ -33,6 +33,7 @@ public class Assets {
 
 	public static class Environment {
 		public static final String TERRAIN_FEATURES = "environment/terrain_features.png";
+		public static final String ARROW_CELL		= "environment/arrow_cell.png";
 		public static final String BARRIER		    = "environment/barrier.png";
 		public static final String ZONES 			= "environment/zones.png";
 

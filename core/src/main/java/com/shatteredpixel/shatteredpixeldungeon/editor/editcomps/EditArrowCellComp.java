@@ -99,7 +99,7 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.pos != b.pos) return false;
-        if (a.directionsLeave != b.directionsLeave) return false;
+//        if (a.directionsLeave != b.directionsLeave) return false;
         if (a.directionsEnter != b.directionsEnter) return false;
         if (a.allowsWaiting != b.allowsWaiting) return false;
         return a.visible == b.visible;

@@ -72,7 +72,7 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     }
 
     public Image getSprite() {
-        return EditorUtilies.getBarrierTexture(visible ? 1 : 0);//tzz
+        return EditorUtilies.getArrowCellTexture(this);
     }
 
     public String name() {

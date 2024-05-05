@@ -905,7 +905,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
             public InternalHeroBelongings(Hero owner) {
                 super(owner);
-                backpack.items.add(wands = new UnlimitedCapacityBag());//TODO tzz make backpack not collect these bags!
+                backpack.items.add(wands = new UnlimitedCapacityBag());
                 backpack.items.add(potions = new UnlimitedCapacityBag());
                 backpack.items.add(utilItems = new UnlimitedCapacityBag());
             }

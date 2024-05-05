@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -25,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.ArrowCellTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -475,6 +477,7 @@ public final class EditorUtilies {
 
     private static final TextureFilm TERRAIN_FEATURE_FILM = new TextureFilm(Assets.Environment.TERRAIN_FEATURES, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
     private static final TextureFilm BARRIER_TEXTURE_FILM = new TextureFilm(Assets.Environment.BARRIER, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
+    private static final TextureFilm ARROW_CELL_TEXTURE_FILM = new TextureFilm(Assets.Environment.ARROW_CELL, DungeonTilemap.SIZE, DungeonTilemap.SIZE);
     private static Image getImageFromFilm(int imgCode, TextureFilm film, String asset) {
         RectF frame = film.get(imgCode);
         if (frame != null) {
@@ -491,5 +494,15 @@ public final class EditorUtilies {
 
     public static Image getBarrierTexture(int imgCode) {
         return getImageFromFilm(imgCode, BARRIER_TEXTURE_FILM, Assets.Environment.BARRIER);
+    }
+
+    public static Image getArrowCellTexture(ArrowCell arrowCell) {
+        int diagonalArrows = ArrowCellTilemap.imgCodeDiagonalOuterArrows(arrowCell);
+        int straightArrows = ArrowCellTilemap.imgCodeStraightOuterArrows(arrowCell);
+        int center = ArrowCellTilemap.imgCodeCenter(arrowCell);
+        Image a = getImageFromFilm(diagonalArrows, ARROW_CELL_TEXTURE_FILM, Assets.Environment.ARROW_CELL);
+        Image b = getImageFromFilm(straightArrows, ARROW_CELL_TEXTURE_FILM, Assets.Environment.ARROW_CELL);
+        Image c = getImageFromFilm(center, ARROW_CELL_TEXTURE_FILM, Assets.Environment.ARROW_CELL);
+        return new CombinedImage(a, b, c);
     }
 }

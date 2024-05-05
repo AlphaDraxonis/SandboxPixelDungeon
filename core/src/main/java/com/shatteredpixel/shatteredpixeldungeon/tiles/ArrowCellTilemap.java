@@ -4,32 +4,123 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.watabou.noosa.Group;
 import com.watabou.utils.SparseArray;
 
-public class ArrowCellTilemap extends DungeonTilemap {
+public class ArrowCellTilemap extends Group {
     private static ArrowCellTilemap instance;
 
     protected SparseArray<ArrowCell> arrowCells;
 
+    private ArrowCellTilemapPart diagonalOuterArrows;
+    private ArrowCellTilemapPart straightOuterArrows;
+    private ArrowCellTilemapPart center;
+
     public ArrowCellTilemap(SparseArray<ArrowCell> arrowCells) {
-        super(Assets.Environment.BARRIER);//tzz
 
         this.arrowCells = arrowCells;
 
-        map( CustomDungeon.isEditing() ? Dungeon.level.map : Dungeon.level.visualMap, Dungeon.level.width() );
+        diagonalOuterArrows = new ArrowCellTilemapPart() {
+            @Override
+            protected int getTileVisual(int pos, int tile, boolean flat) {
+                ArrowCell arrowCell = arrowCells.get(pos);
+                if (arrowCell != null
+                    && (arrowCell.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing())) {
+                    return imgCodeDiagonalOuterArrows(arrowCell);
+                }
+                return -1;
+            }
+        };
+        add(diagonalOuterArrows);
+
+        straightOuterArrows = new ArrowCellTilemapPart() {
+            @Override
+            protected int getTileVisual(int pos, int tile, boolean flat) {
+                ArrowCell arrowCell = arrowCells.get(pos);
+                if (arrowCell != null
+                        && (arrowCell.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing())) {
+                    return imgCodeStraightOuterArrows(arrowCell);
+                }
+                return -1;
+            }
+        };
+        add(straightOuterArrows);
+
+        center = new ArrowCellTilemapPart() {
+            @Override
+            protected int getTileVisual(int pos, int tile, boolean flat) {
+                ArrowCell arrowCell = arrowCells.get(pos);
+                if (arrowCell != null
+                        && (arrowCell.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing())) {
+                    return imgCodeCenter(arrowCell);
+                }
+                return -1;
+            }
+        };
+        add(center);
 
         instance = this;
     }
 
-    @Override
-    protected int getTileVisual(int pos, int tile, boolean flat){
-        if (arrowCells.get(pos) != null) {
-            ArrowCell arrowCell = arrowCells.get(pos);
-            if (arrowCell.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing()){
-                return arrowCell.visible ? 1 : 0;
-            }
+    public void updateMap() {
+        diagonalOuterArrows.updateMap();
+        straightOuterArrows.updateMap();
+        center.updateMap();
+    }
+
+    public void updateMapCell(int cell) {
+        diagonalOuterArrows.updateMapCell(cell);
+        straightOuterArrows.updateMapCell(cell);
+        center.updateMapCell(cell);
+    }
+
+    public void map(int[] data, int cols) {
+        diagonalOuterArrows.map(data, cols);
+        straightOuterArrows.map(data, cols);
+        center.map(data, cols);
+    }
+
+    private static abstract class ArrowCellTilemapPart extends DungeonTilemap {
+
+        public ArrowCellTilemapPart() {
+            super(Assets.Environment.ARROW_CELL);
+            map( CustomDungeon.isEditing() ? Dungeon.level.map : Dungeon.level.visualMap, Dungeon.level.width() );
         }
-        return -1;
+    }
+
+    public static int imgCodeDiagonalOuterArrows(ArrowCell arrowCell) {
+        int visual = 0;
+        if ((arrowCell.directionsEnter & ArrowCell.TOP_LEFT) != 0) visual += 1;
+        if ((arrowCell.directionsEnter & ArrowCell.TOP_RIGHT) != 0) visual += 2;
+        if ((arrowCell.directionsEnter & ArrowCell.BOTTOM_LEFT) != 0) visual += 4;
+        if ((arrowCell.directionsEnter & ArrowCell.BOTTOM_RIGHT) != 0) visual += 8;
+        if (!arrowCell.visible) visual += 64;
+        return visual;
+    }
+
+    public static int imgCodeStraightOuterArrows(ArrowCell arrowCell) {
+        int visual = 16;
+        if ((arrowCell.directionsEnter & ArrowCell.BOTTOM) != 0) visual += 1;
+        if ((arrowCell.directionsEnter & ArrowCell.RIGHT) != 0) visual += 2;
+        if ((arrowCell.directionsEnter & ArrowCell.LEFT) != 0) visual += 4;
+        if ((arrowCell.directionsEnter & ArrowCell.TOP) != 0) visual += 8;
+        if (!arrowCell.visible) visual += 64;
+        return visual;
+    }
+
+    public static int imgCodeCenter(ArrowCell arrowCell) {
+        int visual = 32;
+        if ((arrowCell.directionsEnter & ArrowCell.TOP_LEFT) != 0
+                || (arrowCell.directionsEnter & ArrowCell.BOTTOM_RIGHT) != 0) visual += 1;
+        if ((arrowCell.directionsEnter & ArrowCell.TOP_RIGHT) != 0
+                || (arrowCell.directionsEnter & ArrowCell.BOTTOM_LEFT) != 0) visual += 2;
+        if ((arrowCell.directionsEnter & ArrowCell.TOP) != 0
+                || (arrowCell.directionsEnter & ArrowCell.BOTTOM) != 0) visual += 4;
+        if ((arrowCell.directionsEnter & ArrowCell.RIGHT) != 0
+                || (arrowCell.directionsEnter & ArrowCell.LEFT) != 0) visual += 8;
+//                    if (!arrowCell.allowsWaiting) visual += 16;
+        if (!arrowCell.visible) visual += 64;
+        return visual;
     }
 
 }
