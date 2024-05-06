@@ -79,7 +79,7 @@ public class Item implements Bundlable, Customizable, Copyable<Item> {
 	public int icon = -1; //used as an identifier for items with randomized images
 	public String customImage;
 	protected String customName, customDesc;
-	
+
 	public boolean stackable = false;
 	protected int quantity = 1;
 	public int randQuantMin = -1, randQuantMax = -1;//only used if val>=0;  max always >= min; otherwise swap them
@@ -108,7 +108,7 @@ public class Item implements Bundlable, Customizable, Copyable<Item> {
 	public int reservedQuickslot;
 
 	public boolean spreadIfLoot = false;//drops to adjacent cells, used by Eye, Goo or DM300 in Shattered for example, ONLY used if part of mob loot
-	
+
 	public static final Comparator<Item> itemComparator = new Comparator<Item>() {
 		@Override
 		public int compare( Item lhs, Item rhs ) {
@@ -386,7 +386,7 @@ public class Item implements Bundlable, Customizable, Copyable<Item> {
 	}
 	
 	public boolean isSimilar( Item item ) {
-		return level == item.level && getClass() == item.getClass()
+		return getClass() == item.getClass()
 				&& Objects.equals(customImage, item.customImage)
 				&& Objects.equals(customName, item.customName)
 				&& Objects.equals(customDesc, item.customDesc);
@@ -529,7 +529,7 @@ public class Item implements Bundlable, Customizable, Copyable<Item> {
 
 	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
 	}
-	
+
 	public static void evoke( Hero hero ) {
 		hero.sprite.emitter().burst( Speck.factory( Speck.EVOKE ), 5 );
 	}
@@ -651,7 +651,7 @@ public class Item implements Bundlable, Customizable, Copyable<Item> {
 	private static final String KEPT_LOST       = "kept_lost";
 	private static final String RESERVED_QUICKSLOT = "reserved_quickslot";
 	private static final String SPREAD_IF_LOOT = "spread_if_loot";
-	
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		bundle.put( QUANTITY, quantity );
