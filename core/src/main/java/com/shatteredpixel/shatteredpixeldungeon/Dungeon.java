@@ -55,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesi
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -1021,17 +1022,19 @@ public class Dungeon {
 	
 		GameScene.updateFog(l, t, width, height);
 
+		boolean stealthyMimics = MimicTooth.stealthyMimics();
         if (level.levelScheme.rememberLayout) {
 
             if (hero.buff(MindVision.class) != null) {
                 for (Mob m : level.mobs.toArray(new Mob[0])) {
-                    if (Mimic.isLikeMob(m)) {
-                        BArray.or(level.visited, level.heroFOV, m.pos - 1 - level.width(), 3, level.visited);
-                        BArray.or(level.visited, level.heroFOV, m.pos - 1, 3, level.visited);
-                        BArray.or(level.visited, level.heroFOV, m.pos - 1 + level.width(), 3, level.visited);
-                        //updates adjacent cells too
-                        GameScene.updateFog(m.pos, 2);
-                    }
+					if (!Mimic.isLikeMob(m) || stealthyMimics && m instanceof Mimic && m.alignment == Char.Alignment.NEUTRAL){
+						continue;
+					}
+					BArray.or(level.visited, level.heroFOV, m.pos - 1 - level.width(), 3, level.visited);
+                    BArray.or(level.visited, level.heroFOV, m.pos - 1, 3, level.visited);
+                    BArray.or(level.visited, level.heroFOV, m.pos - 1 + level.width(), 3, level.visited);
+					//updates adjacent cells too
+					GameScene.updateFog(m.pos, 2);
                 }
             }
 

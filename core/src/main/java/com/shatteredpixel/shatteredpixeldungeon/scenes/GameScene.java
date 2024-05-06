@@ -52,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.journal.Guidebook;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
 import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
@@ -120,7 +121,7 @@ public class GameScene extends DungeonScene {
 	}
 
 	private static PointF mainCameraPos;
-	
+
 	@Override
 	public void create() {
 		
@@ -1061,8 +1062,16 @@ public class GameScene extends DungeonScene {
 	
 	public static void afterObserve() {
 		if (scene != null) {
+			boolean stealthyMimics = MimicTooth.stealthyMimics();
 			for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
-				if (mob.sprite != null) mob.updateSpriteVisibility();
+				if (mob.sprite != null) {
+					if (stealthyMimics && mob instanceof Mimic && mob.state == mob.PASSIVE && mob.sprite.visible){
+						//mimics stay visible in fog of war after being first seen
+						mob.sprite.visible = true;
+					} else {
+						mob.updateSpriteVisibility();
+					}
+				}
 				if (mob instanceof Ghoul){
 					for (Ghoul.GhoulLifeLink link : mob.buffs(Ghoul.GhoulLifeLink.class)){
 						link.updateVisibility();

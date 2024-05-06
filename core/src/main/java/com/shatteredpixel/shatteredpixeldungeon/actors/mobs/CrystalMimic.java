@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MimicSprite;
@@ -86,7 +87,10 @@ public class CrystalMimic extends Mimic {
 			if (desc == null) {
 				desc = Messages.get(Heap.class, "crystal_chest_desc_none");
 			}
-			return superHidden ? desc : desc + "\n\n" + Messages.get(this, "hidden_hint");
+			if (!superHidden && !MimicTooth.stealthyMimics()){
+				desc += "\n\n" + Messages.get(this, "hidden_hint");
+			}
+			return desc;
 		} else {
 			return super.description();
 		}

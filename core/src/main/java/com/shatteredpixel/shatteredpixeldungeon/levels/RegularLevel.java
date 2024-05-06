@@ -53,6 +53,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.journal.GuidePage;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.RegionLorePage;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MimicTooth;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
@@ -441,7 +442,12 @@ public abstract class RegularLevel extends Level {
 					case 2:
 					case 3:
 					case 4:
-						type = Heap.Type.CHEST;
+						//base mimic chance is 1/20, regular chest is 4/20
+				// so each +1x mimic spawn rate converts to a 25% chance here
+				if (Random.Float() < (MimicTooth.mimicChanceMultiplier() - 1f)/4f  && findMob(cell) == null){
+					mobs.add(Mimic.spawnAt(cell, toDrop));
+					continue;
+				}type = Heap.Type.CHEST;
 						break;
 					case 5:
 						if (simulatedDepth > 1 && findMob(cell) == null) {
@@ -458,7 +464,8 @@ public abstract class RegularLevel extends Level {
 				if ((toDrop instanceof Artifact && Random.Int(2) == 0) ||
 						(toDrop.isUpgradable() && Random.Int(4 - toDrop.level()) == 0)) {
 
-					if (simulatedDepth > 1 && Random.Int(10) == 0 && findMob(cell) == null) {
+					float mimicChance = 1/10f * MimicTooth.mimicChanceMultiplier();
+				if (simulatedDepth > 1 && Random.Float() < mimicChance && findMob(cell) == null) {
 						mobs.add(Mimic.spawnAt(cell, GoldenMimic.class, toDrop));
 					} else {
 						Heap dropped = drop(toDrop, cell);

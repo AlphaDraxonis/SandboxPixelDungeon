@@ -59,10 +59,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
-import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
-import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.MossyClump;
-import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrapMechanism;
-import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
@@ -2189,26 +2186,28 @@ public abstract class Level implements Bundlable {
 			}
 
 			Dungeon.hero.mindVisionEnemies.clear();
+			boolean stealthyMimics = MimicTooth.stealthyMimics();
 			if (c.buff( MindVision.class ) != null) {
 				for (Mob mob : mobs) {
-					if (Mimic.isLikeMob(mob)) {
-						for (int i : PathFinder.NEIGHBOURS9) {
-							int cell = mob.pos + i;
-							if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;
-						}
+					if (!Mimic.isLikeMob(mob) || stealthyMimics && mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL){
+						continue;
+					}
+					for (int i : PathFinder.NEIGHBOURS9) {
+						heroMindFov[mob.pos + i] = true;
 					}
 				}
 			} else if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES)) {
 				Hero h = (Hero) c;
 				int range = 1+h.pointsInTalent(Talent.HEIGHTENED_SENSES);
 				for (Mob mob : mobs) {
-					if (Mimic.isLikeMob(mob)) {
-						int p = mob.pos;
-						if (!fieldOfView[p] && distance(c.pos, p) <= range) {
-							for (int i : PathFinder.NEIGHBOURS9) {
-								int cell = mob.pos + i;
-								if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;
-							}
+					if (Mimic.isLikeMob(mob) || stealthyMimics && mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL){
+						continue;
+					}
+					int p = mob.pos;
+					if (!fieldOfView[p] && distance(c.pos, p) <= range) {
+						for (int i : PathFinder.NEIGHBOURS9) {
+							int cell = mob.pos + i;
+							if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;
 						}
 					}
 				}
