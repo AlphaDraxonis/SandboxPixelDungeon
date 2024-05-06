@@ -55,7 +55,7 @@ public class ArrowCellItem extends EditorItem<ArrowCell> {
     }
 
     public static boolean invalidPlacement(int cell) {
-        return Dungeon.level.solid[cell] || !Dungeon.level.insideMap(cell);
+        return !Dungeon.level.insideMap(cell);//can be placed on walls because these might be destroyed by the player
     }
 
     public static ActionPart remove(int cell) {

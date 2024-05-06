@@ -212,15 +212,13 @@ public enum Tiles {
 
     static {
         Bag wallBag;
-        bag.items.add(new TileBag("empty", EMPTY.terrains));
+        bag.items.add(new TileBag("empty", EMPTY.terrains) {{items.add(new ArrowCellItem(new ArrowCell(-1)));}});
         bag.items.add(wallBag = new TileBag("wall", WALL.terrains));
         bag.items.add(new TileBag("door", DOOR.terrains));
         bag.items.add(new TileBag("other", SPECIAL.terrains));
         bag.items.add(customTileBag = new CustomTileBag());
 
         wallBag.items.add(2, new BarrierItem(new Barrier(-1)));
-
-        wallBag.items.add(2, new ArrowCellItem(new ArrowCell(-1)));//TODO tzz move to another location!
 
         bag.items.add(new BlobBag(
                 PermaGas.PFire.class,

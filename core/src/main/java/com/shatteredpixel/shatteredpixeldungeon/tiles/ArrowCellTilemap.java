@@ -26,7 +26,7 @@ public class ArrowCellTilemap extends Group {
                 ArrowCell arrowCell = arrowCells.get(pos);
                 if (arrowCell != null
                     && (arrowCell.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing())) {
-                    return imgCodeDiagonalOuterArrows(arrowCell);
+                    return imgCodeDiagonalOuterArrows(arrowCell.directionsEnter, arrowCell.visible);
                 }
                 return -1;
             }
@@ -39,7 +39,7 @@ public class ArrowCellTilemap extends Group {
                 ArrowCell arrowCell = arrowCells.get(pos);
                 if (arrowCell != null
                         && (arrowCell.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing())) {
-                    return imgCodeStraightOuterArrows(arrowCell);
+                    return imgCodeStraightOuterArrows(arrowCell.directionsEnter, arrowCell.visible);
                 }
                 return -1;
             }
@@ -52,7 +52,7 @@ public class ArrowCellTilemap extends Group {
                 ArrowCell arrowCell = arrowCells.get(pos);
                 if (arrowCell != null
                         && (arrowCell.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing())) {
-                    return imgCodeCenter(arrowCell);
+                    return imgCodeCenter(arrowCell.directionsEnter, arrowCell.visible);
                 }
                 return -1;
             }
@@ -88,38 +88,38 @@ public class ArrowCellTilemap extends Group {
         }
     }
 
-    public static int imgCodeDiagonalOuterArrows(ArrowCell arrowCell) {
+    public static int imgCodeDiagonalOuterArrows(int directions, boolean visible) {
         int visual = 0;
-        if ((arrowCell.directionsEnter & ArrowCell.TOP_LEFT) != 0) visual += 1;
-        if ((arrowCell.directionsEnter & ArrowCell.TOP_RIGHT) != 0) visual += 2;
-        if ((arrowCell.directionsEnter & ArrowCell.BOTTOM_LEFT) != 0) visual += 4;
-        if ((arrowCell.directionsEnter & ArrowCell.BOTTOM_RIGHT) != 0) visual += 8;
-        if (!arrowCell.visible) visual += 64;
+        if ((directions & ArrowCell.TOP_LEFT) != 0) visual += 1;
+        if ((directions & ArrowCell.TOP_RIGHT) != 0) visual += 2;
+        if ((directions & ArrowCell.BOTTOM_LEFT) != 0) visual += 4;
+        if ((directions & ArrowCell.BOTTOM_RIGHT) != 0) visual += 8;
+        if (!visible) visual += 64;
         return visual;
     }
 
-    public static int imgCodeStraightOuterArrows(ArrowCell arrowCell) {
+    public static int imgCodeStraightOuterArrows(int directions, boolean visible) {
         int visual = 16;
-        if ((arrowCell.directionsEnter & ArrowCell.BOTTOM) != 0) visual += 1;
-        if ((arrowCell.directionsEnter & ArrowCell.RIGHT) != 0) visual += 2;
-        if ((arrowCell.directionsEnter & ArrowCell.LEFT) != 0) visual += 4;
-        if ((arrowCell.directionsEnter & ArrowCell.TOP) != 0) visual += 8;
-        if (!arrowCell.visible) visual += 64;
+        if ((directions & ArrowCell.TOP) != 0) visual += 1;
+        if ((directions & ArrowCell.RIGHT) != 0) visual += 2;
+        if ((directions & ArrowCell.LEFT) != 0) visual += 4;
+        if ((directions & ArrowCell.BOTTOM) != 0) visual += 8;
+        if (!visible) visual += 64;
         return visual;
     }
 
-    public static int imgCodeCenter(ArrowCell arrowCell) {
+    public static int imgCodeCenter(int directions, boolean visible) {
         int visual = 32;
-        if ((arrowCell.directionsEnter & ArrowCell.TOP_LEFT) != 0
-                || (arrowCell.directionsEnter & ArrowCell.BOTTOM_RIGHT) != 0) visual += 1;
-        if ((arrowCell.directionsEnter & ArrowCell.TOP_RIGHT) != 0
-                || (arrowCell.directionsEnter & ArrowCell.BOTTOM_LEFT) != 0) visual += 2;
-        if ((arrowCell.directionsEnter & ArrowCell.TOP) != 0
-                || (arrowCell.directionsEnter & ArrowCell.BOTTOM) != 0) visual += 4;
-        if ((arrowCell.directionsEnter & ArrowCell.RIGHT) != 0
-                || (arrowCell.directionsEnter & ArrowCell.LEFT) != 0) visual += 8;
+        if ((directions & ArrowCell.TOP_LEFT) != 0
+                || (directions & ArrowCell.BOTTOM_RIGHT) != 0) visual += 1;
+        if ((directions & ArrowCell.TOP_RIGHT) != 0
+                || (directions & ArrowCell.BOTTOM_LEFT) != 0) visual += 2;
+        if ((directions & ArrowCell.TOP) != 0
+                || (directions & ArrowCell.BOTTOM) != 0) visual += 4;
+        if ((directions & ArrowCell.RIGHT) != 0
+                || (directions & ArrowCell.LEFT) != 0) visual += 8;
 //                    if (!arrowCell.allowsWaiting) visual += 16;
-        if (!arrowCell.visible) visual += 64;
+        if (!visible) visual += 64;
         return visual;
     }
 

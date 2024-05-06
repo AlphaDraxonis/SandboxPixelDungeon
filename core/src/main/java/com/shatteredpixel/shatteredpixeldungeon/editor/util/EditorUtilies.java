@@ -497,9 +497,13 @@ public final class EditorUtilies {
     }
 
     public static Image getArrowCellTexture(ArrowCell arrowCell) {
-        int diagonalArrows = ArrowCellTilemap.imgCodeDiagonalOuterArrows(arrowCell);
-        int straightArrows = ArrowCellTilemap.imgCodeStraightOuterArrows(arrowCell);
-        int center = ArrowCellTilemap.imgCodeCenter(arrowCell);
+        return getArrowCellTexture(arrowCell.directionsEnter, arrowCell.visible);
+    }
+
+    public static Image getArrowCellTexture(int directions, boolean visible) {
+        int diagonalArrows = ArrowCellTilemap.imgCodeDiagonalOuterArrows(directions, visible);
+        int straightArrows = ArrowCellTilemap.imgCodeStraightOuterArrows(directions, visible);
+        int center = ArrowCellTilemap.imgCodeCenter(directions, visible);
         Image a = getImageFromFilm(diagonalArrows, ARROW_CELL_TEXTURE_FILM, Assets.Environment.ARROW_CELL);
         Image b = getImageFromFilm(straightArrows, ARROW_CELL_TEXTURE_FILM, Assets.Environment.ARROW_CELL);
         Image c = getImageFromFilm(center, ARROW_CELL_TEXTURE_FILM, Assets.Environment.ARROW_CELL);

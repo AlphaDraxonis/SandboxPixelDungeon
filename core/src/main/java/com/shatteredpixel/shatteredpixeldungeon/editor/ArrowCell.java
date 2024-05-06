@@ -9,6 +9,7 @@ import com.watabou.utils.PathFinder;
 
 public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
 
+    // Order is important!!!
     public static final int NONE = 0;
     public static final int TOP_LEFT = 1;
     public static final int TOP = 2;
@@ -109,11 +110,11 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
 
     public boolean allowsDirectionLeaving(int pathfinderNeighboursValue) {
 //        return allowsDirection(pathfinderNeighboursValue, directionsLeave);
-        return allowsDirection(-pathfinderNeighboursValue, directionsEnter);
+        return allowsDirection(pathfinderNeighboursValue, directionsEnter);
     }
 
     public boolean allowsDirectionEnter(int pathfinderNeighboursValue) {
-        return allowsDirection(pathfinderNeighboursValue, directionsEnter);
+        return allowsDirection(-pathfinderNeighboursValue, directionsEnter);
     }
 
     public static boolean allowsDirection(int pathfinderNeighboursValue, int directionsAllowed) {
@@ -121,10 +122,8 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     }
 
     private static int findDirectionBit(int pathfinderNeighboursValue) {
-        int directonValue = TOP_LEFT;
         for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-            if (PathFinder.NEIGHBOURS8[i] == pathfinderNeighboursValue) return directonValue;
-            directonValue *= 2;
+            if (PathFinder.NEIGHBOURS8[i] == pathfinderNeighboursValue) return 1 << i;
         }
         return NONE;
     }

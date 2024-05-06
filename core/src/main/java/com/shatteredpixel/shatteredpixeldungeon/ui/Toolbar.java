@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.HoldFast;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClassGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -60,7 +61,7 @@ public class Toolbar extends Component {
 	
 	private PickedUpItem pickedUp;
 	
-	private boolean lastEnabled = true;
+	private boolean lastEnabled = true, waitLastEnabled = true;
 	public boolean examining = false;
 
 	private static Toolbar instance;
@@ -638,7 +639,7 @@ public class Toolbar extends Component {
 		super.update();
 		
 		if (lastEnabled != (Dungeon.hero.ready && Dungeon.hero.isAlive())) {
-			lastEnabled = (Dungeon.hero.ready && Dungeon.hero.isAlive());
+			waitLastEnabled = lastEnabled = (Dungeon.hero.ready && Dungeon.hero.isAlive());
 			
 			for (Gizmo tool : members.toArray(new Gizmo[0])) {
 				if (tool instanceof Tool) {
@@ -649,6 +650,12 @@ public class Toolbar extends Component {
 		
 		if (!Dungeon.hero.isAlive()) {
 			btnInventory.enable(true);
+		}
+
+		ArrowCell arrowCell = Dungeon.level.arrowCells.get(Dungeon.hero.pos);
+		if (lastEnabled && waitLastEnabled != (arrowCell == null || arrowCell.allowsWaiting)) {
+			waitLastEnabled = arrowCell == null || arrowCell.allowsWaiting;
+			btnWait.enable(waitLastEnabled);
 		}
 	}
 
