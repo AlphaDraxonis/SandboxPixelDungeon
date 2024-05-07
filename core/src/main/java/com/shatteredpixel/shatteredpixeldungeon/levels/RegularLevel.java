@@ -284,8 +284,8 @@ public abstract class RegularLevel extends Level {
 		boolean[] entranceFOV = new boolean[length()];
 		Point c = cellToPoint(entrance());
 		ShadowCaster.castShadow(c.x, c.y, width(), entranceFOV, losBlocking, 6);
-		PathFinder.buildDistanceMap(entrance(), BArray.not(solid, null), 8);while (mobsToSpawn > 0) {
-				Mob mob = createMob();
+		PathFinder.buildDistanceMap(entrance(), BArray.not(solid, null), 8);Mob mob = null;while (mobsToSpawn > 0) {
+				if (mob == null) mob = createMob();
 				Room roomToSpawn;
 
 				if (!stdRoomIter.hasNext()) {
@@ -309,6 +309,7 @@ public abstract class RegularLevel extends Level {
 				if (tries >= 0) {
 					mobsToSpawn--;
 					mobs.add(mob);
+				mob = null;
 
 					//chance to add a second mob to this room, except on floor 1
 					if (Dungeon.getSimulatedDepth(levelScheme) > 1 && mobsToSpawn > 0 && Random.Int(4) == 0){
@@ -330,6 +331,7 @@ public abstract class RegularLevel extends Level {
 						if (tries >= 0) {
 							mobsToSpawn--;
 							mobs.add(mob);
+							mob = null;
 						}
 					}
 				}
