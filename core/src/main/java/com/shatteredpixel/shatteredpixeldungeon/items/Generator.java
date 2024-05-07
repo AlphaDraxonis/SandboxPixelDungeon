@@ -421,9 +421,10 @@ public class Generator {
 					MossyClump.class,
 					DimensionalSundial.class,
 					ThirteenLeafClover.class,
-					TrapMechanism.class
+					TrapMechanism.class,
+					WondrousResin.class
 			};
-			TRINKET.defaultProbs = new float[]{ 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+			TRINKET.defaultProbs = new float[]{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 			TRINKET.probs = TRINKET.defaultProbs.clone();
 
 			for (Category cat : Category.values()){
