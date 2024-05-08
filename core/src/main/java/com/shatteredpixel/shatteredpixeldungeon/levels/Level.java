@@ -2119,13 +2119,14 @@ public abstract class Level implements Bundlable {
 			if (blocking == null){
 				blocking = Dungeon.level.losBlocking;
 			}
-			
-			int viewDist = c.viewDistance;
+
+			float viewDist = c.viewDistance;
 			if (c instanceof Hero){
 				viewDist *= 1f + 0.25f*((Hero) c).pointsInTalent(Talent.FARSIGHT);
+				viewDist *= EyeOfNewt.visionRangeMultiplier();
 			}
 			
-			ShadowCaster.castShadow( cx, cy, width(), fieldOfView, blocking, viewDist, c instanceof Hero );
+			ShadowCaster.castShadow( cx, cy, width(), fieldOfView, blocking, Math.round(viewDist, c instanceof Hero ));
 		} else {
 			BArray.setFalse(fieldOfView);
 		}
@@ -2196,18 +2197,24 @@ public abstract class Level implements Bundlable {
 						heroMindFov[mob.pos + i] = true;
 					}
 				}
-			} else if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES)) {
-				Hero h = (Hero) c;
-				int range = 1+h.pointsInTalent(Talent.HEIGHTENED_SENSES);
-				for (Mob mob : mobs) {
-					if (Mimic.isLikeMob(mob) || stealthyMimics && mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL){
+			} else {
+
+				int mindVisRange = 0;
+				if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES)){
+					mindVisRange = 1+((Hero) c).pointsInTalent(Talent.HEIGHTENED_SENSES);
+				}
+				mindVisRange = Math.max(mindVisRange, EyeOfNewt.mindVisionRange());
+
+				if (mindVisRange >= 1) {
+					for (Mob mob : mobs) {
+						if (Mimic.isLikeMob(mob) || stealthyMimics && mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL){
 						continue;
 					}
 					int p = mob.pos;
-					if (!fieldOfView[p] && distance(c.pos, p) <= range) {
-						for (int i : PathFinder.NEIGHBOURS9) {
-							int cell = mob.pos + i;
-							if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;
+					if (!fieldOfView[p] && distance(c.pos, p) <= mindVisRange) {
+							for (int i : PathFinder.NEIGHBOURS9) {
+								int cell = mob.pos + i;
+							if (cell >= 0 && cell < heroMindFov.length) heroMindFov[mob.pos + i] = true;}
 						}
 					}
 				}
