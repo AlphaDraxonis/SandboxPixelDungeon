@@ -18,299 +18,387 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class ServerDungeonList extends MultiWindowTabComp {
 
-    private static ServerDungeonList instance;
+	private static ServerDungeonList instance;
 
-    private final DungeonPreview[] dungeons;
+	private static DungeonPreview[][] dungeons;
 
-    private Spinner outsideSp;
-    protected RedButton upload;
+	private Spinner outsideSp;
+	protected RedButton upload;
+	protected RedButton refresh;
+	protected RenderedTextBlock msgWaitingForData;
 
-    private int page = 0;
-    private static final int PREVIEWS_PER_PAGE = 20;
+	private int page = 0;
+	private static int numPages, lastPage = 0;
+	public static final int PREVIEWS_PER_PAGE = 4;
 
-    public ServerDungeonList(DungeonPreview[] dungeons) {
+	private static final Set<Integer> pagesLoading = new HashSet<>(5);
 
-        instance = this;
+	public ServerDungeonList() {
 
-        this.dungeons = dungeons;
+		instance = this;
 
-        title = createTitle();
-        add(title);
+		mainWindowComps = new Component[PREVIEWS_PER_PAGE];
 
-        mainWindowComps = new Component[PREVIEWS_PER_PAGE];
+		upload = new RedButton("") {
+			@Override
+			protected void onClick() {
+				UploadDungeon.showUploadWindow(ServerCommunication.UploadType.UPLOAD, null);
+			}
 
-        if (dungeons.length > PREVIEWS_PER_PAGE) {
-            int numPages = dungeons.length / PREVIEWS_PER_PAGE + 1;
-            outsideSp = new Spinner(new SpinnerIntegerModel(1, numPages, 1, true) {
-                {
-                    setAbsoluteMinAndMax(getMinimum(), getMaximum());
-                }
+			@Override
+			protected String hoverText() {
+				return Messages.get(WndSelectDungeon.class, "upload_label");
+			}
+		};
+		upload.icon(Icons.UPLOAD.get());
+		add(upload);
 
-                @Override
-                public String getDisplayString() {
-                    return Messages.get(ServerDungeonList.class, "page", outsideSp == null ? 1 : outsideSp.getValue(), numPages);
-                }
+		refresh = new RedButton("") {
+			@Override
+			protected void onClick() {
+				dungeons = null;
+				hidePage(page);
+				requestPage(lastPage, true);
+				for (int i = Math.max(0, lastPage-1); i < 3; i++) {
+					loadPageFromServer(i, false);
+				}
+			}
 
-                @Override
-                public float getInputFieldWidth(float height) {
-                    return Spinner.FILL;
-                }
-            }, "", 10) {
-                @Override
-                protected void layout() {
-                    height = 20;
-                    super.layout();
-                }
-            };
-            outsideSp.addChangeListener(() -> {
-                hidePage(page);
-                initPage((int) outsideSp.getValue() - 1);
-                layout();
-                sp.scrollTo(0, 0);
-            });
-        }
+			@Override
+			protected String hoverText() {
+				return Messages.get(WndSelectDungeon.class, "refresh_label");
+			}
+		};
+		refresh.icon(Icons.REFRESH.get());
+		refresh.icon().scale.set(0.7f);
+		add(refresh);
 
-        upload = new RedButton("") {
-            @Override
-            protected void onClick() {
-                UploadDungeon.showUploadWindow(ServerCommunication.UploadType.UPLOAD, null);
-            }
+		title = createTitle();
+		add(title);
 
-            @Override
-            protected String hoverText() {
-                return Messages.get(WndSelectDungeon.class, "upload_label");
-            }
-        };
-        upload.icon(Icons.UPLOAD.get());
-        add(upload);
+		msgWaitingForData = PixelScene.renderTextBlock(Messages.get(ServerCommunication.class, "wait_body"), 6);
+		content.add(msgWaitingForData);
 
-        initPage(page);
-    }
+		outsideSp = new Spinner(new SpinnerIntegerModel(1, numPages, lastPage+1, true) {
+			{
+				setAbsoluteMinAndMax(getMinimum(), getMaximum());
+			}
 
-    private void hidePage(int page) {
-        int indexLast = Math.min(dungeons.length, (page + 1) * PREVIEWS_PER_PAGE) - page * PREVIEWS_PER_PAGE;
-        for (int i = 0; i < indexLast; i++) {
-            mainWindowComps[i].remove();
-            mainWindowComps[i].killAndErase();
-            mainWindowComps[i].destroy();
-            mainWindowComps[i] = null;
-        }
-    }
+			@Override
+			public String getDisplayString() {
+				return Messages.get(ServerDungeonList.class, "page", outsideSp == null ? lastPage+1 : (outsideSp.getValue()), numPages);
+			}
 
-    private void initPage(int page) {
-        this.page = page;
-        int indexLast = Math.min(dungeons.length, (page + 1) * PREVIEWS_PER_PAGE);
-        int pageMultiply = page * PREVIEWS_PER_PAGE;
-        for (int i = pageMultiply; i < indexLast; i++) {
-            mainWindowComps[i - pageMultiply] = createListItem(dungeons[i]);
-            content.add(mainWindowComps[i - pageMultiply]);
-        }
-    }
+			@Override
+			public float getInputFieldWidth(float height) {
+				return Spinner.FILL;
+			}
+		}, "", 10) {
+			@Override
+			protected void layout() {
+				height = 20;
+				super.layout();
+			}
+		};
+		outsideSp.visible = outsideSp.active = numPages > 1;
 
-    public static void updatePage() {
-        if (instance != null) {
-            instance.hidePage(instance.page);
-            instance.initPage(instance.page);
-        }
-    }
+		outsideSp.addChangeListener(() -> {
+			hidePage(page);
+			requestPage((int) outsideSp.getValue()-1, true);
+			layout();
+			sp.scrollTo(0, 0);
+		});
 
-    @Override
-    protected void layoutOwnContent() {
-        content.setSize(width, 0);
-        content.setSize(width, EditorUtilies.layoutCompsLinear(GAP, content, mainWindowComps));
-        upload.setRect(width - 17, height - 15,16,16);
-    }
+		if (dungeons == null) {
+			for (int i = Math.max(0, lastPage-1); i < 3; i++) {
+				loadPageFromServer(i, false);
+			}
+		}
+		requestPage(lastPage, true);
+	}
 
-    @Override
-    public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
-        upload.visible = upload.active = false;
-        super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
-    }
+	public static void setNumPreviews(int numPreviews) {
+		numPages = (int) Math.ceil((float) numPreviews / PREVIEWS_PER_PAGE);
+		if (dungeons == null) {
+			dungeons = new DungeonPreview[numPages][];
+		}
+		if (instance != null) {
+			instance.outsideSp.visible = instance.outsideSp.active = numPages > 1;
+			((SpinnerIntegerModel) instance.outsideSp.getModel()).setMaximum(numPages);
+			((SpinnerIntegerModel) instance.outsideSp.getModel()).setAbsoluteMaximum(numPages);
+			Game.runOnRenderThread(() -> instance.outsideSp.setValue(instance.outsideSp.getValue()));
+			((WndServerDungeonList) EditorUtilies.getParentWindow(instance)).updateLayout();
+		}
+	}
 
-    @Override
-    public void closeCurrentSubMenu() {
-        upload.visible = upload.active = true;
-        super.closeCurrentSubMenu();
-    }
+	private void hidePage(int page) {
+		for (int i = 0; i < mainWindowComps.length; i++) {
+			if (mainWindowComps[i] != null) {
+				mainWindowComps[i].remove();
+				mainWindowComps[i].killAndErase();
+				mainWindowComps[i].destroy();
+				mainWindowComps[i] = null;
+			}
+		}
+	}
 
-    public Component createTitle() {
-        return new IconTitle(null, Messages.titleCase(Messages.get(ServerDungeonList.class, "title")));
-    }
+	private void initPage(int page) {
+		msgWaitingForData.visible = msgWaitingForData.active = false;
+		this.page = page;
+		for (int i = 0; i < dungeons[page].length; i++) {
+			mainWindowComps[i] = createListItem(dungeons[page][i]);
+			content.add(mainWindowComps[i]);
+		}
+	}
 
-    public Component getOutsideSp() {
-        return outsideSp;
-    }
+	public static void updatePage() {
+		if (instance != null) {
+			instance.hidePage(instance.page);
+			instance.initPage(instance.page);
+		}
+	}
 
-    @Override
-    public Image createIcon() {
-        return null;
-    }
+	public void requestPage(int page, boolean startMoreProcesses) {
+		lastPage = page;
+		if (dungeons == null || dungeons[page] == null) {
+			msgWaitingForData.visible = msgWaitingForData.active = true;
+			loadPageFromServer(page, startMoreProcesses);
+		} else {
+			initPage(page);
+		}
+	}
 
-    @Override
-    public String hoverText() {
-        return null;
-    }
+	private void loadPageFromServer(final int page, boolean startMoreProcesses) {
+		if (pagesLoading.contains(page)) return;
+		pagesLoading.add(page);
+		ServerCommunication.dungeonList(new ServerCommunication.OnPreviewReceive() {
+			@Override
+			protected void onSuccessful(DungeonPreview[] previews) {
+				if (dungeons.length <= page) return;
+				dungeons[page] = previews;
+				if (lastPage == page && instance != null) {
+					instance.initPage(page);
+					instance.layout();
+					instance.sp.scrollTo(0, 0);
+				}
+				if (startMoreProcesses && instance != null) {
+					if (page + 1 < dungeons.length && dungeons[page + 1] == null && !pagesLoading.contains(page+1)) loadPageFromServer(page+1, true);
+					else if (page > 0 && dungeons[page - 1] != null  && !pagesLoading.contains(page-1)) loadPageFromServer(page-1, true);
+				}
+				pagesLoading.remove(page);
+			}
+		}, page);
+	}
 
-    @Override
-    public synchronized void destroy() {
-        super.destroy();
-        if (instance == this) instance = null;
-    }
+	@Override
+	protected void layoutOwnContent() {
+		if (mainWindowComps[0] == null) {
+			msgWaitingForData.maxWidth((int) width);
+			msgWaitingForData.setPos((width - msgWaitingForData.width()) * 0.5f, 0);
+			content.setSize(msgWaitingForData.width(), msgWaitingForData.height());
+		}
+		else {
+			content.setSize(width, 0);
+			content.setSize(width, EditorUtilies.layoutCompsLinear(GAP, content, mainWindowComps));
+		}
+		upload.setRect(width - 17, height - 15, 16, 16);
+	}
 
-    public DungeonPreviewItem createListItem(DungeonPreview preview) {
-        return preview.dungeonFileID.startsWith("ERROR")
-                ? new DungeonPreviewItem(preview.dungeonFileID)
-                : new DungeonPreviewItem(preview);
-    }
+	@Override
+	public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
+		upload.visible = upload.active = false;
+		super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
+	}
 
-    private class DungeonPreviewItem extends ScrollingListPane.ListItem {
+	@Override
+	public void closeCurrentSubMenu() {
+		upload.visible = upload.active = true;
+		super.closeCurrentSubMenu();
+	}
 
-        private final DungeonPreview preview;
+	public Component createTitle() {
+		return new Component() {
+			private IconTitle main;
+			{
+				main = new IconTitle(null, Messages.titleCase(Messages.get(ServerDungeonList.class, "title")));
+				add(main);
+			}
 
-        protected RenderedTextBlock desc;
+			@Override
+			protected void layout() {
+				main.setRect(x, y, width - 20, -1);
+				height = Math.max(18, main.height());
+				refresh.setRect(width - 17, (height - 16) * 0.5f + 1, 16, 16);
+			}
+		};
+	};
 
-        protected RenderedTextBlock label2, label3;
+	public Component getOutsideSp() {
+		return outsideSp;
+	}
 
-        private DungeonPreviewItem(String error) {
-            super(new Image(), Messages.get(ServerCommunication.class, "error") + ": " + error);
-            preview = null;
-        }
+	@Override
+	public Image createIcon() {
+		return null;
+	}
 
-        private DungeonPreviewItem(DungeonPreview preview) {
-            super(new Image(), null, preview.title);
-            this.preview = preview;
+	@Override
+	public String hoverText() {
+		return null;
+	}
 
-            desc.text(preview.description);
+	@Override
+	public synchronized void destroy() {
+		super.destroy();
+		if (instance == this) instance = null;
+	}
 
-            label2.text(Messages.get(ServerDungeonList.class, "title_entry"));
-            label3.text("_" + preview.uploader + "_");
-        }
+	private DungeonPreviewItem createListItem(DungeonPreview preview) {
+		return preview.dungeonFileID.startsWith("ERROR")
+				? new DungeonPreviewItem(preview.dungeonFileID)
+				: new DungeonPreviewItem(preview);
+	}
 
-        @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
+	private class DungeonPreviewItem extends ScrollingListPane.ListItem {
 
-            label.setHighlighting(false);
-            label.hardlight(Window.TITLE_COLOR);
+		private final DungeonPreview preview;
 
-            label2 = PixelScene.renderTextBlock(7);
-            label2.setHighlighting(false);
-            add(label2);
+		protected RenderedTextBlock desc;
 
-            label3 = PixelScene.renderTextBlock(7);
-            add(label3);
+		protected RenderedTextBlock label2, label3;
 
-            desc = PixelScene.renderTextBlock(6);
-            desc.maxNumLines = 3;
-            add(desc);
-        }
+		private DungeonPreviewItem(String error) {
+			super(new Image(), Messages.get(ServerCommunication.class, "error") + ": " + error);
+			preview = null;
+		}
 
-        @Override
-        protected void layout() {
-            if (desc == null) super.layout();
-            else {
-                desc.maxWidth(getLabelMaxWidth() - 3);
-                label.maxWidth(getLabelMaxWidth());
-                height = label.height() + desc.height() + 9;
-                super.layout();
-                label.setPos(label.left(), y + 3);
-                desc.setPos(label.left() + 3, label.bottom() + 4);
-            }
+		private DungeonPreviewItem(DungeonPreview preview) {
+			super(new Image(), null, preview.title);
+			this.preview = preview;
 
-            label2.setPos(label.right(), label.top());
-            label3.setPos(label2.right(), label2.top());
-        }
+			desc.text(preview.description);
 
-        @Override
-        protected void onClick() {
-            if (preview != null) {
-                WndPreview prev = new WndPreview(preview, ServerDungeonList.this);
-                changeContent(prev.createTitle(), prev, prev.getOutsideSp());
+			label2.text(Messages.get(ServerDungeonList.class, "title_entry"));
+			label3.text("_" + preview.uploader + "_");
+		}
 
-                if (preview.intVersion > Game.versionCode) {
-                    Game.scene().addToFront(new WndOptions(
-                            Icons.WARNING.get(),
-                            Messages.titleCase( Messages.get(WndPreview.class, "update_req_title") ),
-                            Messages.get(WndPreview.class, "update_req_body"),
-                            Messages.get(WndPreview.class, "update_now"),
-                            Messages.get(WndPreview.class, "update_later")
-                    ) {
-                        @Override
-                        protected void onSelect(int index) {
-                            if (index == 0) {
-                                if (Updates.updateAvailable()) Updates.launchUpdate(Updates.updateData());
-                                else Game.platform.openURI( "https://github.com/AlphaDraxonis/SandboxPixelDungeon/releases" );
-                            }
-                        }
-                    });
-                }
-            }
-        }
-    }
+		@Override
+		protected void createChildren(Object... params) {
+			super.createChildren(params);
 
+			label.setHighlighting(false);
+			label.hardlight(Window.TITLE_COLOR);
 
-    public static void show() {
-        if (!EditorUtilies.shouldConnectToInternet(() -> ServerCommunication.dungeonList(new ServerCommunication.OnPreviewReceive() {
-            @Override
-            protected void onSuccessful(DungeonPreview[] previews) {
-                Game.scene().addToFront(new WndServerDungeonList(previews));
-            }
-        }))) return;
-        ServerCommunication.dungeonList(new ServerCommunication.OnPreviewReceive() {
-            @Override
-            protected void onSuccessful(DungeonPreview[] previews) {
-                Game.scene().addToFront(new WndServerDungeonList(previews));
-            }
-        });
-    }
+			label2 = PixelScene.renderTextBlock(7);
+			label2.setHighlighting(false);
+			add(label2);
 
-    public static void updateLayout() {
-        if (instance != null) instance.layout();
-    }
+			label3 = PixelScene.renderTextBlock(7);
+			add(label3);
 
-    private static class WndServerDungeonList extends Window {
-        private ServerDungeonList serverDungeonList;
-        private Component outsideSp;
+			desc = PixelScene.renderTextBlock(6);
+			desc.maxNumLines = 3;
+			add(desc);
+		}
 
-        public WndServerDungeonList(DungeonPreview[] previews) {
-            super(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
+		@Override
+		protected void layout() {
+			if (desc == null) super.layout();
+			else {
+				desc.maxWidth(getLabelMaxWidth() - 3);
+				label.maxWidth(getLabelMaxWidth());
+				height = label.height() + desc.height() + 9;
+				super.layout();
+				label.setPos(label.left(), y + 3);
+				desc.setPos(label.left() + 3, label.bottom() + 4);
+			}
 
-            add(serverDungeonList = new ServerDungeonList(previews) {
-                @Override
-                public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
-                    super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
-                    if (WndServerDungeonList.this.outsideSp != null) {
-                        WndServerDungeonList.this.outsideSp.visible
-                                = WndServerDungeonList.this.outsideSp.active = false;
-                        serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - 2);
-                    }
-                    sp.givePointerPriority();
-                    upload.givePointerPriority();
-                }
+			label2.setPos(label.right(), label.top());
+			label3.setPos(label2.right(), label2.top());
+		}
 
-                @Override
-                public void closeCurrentSubMenu() {
-                    super.closeCurrentSubMenu();
-                    if (outsideSp != null) {
-                        outsideSp.active = outsideSp.visible = true;
-                        serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - outsideSp.height() - 4);
-                    }
-                }
-            });
-            outsideSp = serverDungeonList.getOutsideSp();
-            if (outsideSp != null) {
-                add(outsideSp);
-                outsideSp.setSize(width, -1);
-                outsideSp.setPos(0, height - outsideSp.height());
-                serverDungeonList.setRect(0, 2, width, height - outsideSp.height() - 4);
-            } else {
-                serverDungeonList.setRect(0, 2, width, height - 2);
-            }
-            serverDungeonList.sp.givePointerPriority();
-            serverDungeonList.upload.givePointerPriority();
-        }
-    }
+		@Override
+		protected void onClick() {
+			if (preview != null) {
+				WndPreview prev = new WndPreview(preview, ServerDungeonList.this);
+				changeContent(prev.createTitle(), prev, prev.getOutsideSp());
+
+				if (preview.intVersion > Game.versionCode) {
+					Game.scene().addToFront(new WndOptions(
+							Icons.WARNING.get(),
+							Messages.titleCase(Messages.get(WndPreview.class, "update_req_title")),
+							Messages.get(WndPreview.class, "update_req_body"),
+							Messages.get(WndPreview.class, "update_now"),
+							Messages.get(WndPreview.class, "update_later")
+					) {
+						@Override
+						protected void onSelect(int index) {
+							if (index == 0) {
+								if (Updates.updateAvailable()) Updates.launchUpdate(Updates.updateData());
+								else Game.platform.openURI("https://github.com/AlphaDraxonis/SandboxPixelDungeon/releases");
+							}
+						}
+					});
+				}
+			}
+		}
+	}
+
+	public static void updateLayout() {
+		if (instance != null) instance.layout();
+	}
+
+	public static class WndServerDungeonList extends Window {
+		private ServerDungeonList serverDungeonList;
+		private Component outsideSp;
+
+		public WndServerDungeonList() {
+			super(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
+
+			add(serverDungeonList = new ServerDungeonList() {
+				@Override
+				public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
+					super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
+					if (WndServerDungeonList.this.outsideSp != null) {
+						WndServerDungeonList.this.outsideSp.visible
+								= WndServerDungeonList.this.outsideSp.active = false;
+						serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - 2);
+					}
+					sp.givePointerPriority();
+					upload.givePointerPriority();
+				}
+
+				@Override
+				public void closeCurrentSubMenu() {
+					super.closeCurrentSubMenu();
+					if (outsideSp != null) {
+						outsideSp.active = outsideSp.visible = true ;
+						serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - outsideSp.height() - 4);
+					}
+				}
+			});
+			outsideSp = serverDungeonList.getOutsideSp();
+			add(outsideSp);
+
+			updateLayout();
+		}
+
+		private void updateLayout() {
+			if (outsideSp != null && outsideSp.visible) {
+				outsideSp.setSize(width, -1);
+				outsideSp.setPos(0, height - outsideSp.height());
+				serverDungeonList.setRect(0, 2, width, height - outsideSp.height() - 4);
+			} else {
+				serverDungeonList.setRect(0, 2, width, height - 2);
+			}
+			serverDungeonList.sp.givePointerPriority();
+			serverDungeonList.upload.givePointerPriority();
+		}
+	}
 
 }

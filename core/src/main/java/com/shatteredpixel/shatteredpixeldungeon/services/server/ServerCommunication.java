@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.server.ServerDungeonList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.ExportDungeonWrapper;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -23,8 +24,6 @@ import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -46,6 +45,7 @@ public final class ServerCommunication {
                 return false;
             }
 
+            //TODO tzz make a new url file for v1.2.0!
             String scriptLoadURL = "https://script.google.com/macros/s/AKfycbzR6JDJgBdSn0U0m10R2VMvF2Ou9kGg8XnPna_XO-BbN5IE9H9jzwLZ5-9CTcplfq5pyQ/exec";
             Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
             httpRequest.setUrl(scriptLoadURL);
@@ -87,7 +87,8 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return URL == null ? "https://script.google.com/macros/s/AKfycbwbBmqKmTGIbeR9CjMhMh9J8ykp4EhiL7qBWzi95jAkCYDvR0Rl1Ank-5xyeeOWdk1JsQ/exec" : URL;
+        return "https://script.google.com/macros/s/AKfycbwUsAg55qmE82h5Oe4DJ28IE1xwycv4VGD6WI1tg0S92cYVTrEYJbED3Wk_vpkoWTR62A/exec";
+//        return URL == null ? "https://script.google.com/macros/s/AKfycbwbBmqKmTGIbeR9CjMhMh9J8ykp4EhiL7qBWzi95jAkCYDvR0Rl1Ank-5xyeeOWdk1JsQ/exec" : URL;
     }
 
     private static String getUUID() {
@@ -184,19 +185,22 @@ public final class ServerCommunication {
     }
 
 
-    public static void dungeonList(OnPreviewReceive callback) {
+    public static void dungeonList(OnPreviewReceive callback, int page) {
 
         Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
-        httpRequest.setUrl(getURL() + "?action=getPreviewList");
+        httpRequest.setUrl(getURL() + "?action=getPreviewList&page="+page+"&perPage="+ ServerDungeonList.PREVIEWS_PER_PAGE);
 
-        callback.showWindow(httpRequest);
+//        callback.showWindow(httpRequest);
 
         Gdx.net.sendHttpRequest(httpRequest, new com.badlogic.gdx.Net.HttpResponseListener() {
             @Override
             public void handleHttpResponse(com.badlogic.gdx.Net.HttpResponse httpResponse) {
                 List<DungeonPreview> dungeons = new ArrayList<>();
                 try {
-                    for (Bundle b : Bundle.read(httpResponse.getResultAsStream()).getBundleArray()) {
+                    Bundle[] bundles = Bundle.read(httpResponse.getResultAsStream()).getBundleArray();
+                    ServerDungeonList.setNumPreviews(bundles[0].getInt("numPreviews"));
+                    for (int i = 1; i < bundles.length; i++) {
+                        Bundle b = bundles[i];
                         if (!b.getString("content").startsWith("Error")) {
                             DungeonPreview preview;
                             try {
@@ -217,7 +221,8 @@ public final class ServerCommunication {
                     Game.runOnRenderThread(() -> callback.failed(e.getMessage() == null ? new IOException(String.valueOf(httpResponse.getStatus().getStatusCode())) : e));
                     return;
                 }
-                Collections.sort(dungeons, (o1, o2) -> new Date(o2.uploadTime).compareTo(new Date(o1.uploadTime)));
+                //sorting is already done on the backend
+                //Collections.sort(dungeons, (o1, o2) -> new Date(o2.uploadTime).compareTo(new Date(o1.uploadTime)));
                 callback.accept(dungeons.toArray(new DungeonPreview[0]));
             }
 

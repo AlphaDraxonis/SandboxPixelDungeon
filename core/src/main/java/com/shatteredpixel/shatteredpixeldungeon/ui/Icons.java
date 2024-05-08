@@ -78,6 +78,7 @@ public enum Icons {
     DOWNLOAD,
     UPLOAD,
     BUG,
+    REFRESH,
 
     //misc icons, mainly used for buttons, spacing for 16x16 until the smaller icons at the end
     UNCHECKED,
@@ -284,6 +285,9 @@ public enum Icons {
                 break;
             case BUG:
                 icon.frame(icon.texture.uvRectBySize(192, 16, 16, 16));
+                break;
+            case REFRESH:
+                icon.frame(icon.texture.uvRectBySize(176, 16, 16, 15));
                 break;
 
             case UNCHECKED:

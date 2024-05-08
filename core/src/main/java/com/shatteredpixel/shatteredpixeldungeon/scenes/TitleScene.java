@@ -170,7 +170,7 @@ public class TitleScene extends PixelScene {
 		StyledButton btnDiscover = new StyledButton(GREY_TR, Messages.get(this, "discover")){
 			@Override
 			protected void onClick() {
-				ServerDungeonList.show();
+				Game.scene().addToFront(new ServerDungeonList.WndServerDungeonList());
 			}
 		};
 		btnDiscover.icon(Icons.get(Icons.DOWNLOAD));

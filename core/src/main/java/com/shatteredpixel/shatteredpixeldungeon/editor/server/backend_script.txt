@@ -12,6 +12,8 @@ const BUG_REPORT_FOLDER = "1oylaCmD9hQ2-6QsZ3g9SuieM5WZeY66K";
 function doPost(e) {
   if (e.parameter.action === "upload") {
 
+    console.log("dungeon upload");
+
     const user = e.parameter.userID;
     const userIDFileContent = {
       id1: hashUserIDOne(user),
@@ -35,7 +37,7 @@ function doPost(e) {
       difficulty: e.parameter.difficulty,
       upload_time: new Date().getTime(),
     };
-    uploadFile(JSON.stringify(preview), dungeonID, "", PREVIEW_FOLDER, false);
+    uploadFile(JSON.stringify(preview), preview.upload_time.toString() + "_" + dungeonID, "", PREVIEW_FOLDER, false);//TODO tzz test!
 
     uploadFile(JSON.stringify(userIDFileContent), dungeonID, "", USER_ID_FOLDER, false);
 
@@ -45,6 +47,8 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.TEXT);
   }
   else if (e.parameter.action === "update") {
+
+    console.log("dungeon update");
 
     const user = e.parameter.userID;
     const userIDFileContent = {
@@ -101,6 +105,8 @@ function doPost(e) {
   }
   else if (e.parameter.action === "bug_report") {
 
+    console.log("bug report");
+
     const user = e.parameter.userID;
 
     if (isUserBanned(hashUserIDOne(user), hashUserIDTwo(user))) return ContentService.createTextOutput("banned")
@@ -137,7 +143,7 @@ function doPost(e) {
 
 function doGet(e) {
   if (e.parameter.action === "getPreviewList") {
-    const result = listFiles(PREVIEW_FOLDER);
+    const result = listFiles(PREVIEW_FOLDER, e.parameter.page, e.parameter.perPage);
     return ContentService.createTextOutput(result)
       .setMimeType(ContentService.MimeType.JSON);
   }
@@ -229,7 +235,7 @@ function deleteDungeon(dungeonID, id1, id2, deleteDungeonFile) {
 
 }
 
-function listFiles(folderID) {
+function listFiles(folderID, page, perPage) {
 
   const folder = DriveApp.getFolderById(folderID);
   const files = folder.getFiles();
@@ -241,11 +247,27 @@ function listFiles(folderID) {
       id: file.getId(),
       name: file.getName(),
       dungeonID: file.getName(),
-      content: file.getBlob().getDataAsString(),
     });
   }
 
-  return JSON.stringify(fileList);
+  const numPreviews = fileList.length;
+
+  fileList.sort((a, b) => a.name.localeCompare(b.name));
+
+  const startIndex = page * perPage;
+  const subset = fileList.slice(startIndex, startIndex + parseInt(perPage));
+
+  subset.forEach(fileInfo => {
+    const file = DriveApp.getFileById(fileInfo.id);
+    fileInfo.content = file.getBlob().getDataAsString();
+  });
+
+  const numPreviewsObj = {
+    numPreviews: numPreviews
+  }
+  subset.unshift(numPreviewsObj);
+
+  return JSON.stringify(subset);
 }
 
 
