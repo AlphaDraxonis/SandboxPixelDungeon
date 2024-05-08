@@ -22,12 +22,11 @@ public class BarrierTilemap extends DungeonTilemap {
     }
 
     @Override
-    protected int getTileVisual(int pos, int tile, boolean flat){
-        if (barriers.get(pos) != null) {
-            Barrier barrier = barriers.get(pos);
-            if (barrier.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing()){
-                return barrier.visible ? 1 : 0;
-            }
+    protected int getTileVisual(int pos, int tile, boolean flat) {
+        Barrier barrier = barriers.get(pos);
+        if (barrier != null
+                && (barrier.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing())) {
+            return barrier.visible ? 1 : 0;
         }
         return -1;
     }

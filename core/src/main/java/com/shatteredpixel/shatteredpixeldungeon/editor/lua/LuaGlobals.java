@@ -33,13 +33,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
-import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
+import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -61,6 +59,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
@@ -70,6 +70,7 @@ import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.OneArgFunction;
+import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
@@ -248,6 +249,20 @@ public class LuaGlobals extends Globals {
 			}
 		});
 
+		set("drop", new ThreeArgFunction() {//no valid placement check is made
+			@Override
+			public LuaValue call(LuaValue item, LuaValue pos, LuaValue from) {
+				if (item.isuserdata() && pos.isint()) {
+					Object obj = item.checkuserdata();
+					if (obj instanceof Item) {
+						if (from.isnil()) Dungeon.level.drop((Item) obj, pos.toint()).sprite.drop();
+						else if (from.isint()) Dungeon.level.drop((Item) obj, pos.toint()).sprite.drop(from.checkint());
+					}
+				}
+				return LuaValue.NIL;
+			}
+		});
+
 		set("giveItem", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue item) {
@@ -280,6 +295,27 @@ public class LuaGlobals extends Globals {
 							return LuaValue.valueOf("Class not found: " + className.checkstring());
 					}
 					return LuaValue.valueOf(clazz.isInstance(obj.checkuserdata()));
+				}
+				return LuaValue.FALSE;
+			}
+		});
+
+		set("areEqual", new TwoArgFunction() {
+			@Override
+			public LuaValue call(LuaValue a, LuaValue b) {
+				if (a.isuserdata() && b.isuserdata()) {
+					Object objA = a.touserdata();
+					Object objB = b.touserdata();
+					if (objA.getClass() != objB.getClass()) return LuaValue.FALSE;
+
+					if (objA instanceof Item)    return LuaValue.valueOf(EditItemComp.areEqual(((Item) objA), (Item) objB));
+					if (objA instanceof Mob)     return LuaValue.valueOf(EditMobComp.areEqual(((Mob) objA), (Mob) objB));
+					if (objA instanceof Trap)    return LuaValue.valueOf(EditTrapComp.areEqual(((Trap) objA), (Trap) objB));
+					if (objA instanceof Plant)   return LuaValue.valueOf(EditPlantComp.areEqual(((Plant) objA), (Plant) objB));
+					if (objA instanceof Heap)    return LuaValue.valueOf(EditHeapComp.areEqual(((Heap) objA), (Heap) objB));
+					if (objA instanceof Barrier) return LuaValue.valueOf(EditBarrierComp.areEqual(((Barrier) objA), (Barrier) objB));
+					if (objA instanceof Room)    return LuaValue.valueOf(EditRoomComp.areEqual(((Room) objA), (Room) objB));
+
 				}
 				return LuaValue.FALSE;
 			}

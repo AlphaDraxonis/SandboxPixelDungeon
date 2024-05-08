@@ -15,7 +15,7 @@ public /*sealed*/ abstract class BarrierActionPart implements ActionPart {
     private BarrierActionPart(Barrier barrier) {
         this.barrier = barrier;
         this.cell = barrier.pos;
-        copyForUndo = (Barrier) barrier.getCopy();
+        copyForUndo = barrier.getCopy();
 
         redo();
     }
@@ -23,7 +23,7 @@ public /*sealed*/ abstract class BarrierActionPart implements ActionPart {
     protected void place() {
         place(copyForUndo);
         barrier = copyForUndo;
-        copyForUndo = (Barrier) barrier.getCopy();
+        copyForUndo = barrier.getCopy();
     }
 
     protected void remove() {
@@ -87,20 +87,20 @@ public /*sealed*/ abstract class BarrierActionPart implements ActionPart {
         private Barrier after;
 
         public Modify(Barrier barrier) {
-            before = (Barrier) barrier.getCopy();
+            before = barrier.getCopy();
             after = barrier;
         }
 
         @Override
         public void undo() {
             remove(after.pos);
-            place((Barrier) before.getCopy());
+            place(before.getCopy());
         }
 
         @Override
         public void redo() {
             remove(after.pos);
-            place((Barrier) after.getCopy());
+            place(after.getCopy());
         }
 
         @Override
@@ -110,7 +110,7 @@ public /*sealed*/ abstract class BarrierActionPart implements ActionPart {
 
         @Override
         public void finish() {
-            after = (Barrier) after.getCopy();
+            after = after.getCopy();
         }
     }
 }

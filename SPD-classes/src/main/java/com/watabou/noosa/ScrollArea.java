@@ -82,6 +82,6 @@ public class ScrollArea extends PointerArea {
 			Gizmo g = Game.scene().members.get(i);
 			if (g != null && checkIfGizmoIsInstanceofWindow.apply(g) && g != ownWindow) return false;
 		}
-		return startIndex < memberCount;
+		return ownWindow != null;
 	}
 }
