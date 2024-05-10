@@ -34,7 +34,7 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
             }
         };
 
-        remover.visible = remover.active = false;
+        remover.setVisible(false);
         add(remover);
         add(adder);
     }
@@ -56,11 +56,11 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
         add(body);
 
 
-        adder.visible = adder.active = false;
+        adder.setVisible(false);
         remover.enable(remover.visible = true);
 
         fold.enable(fold.visible = true);
-        expand.visible = expand.active = false;
+        expand.setVisible(false);
 
         if (!initialAdding) layoutParent();
     }
@@ -76,10 +76,10 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
         }
 
         adder.enable(adder.visible = true);
-        remover.visible = remover.active = false;
+        remover.setVisible(false);
 
-        fold.visible = fold.active = false;
-        expand.visible = expand.active = false;
+        fold.setVisible(false);
+        expand.setVisible(false);
 
         layoutParent();
     }

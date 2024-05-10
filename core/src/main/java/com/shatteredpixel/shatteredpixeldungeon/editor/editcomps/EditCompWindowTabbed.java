@@ -212,7 +212,7 @@ public class EditCompWindowTabbed extends WndTabbed {
         comps.put(comp.getObj(), new Wrapper(body, tabBtn));
         add(tabBtn);
         add(body);
-        body.active = body.visible = false;
+        body.setVisible(false);
     }
 
     private void changeHeight() {

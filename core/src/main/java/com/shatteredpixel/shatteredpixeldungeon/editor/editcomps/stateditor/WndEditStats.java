@@ -245,13 +245,13 @@ public class WndEditStats extends MultiWindowTabComp {
 
     @Override
     public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
-        restoreDefaults.visible = restoreDefaults.active = false;
+        restoreDefaults.setVisible(false);
         super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
     }
 
     @Override
     public void closeCurrentSubMenu() {
-        restoreDefaults.visible = restoreDefaults.active = true;
+        restoreDefaults.setVisible(true);
         super.closeCurrentSubMenu();
     }
 

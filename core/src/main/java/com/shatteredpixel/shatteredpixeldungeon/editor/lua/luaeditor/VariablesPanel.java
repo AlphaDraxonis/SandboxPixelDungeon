@@ -48,7 +48,7 @@ public class VariablesPanel extends CodeInputPanel {
 	@Override
 	protected void onAddClick() {
 		super.onAddClick();
-		remover.visible = remover.active = false;
+		remover.setVisible(false);
 		layout();
 	}
 

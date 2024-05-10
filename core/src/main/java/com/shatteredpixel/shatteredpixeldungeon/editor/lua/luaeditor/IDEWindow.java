@@ -168,13 +168,13 @@ public class IDEWindow extends Component {
 			@Override
 			protected void onAddClick() {
 				super.onAddClick();
-				remover.visible = remover.active = false;
+				remover.setVisible(false);
 			}
 
 			@Override
 			protected void onRemove() {
 				super.onRemove();
-				adder.visible = adder.active = false;
+				adder.setVisible(false);
 			}
 		};
 		add(inputDesc);

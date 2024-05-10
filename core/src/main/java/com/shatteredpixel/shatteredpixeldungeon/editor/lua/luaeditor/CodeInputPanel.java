@@ -145,7 +145,7 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 
 			info = PixelScene.renderTextBlock(6);
 			String desc = createDescription();
-			if (desc == null) info.visible = info.active = false;
+			if (desc == null) info.setVisible(false);
 			else info.text(desc);
 			add(info);
 		}

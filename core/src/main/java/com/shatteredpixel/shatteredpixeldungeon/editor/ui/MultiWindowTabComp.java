@@ -91,9 +91,9 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
         if (this.subMenuComp != null) destroyCurrentSubMenu();
 
-        title.visible   = title.active   = false;
-        content.visible = content.active = false;
-        sp.visible      = sp.active      = false;
+        title.setVisible(false);
+        content.setVisible(false);
+        sp.setVisible(false);
 
         this.subMenuComp = subMenuComp;
         if (subMenuComp.buttonBack == null)

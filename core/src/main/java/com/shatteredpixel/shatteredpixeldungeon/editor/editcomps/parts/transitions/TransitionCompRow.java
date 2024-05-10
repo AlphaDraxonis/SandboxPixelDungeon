@@ -47,8 +47,10 @@ public class TransitionCompRow extends FoldableCompWithAdd {
 
         if (saveForUndo) tileModify = new TileModify(transition, cell);
 
-        if(cell < 0)
-            remover.visible = remover.active = adder.visible = adder.active = false;
+        if (cell < 0) {
+            remover.setVisible(false);
+            adder.setVisible(false);
+        }
     }
 
     @Override

@@ -60,11 +60,12 @@ public class FieldComp extends ObjInspectorTabComp {
 		try {
 			field.get(obj);
 		} catch (Exception e) {
-			value.active = take.active = valueBoxBtn.active = false;
+			value.setVisible(valueBoxBtn.active = false);
 		}
 
 		if (obj == null && !Modifier.isStatic(field.getModifiers())) {
-			value.visible = value.active = take.visible = take.active = false;
+			value.setVisible(false);
+			take.setVisible(false);
 		}
 	}
 

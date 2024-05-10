@@ -312,7 +312,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         transitionEdit = EditTileComp.addTransition(-12345, transition, Dungeon.level.levelScheme, t -> obj.zoneTransition = null);
         add(transitionEdit);
         obj.zoneTransition = transition;
-        addTransition.visible = addTransition.active = false;
+        addTransition.setVisible(false);
         layout();
         updateObj();//for resize
     }

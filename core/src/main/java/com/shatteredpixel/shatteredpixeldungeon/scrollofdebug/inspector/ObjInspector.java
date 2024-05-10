@@ -52,7 +52,7 @@ public class ObjInspector extends Component {
         }
         scrollPos = new float[tabs.length];
         for (Component tab : tabs) {
-            tab.visible = tab.active = false;
+            tab.setVisible(false);
             add(tab);
         }
 
@@ -165,12 +165,12 @@ public class ObjInspector extends Component {
         private Component current;
 
         public void setContent(Component content) {
-            if (current != null) current.visible = current.active = false;
+            if (current != null) current.setVisible(false);
             if (!contents.contains(content)) {
                 contents.add(content);
                 add(content);
             }
-            content.visible = content.active = true;
+            content.setVisible(true);
             current = content;
         }
 

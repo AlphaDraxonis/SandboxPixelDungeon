@@ -148,7 +148,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 	}
 
 	private void initPage(int page) {
-		msgWaitingForData.visible = msgWaitingForData.active = false;
+		msgWaitingForData.setVisible(false);
 		this.page = page;
 		for (int i = 0; i < dungeons[page].length; i++) {
 			mainWindowComps[i] = createListItem(dungeons[page][i]);
@@ -166,11 +166,11 @@ public class ServerDungeonList extends MultiWindowTabComp {
 	public void requestPage(int page, boolean startMoreProcesses) {
 		lastPage = page;
 		if (dungeons == null || dungeons.length > 0 && dungeons[page] == null) {
-			msgWaitingForData.visible = msgWaitingForData.active = true;
+			msgWaitingForData.setVisible(true);
 			loadPageFromServer(page, startMoreProcesses);
 		} else {
 			if (dungeons.length == 0) {
-				msgWaitingForData.visible = msgWaitingForData.active = false;
+				msgWaitingForData.setVisible(false);
 				layout();
 				sp.scrollTo(0, 0);
 			}
@@ -186,7 +186,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			protected void onSuccessful(DungeonPreview[] previews) {
 				if (dungeons.length <= page) {
 					if (dungeons.length == 0) {
-						msgWaitingForData.visible = msgWaitingForData.active = false;
+						msgWaitingForData.setVisible(false);
 						instance.layout();
 						instance.sp.scrollTo(0, 0);
 					}
@@ -223,13 +223,15 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
 	@Override
 	public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
-		upload.visible = upload.active = false;
+		upload.setVisible(false);
+		refresh.setVisible(false);
 		super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
 	}
 
 	@Override
 	public void closeCurrentSubMenu() {
-		upload.visible = upload.active = true;
+		upload.setVisible(true);
+		refresh.setVisible(true);
 		super.closeCurrentSubMenu();
 	}
 
@@ -377,9 +379,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 				public void changeContent(Component titleBar, Component body, Component outsideSp, float contentAlignmentV, float titleAlignmentH) {
 					super.changeContent(titleBar, body, outsideSp, contentAlignmentV, titleAlignmentH);
 					if (WndServerDungeonList.this.outsideSp != null) {
-						WndServerDungeonList.this.outsideSp.visible
-								= WndServerDungeonList.this.outsideSp.active = false;
-						refresh.active = refresh.visible = false;
+						WndServerDungeonList.this.outsideSp.setVisible(false);
 						serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - 2);
 					}
 					sp.givePointerPriority();
@@ -390,8 +390,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 				public void closeCurrentSubMenu() {
 					super.closeCurrentSubMenu();
 					if (outsideSp != null) {
-						outsideSp.active = outsideSp.visible = numPages > 1;
-						refresh.active = refresh.visible = true;
+						outsideSp.setVisible(numPages > 1);
 						serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - outsideSp.height() - 4);
 					}
 				}

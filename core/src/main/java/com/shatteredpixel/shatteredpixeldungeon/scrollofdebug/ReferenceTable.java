@@ -95,7 +95,7 @@ public class ReferenceTable extends MultiWindowTabComp {
         else {
             SubMenuComp subMenuComp = getSubMenuComp();
             lastInspectedObjects.add(subMenuComp);
-            subMenuComp.visible = subMenuComp.active = false;
+            subMenuComp.setVisible(false);
             remove(subMenuComp);
         }
     }

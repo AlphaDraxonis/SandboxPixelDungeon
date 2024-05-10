@@ -230,8 +230,8 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             EditorScene.remove(transition);
         });
         add(transitionEdit);
-        addTransition.visible = addTransition.active = false;
-//        addTransition.active=false;
+        addTransition.setVisible(false);
+
         layout();
         updateObj();//for resize
     }

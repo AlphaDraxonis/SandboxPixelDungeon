@@ -59,8 +59,8 @@ public class FoldableComp extends Component {
         };
         add(fold);
 
-        fold.visible = fold.active = false;
-        expand.visible = expand.active = false;
+        fold.setVisible(false);
+        expand.setVisible(false);
     }
 
     protected int titleFontSize() {

@@ -130,7 +130,7 @@ public class BossHealthBar extends Component {
                     bar.visible = bar.active = true;
                     bar.setPos(x, posY);
                     posY += bar.height() + gap;
-                } else bar.visible = bar.active = false;
+                } else bar.setVisible(false);
             }
             height = posY - y - gap;
         }

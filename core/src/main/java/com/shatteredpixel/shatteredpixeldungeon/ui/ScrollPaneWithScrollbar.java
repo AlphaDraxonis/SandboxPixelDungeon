@@ -84,7 +84,7 @@ public class ScrollPaneWithScrollbar extends ScrollPane {
 
 		layoutThumbs();
 
-		thumbVer.visible = thumbHor.visible = false;
+		thumbVer.setVisible(false);
 	}
 
 	@Override

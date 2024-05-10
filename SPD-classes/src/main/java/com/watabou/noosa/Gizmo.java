@@ -99,4 +99,14 @@ public class Gizmo {
 			parent.remove( this );
 		}
 	}
+
+
+	/**
+	 * <b><code>visible = active = flag;</code></b>
+	 * @param flag
+	 */
+	public void setVisible(boolean flag) {
+		visible = active = flag;
+	}
+
 }
