@@ -25,7 +25,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
 	private static ServerDungeonList instance;
 
-	private static DungeonPreview[][] dungeons;
+	public static DungeonPreview[][] dungeons;
 
 	private Spinner outsideSp;
 	protected RedButton upload;
@@ -165,11 +165,16 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
 	public void requestPage(int page, boolean startMoreProcesses) {
 		lastPage = page;
-		if (dungeons == null || dungeons[page] == null) {
+		if (dungeons == null || dungeons.length > 0 && dungeons[page] == null) {
 			msgWaitingForData.visible = msgWaitingForData.active = true;
 			loadPageFromServer(page, startMoreProcesses);
 		} else {
-			initPage(page);
+			if (dungeons.length == 0) {
+				msgWaitingForData.visible = msgWaitingForData.active = false;
+				layout();
+				sp.scrollTo(0, 0);
+			}
+			else initPage(page);
 		}
 	}
 
@@ -179,7 +184,14 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		ServerCommunication.dungeonList(new ServerCommunication.OnPreviewReceive() {
 			@Override
 			protected void onSuccessful(DungeonPreview[] previews) {
-				if (dungeons.length <= page) return;
+				if (dungeons.length <= page) {
+					if (dungeons.length == 0) {
+						msgWaitingForData.visible = msgWaitingForData.active = false;
+						instance.layout();
+						instance.sp.scrollTo(0, 0);
+					}
+					return;
+				}
 				dungeons[page] = previews;
 				if (lastPage == page && instance != null) {
 					instance.initPage(page);
@@ -340,7 +352,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 						protected void onSelect(int index) {
 							if (index == 0) {
 								if (Updates.updateAvailable()) Updates.launchUpdate(Updates.updateData());
-								else Game.platform.openURI("https://github.com/AlphaDraxonis/SandboxPixelDungeon/releases");
+								else Game.platform.openURI("https://github.com/AlphaDraxonis/SandboxPixelDungeon/releases/latest");
 							}
 						}
 					});
@@ -367,6 +379,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 					if (WndServerDungeonList.this.outsideSp != null) {
 						WndServerDungeonList.this.outsideSp.visible
 								= WndServerDungeonList.this.outsideSp.active = false;
+						refresh.active = refresh.visible = false;
 						serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - 2);
 					}
 					sp.givePointerPriority();
@@ -377,7 +390,8 @@ public class ServerDungeonList extends MultiWindowTabComp {
 				public void closeCurrentSubMenu() {
 					super.closeCurrentSubMenu();
 					if (outsideSp != null) {
-						outsideSp.active = outsideSp.visible = true ;
+						outsideSp.active = outsideSp.visible = numPages > 1;
+						refresh.active = refresh.visible = true;
 						serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - outsideSp.height() - 4);
 					}
 				}

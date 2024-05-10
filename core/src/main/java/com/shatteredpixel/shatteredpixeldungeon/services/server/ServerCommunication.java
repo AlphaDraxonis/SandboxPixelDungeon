@@ -87,11 +87,11 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return "https://script.google.com/macros/s/AKfycbwUsAg55qmE82h5Oe4DJ28IE1xwycv4VGD6WI1tg0S92cYVTrEYJbED3Wk_vpkoWTR62A/exec";
+        return "https://script.google.com/macros/s/AKfycbx2kLLDdyQtzJIy9FDRQZijQ0PpDCtwYb7p0cgBriHEsxSqo-3B0obrOIjzGWQqnRdO1A/exec";
 //        return URL == null ? "https://script.google.com/macros/s/AKfycbwbBmqKmTGIbeR9CjMhMh9J8ykp4EhiL7qBWzi95jAkCYDvR0Rl1Ank-5xyeeOWdk1JsQ/exec" : URL;
     }
 
-    private static String getUUID() {
+    static String getUUID() {
         if (userID == null) {
             userID = SPDSettings.uuid();
             if (userID == null) {
@@ -111,6 +111,10 @@ public final class ServerCommunication {
         protected Window waitWindow;
 
         public void showWindow(com.badlogic.gdx.Net.HttpRequest httpRequest) {
+            showWindow(httpRequest, null);
+        }
+
+        public void showWindow(com.badlogic.gdx.Net.HttpRequest httpRequest, Runnable onCancel) {
             waitWindow = new WndOptions(Messages.get(ServerCommunication.class, "wait_title"),
                     Messages.get(ServerCommunication.class, "wait_body"),
                     Messages.get(ServerCommunication.class, "wait_cancel")) {
@@ -122,6 +126,7 @@ public final class ServerCommunication {
                 protected void onSelect(int index) {
                     if (index == 0) {
                         Gdx.net.cancelHttpRequest(httpRequest);
+                        if (onCancel != null) onCancel.run();
                     }
                 }
             };
@@ -136,7 +141,11 @@ public final class ServerCommunication {
             hideWindow();
             if (t instanceof UnknownHostException) Game.scene().addToFront(new WndError(Messages.get(ServerCommunication.class, "no_internet")));
             else
-                Game.scene().addToFront(new WndError(Messages.get(ServerCommunication.class, "error") + ":\n" + t.getClass().getSimpleName() + ": " + t.getMessage()));
+                Game.scene().addToFront(new WndError(Messages.get(ServerCommunication.class, "error") + ":\n" + t.getClass().getSimpleName() + ": " + t.getMessage()) {
+                    {
+                        setHighligtingEnabled(false);
+                    }
+                });
         }
     }
 
@@ -238,63 +247,15 @@ public final class ServerCommunication {
 
     }
 
-    public static void downloadDungeon(String fileId, OnDungeonReceive callback) {
-
-        Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
-        httpRequest.setUrl(getURL() + "?action=downloadDungeon&fileID=" + fileId + "&userID=" + getUUID());
-
-        callback.showWindow(httpRequest);
-
-        Gdx.net.sendHttpRequest(httpRequest, new com.badlogic.gdx.Net.HttpResponseListener() {
-            @Override
-            public void handleHttpResponse(com.badlogic.gdx.Net.HttpResponse httpResponse) {
-                int statusCode = httpResponse.getStatus().getStatusCode();
-                if (statusCode == 200) {
-                    try {
-                        for (Bundle b : Bundle.read(httpResponse.getResultAsStream()).getBundleArray()) {
-                            if (!b.getString("content").startsWith("Error")) {
-                                try {
-                                    //unfortunately it seems like there is no better way for this...
-                                    Bundle bundle = Bundle.class.getConstructor(String.class).newInstance(b.getString("content"));
-                                    ExportDungeonWrapper dungeon = (ExportDungeonWrapper) bundle.get(CustomDungeonSaves.EXPORT);
-                                    if (dungeon == null) throw new Exception("Could not download the dungeon!");
-
-                                    //Ask the user about this deletion first!
-                                    CustomDungeonSaves.deleteDungeonFile(dungeon.dungeonInfo.name);
-
-                                    CustomDungeonSaves.Info info = dungeon.doImport();
-                                    if (info == null) throw new Exception("Failed to import dungeon!");
-                                    callback.accept(info);
-                                    return;
-                                } catch (Exception e) {
-                                    Game.runOnRenderThread(() -> callback.failed(e));
-                                }
-                            } else Game.runOnRenderThread(() -> callback.failed(new Exception(b.getString("content"))));
-                        }
-                        Game.runOnRenderThread(() -> callback.failed(new Exception("Could not find the dungeon!")));
-                    } catch (IOException e) {
-                        Game.runOnRenderThread(() -> callback.failed(e.getMessage() == null ? new Exception(Messages.get(ServerCommunication.class, "download_error")) : e));
-                    }
-                } else Game.runOnRenderThread(() -> callback.failed(new IOException(String.valueOf(statusCode))));
-            }
-
-            @Override
-            public void failed(Throwable t) {
-                Game.runOnRenderThread(() -> callback.failed(t));
-            }
-
-            @Override
-            public void cancelled() {
-            }
-        });
-
+    public static void downloadDungeon(String dungeonName, String fileId, OnDungeonReceive callback) {
+        new DownloadDungeonAction(dungeonName, fileId, callback);
     }
 
-    private static class UploadDataListener implements Net.HttpResponseListener {
+    static class UploadDataListener implements Net.HttpResponseListener {
 
         private final UploadCallback callback;
 
-        private UploadDataListener(UploadCallback callback) {
+        UploadDataListener(UploadCallback callback) {
             this.callback = callback;
         }
 
@@ -321,78 +282,18 @@ public final class ServerCommunication {
         }
     }
 
-    private static class Banned extends Exception {
+    static class Banned extends Exception {
         public Banned() {
             super(Messages.get(ServerCommunication.class, "banned", hashUserIDOne() + "&\n" + hashUserIDTwo()));
         }
     }
 
     public static void uploadDungeon(String dungeonName, String description, String userName, int difficulty, UploadCallback callback) {
-        try {
-            Bundle dungeonAsBundle = CustomDungeonSaves.getExportDungeonBundle(dungeonName);
-
-            DungeonPreview uploadPreview = new DungeonPreview();
-            uploadPreview.title = dungeonName;
-            uploadPreview.description = description;
-            uploadPreview.version = Game.version;
-            uploadPreview.intVersion = Game.versionCode;
-            uploadPreview.uploader = userName;
-            uploadPreview.difficulty = difficulty;
-
-            Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
-            httpRequest.setUrl(getURL() + "?action=upload&fileName=" + URLEncoder.encode(dungeonName, "UTF-8") + "&userID=" + getUUID()
-                    + uploadPreview.writeArgumentsForURL());
-            httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
-            httpRequest.setContent("dungeon=" + dungeonAsBundle);
-
-            callback.showWindow(httpRequest);
-
-            Gdx.net.sendHttpRequest(httpRequest, new UploadDataListener(callback));
-        } catch (IOException e) {
-            Game.runOnRenderThread(() -> callback.failed(e));
-        } catch (CustomDungeonSaves.RenameRequiredException e) {
-            Game.runOnRenderThread(() -> {
-                callback.hideWindow();
-                e.showExceptionWindow();
-            });
-        }
+        new UploadDungeonAction(dungeonName, description, userName, difficulty, callback);
     }
 
     public static void updateDungeon(DungeonPreview oldDungeonPreview, String newDungeonName, String newDescription, int difficulty, UploadCallback callback) {
-        try {
-            Bundle dungeonAsBundle;
-            if (newDungeonName == null) {
-                dungeonAsBundle = null;
-                newDungeonName = oldDungeonPreview.title;
-            } else dungeonAsBundle = CustomDungeonSaves.getExportDungeonBundle(newDungeonName);
-
-            DungeonPreview uploadPreview = new DungeonPreview();
-            uploadPreview.title = newDungeonName;
-            uploadPreview.description = newDescription;
-            uploadPreview.version = Game.version;
-            uploadPreview.intVersion = Game.versionCode;
-            uploadPreview.uploader = oldDungeonPreview.uploader;
-            uploadPreview.difficulty = difficulty;
-
-            Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
-            httpRequest.setUrl(getURL() + "?action=update&fileName=" + URLEncoder.encode(newDungeonName, "UTF-8") + "&dungeonID=" + oldDungeonPreview.dungeonFileID
-                    + "&userID=" + getUUID() + "&oldSalt=" + oldDungeonPreview.title.hashCode() + "&newSalt=" + newDungeonName.hashCode()
-                    + uploadPreview.writeArgumentsForURL()
-            );
-            httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
-            httpRequest.setContent("dungeon=" + dungeonAsBundle);
-
-            callback.showWindow(httpRequest);
-
-            Gdx.net.sendHttpRequest(httpRequest, new UploadDataListener(callback));
-        } catch (IOException e) {
-            Game.runOnRenderThread(() -> callback.failed(e));
-        } catch (CustomDungeonSaves.RenameRequiredException e) {
-            Game.runOnRenderThread(() -> {
-                callback.hideWindow();
-                e.showExceptionWindow();
-            });
-        }
+        new UpdateDungeonAction(oldDungeonPreview, newDungeonName, newDescription, difficulty, callback);
     }
 
     public static void reportBug(String dungeonName, String description, UploadCallback callback) {

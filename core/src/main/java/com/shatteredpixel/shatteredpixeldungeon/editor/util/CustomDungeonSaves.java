@@ -37,6 +37,7 @@ public class CustomDungeonSaves {
     private static final String FILE_EXTENSION = ".dat";
     public static final String EXPORT_FILE_EXTENSION = ".dun";//also used in AndroidManifest.xml!!!
     public static final String DUNGEON_FOLDER = ROOT_DIR + "custom_dungeons/";
+	public static final String TEMP_FOLDER = ROOT_DIR + "temp_";
     private static final String LEVEL_FOLDER = "levels/";
     private static final String DUNGEON_DATA = "data" + FILE_EXTENSION;
     private static final String DUNGEON_INFO = "info" + FILE_EXTENSION;
@@ -89,6 +90,65 @@ public class CustomDungeonSaves {
         export.put(EXPORT, new ExportDungeonWrapper(dun));
         return export;
     }
+
+    public static FileHandle[] uploadDungeon(String dungeonName) {
+        FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
+        setCurDirectory(DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/");
+        FileHandle dir = FileUtils.getFileHandle(curDirectory);
+
+        if (!dir.exists() || !dir.isDirectory()) return null;
+
+        return dir.list();
+    }
+
+    public static String cutBasePathFromFileName(FileHandle file) {
+        return file.path().substring(FileUtils.defaultPathLength() + curDirectory.length());
+    }
+
+	public static String initializeDownloading(String dungeonName) {
+		FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
+		setCurDirectory(TEMP_FOLDER + dungeonName.replace(' ', '_') + "/");
+		return curDirectory;
+		//we delete it later
+		//later move all files from tempDir to the actual dest and then delete it
+	}
+
+	public static void completeDownloading(String downloadToDir, String dungeonName) throws IOException {
+		if (!downloadToDir.startsWith(TEMP_FOLDER)) throw new IOException("Error occurred around line 115.");
+
+		try {
+			FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
+			FileHandle tempDir = FileUtils.getFileHandle(downloadToDir);
+            setCurDirectory(DUNGEON_FOLDER + dungeonName.replace(' ', '_') + "/");
+			FileHandle dest = FileUtils.getFileHandle(curDirectory);
+			if (dest.exists()) {
+				if (dest.isDirectory()) dest.deleteDirectory();
+				else dest.delete();
+			}
+			dest.mkdirs();
+
+            FileHandle[] filesToMove = tempDir.list();
+            for (int i = 0; i < filesToMove.length; i++) {
+                FileHandle old = filesToMove[i];
+                FileHandle neu = FileUtils.getFileHandle(curDirectory + old.name());
+                old.moveTo(neu);
+            }
+
+            tempDir.deleteDirectory();
+
+		} catch (GdxRuntimeException e) {
+			throw new IOException(e);
+		}
+	}
+
+	public static void writeBytesToFileNoBackup( String basePath, String name, byte[] bytes ) throws IOException {
+		try {
+			FileHandle file = FileUtils.getFileHandle( basePath + name);
+			file.writeBytes(bytes, false);
+		} catch (GdxRuntimeException e) {
+			throw new IOException(e);
+		}
+	}
 
     public static class RenameRequiredException extends Exception {
         public RenameRequiredException(FileHandle file, String name) {

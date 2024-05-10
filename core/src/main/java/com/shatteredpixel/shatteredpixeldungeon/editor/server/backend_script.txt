@@ -1,18 +1,16 @@
-const PREVIEW_FOLDER = "1F5GxoX00OEITFywPgh4wOxv1nJEhCsJ8";
-const FULL_DUNGEON_FOLDER = "1p8m3rpwXOkIbcD-nHRFyHft1Sxq3JxeZ";
+const PREVIEW_FOLDER = "1H3S5I9mLo55qzmdSzidUvQNZM3INHinp";
+const FULL_DUNGEON_FOLDER = "1IDqdDFR9Wip5WP23FpWZ8RvBb7mMfkkE";
 
 const USER_ID_FOLDER = "1d0SinmQznVX5ii8XmxGXrdyy9T8gNxrQ";
 const BANNED_USER_FOLDER = "1C5RCpO7W0-15ajNnskZSnOpz3ksOjyrN";
-const UPLOAD_FOLDER = "158uV22qE6eBmS2jcEtV50nywDKAKNyGm";
-const UPDATE_FOLDER = "1b2JP9UoMKCHAh4XuuzwuBRTyqZM6B1Q7";
 
 const BUG_REPORT_FOLDER = "1oylaCmD9hQ2-6QsZ3g9SuieM5WZeY66K";
 
 
 function doPost(e) {
-  if (e.parameter.action === "upload") {
+  if (e.parameter.action === "uploadStart") {
 
-    console.log("dungeon upload");
+    console.log("dungeon upload start");
 
     const user = e.parameter.userID;
     const userIDFileContent = {
@@ -23,32 +21,57 @@ function doPost(e) {
     if (isUserBanned(userIDFileContent.id1, userIDFileContent.id2)) return ContentService.createTextOutput("banned")
       .setMimeType(ContentService.MimeType.TEXT);
 
-    const fileName = e.parameter.fileName;
-    const dungeon = e.parameter.dungeon;
-
-    const dungeonID = uploadFile(dungeon, fileName, ".dun", FULL_DUNGEON_FOLDER, true);
+    const folderID = createDirectory(e.parameter.title, FULL_DUNGEON_FOLDER);
 
     const preview = {
       title: e.parameter.title,
       description: e.parameter.description,
+      dungeonID: folderID,
       version: e.parameter.version,
       int_version: e.parameter.int_version,
       uploader: e.parameter.uploader,
       difficulty: e.parameter.difficulty,
       upload_time: new Date().getTime(),
+      userHash: userIDFileContent.id1.substring(0, 10),
     };
-    uploadFile(JSON.stringify(preview), preview.upload_time.toString() + "_" + dungeonID, "", PREVIEW_FOLDER, false);//TODO tzz test!
+    uploadFile(JSON.stringify(preview), preview.upload_time + "_" + folderID, "", PREVIEW_FOLDER, false);
 
-    uploadFile(JSON.stringify(userIDFileContent), dungeonID, "", USER_ID_FOLDER, false);
+    uploadFile(JSON.stringify(userIDFileContent), folderID, "", USER_ID_FOLDER, false);
 
-    sendNotificationEmail(fileName, "Uploaded", e.parameter.description, e.parameter.int_version);
+    //tzzsendNotificationEmail(e.parameter.title, "Uploaded", e.parameter.description, e.parameter.int_version);
 
-    return ContentService.createTextOutput(true.toString() + dungeonID)
+    return ContentService.createTextOutput(true.toString() + folderID)
       .setMimeType(ContentService.MimeType.TEXT);
   }
-  else if (e.parameter.action === "update") {
+  else if (e.parameter.action === "uploadFile") {
 
-    console.log("dungeon update");
+    console.log("dungeon upload file");
+
+    const user = e.parameter.userID;
+    const userIDs = {
+      id1: hashUserIDOne(user),
+      id2: hashUserIDTwo(user),
+    };
+
+    if (isUserBanned(userIDs.id1, userIDs.id2)) return ContentService.createTextOutput("banned")
+      .setMimeType(ContentService.MimeType.TEXT);
+
+    const folderID = e.parameter.folderID;
+
+    if (!isCreator(folderID, userIDs.id1, userIDs.id2)) return ContentService.createTextOutput("not the creator!")
+      .setMimeType(ContentService.MimeType.TEXT);
+
+
+    const fileName = e.parameter.fileName;
+
+    uploadFile(e.parameter.content, fileName, "", folderID, true);
+
+    return ContentService.createTextOutput(true.toString() + folderID)
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+  else if (e.parameter.action === "updateStart") {
+
+    console.log("dungeon update start");
 
     const user = e.parameter.userID;
     const userIDFileContent = {
@@ -59,47 +82,42 @@ function doPost(e) {
     if (isUserBanned(userIDFileContent.id1, userIDFileContent.id2)) return ContentService.createTextOutput("banned")
       .setMimeType(ContentService.MimeType.TEXT);
 
-
-    const fileName = e.parameter.fileName;
-
-    let dungeon = e.parameter.dungeon;
-    let dungeonID = e.parameter.dungeonID;
-
-    const dungeonChanged = dungeon !== "null";
+    let folderID = e.parameter.folderID;
+    const changeFiles = e.parameter.changeFiles === "true";
 
     let new_int_version;
-    if (dungeonChanged) {
+    if (changeFiles) {
       new_int_version = e.parameter.int_version;
     } else {
-      new_int_version = readIntVersion(dungeonID);
+      new_int_version = readIntVersion(folderID);
     }
 
-    new_int_version = e.parameter.int_version;
-
-    if (!deleteDungeon(e.parameter.dungeonID, userIDFileContent.id1, userIDFileContent.id2, dungeonChanged))
+    if (!deleteDungeon(folderID, userIDFileContent.id1, userIDFileContent.id2, changeFiles))
       return ContentService.createTextOutput(false.toString())
         .setMimeType(ContentService.MimeType.TEXT);
 
-    if (dungeonChanged) {
-      dungeonID = uploadFile(dungeon, fileName, ".dun", FULL_DUNGEON_FOLDER, true);
+    if (changeFiles) {
+        folderID = createDirectory(e.parameter.title, FULL_DUNGEON_FOLDER);
     }
 
     const preview = {
       title: e.parameter.title,
       description: e.parameter.description,
+      dungeonID: folderID,
       version: e.parameter.version,
       int_version: new_int_version,
       uploader: e.parameter.uploader,
       difficulty: e.parameter.difficulty,
       upload_time: new Date().getTime(),
+      userHash: userIDFileContent.id1.substring(0, 10),
     };
-    uploadFile(JSON.stringify(preview), dungeonID, "", PREVIEW_FOLDER, false);
+    uploadFile(JSON.stringify(preview), folderID, "", PREVIEW_FOLDER, false);
 
-    uploadFile(JSON.stringify(userIDFileContent), dungeonID, "", USER_ID_FOLDER, false);
+    uploadFile(JSON.stringify(userIDFileContent), folderID, "", USER_ID_FOLDER, false);
 
-    sendNotificationEmail(fileName, "Updated", e.parameter.description, new_int_version);
+    //sendNotificationEmail(fileName, "Updated", e.parameter.description, new_int_version);
 
-    return ContentService.createTextOutput(true.toString() + dungeonID)
+    return ContentService.createTextOutput(true.toString() + folderID)
       .setMimeType(ContentService.MimeType.TEXT);
 
   }
@@ -147,19 +165,26 @@ function doGet(e) {
     return ContentService.createTextOutput(result)
       .setMimeType(ContentService.MimeType.JSON);
   }
-  else if (e.parameter.action === "downloadDungeon") {
+  else if (e.parameter.action === "downloadStart") {
 
-    const user = e.parameter.userID;
-    const dungeonID = e.parameter.fileID;
+    const userID = e.parameter.userID;
+    const folderID = e.parameter.folderID;
 
-    const result = getFileContentAsJSON(dungeonID);
+    const folder = DriveApp.getFolderById(folderID);
 
-    if (isCreator(dungeonID, hashUserIDOne(user), hashUserIDTwo(user))) {
-      result.export.dungeon.downloaded = false;
-    }
+    const fileIDs = getAllFileIdsInFolder(folder);
 
-    return ContentService.createTextOutput(convertFileContentObjToSendableString(result))
+    fileIDs.unshift({creator: isCreator(folderID, hashUserIDOne(userID), hashUserIDTwo(userID))});
+
+    return ContentService.createTextOutput(JSON.stringify(fileIDs))
       .setMimeType(ContentService.MimeType.JSON);
+  }
+  else if (e.parameter.action === "downloadFile") {
+
+    const content = getFileContent(e.parameter.fileID);
+    return ContentService.createTextOutput(content)
+      .setMimeType(ContentService.MimeType.TEXT);
+
   }
   else if (e.parameter.action === "isCreator") {
     const userID = e.parameter.userID;
@@ -187,45 +212,70 @@ function doGet(e) {
   }
 }
 
-function uploadFile(fileContent, fileName, fileExtension, folderID, compress) {
-  const folder = DriveApp.getFolderById(folderID);
-
-  if (fileExistsInFolder(folder, fileName + fileExtension)) {
-    let count = 1;
-    let originalFileName = fileName;
-    do {
-      fileName = originalFileName + count;
-      count++;
-    } while (fileExistsInFolder(folder, fileName + fileExtension));
-  }
-
-  let contentBlob;
-  if (compress) {
-    const fileBytes = Utilities.newBlob(fileContent).getBytes();
-    contentBlob = compressGZip(fileBytes);
-    contentBlob.setName(fileName + fileExtension);
-  } else {
-    contentBlob = Utilities.newBlob(fileContent, 'application/octet-stream', fileName + fileExtension);
-  }
-
-  const uploadedFile = folder.createFile(contentBlob);
-
-  return uploadedFile.getId();
+function createDirectory(name, parentDirectory) {
+  const folder = DriveApp.getFolderById(parentDirectory);
+  return folder.createFolder(name).getId();
 }
 
-function deleteDungeon(dungeonID, id1, id2, deleteDungeonFile) {
+function uploadFile(content, fileName, fileExtension, parentFolderID, compress) {
 
-  if (!isCreator(dungeonID, id1, id2)) return 'UserID is incorrect!';
+  let folders = fileName.split('/');
+  let parentFolder = DriveApp.getFolderById(parentFolderID);
 
-  if (deleteDungeonFile) DriveApp.getFileById(dungeonID).setTrashed(true);
+  for (let i = 0; i < folders.length - 1; i++) {
+    let folderName = folders[i];
+    let subFolder;
 
-  const previewFile = DriveApp.getFolderById(PREVIEW_FOLDER).getFilesByName(dungeonID);
-  while (previewFile.hasNext()) {
-    const file = previewFile.next();
-    file.setTrashed(true);
+    let subFolders = parentFolder.getFoldersByName(folderName);
+    if (subFolders.hasNext()) {
+      subFolder = subFolders.next();
+    } else {
+      subFolder = parentFolder.createFolder(folderName);
+    }
+    parentFolder = subFolder;
   }
 
-  const userIDFile = DriveApp.getFolderById(USER_ID_FOLDER).getFilesByName(dungeonID);
+  let finalFileName = folders[folders.length - 1];
+
+
+  if (fileExistsInFolder(parentFolder, finalFileName + fileExtension)) {
+    let count = 1;
+    let originalFileName = finalFileName;
+    do {
+      finalFileName = originalFileName + count;
+      count++;
+    } while (fileExistsInFolder(parentFolder, finalFileName + fileExtension));
+  }
+
+  let blob;
+  if (compress) {
+    blob = Utilities.newBlob(content);
+    const fileBytes = blob.getBytes();
+    blob = compressGZip(fileBytes);
+    blob.setName(finalFileName + fileExtension);
+  } else {
+    blob = Utilities.newBlob(content, 'application/octet-stream', finalFileName + fileExtension);
+  }
+
+  return parentFolder.createFile(blob).getId();
+}
+
+function deleteDungeon(folderID, id1, id2, deleteDungeonFiles) {
+
+  if (!isCreator(folderID, id1, id2)) return 'UserID is incorrect!';
+
+  if (deleteDungeonFiles) DriveApp.getFileById(folderID).setTrashed(true);
+
+
+  const allPreviewFiles = DriveApp.getFolderById(PREVIEW_FOLDER).getFiles();
+  while (allPreviewFiles.hasNext()) {
+    const file = allPreviewFiles.next();
+    if (file.getName().endsWith(folderID)) {
+      file.setTrashed(true);
+    }
+  }
+
+  const userIDFile = DriveApp.getFolderById(USER_ID_FOLDER).getFilesByName(folderID);
   while (userIDFile.hasNext()) {
     const file = userIDFile.next();
     file.setTrashed(true);
@@ -246,7 +296,7 @@ function listFiles(folderID, page, perPage) {
     fileList.push({
       id: file.getId(),
       name: file.getName(),
-      dungeonID: file.getName(),
+      dungeonID: file.getName().split('_').slice(1).join('_'),
     });
   }
 
@@ -276,34 +326,37 @@ function fileExistsInFolder(folder, filename) {
   return files.hasNext();
 }
 
+
+function getAllFileIdsInFolder(folder, currentPath = '') {
+
+  var result = [];
+
+  var files = folder.getFiles();
+  while (files.hasNext()) {
+    var file = files.next();
+    var filePath = currentPath + file.getName();
+    result.push({ id: file.getId(), path: filePath});
+  }
+
+  var subfolders = folder.getFolders();
+  while (subfolders.hasNext()) {
+    var subfolder = subfolders.next();
+    var path = currentPath + subfolder.getName() + '/';
+    result = result.concat(getAllFileIdsInFolder(subfolder, path));
+  }
+
+  return result;
+}
+
 function getFileContent(fileID) {
   try {
+
     const file = DriveApp.getFileById(fileID);
-    const fileList = [];
+    return decompressGZip(file.getBlob());
 
-    const obj = decompressGZip(file.getBlob());
-
-    fileList.push({
-      content: obj,
-    });
-    return JSON.stringify(fileList);
   } catch (error) {
-    return "File not found! Maybe it was deleted. Try closing and reopening the window with all the downloadable dungeons and try again."
+    return "File not found! Maybe it was deleted. Try closing and reopening the window with all the downloadable dungeons and try again.\nDetails: " + error;
   }
-}
-
-function getFileContentAsJSON(fileID) {
-  const file = DriveApp.getFileById(fileID);
-  const obj = JSON.parse(decompressGZip(file.getBlob()));
-  return obj;
-}
-
-function convertFileContentObjToSendableString(obj) {
-  const fileList = [];
-  fileList.push({
-    content: obj,
-  });
-  return JSON.stringify(fileList);
 }
 
 
@@ -328,9 +381,14 @@ function compressGZip(decompressedBlob) {
 
 function readIntVersion(dungeonID) {
   const folder = DriveApp.getFolderById(PREVIEW_FOLDER);
-  const files = folder.getFilesByName(dungeonID);
-  const asJSON = JSON.parse(files.next().getBlob());
-  return asJSON.int_version;
+  const files = folder.getFiles();
+  while (files.hasNext()) {
+    const file = files.next();
+    if (file.getName().endsWith(dungeonID)) {
+      return JSON.parse(file.getBlob().getDataAsString()).int_version;
+    }
+  }
+  return 0;
 }
 
 

@@ -176,7 +176,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                 return;
             }
 
-            if (!SPDSettings.canUploadedToServer()) {
+            if (!SPDSettings.canUploadToServer() && !DeviceCompat.isDebug()) {
                 Game.scene().addToFront(new WndMessage(Messages.get(UploadDungeon.class, "wait_upload")));
                 return;
             }
@@ -202,7 +202,7 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
             });
         } else if (type == ServerCommunication.UploadType.CHANGE) {
 
-            if (!SPDSettings.canUpdatedToServer()) {
+            if (!SPDSettings.canUpdateToServer() && !DeviceCompat.isDebug()) {
                 Game.scene().addToFront(new WndMessage(Messages.get(UploadDungeon.class, "wait_update")));
                 return;
             }

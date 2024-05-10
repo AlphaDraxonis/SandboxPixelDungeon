@@ -267,4 +267,7 @@ public class FileUtils {
 		output.close();
 	}
 
+	public static int defaultPathLength() {
+		return defaultPath.length();
+	}
 }

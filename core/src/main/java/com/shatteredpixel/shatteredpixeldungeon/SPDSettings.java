@@ -68,7 +68,7 @@ public class SPDSettings extends GameSettings {
 		return getBoolean( KEY_TUTORIAL_OPENED_REGULAR_LEVEL, false );
 	}
 
-	public static boolean canUploadedToServer() {
+	public static boolean canUploadToServer() {
 		return getLong( KEY_LAST_UPLOADED_TO_SERVER_TIMER, 0 ) < System.currentTimeMillis();
 	}
 
@@ -76,7 +76,7 @@ public class SPDSettings extends GameSettings {
 		put( KEY_LAST_UPLOADED_TO_SERVER_TIMER, Math.max(getLong( KEY_LAST_UPLOADED_TO_SERVER_TIMER, 0 ), System.currentTimeMillis()) + 2*1000*3600 );//2h
 	}
 
-	public static boolean canUpdatedToServer() {
+	public static boolean canUpdateToServer() {
 		return getLong( KEY_LAST_UPDATED_TO_SERVER_TIMER, 0 ) < System.currentTimeMillis();
 	}
 
