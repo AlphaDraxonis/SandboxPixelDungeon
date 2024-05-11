@@ -183,6 +183,7 @@ public class EditorScene extends DungeonScene {
         }
 
         emitters = new Group();
+        effects = new Group();
 
         mobs = new Group();
         add(mobs);
@@ -201,7 +202,8 @@ public class EditorScene extends DungeonScene {
             addCustomWall(visual);
         }
 
-        add(emitters);
+        add( emitters );
+        add( effects );
 
         gases = new Group();
         add(gases);

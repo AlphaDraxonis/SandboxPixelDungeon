@@ -25,7 +25,7 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     public int pos;
 //    public int directionsLeave;
     public int directionsEnter;
-    public boolean allowsWaiting;
+    public boolean allowsWaiting = true;
     public boolean visible;
 
 
@@ -69,6 +69,7 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     public ArrowCell getCopy() {
         ArrowCell copy = new ArrowCell(pos, /*directionsLeave,*/ directionsEnter);
         copy.visible = visible;
+        copy.allowsWaiting = allowsWaiting;
         return copy;
     }
 

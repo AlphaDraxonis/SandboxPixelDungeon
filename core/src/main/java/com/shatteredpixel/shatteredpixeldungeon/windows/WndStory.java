@@ -47,7 +47,11 @@ public class WndStory extends Window {
 	}
 	
 	public WndStory(Image icon, String title, String text ) {
-		super( 0, 0, Chrome.get( Chrome.Type.SCROLL ) );
+		this(icon, title, text, Chrome.Type.SCROLL);
+	}
+
+	public WndStory(Image icon, String title, String text, Chrome.Type type ) {
+		super( 0, 0, Chrome.get( type ) );
 
 		int width = PixelScene.landscape() ? WIDTH_L - MARGIN * 2: WIDTH_P - MARGIN *2;
 
@@ -57,12 +61,13 @@ public class WndStory extends Window {
 			ttl.setRect(MARGIN, y, width-2*MARGIN, 0);
 			y = ttl.bottom()+MARGIN;
 			add(ttl);
-			ttl.tfLabel.invert();
+			if (type == Chrome.Type.SCROLL) ttl.tfLabel.invert();
+			else y += MARGIN;
 		}
 		
 		tf = PixelScene.renderTextBlock( text, 6 );
 		tf.maxWidth(width);
-		tf.invert();
+		if (type == Chrome.Type.SCROLL) tf.invert();
 		tf.setPos(MARGIN, y);
 		add( tf );
 

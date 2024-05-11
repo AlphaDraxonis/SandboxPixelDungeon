@@ -32,7 +32,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.WndCreator;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
@@ -64,15 +66,14 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import org.luaj.vm2.*;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.ThreeArgFunction;
-import org.luaj.vm2.lib.TwoArgFunction;
-import org.luaj.vm2.lib.ZeroArgFunction;
+import org.luaj.vm2.lib.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
@@ -93,7 +94,7 @@ public class LuaGlobals extends Globals {
 						LuaValue result = newInstance.call(arg);
 						if (result.isuserdata()) {
 							Object obj = result.checkuserdata();
-							if (obj instanceof Bundlable || obj instanceof Ballistica) return result;
+							if (obj instanceof Bundlable || obj instanceof CharSprite || obj instanceof Ballistica) return result;
 						}
 					}
 					String fullName = searchFullyQualifiedName(arg.checkjstring());
@@ -114,7 +115,7 @@ public class LuaGlobals extends Globals {
 						}
 					}
 					String fullName = searchFullyQualifiedName(arg.checkjstring());
-					if (fullName != null) return newInstance.call(fullName);
+					if (fullName != null) return CoerceJavaToLua.coerce(Reflection.forName(fullName));
 				}
 				return LuaValue.NIL;
 			}
@@ -166,6 +167,11 @@ public class LuaGlobals extends Globals {
 		randomUtils.set("int", new TwoArgFunction() {
 			@Override
 			public LuaValue call(LuaValue min, LuaValue max) {
+				if (max.isnil()) {
+					return min.isint()
+							? LuaValue.valueOf(Random.Int(min.checkint()))
+							: LuaValue.NIL;
+				}
 				return min.isint() && max.isint()
 						? LuaValue.valueOf(Random.Int(min.checkint(), max.checkint()))
 						: LuaValue.NIL;
@@ -213,7 +219,36 @@ public class LuaGlobals extends Globals {
 
 		set("print", gLog.get("i"));
 
-		//TODO show windows tzz
+		set("showMessageWindow", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs varargs) {
+				LuaValue fifthArg = varargs.arg(5);
+				LuaFunction onHide = fifthArg.isfunction() ? fifthArg.checkfunction() : null;
+				Game.runOnRenderThread(() -> WndCreator.showMessageWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), onHide));
+				return LuaValue.NIL;
+			}
+
+		});
+		set("showStoryWindow", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs varargs) {
+				LuaValue fifthArg = varargs.arg(5);
+				LuaFunction onHide = fifthArg.isfunction() ? fifthArg.checkfunction() : null;
+				Game.runOnRenderThread(() -> WndCreator.showStoryWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), onHide));
+				return LuaValue.NIL;
+			}
+
+		});
+		set("showItemRewardWindow", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs varargs) {
+				LuaValue seventhArg = varargs.arg(7);
+				LuaFunction onSelectReward = seventhArg.isfunction() ? seventhArg.checkfunction() : null;
+				Game.runOnRenderThread(() -> WndCreator.showItemRewardWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), varargs.arg(5), varargs.arg(6), onSelectReward));
+				return LuaValue.NIL;
+			}
+
+		});
 
 		set("cellToString", new OneArgFunction() {
 			@Override
@@ -366,6 +401,7 @@ public class LuaGlobals extends Globals {
 	private static String searchFullyQualifiedName(String simpleName) {
 		String result = null;
 		switch (simpleName) {
+			case "ArrowCell": return ArrowCell.class.getName();
 			case "Barrier": return Barrier.class.getName();
 			case "Ballistica": return Ballistica.class.getName();
 		}
@@ -374,6 +410,7 @@ public class LuaGlobals extends Globals {
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Plants.values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Traps.values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Buffs.values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(MobSprites.values()));
 		return result;
 	}
 
@@ -384,6 +421,7 @@ public class LuaGlobals extends Globals {
 			case "QuestNPC": return QuestNPC.class.getName();
 			case "NPC": return NPC.class.getName();
 			case "Buff": return Buff.class.getName();
+			case "ArrowCell": return ArrowCell.class.getName();
 			case "Barrier": return Barrier.class.getName();
 			case "Actor": return Actor.class.getName();
 			case "Weapon": return Weapon.class.getName();
@@ -422,6 +460,7 @@ public class LuaGlobals extends Globals {
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Buffs.values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Traps.values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Plants.values()));
+		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(MobSprites.values()));
 		return result;
 	}
 

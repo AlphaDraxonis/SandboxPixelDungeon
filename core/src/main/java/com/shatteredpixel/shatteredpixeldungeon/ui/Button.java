@@ -23,16 +23,14 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
-import com.watabou.input.ControllerHandler;
-import com.watabou.input.GameAction;
-import com.watabou.input.KeyBindings;
-import com.watabou.input.KeyEvent;
-import com.watabou.input.PointerEvent;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.watabou.input.*;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.PointF;
 import com.watabou.utils.Signal;
 
 public class Button extends Component {
@@ -112,7 +110,8 @@ public class Button extends Component {
 					}
 					hoverTip = new Tooltip(Button.this, text, 80);
 					Button.this.parent.addToFront(hoverTip);
-					hoverTip.camera = camera();
+					Window parentWindow = EditorUtilies.getParentWindow(this);
+					hoverTip.camera = parentWindow == null ? camera() : parentWindow.camera;
 					alignTooltip(hoverTip);
 				}
 			}
@@ -246,8 +245,9 @@ public class Button extends Component {
 
 	//TODO might be nice for more flexibility here
 	private void alignTooltip( Tooltip tip ){
-		tip.setPos(x, y-tip.height()-1);
-		Camera cam = camera();
+		PointF p = tip.camera.screenToCamera(camera().cameraToScreen(x, y));
+		tip.setPos(p.x, p.y-tip.height()-1);
+		Camera cam = tip.camera();
 		//shift left if there's no room on the right
 		if (tip.right() > (cam.width+cam.scroll.x)){
 			tip.setPos(tip.left() - (tip.right() - (cam.width+cam.scroll.x)), tip.top());

@@ -269,7 +269,11 @@ public class Camera extends Gizmo {
 	public void setFollowDeadzone( float deadzone ){
 		followDeadzone = deadzone;
 	}
-	
+
+	public PointF screenToCamera( Point p ) {
+		return screenToCamera( p.x, p.y );
+	}
+
 	public PointF screenToCamera( int x, int y ) {
 		return new PointF(
 			(x - this.x) / zoom + scroll.x,

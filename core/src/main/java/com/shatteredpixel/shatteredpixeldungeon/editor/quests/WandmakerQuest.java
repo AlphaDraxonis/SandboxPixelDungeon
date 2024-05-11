@@ -57,7 +57,7 @@ public class WandmakerQuest extends Quest {
         if (wand2 == null) {
             do {
                 wand2 = (Wand) Generator.randomUsingDefaults(Generator.Category.WAND);
-            } while (wand2.getClass().equals(wand1.getClass()));
+            } while (wand1 != null && wand2.getClass().equals(wand1.getClass()));
             wand2.cursed = false;
             wand2.upgrade();
         } else {
@@ -187,7 +187,7 @@ public class WandmakerQuest extends Quest {
 
             RegularLevel l = (RegularLevel) Dungeon.level;
 
-            if (true || questsActive[DUST] > 0) {
+            if (questsActive[DUST] > 0) {
                 //hero is in the mass grave room
                 if (l.room(Dungeon.hero.pos) instanceof MassGraveRoom) {
                     return true;
@@ -200,7 +200,7 @@ public class WandmakerQuest extends Quest {
                 }
             }
 
-            if (true || questsActive[SEED] > 0) {
+            if (questsActive[SEED] > 0) {
                 //hero is in the rot garden room and the rot heart in the same room is alive
                 Room room = l.room(Dungeon.hero.pos);
                 if (l.room(Dungeon.hero.pos) instanceof RotGardenRoom) {
@@ -212,7 +212,7 @@ public class WandmakerQuest extends Quest {
                 }
             }
 
-            if (true || questsActive[CANDLE] > 0) {
+            if (questsActive[CANDLE] > 0) {
                 //hero has summoned the newborn elemental
                 for (Mob m : Dungeon.level.mobs) {
                     if (m instanceof Elemental.NewbornFireElemental && ((Elemental.NewbornFireElemental) m).spawnedByQuest) {
@@ -263,7 +263,7 @@ public class WandmakerQuest extends Quest {
                 }
             }
 
-            if (questsActive[CANDLE] > 0 || true) {
+            if (questsActive[CANDLE] > 0) {
                 //hero has summoned the newborn elemental
                 for (Mob m : Dungeon.level.mobs) {
                     if (m instanceof Elemental.NewbornFireElemental && ((Elemental.NewbornFireElemental) m).spawnedByQuest) {

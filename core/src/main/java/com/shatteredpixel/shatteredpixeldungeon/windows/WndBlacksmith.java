@@ -484,7 +484,22 @@ public class WndBlacksmith extends Window {
 				ItemButton btnReward = new ItemButton(){
 					@Override
 					protected void onClick() {
-						GameScene.show(new RewardWindow(troll, hero, item()));
+						GameScene.show(new WndConfirmReward(item(), item ->  {
+							item.identify(false);
+							Sample.INSTANCE.play(Assets.Sounds.EVOKE);
+							Item.evoke( Dungeon.hero );
+							if (item.doPickUp( Dungeon.hero )) {
+								GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", item.name())) );
+							} else {
+								Dungeon.level.drop( item, Dungeon.hero.pos ).sprite.drop();
+							}
+							WndSmith.this.hide();
+							troll.quest.smithRewards = null;
+
+							if (!troll.quest.rewardsAvailable()){
+								Notes.remove( Notes.Landmark.TROLL );
+							}
+						}));
 					}
 				};
 				btnReward.item( i );
@@ -500,47 +515,6 @@ public class WndBlacksmith extends Window {
 		@Override
 		public void onBackPressed() {
 			//do nothing
-		}
-
-		private class RewardWindow extends WndInfoItem {
-
-			public RewardWindow( Blacksmith troll, Hero hero, Item item ) {
-				super(item);
-
-				RedButton btnConfirm = new RedButton(Messages.get(WndSadGhost.class, "confirm")){
-					@Override
-					protected void onClick() {
-						RewardWindow.this.hide();
-						item.identify(false);
-						Sample.INSTANCE.play(Assets.Sounds.EVOKE);
-						Item.evoke( Dungeon.hero );
-						if (item.doPickUp( Dungeon.hero )) {
-							GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", item.name())) );
-						} else {
-							Dungeon.level.drop( item, Dungeon.hero.pos ).sprite.drop();
-						}
-						WndSmith.this.hide();
-						troll.quest.smithRewards = null;
-
-						if (!troll.quest.rewardsAvailable()){
-							Notes.remove( Notes.Landmark.TROLL );
-						}
-					}
-				};
-				btnConfirm.setRect(0, height+2, width/2-1, 16);
-				add(btnConfirm);
-
-				RedButton btnCancel = new RedButton(Messages.get(WndSadGhost.class, "cancel")){
-					@Override
-					protected void onClick() {
-						RewardWindow.this.hide();
-					}
-				};
-				btnCancel.setRect(btnConfirm.right()+2, height+2, btnConfirm.width(), 16);
-				add(btnCancel);
-
-				resize(width, (int)btnCancel.bottom());
-			}
 		}
 
 	}

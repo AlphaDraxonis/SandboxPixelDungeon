@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
@@ -53,10 +54,8 @@ public abstract class Reference {
     public Image createIcon() {
         Object iconValue = getValue() == null ? Reflection.newInstance(type) : getValue();
 
-        if (value instanceof Item) return Dungeon.customDungeon.getItemImage((Item) iconValue);
-        if (value instanceof Mob) return ((Mob) iconValue).sprite();
-        if (value instanceof Trap) return ((Trap) iconValue).getSprite();
-        if (value instanceof Plant) return ((Plant) iconValue).getSprite();
+        Image img = objectToImage(iconValue);
+        if (img != null) return img;
 
         if (Collection.class.isAssignableFrom(getType())) {
             //TODO tzz
@@ -76,6 +75,16 @@ public abstract class Reference {
         }
 
         return new ItemSprite();
+    }
+
+    public static Image objectToImage(Object obj) {
+        if (obj instanceof Item) return Dungeon.customDungeon.getItemImage((Item) obj);
+        if (obj instanceof Mob) return ((Mob) obj).sprite();
+        if (obj instanceof Trap) return ((Trap) obj).getSprite();
+        if (obj instanceof Plant) return ((Plant) obj).getSprite();
+        if (obj instanceof Heap) return new ItemSprite((Heap) obj);
+        if (obj instanceof Image) return (Image) obj;
+        return null;
     }
 
 

@@ -531,9 +531,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         }
         RandomItem.replaceRandomItemsInList(itemsToSpawn);
         if (type == CustomLevel.class) {
-            for (Mob m : level.mobs) {
-                m.initRandoms();
-            }
             for (Heap h : level.heaps.valueList()) {
                 RandomItem.replaceRandomItemsInList(h.items);
                 if (h.items.isEmpty()) h.destroy();

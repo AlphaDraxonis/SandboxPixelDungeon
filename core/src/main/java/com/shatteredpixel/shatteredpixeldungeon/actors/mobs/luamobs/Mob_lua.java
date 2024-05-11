@@ -1206,7 +1206,7 @@ public class Mob_lua extends Rat implements LuaMob {
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
-        return super.chooseEnemy();
+        return super.chooseEnemyImpl();
     }
 
     @Override

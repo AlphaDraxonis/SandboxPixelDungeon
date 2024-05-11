@@ -16,6 +16,8 @@ public class ChargeSpinner extends StyledSpinner {
         super(new LevelSpinner.LevelSpinnerModel(wand.curCharges, wand.maxCharges),
                 Messages.get(ChargeSpinner.class, "label"), 9, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_RECHARGE));
         icon.scale.set(9f / icon.height());
+        ((SpinnerIntegerModel) getModel()).setMinimum(0);
+        ((SpinnerIntegerModel) getModel()).setAbsoluteMinimum(0);
         addChangeListener(() -> {
             wand.curCharges = (int) getValue();
             onChange();
@@ -26,6 +28,8 @@ public class ChargeSpinner extends StyledSpinner {
         super(new LevelSpinner.LevelSpinnerModel(artifact.charge(), artifact.chargeCap()),
                 Messages.get(ChargeSpinner.class, "label"), 9, EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_RECHARGE));
         icon.scale.set(9f / icon.height());
+        ((SpinnerIntegerModel) getModel()).setMinimum(0);
+        ((SpinnerIntegerModel) getModel()).setAbsoluteMinimum(0);
         addChangeListener(() -> {
             artifact.charge((int) getValue());
             onChange();
@@ -45,9 +49,9 @@ public class ChargeSpinner extends StyledSpinner {
         SpinnerIntegerModel model = (SpinnerIntegerModel) getModel();
         int maxCharges;
         if (item instanceof Wand) {
-            maxCharges = ((Wand) item).maxCharges;
+            maxCharges = Math.max(1, ((Wand) item).maxCharges);
         } else if (!(item instanceof Artifact)) throw new IllegalArgumentException("Error in line 37 hehehehe!");
-        else maxCharges = ((Artifact) item).chargeCap();
+        else maxCharges = Math.max(1, ((Artifact) item).chargeCap());
 
         if (model.getValue() == model.getMaximum()) model.setValue(maxCharges);
         model.setMaximum(maxCharges);

@@ -15,7 +15,8 @@ public class SimpleWindow extends Window {
     protected Component title, body, outsideSp;
     protected ScrollPane sp;
 
-    private float contentAlignment, titleAlignment;
+    protected float contentAlignment;
+    protected float titleAlignment;
 
     public SimpleWindow() {
         this(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
@@ -70,7 +71,7 @@ public class SimpleWindow extends Window {
 
         if (title != null) {
             if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth(width);
-            title.setRect(Math.max(GAP, (width - title.width()) * titleAlignment), posY, width - GAP, title.height());
+            title.setRect(Math.max(GAP, (width - title.width()) * titleAlignment), posY, width, title.height());
             posY = title.bottom() + GAP * 3;
         }
 
@@ -92,11 +93,12 @@ public class SimpleWindow extends Window {
         sp.givePointerPriority();
     }
 
-    protected void onScroll(ScrollPane sp) {
-    }
-
     public float preferredHeight() {
         float result;
+
+        if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth(width);
+        else title.setSize(width, title.height());
+
         body.setSize(width, -1);
         result = GAP * 5 + title.height() + body.height() + 1;
 
@@ -114,5 +116,8 @@ public class SimpleWindow extends Window {
     public void resize(int w, int h) {
         super.resize(w, h);
         if (body != null) layout();
+    }
+
+    protected void onScroll(ScrollPane sp) {
     }
 }

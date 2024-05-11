@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
@@ -32,8 +33,12 @@ public class WndMessage extends Window {
 	private static final int MARGIN = 4;
 	
 	public WndMessage( String text ) {
+		this(text, Chrome.Type.WINDOW);
+	}
+
+	public WndMessage( String text, Chrome.Type type ) {
 		
-		super();
+		super( 0, 0, Chrome.get(type) );
 		
 		RenderedTextBlock info = PixelScene.renderTextBlock( text, 6 );
 		info.maxWidth((PixelScene.landscape() ? WIDTH_L : WIDTH_P) - MARGIN * 2);

@@ -135,7 +135,7 @@ public class LuaScript implements Comparable<LuaScript>, Copyable<LuaScript> {
 			int outputStartIndex = matcher.start();
 			int startIndex = matcher.end();
 
-			Matcher startMatcher = Pattern.compile("\\b(if|for|while|do|repeat)\\b", Pattern.DOTALL).matcher(cleanedCode.substring(startIndex));
+			Matcher startMatcher = Pattern.compile("\\b(if|for|while|do|repeat|function)\\b", Pattern.DOTALL).matcher(cleanedCode.substring(startIndex));
 			Matcher endMatcher = Pattern.compile("\\bend\\b", Pattern.DOTALL).matcher(cleanedCode.substring(startIndex));
 
 			LinkedList<Integer> starts = new LinkedList<>();

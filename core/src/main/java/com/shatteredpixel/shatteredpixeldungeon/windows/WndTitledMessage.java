@@ -20,6 +20,7 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
@@ -27,76 +28,6 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
-//public class WndTitledMessage extends Window {
-//
-//    public static final int WIDTH_MIN    = 120;
-//    public static final int WIDTH_MAX    = 220;
-//    public static final int GAP	= 2;
-//
-//    protected RenderedTextBlock text;
-//    protected ScrollPane sp;
-//
-//    public WndTitledMessage(Image icon, String title, String message ) {
-//
-//        this( new IconTitle( icon, title ), message );
-//
-//    }
-//
-//    public WndTitledMessage(Component titlebar, String message ) {
-//
-//        super();
-//
-//        int width = WIDTH_MIN;
-//
-//        titlebar.setRect(0, 0, width, 0);
-//        add(titlebar);
-//
-//        sp = new ScrollPane(new Component() {
-//            @Override
-//            protected void createChildren(Object... params) {
-//                text = PixelScene.renderTextBlock( 6 );
-//                text.text( message, WndTitledMessage.this.width );
-//                add(text);
-//            }
-//
-//            @Override
-//            protected void layout() {
-//                text.setPos(x, y);
-//                width = text.width();
-//                height = text.height();
-//                if (sp.height() < height) height += 1;
-//            }
-//        });
-//        add(sp);
-//
-//        while (PixelScene.landscape()
-//                && text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
-//                && width < WIDTH_MAX){
-//            width += 20;
-//            titlebar.setRect(0, 0, width, 0);
-//            sp.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
-//            text.maxWidth(width);
-//        }
-//
-//        bringToFront(titlebar);
-//
-//        resize( width, (int) Math.min(titlebar.height() + 2*GAP + text.height() + 2, PixelScene.uiCamera.height * 0.85f ));
-//
-//        sp.setRect( titlebar.left(), titlebar.bottom() + 2*GAP, width, height - titlebar.height() - 2*GAP - 2 );
-//    }
-//
-//    public static void layoutTitleBar(Component titlebar, int width) {
-//        if (titlebar == null) return;
-//        if (titlebar instanceof RenderedTextBlock) {
-//            ((RenderedTextBlock) titlebar).maxWidth(width);
-//            titlebar.setRect((width - titlebar.width()) / 2f, GAP, titlebar.width(), titlebar.height());
-//        } else titlebar.setRect(0, 0, width, 0);
-//        PixelScene.align(titlebar);
-//    }
-//
-//    public void setHighligtingEnabled(boolean enableHighligthing){
-//        text.setHighlighting(enableHighligthing);
-//    }
 public class WndTitledMessage extends Window {
 
     public static final int WIDTH_MIN    = 120;
@@ -106,15 +37,24 @@ public class WndTitledMessage extends Window {
     protected WindowContent content;
     protected RenderedTextBlock text;
 
-    public WndTitledMessage(Image icon, String title, String message ) {
 
-        this( new IconTitle( icon, title ), message );
+    public WndTitledMessage(Image icon, String title, String message ) {
+        this(icon, title, message, Chrome.Type.WINDOW);
+    }
+
+    public WndTitledMessage(Image icon, String title, String message, Chrome.Type type ) {
+
+        this( new IconTitle( icon, title ), message, type );
 
     }
 
     public WndTitledMessage(Component titlebar, String message ) {
+        this(titlebar, message, Chrome.Type.WINDOW);
+    }
 
-        super();
+    public WndTitledMessage(Component titlebar, String message, Chrome.Type type ) {
+
+        super(0, 0, Chrome.get(type));
 
         content = new WindowContent(titlebar, message);
         text = content.text;

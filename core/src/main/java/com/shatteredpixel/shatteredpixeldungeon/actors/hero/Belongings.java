@@ -246,6 +246,22 @@ public class Belongings implements Iterable<Item> {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	public<T extends Item> T getExactItem( Class<T> itemClass ) {
+
+		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
+
+		for (Item item : this) {
+			if (itemClass == item.getClass()) {
+				if (!lostInvent || item.keptThroughLostInventory()) {
+					return (T) item;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	public<T extends Item> ArrayList<T> getAllItems( Class<T> itemClass ) {
 		ArrayList<T> result = new ArrayList<>();
 
