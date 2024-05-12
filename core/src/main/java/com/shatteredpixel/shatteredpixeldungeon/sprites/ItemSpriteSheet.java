@@ -395,9 +395,13 @@ public class ItemSpriteSheet {
 	public static final int WAND_WARDING        = WANDS+10;
 	public static final int WAND_REGROWTH       = WANDS+11;
 	public static final int WAND_TRANSFUSION    = WANDS+12;
+	public static final int WAND_INSTABILITY    = WANDS+13;
+	public static final int WAND_SUMMONING      = WANDS+14;
+	public static final int WAND_YENDOR         = WANDS+15;
 	static {
-		for (int i = WANDS; i < WANDS+16; i++)
+		for (int i = WANDS; i < WANDS+15; i++)
 			assignItemRect(i, 14, 14);
+		assignItemRect(WAND_YENDOR, 16, 16);
 	}
 
 	public static final int RINGS          =                               xy(1, 15);  //16 slots
