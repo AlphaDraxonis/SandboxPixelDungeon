@@ -485,7 +485,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 		int pylonsToActivate = totalPylonsToActivate();
 		int threshold = (int) Math.ceil(HT / ((float)(pylonsToActivate + 1)) * (pylonsToActivate - pylonsActivated));
 
-		if (HP <= threshold){
+		if (HP <= threshold && HP > 0){
 			HP = threshold;
 			supercharge();
 		}
