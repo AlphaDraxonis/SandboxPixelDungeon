@@ -138,7 +138,7 @@ public class WndReward extends SimpleWindow {
 					itemButtons[i].setRect( posX, posY, BTN_SIZE, BTN_SIZE );
 				}
 				if (i + 1 == itemButtons.length) posY = itemButtons[i].bottom();
-				else if (i % MAX_BUTTONS_PER_ROW == MAX_BUTTONS_PER_ROW-1) posY += GAP;
+				else if (i % MAX_BUTTONS_PER_ROW == MAX_BUTTONS_PER_ROW-1) posY += GAP + BTN_SIZE;
 				posX = itemButtons[i].right() + BTN_GAP;
 			}
 

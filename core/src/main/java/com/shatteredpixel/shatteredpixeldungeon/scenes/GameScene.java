@@ -1217,7 +1217,7 @@ public class GameScene extends DungeonScene {
 		Char charAtCell = Actor.findChar(cell);
 
 		if (Dungeon.isLevelTesting()
-			&& (!(charAtCell instanceof HeroMob) || ((HeroMob) charAtCell).getDirectableAlly() == null)) {
+			&& (!(charAtCell instanceof Hero) && (!(charAtCell instanceof HeroMob) || ((HeroMob) charAtCell).getDirectableAlly() == null))) {
 			showEditCellWindow( cell );
 			return;
 		}
@@ -1293,7 +1293,7 @@ public class GameScene extends DungeonScene {
 	public static void examineObject(Object o){
 
 		if (Dungeon.isLevelTesting()
-				&& (!(o instanceof HeroMob) || ((HeroMob) o).getDirectableAlly() == null)) {
+				&& !(o instanceof Hero) && ((!(o instanceof HeroMob) || ((HeroMob) o).getDirectableAlly() == null))) {
 			show(new EditCompWindow( o ));
 			return;
 		}
@@ -1433,7 +1433,8 @@ public class GameScene extends DungeonScene {
 						if (objects.isEmpty()){
 							GameScene.show(new WndInfoCell(cell));
 						} else if (!Dungeon.isLevelTesting()
-								|| objects.get(index-1) instanceof HeroMob && ((HeroMob) objects.get(index-1)).getDirectableAlly() != null) {
+								|| !(objects.get(index-1) instanceof Hero)
+								&& (objects.get(index-1) instanceof HeroMob && ((HeroMob) objects.get(index-1)).getDirectableAlly() != null)) {
 							examineObject(objects.get(index-1));
 						} else {
 							showEditCellWindow( cell );

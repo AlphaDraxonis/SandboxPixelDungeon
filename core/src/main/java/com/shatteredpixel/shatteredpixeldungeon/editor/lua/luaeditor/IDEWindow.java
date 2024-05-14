@@ -426,6 +426,7 @@ public class IDEWindow extends Component {
 							else obj = item;
 							if (obj == null) return;
 							String clName = obj.getClass().getSimpleName();
+							if (clName.equals("Barrier")) clName = obj.getClass().getName();
 							TextInput textInput = TextInput.getWithFocus();
 							if (textInput != null && textInput != pathInput) textInput.insert("new(\"" + clName + "\")");
 						}

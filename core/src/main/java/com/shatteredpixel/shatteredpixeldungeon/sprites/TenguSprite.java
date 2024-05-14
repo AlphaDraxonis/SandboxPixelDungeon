@@ -100,18 +100,7 @@ public class TenguSprite extends MobSprite {
 
 	public static boolean doRealAttack( CharSprite sprite, int cell ) {
 		if (!Dungeon.level.adjacent( cell, sprite.ch.pos )) {
-			((MissileSprite)sprite.parent.recycle( MissileSprite.class )).
-					reset( sprite, cell, new TenguShuriken(), new Callback() {
-						@Override
-						public void call() {
-							if (sprite.ch instanceof Tengu) {
-								sprite.ch.onAttackComplete();
-							} else {
-								sprite.ch.onZapComplete();
-							}
-						}
-					} );
-			sprite.zap( sprite.ch.pos );
+			sprite.zap(cell);
 		} else {
 			if (sprite instanceof TenguSprite) return false;
 			sprite.attack( cell );
@@ -125,7 +114,7 @@ public class TenguSprite extends MobSprite {
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
-		//Zap animations are usually handled in Tengu.java
+		//normal Zap/Throwing animations are handled in Tengu.java
 		if (!(ch instanceof Tengu)) {
 			((MissileSprite)parent.recycle( MissileSprite.class )).
 					reset( sprite, cell, new TenguShuriken(), new Callback() {

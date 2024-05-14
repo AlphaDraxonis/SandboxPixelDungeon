@@ -69,6 +69,7 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Gizmo;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -86,19 +87,25 @@ public class LuaGlobals extends Globals {
 		loader = standardGlobals.loader;
 
 		final LuaFunction newInstance = standardGlobals.get("luajava").get("newInstance").checkfunction();
-		set("new", new OneArgFunction() {
+		set("new", new VarArgFunction() {
+
 			@Override
-			public LuaValue call(LuaValue arg) {
+			public Varargs invoke(Varargs varargs) {
+				LuaValue arg = varargs.arg1();
 				if (arg.isstring()) {
 					if (arg.checkjstring().startsWith(Messages.MAIN_PACKAGE_NAME)) {
-						LuaValue result = newInstance.call(arg);
+						LuaValue result = newInstance.invoke(arg, varargs.subargs(2)).arg1();
 						if (result.isuserdata()) {
 							Object obj = result.checkuserdata();
 							if (obj instanceof Bundlable || obj instanceof CharSprite || obj instanceof Ballistica) return result;
+							else {
+								if (obj instanceof Gizmo) ((Gizmo) obj).destroy();
+								throw new IllegalArgumentException("Instancing class " + arg.checkjstring() + " is not permitted for security reasons!");
+							}
 						}
 					}
 					String fullName = searchFullyQualifiedName(arg.checkjstring());
-					if (fullName != null) return newInstance.call(fullName);
+					if (fullName != null) return newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2));
 				}
 				return LuaValue.NIL;
 			}
@@ -423,6 +430,7 @@ public class LuaGlobals extends Globals {
 			case "Buff": return Buff.class.getName();
 			case "ArrowCell": return ArrowCell.class.getName();
 			case "Barrier": return Barrier.class.getName();
+			case "Ballistica": return Ballistica.class.getName();
 			case "Actor": return Actor.class.getName();
 			case "Weapon": return Weapon.class.getName();
 			case "Armor": return Armor.class.getName();

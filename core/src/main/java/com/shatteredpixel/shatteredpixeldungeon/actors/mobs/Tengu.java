@@ -291,6 +291,17 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 		return false;
 	}
 
+	@Override
+	public void onZapComplete() {
+		if (!(sprite instanceof TenguSprite)) super.onAttackComplete();
+		else super.onZapComplete();
+	}
+
+	@Override
+	public void hitSound(float pitch) {
+		if (sprite instanceof TenguSprite || Dungeon.level.adjacent(pos, target)) super.hitSound(pitch);
+	}
+
 	private void jump(int targetPos, boolean insideArena) {
 		
 		//in case tengu hasn't had a chance to act yet

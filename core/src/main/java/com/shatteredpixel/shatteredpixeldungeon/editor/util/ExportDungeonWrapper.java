@@ -175,7 +175,7 @@ public class ExportDungeonWrapper implements Bundlable {
                 FileHandle[] files = file.list();
                 subFiles = new AdditionalFileInfo[files.length];
                 for (int i = 0; i < files.length; i++) {
-                    if (files[i].exists()) subFiles[i] = new AdditionalFileInfo(files[i]);
+                    if (files[i].exists() && !"mp3/ogg/wav".contains(files[i].extension())) subFiles[i] = new AdditionalFileInfo(files[i]);
                 }
             } else {
                 try {
