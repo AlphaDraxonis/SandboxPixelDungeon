@@ -177,6 +177,9 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
     private static Integer[] createTypeData() {
         return new Integer[] {
 
+                CustomParticle.LIGHT_HALO,
+                CustomParticle.FLARE,
+
                 Speck.LIGHT,
                 Speck.RED_LIGHT,
                 Speck.DISCOVER,

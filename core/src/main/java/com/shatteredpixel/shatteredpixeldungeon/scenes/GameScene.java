@@ -1431,7 +1431,7 @@ public class GameScene extends DungeonScene {
 						handleCell(cell);
 					} else {
 						if (objects.isEmpty()){
-							GameScene.show(new WndInfoCell(cell));
+							showEditCellWindow( cell );
 						} else if (!Dungeon.isLevelTesting()
 								|| !(objects.get(index-1) instanceof Hero)
 								&& (objects.get(index-1) instanceof HeroMob && ((HeroMob) objects.get(index-1)).getDirectableAlly() != null)) {

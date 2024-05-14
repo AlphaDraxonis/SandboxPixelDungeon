@@ -81,6 +81,11 @@ public class FindInBag implements Bundlable {
 			value = ((CustomParticle) source).particleID;
 		}
 
+		else if (source instanceof CustomParticle.ParticleProperty) {
+			type = Type.PARTICLE;
+			value = ((CustomParticle.ParticleProperty) source).particleID();
+		}
+
 		else if (source  instanceof CustomTileLoader.UserCustomTile) {
 			type = Type.CUSTOM_TILE;
 			value = ((CustomTileLoader.UserCustomTile) source).identifier;
@@ -94,6 +99,11 @@ public class FindInBag implements Bundlable {
 		else if (source  instanceof Class) {
 			type = Type.CLASS;
 			value = source;
+		}
+
+		else if (source  instanceof FindInBag) {
+			type = ((FindInBag) source).getType();
+			value = ((FindInBag) source).getValue();
 		}
 
 		else {
