@@ -66,8 +66,12 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.utils.Bundlable;
@@ -229,9 +233,15 @@ public class LuaGlobals extends Globals {
 		set("showMessageWindow", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs varargs) {
-				LuaValue fifthArg = varargs.arg(5);
+				LuaValue fifthArg = varargs.arg(4);
 				LuaFunction onHide = fifthArg.isfunction() ? fifthArg.checkfunction() : null;
-				Game.runOnRenderThread(() -> WndCreator.showMessageWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), onHide));
+				Game.runOnRenderThread(() -> {
+					try {
+						WndCreator.showMessageWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), LuaValue.NIL, onHide);
+					} catch (LuaError e) {
+						DungeonScene.show(new WndError(e));
+					}
+				});
 				return LuaValue.NIL;
 			}
 
@@ -239,9 +249,15 @@ public class LuaGlobals extends Globals {
 		set("showStoryWindow", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs varargs) {
-				LuaValue fifthArg = varargs.arg(5);
+				LuaValue fifthArg = varargs.arg(4);
 				LuaFunction onHide = fifthArg.isfunction() ? fifthArg.checkfunction() : null;
-				Game.runOnRenderThread(() -> WndCreator.showStoryWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), onHide));
+				Game.runOnRenderThread(() -> {
+					try {
+						WndCreator.showStoryWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), LuaValue.NIL, onHide);
+					} catch (LuaError e) {
+						DungeonScene.show(new WndError(e));
+					}
+				});
 				return LuaValue.NIL;
 			}
 
@@ -251,10 +267,47 @@ public class LuaGlobals extends Globals {
 			public Varargs invoke(Varargs varargs) {
 				LuaValue seventhArg = varargs.arg(7);
 				LuaFunction onSelectReward = seventhArg.isfunction() ? seventhArg.checkfunction() : null;
-				Game.runOnRenderThread(() -> WndCreator.showItemRewardWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), varargs.arg(5), varargs.arg(6), onSelectReward));
+				Game.runOnRenderThread(() -> {
+					try {
+						WndCreator.showItemRewardWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), varargs.arg(5), varargs.arg(6), onSelectReward);
+					} catch (LuaError e) {
+						DungeonScene.show(new WndError(e));
+					}
+				});
 				return LuaValue.NIL;
 			}
+		});
 
+		set("showCellSelector", new TwoArgFunction() {
+			@Override
+			public LuaValue call(LuaValue prompt, LuaValue onSelect) {
+				String promptString;
+				if (prompt.isnil() || !prompt.isstring()) promptString = Messages.get(LuaGlobals.class, "select_cell_prompt");
+				else {
+					promptString = prompt.checkjstring();
+					String msg = Messages.get(promptString);
+					if (msg != Messages.NO_TEXT_FOUND) promptString = msg;
+				}
+				final String p = promptString;
+				Game.runOnRenderThread(() -> {
+					GameScene.selectCell(new CellSelector.Listener() {
+						@Override
+						public void onSelect(Integer cell) {
+							try {
+								if (cell == null || cell < 0 || cell >= Dungeon.level.length())
+									cell = -1;
+								onSelect.call(LuaValue.valueOf(cell));
+							} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
+						}
+
+						@Override
+						public String prompt() {
+							return p;
+						}
+					});
+				});
+				return LuaValue.NIL;
+			}
 		});
 
 		set("cellToString", new OneArgFunction() {
@@ -322,6 +375,24 @@ public class LuaGlobals extends Globals {
 			@Override
 			public LuaValue call() {
 				SandboxPixelDungeon.seamlessResetScene();
+				return LuaValue.NIL;
+			}
+		});
+
+		set("updateCell", new OneArgFunction() {
+			@Override
+			public LuaValue call(LuaValue cell) {
+				if (cell.isint()) {
+					DungeonScene.updateMap(cell.checkint());
+				}
+				return LuaValue.NIL;
+			}
+		});
+
+		set("updateMap", new ZeroArgFunction() {
+			@Override
+			public LuaValue call() {
+				DungeonScene.updateMap();
 				return LuaValue.NIL;
 			}
 		});

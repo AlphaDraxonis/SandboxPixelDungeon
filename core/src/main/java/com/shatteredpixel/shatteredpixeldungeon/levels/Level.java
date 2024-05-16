@@ -1620,6 +1620,10 @@ public abstract class Level implements Bundlable {
 			discoverable[i] = d;
 		}
 	}
+
+	public void setTerrain( int cell, int terrain ){//used for Lua
+		set( cell, terrain, this );
+	}
 	
 	public static void set( int cell, int terrain ){
 		set( cell, terrain, Dungeon.level );

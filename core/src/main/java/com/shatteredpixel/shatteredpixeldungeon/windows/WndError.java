@@ -23,8 +23,8 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import org.luaj.vm2.LuaError;
 import com.watabou.noosa.Game;
+import org.luaj.vm2.LuaError;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -36,7 +36,7 @@ public class WndError extends WndTitledMessage {
 	}
 
 	public WndError( LuaError error ) {
-		this( error.getMessage() );
+		this( addLineNumbers(error.getMessage()) );
 		content.sp.scrollTo(0, text.bottom());
 		setHighligtingEnabled(false);
 	}
@@ -70,6 +70,21 @@ public class WndError extends WndTitledMessage {
 		}
 
 		return exceptionMsg;
+	}
+
+	private static String addLineNumbers(String s) {
+
+		if (s == null) return null;
+
+		String[] lines = s.split("\n");
+		StringBuilder b = new StringBuilder();
+
+		for (int i = 0; i < lines.length; i++) {
+			b.append(i + 1).append("  ").append(lines[i]);
+			if (i+1 < lines.length) b.append("\n");
+		}
+
+		return b.toString();
 	}
 
 }

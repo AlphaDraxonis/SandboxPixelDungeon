@@ -2,6 +2,8 @@ package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
@@ -83,6 +85,8 @@ public abstract class Reference {
         if (obj instanceof Trap) return ((Trap) obj).getSprite();
         if (obj instanceof Plant) return ((Plant) obj).getSprite();
         if (obj instanceof Heap) return new ItemSprite((Heap) obj);
+        if (obj instanceof Barrier) return ((Barrier) obj).getSprite();
+        if (obj instanceof ArrowCell) return ((ArrowCell) obj).getSprite();
         if (obj instanceof Image) return (Image) obj;
         return null;
     }

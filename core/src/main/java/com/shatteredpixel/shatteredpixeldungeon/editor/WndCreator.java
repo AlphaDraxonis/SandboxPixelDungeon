@@ -28,12 +28,16 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Reference;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -46,7 +50,7 @@ public final class WndCreator {
 	private WndCreator(){}
 
 	private static String parseMessage(LuaValue message) {
-		if (message.isnil() || !message.isstring()) throw new IllegalArgumentException();
+		if (message.isnil() || !message.isstring()) throw new LuaError(new IllegalArgumentException());
 		String key = message.checkjstring();
 		String msg = Messages.get(key);
 		return msg.equals(Messages.NO_TEXT_FOUND) ? key : msg;
@@ -61,9 +65,19 @@ public final class WndCreator {
 
 	private static Image parseIcon(LuaValue icon) {
 		int intvalue;
-		return icon.isuserdata() ? Reference.objectToImage(icon.touserdata()) :
-				icon.isint() ? (intvalue = icon.checkint()) >= 0 && intvalue < 512 ? new ItemSprite(intvalue) : null :
-						null;
+		if (icon.isuserdata()) {
+			return Reference.objectToImage(icon.touserdata());
+		}
+		if (icon.isint()) {
+			return (intvalue = icon.checkint()) >= 0 && intvalue < 512 ? new ItemSprite(intvalue) : null;
+		}
+		if (icon.isstring()) {
+			String asString = icon.checkjstring();
+			for (Icons i : Icons.values()) {
+				if (i.name().toLowerCase(Locale.ENGLISH).equals(asString)) return i.get();
+			}
+		}
+		return null;
 	}
 
 	private static Mob parseMob(LuaValue mob) {
@@ -91,24 +105,33 @@ public final class WndCreator {
 				}
 			}
 		}
-		return Chrome.Type.SCROLL;
+		return null;
 	}
 
 	public static Window showMessageWindow(LuaValue text, LuaValue title, LuaValue icon, LuaValue chromeType, LuaFunction onHide) {
 		String t = parseTitle(title);
 		Window w;
-		w = t == null ? new WndMessage(parseMessage(text), parseChromeType(chromeType)) {
+		Chrome.Type bg = parseChromeType(chromeType);
+		w = t == null ? new WndMessage(parseMessage(text), bg == null ? Chrome.Type.WINDOW : bg) {
 			@Override
 			public void hide() {
 				super.hide();
-				if (onHide != null) onHide.call();
+				if (onHide != null) {
+					try {
+						onHide.call();
+					} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
+				}
 			}
 		}
-		: new WndTitledMessage(parseIcon(icon), parseTitle(title), parseMessage(text), parseChromeType(chromeType)) {
+		: new WndTitledMessage(parseIcon(icon), parseTitle(title), parseMessage(text), bg == null ? Chrome.Type.WINDOW : bg) {
 			@Override
 			public void hide() {
 				super.hide();
-				if (onHide != null) onHide.call();
+				if (onHide != null) {
+					try {
+						onHide.call();
+					} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
+				}
 			}
 		};
 
@@ -121,11 +144,15 @@ public final class WndCreator {
 	}
 
 	public static Window showStoryWindow(String text, String title, Image icon, Chrome.Type type, LuaFunction onHide) {
-		Window w = new WndStory(icon, title, text, type) {
+		Window w = new WndStory(icon, title, text, type == null ? Chrome.Type.SCROLL : type) {
 			@Override
 			public void hide() {
 				super.hide();
-				if (onHide != null) onHide.call();
+				if (onHide != null) {
+					try {
+						onHide.call();
+					} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
+				}
 			}
 		};
 		GameScene.show(w);
@@ -136,7 +163,7 @@ public final class WndCreator {
 	//showItemRewardWindow("Ich will dir was geben...", this, hero.belongings:getItem(class("Food")), {new("Sword")}, nil, nil, function(i)  i:identify(false);i:level(8); end)
 	//just passing sth like hero.die as function directly WILL NOT WORK
 	public static Window showItemRewardWindow(LuaValue msg, LuaValue questInitiator, LuaValue payItem, LuaValue rewards,  LuaValue title, LuaValue icon, LuaFunction onSelectReward) {
-		if (rewards.isnil() || !rewards.istable()) throw new IllegalArgumentException();
+		if (rewards.isnil() || !rewards.istable()) throw new LuaError(new IllegalArgumentException());
 
 		LuaTable luaList = rewards.checktable();
 		Item[] rewardItems = new Item[luaList.length()];
@@ -164,7 +191,11 @@ public final class WndCreator {
 						new SingleItemRewardsBody(msg, questInitiator, payItem, rewards) {
 							@Override
 							protected void onSelectReward(Item reward) {
-								if (onSelectReward != null) onSelectReward.call(CoerceJavaToLua.coerce(reward));
+								if (onSelectReward != null) {
+									try {
+										onSelectReward.call(CoerceJavaToLua.coerce(reward));
+									} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
+								}
 							}
 						}, null);
 			}
