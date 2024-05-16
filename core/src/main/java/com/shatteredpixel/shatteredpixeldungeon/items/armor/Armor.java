@@ -365,7 +365,7 @@ public class Armor extends EquipableItem {
 			//for each enemy, check if they are adjacent, or within 2 tiles and an adjacent cell is open
 			PathFinder.buildDistanceMap(owner.pos, Dungeon.level.getPassableVar(), 2);
 			for (Char ch : Actor.chars()){
-				if ( Dungeon.level.distance(ch.pos, owner.pos) <= 2 && owner.alignment != ch.alignment){
+				if ( Dungeon.level.distance(ch.pos, owner.pos) <= 2 && owner.alignment != ch.alignment && ch.alignment != Char.Alignment.NEUTRAL){
 					if (Dungeon.level.adjacent(ch.pos, owner.pos)){
 						enemyNear = true;
 						break;
