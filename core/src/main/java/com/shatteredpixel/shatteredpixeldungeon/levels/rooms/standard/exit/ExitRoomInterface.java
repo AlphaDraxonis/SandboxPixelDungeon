@@ -5,6 +5,9 @@
  * Shattered Pixel Dungeon
  * Copyright (C) 2014-2024 Evan Debenham
  *
+ * Sandbox Pixel Dungeon
+ * Copyright (C) 2023-2024 AlphaDraxonis
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,22 +24,10 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.RitualRoom;
-import com.watabou.utils.Point;
+public interface ExitRoomInterface {
 
-public class RitualExitRoom extends RitualRoom implements ExitRoomInterface {
-
-	@Override
-	public boolean isExit() {
+	default boolean isExit() {
 		return true;
 	}
 
-	@Override
-	protected void placeloot(Level level, Point p) {
-		Painter.set(level, p, Terrain.EXIT);
-		level.addRegularExit(level.pointToCell(p));
-	}
 }

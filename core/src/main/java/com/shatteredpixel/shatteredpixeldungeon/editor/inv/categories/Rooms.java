@@ -85,6 +85,7 @@ public enum Rooms implements EditorInvCategory<Room> {
                 SewerPipeRoom.class,
                 RingRoom.class,
                 CircleBasinRoom.class,
+                WaterBridgeRoom.class,
 
                 //TODO add descriptions tzzz
                 DiamondGooRoom.class,
@@ -97,28 +98,32 @@ public enum Rooms implements EditorInvCategory<Room> {
                 SegmentedRoom.class,
                 PillarsRoom.class,
                 CellBlockRoom.class,
+                ChasmBridgeRoom.class,
                 RotGardenRoom.class,
                 RitualSiteRoom.class,
-                MassGraveRoom.class
+                MassGraveRoom.class,
         };
 
         CAVES.classes = new Class[] {
                 CaveRoom.class,
                 CavesFissureRoom.class,
                 CirclePitRoom.class,
-                BlacksmithRoom.class
+                CircleWallRoom.class,
+                BlacksmithRoom.class,
         };
 
         CITY.classes = new Class[] {
                 HallwayRoom.class,
                 StatuesRoom.class,
-                SegmentedLibraryRoom.class
+                SegmentedLibraryRoom.class,
+                LibraryRingRoom.class,
         };
 
         HALLS.classes = new Class[] {
                 RuinsRoom.class,
                 ChasmRoom.class,
                 SkullsRoom.class,
+                RitualRoom.class,
                 DemonSpawnerRoom.class
         };
 

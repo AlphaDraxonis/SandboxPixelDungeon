@@ -26,8 +26,9 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance.EntranceRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance.EntranceRoomInterface;
 
-public class SewerBossEntranceRoom extends EntranceRoom {
+public class SewerBossEntranceRoom extends EntranceRoom implements EntranceRoomInterface {
 
 	@Override
 	public int minWidth() {

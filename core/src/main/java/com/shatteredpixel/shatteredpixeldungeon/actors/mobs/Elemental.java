@@ -289,7 +289,7 @@ public abstract class Elemental extends Mob {
 			//fire a charged attack instead of any other action, as long as it is possible to do so
 			if (targetingPos != -1 && state == HUNTING){
 				//account for bolt hitting walls, in case position suddenly changed
-				targetingPos = new Ballistica( pos, targetingPos, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET ).collisionPos;
+				targetingPos = new Ballistica( pos, targetingPos, Ballistica.STOP_SOLID | Ballistica.STOP_TARGET | Ballistica.STOP_BARRIER_PROJECTILES, null ).collisionPos;
 				if (sprite != null && (sprite.visible || Dungeon.level.heroFOV[targetingPos])) {
 					sprite.zap( targetingPos );
 					return false;

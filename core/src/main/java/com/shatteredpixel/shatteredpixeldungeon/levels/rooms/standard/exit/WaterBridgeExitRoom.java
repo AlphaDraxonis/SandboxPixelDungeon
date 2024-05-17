@@ -23,12 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.WaterBridgeRoom;
 import com.watabou.utils.PathFinder;
 
-public class WaterBridgeExitRoom extends WaterBridgeRoom {
+public class WaterBridgeExitRoom extends WaterBridgeRoom implements ExitRoomInterface {
 
 	@Override
 	public int minWidth() {
@@ -60,7 +59,7 @@ public class WaterBridgeExitRoom extends WaterBridgeRoom {
 		}
 
 		Painter.set( level, exit, Terrain.EXIT );
-		level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
+		level.addRegularExit(exit);
 	}
 
 }

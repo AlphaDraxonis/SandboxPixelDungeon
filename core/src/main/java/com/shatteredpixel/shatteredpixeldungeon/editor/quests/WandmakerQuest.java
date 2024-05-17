@@ -84,11 +84,6 @@ public class WandmakerQuest extends Quest {
     }
 
     @Override
-    public boolean completed() {
-        return false;
-    }
-
-    @Override
     public void complete() {
         wand1 = null;
         wand2 = null;

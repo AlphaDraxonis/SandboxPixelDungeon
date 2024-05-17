@@ -133,7 +133,7 @@ public class WndInfoCell extends Window {
 			String customDesc = customTile.desc(x, y);
 			if (customDesc != null) {
 				desc += customDesc +
-						(TileItem.isExitTerrainCell(customTile.terrain) || customTile.terrain == Terrain.ENTRANCE
+						(TileItem.isExitTerrainCell(customTile.terrain) || TileItem.isEntranceTerrainCell(customTile.terrain)
 								? Dungeon.level.appendNoTransWarning(cell) : "");
 			} else {
 				desc += Dungeon.level.tileDesc(Dungeon.level.map[cell], cell);

@@ -23,12 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.ChasmRoom;
 import com.watabou.utils.PathFinder;
 
-public class ChasmExitRoom extends ChasmRoom {
+public class ChasmExitRoom extends ChasmRoom implements ExitRoomInterface {
 
 	@Override
 	public int minHeight() {
@@ -65,7 +64,7 @@ public class ChasmExitRoom extends ChasmRoom {
 			Painter.set( level, exit+i, Terrain.EMPTY );
 		}
 
-		level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
+		level.addRegularExit(exit);
 	}
 
 }

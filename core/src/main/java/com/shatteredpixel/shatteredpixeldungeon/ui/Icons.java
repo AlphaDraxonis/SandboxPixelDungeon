@@ -344,25 +344,25 @@ public enum Icons {
 				icon.frame(icon.texture.uvRectBySize(176, 64, 16, 16));
 				break;
 			case ARROW:
-				icon.frame( icon.texture.uvRectBySize( 64, 48, 11, 11 ) );
+				icon.frame( icon.texture.uvRectBySize( 80, 48, 11, 11 ) );
 				break;
 			case INFO:
-				icon.frame( icon.texture.uvRectBySize( 80, 48, 14, 14 ) );
-				break;
-			case WARNING:
 				icon.frame( icon.texture.uvRectBySize( 96, 48, 14, 14 ) );
 				break;
+			case WARNING:
+				icon.frame( icon.texture.uvRectBySize( 112, 48, 14, 14 ) );
+				break;
 			case BACKPACK_LRG:
-				icon.frame( icon.texture.uvRectBySize( 112, 48, 16, 16 ) );
+				icon.frame( icon.texture.uvRectBySize( 128, 48, 16, 16 ) );
 				break;
 			case TALENT:
-				icon.frame( icon.texture.uvRectBySize( 128, 48, 13, 13 ) );
+				icon.frame( icon.texture.uvRectBySize( 144, 48, 13, 13 ) );
 				break;
 			case MAGNIFY:
-				icon.frame( icon.texture.uvRectBySize( 144, 48, 14, 14 ) );
+				icon.frame( icon.texture.uvRectBySize( 160, 48, 14, 14 ) );
 				break;
 			case SNAKE:
-				icon.frame( icon.texture.uvRectBySize( 160, 48,  9, 13 ) );
+				icon.frame( icon.texture.uvRectBySize( 176, 48,  9, 13 ) );
 				break;
 			case BUFFS:
 				icon.frame( icon.texture.uvRectBySize( 192, 48, 16, 15 ) );

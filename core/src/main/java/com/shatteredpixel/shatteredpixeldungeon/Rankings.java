@@ -327,7 +327,7 @@ public enum Rankings {
 
 		Dungeon.initialVersion = data.getInt(GAME_VERSION);
 
-		if (Dungeon.initialVersion <= ShatteredPixelDungeon.v1_2_3){
+		if (Dungeon.initialVersion <= SandboxPixelDungeon.v1_2_3){
 			Statistics.gameWon = rec.win;
 		}
 		rec.score = calculateScore();
@@ -376,7 +376,7 @@ public enum Rankings {
 		try {
 			FileUtils.bundleToFile( RANKINGS_FILE, bundle);
 		} catch (IOException e) {
-			ShatteredPixelDungeon.reportException(e);
+			SandboxPixelDungeon.reportException(e);
 		}
 
 	}

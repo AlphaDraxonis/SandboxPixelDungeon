@@ -70,8 +70,8 @@ public class DimensionalSundial extends Trinket {
 		return enemySpawnMultiplier(trinketLevel(DimensionalSundial.class));
 	}
 
-	public static float enemySpawnMultiplier( int level ){
-		if (level == -1){
+	private static float enemySpawnMultiplier( int level ){
+		if (level <= -1){
 			return 1f;
 		} else {
 			return 1.25f + 0.25f*level;

@@ -389,8 +389,7 @@ public class GameScene extends DungeonScene {
 			default:
 				Camera.main.snapTo(hero.center().x, hero.center().y);
 		}
-		if (mainCameraPos == null || InterlevelScene.mode != InterlevelScene.Mode.NONE)
-			Camera.main.panTo(hero.center(), 2.5f);
+		Camera.main.panTo(hero.center(), 2.5f);
 		mainCameraPos = Camera.main.scroll;
 
 		if (InterlevelScene.mode != InterlevelScene.Mode.NONE) {
@@ -1065,7 +1064,7 @@ public class GameScene extends DungeonScene {
 			boolean stealthyMimics = MimicTooth.stealthyMimics();
 			for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
 				if (mob.sprite != null) {
-					if (stealthyMimics && mob instanceof Mimic && mob.state == mob.PASSIVE && mob.sprite.visible){
+					if ((!Mimic.isLikeMob(mob) || stealthyMimics && mob instanceof Mimic && mob.state == mob.PASSIVE) && mob.sprite.visible){
 						//mimics stay visible in fog of war after being first seen
 						mob.sprite.visible = true;
 					} else {

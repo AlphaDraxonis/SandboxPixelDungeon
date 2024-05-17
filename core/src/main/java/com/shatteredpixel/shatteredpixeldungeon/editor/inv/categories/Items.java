@@ -17,10 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bombs.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.*;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.BlizzardBrew;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.CausticBrew;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.InfernalBrew;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.ShockingBrew;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.*;
@@ -28,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.remains.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.*;
@@ -56,6 +54,7 @@ public enum Items implements EditorInvCategory<Item> {
     FOOD(FOOD_HOLDER),
     BOMB(BOMB_HOLDER),
     ALCHEMICAL(SPELL_HOLDER),
+    TRINKET(TRINKET_HOLDER),
     OTHER();
 
     private final int sprite;
@@ -163,7 +162,21 @@ public enum Items implements EditorInvCategory<Item> {
                 TimekeepersHourglass.sandBag.class,
                 UnstableSpellbook.class,
                 CapeOfThorns.class,
-                LloydsBeacon.class
+                LloydsBeacon.class,
+
+                TrinketCatalyst.class,
+
+                DimensionalSundial.class,
+                ExoticCrystals.class,
+                EyeOfNewt.class,
+                MimicTooth.class,
+                MossyClump.class,
+                ParchmentScrap.class,
+                PetrifiedSeed.class,
+                RatSkull.class,
+                ThirteenLeafClover.class,
+                TrapMechanism.class,
+                WondrousResin.class,
         };
 
         WAND.classes = Generator.Category.WAND.classes;
@@ -190,10 +203,17 @@ public enum Items implements EditorInvCategory<Item> {
                 ElixirOfMight.class,
                 ElixirOfToxicEssence.class,
 
+                ElixirOfFeatherFall.class,
+
                 BlizzardBrew.class,
                 CausticBrew.class,
                 InfernalBrew.class,
-                ShockingBrew.class
+                ShockingBrew.class,
+
+                UnstableBrew.class,
+                AquaBrew.class,
+
+                Pasty.PastyPride.class,
         };
 
         SCROLL.classes = new Class[] {
@@ -248,6 +268,9 @@ public enum Items implements EditorInvCategory<Item> {
                 Pasty.PastyEaster.class,
                 Pasty.PastyHWeen.class,
                 Pasty.PastyXMas.class,
+                Pasty.PastyPride.class,
+                Pasty.PastyShPDBirthday.class,
+                Pasty.PastyPDBirthday.class
         };
 
         BOMB.classes = new Class[] {
@@ -268,24 +291,23 @@ public enum Items implements EditorInvCategory<Item> {
 
         ALCHEMICAL.classes = new Class[] {
                 EnergyCrystal.class,
-                AlchemicalCatalyst.class,
-                ArcaneCatalyst.class,
                 ArcaneResin.class,
                 LiquidMetal.class,
 
                 Alchemize.class,
-                AquaBlast.class,
                 BeaconOfReturning.class,
                 CurseInfusion.class,
-                FeatherFall.class,
                 MagicalInfusion.class,
                 PhaseShift.class,
                 ReclaimTrap.class,
                 Recycle.class,
                 SummonElemental.class,
                 TelekineticGrab.class,
+                UnstableSpell.class,
                 WildEnergy.class
         };
+
+        TRINKET.classes = Generator.Category.TRINKET.classes;
 
         OTHER.classes = new Class[] {
 
@@ -322,7 +344,6 @@ public enum Items implements EditorInvCategory<Item> {
                 BowFragment.class,
                 BrokenHilt.class,
 
-                RatSkull.class,
                 CeremonialCandle.class,
                 CorpseDust.class,
                 Embers.class,

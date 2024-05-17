@@ -45,7 +45,7 @@ public class PetrifiedSeed extends Trinket {
 		return grassLootMultiplier(trinketLevel(PetrifiedSeed.class));
 	}
 
-	public static float grassLootMultiplier( int level ){
+	private static float grassLootMultiplier( int level ){
 		if (level <= 0){
 			return 1f;
 		} else {
@@ -60,7 +60,7 @@ public class PetrifiedSeed extends Trinket {
 	//when accounting for boosts, we effectively get:
 	//stones: 25/50/75/100%
 	//seeds:  75/58/38/25%
-	public static float stoneInsteadOfSeedChance( int level ){
+	private static float stoneInsteadOfSeedChance( int level ){
 		switch (level){
 			default:
 				return 0;

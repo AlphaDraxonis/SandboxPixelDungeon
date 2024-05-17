@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ReorderHe
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeItemCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
@@ -30,6 +31,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfEnchantment;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
@@ -44,10 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class EditItemComp extends DefaultEditComp<Item> {
 
@@ -75,6 +75,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledSpinner shockerDuration;
     protected AugmentationSpinner augmentationSpinner;
     protected StyledButton enchantBtn;
+    protected StyledSpinner numChoosableTrinkets;
+    protected ItemContainer<Trinket> rollTrinkets;
     protected ChooseDestLevelComp keylevel;
     protected StyledButton keyCell;
     protected StyledButton randomItem;
@@ -168,6 +170,26 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 add(cursedKnown);
             }
 
+            if (item instanceof TrinketCatalyst) {
+
+                TrinketCatalyst cata = (TrinketCatalyst) item;
+
+                numChoosableTrinkets = new StyledSpinner(new SpinnerIntegerModel(1, Generator.Category.TRINKET.classes.length, cata.numChoosableTrinkets), label("num_choosable_trinkets"));
+                ((SpinnerIntegerModel) numChoosableTrinkets.getModel()).setAbsoluteMinAndMax(1, 100);
+                numChoosableTrinkets.addChangeListener(() -> {
+                    cata.numChoosableTrinkets = (int) numChoosableTrinkets.getValue();
+                });
+                add(numChoosableTrinkets);
+
+                rollTrinkets = new ItemContainerWithLabel<Trinket>(cata.rolledTrinkets, this, label("roll_trinkets")) {
+                    @Override
+                    protected void showSelectWindow() {
+                        ItemSelector.showSelectWindow(this, ItemSelector.NullTypeSelector.DISABLED, Trinket.class, Items.bag, new HashSet<>(0));
+                    }
+                };
+                add(rollTrinkets);
+            }
+
             if (item instanceof Wand) {//Check ItemItem#status() if you change sth
                 chargeSpinner = new ChargeSpinner((Wand) item) {
                     @Override
@@ -185,7 +207,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             }
             if (chargeSpinner != null) add(chargeSpinner);
 
-            if (item.isUpgradable() || item instanceof Artifact) {
+            if (item.isUpgradable() || item instanceof Artifact || item instanceof Trinket) {
                 levelSpinner = new LevelSpinner(item) {
                     @Override
                     protected void onChange() {
@@ -406,9 +428,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(randomItem);
         }
 
-        rectComps = new Component[]{quantity, quickslotPos, shockerDuration, chargeSpinner, levelSpinner, durabilitySpinner, augmentationSpinner,
-                curseBtn, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, spreadIfLoot};
-        linearComps = new Component[]{bagItems, randomItem, keylevel, keyCell};
+        rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, chargeSpinner, levelSpinner, durabilitySpinner,
+                augmentationSpinner, curseBtn, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, spreadIfLoot};
+        linearComps = new Component[]{rollTrinkets, bagItems, randomItem, keylevel, keyCell};
     }
 
     @Override
@@ -626,6 +648,10 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
         if (a instanceof Bag) {
             if (!isItemListEqual(((Bag) a).items, ((Bag) b).items)) return false;
+        }
+        if (a instanceof TrinketCatalyst) {
+            if (((TrinketCatalyst) a).numChoosableTrinkets != ((TrinketCatalyst) b).numChoosableTrinkets) return false;
+            if (!isItemListEqual(((TrinketCatalyst) a).rolledTrinkets, ((TrinketCatalyst) b).rolledTrinkets)) return false;
         }
         if (a instanceof RandomItem) {
             if (!a.equals(b)) return false;

@@ -23,6 +23,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.DimensionalSundial;
 import com.shatteredpixel.shatteredpixeldungeon.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -183,7 +184,7 @@ public class CustomLevel extends Level {
             visualRegions = level.visualRegions;
 
             for (int i = 0; i < map.length; i++) {
-                if (map[i] == ENTRANCE) levelScheme.entranceCells.add(i);
+                if (TileItem.isEntranceTerrainCell(map[i])) levelScheme.entranceCells.add(i);
                 else if (TileItem.isExitTerrainCell(map[i])) levelScheme.exitCells.add(i);
             }
             Collections.sort(levelScheme.entranceCells);
@@ -434,7 +435,7 @@ public class CustomLevel extends Level {
         levelScheme.exitCells.clear();
         for (int i = 0; i < map.length; i++) {
             int terrain = map[i];
-            if (terrain == ENTRANCE) {
+            if (TileItem.isEntranceTerrainCell(terrain)) {
                 levelScheme.entranceCells.add(i);
                 String dest = Dungeon.customDungeon.getFloor(Dungeon.levelName).getDefaultAbove();
                 if (Level.SURFACE.equals(dest)) {
@@ -470,7 +471,7 @@ public class CustomLevel extends Level {
 
     @Override
     public float respawnCooldown() {
-        return respawnCooldown;
+        return respawnCooldown / DimensionalSundial.spawnMultiplierAtCurrentTime();
     }
     public void respawnCooldown(float cd) {
         respawnCooldown = cd;
@@ -503,8 +504,8 @@ public class CustomLevel extends Level {
         while (tries-- > 0) {
             int pos = Random.Int(level.length());
             if (level.isPassableHero(pos) && !level.solid[pos]
-                    && level.map[pos] != ENTRANCE
-                    && level.map[pos] != EXIT
+                    && !TileItem.isEntranceTerrainCell(level.map[pos])
+                    && !TileItem.isExitTerrainCell(level.map[pos])
                     && Zone.canSpawnItems(level, pos)
                     && (tries <= lengthHalf || (level.heaps.get(pos) == null && level.findMob(pos) == null))) {
 

@@ -250,11 +250,11 @@ public abstract class DungeonScene extends PixelScene {
 	}
 
 	public static void updateMap() {
-		scene.updateMapImpl();
+		if (scene != null) scene.updateMapImpl();
 	}
 
 	public static void updateMap(int cell) {
-		scene.updateMapImpl(cell);
+		if (scene != null) scene.updateMapImpl(cell);
 	}
 
 	protected abstract void updateMapImpl();

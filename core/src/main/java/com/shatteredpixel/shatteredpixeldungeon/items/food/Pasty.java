@@ -272,4 +272,22 @@ public class Pasty extends Food {
 			reset();
 		}
 	}
+	public static class PastyPride extends Pasty {
+		{
+			holiday = Holiday.PRIDE;
+			reset();
+		}
+	}
+	public static class PastyShPDBirthday extends Pasty {
+		{
+			holiday = Holiday.SHATTEREDPD_BIRTHDAY;
+			reset();
+		}
+	}
+	public static class PastyPDBirthday extends Pasty {
+		{
+			holiday = Holiday.PD_BIRTHDAY;
+			reset();
+		}
+	}
 }

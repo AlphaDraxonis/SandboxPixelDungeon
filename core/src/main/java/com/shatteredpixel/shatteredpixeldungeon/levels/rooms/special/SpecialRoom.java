@@ -144,11 +144,7 @@ public abstract class SpecialRoom extends Room implements Copyable<Room> {
 	
 	public static void initForFloor(){
 		floorSpecials = (ArrayList<Class<?extends Room>>) runSpecials.clone();
-		
-//		//laboratory rooms spawn at set intervals every chapter, on 3rd or 4th floor
-//		if (Dungeon.depth%5 == (Dungeon.seed%2 + 3)){
-//			floorSpecials.add(0, LaboratoryRoom.class);
-//		} tzz
+
 		//laboratory rooms spawn at set intervals every chapter
 		if (Dungeon.getSimulatedDepth()%5 == (Dungeon.seed%2 + 3)){
 			floorSpecials.add(0, LaboratoryRoom.class);

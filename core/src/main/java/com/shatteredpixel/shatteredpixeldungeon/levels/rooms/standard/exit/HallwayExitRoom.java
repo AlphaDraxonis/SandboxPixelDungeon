@@ -23,12 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.HallwayRoom;
 import com.watabou.utils.Point;
 
-public class HallwayExitRoom extends HallwayRoom {
+public class HallwayExitRoom extends HallwayRoom implements ExitRoomInterface {
 
 	@Override
 	public boolean isExit() {
@@ -47,7 +46,7 @@ public class HallwayExitRoom extends HallwayRoom {
 			}
 		}
 		Painter.set( level, exit, Terrain.EXIT );
-		level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
+		level.addRegularExit(exit);
 
 	}
 

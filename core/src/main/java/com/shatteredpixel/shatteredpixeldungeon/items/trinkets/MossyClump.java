@@ -51,8 +51,8 @@ public class MossyClump extends Trinket {
 		return overrideNormalLevelChance(trinketLevel(MossyClump.class));
 	}
 
-	public static float overrideNormalLevelChance( int level ){
-		if (level == -1){
+	private static float overrideNormalLevelChance( int level ){
+		if (level <= -1){
 			return 0f;
 		} else {
 			return 0.25f + 0.25f*level;

@@ -109,6 +109,7 @@ public class EditCustomTileComp extends EditTileComp {
                 Terrain.INACTIVE_TRAP,
 
                 Terrain.ENTRANCE,
+                Terrain.ENTRANCE_SP,
                 Terrain.EXIT,
                 Terrain.LOCKED_EXIT,
                 Terrain.UNLOCKED_EXIT,

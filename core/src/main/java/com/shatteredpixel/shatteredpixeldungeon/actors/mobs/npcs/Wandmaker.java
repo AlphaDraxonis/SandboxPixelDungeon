@@ -151,7 +151,7 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 	public void place(RegularLevel level, List<Room> rooms) {
 //        Set<Room> entrances = new HashSet<>(4);// TODO maybe use just entranceRoom insted ?
 //        for (Room room : rooms) {
-//            if (room instanceof EntranceRoom) {
+//            if (room.isEntrance()) {
 //                entrances.add(room);
 //            }
 //        }
@@ -181,7 +181,7 @@ public class Wandmaker extends QuestNPC<WandmakerQuest> {
 				}
 			}
 			if (level.traps.get(pos) != null
-					|| !level.passable[pos]
+					|| !level.isPassable(pos, this)
 					|| level.map[pos] == Terrain.EMPTY_SP) {
 				validPos = false;
 			}

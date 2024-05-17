@@ -11,6 +11,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DarkGold;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
@@ -45,6 +46,8 @@ public class BlacksmithQuest extends Quest {
 
     //pre-generate these so they are consistent between seeds
     public ArrayList<Item> smithRewards;
+    public static Weapon.Enchantment smithEnchant;
+    public static Armor.Glyph smithGlyph;
 
     private static int oldGoldQuestsActive;
     private static final Map<Integer, BlacksmithQuest> quests = new HashMap<>();
@@ -110,6 +113,13 @@ public class BlacksmithQuest extends Quest {
                 a.inscribe(null);
                 a.cursed = false;
             }
+        }
+
+        // 30% base chance to be enchanted, stored separately so status isn't revealed early
+        float enchantRoll = Random.Float();
+        if (enchantRoll <= 0.3f * ParchmentScrap.enchantChanceMultiplier()){
+            smithEnchant = Weapon.Enchantment.random();
+            smithGlyph = Armor.Glyph.random();
         }
 
         RandomItem.replaceRandomItemsInList(smithRewards);
@@ -191,7 +201,10 @@ public class BlacksmithQuest extends Quest {
     private static final String UPGRADES = "upgrades";
     private static final String SMITHS = "smiths";
     private static final String SMITH_REWARDS = "smith_rewards";
+    private static final String ENCHANT		= "enchant";
+    private static final String GLYPH		= "glyph";
     private static final String QUEST_SCORE = "quest_score";
+
 
     @Override
     public void storeInBundle(Bundle bundle) {
@@ -209,7 +222,13 @@ public class BlacksmithQuest extends Quest {
         bundle.put(SMITHS, smiths);
         bundle.put(QUEST_SCORE, questScore);
 
-        if (smithRewards != null) bundle.put(SMITH_REWARDS, smithRewards);
+        if (smithRewards != null) {
+            bundle.put(SMITH_REWARDS, smithRewards);
+            if (smithEnchant != null) {
+                bundle.put(ENCHANT, smithEnchant);
+                bundle.put(GLYPH, smithGlyph);
+            }
+        }
     }
 
     @Override
@@ -240,6 +259,11 @@ public class BlacksmithQuest extends Quest {
 
         if (bundle.contains(SMITH_REWARDS)) {
             smithRewards = new ArrayList<>((Collection<Item>) ((Collection<?>) bundle.getCollection(SMITH_REWARDS)));
+            if (bundle.contains(ENCHANT)) {
+                smithEnchant = (Weapon.Enchantment) bundle.get(ENCHANT);
+                smithGlyph   = (Armor.Glyph) bundle.get(GLYPH);
+            }
+
         }
     }
 

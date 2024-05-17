@@ -23,12 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StatuesRoom;
 import com.watabou.utils.PathFinder;
 
-public class StatuesExitRoom extends StatuesRoom {
+public class StatuesExitRoom extends StatuesRoom implements ExitRoomInterface {
 
 	@Override
 	public float[] sizeCatProbs() {
@@ -57,7 +56,7 @@ public class StatuesExitRoom extends StatuesRoom {
 		}
 
 		Painter.set( level, exit, Terrain.EXIT );
-		level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
+		level.addRegularExit(exit);
 
 	}
 

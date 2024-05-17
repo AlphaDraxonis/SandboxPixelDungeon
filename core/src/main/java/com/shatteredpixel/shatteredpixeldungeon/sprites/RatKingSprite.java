@@ -46,15 +46,15 @@ public class RatKingSprite extends MobSprite {
 				c = 0;
 				break;
 			case APRIL_FOOLS:
-				c = 8;
+				c = 32;
 				break;
 			case WINTER_HOLIDAYS:
-				c = 16;
+				c = 64;
 				break;
 		}
 
 		if (Dungeon.hero != null && Dungeon.hero.armorAbility instanceof Ratmogrify){
-			c += 24;
+			c += 16;
 			if (parent != null) aura(0xFFFF00);
 		}
 

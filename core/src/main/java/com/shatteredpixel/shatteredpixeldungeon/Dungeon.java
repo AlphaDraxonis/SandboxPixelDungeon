@@ -591,6 +591,7 @@ public class Dungeon {
 		if (CustomDungeon.isEditing()) {
 			if (region() == LevelScheme.REGION_PRISON || region() == LevelScheme.REGION_CAVES)
 				return Random.Int(4) == 0;
+			else return false;
 		}
 		if (visitedDepths.contains(Dungeon.depth)) return false;
 		return false;//uses ItemDistribution
@@ -610,6 +611,7 @@ public class Dungeon {
 		if (CustomDungeon.isEditing()) {
 			if (getSimulatedDepth() <= 3)
 				return Random.Int(3) == 0;
+			else return false;
 		}
 		if (visitedDepths.contains(Dungeon.depth)) return false;
 		return false;//uses ItemDistribution
@@ -621,6 +623,7 @@ public class Dungeon {
 		if (CustomDungeon.isEditing()) {
 			if (getSimulatedDepth() <= 3)
 				return Random.Int(3) == 0;
+			else return false;
 		}
 		if (visitedDepths.contains(Dungeon.depth)) return false;
 		return false;//uses ItemDistribution
@@ -628,7 +631,7 @@ public class Dungeon {
 //		return depth < 5 && !LimitedDrops.TRINKET_CATA.dropped() && Random.Int(4-depth) == 0;
 	}
 
-	public static boolean labRoomNeeded(){
+	public static boolean labRoomNeeded(){//tzz
 		//one laboratory each floor set, in floor 3 or 4, 1/2 chance each floor
 		int region = 1+depth/5;
 		if (region > LimitedDrops.LAB_ROOM.count){
@@ -643,7 +646,9 @@ public class Dungeon {
 	// 1/4
 	// 3/4 * 1/3 = 3/12 = 1/4
 	// 3/4 * 2/3 * 1/2 = 6/24 = 1/4
-	// 1/4private static final String INIT_VER = "init_ver";
+	// 1/4
+
+	private static final String INIT_VER = "init_ver";
     private static final String VERSION = "version";
     private static final String SEED = "seed";
     private static final String CUSTOM_SEED = "custom_seed";
@@ -784,7 +789,7 @@ public class Dungeon {
 		
 		Bundle bundle = FileUtils.bundleFromFile( GamesInProgress.gameFile( save ) );
 
-        initialVersion = bundle.getInt(VERSION);
+        initialVersion = bundle.getInt(INIT_VER);
 
 		version = bundle.getInt( VERSION );
 

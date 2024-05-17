@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.trinkets;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
@@ -43,24 +44,24 @@ public class EyeOfNewt extends Trinket {
 				mindVisionRange(buffedLvl()));
 	}
 
-	public static float visionRangeMultiplier(){
-		return visionRangeMultiplier(trinketLevel(EyeOfNewt.class));
+	public static float visionRangeMultiplier(Hero hero){
+		return visionRangeMultiplier(trinketLevel(EyeOfNewt.class, hero));
 	}
 
-	public static float visionRangeMultiplier( int level ){
-		if (level < 0){
+	private static float visionRangeMultiplier( int level ){
+		if (level <= -1){
 			return 1;
 		} else {
 			return 0.875f - 0.125f*level;
 		}
 	}
 
-	public static int mindVisionRange(){
-		return mindVisionRange(trinketLevel(EyeOfNewt.class));
+	public static int mindVisionRange(Hero hero){
+		return mindVisionRange(trinketLevel(EyeOfNewt.class, hero));
 	}
 
-	public static int mindVisionRange( int level ){
-		if (level < 0){
+	private static int mindVisionRange( int level ){
+		if (level <= -1){
 			return 0;
 		} else {
 			return 2+level;

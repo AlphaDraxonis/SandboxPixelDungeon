@@ -127,11 +127,11 @@ abstract public class ClassArmor extends Armor {
 		classArmor.cursed = armor.cursed;
 		classArmor.curseInfusionBonus = armor.curseInfusionBonus;
 		classArmor.masteryPotionBonus = armor.masteryPotionBonus;
-		if (armor.levelKnown && armor.cursedKnown) {
+		if (armor.levelKnown && armor.cursedKnown()) {
 			classArmor.identify();
 		} else {
 			classArmor.levelKnown = armor.levelKnown;
-			classArmor.cursedKnown = true;
+			classArmor.setCursedKnown(true);
 		}
 
 		classArmor.charge = 50;
@@ -270,11 +270,11 @@ abstract public class ClassArmor extends Armor {
 									inscribe(armor.glyph);
 								}
 
-								if (armor.levelKnown && armor.cursedKnown) {
+								if (armor.levelKnown && armor.cursedKnown()) {
 									identify();
 								} else {
 									levelKnown = armor.levelKnown;
-									cursedKnown = true;
+									setCursedKnown(true);
 								}
 
 								GLog.p( Messages.get(ClassArmor.class, "transfer_complete") );

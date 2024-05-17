@@ -23,12 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit;
 
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.PillarsRoom;
 import com.watabou.utils.PathFinder;
 
-public class PillarsExitRoom extends PillarsRoom {
+public class PillarsExitRoom extends PillarsRoom implements ExitRoomInterface {
 
 	@Override
 	public float[] sizeCatProbs() {
@@ -60,7 +59,7 @@ public class PillarsExitRoom extends PillarsRoom {
 		} while (level.findMob(exit) != null || level.map[exit] == Terrain.WALL || !valid);
 		Painter.set( level, exit, Terrain.EXIT );
 
-		level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
+		level.addRegularExit(exit);
 	}
 
 }

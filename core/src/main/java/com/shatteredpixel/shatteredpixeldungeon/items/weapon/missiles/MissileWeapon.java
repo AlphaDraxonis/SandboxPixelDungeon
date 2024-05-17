@@ -157,7 +157,7 @@ abstract public class MissileWeapon extends Weapon {
 	}
 
 	public boolean isSimilar( Item item ) {
-		return level() == item.level() && getClass() == item.getClass();
+		return level() == item.level() && getClass() == item.getClass() && baseUses == ((MissileWeapon) item).baseUses;
 	}
 	
 	@Override
@@ -527,11 +527,6 @@ abstract public class MissileWeapon extends Weapon {
 		if (bundle.contains(BASE_USES)) baseUses = bundle.getFloat(BASE_USES);
 
 		setCursedKnown(true);
-	}
-
-	@Override
-	public boolean isSimilar(Item item) {
-		return super.isSimilar(item) && baseUses == ((MissileWeapon) item).baseUses;
 	}
 
 	public static class PlaceHolder extends MissileWeapon {

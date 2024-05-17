@@ -45,8 +45,8 @@ public class RatSkull extends Trinket {
 		return exoticChanceMultiplier(trinketLevel(RatSkull.class));
 	}
 
-	public static float exoticChanceMultiplier( int level ){
-		if (level == -1){
+	private static float exoticChanceMultiplier( int level ){
+		if (level <= -1){
 			return 1f;
 		} else {
 			return 2f + 1f*level;

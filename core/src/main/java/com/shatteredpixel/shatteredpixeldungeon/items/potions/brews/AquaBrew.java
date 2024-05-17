@@ -41,7 +41,7 @@ public class AquaBrew extends Brew {
 		geyser.source = this;
 
 		int userPos = curUser.pos;
-		Ballistica aim = new Ballistica(userPos, cell, Ballistica.STOP_TARGET);
+		Ballistica aim = new Ballistica(userPos, cell, Ballistica.STOP_TARGET, null);
 		if (aim.path.size() > aim.dist+1) {
 			geyser.centerKnockBackDirection = aim.path.get(aim.dist + 1);
 		}

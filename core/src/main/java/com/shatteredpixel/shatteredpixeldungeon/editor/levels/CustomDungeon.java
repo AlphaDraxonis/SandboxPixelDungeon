@@ -35,7 +35,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Function;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.Brew;
@@ -48,6 +47,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfWipeOut;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.SummoningTrap;
@@ -207,7 +207,7 @@ public class CustomDungeon implements Bundlable {
             code = (scrollRuneLabels == null || !scrollRuneLabels.containsKey(c)) ?
                     ItemSpriteSheet.SCROLL_HOLDER :
                     Scroll.runes.get(scrollRuneLabels.get(c)) + (item instanceof ExoticScroll ? 16 : 0);
-        } else if (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew || item instanceof AlchemicalCatalyst)) {
+        } else if (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew /*|| item instanceof AlchemicalCatalyst tzz*/)) {
             if (item instanceof ExoticPotion) c = ExoticPotion.exoToReg.get(c);
             code = (potionColorLabels == null || !potionColorLabels.containsKey(c)) ?
                     ItemSpriteSheet.POTION_HOLDER :
@@ -394,19 +394,33 @@ public class CustomDungeon implements Bundlable {
             itemDistributions.add(sty);
         }
         ItemDistribution.Items soTransmutation = new ItemDistribution.Items(true);
-        soTransmutation.getObjectsToDistribute().add(new StoneOfEnchantment());//I wonder if the comment in shatteredPD is an mistake...
+        soTransmutation.getObjectsToDistribute().add(new StoneOfEnchantment());//I wonder if the comment in shatteredPD is a mistake...
         for (int i = 6; i < 20; i++) {
             if (i % 5 != 0) soTransmutation.getLevels().add(Integer.toString(i));
         }
         itemDistributions.add(soTransmutation);
 
+        ItemDistribution.Items trinket = new ItemDistribution.Items(true);
+        trinket.getObjectsToDistribute().add(new TrinketCatalyst());
+        for (int i = 1; i <= 3; i++) {
+            trinket.getLevels().add(Integer.toString(i));
+        }
+        itemDistributions.add(trinket);
+
         //TODO bei der Erstellung automatisch ggf zu Spawnitems adden (auch food) -> dafür CategoryPlaceholders
-        ItemDistribution.Items stIntu = new ItemDistribution.Items(true);
+        ItemDistribution.Items stIntu = new ItemDistribution.Items(false);
         stIntu.getObjectsToDistribute().add(new StoneOfIntuition());
         for (int i = 1; i <= 3; i++) {
             stIntu.getLevels().add(Integer.toString(i));
         }
         itemDistributions.add(stIntu);
+
+        ItemDistribution.Items stEnch = new ItemDistribution.Items(true);
+        stEnch.getObjectsToDistribute().add(new StoneOfEnchantment());
+        for (int i = 6; i <= 14; i++) {
+            if (i != 10) stEnch.getLevels().add(Integer.toString(i));
+        }
+        itemDistributions.add(stEnch);
 
         ItemDistribution.Mobs ghostDistr = new ItemDistribution.Mobs();
         QuestNPC<?> questNPC = new Ghost(new GhostQuest());

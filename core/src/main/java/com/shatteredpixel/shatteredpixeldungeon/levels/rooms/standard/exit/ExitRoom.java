@@ -33,7 +33,7 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
-public class ExitRoom extends StandardRoom {
+public class ExitRoom extends StandardRoom implements ExitRoomInterface {
 	
 	@Override
 	public int minWidth() {

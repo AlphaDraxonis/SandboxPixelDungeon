@@ -16,7 +16,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
@@ -106,6 +105,10 @@ public class TileItem extends EditorItem {
         return terrain == EXIT || terrain == LOCKED_EXIT || terrain == UNLOCKED_EXIT;
     }
 
+    public static boolean isEntranceTerrainCell(int terrain) {
+        return terrain == ENTRANCE || terrain == ENTRANCE_SP;
+    }
+
     public static boolean isTrapTerrainCell(int terrain) {
         return terrain == TRAP || terrain == SECRET_TRAP || terrain == INACTIVE_TRAP;
     }
@@ -178,7 +181,9 @@ public class TileItem extends EditorItem {
             //Transition logic
             final boolean wasExit = TileItem.isExitTerrainCell(oldTerrain);
             final boolean nowExit = TileItem.isExitTerrainCell(terrainType);
-            if (wasExit || nowExit || oldTerrain == ENTRANCE || terrainType == ENTRANCE) {
+            final boolean wasEntrance = TileItem.isEntranceTerrainCell(oldTerrain);
+            final boolean nowEntrance = TileItem.isEntranceTerrainCell(terrainType);
+            if (wasExit || nowExit || wasEntrance || nowEntrance) {
 
                 final LevelTransition transition = level.transitions.get(cell);
                 final LevelScheme levelScheme = level.levelScheme;
@@ -193,7 +198,7 @@ public class TileItem extends EditorItem {
                             : ((defaultDestlevelScheme = (Dungeon.customDungeon.getFloor(defaultBelowOrAbove))) == null
                             || defaultDestlevelScheme.exitCells.isEmpty() ? null
                             : new LevelTransition(level, cell, defaultDestlevelScheme.exitCells.get(0), defaultBelowOrAbove));
-                } else if (terrainType == ENTRANCE) {
+                } else if (nowEntrance) {
                     defaultBelowOrAbove = levelScheme.getDefaultAbove();
                     defaultTransition = Level.SURFACE.equals(defaultBelowOrAbove) ? new LevelTransition(level, cell, LevelTransition.Type.SURFACE)
                             : ((defaultDestlevelScheme = (Dungeon.customDungeon.getFloor(defaultBelowOrAbove))) == null
@@ -212,7 +217,7 @@ public class TileItem extends EditorItem {
                         level.transitions.remove(cell);
                         EditorScene.remove(defaultTransition);
 
-                        if (oldTerrain == Terrain.ENTRANCE) {
+                        if (wasEntrance) {
                             levelScheme.entranceCells.add((Integer) cell);
                             levelScheme.exitCells.remove((Integer) cell);
                             if (transition != null) {
@@ -221,7 +226,7 @@ public class TileItem extends EditorItem {
                             }
                         } else {
 
-                            if (terrainType == Terrain.ENTRANCE) {
+                            if (nowEntrance) {
                                 levelScheme.entranceCells.remove((Integer) cell);
                                 if (transition != null) {
                                     level.transitions.put(cell, transition);
@@ -252,7 +257,7 @@ public class TileItem extends EditorItem {
                         Level level = Dungeon.level;
                         LevelScheme levelScheme = level.levelScheme;
 
-                        if (terrainType == Terrain.ENTRANCE) {  //neu entrance
+                        if (nowEntrance) {  //neu entrance
                             levelScheme.entranceCells.add((Integer) cell);  //füge entrance cell hinzu
                             levelScheme.exitCells.remove((Integer) cell);   // entferne ggf exit
                             if (transition != null) { //entferne ggf alte transition
@@ -267,7 +272,7 @@ public class TileItem extends EditorItem {
                         } else {
 
                             //es wird hier kein entrance sein (da terraintype verschieden sein muss)
-                            if (oldTerrain == Terrain.ENTRANCE) {//wenn es mal entrance war, aber keiner mehr ist
+                            if (wasEntrance) {//wenn es mal entrance war, aber keiner mehr ist
                                 levelScheme.entranceCells.remove((Integer) cell);//entferne entrance
                                 if (transition != null) {//entferne ggf alte transitiom
                                     level.transitions.remove(cell);

@@ -410,7 +410,7 @@ public class Generator {
 			ARTIFACT.defaultProbs = new float[]{ 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1 };
 			ARTIFACT.probs = ARTIFACT.defaultProbs.clone();
 
-			//Trinkets are unique like artifacts, but unlike them you can only have one at once
+			//Trinkets are unique like artifacts, but unlike them, you can only have one at once
 			//So we don't need the same enforcement of uniqueness
 			TRINKET.classes = new Class<?>[]{
 					RatSkull.class,

@@ -47,8 +47,8 @@ public class MimicTooth extends Trinket {
 		return mimicChanceMultiplier(trinketLevel(MimicTooth.class));
 	}
 
-	public static float mimicChanceMultiplier( int level ){
-		if (level == -1){
+	private static float mimicChanceMultiplier( int level ){
+		if (level <= -1){
 			return 1f;
 		} else {
 			return 1.5f + 0.5f*level;
@@ -63,11 +63,11 @@ public class MimicTooth extends Trinket {
 		return ebonyMimicChance(trinketLevel(MimicTooth.class));
 	}
 
-	public static float ebonyMimicChance( int level ){
-		if (level >= 0){
-			return 0.125f + 0.125f * level;
-		} else {
+	private static float ebonyMimicChance( int level ){
+		if (level <= -1){
 			return 0;
+		} else {
+			return 0.125f + 0.125f * level;
 		}
 	}
 

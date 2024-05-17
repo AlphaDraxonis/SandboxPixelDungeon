@@ -15,13 +15,15 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.RotGardenRoom
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance.EntranceRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance.EntranceRoomInterface;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit.ExitRoom;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit.ExitRoomInterface;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
-
-import java.util.Locale;
 
 public class RoomItem extends EditorItem<Room> {
 
@@ -56,11 +58,25 @@ public class RoomItem extends EditorItem<Room> {
     }
 
     public static String getName(Class<? extends Room> r) {
-        return Messages.get(RoomItem.class, r.getSimpleName().toLowerCase(Locale.ENGLISH));
+        String name = Messages.get(r, "name");
+        if (EntranceRoomInterface.class.isAssignableFrom(r)) {
+            name += Messages.get(EntranceRoomInterface.class, "name", name);
+        }
+        if (ExitRoomInterface.class.isAssignableFrom(r)) {
+            name +=  Messages.get(ExitRoomInterface.class, "name", name);
+        }
+        return name;
     }
 
     public static String getDesc(Class<? extends Room> r) {
-        return Messages.get(RoomItem.class, r.getSimpleName().toLowerCase(Locale.ENGLISH) + "_desc");
+        String desc = Messages.get(r, "desc");
+        if (EntranceRoomInterface.class.isAssignableFrom(r)) {
+            desc += "\n_" + Messages.get(EntranceRoomInterface.class, "desc") + "_";
+        }
+        if (ExitRoomInterface.class.isAssignableFrom(r)) {
+            desc += "\n_" + Messages.get(ExitRoomInterface.class, "desc") + "_";
+        }
+        return desc;
     }
 
     public static Image getImage(Class<? extends Room> r) {

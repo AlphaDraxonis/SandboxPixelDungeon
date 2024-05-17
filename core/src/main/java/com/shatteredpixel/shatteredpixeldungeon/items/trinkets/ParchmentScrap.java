@@ -45,18 +45,15 @@ public class ParchmentScrap extends Trinket {
 		return enchantChanceMultiplier(trinketLevel(ParchmentScrap.class));
 	}
 
-	public static float enchantChanceMultiplier( int level ){
-		switch (level){
-			default:
-				return 1;
-			case 0:
-				return 2;
-			case 1:
-				return 4;
-			case 2:
-				return 7;
-			case 3:
-				return 10;
+	private static float enchantChanceMultiplier( int level ){
+		if (level <= - 1) {
+			return 1;
+		} else {
+			switch (level){
+				case 0:
+				case 1: return 2 + level * 2;
+				default: return 1 + level * 3;
+			}
 		}
 	}
 
@@ -64,18 +61,16 @@ public class ParchmentScrap extends Trinket {
 		return curseChanceMultiplier(trinketLevel(ParchmentScrap.class));
 	}
 
-	public static float curseChanceMultiplier( int level ){
-		switch (level){
-			default:
-				return 1;
-			case 0:
-				return 1.5f;
-			case 1:
-				return 2f;
-			case 2:
-				return 1f;
-			case 3:
-				return 0f;
+	private static float curseChanceMultiplier( int level ){
+		if (level <= -1) {
+			return 1;
+		} else {
+			switch (level){
+				case 0: return 1.5f;
+				case 1: return 2f;
+				case 2: return 1f;
+				default: return 0f;
+			}
 		}
 	}
 }

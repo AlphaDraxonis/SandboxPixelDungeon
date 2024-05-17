@@ -44,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.tweeners.AlphaTweener;
+import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
@@ -227,8 +228,7 @@ public class ScrollOfTeleportation extends Scroll {
 		}
 
 		int pos = teleportInNonRegularLevel(ch.pos, preferNotSeen, Char.hasProp(ch, Char.Property.LARGE)
-				? Dungeon.level.getPassableAndAnyVarForBoth(ch, null, Dungeon.level.openSpace) : Dungeon.level.getPassableVar(ch), ch instanceof Hero);
-//tzz here is BArray.and, not BArray.or if Large
+				? BArray.and(Dungeon.level.getPassableVar(ch), Dungeon.level.openSpace, null) : Dungeon.level.getPassableVar(ch), ch instanceof Hero);
 
 		if (pos == -1) return false;
 

@@ -46,7 +46,7 @@ public class ThirteenLeafClover extends Trinket {
 		return combatDistributionInverseChance(trinketLevel(ThirteenLeafClover.class));
 	}
 
-	public static float combatDistributionInverseChance( int level ){
+	private static float combatDistributionInverseChance( int level ){
 		if (level <= -1){
 			return 0;
 		} else {

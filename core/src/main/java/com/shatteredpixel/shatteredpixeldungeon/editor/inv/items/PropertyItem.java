@@ -82,6 +82,7 @@ public class PropertyItem extends EditorItem<Char.Property> {
             case LARGE: return new GolemSprite();
             case IMMOVABLE: return new WandmakerSprite();
             case FLYING: return new SwarmSprite();
+            case STATIC: return new RotHeartSprite();
         }
 
         return new ItemSprite(ItemSpriteSheet.SOMETHING);

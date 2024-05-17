@@ -8,11 +8,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.LeatherArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.MailArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.ScaleArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -63,7 +60,7 @@ public class GhostQuest extends Quest {
             } else {
                 itemLevel = 3;
             }
-            boolean doEnchant = Random.Int(10) == 0;//10% to be enchanted. We store it separately so enchant status isn't revealed early
+            boolean doEnchant = Random.Float() < 0.2f * ParchmentScrap.enchantChanceMultiplier();//20% to be enchanted. We store it separately so enchant status isn't revealed early
 
             if (armor == null) {
                 //50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5

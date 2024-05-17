@@ -69,7 +69,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
         final int cell = item.cell();
         if (cell != -1) {
-            if (item.terrainType() == Terrain.ENTRANCE || TileItem.isExitTerrainCell(item.terrainType())) {
+            if (TileItem.isEntranceTerrainCell(item.terrainType()) || TileItem.isExitTerrainCell(item.terrainType())) {
 
                 addTransition = new RedButton(Messages.get(EditTileComp.class, "add_transition"), 9) {
                     @Override
@@ -239,14 +239,14 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
     public static TransitionEditPart addTransition(int terrainType, LevelTransition transition,
                                                    LevelScheme levelScheme, Consumer<LevelTransition> deleteTransition) {
         String suggestion;
-        if (terrainType == Terrain.ENTRANCE)
+        if (TileItem.isEntranceTerrainCell(terrainType))
             suggestion = levelScheme.getDefaultAbove();
         else {
             suggestion = levelScheme.getChasm();
             if (suggestion == null) suggestion = levelScheme.getDefaultBelow();
         }
         if (transition.destLevel != null) suggestion = transition.destLevel;
-        return new TransitionEditPart(transition, EditorUtilies.getLevelScheme(suggestion), terrainType == -12345 ? null : terrainType != Terrain.ENTRANCE,
+        return new TransitionEditPart(transition, EditorUtilies.getLevelScheme(suggestion), terrainType == -12345 ? null : !TileItem.isEntranceTerrainCell(terrainType),
                 levelScheme.getDepth()) {
             @Override
             protected void deleteTransition(LevelTransition transition) {
@@ -341,7 +341,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                     ? Messages.get(EditCustomTileComp.class, "custom_terrain")
                     : TileItem.getName(obj.terrainType(), -1);
             desc += "\n" + Messages.get(EditCustomTileComp.class, "terrain") + ": " + terrainName;
-            if (TileItem.isExitTerrainCell(obj.terrainType()) || obj.terrainType() == Terrain.ENTRANCE)
+            if (TileItem.isExitTerrainCell(obj.terrainType()) || TileItem.isEntranceTerrainCell(obj.terrainType()))
                 desc += Dungeon.level.appendNoTransWarning(obj.cell());
 
         } else {

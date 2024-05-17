@@ -268,6 +268,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     return false;
                 }
 
+                @Override
                 protected void showSelectWindow() {
                     ItemSelector.showSelectWindow(this, ItemSelector.NullTypeSelector.DISABLED, Wand.class, Items.bag, new HashSet<>(0));
                 }

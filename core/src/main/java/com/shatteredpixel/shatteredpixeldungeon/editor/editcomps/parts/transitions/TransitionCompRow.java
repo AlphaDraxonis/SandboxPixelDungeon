@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transiti
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditTileComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
@@ -31,7 +32,7 @@ public class TransitionCompRow extends FoldableCompWithAdd {
         if (cell < 0)
             title.text(Messages.get(TransitionCompRow.class, cell == CELL_DEFAULT_ENTRANCE ? "entrance" : "exit"));
         else
-            title.text(Messages.get(TransitionCompRow.class, (levelScheme.getLevel().map[cell] == Terrain.ENTRANCE ? "entrance" : "exit"))
+            title.text(Messages.get(TransitionCompRow.class, (TileItem.isEntranceTerrainCell(levelScheme.getLevel().map[cell]) ? "entrance" : "exit"))
                     + EditorUtilies.appendCellToString(cell, levelScheme.getLevel()));
 
         LevelTransition transition;

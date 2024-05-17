@@ -37,7 +37,7 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
-public class EntranceRoom extends StandardRoom {
+public class EntranceRoom extends StandardRoom implements EntranceRoomInterface {
 	
 	@Override
 	public int minWidth() {

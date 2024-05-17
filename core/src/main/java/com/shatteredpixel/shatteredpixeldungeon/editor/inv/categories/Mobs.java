@@ -95,6 +95,7 @@ public enum Mobs implements EditorInvCategory<Mob> {
                 Mimic.class,
                 GoldenMimic.class,
                 CrystalMimic.class,
+                EbonyMimic.class,
                 SentryRoom.Sentry.class,
                 HeroMob.class
         };

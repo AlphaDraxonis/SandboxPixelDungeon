@@ -242,35 +242,36 @@ public abstract class Level implements Bundlable {
 
 				addItemToSpawn(Generator.random(Generator.Category.FOOD));
 
-			if (Dungeon.posNeeded()) {
-				Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
-				addItemToSpawn( new PotionOfStrength() );
-			}
-			if (Dungeon.souNeeded()) {
-				Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
-				//every 2nd scroll of upgrade is removed with forbidden runes challenge on
-				//TODO while this does significantly reduce this challenge's levelgen impact, it doesn't quite remove it
-				//for 0 levelgen impact, we need to do something like give the player all SOU, but nerf them
-				//or give a random scroll (from a separate RNG) instead of every 2nd SOU
-				if (!Dungeon.isChallenged(Challenges.NO_SCROLLS) || Dungeon.LimitedDrops.UPGRADE_SCROLLS.count%2 != 0){
-					addItemToSpawn(new ScrollOfUpgrade());
+				if (Dungeon.posNeeded()) {
+					Dungeon.LimitedDrops.STRENGTH_POTIONS.count++;
+					addItemToSpawn(new PotionOfStrength());
 				}
-			}
-			if (Dungeon.asNeeded()) {
-				Dungeon.LimitedDrops.ARCANE_STYLI.count++;
-				addItemToSpawn( new Stylus() );
-			}
-			if ( Dungeon.enchStoneNeeded() ){
-				Dungeon.LimitedDrops.ENCH_STONE.drop();
-				addItemToSpawn( new StoneOfEnchantment() );
-			}
-			if ( Dungeon.intStoneNeeded() ){
-				Dungeon.LimitedDrops.INT_STONE.drop();
-				addItemToSpawn( new StoneOfIntuition() );
-			}
-			if ( Dungeon.trinketCataNeeded() ){
-				Dungeon.LimitedDrops.TRINKET_CATA.drop();
-				addItemToSpawn( new TrinketCatalyst());
+				if (Dungeon.souNeeded()) {
+					Dungeon.LimitedDrops.UPGRADE_SCROLLS.count++;
+					//every 2nd scroll of upgrade is removed with forbidden runes challenge on
+					//TODO while this does significantly reduce this challenge's levelgen impact, it doesn't quite remove it
+					//for 0 levelgen impact, we need to do something like give the player all SOU, but nerf them
+					//or give a random scroll (from a separate RNG) instead of every 2nd SOU
+					if (!Dungeon.isChallenged(Challenges.NO_SCROLLS) || Dungeon.LimitedDrops.UPGRADE_SCROLLS.count % 2 != 0) {
+						addItemToSpawn(new ScrollOfUpgrade());
+					}
+				}
+				if (Dungeon.asNeeded()) {
+					Dungeon.LimitedDrops.ARCANE_STYLI.count++;
+					addItemToSpawn(new Stylus());
+				}
+				if (Dungeon.enchStoneNeeded()) {
+					Dungeon.LimitedDrops.ENCH_STONE.drop();
+					addItemToSpawn(new StoneOfEnchantment());
+				}
+				if (Dungeon.intStoneNeeded()) {
+					Dungeon.LimitedDrops.INT_STONE.drop();
+					addItemToSpawn(new StoneOfIntuition());
+				}
+				if (Dungeon.trinketCataNeeded()) {
+					Dungeon.LimitedDrops.TRINKET_CATA.drop();
+					addItemToSpawn(new TrinketCatalyst());
+				}
 			}
 			
 			if (Dungeon.depth > 1 && feeling == null) {
@@ -299,11 +300,16 @@ public abstract class Level implements Bundlable {
 						feeling = Feeling.SECRETS;
 						break;
 					default:
-						//if-else statements are fine here as only one chance can be above 0 at a time
-						if (Random.Float() < MossyClump.overrideNormalLevelChance()){
-							feeling = MossyClump.getNextFeeling();
-						} else if (Random.Float() < TrapMechanism.overrideNormalLevelChance()) {
-							feeling = TrapMechanism.getNextFeeling();
+						float mossyClumpChance = MossyClump.overrideNormalLevelChance();
+						float trapMechanismChance = TrapMechanism.overrideNormalLevelChance();
+						float largest = Math.max(mossyClumpChance, trapMechanismChance);
+						if (Random.Float() < largest){
+							if (mossyClumpChance == largest)
+								feeling = MossyClump.getNextFeeling();
+							else if (trapMechanismChance == largest)
+								feeling = TrapMechanism.getNextFeeling();
+							else
+								feeling = Feeling.NONE;
 						} else {
 							feeling = Feeling.NONE;
 						}
@@ -2123,10 +2129,10 @@ public abstract class Level implements Bundlable {
 			float viewDist = c.viewDistance;
 			if (c instanceof Hero){
 				viewDist *= 1f + 0.25f*((Hero) c).pointsInTalent(Talent.FARSIGHT);
-				viewDist *= EyeOfNewt.visionRangeMultiplier();
+				viewDist *= EyeOfNewt.visionRangeMultiplier((Hero) c);
 			}
 			
-			ShadowCaster.castShadow( cx, cy, width(), fieldOfView, blocking, Math.round(viewDist, c instanceof Hero ));
+			ShadowCaster.castShadow( cx, cy, width(), fieldOfView, blocking, Math.round(viewDist), c instanceof Hero );
 		} else {
 			BArray.setFalse(fieldOfView);
 		}
@@ -2177,8 +2183,9 @@ public abstract class Level implements Bundlable {
 			}
 		}
 
-		//Currently only the hero can get mind vision or awareness
-		if (c.isAlive() && c == Dungeon.hero) {
+		//Currently only a hero can get mind vision or awareness
+		if (c.isAlive() && (c instanceof Hero || c instanceof HeroMob)   && c == Dungeon.hero) {
+			Hero hero = c instanceof Hero ? (Hero) c : ((HeroMob) c).hero();
 
 			if (heroMindFov == null || heroMindFov.length != length()){
 				heroMindFov = new boolean[length];
@@ -2200,14 +2207,14 @@ public abstract class Level implements Bundlable {
 			} else {
 
 				int mindVisRange = 0;
-				if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES)){
-					mindVisRange = 1+((Hero) c).pointsInTalent(Talent.HEIGHTENED_SENSES);
+				if (hero.hasTalent(Talent.HEIGHTENED_SENSES)){
+					mindVisRange = 1+hero.pointsInTalent(Talent.HEIGHTENED_SENSES);
 				}
-				mindVisRange = Math.max(mindVisRange, EyeOfNewt.mindVisionRange());
+				mindVisRange = Math.max(mindVisRange, EyeOfNewt.mindVisionRange(hero));
 
 				if (mindVisRange >= 1) {
 					for (Mob mob : mobs) {
-						if (Mimic.isLikeMob(mob) || stealthyMimics && mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL){
+						if (!Mimic.isLikeMob(mob) || stealthyMimics && mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL){
 						continue;
 					}
 					int p = mob.pos;

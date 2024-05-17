@@ -327,8 +327,6 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                         && shot.dist > 4
                         /*&& new Ballistica(pos, target, Ballistica.STOP_BARRIER_BLOBS, null).dist*/) return potion;
 
-                if (potion instanceof AlchemicalCatalyst) return potion;//always throw
-
                 if (potion instanceof Brew && shot.dist > 3) {
                     if (c == BlizzardBrew.class && enemy != null && !enemy.isImmune(Frost.class)) return potion;
                     if (c == CausticBrew.class && enemy != null && !enemy.isImmune(Ooze.class) && !Dungeon.level.water[target]) return potion;
@@ -475,7 +473,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
             //throw:
             if (potion instanceof Brew || potion instanceof PotionOfFrost || potion instanceof PotionOfLiquidFlame  || potion instanceof PotionOfDragonsBreath
-                    || potion instanceof PotionOfStormClouds || potion instanceof AlchemicalCatalyst
+                    || potion instanceof PotionOfStormClouds
                 || potion instanceof ElixirOfHoneyedHealing && enemy instanceof Bee && enemy.alignment == Alignment.ENEMY) {
                 potion.cast(internalHero, target);
             }

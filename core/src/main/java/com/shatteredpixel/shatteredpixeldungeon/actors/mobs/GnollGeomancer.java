@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ShieldBuff;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.effects.*;
@@ -569,7 +570,7 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 					boolean targetNextToBarricade = false;
 					for (int i : PathFinder.NEIGHBOURS8){
 						if (Dungeon.level.map[enemy.pos+i] == Terrain.BARRICADE
-								|| Dungeon.level.map[enemy.pos+i] == Terrain.ENTRANCE){
+								|| TileItem.isEntranceTerrainCell(Dungeon.level.map[enemy.pos+1])){
 							targetNextToBarricade = true;
 							break;
 						}
@@ -762,7 +763,7 @@ public class GnollGeomancer extends Mob implements MobBasedOnDepth {
 					boolean barricade = false;
 					for (int j : PathFinder.NEIGHBOURS9){
 						if (Dungeon.level.map[pos+j] == Terrain.BARRICADE
-								|| Dungeon.level.map[pos+j] == Terrain.ENTRANCE){
+								|| TileItem.isEntranceTerrainCell(Dungeon.level.map[pos+j])){
 							barricade = true;
 						}
 					}

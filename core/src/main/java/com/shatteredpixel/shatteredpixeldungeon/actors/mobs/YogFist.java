@@ -366,7 +366,7 @@ public abstract class YogFist extends Mob {
 			return (!(Dungeon.level instanceof HallsBossLevel) || Dungeon.level.distance(cell, yogPos) > 4)
 					&& !Dungeon.level.solid[cell]
 					&& !(Dungeon.level.map[cell] == Terrain.FURROWED_GRASS || Dungeon.level.map[cell] == Terrain.HIGH_GRASS)
-					&& !(TileItem.isExitTerrainCell(Dungeon.level.map[cell]) || Dungeon.level.map[cell] == Terrain.ENTRANCE);
+					&& !(TileItem.isExitTerrainCell(Dungeon.level.map[cell]) || TileItem.isEntranceTerrainCell(Dungeon.level.map[cell]));
 		}
 
 	}

@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.TargetedCell;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -184,7 +185,7 @@ public class GnollSapper extends Mob {
 					boolean targetNextToBarricade = false;
 					for (int i : PathFinder.NEIGHBOURS8){
 						if (Dungeon.level.map[enemy.pos+i] == Terrain.BARRICADE
-							|| Dungeon.level.map[enemy.pos+i] == Terrain.ENTRANCE){
+							|| TileItem.isEntranceTerrainCell(Dungeon.level.map[enemy.pos+i])){
 							targetNextToBarricade = true;
 							break;
 						}

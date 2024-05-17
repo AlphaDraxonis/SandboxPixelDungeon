@@ -20,6 +20,7 @@ public abstract class Quest implements Bundlable {
     public void complete(){
         completed = true;
     }
+
     public static void addScore(int slot, int score){
         if (Statistics.questScores[slot] >= score) Statistics.questScores[slot] += score/10;
         else Statistics.questScores[slot] = score;

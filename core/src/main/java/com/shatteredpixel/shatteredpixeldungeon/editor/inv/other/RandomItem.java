@@ -17,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
@@ -81,6 +82,7 @@ public interface RandomItem<T> {
         if (itemClass == KindofMisc.class) return new RandomEqMiscItem();
         if (itemClass == Wand.class) return new RandomWand();
         if (itemClass == Bag.class) return new RandomBag();
+        if (itemClass == Trinket.class) return new RandomTrinket();
         return new RandomItemAny();
     }
 
@@ -998,6 +1000,97 @@ public interface RandomItem<T> {
         @Override
         public void updateInvalidKeys(String oldLvlName, String newLvlName) {
             RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
+        }
+    }
+
+
+    class RandomTrinket extends Trinket implements RandomItem<Trinket> {
+
+        {
+            image = ItemSpriteSheet.SOMETHING;
+        }
+
+        //can only have one item per slot, and no RandomItem
+        private ItemsWithChanceDistrComp.RandomItemData internalRandomItem = new ItemsWithChanceDistrComp.RandomItemData();
+
+        @Override
+        public void restoreFromBundle(Bundle bundle) {
+            super.restoreFromBundle(bundle);
+            internalRandomItem = (ItemsWithChanceDistrComp.RandomItemData) bundle.get(INTERNAL_RANDOM_ITEM);
+        }
+
+        @Override
+        public void storeInBundle(Bundle bundle) {
+            super.storeInBundle(bundle);
+            bundle.put(INTERNAL_RANDOM_ITEM, internalRandomItem);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
+            return internalRandomItem.equals(((RandomTrinket) obj).internalRandomItem);
+        }
+
+        @Override
+        public boolean isUpgradable() {
+            return false;
+        }
+
+        @Override
+        public Trinket[] generateItems() {
+            if (Random.Float() >= internalRandomItem.lootChance()) return null;
+            List<Item> result = internalRandomItem.generateLoot();
+            if (result == null || result.isEmpty()) return null;
+            Trinket item = (Trinket) result.get(0);
+            if (reservedQuickslot > 0) item.reservedQuickslot = reservedQuickslot;
+            return new Trinket[]{item};
+        }
+
+        @Override
+        public ItemsWithChanceDistrComp.RandomItemData getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI() {
+            return internalRandomItem;
+        }
+
+        @Override
+        public Class<Trinket> getType() {
+            return Trinket.class;
+        }
+
+        @Override
+        public String name() {
+            return RandomItem.getName();
+        }
+
+        @Override
+        public String desc() {
+            return RandomItem.getDesc();
+        }
+
+        @Override
+        public boolean onDeleteLevelScheme(String name) {
+            return RandomItem.removeInvalidKeys(internalRandomItem, name);
+        }
+
+        @Override
+        public boolean onRenameLevelScheme(String oldName, String newName) {
+            return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
+        }
+
+        @Override
+        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
+            super.onMapSizeChange(newPosition, isPositionValid);
+        }
+
+        @Override
+        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
+            RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
+        }
+
+        @Override
+        protected int upgradeEnergyCost() {
+            return 0;
         }
     }
 
