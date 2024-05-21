@@ -54,7 +54,9 @@ public class TileSprite extends Image {
         }
         this.terrain = terrain;
 
-        frame(getImage());
+        int img = getImage();
+        if (img == -1) frame(5);
+        else frame(getImage());
 
         return this;
     }

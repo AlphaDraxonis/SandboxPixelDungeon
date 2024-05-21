@@ -187,7 +187,7 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 		@Override
 		protected void layout() {
 			info.maxWidth((int) width);
-			height = 0;
+			height = 1;
 			height = EditorUtilies.layoutCompsLinear(2, this, info, textInput);
 		}
 

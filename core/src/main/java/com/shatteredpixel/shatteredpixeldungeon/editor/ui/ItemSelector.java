@@ -12,6 +12,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.Game;
@@ -29,7 +30,7 @@ public class ItemSelector extends Component {
     }
 
     public static final int MIN_GAP = 6;//Gap between text and title
-    public static final float GAP = 0.5f;
+    public static final float GAP = 2f;
 
     private Class<? extends Item> itemClasses;
     private Item selectedItem;
@@ -132,10 +133,16 @@ public class ItemSelector extends Component {
 
     @Override
     protected void layout() {
-        renderedTextBlock.maxWidth((int) (width - height - MIN_GAP));
+        float btnWidth = changeBtn.icon().width();
+        float slotSize = ItemSpriteSheet.SIZE;
+
+        renderedTextBlock.maxWidth((int) (width - MIN_GAP - slotSize - GAP - btnWidth));
         renderedTextBlock.setPos(x, y + (height - renderedTextBlock.height()) * 0.5f);
-        itemSlot.setRect(Math.max(width - height * 2 - GAP, renderedTextBlock.right() + MIN_GAP), y, height, height);
-        changeBtn.setRect(Math.max(width - height, renderedTextBlock.right() + MIN_GAP + GAP + height), y, height, height);
+
+        itemSlot.setRect(Math.max(x + width - btnWidth - GAP - slotSize, renderedTextBlock.right() + MIN_GAP), y, slotSize, slotSize);
+        changeBtn.setRect(Math.max(x + width - btnWidth, renderedTextBlock.right() + MIN_GAP + slotSize + GAP), y, btnWidth, changeBtn.icon().height());
+
+        height = Math.max(slotSize, renderedTextBlock.height());
     }
 
     public void setSelectedItem(Item selectedItem) {

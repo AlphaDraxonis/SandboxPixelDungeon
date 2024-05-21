@@ -54,7 +54,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 
-public class Combo extends Buff implements ActionIndicator.Action {
+public class Combo extends HeroSubclassAbilityBuff {
 
 	{
 		type = buffType.POSITIVE;
@@ -95,7 +95,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		comboTime = 5f;
 
 		if (!enemy.isAlive() || (enemy.buff(Corruption.class) != null && enemy.HP == enemy.HT)){
-			comboTime = Math.max(comboTime, 15*((Hero)target).pointsInTalent(Talent.CLEAVE));
+			comboTime = Math.max(comboTime, 15*targetHero().pointsInTalent(Talent.CLEAVE));
 		}
 
 		initialComboTime = comboTime;
@@ -166,8 +166,11 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 		clobberUsed = bundle.getBoolean(CLOBBER_USED);
 		parryUsed = bundle.getBoolean(PARRY_USED);
+	}
 
-		if (getHighestMove() != null) ActionIndicator.setAction(this);
+	@Override
+	protected boolean actionAvailable() {
+		return getHighestMove() != null;
 	}
 
 	@Override
@@ -292,8 +295,8 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			comboTime = 5f;
 			Invisibility.dispel();
 			Buff.affect(target, ParryTracker.class, Actor.TICK);
-			((Hero)target).spendAndNext(Actor.TICK);
-			Dungeon.hero.busy();
+			targetHero().spendAndNext(Actor.TICK);
+			targetHero().busy();
 		} else {
 			moveBeingUsed = move;
 			GameScene.selectCell(listener);
@@ -344,7 +347,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		AttackIndicator.target(enemy);
 
 		boolean wasAlly = enemy.alignment == target.alignment;
-		Hero hero = (Hero) target;
+		Hero hero = targetHero();
 
 		float dmgMulti = 1f;
 		int dmgBonus = 0;
@@ -486,27 +489,30 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		public void onSelect(Integer cell) {
 			if (cell == null) return;
 			final Char enemy = Actor.findChar( cell );
+			Hero hero = targetHero();
 			if (enemy == null
 					|| enemy == target
 					|| !Dungeon.level.heroFOV[cell]
 					|| target.isCharmedBy( enemy )) {
 				GLog.w(Messages.get(Combo.class, "bad_target"));
 
-			} else if (!((Hero)target).canAttack(enemy)){
-				if (((Hero) target).pointsInTalent(Talent.ENHANCED_COMBO) < 3
+			} else if (!hero.canAttack(enemy)){
+				if (hero.pointsInTalent(Talent.ENHANCED_COMBO) < 3
 					|| Dungeon.level.distance(target.pos, enemy.pos) > 1 + target.buff(Combo.class).count/3){
-					GLog.w(Messages.get(Combo.class, "bad_target"));
+					if (isPlayer()) GLog.w(Messages.get(Combo.class, "bad_target"));
 				} else {
 					Ballistica c = new Ballistica(target.pos, enemy.pos, Ballistica.REAL_PROJECTILE, target);
 					if (c.collisionPos == enemy.pos){
 						final int leapPos = c.path.get(c.dist-1);
 						if (!Barrier.canEnterCell(leapPos, enemy, target.isFlying(), true)){
-							GLog.w(Messages.get(Combo.class, "bad_target"));
-						} else if (Dungeon.hero.rooted) {
-							PixelScene.shake( 1, 1f );
-							GLog.w(Messages.get(Combo.class, "bad_target"));
+							if (isPlayer()) GLog.w(Messages.get(Combo.class, "bad_target"));
+						} else if (hero.rooted) {
+							if (isPlayer()) {
+								PixelScene.shake(1, 1f);
+								GLog.w(Messages.get(Combo.class, "bad_target"));
+							}
 						} else {
-							Dungeon.hero.busy();
+							hero.busy();
 							target.sprite.jump(target.pos, leapPos, new Callback() {
 								@Override
 								public void call() {
@@ -524,12 +530,12 @@ public class Combo extends Buff implements ActionIndicator.Action {
 							});
 						}
 					} else {
-						GLog.w(Messages.get(Combo.class, "bad_target"));
+						if (isPlayer()) GLog.w(Messages.get(Combo.class, "bad_target"));
 					}
 				}
 
 			} else {
-				Dungeon.hero.busy();
+				hero.busy();
 				target.sprite.attack(cell, new Callback() {
 					@Override
 					public void call() {

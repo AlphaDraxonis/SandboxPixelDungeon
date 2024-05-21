@@ -831,6 +831,11 @@ public abstract class Mob extends Char implements Customizable {
 			}
 		}
 		if (step != -1) {
+
+			if (this instanceof HeroMob &&  ((HeroMob) this).hero().subClass == HeroSubClass.FREERUNNER){
+				Buff.affect(this, Momentum.class).gainStack();
+			}
+
 			move( step );
 			return true;
 		} else {
@@ -1268,7 +1273,19 @@ public abstract class Mob extends Char implements Customizable {
 
 	protected void doDropLoot(Item item) {
 		if (!item.spreadIfLoot || !LooseItemsTrap.dropAround(item, this, PathFinder.NEIGHBOURS8)) {
-			Dungeon.level.drop(item, pos).sprite.drop();
+
+			int cell = pos;
+			if (Dungeon.level.solid[cell]) {
+				Set<Integer> candidates = new HashSet<>(4);
+				for (int i : PathFinder.NEIGHBOURS8) {
+					if (!Dungeon.level.solid[i + cell]) candidates.add(i + cell);
+				}
+				if (!candidates.isEmpty()) {
+					cell = Random.element(candidates);
+				}
+			}
+
+			Dungeon.level.drop(item, cell).sprite.drop(pos);
 		}
 	}
 

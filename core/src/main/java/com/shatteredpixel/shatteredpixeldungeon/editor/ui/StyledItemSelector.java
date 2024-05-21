@@ -37,14 +37,14 @@ public class StyledItemSelector extends ItemSelector {
         bg.y = y;
         bg.size(width(), height());
 
-        float conW = getSlotHeight() * 2 + GAP * 3;
+        float conW = getSlotHeight() * 2 + 1.5f;
         float startX = x + (width - conW) * 0.5f;
         float conY = y + (height() - getSlotHeight() - renderedTextBlock.height()) / 2f + 2 + renderedTextBlock.height();
 
 
         itemSlot.setRect(startX, conY, getSlotHeight(), getSlotHeight());
         PixelScene.align(itemSlot);
-        changeBtn.setRect(itemSlot.right() + GAP * 3, conY, getSlotHeight(), getSlotHeight());
+        changeBtn.setRect(itemSlot.right() + 1.5f, conY, getSlotHeight(), getSlotHeight());
         PixelScene.align(changeBtn);
 
         if (!renderedTextBlock.text().equals("")) {

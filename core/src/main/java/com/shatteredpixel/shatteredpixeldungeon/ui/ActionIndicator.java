@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.HeroSubclassAbilityBuff;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.input.GameAction;
@@ -152,6 +153,7 @@ public class ActionIndicator extends Tag {
 	}
 
 	public static void setAction(Action action){
+		if (action instanceof HeroSubclassAbilityBuff && !((HeroSubclassAbilityBuff) action).isPlayer()) return;
 		synchronized (ActionIndicator.class) {
 			ActionIndicator.action = action;
 			refresh();

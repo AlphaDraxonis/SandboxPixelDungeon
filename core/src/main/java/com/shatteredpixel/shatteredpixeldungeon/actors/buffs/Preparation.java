@@ -25,8 +25,10 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroAction;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -51,7 +53,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class Preparation extends Buff implements ActionIndicator.Action {
+public class Preparation extends HeroSubclassAbilityBuff {
 	
 	{
 		//always acts after other buffs, so invisibility effects can process first
@@ -221,13 +223,17 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		turnsInvis = bundle.getInt(TURNS);
-		ActionIndicator.setAction(this);
 	}
-	
+
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(TURNS, turnsInvis);
+	}
+
+	@Override
+	protected boolean actionAvailable() {
+		return true;
 	}
 
 	@Override
@@ -272,24 +278,26 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 		public void onSelect(Integer cell) {
 			if (cell == null) return;
 			final Char enemy = Actor.findChar( cell );
-			if (enemy == null || Dungeon.hero.isCharmedBy(enemy) || enemy instanceof NPC || !Dungeon.level.heroFOV[cell] || enemy == Dungeon.hero){
-				GLog.w(Messages.get(Preparation.class, "no_target"));
+			Hero hero = targetHero();
+			if (enemy == null || hero.isCharmedBy(enemy) || enemy instanceof NPC || enemy == hero
+					|| hero == Dungeon.hero && !Dungeon.level.heroFOV[cell] || hero instanceof HeroMob.InternalHero && !hero.fieldOfView[cell]){
+				if (hero == Dungeon.hero) GLog.w(Messages.get(Preparation.class, "no_target"));
 			} else {
 
 				//just attack them then!
-				if (Dungeon.hero.canAttack(enemy)){
-					Dungeon.hero.curAction = new HeroAction.Attack( enemy );
-					Dungeon.hero.next();
+				if (hero.canAttack(enemy)){
+					hero.curAction = new HeroAction.Attack( enemy );
+					hero.next();
 					return;
 				}
 				
 				AttackLevel lvl = AttackLevel.getLvl(turnsInvis);
 
-				PathFinder.buildDistanceMap(Dungeon.hero.pos, Dungeon.level.getPassableAndAvoidVar(Dungeon.hero), lvl.blinkDistance());
+				PathFinder.buildDistanceMap(hero.pos, Dungeon.level.getPassableAndAvoidVar(hero), lvl.blinkDistance());
 				int dest = -1;
 				for (int i : PathFinder.NEIGHBOURS8){
 					//cannot blink into a cell that's occupied or impassable, only over them
-					if (!Barrier.canEnterCell(cell+i, Dungeon.hero, true, true))     continue;
+					if (!Barrier.canEnterCell(cell+i, hero, true, true))     continue;
 					if (!Dungeon.level.isPassable(cell+i) && !(target.isFlying() && Dungeon.level.avoid[cell+i])) {
 						continue;
 					}
@@ -298,33 +306,33 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 						dest = cell+i;
 					//if two cells have the same pathfinder distance, prioritize the one with the closest true distance to the hero
 					} else if (PathFinder.distance[dest] == PathFinder.distance[cell+i]){
-						if (Dungeon.level.trueDistance(Dungeon.hero.pos, dest) > Dungeon.level.trueDistance(Dungeon.hero.pos, cell+i)){
+						if (Dungeon.level.trueDistance(hero.pos, dest) > Dungeon.level.trueDistance(hero.pos, cell+i)){
 							dest = cell+i;
 						}
 					}
 
 				}
 
-				if (dest == -1 || PathFinder.distance[dest] == Integer.MAX_VALUE || Dungeon.hero.rooted){
-					GLog.w(Messages.get(Preparation.class, "out_of_reach"));
-					if (Dungeon.hero.rooted) PixelScene.shake( 1, 1f );
+				if (dest == -1 || PathFinder.distance[dest] == Integer.MAX_VALUE || hero.rooted){
+					if (hero == Dungeon.hero) GLog.w(Messages.get(Preparation.class, "out_of_reach"));
+					if (hero.rooted) PixelScene.shake( 1, 1f );
 					return;
 				}
 				
-				Dungeon.hero.pos = dest;
-				Dungeon.level.occupyCell(Dungeon.hero);
+				hero.pos = dest;
+				Dungeon.level.occupyCell(hero);
 				//prevents the hero from being interrupted by seeing new enemies
 				Dungeon.observe();
 				GameScene.updateFog();
-				Dungeon.hero.checkVisibleMobs();
+				hero.checkVisibleMobs();
 				
-				Dungeon.hero.sprite.place( Dungeon.hero.pos );
-				Dungeon.hero.sprite.turnTo( Dungeon.hero.pos, cell);
-				CellEmitter.get( Dungeon.hero.pos ).burst( Speck.factory( Speck.WOOL ), 6 );
+				hero.sprite.place( hero.pos );
+				hero.sprite.turnTo( hero.pos, cell);
+				CellEmitter.get( hero.pos ).burst( Speck.factory( Speck.WOOL ), 6 );
 				Sample.INSTANCE.play( Assets.Sounds.PUFF );
 
-				Dungeon.hero.curAction = new HeroAction.Attack( enemy );
-				Dungeon.hero.next();
+				hero.curAction = new HeroAction.Attack( enemy );
+				hero.next();
 			}
 		}
 		

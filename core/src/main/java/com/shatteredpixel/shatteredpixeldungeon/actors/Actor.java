@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.watabou.noosa.Game;
@@ -388,8 +389,10 @@ public abstract class Actor implements Bundlable, Copyable<Actor> {
 	
 	public static synchronized Char findChar( int pos ) {
 		for (Char ch : chars){
-			if (ch.pos == pos)
-				return ch;
+			if (ch.pos == pos) {
+				if (ch instanceof HeroMob) return ((HeroMob) ch).hero();
+				else return ch;
+			}
 		}
 		return null;
 	}

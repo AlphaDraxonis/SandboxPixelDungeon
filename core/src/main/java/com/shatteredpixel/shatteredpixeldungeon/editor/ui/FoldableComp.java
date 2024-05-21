@@ -101,8 +101,7 @@ public class FoldableComp extends Component {
         float posX = width - 2;
         float titleWidth = posX;
 
-        if (fold.visible) titleWidth -= BUTTON_HEIGHT + BUTTON_GAP;
-        else if (expand.visible) titleWidth -= BUTTON_HEIGHT + BUTTON_GAP;
+        if (fold.visible || expand.visible) titleWidth -= BUTTON_HEIGHT + BUTTON_GAP;
 
         title.maxWidth((int) titleWidth);
         float titleHeight = Math.max(BUTTON_HEIGHT, title.height());
@@ -112,11 +111,11 @@ public class FoldableComp extends Component {
         if (fold.visible)
             fold.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - fold.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
         else if (expand.visible)
-            expand.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY+ (titleHeight - expand.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+            expand.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - expand.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
 
         title.setPos(x, (titleHeight - title.height()) * 0.5f + posY + 1);
 
-        posY += BUTTON_HEIGHT + 2;
+        posY += titleHeight + 2;
 
         if (body != null && body.visible) {
             body.setRect(x, posY, width, -1);

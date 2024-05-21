@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindOfWeapon;
@@ -471,7 +472,8 @@ public class MeleeWeapon extends Weapon {
 					partialCharge += chargeToGain;
 				}
 
-				int points = ((Hero)target).pointsInTalent(Talent.WEAPON_RECHARGING);
+				Hero hero = target instanceof Hero ? (Hero) target : ((HeroMob) target).hero();
+				int points =hero.pointsInTalent(Talent.WEAPON_RECHARGING);
 				if (points > 0 && target.buff(Recharging.class) != null || target.buff(ArtifactRecharge.class) != null){
 					//1 every 15 turns at +1, 10 turns at +2
 					partialCharge += 1/(20f - 5f*points);

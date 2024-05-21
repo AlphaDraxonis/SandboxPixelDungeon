@@ -109,6 +109,7 @@ public class Hero extends Char {
 	
 	public static final int MAX_LEVEL = 30;
 
+	public static final int STARTING_HP = 20;
 	public static final int STARTING_STR = 10;
 	public static final int STARTING_ATK_SKILL = 10;
 	public static final int STARTING_DEF_SKILL = 5;
@@ -155,7 +156,7 @@ public class Hero extends Char {
 	public Hero() {
 		super();
 
-		HP = HT = 20;
+		HP = HT = STARTING_HP;
 		STR = STARTING_STR;
 		
 		belongings = new Belongings( this );

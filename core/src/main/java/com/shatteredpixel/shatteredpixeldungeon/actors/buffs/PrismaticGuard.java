@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
@@ -44,8 +45,8 @@ public class PrismaticGuard extends Buff {
 	
 	@Override
 	public boolean act() {
-		
-		Hero hero = (Hero)target;
+
+		Hero hero = target instanceof Hero ? (Hero) target : ((HeroMob) target).hero();
 		
 		Mob closest = null;
 		int v = hero.visibleEnemies();
@@ -98,7 +99,8 @@ public class PrismaticGuard extends Buff {
 	}
 	
 	public int maxHP(){
-		return maxHP((Hero)target);
+		Hero hero = target instanceof Hero ? (Hero) target : ((HeroMob) target).hero();
+		return maxHP(hero);
 	}
 	
 	public static int maxHP( Hero hero ){

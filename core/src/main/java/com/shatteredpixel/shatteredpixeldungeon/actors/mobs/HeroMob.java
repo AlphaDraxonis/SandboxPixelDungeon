@@ -261,7 +261,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                 }
                 continue;
             }
-            if (c == PotionOfCleansing.class && internalHero.buff(BlobImmunity.class) == null) {
+            if (c == PotionOfCleansing.class && buff(BlobImmunity.class) == null) {
                 //only use on self
                 for (Buff b : internalHero.buffs()) {
                     if (b.type == Buff.buffType.NEGATIVE
@@ -309,13 +309,13 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
                 Class<? extends Potion> c = potion.getClass();
                 if (c == PotionOfStrength.class) return potion;
                 if (c == PotionOfExperience.class) return potion;
-                if (c == PotionOfHaste.class && internalHero.buff(Haste.class) == null) return potion;
-                if (c == PotionOfStamina.class && internalHero.buff(Stamina.class) == null) return potion;
-                if (c == PotionOfMindVision.class && internalHero.buff(MindVision.class) == null) return potion;
-                if (c == PotionOfMagicalSight.class && internalHero.buff(MagicalSight.class) == null) return potion;
-                if (c == PotionOfEarthenArmor.class && internalHero.buff(Barkskin.class) == null) return potion;
+                if (c == PotionOfHaste.class && buff(Haste.class) == null) return potion;
+                if (c == PotionOfStamina.class && buff(Stamina.class) == null) return potion;
+                if (c == PotionOfMindVision.class && buff(MindVision.class) == null) return potion;
+                if (c == PotionOfMagicalSight.class && buff(MagicalSight.class) == null) return potion;
+                if (c == PotionOfEarthenArmor.class && buff(Barkskin.class) == null) return potion;
                 if ((c == PotionOfInvisibility.class || c == PotionOfShroudingFog.class) && internalHero.invisible <= 0) return potion;
-                if (c == PotionOfLevitation.class && internalHero.buff(Levitation.class) == null) return potion;//do not throw; maybe check for Chasms?
+                if (c == PotionOfLevitation.class && buff(Levitation.class) == null) return potion;//do not throw; maybe check for Chasms?
 
                 if (c == PotionOfStormClouds.class && !Dungeon.level.water[target]) return potion;
 

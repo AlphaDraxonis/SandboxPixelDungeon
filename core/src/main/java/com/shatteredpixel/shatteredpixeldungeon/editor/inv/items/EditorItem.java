@@ -238,7 +238,7 @@ public abstract class EditorItem<T> extends Item {
                     Trap t = Reflection.newInstance(EditorInvCategory.getRandom(Traps.values()));
                     t.visible = true;
                     return t.getSprite();
-                case ARROW_CELL: return EditorUtilies.getBarrierTexture(1);//tzz different sprite
+                case ARROW_CELL: return EditorUtilies.getArrowCellTexture(ArrowCell.ALL, true);
                 case BARRIER: return EditorUtilies.getBarrierTexture(1);
                 case CUSTOM_TILE: return Icons.TALENT.get();
                 case PARTICLE: return Tiles.particleBag.getCategoryImage();

@@ -21,7 +21,6 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -55,7 +54,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	
 	@Override
 	public boolean attachTo(Char target) {
-		ActionIndicator.setAction(this);
+		if (target.getClass() == Hero.class) ActionIndicator.setAction(this);
 		return super.attachTo(target);
 	}
 	
@@ -96,7 +95,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	
 	@Override
 	public String actionName() {
-		SpiritBow bow = Dungeon.hero.belongings.getItem(SpiritBow.class);
+		SpiritBow bow = HeroSubclassAbilityBuff.targetHero(target).belongings.getItem(SpiritBow.class);
 
 		if (bow == null) return null;
 
@@ -123,7 +122,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	@Override
 	public void doAction() {
 		
-		Hero hero = Dungeon.hero;
+		Hero hero = HeroSubclassAbilityBuff.targetHero(target);
 		if (hero == null) return;
 		
 		SpiritBow bow = hero.belongings.getItem(SpiritBow.class);
@@ -139,7 +138,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		if (cell == -1) return;
 		
 		bow.sniperSpecial = true;
-		bow.sniperSpecialBonusDamage = level*Dungeon.hero.pointsInTalent(Talent.SHARED_UPGRADES)/10f;
+		bow.sniperSpecialBonusDamage = level*hero.pointsInTalent(Talent.SHARED_UPGRADES)/10f;
 		
 		arrow.cast(hero, cell);
 		detach();

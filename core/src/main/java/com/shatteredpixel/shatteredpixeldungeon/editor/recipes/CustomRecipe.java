@@ -4,9 +4,15 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
@@ -118,16 +124,22 @@ public class CustomRecipe extends Recipe implements Bundlable {
 
         Item result = itemOutput.getCopy();
         boolean identifyResult = true;
-        for (Recipe recipe : otherRecipes) {
-            Class<? extends Item> outputClass;
-            if (recipe instanceof CustomRecipe) outputClass = ((CustomRecipe) recipe).itemOutput.getClass();
-            else outputClass = recipe.sampleOutput(ingredients).getClass();
-            if (outputClass == result.getClass()) {
-                identifyResult = false;
-                break;
+        if (result instanceof Ring || result instanceof Wand || result instanceof Artifact
+                || (result instanceof Weapon && !(result instanceof MissileWeapon))
+                || (result instanceof Armor && !(result instanceof ClassArmor))) {
+            identifyResult = false;
+        } else {
+            for (Recipe recipe : otherRecipes) {
+                Class<? extends Item> outputClass;
+                if (recipe instanceof CustomRecipe) outputClass = ((CustomRecipe) recipe).itemOutput.getClass();
+                else outputClass = recipe.sampleOutput(ingredients).getClass();
+                if (outputClass == result.getClass()) {
+                    identifyResult = false;
+                    break;
+                }
             }
         }
-        if (identifyResult)
+        if (identifyResult || result.identifyOnStart)
             result.identify();
 
         return result;

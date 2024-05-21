@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
@@ -460,10 +461,11 @@ public class CellSelector extends ScrollArea {
 				ControllerHandler.leftStickPosition.y);
 
 		//skip logic here if there's no input, or if input is blocked
-		if ((newLeftStick == leftStickAction
-				&& leftStickAction == GameAction.NONE
+		if (!CustomDungeon.isEditing()
+				&& ((newLeftStick == leftStickAction
+					&& leftStickAction == GameAction.NONE
 					&& heldAction1 == SPDAction.NONE)
-					|| GameScene.interfaceBlockingHero()){
+					|| GameScene.interfaceBlockingHero())){
 			return;
 		}
 

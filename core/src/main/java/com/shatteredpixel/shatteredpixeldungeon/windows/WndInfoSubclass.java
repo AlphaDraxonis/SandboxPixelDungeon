@@ -47,6 +47,8 @@ public class WndInfoSubclass extends WndTitledMessage {
 		add(talentPane);
 		resize(width, (int) talentPane.bottom());
 
+		content.layout();
+
 	}
 
 }

@@ -22,8 +22,9 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.SpellSprite;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -39,7 +40,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
 
-public class Momentum extends Buff implements ActionIndicator.Action {
+public class Momentum extends HeroSubclassAbilityBuff {
 	
 	{
 		type = buffType.POSITIVE;
@@ -66,7 +67,9 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 			freerunCooldown--;
 		}
 
-		if (freerunCooldown == 0 && !freerunning() && target.invisible > 0 && Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH) >= 1){
+		Hero hero = target instanceof Hero ? (Hero) target : ((HeroMob) target).hero();
+
+		if (freerunCooldown == 0 && !freerunning() && target.invisible > 0 && hero.pointsInTalent(Talent.SPEEDY_STEALTH) >= 1){
 			momentumStacks = Math.min(momentumStacks + 2, 10);
 			movedLastTurn = true;
 			ActionIndicator.setAction(this);
@@ -74,7 +77,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		}
 
 		if (freerunTurns > 0){
-			if (target.invisible == 0 || Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH) < 2) {
+			if (target.invisible == 0 || hero.pointsInTalent(Talent.SPEEDY_STEALTH) < 2) {
 				freerunTurns--;
 			}
 		} else if (!movedLastTurn){
@@ -99,6 +102,10 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 			momentumStacks = Math.min(momentumStacks + 1, 10);
 			ActionIndicator.setAction(this);
 			BuffIndicator.refreshHero();
+
+			if (momentumStacks >= 10 && target instanceof HeroMob) {
+				doAction();
+			}
 		}
 	}
 
@@ -109,7 +116,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	public float speedMultiplier(){
 		if (freerunning()){
 			return 2;
-		} else if (target.invisible > 0 && Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH) == 3){
+		} else if (target.invisible > 0 && targetHero().pointsInTalent(Talent.SPEEDY_STEALTH) == 3){
 			return 2;
 		} else {
 			return 1;
@@ -118,7 +125,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	
 	public int evasionBonus( int heroLvl, int excessArmorStr ){
 		if (freerunTurns > 0) {
-			return heroLvl/2 + excessArmorStr*Dungeon.hero.pointsInTalent(Talent.EVASIVE_ARMOR);
+			return heroLvl/2 + excessArmorStr*targetHero().pointsInTalent(Talent.EVASIVE_ARMOR);
 		} else {
 			return 0;
 		}
@@ -201,10 +208,12 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		momentumStacks = bundle.getInt(STACKS);
 		freerunTurns = bundle.getInt(FREERUN_TURNS);
 		freerunCooldown = bundle.getInt(FREERUN_CD);
-		if (momentumStacks > 0 && freerunTurns <= 0){
-			ActionIndicator.setAction(this);
-		}
 		movedLastTurn = false;
+	}
+
+	@Override
+	protected boolean actionAvailable() {
+		return momentumStacks > 0 && freerunTurns <= 0;
 	}
 
 	@Override

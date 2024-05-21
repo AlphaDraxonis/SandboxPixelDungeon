@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
@@ -174,11 +175,12 @@ public enum Talent {
 
 		@Override
 		public boolean act() {
+			Hero hero = target instanceof Hero ? (Hero) target : ((HeroMob) target).hero();
 			//barrier every 2/1 turns, to a max of 3/5
-			if (((Hero)target).hasTalent(Talent.PROTECTIVE_SHADOWS) && target.invisible > 0){
+			if (hero.hasTalent(Talent.PROTECTIVE_SHADOWS) && target.invisible > 0){
 				Barrier barrier = Buff.affect(target, Barrier.class);
-				if (barrier.shielding() < 1 + 2*((Hero)target).pointsInTalent(Talent.PROTECTIVE_SHADOWS)) {
-					barrierInc += 0.5f * ((Hero) target).pointsInTalent(Talent.PROTECTIVE_SHADOWS);
+				if (barrier.shielding() < 1 + 2*hero.pointsInTalent(Talent.PROTECTIVE_SHADOWS)) {
+					barrierInc += 0.5f * hero.pointsInTalent(Talent.PROTECTIVE_SHADOWS);
 				}
 				if (barrierInc >= 1){
 					barrierInc = 0;

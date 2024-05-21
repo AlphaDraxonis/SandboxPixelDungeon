@@ -53,7 +53,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.GameMath;
 
-public class MonkEnergy extends Buff implements ActionIndicator.Action {
+public class MonkEnergy extends HeroSubclassAbilityBuff {
 
 	{
 		type = buffType.POSITIVE;
@@ -131,10 +131,11 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 		super.restoreFromBundle(bundle);
 		energy = bundle.getFloat(ENERGY);
 		cooldown = bundle.getInt(COOLDOWN);
+	}
 
-		if (energy >= 1 && cooldown == 0){
-			ActionIndicator.setAction(this);
-		}
+	@Override
+	protected boolean actionAvailable() {
+		return energy >= 1 && cooldown == 0;
 	}
 
 	public void gainEnergy(Mob enemy ){
@@ -156,8 +157,8 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 		else                                                    energyGain = 1;
 
 		float enGainMulti = 1f;
-		if (target instanceof Hero) {
-			Hero hero = (Hero) target;
+		Hero hero = targetHero();
+		if (hero != null) {
 			if (hero.hasTalent(Talent.UNENCUMBERED_SPIRIT)) {
 				int points = hero.pointsInTalent(Talent.UNENCUMBERED_SPIRIT);
 
@@ -259,7 +260,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public int indicatorColor() {
-		if (abilitiesEmpowered(Dungeon.hero)){
+		if (abilitiesEmpowered(targetHero())){
 			return 0xAAEE22;
 		} else {
 			return 0xA08840;
