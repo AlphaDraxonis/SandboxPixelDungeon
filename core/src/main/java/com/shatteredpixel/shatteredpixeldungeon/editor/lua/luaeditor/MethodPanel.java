@@ -135,16 +135,18 @@ public class MethodPanel extends CodeInputPanel {
 	@Override
 	protected void onAddClick() {
 		super.onAddClick();
-		StringBuilder b = new StringBuilder();
-		if (method.getReturnType() != void.class)
-			b.append("return ");
-		b.append("super:call(");
-		for (int i = 0; i < paramNames.length; i++) {
-			b.append(paramNames[i]);
-			if (i < paramNames.length - 1)
-				b.append(", ");
+		if (textInputText == null || textInputText.isEmpty()) {
+			StringBuilder b = new StringBuilder();
+			if (method.getReturnType() != void.class)
+				b.append("return ");
+			b.append("super:call(");
+			for (int i = 0; i < paramNames.length; i++) {
+				b.append(paramNames[i]);
+				if (i < paramNames.length - 1)
+					b.append(", ");
+			}
+			b.append(");\n");
+			textInput.setText(textInputText = b.toString());
 		}
-		b.append(");\n");
-		textInput.setText(b.toString());
 	}
 }

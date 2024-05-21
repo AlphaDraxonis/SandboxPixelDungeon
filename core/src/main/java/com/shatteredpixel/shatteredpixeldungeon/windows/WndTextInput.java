@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.input.PointerEvent;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.TextInput;
 
 public class WndTextInput extends Window {
@@ -199,6 +200,7 @@ public class WndTextInput extends Window {
 
 		PointerEvent.clearKeyboardThisPress = false;
 
+		Game.platform.setOnscreenKeyboardVisible(true);
 	}
 
 	@Override

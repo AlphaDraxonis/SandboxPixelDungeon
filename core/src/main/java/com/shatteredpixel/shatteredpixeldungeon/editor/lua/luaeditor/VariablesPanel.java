@@ -46,10 +46,29 @@ public class VariablesPanel extends CodeInputPanel {
 
 
 	@Override
-	protected void onAddClick() {
-		super.onAddClick();
+	public void expand() {
+		onAdd(null, true);
 		remover.setVisible(false);
-		layout();
+
+		layoutParent();
+	}
+
+	@Override
+	public void fold() {
+		if (body != null) {
+			body.destroy();
+			remove(body);
+			body = null;
+		}
+		textInput = null;
+
+		adder.setVisible(false);
+		remover.setVisible(false);
+
+		fold.setVisible(false);
+		expand.setVisible(true);
+
+		layoutParent();
 	}
 
 	@Override
@@ -145,5 +164,17 @@ public class VariablesPanel extends CodeInputPanel {
 		int indexNormalComma = cleanedCode.indexOf(',', indexValueStart);
 		int indexEnd = Math.min(indexSemikolon == -1 ? Integer.MAX_VALUE : indexSemikolon, indexNormalComma == -1 ? Integer.MAX_VALUE : indexNormalComma);
 		return indexEnd == Integer.MAX_VALUE ? originalCode.substring(indexValueStart) : originalCode.substring(indexValueStart, indexEnd);
+	}
+
+	@Override
+	protected void setCode(boolean forceChange, String code) {
+		super.setCode(forceChange, code);
+		if (textInputText != null) {
+			expand.setVisible(body == null);
+			fold.setVisible(body != null);
+
+			adder.setVisible(false);
+			remover.setVisible(false);
+		}
 	}
 }

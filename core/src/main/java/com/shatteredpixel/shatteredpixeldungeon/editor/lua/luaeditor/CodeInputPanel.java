@@ -38,6 +38,8 @@ import com.watabou.noosa.ui.Component;
 
 public abstract class CodeInputPanel extends FoldableCompWithAdd {
 
+	protected String textInputText;
+
 	protected TextInput textInput;
 	protected RenderedTextBlock info;
 
@@ -47,14 +49,38 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 	}
 
 	@Override
+	public void expand() {
+		onAdd(null, true);
+	}
+
+	@Override
+	public void fold() {
+		if (body != null) {
+			body.destroy();
+			remove(body);
+			body = null;
+		}
+		textInput = null;
+
+		adder.setVisible(false);
+		remover.setVisible(true);
+
+		fold.setVisible(false);
+		expand.setVisible(true);
+
+		layoutParent();
+	}
+
+	@Override
 	protected void onAddClick() {
-		onAdd(null, false);
+		expand();
 	}
 
 	@Override
 	protected void onRemove() {
 		super.onRemove();
 		textInput = null;
+		textInputText = null;
 	}
 
 	@Override
@@ -97,19 +123,24 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 
 	public abstract void applyScript(boolean forceChange, LuaScript fullScript, String cleanedCode);
 
-	protected final void setCode(boolean forceChange, String code) {
+	protected void setCode(boolean forceChange, String code) {
 		if (code == null) {
 			if (forceChange && textInput != null) onRemove();//TODO tzz add a warning!
 			return;
 		}
 
 		if (textInput == null || textInput.getText().isEmpty()) {
-			if (textInput == null) onAddClick();
-			else if (!textInput.visible) expand();
-			textInput.setText(code);
+			textInputText = code;
+			if (textInput != null) textInput.setText(code);
+			else {
+				expand.setVisible(true);
+				adder.setVisible(false);
+				remover.setVisible(true);
+			}
 		} else {
 			String oldCode = forceChange ? "" : "--[[\n" + textInput.getText() + "]]\n\n";
 			textInput.setText(oldCode + code);
+			textInputText = oldCode + code;
 		}
 	}
 
@@ -142,6 +173,9 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 //				}
 			};
 			add(textInput);
+
+			if (textInputText != null) textInput.setText(textInputText);
+			else textInputText = "";
 
 			info = PixelScene.renderTextBlock(6);
 			String desc = createDescription();

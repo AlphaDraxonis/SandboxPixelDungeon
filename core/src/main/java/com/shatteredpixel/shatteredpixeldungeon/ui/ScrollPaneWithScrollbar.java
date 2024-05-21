@@ -108,7 +108,7 @@ public class ScrollPaneWithScrollbar extends ScrollPane {
 
 	private class ScrollbarThumb extends RedButton {
 
-		public static final int GAP = 1, THICKNESS = 10, TOTAL_THICKNESS = THICKNESS + 2*GAP;
+		public static final int GAP = 1, THICKNESS = 10, TOTAL_THICKNESS = THICKNESS + GAP;
 		public static final float SCALE_FACTOR = 1.0f;//TODO doesn't really work atm
 		public static final int VERTICAL = 0, HORIZONTAL = 1;
 

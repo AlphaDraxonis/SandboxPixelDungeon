@@ -101,6 +101,12 @@ public class TextInput extends Component {
 			}
 
 			@Override
+			protected void onClick(PointerEvent event) {
+				super.onClick(event);
+				Gdx.app.postRunnable(() -> Game.platform.setOnscreenKeyboardVisible(true));
+			}
+
+			@Override
 			protected void onPointerDown(PointerEvent event) {
 				super.onPointerDown(event);
 				clickStarted = true;
@@ -218,7 +224,6 @@ public class TextInput extends Component {
 
 		container.setActor(textField);
 		stage.setKeyboardFocus(textField);
-		Game.platform.setOnscreenKeyboardVisible(true);
 
 		normalCursorColor = ((NinePatchDrawable) style.cursor).getPatch().getColor().toIntBits();
 		gainFocus();

@@ -42,7 +42,7 @@ public class TransitionCompRow extends FoldableCompWithAdd {
             else transition = levelScheme.getExitTransitionRegular();
         } else transition = levelScheme.getLevel().transitions.get(cell);
         if (transition != null) {
-            onAdd(transition, true);
+            onAdd(transition, false);
             showBody(transition.showDetailsInEditor);
         }
 
@@ -56,14 +56,14 @@ public class TransitionCompRow extends FoldableCompWithAdd {
 
     @Override
     protected void onAddClick() {
-        onAdd(EditTileComp.createNewTransition(cell), false);
+        onAdd(EditTileComp.createNewTransition(cell), true);
     }
 
     @Override
-    protected void onAdd(Object toAdd, boolean initialAdding) {
-        super.onAdd(toAdd, initialAdding);
+    protected void onAdd(Object toAdd, boolean layoutParent) {
+        super.onAdd(toAdd, layoutParent);
 
-        if (!initialAdding && levelScheme.getLevel() == Dungeon.level)
+        if (layoutParent && levelScheme.getLevel() == Dungeon.level)
             EditorScene.add((LevelTransition) toAdd);
     }
 

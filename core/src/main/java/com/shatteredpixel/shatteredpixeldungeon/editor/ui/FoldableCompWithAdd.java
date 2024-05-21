@@ -46,7 +46,7 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
 
     protected abstract void onAddClick();
 
-    protected void onAdd(Object toAdd, boolean initialAdding) {
+    protected void onAdd(Object toAdd, boolean layoutParent) {
 
         if (body != null) {
             remove(body);
@@ -57,12 +57,12 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
 
 
         adder.setVisible(false);
-        remover.enable(remover.visible = true);
+        remover.setVisible(true);
 
-        fold.enable(fold.visible = true);
+        fold.setVisible(true);
         expand.setVisible(false);
 
-        if (!initialAdding) layoutParent();
+        if (layoutParent) layoutParent();
     }
 
     protected abstract Component createBody(Object param);
@@ -75,7 +75,7 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
             body = null;
         }
 
-        adder.enable(adder.visible = true);
+        adder.setVisible(true);
         remover.setVisible(false);
 
         fold.setVisible(false);
@@ -92,21 +92,32 @@ public abstract class FoldableCompWithAdd extends FoldableComp {
 
         float posY = y;
 
-        float posX = width - 2 - BUTTON_HEIGHT - BUTTON_GAP;
+        float posX = width - 2;
+        float titleWidth = posX;
+
+        if (remover.visible) titleWidth -= BUTTON_HEIGHT + BUTTON_GAP;
+        else if (fold.visible) titleWidth -= BUTTON_HEIGHT + BUTTON_GAP;
+
+        if (fold.visible) titleWidth -= BUTTON_HEIGHT + BUTTON_GAP;
+        else if (expand.visible) titleWidth -= BUTTON_HEIGHT + BUTTON_GAP;
+
+        title.maxWidth((int) titleWidth);
+        float titleHeight = Math.max(BUTTON_HEIGHT, title.height());
 
         IconButton last = reverseBtnOrder ?
                 (fold.visible ? fold : expand):
-                (remover.visible ? remover : (adder.visible ? adder: null));
+                (remover.visible ? remover : (adder.visible ? adder : null));
 
-        if (last != null) last.setRect(posX, posY + (BUTTON_HEIGHT - last.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        if (last != null) {
+            last.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - last.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        }
 
         IconButton next = !reverseBtnOrder ?
                 (fold.visible ? fold : expand):
-                (remover.visible ? remover : (adder.visible ? adder: null));
+                (remover.visible ? remover : (adder.visible ? adder : null));
 
-        if(next != null) {
-            if (last == null) next.setRect(posX, posY + (BUTTON_HEIGHT - next.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
-            else next.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (BUTTON_HEIGHT - last.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
+        if (next != null) {
+            next.setRect(posX -= BUTTON_HEIGHT + BUTTON_GAP, posY + (titleHeight - next.icon().height()) / 2f, BUTTON_HEIGHT, BUTTON_HEIGHT);
         }
 
         title.maxWidth((int) posX);

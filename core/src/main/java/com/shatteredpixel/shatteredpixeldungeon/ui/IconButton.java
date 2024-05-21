@@ -63,8 +63,14 @@ public class IconButton extends Button {
 			icon.alpha( active ? 1.0f : 0.3f );//why Evan why did you not add this?!?!?
 		}
 	}
-	
-	public void enable( boolean value ) {
+
+	@Override
+	public void setVisible(boolean flag) {
+		super.setVisible(flag);
+		enable(flag);
+	}
+
+	public void enable(boolean value ) {
 		active = value;
 		if (icon != null) icon.alpha( value ? 1.0f : 0.3f );
 	}
