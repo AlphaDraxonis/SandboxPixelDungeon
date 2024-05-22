@@ -34,14 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
 import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
-import com.shatteredpixel.shatteredpixeldungeon.ui.GameLog;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.OptionSlider;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Toolbar;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.watabou.input.ControllerHandler;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
@@ -176,10 +169,10 @@ public class WndSettings extends WndTabbed {
 			protected void createChildren(Object... params) {
 				super.createChildren(params);
 				switch(Messages.lang().status()){
-					case UNFINISHED:
+					case X_UNFINISH:
 						icon.hardlight(1.5f, 0, 0);
 						break;
-					case UNREVIEWED:
+					case __UNREVIEW:
 						icon.hardlight(1.5f, 0.75f, 0f);
 						break;
 				}
@@ -1162,13 +1155,13 @@ public class WndSettings extends WndTabbed {
 			txtLangInfo = PixelScene.renderTextBlock(6);
 			String info = "_" + Messages.titleCase(currLang.nativeName()) + "_ - ";
 			if (currLang == Languages.ENGLISH) info += "This is the source language, written by the developer.";
-			else if (currLang.status() == Languages.Status._COMPLETE_) info += Messages.get(this, "completed");
-			else if (currLang.status() == Languages.Status.UNREVIEWED) info += Messages.get(this, "unreviewed");
-			else if (currLang.status() == Languages.Status.UNFINISHED) info += Messages.get(this, "unfinished");
+			else if (currLang.status() == Languages.Status.O_COMPLETE) info += Messages.get(this, "completed");
+			else if (currLang.status() == Languages.Status.__UNREVIEW) info += Messages.get(this, "unreviewed");
+			else if (currLang.status() == Languages.Status.X_UNFINISH) info += Messages.get(this, "unfinished");
 			txtLangInfo.text(info);
 
-			if (currLang.status() == Languages.Status.UNREVIEWED) txtLangInfo.setHighlighting(true, CharSprite.WARNING);
-			else if (currLang.status() == Languages.Status.UNFINISHED) txtLangInfo.setHighlighting(true, CharSprite.NEGATIVE);
+			if (currLang.status() == Languages.Status.__UNREVIEW) txtLangInfo.setHighlighting(true, CharSprite.WARNING);
+			else if (currLang.status() == Languages.Status.X_UNFINISH) txtLangInfo.setHighlighting(true, CharSprite.NEGATIVE);
 			add(txtLangInfo);
 
 			sep2 = new ColorBlock(1, 1, 0xFF000000);
@@ -1200,10 +1193,10 @@ public class WndSettings extends WndTabbed {
 					btn.textColor(TITLE_COLOR);
 				} else {
 					switch (langs.get(i).status()) {
-						case UNFINISHED:
+						case X_UNFINISH:
 							btn.textColor(0x888888);
 							break;
-						case UNREVIEWED:
+						case __UNREVIEW:
 							btn.textColor(0xBBBBBB);
 							break;
 					}

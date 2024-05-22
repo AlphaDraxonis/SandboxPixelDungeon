@@ -50,7 +50,7 @@ public class LuaTemplates {
 				"\n\nreturn {vars = vars; static = static; die = die}";
 
 		SPAWN_MOB_ON_DIE = new LuaScript(Mob.class, "When this mob dies, a wraith (or another mob) is spawned in its place.", "");
-		SPAWN_MOB_ON_DIE.code = "vars = {} static = {} function die(this, vars, super, cause) hero:die(this);\nsuper:call(cause);\n" +
+		SPAWN_MOB_ON_DIE.code = "vars = {} static = {} function die(this, vars, super, cause) super:call(cause);\n" +
 				"\n" +
 				"mob = new(\"Wraith\");\n" +
 				"\n" +
@@ -58,7 +58,8 @@ public class LuaTemplates {
 				"\n" +
 				"placeMob(mob, this.pos);\n" +
 				"\n" +
-				"mob:spend(1); --so it doesn't act immediately end" +
+				"mob:spend(1); --so it doesn't act immediately\n" +
+				"end" +
 				"\n\nreturn {vars = vars; static = static; die = die}";
 
 		CRYSTAL_GUARDIAN_RECOVERY = new LuaScript(Mob.class, "Instead of dying of HP drops to 0, this mobs gains HP like a crystal guardian", "");
@@ -138,7 +139,7 @@ public class LuaTemplates {
 				"\nend" +
 				"\n\nreturn {vars = vars; static = static; initForPlay = initForPlay}";
 
-		TEMPLATES = new LuaScript[]{KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE,
+		TEMPLATES = new LuaScript[]{KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY,
 				REPLACES_WALLS_WITH_EMBERS};
 	}
 
