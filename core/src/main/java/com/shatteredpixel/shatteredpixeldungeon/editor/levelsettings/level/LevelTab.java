@@ -44,7 +44,8 @@ public class LevelTab extends MultiWindowTabComp {
         StyledButton mobSpawn;
         Spinner viewDistance, depth, shopPrice;
         StyledButton changeSize;
-        StyledCheckBox hungerDepletion, naturalRegen, allowPickaxeMining, rememberLayout, magicMappingDisabled;
+        StyledSpinner hungerSpeed;
+        StyledCheckBox naturalRegen, allowPickaxeMining, rememberLayout, magicMappingDisabled;
         StyledButton bossLevelRetexture;
         StyledButton levelColoring;
 
@@ -70,21 +71,15 @@ public class LevelTab extends MultiWindowTabComp {
         mobSpawn.icon(new GnollSprite());
         content.add(mobSpawn);
 
-        hungerDepletion = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "hunger")) {
+        hungerSpeed = new StyledSpinner(new SpinnerFloatModel(0f, 100f, level.levelScheme.hungerSpeed, 2, 0.1f) {
             @Override
-            public void checked(boolean value) {
-                super.checked(value);
-                level.levelScheme.hungerDepletion = value;
+            public String getDisplayString() {
+                return "x " + super.getDisplayString();
             }
-
-            @Override
-            protected int textSize() {
-                return super.textSize() - 1;
-            }
-        };
-        hungerDepletion.checked(level.levelScheme.hungerDepletion);
-        hungerDepletion.icon(new ItemSprite(ItemSpriteSheet.RATION));
-        content.add(hungerDepletion);
+        }, Messages.get(this, "hunger_speed"));
+        hungerSpeed.addChangeListener(() -> level.levelScheme.hungerSpeed = ((SpinnerFloatModel) hungerSpeed.getModel()).getAsFloat());
+        hungerSpeed.icon(new ItemSprite(ItemSpriteSheet.RATION));
+        content.add(hungerSpeed);
 
         naturalRegen = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "regeneration")) {
             @Override
@@ -211,7 +206,7 @@ public class LevelTab extends MultiWindowTabComp {
 
         mainWindowComps = new Component[]{
                 region, mobSpawn, changeSize,
-                hungerDepletion, naturalRegen, allowPickaxeMining, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                hungerSpeed, naturalRegen, allowPickaxeMining, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 depth, viewDistance, shopPrice, rememberLayout, magicMappingDisabled, levelColoring, bossLevelRetexture
         };
     }

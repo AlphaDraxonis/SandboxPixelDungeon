@@ -33,8 +33,7 @@ public class StyledSpinner extends Spinner {
         setSpinnerHeight(spinnerHeight);
         setAlignmentSpinnerX(ALIGNMENT_CENTER);
 
-        this.icon = icon;
-        if (icon != null) add(icon);
+        icon(icon);
 
         layout();
     }
@@ -117,5 +116,16 @@ public class StyledSpinner extends Spinner {
 
     public Image icon() {
         return icon;
+    }
+
+    public void icon(Image icon) {
+        if (this.icon != null) {
+            this.icon.destroy();
+            this.icon.remove();
+        }
+        this.icon = icon;
+        if (icon != null) {
+            add(icon);
+        }
     }
 }

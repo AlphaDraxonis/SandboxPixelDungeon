@@ -23,7 +23,6 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.Guidebook;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
@@ -36,7 +35,7 @@ import com.watabou.utils.Bundle;
 
 public class Hunger extends Buff implements Hero.Doom {
 
-	private static final float STEP	= 10f;
+	private static final float STEP	= 1f;
 
 	public static final float HUNGRY	= 300f;
 	public static final float STARVING	= 450f;
@@ -65,9 +64,9 @@ public class Hunger extends Buff implements Hero.Doom {
 	public boolean act() {
 
 		if (Dungeon.level.locked()
-				|| !Dungeon.curLvlScheme().hungerDepletion
+				|| hungerSpeed() == 0f
 				|| target.buff(WellFed.class) != null
-				|| SPDSettings.intro()
+//				|| SPDSettings.intro()
 				|| target.buff(ScrollOfChallenge.ChallengeArena.class) != null){
 			spend(STEP);
 			return true;
@@ -79,7 +78,7 @@ public class Hunger extends Buff implements Hero.Doom {
 
 			if (isStarving()) {
 
-				partialDamage += STEP * target.HT/1000f;
+				partialDamage += hungerSpeed() * target.HT/1000f;
 
 				if (partialDamage > 1){
 					target.damage( (int)partialDamage, this);
@@ -88,7 +87,7 @@ public class Hunger extends Buff implements Hero.Doom {
 				
 			} else {
 
-				float newLevel = level + STEP;
+				float newLevel = level + hungerSpeed();
 				if (newLevel >= STARVING) {
 
 					GLog.n( Messages.get(this, "onstarving") );
@@ -211,5 +210,9 @@ public class Hunger extends Buff implements Hero.Doom {
 
 		Dungeon.fail( this );
 		GLog.n( Messages.get(this, "ondeath") );
+	}
+
+	private static float hungerSpeed() {
+		return STEP * Dungeon.curLvlScheme().hungerSpeed;
 	}
 }
