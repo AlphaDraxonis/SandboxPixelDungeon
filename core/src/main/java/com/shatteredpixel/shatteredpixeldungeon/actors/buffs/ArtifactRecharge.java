@@ -29,22 +29,21 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
-public class ArtifactRecharge extends Buff {
+public class ArtifactRecharge extends BuffWithDuration {
 
 	public static final float DURATION = 30f;
 
 	{
 		type = buffType.POSITIVE;
 	}
-
-	private float left;
 	public boolean ignoreHornOfPlenty;
 	
 	@Override
 	public boolean act() {
 
-		if (target instanceof Hero) {
-			float chargeAmount = Math.min(1, left);
+		Hero hero = HeroSubclassAbilityBuff.targetHero(target);
+		if (hero != null) {
+			float chargeAmount = Math.min(1, permanent && left < 1 ? 2 : left);
 			if (chargeAmount > 0){
 				for (Buff b : target.buffs()) {
 					if (b instanceof Artifact.ArtifactBuff) {
@@ -52,14 +51,14 @@ public class ArtifactRecharge extends Buff {
 							continue;
 						}
 						if (!((Artifact.ArtifactBuff) b).isCursed()) {
-							((Artifact.ArtifactBuff) b).charge((Hero) target, chargeAmount);
+							((Artifact.ArtifactBuff) b).charge(hero, chargeAmount);
 						}
 					}
 				}
 			}
 		}
 
-		left--;
+		if (!permanent) left--;
 		if (left < 0){ // we expire after 0 to be more consistent with wand recharging visually
 			detach();
 		} else {
@@ -77,10 +76,6 @@ public class ArtifactRecharge extends Buff {
 	public ArtifactRecharge prolong( float amount ){
 		left += amount;
 		return this;
-	}
-
-	public float left(){
-		return left;
 	}
 	
 	@Override
@@ -105,23 +100,20 @@ public class ArtifactRecharge extends Buff {
 	
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", dispTurns(left+1));
+		return Messages.get(this, "desc", dispTurns(left+1)) + appendDescForPermanent();
 	}
-	
-	private static final String LEFT = "left";
+
 	private static final String IGNORE_HORN = "ignore_horn";
 	
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
-		bundle.put( LEFT, left );
 		bundle.put( IGNORE_HORN, ignoreHornOfPlenty );
 	}
 	
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
-		left = bundle.getFloat(LEFT);
 		ignoreHornOfPlenty = bundle.getBoolean(IGNORE_HORN);
 	}
 

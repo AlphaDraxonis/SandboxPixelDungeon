@@ -7,11 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ToastWithButtons;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Toast;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -39,7 +35,7 @@ public class ZonePrompt extends ToastWithButtons {
     public ZonePrompt() {
 
         instance = this;
-        updateButtonColors();
+        updateButtonColors(comps);
 
         zoneColor = new ColorBlock(1, 1, 0x8FD8D8D8) {
             @Override
@@ -70,13 +66,13 @@ public class ZonePrompt extends ToastWithButtons {
             @Override
             protected void onClick() {
                 mode = Mode.ADD;
-                updateButtonColors();
+                updateButtonColors(comps);
             }
 
             @Override
             protected void onPointerUp() {
                 super.onPointerUp();
-                updateButtonColors();
+                updateButtonColors(comps);
             }
         };
         add(placeZone);
@@ -84,13 +80,13 @@ public class ZonePrompt extends ToastWithButtons {
             @Override
             protected void onClick() {
                 mode = Mode.REMOVE;
-                updateButtonColors();
+                updateButtonColors(comps);
             }
 
             @Override
             protected void onPointerUp() {
                 super.onPointerUp();
-                updateButtonColors();
+                updateButtonColors(comps);
             }
         };
         add(removeZone);
@@ -98,13 +94,13 @@ public class ZonePrompt extends ToastWithButtons {
             @Override
             protected void onClick() {
                 mode = Mode.EDIT;
-                updateButtonColors();
+                updateButtonColors(comps);
             }
 
             @Override
             protected void onPointerUp() {
                 super.onPointerUp();
-                updateButtonColors();
+                updateButtonColors(comps);
             }
         };
         add(editZone);
@@ -120,9 +116,8 @@ public class ZonePrompt extends ToastWithButtons {
         comps = new Component[]{placeZone, removeZone, editZone, selectZoneButton};
     }
 
-    private static void updateButtonColors() {
+    private static void updateButtonColors(Component[] comps) {
 
-        Component[] comps = instance.comps;
         if (mode == Mode.ADD) ((IconButton) comps[0]).icon().brightness(1.5f);
         else ((IconButton) comps[0]).icon().resetColor();
 

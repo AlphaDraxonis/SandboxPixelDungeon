@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
 //buff whose only internal logic is to wait and detach after a time.
@@ -32,6 +33,16 @@ public class FlavourBuff extends Buff {
 			spend(0.005f);
 		} else detach();
 		return true;
+	}
+
+	@Override
+	public void makePermanent(boolean flag) {
+		super.makePermanent(flag);
+		if (!flag) {
+			if (timeWhenPaused > 0) {
+				spend(Math.min(Actor.now() - timeWhenPaused, cooldownWhenPaused));
+			}
+		}
 	}
 
 	@Override

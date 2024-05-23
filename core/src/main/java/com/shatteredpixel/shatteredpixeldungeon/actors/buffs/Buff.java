@@ -95,13 +95,12 @@ public class Buff extends Actor {
         return true;
     }
 
-    private float timeWhenPaused, cooldownWhenPaused;
+    protected float timeWhenPaused;
+    protected float cooldownWhenPaused;
     public void makePermanent(boolean flag) {
         if (permanent = flag) {
             timeWhenPaused = Actor.now();
             cooldownWhenPaused = cooldown();
-        } else if (timeWhenPaused > 0) {
-            spend(Math.min(Actor.now() - timeWhenPaused, cooldownWhenPaused));
         }
     }
 

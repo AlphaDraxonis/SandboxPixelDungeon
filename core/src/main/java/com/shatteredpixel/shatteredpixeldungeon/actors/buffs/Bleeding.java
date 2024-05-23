@@ -35,37 +35,29 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
-public class Bleeding extends Buff {
+public class Bleeding extends BuffWithDuration {
 
 	{
 		type = buffType.NEGATIVE;
 		announced = true;
 	}
-	
-	protected float level;
 
 	//used in specific cases where the source of the bleed is important for death logic
 	private Class source;
 
-	public float level(){
-		return level;
-	}
-	
-	private static final String LEVEL	= "level";
 	private static final String SOURCE	= "source";
 	
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
-		bundle.put( LEVEL, level );
 		bundle.put( SOURCE, source );
 	}
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
-		level = bundle.getFloat( LEVEL );
 		source = bundle.getClass( SOURCE );
+		if (bundle.contains("level")) left = bundle.getFloat("level");
 	}
 	
 	public void set( float level ) {
@@ -73,12 +65,20 @@ public class Bleeding extends Buff {
 	}
 
 	public void set( float level, Class source ){
-		if (this.level < level) {
-			this.level = Math.max(this.level, level);
+		if (this.left < level) {
+			this.left = Math.max(this.left, level);
 			this.source = source;
 		}
 	}
 	
+	@Override
+	public void set(BuffWithDuration buff, Class source) {
+		if (this.left < buff.left) {
+			set(buff.left, source);
+			this.source = source;
+		}
+	}
+
 	@Override
 	public int icon() {
 		return BuffIndicator.BLEEDING;
@@ -86,15 +86,15 @@ public class Bleeding extends Buff {
 
 	@Override
 	public String iconTextDisplay() {
-		return Integer.toString(Math.round(level));
+		return Integer.toString(Math.round(left));
 	}
 	
 	@Override
 	public boolean act() {
 		if (target.isAlive()) {
 			
-			level = Random.NormalFloat(level / 2f, level);
-			int dmg = Math.round(level);
+			if (!permanent) left = Random.NormalFloat(left / 2f, left);
+			int dmg = Math.round(left);
 			
 			if (dmg > 0) {
 				
@@ -120,7 +120,7 @@ public class Bleeding extends Buff {
 				
 				spend( TICK );
 			} else {
-				detach();
+				if (!permanent) detach();
 			}
 			
 		} else {
@@ -134,6 +134,6 @@ public class Bleeding extends Buff {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", Math.round(level));
+		return Messages.get(this, "desc", Math.round(left)) + appendDescForPermanent();
 	}
 }

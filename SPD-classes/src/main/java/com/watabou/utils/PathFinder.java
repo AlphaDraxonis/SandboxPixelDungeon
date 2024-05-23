@@ -163,12 +163,12 @@ public class PathFinder {
 				int end = ((step + 1) % width == 0 ? 3 : 0);
 				for (int i = start; i < dirLR.length - end; i++) {
 
-					if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(dirLR[i])) continue;//TODO test this here!, and add entering check!
+					if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionEnter(dirLR[i])) continue;
 
 					int n = step + dirLR[i];
 
 					ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
-					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
+					if (arrowCell != null && !arrowCell.allowsDirectionLeaving(-dirLR[i])) continue;
 
 					if (n >= 0 && n < size && passable[n]) {
 						if (distance[n] < distance[cur]) {
@@ -248,12 +248,12 @@ public class PathFinder {
 			int end   = ((step+1) % width == 0 ? 3 : 0);
 			for (int i = start; i < dirLR.length - end; i++) {
 
-				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(-dirLR[i])) continue;
+				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionEnter(dirLR[i])) continue;
 
 				int n = step + dirLR[i];
-				ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
 				if (n == from || (n >= 0 && n < size && passable[n] && (distance[n] > nextDistance))) {
-					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
+					ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
+					if (arrowCell != null && !arrowCell.allowsDirectionLeaving(-dirLR[i])) continue;
 					// Add to queue
 					queue[tail++] = n;
 					distance[n] = nextDistance;
@@ -292,12 +292,12 @@ public class PathFinder {
 			int end   = ((step+1) % width == 0 ? 3 : 0);
 			for (int i = start; i < dirLR.length - end; i++) {
 
-				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(-dirLR[i])) continue;
+				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionEnter(dirLR[i])) continue;
 
 				int n = step + dirLR[i];
-				ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
 				if (n >= 0 && n < size && passable[n] && (distance[n] > nextDistance)) {
-					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
+					ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
+					if (arrowCell != null && !arrowCell.allowsDirectionLeaving(-dirLR[i])) continue;
 					// Add to queue
 					queue[tail++] = n;
 					distance[n] = nextDistance;
@@ -344,12 +344,12 @@ public class PathFinder {
 			int end   = ((step+1) % width == 0 ? 3 : 0);
 			for (int i = start; i < dirLR.length - end; i++) {
 
-				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(-dirLR[i])) continue;
+				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionEnter(dirLR[i])) continue;
 
 				int n = step + dirLR[i];
-				ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
 				if (n == from || (n >= 0 && n < size && passable[n] && (distance[n] > nextDistance))) {
-					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
+					ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
+					if (arrowCell != null && !arrowCell.allowsDirectionLeaving(-dirLR[i])) continue;
 					// Add to queue
 					queue[tail++] = n;
 					distance[n] = nextDistance;
@@ -400,12 +400,12 @@ public class PathFinder {
 			int end   = ((step+1) % width == 0 ? 3 : 0);
 			for (int i = start; i < dirLR.length - end; i++) {
 
-				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(-dirLR[i])) continue;
+				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionEnter(dirLR[i])) continue;
 
 				int n = step + dirLR[i];
-				ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
 				if (n >= 0 && n < size && passable[n] && distance[n] > nextDistance) {
-					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
+					ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
+					if (arrowCell != null && !arrowCell.allowsDirectionLeaving(-dirLR[i])) continue;
 					// Add to queue
 					queue[tail++] = n;
 					distance[n] = nextDistance;
@@ -440,12 +440,12 @@ public class PathFinder {
 			int end   = ((step+1) % width == 0 ? 3 : 0);
 			for (int i = start; i < dirLR.length - end; i++) {
 
-				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionLeaving(-dirLR[i])) continue;
+				if (arrowCellFrom != null && !arrowCellFrom.allowsDirectionEnter(dirLR[i])) continue;
 
 				int n = step + dirLR[i];
-				ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
 				if (n >= 0 && n < size && passable[n] && (distance[n] > nextDistance)) {
-					if (arrowCell != null && !arrowCell.allowsDirectionEnter(dirLR[i])) continue;
+					ArrowCellInterface arrowCell = getArrowCellAt.apply(n);
+					if (arrowCell != null && !arrowCell.allowsDirectionLeaving(-dirLR[i])) continue;
 					// Add to queue
 					queue[tail++] = n;
 					distance[n] = nextDistance;

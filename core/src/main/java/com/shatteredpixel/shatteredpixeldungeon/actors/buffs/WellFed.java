@@ -41,8 +41,7 @@ public class WellFed extends Buff {
 	
 	@Override
 	public boolean act() {
-		left --;
-		if (left < 0){
+		if (!permanent && (left--) < 0){
 			detach();
 			if (target instanceof Hero) {
 				((Hero) target).resting = false;

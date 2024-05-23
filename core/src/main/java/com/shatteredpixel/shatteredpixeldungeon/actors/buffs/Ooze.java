@@ -25,31 +25,15 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-public class Ooze extends Buff {
+public class Ooze extends BuffWithDuration {
 
 	public static final float DURATION = 20f;
 
 	{
 		type = buffType.NEGATIVE;
 		announced = true;
-	}
-	
-	private float left;
-	private static final String LEFT	= "left";
-	
-	@Override
-	public void storeInBundle( Bundle bundle ) {
-		super.storeInBundle( bundle );
-		bundle.put( LEFT, left );
-	}
-	
-	@Override
-	public void restoreFromBundle( Bundle bundle ) {
-		super.restoreFromBundle(bundle);
-		left = bundle.getFloat(LEFT);
 	}
 	
 	@Override
@@ -62,16 +46,6 @@ public class Ooze extends Buff {
 		return Math.max(0, (DURATION - left) / DURATION);
 	}
 
-	@Override
-	public String iconTextDisplay() {
-		return Integer.toString((int)left);
-	}
-
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc", dispTurns(left));
-	}
-	
 	public void set(float left){
 		this.left = left;
 	}
@@ -92,8 +66,7 @@ public class Ooze extends Buff {
 				GLog.n( Messages.get(this, "ondeath") );
 			}
 			spend( TICK );
-			left -= TICK;
-			if (left <= 0){
+			if (!permanent && (left -= TICK) <= 0){
 				detach();
 			}
 		} else {

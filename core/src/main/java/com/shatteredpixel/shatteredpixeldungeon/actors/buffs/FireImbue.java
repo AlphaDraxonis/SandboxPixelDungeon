@@ -26,14 +26,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
-import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-public class FireImbue extends Buff {
+public class FireImbue extends BuffWithDuration {
 	
 	{
 		type = buffType.POSITIVE;
@@ -41,23 +39,6 @@ public class FireImbue extends Buff {
 	}
 
 	private static final float DURATION	= 50f;
-
-	protected float left;
-
-	private static final String LEFT	= "left";
-
-	@Override
-	public void storeInBundle( Bundle bundle ) {
-		super.storeInBundle( bundle );
-		bundle.put( LEFT, left );
-
-	}
-
-	@Override
-	public void restoreFromBundle( Bundle bundle ) {
-		super.restoreFromBundle( bundle );
-		left = bundle.getFloat( LEFT );
-	}
 
 	public void set( float duration ) {
 		this.left = duration;
@@ -71,8 +52,10 @@ public class FireImbue extends Buff {
 		}
 
 		spend(TICK);
-		left -= TICK;
-		if (left <= 0){
+		if (!permanent && (left -= TICK) <= 0){
+			detach();
+		}
+		else if (!target.isActive()) {
 			detach();
 		}
 
@@ -107,16 +90,6 @@ public class FireImbue extends Buff {
 
 	public static float defaultDuration() {
 		return DURATION;
-	}
-
-	@Override
-	public String iconTextDisplay() {
-		return Integer.toString((int)left);
-	}
-
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc", dispTurns(left));
 	}
 
 	{

@@ -606,6 +606,12 @@ public class Hero extends Char {
 			return true;
 		}
 
+		for (ChampionEnemy buff : buffs(ChampionEnemy.class)){
+			if (buff.canAttackWithExtraReach( enemy )){
+				return true;
+			}
+		}
+
 		KindOfWeapon wep = Dungeon.hero.belongings.attackingWeapon();
 
 		if (wep != null){

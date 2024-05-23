@@ -76,6 +76,11 @@ public class LevelTab extends MultiWindowTabComp {
             public String getDisplayString() {
                 return "x " + super.getDisplayString();
             }
+
+            @Override
+            public float getInputFieldWidth(float height) {
+                return Spinner.FILL;
+            }
         }, Messages.get(this, "hunger_speed"));
         hungerSpeed.addChangeListener(() -> level.levelScheme.hungerSpeed = ((SpinnerFloatModel) hungerSpeed.getModel()).getAsFloat());
         hungerSpeed.icon(new ItemSprite(ItemSpriteSheet.RATION));

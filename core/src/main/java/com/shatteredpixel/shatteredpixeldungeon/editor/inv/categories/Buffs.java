@@ -28,9 +28,12 @@ public enum Buffs implements EditorInvCategory<Buff> {
         MOVEMENT.classes = new Class[]{
                 Haste.class,
                 Stamina.class,
+                Adrenaline.class,
+                Slow.class,
                 Cripple.class,
                 Frost.class,
                 Paralysis.class,
+                Roots.class,
                 Vertigo.class,//Confusion
                 Amok.class,
                 Terror.class,
@@ -39,13 +42,22 @@ public enum Buffs implements EditorInvCategory<Buff> {
 
         FIGHT.classes = new Class[]{
 //                Fury.class,
+                Bless.class,
+                AnkhInvulnerability.class,
+                SoulMark.class,
+
                 Weakness.class,
                 Degrade.class,
                 Hex.class,
                 Daze.class,
+                Vulnerable.class,
                 Doom.class,
                 Corruption.class,
-//                Ooze.class,
+                Poison.class,
+                Corrosion.class,
+                Ooze.class,
+                Bleeding.class,
+                Burning.class,
         };
 
         SIGHT.classes = new Class[]{
@@ -58,11 +70,17 @@ public enum Buffs implements EditorInvCategory<Buff> {
         };
 
         OTHER.classes = new Class[]{
+                FireImbue.class,
+                FrostImbue.class,
+                ToxicImbue.class,
+
                 Levitation.class,
+                BlobImmunity.class,
                 MagicImmune.class,
                 Drowsy.class,
                 MagicalSleep.class,
                 Recharging.class,
+                ArtifactRecharge.class,
 //                EnhancedRings.class,
         };
     }

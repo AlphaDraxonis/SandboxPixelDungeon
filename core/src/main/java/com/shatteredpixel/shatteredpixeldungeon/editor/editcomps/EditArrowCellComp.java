@@ -4,6 +4,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ArrowCellItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerEnumModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
@@ -18,6 +20,7 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
 
 
     protected StyledCheckBox[] directions;
+    protected StyledSpinner enterMode;
     protected StyledCheckBox visible;
 
     private final ArrowCellItem arrowCellItem;//used for linking the item with the sprite in the toolbar
@@ -44,10 +47,10 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
                 int bit = 1 << (i - (i>4?1:0));
                 directions[i] = new StyledCheckBox(Messages.get(this, "direction_" + bit));
                 directions[i].icon(EditorUtilies.getArrowCellTexture(bit, true));
-                directions[i].checked((obj.directionsEnter & bit) != 0);
+                directions[i].checked((obj.directionsLeaving & bit) != 0);
                 directions[i].addChangeListener(val -> {
-                    if (val) obj.directionsEnter |= bit;
-                    else obj.directionsEnter &= ~bit;
+                    if (val) obj.directionsLeaving |= bit;
+                    else obj.directionsLeaving &= ~bit;
                     updateObj();
                 });
                 add(directions[i]);
@@ -61,6 +64,11 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
                 add(directions[i]);
             }
         }
+
+        enterMode = new StyledSpinner(new SpinnerEnumModel<>(ArrowCell.EnterMode.class, obj.enterMode), Messages.get(this, "enter_mode"), 6);
+        enterMode.setButtonWidth(8);
+        enterMode.addChangeListener(() -> obj.enterMode = (ArrowCell.EnterMode) enterMode.getValue());
+        add(enterMode);
 
         visible = new StyledCheckBox(Messages.get(EditTrapComp.class, "visible")) {
             @Override
@@ -76,7 +84,7 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
         visible.checked(obj.visible);
         add(visible);
 
-        comps = new Component[]{visible};
+        comps = new Component[]{visible, enterMode};
     }
 
     @Override
@@ -130,8 +138,8 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
         if (a == null || b == null) return false;
         if (a.getClass() != b.getClass()) return false;
         if (a.pos != b.pos) return false;
-//        if (a.directionsLeave != b.directionsLeave) return false;
-        if (a.directionsEnter != b.directionsEnter) return false;
+        if (a.directionsLeaving != b.directionsLeaving) return false;
+        if (a.enterMode != b.enterMode) return false;
         if (a.allowsWaiting != b.allowsWaiting) return false;
         return a.visible == b.visible;
     }

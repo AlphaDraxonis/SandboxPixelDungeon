@@ -497,7 +497,7 @@ public final class EditorUtilies {
     }
 
     public static Image getArrowCellTexture(ArrowCell arrowCell) {
-        return getArrowCellTexture(arrowCell.directionsEnter, arrowCell.visible);
+        return getArrowCellTexture(arrowCell.directionsLeaving, arrowCell.visible);
     }
 
     public static Image getArrowCellTexture(int directions, boolean visible) {

@@ -41,7 +41,6 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.Reflection;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -219,8 +218,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         }
 
         List<BuffItem> asBuffItems = new ArrayList<>();
-        for (Class<? extends Buff> b : zone.heroBuffs) {
-            Buff buff = Reflection.newInstance(b);
+        for (Buff buff : zone.heroBuffs.values()) {
             if (buff.icon() != BuffIndicator.NONE) {
                 buff.zoneBuff = buff.permanent = true;
                 asBuffItems.add(new BuffItem(buff));
@@ -230,22 +228,19 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
             @Override
             protected Set<Class<? extends Buff>> getBuffsToIgnore() {
                 Set<Class<? extends Buff>> buffsToIgnore = super.getBuffsToIgnore();
-                for (Class<? extends Buff> c : ChampionEnemy.CLASSES) {
-                    buffsToIgnore.add(c);
-                }
                 buffsToIgnore.add(Amok.class);
                 buffsToIgnore.add(Terror.class);
                 buffsToIgnore.add(Dread.class);
+                buffsToIgnore.add(SoulMark.class);
                 return buffsToIgnore;
             }
 
             @Override
-            protected Buff doAddBuff(Class<? extends Buff> buff) {
-                zone.heroBuffs.add(buff);
+            protected Buff doAddBuff(Buff buff) {
+                zone.heroBuffs.put(buff.getClass(), buff);
                 updateObj();
-                Buff b = Reflection.newInstance(buff);
-                b.zoneBuff = b.permanent = true;
-                return b;
+                buff.zoneBuff = buff.permanent = true;
+                return buff;
             }
 
             @Override
@@ -257,8 +252,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         add(heroBuffs);
 
         asBuffItems = new ArrayList<>();
-        for (Class<? extends Buff> b : zone.mobBuffs) {
-            Buff buff = Reflection.newInstance(b);
+        for (Buff buff : zone.mobBuffs.values()) {
             if (buff.icon() != BuffIndicator.NONE) {
                 buff.zoneBuff = buff.permanent = true;
                 asBuffItems.add(new BuffItem(buff));
@@ -277,12 +271,11 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
             }
 
             @Override
-            protected Buff doAddBuff(Class<? extends Buff> buff) {
-                zone.mobBuffs.add(buff);
+            protected Buff doAddBuff(Buff buff) {
+                zone.mobBuffs.put(buff.getClass(), buff);
                 updateObj();
-                Buff b = Reflection.newInstance(buff);
-                b.zoneBuff = b.permanent = true;
-                return b;
+                buff.zoneBuff = buff.permanent = true;
+                return buff;
             }
 
             @Override

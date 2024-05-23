@@ -104,7 +104,7 @@ public abstract class Actor implements Bundlable, Copyable<Actor> {
 		time = now;
 	}
 
-	public void setDurationForBuff(int duration) {
+	public void setDurationForFlavourBuff(int duration) {
 		time = now + duration - 1;
 	}
 

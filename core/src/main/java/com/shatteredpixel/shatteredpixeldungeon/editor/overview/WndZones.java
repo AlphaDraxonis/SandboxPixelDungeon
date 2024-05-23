@@ -14,12 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.SlowExtendWindow;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Point;
@@ -181,10 +176,10 @@ public final class WndZones {
             desc.maxWidth(endWidth - MARGIN * 2);
             desc.setPos(MARGIN, MARGIN);
 
-            createZone.setRect(MARGIN, endHeight - MARGIN - 18, endWidth - MARGIN, 18);
+            createZone.setRect(-2 + MARGIN*0.5f, endHeight - MARGIN - 18, endWidth - MARGIN, 18);
             PixelScene.align(createZone);
 
-            listPane.setRect(0, desc.bottom() + MARGIN * 2, endWidth, createZone.top() - MARGIN * 4 - desc.height());
+            listPane.setRect(-2, desc.bottom() + MARGIN * 2, endWidth, createZone.top() - MARGIN * 4 - desc.height());
             PixelScene.align(listPane);
 
             listPane.updateList();
@@ -204,7 +199,6 @@ public final class WndZones {
             super.destroy();
             instance = null;
         }
-
     }
 
     public static class WndNewZone extends NewCompWindow<Zone> {

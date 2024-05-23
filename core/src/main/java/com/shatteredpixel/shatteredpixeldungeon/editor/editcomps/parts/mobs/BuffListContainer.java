@@ -25,6 +25,7 @@ public abstract class BuffListContainer extends ItemContainerWithLabel<BuffItem>
     @Override
     protected void showSelectWindow() {
 
+        Set<Class<? extends Buff>> buffsToIgnore = getBuffsToIgnore();
         EditorScene.selectItem(new WndBag.ItemSelectorInterface() {
             @Override
             public String textPrompt() {
@@ -43,13 +44,13 @@ public abstract class BuffListContainer extends ItemContainerWithLabel<BuffItem>
 
             @Override
             public boolean itemSelectable(Item item) {
-                return item instanceof BuffItem;
+                return item instanceof BuffItem && !buffsToIgnore.contains(((BuffItem) item).getObject().getClass());
             }
 
             @Override
             public void onSelect(Item item) {
                 if (!(item instanceof BuffItem)) return;
-                Buff b = ((BuffItem) item).getObject();
+                Buff b = (Buff) ((BuffItem) item).getObject().getCopy();
                 b.permanent = false;
                 addNewItem(new BuffItem(b));
             }
@@ -86,7 +87,7 @@ public abstract class BuffListContainer extends ItemContainerWithLabel<BuffItem>
 
     @Override
     protected void doAddItem(BuffItem item) {
-        item.setObject(doAddBuff(item.getObject().getClass()));
+        item.setObject(doAddBuff(item.getObject()));
         super.doAddItem(item);
     }
 
@@ -99,7 +100,7 @@ public abstract class BuffListContainer extends ItemContainerWithLabel<BuffItem>
         return false;
     }
 
-    protected abstract Buff doAddBuff(Class<? extends Buff> buff);
+    protected abstract Buff doAddBuff(Buff buff);
 
     protected abstract void doRemoveBuff(Buff buff);
 

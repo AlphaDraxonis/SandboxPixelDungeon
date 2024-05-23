@@ -31,16 +31,14 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
-public class Corrosion extends Buff implements Hero.Doom {
+public class Corrosion extends BuffWithDuration implements Hero.Doom {
 
-	private float damage = 1;
-	protected float left;
+	public float damage = 1;
 
 	//used in specific cases where the source of the corrosion is important for death logic
 	private Class source;
 
 	private static final String DAMAGE	= "damage";
-	private static final String LEFT	= "left";
 	private static final String SOURCE	= "source";
 
 	{
@@ -52,7 +50,6 @@ public class Corrosion extends Buff implements Hero.Doom {
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( DAMAGE, damage );
-		bundle.put( LEFT, left );
 		bundle.put( SOURCE, source);
 	}
 
@@ -60,7 +57,6 @@ public class Corrosion extends Buff implements Hero.Doom {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		damage = bundle.getFloat( DAMAGE );
-		left = bundle.getFloat( LEFT );
 		source = bundle.getClass( SOURCE );
 	}
 
@@ -74,6 +70,11 @@ public class Corrosion extends Buff implements Hero.Doom {
 		this.source = source;
 	}
 	
+	@Override
+	public void set(BuffWithDuration buff, Class source) {
+		set(buff.left, (int) ((Corrosion) buff).damage, source);
+	}
+
 	@Override
 	public int icon() {
 		return BuffIndicator.POISON;
@@ -91,7 +92,7 @@ public class Corrosion extends Buff implements Hero.Doom {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", dispTurns(left), (int)damage);
+		return Messages.get(this, "desc", dispTurns(left), (int)damage) + appendDescForPermanent();
 	}
 
 	@Override
@@ -105,7 +106,7 @@ public class Corrosion extends Buff implements Hero.Doom {
 			}
 			
 			spend( TICK );
-			if ((left -= TICK) <= 0) {
+			if (!permanent && (left -= TICK) <= 0) {
 				detach();
 			}
 		} else {

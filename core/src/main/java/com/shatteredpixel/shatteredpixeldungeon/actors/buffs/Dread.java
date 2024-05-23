@@ -29,9 +29,8 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
-public class Dread extends Buff {
+public class Dread extends BuffWithDuration {
 
-	protected int left = (int)DURATION;
 	public int object = 0;
 
 	public static final float DURATION = 20f;
@@ -39,6 +38,8 @@ public class Dread extends Buff {
 	{
 		type = buffType.NEGATIVE;
 		announced = true;
+
+		left = DURATION;
 	}
 
 	//dread overrides terror
@@ -67,9 +68,8 @@ public class Dread extends Buff {
 			target.destroy();
 			target.sprite.killAndErase();
 			Dungeon.level.mobs.remove(target);
-		} else {
-			left--;
-			if (left <= 0){
+		} else {;
+			if (!permanent && (left -= TICK) <= 0){
 				detach();
 			}
 		}
@@ -78,13 +78,11 @@ public class Dread extends Buff {
 		return true;
 	}
 
-	private static final String LEFT	= "left";
 	private static final String OBJECT    = "object";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle(bundle);
-		bundle.put(LEFT, left);
 		bundle.put(OBJECT, object);
 	}
 
@@ -92,7 +90,6 @@ public class Dread extends Buff {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		object = bundle.getInt( OBJECT );
-		left = bundle.getInt( LEFT );
 	}
 
 	@Override
@@ -106,23 +103,17 @@ public class Dread extends Buff {
 	}
 
 	@Override
-	public String iconTextDisplay() {
-		return Integer.toString(left);
-	}
-
-	@Override
 	public void tintIcon(Image icon) {
 		icon.hardlight(1, 0, 0);
 	}
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", left);
+		return Messages.get(this, "desc", left) + appendDescForPermanent();
 	}
 
 	public void recover() {
-		left -= 5;
-		if (left <= 0){
+		if (!permanent && (left -= 5) <= 0){
 			detach();
 		}
 	}

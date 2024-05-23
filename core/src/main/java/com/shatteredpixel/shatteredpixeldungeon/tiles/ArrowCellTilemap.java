@@ -26,7 +26,7 @@ public class ArrowCellTilemap extends Group {
                 ArrowCell arrowCell = arrowCells.get(pos);
                 if (arrowCell != null
                     && (arrowCell.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing())) {
-                    return imgCodeDiagonalOuterArrows(arrowCell.directionsEnter, arrowCell.visible);
+                    return imgCodeDiagonalOuterArrows(arrowCell.directionsLeaving, arrowCell.visible);
                 }
                 return -1;
             }
@@ -39,7 +39,7 @@ public class ArrowCellTilemap extends Group {
                 ArrowCell arrowCell = arrowCells.get(pos);
                 if (arrowCell != null
                         && (arrowCell.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing())) {
-                    return imgCodeStraightOuterArrows(arrowCell.directionsEnter, arrowCell.visible);
+                    return imgCodeStraightOuterArrows(arrowCell.directionsLeaving, arrowCell.visible);
                 }
                 return -1;
             }
@@ -52,7 +52,7 @@ public class ArrowCellTilemap extends Group {
                 ArrowCell arrowCell = arrowCells.get(pos);
                 if (arrowCell != null
                         && (arrowCell.visible || Dungeon.customDungeon.seeSecrets || CustomDungeon.isEditing())) {
-                    return imgCodeCenter(arrowCell.directionsEnter, arrowCell.visible);
+                    return imgCodeCenter(arrowCell.directionsLeaving, arrowCell.visible);
                 }
                 return -1;
             }

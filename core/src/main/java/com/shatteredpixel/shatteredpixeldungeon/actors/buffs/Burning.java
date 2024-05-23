@@ -48,16 +48,13 @@ import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
-public class Burning extends Buff implements Hero.Doom {
+public class Burning extends BuffWithDuration implements Hero.Doom {
 	
 	private static final float DURATION = 8f;
 	
-	private float left;
-	
 	//for tracking burning of hero items
 	private int burnIncrement = 0;
-	
-	private static final String LEFT	= "left";
+
 	private static final String BURN	= "burnIncrement";
 
 	{
@@ -68,15 +65,19 @@ public class Burning extends Buff implements Hero.Doom {
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
-		bundle.put( LEFT, left );
 		bundle.put( BURN, burnIncrement );
 	}
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle(bundle);
-		left = bundle.getFloat( LEFT );
 		burnIncrement = bundle.getInt( BURN );
+	}
+
+	@Override
+	public void makePermanent(boolean flag) {
+		super.makePermanent(flag);
+		if (!flag) left++;
 	}
 
 	@Override
@@ -94,9 +95,8 @@ public class Burning extends Buff implements Hero.Doom {
 			int damage = Char.combatRoll( 1, 3 + Dungeon.scalingDepth()/4 );
 			Buff.detach( target, Chill.class);
 
-			if (target instanceof Hero && target.buff(TimekeepersHourglass.timeStasis.class) == null) {
-				
-				Hero hero = (Hero)target;
+			Hero hero = HeroSubclassAbilityBuff.targetHero(target);
+			if (target != null && hero.buff(TimekeepersHourglass.timeStasis.class) == null) {
 
 				hero.damage( damage, this );
 				burnIncrement++;
@@ -156,7 +156,8 @@ public class Burning extends Buff implements Hero.Doom {
 		}
 		
 		spend( TICK );
-		left -= TICK;
+		if (!permanent) left -= TICK;
+		else if (left <= 0) left = 1;
 		
 		if (left <= 0 ||
 			(Dungeon.level.water[target.pos] && !target.isFlying())) {
@@ -205,19 +206,9 @@ public class Burning extends Buff implements Hero.Doom {
 	}
 
 	@Override
-	public String iconTextDisplay() {
-		return Integer.toString((int)left);
-	}
-
-	@Override
 	public void fx(boolean on) {
 		if (on) target.sprite.add(CharSprite.State.BURNING);
 		else target.sprite.remove(CharSprite.State.BURNING);
-	}
-
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc", dispTurns(left));
 	}
 
 	@Override

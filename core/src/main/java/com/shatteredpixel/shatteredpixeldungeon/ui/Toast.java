@@ -56,6 +56,7 @@ public class Toast extends Component {
 		if (maxWidth < width) {
 			width = maxWidth;
 			this.text.maxWidth((int) (maxWidth - close.width() - bg.marginHor() - MARGIN_HOR * 2));
+			width = this.text.width() + close.width() + bg.marginHor() + MARGIN_HOR * 2;
 		}
 		height = Math.max( this.text.height(), close.height() ) + bg.marginVer() + MARGIN_VER * 2;
 	}

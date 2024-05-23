@@ -105,6 +105,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         }
     }
 
+    @Override
     public void changeValue(Object oldValue, Object newValue) {
         this.value = (Integer) newValue;
     }

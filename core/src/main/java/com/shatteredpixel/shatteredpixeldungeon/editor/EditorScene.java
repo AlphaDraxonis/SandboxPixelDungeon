@@ -525,7 +525,7 @@ public class EditorScene extends DungeonScene {
         cellSelector.listener = listener;
         cellSelector.enabled = true;
         if (listener.prompt() != null) prompt(listener.prompt());
-        else prompt(listener.promptComp());
+        else if (listener != zonesCellListener) prompt(listener.promptComp());
     }
 
     @Override

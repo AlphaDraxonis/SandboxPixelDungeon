@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BuffWithDuration;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bestiary;
@@ -12,20 +13,15 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Reflection;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Zone implements Bundlable {
 
@@ -69,8 +65,8 @@ public class Zone implements Bundlable {
 
     private ArrayList<? extends Mob> mobsToSpawn = new ArrayList<>();
 
-    public ArrayList<Class<? extends Buff>> heroBuffs = new ArrayList<>();
-    public ArrayList<Class<? extends Buff>> mobBuffs = new ArrayList<>();
+    public HashMap<Class<? extends Buff>, Buff> heroBuffs = new LinkedHashMap<>();
+    public HashMap<Class<? extends Buff>, Buff> mobBuffs = new LinkedHashMap<>();
 
 
     public String getName() {
@@ -92,8 +88,8 @@ public class Zone implements Bundlable {
     public static final String RESPAWN_COOLDOWN = "respawn_cooldown";
     public static final String OWN_MOB_ROTATION_ENABLED = "own_mob_rotation_enabled";
     public static final String MOB_ROTATION = "mob_rotation";
-    public static final String HERO_BUFFS = "hero_buffs";
-    public static final String MOB_BUFFS = "mob_buffs";
+    public static final String HERO_BUFFS = "hero_buffs_new";
+    public static final String MOB_BUFFS = "mob_buffs_new";
     public static final String CELLS = "cells";
 
     @Override
@@ -121,10 +117,15 @@ public class Zone implements Bundlable {
             else music = Level.SPECIAL_MUSIC[0][variant];
         } else if (bundle.contains(MUSIC)) music = bundle.getString(MUSIC);
 
+        if (bundle.contains("hero_buffs"))
+            for (Class c : bundle.getClassArray("hero_buffs")) heroBuffs.put(c, (Buff) Reflection.newInstance(c));
+        if (bundle.contains("mob_buffs"))
+            for (Class c : bundle.getClassArray("mob_buffs")) mobBuffs.put(c, (Buff) Reflection.newInstance(c));
+
         if (bundle.contains(HERO_BUFFS))
-            for (Class c : bundle.getClassArray(HERO_BUFFS)) heroBuffs.add(c);
+            for (Bundlable b : bundle.getCollection(HERO_BUFFS)) heroBuffs.put((Class<? extends Buff>) b.getClass(), (Buff) b);
         if (bundle.contains(MOB_BUFFS))
-            for (Class c : bundle.getClassArray(MOB_BUFFS)) mobBuffs.add(c);
+            for (Bundlable b : bundle.getCollection(MOB_BUFFS)) mobBuffs.put((Class<? extends Buff>) b.getClass(), (Buff) b);
 
         if (respawnCooldown == 0) respawnCooldown = 50;
 
@@ -152,8 +153,8 @@ public class Zone implements Bundlable {
         bundle.put(ZONE_TRANSITION, zoneTransition);
         bundle.put(RESPAWN_COOLDOWN, respawnCooldown);
         bundle.put(OWN_MOB_ROTATION_ENABLED, ownMobRotationEnabled);
-        bundle.put(HERO_BUFFS, heroBuffs.toArray(EditorUtilies.EMPTY_CLASS_ARRAY));
-        bundle.put(MOB_BUFFS, mobBuffs.toArray(EditorUtilies.EMPTY_CLASS_ARRAY));
+        bundle.put(HERO_BUFFS, heroBuffs.values());
+        bundle.put(MOB_BUFFS, mobBuffs.values());
 
         if (mobRotation != null && mobRotation.distrSlots.isEmpty()) mobRotation = null;
         else bundle.put(MOB_ROTATION, mobRotation);
@@ -247,14 +248,17 @@ public class Zone implements Bundlable {
 
     public void affectBuffs(Char ch) {
 
-        List<Class<? extends Buff>> buffs = ch instanceof Hero ? heroBuffs : mobBuffs;
+        Collection<Buff> buffs = ch instanceof Hero ? heroBuffs.values() : mobBuffs.values();
 
-        for (Class<? extends Buff> buffClass : buffs) {
+        for (Buff buff : buffs) {
             Buff b;
-            if (FlavourBuff.class.isAssignableFrom(buffClass)) {
-                b = Buff.affect(ch, (Class<? extends FlavourBuff>) buffClass, 0);
+            if (buff instanceof FlavourBuff) {
+                b = Buff.affect(ch, (Class<? extends FlavourBuff>) buff.getClass(), 0);
             } else {
-                b = Buff.affect(ch, buffClass);
+                b = Buff.affect(ch, buff.getClass());
+            }
+            if (b instanceof BuffWithDuration) {
+                ((BuffWithDuration) b).set((BuffWithDuration) buff, getClass());
             }
             if (!b.permanent) {
                 b.makePermanent(b.zoneBuff = true);
@@ -272,8 +276,8 @@ public class Zone implements Bundlable {
 
     public boolean appliesBuff(Class<? extends Buff> buff, Char target) {
         if (target.isImmune(buff)) return false;
-        if (target instanceof Hero) return heroBuffs.contains(buff);
-        if (target instanceof Mob) return mobBuffs.contains(buff);
+        if (target instanceof Hero) return heroBuffs.containsKey(buff);
+        if (target instanceof Mob) return mobBuffs.containsKey(buff);
         return false;
     }
 

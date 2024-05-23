@@ -25,15 +25,14 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
-import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 
-public class ToxicImbue extends Buff {
+public class ToxicImbue extends BuffWithDuration {
 	
 	{
 		type = buffType.POSITIVE;
@@ -42,30 +41,13 @@ public class ToxicImbue extends Buff {
 
 	private static final float DURATION	= 50f;
 
-	protected float left;
-
-	private static final String LEFT	= "left";
-
-	@Override
-	public void storeInBundle( Bundle bundle ) {
-		super.storeInBundle( bundle );
-		bundle.put( LEFT, left );
-
-	}
-
-	@Override
-	public void restoreFromBundle( Bundle bundle ) {
-		super.restoreFromBundle( bundle );
-		left = bundle.getFloat( LEFT );
-	}
-
 	public void set( float duration ) {
 		this.left = duration;
 	}
 
 	@Override
 	public boolean act() {
-		if (left > 0) {
+		if (left > 0 || permanent) {
 			//spreads 54 units of gas total
 			int centerVolume = 6;
 			for (int i : PathFinder.NEIGHBOURS8) {
@@ -79,8 +61,10 @@ public class ToxicImbue extends Buff {
 		}
 
 		spend(TICK);
-		left -= TICK;
-		if (left <= -5){
+		if (!permanent && (left -= TICK) <= -5){
+			detach();
+		}
+		else if (!target.isActive()) {
 			detach();
 		}
 
@@ -89,7 +73,7 @@ public class ToxicImbue extends Buff {
 
 	@Override
 	public int icon() {
-		return left > 0 ? BuffIndicator.IMBUE : BuffIndicator.NONE;
+		return left > 0 || permanent || CustomDungeon.isEditing() ? BuffIndicator.IMBUE : BuffIndicator.NONE;
 	}
 
 	@Override
@@ -108,16 +92,6 @@ public class ToxicImbue extends Buff {
 
 	public static float defaultDuration() {
 		return DURATION;
-	}
-
-	@Override
-	public String iconTextDisplay() {
-		return Integer.toString((int)left);
-	}
-
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc", dispTurns(left));
 	}
 
 	{

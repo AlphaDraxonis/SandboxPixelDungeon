@@ -211,7 +211,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
             if (buttonBack != null) buttonBack.setPos(x, posY + (title.height() - buttonBack.height()) * 0.5f);
 
-            posY += Math.max(title.height(), buttonBack.height()) + GAP * 3;
+            posY += Math.max(title.height(), buttonBack.height());
 
             body.setSize(width, -1);
 
@@ -238,7 +238,7 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
 
             if (title instanceof RenderedTextBlock) ((RenderedTextBlock) title).maxWidth((int) (width - backW));
 
-            float result = GAP*2 + Math.max(title.height(), backH) + GAP*3;
+            float result = GAP*2 + Math.max(title.height(), backH);
 
             body.setSize(width, -1);
 

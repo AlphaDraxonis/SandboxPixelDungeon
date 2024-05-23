@@ -790,11 +790,11 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
 
                     @Override
-                    protected Buff doAddBuff(Class<? extends Buff> buff) {
-                        Buff b = Buff.affect(mob, buff);
-                        b.permanent = !(b instanceof ChampionEnemy);
+                    protected Buff doAddBuff(Buff buff) {
+                        buff.attachTo(mob);
+                        buff.permanent = !(buff instanceof ChampionEnemy);
                         updateObj();
-                        return b;
+                        return buff;
                     }
 
                     @Override
@@ -1071,11 +1071,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (a.spriteClass != b.spriteClass) return false;
 
-        Set<Class<? extends Buff>> aBuffs = new HashSet<>(4);
-        Set<Class<? extends Buff>> bBuffs = new HashSet<>(4);
-        for (Buff buff : a.buffs()) aBuffs.add(buff.getClass());
-        for (Buff buff : b.buffs()) bBuffs.add(buff.getClass());
-        if (!bBuffs.equals(aBuffs)) return false;//only very simple, does not compare any values, just the types!!
+        if (!EditBuffComp.isBuffListEqual(a.buffs(), b.buffs())) return false;//only very simple, does not compare any values, just the types!!
 
         if (a.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
             if (!a.loot.equals(b.loot)) return false;

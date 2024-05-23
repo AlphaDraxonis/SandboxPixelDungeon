@@ -9,6 +9,12 @@ import com.watabou.utils.PathFinder;
 
 public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
 
+    public enum EnterMode {
+        IF_NO_EXIT,
+        IF_EXIT_ON_OPPOSITE,
+        ALWAYS_ALLOWED
+    }
+
     // Order is important!!!
     public static final int NONE = 0;
     public static final int TOP_LEFT = 1;
@@ -23,8 +29,8 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
 
 
     public int pos;
-//    public int directionsLeave;
-    public int directionsEnter;
+    public int directionsLeaving;
+    public EnterMode enterMode;
     public boolean allowsWaiting = true;
     public boolean visible;
 
@@ -33,26 +39,26 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     }
 
     public ArrowCell(int pos) {
-        this(pos, /*ALL,*/ ALL);
+        this(pos, ALL, EnterMode.ALWAYS_ALLOWED);
     }
 
-    public ArrowCell(int pos, /*int directionsLeave,*/ int directionsEnter) {
+    public ArrowCell(int pos, int directionsLeaving, EnterMode enterMode) {
         this.pos = pos;
-//        this.directionsLeave = directionsLeave;
-        this.directionsEnter = directionsEnter;
+        this.directionsLeaving = directionsLeaving;
+        this.enterMode = enterMode;
     }
 
     private static final String POS = "pos";
-//    private static final String DIRECTIONS_LEAVE = "directions_leave";
-    private static final String DIRECTIONS_ENTER = "directions_enter";
+    private static final String DIRECTIONS_LEAVING = "directions_leaving";
+    private static final String ENTER_MODE = "enter_mode";
     private static final String ALLOWS_WAITING = "allows_waiting";
     private static final String VISIBLE = "visible";
 
     @Override
     public void storeInBundle(Bundle bundle) {
         bundle.put(POS, pos);
-//        bundle.put(DIRECTIONS_LEAVE, directionsLeave);
-        bundle.put(DIRECTIONS_ENTER, directionsEnter);
+        bundle.put(DIRECTIONS_LEAVING, directionsLeaving);
+        bundle.put(ENTER_MODE, enterMode);
         bundle.put(ALLOWS_WAITING, allowsWaiting);
         bundle.put(VISIBLE, visible);
     }
@@ -60,14 +66,14 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     @Override
     public void restoreFromBundle(Bundle bundle) {
         pos = bundle.getInt(POS);
-//        directionsLeave = bundle.getInt(DIRECTIONS_LEAVE);
-        directionsEnter = bundle.getInt(DIRECTIONS_ENTER);
+        directionsLeaving = bundle.getInt(DIRECTIONS_LEAVING);
+        enterMode = bundle.getEnum(ENTER_MODE, EnterMode.class);
         allowsWaiting = bundle.getBoolean(ALLOWS_WAITING);
         visible = bundle.getBoolean(VISIBLE);
     }
 
     public ArrowCell getCopy() {
-        ArrowCell copy = new ArrowCell(pos, /*directionsLeave,*/ directionsEnter);
+        ArrowCell copy = new ArrowCell(pos, directionsLeaving, enterMode);
         copy.visible = visible;
         copy.allowsWaiting = allowsWaiting;
         return copy;
@@ -82,40 +88,23 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     }
 
     public String desc() {
-        String desc = Messages.get(this, "desc");
-//        if (blocks == 0) desc += "\n" + Messages.get(this, "block_none");
-//        else {
-//            for (int i = 0; i < NUM_BLOCK_TYPES; i++) {
-//                int bit = (int) Math.pow(2, i);
-//                if ((blocks & bit) != 0) desc += "\n" + Messages.get(this, "block_" + getBlockKey(bit));
-//            }
-//        }
-        return desc;
+        return Messages.get(this, "desc");
     }
 
-//    public static String getBlockKey(int blockBit) {
-//        switch (blockBit) {
-//            case BLOCK_PLAYER:
-//                return "player";
-//            case BLOCK_MOBS:
-//                return "mobs";
-//            case BLOCK_ALLIES:
-//                return "allies";
-//            case BLOCK_PROJECTILES:
-//                return "projectiles";
-//            case BLOCK_BLOBS:
-//                return "blobs";
-//        }
-//        return "none";
-//    }
-
     public boolean allowsDirectionLeaving(int pathfinderNeighboursValue) {
-//        return allowsDirection(pathfinderNeighboursValue, directionsLeave);
-        return allowsDirection(pathfinderNeighboursValue, directionsEnter);
+        return allowsDirection(pathfinderNeighboursValue, directionsLeaving);
     }
 
     public boolean allowsDirectionEnter(int pathfinderNeighboursValue) {
-        return allowsDirection(-pathfinderNeighboursValue, directionsEnter);
+        switch (enterMode) {
+			case IF_NO_EXIT:
+                return !allowsDirectionLeaving(pathfinderNeighboursValue);
+			case IF_EXIT_ON_OPPOSITE:
+                return allowsDirection(-pathfinderNeighboursValue, directionsLeaving);
+			case ALWAYS_ALLOWED:
+                return true;
+		}
+        return false;
     }
 
     public static boolean allowsDirection(int pathfinderNeighboursValue, int directionsAllowed) {

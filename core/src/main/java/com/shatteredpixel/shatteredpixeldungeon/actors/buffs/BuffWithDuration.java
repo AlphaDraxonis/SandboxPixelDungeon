@@ -5,6 +5,9 @@
  * Shattered Pixel Dungeon
  * Copyright (C) 2014-2024 Evan Debenham
  *
+ * Sandbox Pixel Dungeon
+ * Copyright (C) 2023-2024 AlphaDraxonis
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,51 +24,42 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
-import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 
-public class ScrollEmpower extends BuffWithDuration {
+public class BuffWithDuration extends Buff {
 
-	{
-		type = buffType.POSITIVE;
+	public float left;
+
+	public float left(){
+		return left;
 	}
 
-	public void reset(int left){
-		this.left = left;
-		Item.updateQuickslot();
+	public void set(BuffWithDuration buff, Class source) {
+		this.left = Math.max(buff.left, left);
 	}
 
-	public void use(){;
-		if (!permanent && (left -= TICK) <= 0){
-			detach();
-		}
+	private static final String LEFT = "left";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put( LEFT, left );
 	}
 
 	@Override
-	public void detach() {
-		super.detach();
-		Item.updateQuickslot();
-	}
-
-	@Override
-	public int icon() {
-		return BuffIndicator.UPGRADE;
-	}
-
-	@Override
-	public void tintIcon(Image icon) {
-		icon.hardlight(0.84f, 0.79f, 0.65f); //scroll colors
-	}
-
-	@Override
-	public float iconFadePercent() {
-		return Math.max(0, (3f - left) / 3f);
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		left = bundle.getFloat(LEFT);
 	}
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", 2, left) + appendDescForPermanent();
+		return Messages.get(this, "desc", dispTurns(left)) + appendDescForPermanent();
+	}
+
+	@Override
+	public String iconTextDisplay() {
+		return Integer.toString((int)left);
 	}
 }

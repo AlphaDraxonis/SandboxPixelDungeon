@@ -354,7 +354,7 @@ public class QuickSlotButton extends Button {
 				return;
 			}
 		}
-		set(0, item);
+		set(EToolbar.getSelectedSlot(), item);
 	}
 
 	public static void set(int slotNum, Item item){

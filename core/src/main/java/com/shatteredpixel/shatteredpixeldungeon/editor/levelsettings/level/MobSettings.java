@@ -241,13 +241,13 @@ public class MobSettings extends Component implements LevelTab.BackPressImplemen
     @Override
     protected void layout() {
         if (mobSpawning != null && mobSpawning.isVisible()) {
-            mobSpawning.setRect(x, y, width, -1);
+            mobSpawning.setRect(x, y, width, 0);
             height = mobSpawning.height();
         } else if (mobRotation != null && mobRotation.isVisible()) {
-            mobRotation.setRect(x, y, width, -1);
+            mobRotation.setRect(x, y, width, 0);
             height = mobRotation.height();
         } else if (mobOverview != null && mobOverview.isVisible()) {
-            mobOverview.setRect(x, y, width, -1);
+            mobOverview.setRect(x, y, width, 0);
             height = mobOverview.height();
         }
     }

@@ -1,7 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
@@ -9,15 +12,113 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoBuff;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
+import java.util.LinkedHashSet;
+
 public class EditBuffComp extends DefaultEditComp<Buff> {
 
-    private final Component[] comps;
 
-    private RedButton removeBuff;
-    private Spinner changeDuration;
+    protected StyledCheckBox permanent;
+
+    protected RedButton removeBuff;
+    protected StyledSpinner duration, level;
+
+    private final Component[] comps, linearComps;
 
     public EditBuffComp(Buff buff, DefaultEditComp<?> editComp) {
         super(buff);
+
+        if (!buff.zoneBuff){
+
+            if (!(buff instanceof ChampionEnemy)) {
+                permanent = new StyledCheckBox(Messages.get(this, "permanent"));
+                permanent.checked(buff.permanent);
+                permanent.addChangeListener(v -> {
+                    buff.permanent = v;
+                    updateObj();
+                });
+                add(permanent);
+            }
+
+            if (buff instanceof Burning || buff instanceof Corrosion || buff instanceof ToxicImbue) {
+                duration = new StyledSpinner(new SpinnerIntegerModel(0, 1000, (int) ((BuffWithDuration) buff).left) {
+                    @Override
+                    public float getInputFieldWidth(float height) {
+                        return Spinner.FILL;
+                    }
+                }, Messages.get(this, "duration")) {
+                    @Override
+                    protected void afterClick() {
+                        super.afterClick();
+                        updateObj();
+                    }
+                };
+                duration.addChangeListener(() -> {
+                    if (((int) (((BuffWithDuration) buff).left = (int) duration.getValue())) % 20 == 0)
+                        updateObj();//pretty expensive call for longer texts, so it is better to call this less
+                });
+                add(duration);
+            } else if (buff instanceof FlavourBuff) {
+                duration = new StyledSpinner(new SpinnerIntegerModel(1, 1000, (int) buff.visualcooldown()) {
+                    @Override
+                    public float getInputFieldWidth(float height) {
+                        return Spinner.FILL;
+                    }
+                }, Messages.get(this, "duration")) {
+                    @Override
+                    protected void afterClick() {
+                        super.afterClick();
+                        updateObj();
+                    }
+                };
+                duration.addChangeListener(() -> {
+                    int val = (int) duration.getValue();
+                    buff.setDurationForFlavourBuff(val);
+                    if (val % 20 == 0)
+                        updateObj();//pretty expensive call for longer texts, so it is better to call this less
+                });
+                add(duration);
+            }
+
+        }
+
+        if (buff instanceof BuffWithDuration
+                && !(buff instanceof Burning || buff instanceof Corrosion || buff instanceof ToxicImbue)) {
+            level = new StyledSpinner(new SpinnerIntegerModel(0, 1000, (int) ((BuffWithDuration) buff).left) {
+                @Override
+                public float getInputFieldWidth(float height) {
+                    return Spinner.FILL;
+                }
+            }, Messages.get(this, "level")) {
+                @Override
+                protected void afterClick() {
+                    super.afterClick();
+                    updateObj();
+                }
+            };
+            level.addChangeListener(() -> {
+                if (((int) (((BuffWithDuration) buff).left = (int) level.getValue())) % 20 == 0)
+                    updateObj();//pretty expensive call for longer texts, so it is better to call this less
+            });
+            add(level);
+        } else if (buff instanceof Corrosion) {
+            level = new StyledSpinner(new SpinnerIntegerModel(0, 100, (int) ((Corrosion) buff).damage) {
+                @Override
+                public float getInputFieldWidth(float height) {
+                    return Spinner.FILL;
+                }
+            }, Messages.get(this, "level")) {
+                @Override
+                protected void afterClick() {
+                    super.afterClick();
+                    updateObj();
+                }
+            };
+            level.addChangeListener(() -> {
+                if (((int) (((Corrosion) buff).damage = (int) level.getValue())) % 20 == 0)
+                    updateObj();//pretty expensive call for longer texts, so it is better to call this less
+            });
+            add(level);
+        }
 
         if (buff.target != null) {
             removeBuff = new RedButton(Messages.get(this, "remove")) {
@@ -55,21 +156,15 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
 //        } else changeDuration = null;
 
 
-        comps = new Component[]{changeDuration, removeBuff};
-    }
-
-    private void onSpinnerValueChange(boolean updateTextAlways) {
-        int duration = changeDuration.getValue() == null ? 9999 : (int) changeDuration.getValue();
-        obj.setDurationForBuff(duration);
-        String updatedText = obj.desc();
-        if (updateTextAlways || updatedText.length() < 500 || duration % 10 == 0)
-            updateObj();//pretty expensive call for longer texts so it is better to call this less
+        comps = new Component[]{permanent, duration, level};
+        linearComps = new Component[]{removeBuff};
     }
 
     @Override
     protected void layout() {
         super.layout();
-        layoutCompsLinear(comps);
+        layoutCompsInRectangles(comps);
+        layoutCompsLinear(linearComps);
     }
 
     @Override
@@ -91,4 +186,36 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
     public Image getIcon() {
         return null;
     }
+
+    public static boolean areEqual(Buff a, Buff b) {
+        if (a == b) return true;
+        if (a == null || b == null) return false;
+        if (a.getClass() != b.getClass()) return false;
+
+        if (a.permanent != b.permanent) return false;
+
+        if (a instanceof BuffWithDuration) {
+            if (((BuffWithDuration) a).left != ((BuffWithDuration) b).left) return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isBuffListEqual(LinkedHashSet<Buff> a, LinkedHashSet<Buff> b) {
+        int sizeA = a == null ? 0 : a.size();
+        int sizeB = b == null ? 0 : b.size();
+        if (sizeA != sizeB) return false;
+        if (a == null || b == null) return true;
+        Buff[] bBuffs = new Buff[b.size()];
+        int i = 0;
+        for (Buff buff : b) {
+            bBuffs[i++] = buff;
+        }
+        int index = 0;
+        for (Buff buff : a) {
+            if (!EditBuffComp.areEqual(buff, bBuffs[index++])) return false;
+        }
+        return true;
+    }
+
 }
