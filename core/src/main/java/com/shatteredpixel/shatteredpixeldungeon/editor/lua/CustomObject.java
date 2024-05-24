@@ -46,13 +46,8 @@ import java.util.Map;
 
 public class CustomObject implements Bundlable {
 
-	//TODO find/restore in toolbar!
-
 	public LuaClass luaClass;
 	public String name;
-
-	//TODO tzz we still need to configure synchronization! like all mobs should use the same description if not overriding
-	// (maybe just add a checkbox in EdiMobComp 'inherit stats' and if checked, it just copies all changable stats to the LuaClass?)
 
 	public String pathToScript;
 
@@ -168,7 +163,7 @@ public class CustomObject implements Bundlable {
 
 	}
 
-	public static void deleteCustomObject(int identifier) {//TODO tzz what about toolbar?
+	public static void deleteCustomObject(int identifier) {//TODO tzz tzz what if used in mob container e.g. yog dzwea fist, mob rotation...
 		if (customObjects.containsKey(identifier)) {
 
 			CustomObject toDelete = customObjects.get(identifier);

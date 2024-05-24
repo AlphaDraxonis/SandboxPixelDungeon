@@ -87,7 +87,6 @@ public enum Rooms implements EditorInvCategory<Room> {
                 CircleBasinRoom.class,
                 WaterBridgeRoom.class,
 
-                //TODO add descriptions tzzz
                 DiamondGooRoom.class,
                 WalledGooRoom.class,
                 ThinPillarsGooRoom.class,

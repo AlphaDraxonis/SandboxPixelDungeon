@@ -158,7 +158,7 @@ public class CustomParticle extends Blob {
                 if (type == WATER_SPLASH_PARTICLE) return new TileSprite(Assets.Environment.WATER_SEWERS, Terrain.WATER);
                 if (type == FLAMES_PARTICLE) return BlobItem.createIcon(PermaGas.PFire.class);
                 if (type == ETERNAL_FLAMES_PARTICLE) return BlobItem.createIcon(MagicalFireRoom.EternalFire.class);
-                //tzz flare and halo
+                //TODO flare and halo
                 return new ItemSprite();
             }
             Speck icon = new Speck();

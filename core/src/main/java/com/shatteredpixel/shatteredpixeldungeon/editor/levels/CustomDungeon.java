@@ -208,7 +208,7 @@ public class CustomDungeon implements Bundlable {
             code = (scrollRuneLabels == null || !scrollRuneLabels.containsKey(c)) ?
                     ItemSpriteSheet.SCROLL_HOLDER :
                     Scroll.runes.get(scrollRuneLabels.get(c)) + (item instanceof ExoticScroll ? 16 : 0);
-        } else if (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew /*|| item instanceof AlchemicalCatalyst tzz*/)) {
+        } else if (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew)) {
             if (item instanceof ExoticPotion) c = ExoticPotion.exoToReg.get(c);
             code = (potionColorLabels == null || !potionColorLabels.containsKey(c)) ?
                     ItemSpriteSheet.POTION_HOLDER :

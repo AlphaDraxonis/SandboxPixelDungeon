@@ -5,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndScrollOfDebug;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndSetValue;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndStoreReference;
@@ -170,7 +171,8 @@ public class FieldComp extends ObjInspectorTabComp {
 	protected void setToNull() {
 		if (WndSetValue.isPrimitiveLike(field.getType())) return;
 
-		DungeonScene.show(new WndOptions(Icons.WARNING.get(), "Set to null tzz?", "Set to null can result in a game crash!", "Yes", "No") {
+		DungeonScene.show(new WndOptions(Icons.WARNING.get(), Messages.get(this, "set_to_null_title"), Messages.get(this, "set_to_null_body"),
+				Messages.get(HeroSelectScene.class, "daily_yes"), Messages.get(HeroSelectScene.class, "daily_no")) {
 			@Override
 			protected void onSelect(int index) {
 				if (index == 0) {

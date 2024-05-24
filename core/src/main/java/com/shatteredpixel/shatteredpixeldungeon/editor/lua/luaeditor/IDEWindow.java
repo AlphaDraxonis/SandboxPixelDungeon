@@ -458,7 +458,7 @@ public class IDEWindow extends Component {
 				@Override
 				protected void onPointerUp() {
 					super.onPointerUp();
-					PointerEvent.clearKeyboardThisPress = false;//tzz test if this is required everywhere
+					PointerEvent.clearKeyboardThisPress = false;
 				}
 
 				@Override

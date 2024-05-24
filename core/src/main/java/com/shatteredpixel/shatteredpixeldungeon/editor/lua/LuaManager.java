@@ -25,6 +25,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.noosa.Game;
@@ -52,9 +53,7 @@ public class LuaManager {
 	}
 
 	private static void showScriptRunningWarning(String methodName) {
-		DungeonScene.show( new WndError("tzz A script tried to call the method " + methodName + "(), " +
-				"but the access couldn't be granted due to security reasons (the effects would go beyond the current game)." +
-				"\n\n_The fact that a script even tried this is alarming and you should definitely be careful!_") );
+		DungeonScene.show( new WndError(Messages.get(LuaManager.class, "inaccessible_method_called", methodName)) );
 	}
 
 	public static boolean checkAccess(String methodName) {

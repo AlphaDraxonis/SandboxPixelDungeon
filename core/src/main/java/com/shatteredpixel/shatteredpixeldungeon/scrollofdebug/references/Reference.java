@@ -60,7 +60,7 @@ public abstract class Reference {
         if (img != null) return img;
 
         if (Collection.class.isAssignableFrom(getType())) {
-            //TODO tzz
+            //TODO
         }
 
         if (type == int.class || type == Integer.class) {
@@ -68,7 +68,7 @@ public abstract class Reference {
                 case "pos":
                 case "cell":
                 case "target":
-                case "position": new ItemSprite();//return Icons.POSITION.get();//TODO tzz
+                case "position": new ItemSprite();//return Icons.POSITION.get();//TODO
                 case "gold": return new ItemSprite(ItemSpriteSheet.GOLD);
                 case "energy": return new ItemSprite(ItemSpriteSheet.ENERGY);
                 case "depth": return Icons.DEPTH.get();

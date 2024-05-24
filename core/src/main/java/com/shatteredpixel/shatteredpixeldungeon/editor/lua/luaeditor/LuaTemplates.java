@@ -40,7 +40,7 @@ public class LuaTemplates {
 
 	static {
 		KILL_HERO_ON_DIE = new LuaScript(Mob.class, "Kills the hero when it dies", "");
-		KILL_HERO_ON_DIE.code = "vars = {} static = {} function die(this, vars, super, cause) hero:die(this); super:call(cause); end" +
+		KILL_HERO_ON_DIE.code = "vars = {} static = {} function die(this, vars, super, cause) hero:die(this);\nsuper:call(cause); end" +
 				"\n\nreturn {vars = vars; static = static; die = die}";
 
 		TEMPLATES = new LuaScript[][]{{KILL_HERO_ON_DIE}};
