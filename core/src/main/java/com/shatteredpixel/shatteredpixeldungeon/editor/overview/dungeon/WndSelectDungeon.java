@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon;
 
 import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -10,49 +11,107 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.DungeonToJsonConverter;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.ExportDungeonWrapper;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
+import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.TextInput;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Consumer;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.FileUtils;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.DateFormat;
+import java.util.*;
 
 import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon.DEFAULT_DUNGEON;
 
 public class WndSelectDungeon extends Window {
 
+    private enum SortMode {
+        ALPABETICALLY,
+        LAST_MODIFIED;
+
+        public SortMode nextMode() {
+            switch (this) {
+				case ALPABETICALLY: return LAST_MODIFIED;
+				case LAST_MODIFIED: return ALPABETICALLY;
+			}
+            return LAST_MODIFIED;
+        }
+    }
 
     protected ScrollingListPane listPane;
     protected RedButton createNewDungeonBtn, openFileExplorer;
+    protected IconButton sort;
+
+    private SortMode sortMode = SortMode.LAST_MODIFIED;
 
     private List<CustomDungeonSaves.Info> allInfos;
+    private CustomDungeonSaves.Info featuredInfo;
     private Set<String> dungeonNames;
 
     public WndSelectDungeon(List<CustomDungeonSaves.Info> allInfos, boolean showAddButton) {
+        this(allInfos, showAddButton, null);
+    }
+
+    public WndSelectDungeon(List<CustomDungeonSaves.Info> allInfos, boolean showAddButton, CustomDungeonSaves.Info featuredInfo) {
         this.allInfos = allInfos;
+        this.featuredInfo = featuredInfo;
 
         resize(Math.min(WndTitledMessage.WIDTH_MAX, (int) (PixelScene.uiCamera.width * 0.9)), (int) (PixelScene.uiCamera.height * 0.8f));
 
-        listPane = new ScrollingListPane();
+        listPane = new ScrollingListPane() {
+            @Override
+            protected void layout() {
+                layout(true);
+
+                content.setSize(width, 0);
+
+                Component[] comps = getItems();
+                for (int i = 0; i < comps.length; i++) {
+                    if (comps[i] instanceof PlayAgain) {
+                        content.setSize(width, EditorUtilies.layoutCompsLinear(2, content, comps[i]) + 2);
+                        comps[i] = null;
+                    }
+                }
+                content.setSize(width, EditorUtilies.layoutStyledCompsInRectangles(2, width, content, comps));
+            }
+        };
         add(listPane);
 
         dungeonNames = new HashSet<>();
         for (CustomDungeonSaves.Info info : allInfos) dungeonNames.add(info.name);
+
+        if (dungeonNames.size() > 3) {
+            sort = new IconButton(Icons.SORT.get()) {
+                @Override
+                protected void onClick() {
+                    sortMode = sortMode.nextMode();
+                    updateList();
+                }
+
+                @Override
+                protected void layout() {
+                    super.layout();
+                    hotArea.x--;
+                    hotArea.y--;
+                    hotArea.width += 2;
+                    hotArea.height += 2;
+                }
+            };
+            add(sort);
+            sort.setRect(width - 1 - sort.icon().width(), 1, sort.icon().width(), sort.icon().height());
+        }
 
         if (showAddButton) {
             createNewDungeonBtn = new RedButton(Messages.get(WndSelectDungeon.class, "new")) {
@@ -105,18 +164,30 @@ public class WndSelectDungeon extends Window {
             }
         }
 
-        listPane.setSize(width, createNewDungeonBtn == null ? height : createNewDungeonBtn.top());
+        listPane.setSize(width, createNewDungeonBtn == null ? height : createNewDungeonBtn.top() - 1);
 
         updateList();
     }
 
     private void updateList() {
         listPane.clear();
+        Collections.sort(allInfos, (o1, o2) -> {
+			switch (sortMode) {
+				case ALPABETICALLY: return o1.name.compareTo(o2.name);
+				case LAST_MODIFIED: return Long.compare(o2.lastModified, o1.lastModified);
+			}
+			return 0;
+		});
+        if (featuredInfo != null) {
+            listPane.addItemNoLayouting(new PlayAgain(featuredInfo));
+        }
         for (CustomDungeonSaves.Info info : allInfos) {
             if (createNewDungeonBtn != null || info.numLevels > 0)
-                listPane.addItem(new ListItem(info));
+                listPane.addItemNoLayouting(new ListItem(info));
         }
+        listPane.nowLayout();
         listPane.scrollToCurrentView();
+        if (sort != null) sort.givePointerPriority();
     }
 
     protected void select(String customDungeonName) {
@@ -125,44 +196,120 @@ public class WndSelectDungeon extends Window {
     }
 
 
-    private class ListItem extends ScrollingListPane.ListItem {
+    private class ListItem extends StyledButton {
 
         private final CustomDungeonSaves.Info info;
 
         protected RenderedTextBlock folderName;
 
+        protected RenderedTextBlock depthText;
+        protected Image depthIcon;
+
+        protected RenderedTextBlock lastModified;
+
         public ListItem(CustomDungeonSaves.Info info) {
-            super(Icons.get(Icons.STAIRS), info.name);
+            super(Chrome.Type.GREY_BUTTON_TR, info.name, 9);
+
+            depthIcon = Icons.get(Level.Feeling.NONE);
+            depthIcon.scale.set(1.2f);
+            add(depthIcon);
+            depthText = PixelScene.renderTextBlock(Integer.toString(info.numLevels), 7);
+            add(depthText);
+
+            if (info.lastModified > 0) {
+                long timeDiff = System.currentTimeMillis() - info.lastModified;
+                String t;
+                if (timeDiff < 86_400_000L) {
+                    if (timeDiff < 0) t = null;
+                    else {
+                        t = EditorUtilies.convertTimeDifferenceToString(timeDiff);
+                    }
+                } else {
+                    t = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault()).format(new Date(info.lastModified));
+                }
+                if (t != null) {
+                    lastModified = PixelScene.renderTextBlock(t, 6);
+                    lastModified.align(RenderedTextBlock.RIGHT_ALIGN);
+                    add(lastModified);
+                }
+            }
+
+            text.setHighlighting(false);
+            text.hardlight(Window.TITLE_COLOR);
+            text.align(RenderedTextBlock.CENTER_ALIGN);
+
             for (String n : dungeonNames) {
                 if (info.name != n && info.name.trim().equals(n.trim())) {
-                    folderName = PixelScene.renderTextBlock("(" + info.name + ")", 5);
+                    folderName = PixelScene.renderTextBlock(Messages.get(WndSelectDungeon.class, "folder_name", info.name), 5);
+                    folderName.align(RenderedTextBlock.CENTER_ALIGN);
+                    folderName.setHighlighting(false);
                     add(folderName);
                     break;
                 }
             }
+
             this.info = info;
         }
 
         @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
-            label.setHighlighting(false);
-        }
-
-        @Override
         protected void layout() {
-            super.layout();
+
+            float neededHeight = bg.marginVer() + 4;
+
+            float componentWidth = 0;
+
+            if (icon != null) componentWidth += icon.width() + 2;
+
+            text.maxWidth( (int)(width - componentWidth - bg.marginHor() - 2) );
+            neededHeight += text.height();
+
             if (folderName != null) {
-                label.setPos(label.left(), label.top() - 1);
-                folderName.setPos(label.left(), label.bottom() + 2);
+                folderName.maxWidth(text.maxWidth());
+                neededHeight += folderName.height() + 2;
             }
+
+            if (depthIcon != null) {
+                neededHeight += 3 + depthIcon.height();
+            }
+
+            float excessHeight = height - neededHeight;
+            if (excessHeight < 0) {
+                height = neededHeight;
+                excessHeight = 0;
+            }
+
+            super.layout();
+
+            depthIcon.x = x + 2;
+            depthIcon.y = y + 2;
+            depthText.setPos(depthIcon.x + depthIcon.width(), depthIcon.y + (depthIcon.height() - depthText.height()) * 0.5f);
+            PixelScene.align(depthIcon);
+            PixelScene.align(depthText);
+
+            text.setPos(
+                    x + (width() + componentWidth + text.width() + 2)/2f - text.width() - 1,
+                    depthIcon.y + depthIcon.height() + excessHeight/2
+            );
+
+            if (folderName != null) {
+                folderName.setPos(
+                        x + (width() + componentWidth + folderName.width() + 2)/2f - folderName.width() - 1,
+                        text.bottom() + 3
+                );
+            }
+
+            if (lastModified != null) {
+                lastModified.setPos(
+                        x + width - bg.marginHor()/2f - lastModified.width(),
+                        y + height - bg.marginVer()/2f - lastModified.height()
+                );
+            }
+
         }
 
         @Override
         protected boolean onLongClick() {
-            Window w = new WndInfoDungeon(info);
-            if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-            else Game.scene().addToFront(w);
+            EditorScene.show(new WndInfoDungeon(info));
             return true;
         }
 
@@ -251,8 +398,7 @@ public class WndSelectDungeon extends Window {
                                 }
                             }
                         };
-                        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                        else Game.scene().addToFront(w);
+                        EditorScene.show(w);
                     }
                 };
                 exportJson.enable(info.numLevels > 0);
@@ -428,6 +574,42 @@ public class WndSelectDungeon extends Window {
 
         }
 
+    }
+
+    private class PlayAgain extends Component {
+
+        protected ListItem listItem;
+        protected RenderedTextBlock playAgain;
+        protected ColorBlock separator;
+
+        public PlayAgain(CustomDungeonSaves.Info info) {
+            listItem = new ListItem(info);
+            add(listItem);
+
+            playAgain = PixelScene.renderTextBlock(Messages.get(this, "label"), 10);
+            playAgain.align(RenderedTextBlock.RIGHT_ALIGN);
+            add(playAgain);
+
+            separator = new ColorBlock(1, 1, 0xFF222222);
+            add(separator);
+        }
+
+        @Override
+        protected void layout() {
+
+            float widthListItem = (width-2) / (PixelScene.landscape() ? 3 : 2);
+
+            playAgain.maxWidth((int) (width - widthListItem - width/4));
+
+            listItem.setRect(x + 0.9f*width - widthListItem, y + 10, widthListItem, Math.max(40, playAgain.height()));
+            height = listItem.height() + 20;
+
+            playAgain.setPos(listItem.left() - playAgain.width() - 0.05f*width, y + (height - playAgain.height()) * 0.5f);
+
+            separator.x = x;
+            separator.y = height - 2 + y;
+            separator.size(width, 1);
+        }
     }
 
     public static void openDungeon(String name) {

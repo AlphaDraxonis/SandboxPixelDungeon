@@ -55,6 +55,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -772,7 +773,7 @@ public class CustomDungeon implements Bundlable {
     }
 
     public CustomDungeonSaves.Info createInfo() {
-        return new CustomDungeonSaves.Info(getName(), 1, getNumFloors(), 0/*hashCode()*/, downloaded);
+        return new CustomDungeonSaves.Info(getName(), Game.versionCode, getNumFloors(), 0/*hashCode()*/, downloaded);
     }
 
     void addRatKingLevel(String name) {

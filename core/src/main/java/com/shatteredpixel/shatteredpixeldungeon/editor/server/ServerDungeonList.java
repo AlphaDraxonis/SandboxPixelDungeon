@@ -171,8 +171,10 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		} else {
 			if (dungeons.length == 0) {
 				msgWaitingForData.setVisible(false);
-				layout();
-				sp.scrollTo(0, 0);
+				if (sp.camera() != null) {
+					layout();
+					sp.scrollTo(0, 0);
+				}
 			}
 			else initPage(page);
 		}
@@ -184,6 +186,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		ServerCommunication.dungeonList(new ServerCommunication.OnPreviewReceive() {
 			@Override
 			protected void onSuccessful(DungeonPreview[] previews) {
+				pagesLoading.remove(page);
 				if (dungeons.length <= page) {
 					if (dungeons.length == 0) {
 						msgWaitingForData.setVisible(false);
@@ -202,7 +205,6 @@ public class ServerDungeonList extends MultiWindowTabComp {
 					if (page + 1 < dungeons.length && dungeons[page + 1] == null && !pagesLoading.contains(page+1)) loadPageFromServer(page+1, true);
 					else if (page > 0 && dungeons[page - 1] != null  && !pagesLoading.contains(page-1)) loadPageFromServer(page-1, true);
 				}
-				pagesLoading.remove(page);
 			}
 		}, page);
 	}

@@ -21,15 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.DM300Sprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.FungalSentrySprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollGuardSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GooSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.KingSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.TenguSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.YogSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
@@ -125,15 +117,11 @@ public abstract class LevelListPane extends ScrollingListPane {
             super(Chrome.Type.GREY_BUTTON_TR, "");
             this.levelScheme = levelScheme;
             text.setHighlighting(false);
-            updateLevel();
-        }
-
-        @Override
-        protected void createChildren(Object... params) {
-            super.createChildren(params);
 
             depthText = PixelScene.renderTextBlock(textSize());
             add(depthText);
+
+            updateLevel();
         }
 
         public LevelSchemeLike getLevelScheme() {

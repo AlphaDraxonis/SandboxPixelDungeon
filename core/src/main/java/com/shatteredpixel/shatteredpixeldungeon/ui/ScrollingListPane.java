@@ -86,8 +86,16 @@ public class ScrollingListPane extends ScrollPane {
     }
 
     public void addItem(Component item) {
+        addItemNoLayouting(item);
+        nowLayout();
+    }
+
+    public void addItemNoLayouting(Component item) {
         content.add(item);
         items.add(item);
+    }
+
+    public void nowLayout() {
         layout();
         givePointerPriority();
     }

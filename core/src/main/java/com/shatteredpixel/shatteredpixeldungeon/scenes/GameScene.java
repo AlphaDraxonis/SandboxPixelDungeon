@@ -1112,7 +1112,7 @@ public class GameScene extends DungeonScene {
 					} catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
 						SandboxPixelDungeon.reportException(e);
 					}
-				} else StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass);
+				} else StartScene.showWndSelectDungeon(GamesInProgress.firstEmpty(), Dungeon.hero.heroClass, Dungeon.customDungeon.getName());
 			}
 
 			@Override

@@ -81,9 +81,8 @@ public class LevelTab extends MultiWindowTabComp {
             public float getInputFieldWidth(float height) {
                 return Spinner.FILL;
             }
-        }, Messages.get(this, "hunger_speed"));
+        }, Messages.get(this, "hunger_speed"), 8, new ItemSprite(ItemSpriteSheet.RATION));
         hungerSpeed.addChangeListener(() -> level.levelScheme.hungerSpeed = ((SpinnerFloatModel) hungerSpeed.getModel()).getAsFloat());
-        hungerSpeed.icon(new ItemSprite(ItemSpriteSheet.RATION));
         content.add(hungerSpeed);
 
         naturalRegen = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "regeneration")) {

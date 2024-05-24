@@ -310,8 +310,11 @@ public class CustomDungeonSaves {
                     }
                 }
                 FileHandle file = FileUtils.getFileHandleWithDefaultPath(FileUtils.getFileTypeForCustomDungeons(), DUNGEON_FOLDER + path + "/" + DUNGEON_INFO);
-                if (file.exists())
-                    result.add((Info) FileUtils.bundleFromStream(file.read()).get(INFO));
+                if (file.exists()) {
+                    Info info = (Info) FileUtils.bundleFromStream(file.read()).get(INFO);
+                    info.lastModified = file.lastModified();
+                    result.add(info);
+                }
             }
             Collections.sort(result);
             return result;
@@ -511,6 +514,7 @@ public class CustomDungeonSaves {
 
         public String name;
         public int version;
+        public long lastModified;
 
         public int numLevels;
         public boolean downloaded;
@@ -526,6 +530,8 @@ public class CustomDungeonSaves {
             this.numLevels = numLevels;
             this.hashcode = hashcode;
             this.downloaded = downloaded;
+
+            this.lastModified = System.currentTimeMillis();
         }
 
         @Override

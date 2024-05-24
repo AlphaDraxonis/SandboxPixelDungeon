@@ -351,7 +351,7 @@ public final class EditorUtilies {
         //TODO take logic from heroselectscene to center remaining
 
         for (Component c : comps) {
-            if (c != null && c.visible) c.setSize(widthOnePart, -1);
+            if (c != null && c.visible) c.setSize(widthOnePart, 0);
         }
         float[] rowHeights = new float[comps.length];
         int row = 0;
