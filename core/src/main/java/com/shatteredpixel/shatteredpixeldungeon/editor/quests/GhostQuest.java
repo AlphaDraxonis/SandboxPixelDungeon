@@ -2,9 +2,9 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -20,6 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -39,7 +40,12 @@ public class GhostQuest extends Quest {
     public Weapon.Enchantment enchant;
     public Armor.Glyph glyph;
 
-    public GhostQuest() {
+
+    @Override
+    public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+        return super.doOnAllGameObjects(whatToDo)
+                | doOnSingleObject(weapon, whatToDo, newValue -> weapon = newValue)
+                | doOnSingleObject(armor, whatToDo, newValue -> armor = newValue);
     }
 
     @Override
@@ -82,7 +88,7 @@ public class GhostQuest extends Quest {
                 armor.upgrade(itemLevel);
                 if (doEnchant) glyph = Armor.Glyph.random();
             } else {
-                armor = RandomItem.initRandomStatsForItemSubclasses(armor);
+                GameObject.doOnSingleObject(armor, GameObject::initRandoms, newValue -> armor = newValue);
             }
             if (weapon == null) {
                 //50%:tier2, 30%:tier3, 15%:tier4, 5%:tier5
@@ -96,11 +102,11 @@ public class GhostQuest extends Quest {
                 weapon.upgrade(itemLevel);
                 if (doEnchant) enchant = Weapon.Enchantment.random();
             } else {
-                weapon = RandomItem.initRandomStatsForItemSubclasses(weapon);
+                GameObject.doOnSingleObject(weapon, GameObject::initRandoms, newValue -> weapon = newValue);
             }
         } else {
-            armor = RandomItem.initRandomStatsForItemSubclasses(armor);
-            weapon = RandomItem.initRandomStatsForItemSubclasses(weapon);
+            GameObject.doOnSingleObject(armor, GameObject::initRandoms, newValue -> armor = newValue);
+            GameObject.doOnSingleObject(weapon, GameObject::initRandoms, newValue -> weapon = newValue);
         }
 
     }

@@ -1,8 +1,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
@@ -18,6 +18,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoo
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -52,6 +53,13 @@ public class BlacksmithQuest extends Quest {
     private static int oldGoldQuestsActive;
     private static final Map<Integer, BlacksmithQuest> quests = new HashMap<>();
     private static int nextId = 0;
+
+    @Override
+    public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+        return super.doOnAllGameObjects(whatToDo)
+                | doOnAllGameObjectsList(smithRewards, whatToDo)
+                | doOnSingleObject(pickaxe, whatToDo, newValue -> pickaxe = newValue);
+    }
 
     @Override
     public void initRandom(LevelScheme levelScheme) {
@@ -122,7 +130,7 @@ public class BlacksmithQuest extends Quest {
             smithGlyph = Armor.Glyph.random();
         }
 
-        RandomItem.replaceRandomItemsInList(smithRewards);
+        GameObject.doOnAllGameObjectsList(smithRewards, GameObject::initRandoms);
 
         if (type == BASED_ON_DEPTH) {
             type = levelScheme.generateBlacksmithQuest();

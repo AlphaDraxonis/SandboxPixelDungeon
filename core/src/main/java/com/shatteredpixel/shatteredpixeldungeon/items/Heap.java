@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
@@ -65,15 +66,15 @@ import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
-public class Heap implements Bundlable, Copyable<Heap> {
+public class Heap extends GameObject implements Copyable<Heap> {
 	
 	public enum Type {
 		HEAP,
@@ -96,8 +97,19 @@ public class Heap implements Bundlable, Copyable<Heap> {
 	public float priceMultiplier = 1f;
 
 	public LinkedList<Item> items = new LinkedList<>();
-	
-	public void open( Hero hero ) {
+
+	@Override
+	public int sparseArrayKey() {
+		return pos;
+	}
+
+	@Override
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnAllGameObjectsList(items, whatToDo);
+	}
+
+	public void open(Hero hero ) {
 		switch (type) {
 		case TOMB:
 			Wraith.spawnAround( hero.pos );

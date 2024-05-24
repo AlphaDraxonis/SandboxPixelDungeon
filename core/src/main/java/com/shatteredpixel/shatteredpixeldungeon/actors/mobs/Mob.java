@@ -39,7 +39,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.Customizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.PropertyItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
@@ -172,42 +171,30 @@ public abstract class Mob extends Char implements Customizable {
 		} else if (following && playerAlignment == Mob.FRIENDLY_ALIGNMENT) intelligentAlly = true;
 	}
 
-	public boolean onDeleteLevelScheme(String name) {
-		boolean changedSth = false;
-
-		if (loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
-			for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) loot).distrSlots) {
-				if (CustomDungeon.removeInvalidKeys(itemsWithCount.items, name)) {
-					changedSth = true;
-				}
-			}
-		}
-		return changedSth;
-	}
-
-	public boolean onRenameLevelScheme(String oldName, String newName) {
-		boolean changedSth = false;
-
-		if (loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
-			for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) loot).distrSlots) {
-				if (CustomDungeon.renameInvalidKeys(itemsWithCount.items, oldName, newName)) {
-					changedSth = true;
-				}
-			}
-		}
-		return changedSth;
-	}
-
+	@Override
 	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+		super.onMapSizeChange(newPosition, isPositionValid);
 		if (turnToCell != -1) {
 			int nTurn = newPosition.get(turnToCell);
 			turnToCell = isPositionValid.test(turnToCell, nTurn) ? nTurn : -1;
 		}
 	}
 
-	public void initRandoms() {
-		glyphArmor.replaceRandom();
-		enchantWeapon.replaceRandom();
+	@Override
+	public ModifyResult initRandoms() {
+		if (glyphArmor.replaceRandom() | enchantWeapon.replaceRandom()) return ModifyResult.singeReplacement(this);
+		return super.initRandoms();
+	}
+
+	@Override
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		boolean changedSth = false;
+		if (loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
+			for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) loot).distrSlots) {
+				if (doOnAllGameObjectsList(itemsWithCount.items, whatToDo)) changedSth = true;
+			}
+		}
+		return super.doOnAllGameObjects(whatToDo) || changedSth;
 	}
 
 	private static final String STATE	= "state";
@@ -1236,7 +1223,7 @@ public abstract class Mob extends Char implements Customizable {
 		if (stolen == null || !stolen.itemWasStolen()) {
 			if (Random.Float() < lootChance()) {
 				List<Item> loot = createActualLoot();
-				RandomItem.replaceRandomItemsInList(loot);
+				GameObject.doOnAllGameObjectsList(loot, GameObject::initRandoms);
 				for (Item l : loot) {
 					if (l == null) continue;
 					increaseLimitedDropCount(l);

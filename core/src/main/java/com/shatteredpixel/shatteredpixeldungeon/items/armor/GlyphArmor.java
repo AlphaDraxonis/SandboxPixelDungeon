@@ -103,7 +103,8 @@ public class GlyphArmor extends Armor {
 		return a.glyphs.keySet().equals(b.glyphs.keySet());
 	}
 
-	public void replaceRandom() {
+	public boolean replaceRandom() {
+		boolean changedSth = false;
 		Set<Class<? extends Glyph>> existingGlyphs = new HashSet<>();
 		existingGlyphs.addAll(glyphs.keySet());
 
@@ -120,6 +121,7 @@ public class GlyphArmor extends Armor {
 			if (newGlyph != null) {
 				addGlyph(glyph);
 				existingGlyphs.add(glyph.getClass());
+				changedSth = true;
 			}
 		}
 
@@ -136,7 +138,10 @@ public class GlyphArmor extends Armor {
 			if (newGlyph != null) {
 				addGlyph(glyph);
 				existingGlyphs.add(glyph.getClass());
+				changedSth = true;
 			}
 		}
+
+		return changedSth;
 	}
 }

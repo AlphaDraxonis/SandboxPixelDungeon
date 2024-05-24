@@ -24,13 +24,16 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.Function;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.watabou.utils.Function;
+
+import java.io.IOException;
 
 public interface LuaMob extends LuaClass {
 
@@ -45,20 +48,25 @@ public interface LuaMob extends LuaClass {
 			final int ident = getIdentifier();
 			final Mob template = (Mob) this;
 
-			Function<Mob, Boolean> whatToDo = mob -> {
-				if (mob instanceof LuaMob && ((LuaMob) mob).getIdentifier() == ident && ((LuaMob) mob).getInheritsStats()) {
-					MobActionPart.Modify modify = new MobActionPart.Modify(mob);
-					EditMobComp.setToMakeEqual(mob, template);
-					EditMobComp.updateMobTexture(mob);
-					modify.finish();
-					Undo.addActionPart(modify);
+			Function<GameObject, GameObject.ModifyResult> whatToDo = mob -> {
+				if (mob instanceof Mob) {
+					Mob m = (Mob) mob;
+					if (mob instanceof LuaMob && ((LuaMob) mob).getIdentifier() == ident && ((LuaMob) mob).getInheritsStats()) {
+						MobActionPart.Modify modify = new MobActionPart.Modify(m);
+						EditMobComp.setToMakeEqual(m, template);
+						EditMobComp.updateMobTexture(m);
+						modify.finish();
+						Undo.addActionPart(modify);
+					}
 				}
-				return false;
+				return GameObject.ModifyResult.noChange();
 			};
 
-			for (Mob m : level.levelScheme.mobsToSpawn) whatToDo.apply(m);
-
-			CustomDungeon.doOnAllMobs(level, whatToDo);
+			try {
+				CustomDungeon.doOnEverything(level.levelScheme, whatToDo, l -> false, () -> {});//TODO tzz we need to also do this whenever we are loading a levelscheme!
+			} catch (IOException e) {
+				//level should already be loaded
+			}
 		}
 	}
 }

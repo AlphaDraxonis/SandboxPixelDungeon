@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.armor;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -98,7 +99,33 @@ public class Armor extends EquipableItem {
 	public Armor( int tier ) {
 		this.tier = tier;
 	}
-	
+
+	@Override
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnSingleObject(seal, whatToDo, newValue -> seal = newValue);
+	}
+
+	@Override
+	public ModifyResult initRandoms() {
+		return overrideResult(super.initRandoms(), armor -> {
+			Armor a = (Armor) armor;
+			boolean changedSth = false;
+			if (a.augment == Armor.Augment.RANDOM) {
+				a.augment = (com.watabou.utils.Random.Int(2) == 0) ? Augment.DEFENSE : Augment.EVASION;
+				changedSth = true;
+			}
+			if (a.glyph instanceof RandomGlyph) {
+				a.glyph = Armor.Glyph.random();
+				changedSth = true;
+			}
+			if (a.glyph instanceof RandomCurse) {
+				a.glyph = Armor.Glyph.randomCurse();
+				changedSth = true;
+			}
+			return changedSth;
+		});
+	}
 	private static final String USES_LEFT_TO_ID = "uses_left_to_id";
 	private static final String AVAILABLE_USES  = "available_uses";
 	private static final String GLYPH			= "glyph";

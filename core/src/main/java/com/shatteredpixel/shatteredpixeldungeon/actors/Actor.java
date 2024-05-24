@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -29,13 +30,12 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.watabou.noosa.Game;
-import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.SparseArray;
 
 import java.util.HashSet;
 
-public abstract class Actor implements Bundlable, Copyable<Actor> {
+public abstract class Actor extends GameObject implements Copyable<Actor> {
 	
 	public static final float TICK	= 1f;
 
@@ -112,8 +112,11 @@ public abstract class Actor implements Bundlable, Copyable<Actor> {
 		time = Float.MAX_VALUE;
 	}
 	
-	protected void onAdd() {}
-	
+	protected void onAdd() {
+		initRandoms();
+		doOnAllGameObjects(obj -> obj.initRandoms());
+	}
+
 	protected void onRemove() {}
 
 	private static final String TIME    = "time";

@@ -88,7 +88,8 @@ public class EnchantmentWeapon extends MeleeWeapon {
     }
 
 
-    public void replaceRandom() {
+    public boolean replaceRandom() {
+        boolean changedSth = false;
         Set<Class<? extends Enchantment>> existingEnchs = new HashSet<>();
         for (Enchantment ench : enchantments) {
             existingEnchs.add(ench.getClass());
@@ -107,6 +108,7 @@ public class EnchantmentWeapon extends MeleeWeapon {
             if (newEnch != null) {
                 addEnchantment(newEnch);
                 existingEnchs.add(newEnch.getClass());
+                changedSth = true;
             }
         }
 
@@ -123,7 +125,10 @@ public class EnchantmentWeapon extends MeleeWeapon {
             if (newEnch != null) {
                 addEnchantment(newEnch);
                 existingEnchs.add(newEnch.getClass());
+                changedSth = true;
             }
         }
+
+        return changedSth;
     }
 }

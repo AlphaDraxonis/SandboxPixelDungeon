@@ -37,6 +37,7 @@ public final class CustomTileLoader {
         EditorItemBag.callStaticInitializers();
         Tiles.updateParticlesInInv();
         Mobs.updateCustomMobsInInv();
+        Mobs.deleteCustomMobFromOtherContainers(null, -1, false);
 
         if (!forceLoad && Dungeon.customDungeon.getName().equals(dungeonNameOfLastLoadedTiles)) return;
         dungeonNameOfLastLoadedTiles = Dungeon.customDungeon.getName();

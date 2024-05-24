@@ -1,10 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
@@ -14,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.GolemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.MonkSprite;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 public class ImpQuest extends Quest {
@@ -27,6 +28,12 @@ public class ImpQuest extends Quest {
     public Ring reward;
 
     @Override
+    public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+        return super.doOnAllGameObjects(whatToDo)
+                | doOnSingleObject(reward, whatToDo, newValue -> reward = newValue);
+    }
+
+    @Override
     public void initRandom(LevelScheme levelScheme) {
         if (type == BASED_ON_DEPTH) type = levelScheme.generateImpQuestNotRandom();
         else if (type == RANDOM) type = Random.Int(2);
@@ -37,7 +44,7 @@ public class ImpQuest extends Quest {
             reward.upgrade(2);
             reward.cursed = true;
         } else {
-            reward = RandomItem.initRandomStatsForItemSubclasses(reward);
+            GameObject.doOnSingleObject(reward, GameObject::initRandoms, newValue -> reward = newValue);
             if (reward != null && reward.identifyOnStart) reward.identify();
         }
     }

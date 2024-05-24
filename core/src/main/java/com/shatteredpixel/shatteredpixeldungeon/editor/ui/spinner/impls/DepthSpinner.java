@@ -4,8 +4,8 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloo
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerModel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.Function;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.utils.Function;
 
 public abstract class DepthSpinner extends Spinner {
 

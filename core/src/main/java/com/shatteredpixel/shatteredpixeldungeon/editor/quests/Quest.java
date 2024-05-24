@@ -1,12 +1,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.watabou.noosa.Image;
-import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
-public abstract class Quest implements Bundlable {
+public abstract class Quest extends GameObject {
 
     public static final int RANDOM = -1, NONE = -2, BASED_ON_DEPTH = -3;
 
@@ -16,6 +17,12 @@ public abstract class Quest implements Bundlable {
     private boolean completed;
 
     public abstract void initRandom(LevelScheme levelScheme);
+
+    @Override
+    public ModifyResult initRandoms() {
+        initRandom(Dungeon.level.levelScheme);
+        return ModifyResult.singeReplacement(this);
+    }
 
     public void complete(){
         completed = true;

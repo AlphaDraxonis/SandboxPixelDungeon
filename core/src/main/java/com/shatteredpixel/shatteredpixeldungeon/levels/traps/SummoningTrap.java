@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.MobBasedOnDepth;
@@ -30,10 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportat
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
+import com.watabou.utils.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -131,6 +129,12 @@ public class SummoningTrap extends Trap {
 			GLog.w(Messages.get(this, "no_mobs"));
 		}
 
+	}
+
+	@Override
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnAllGameObjectsList(spawnMobs, whatToDo);
 	}
 
 	private static final String SPAWN_MOBS = "spawn_mobs";

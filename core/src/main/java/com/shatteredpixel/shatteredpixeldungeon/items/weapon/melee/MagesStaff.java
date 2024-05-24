@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -51,6 +52,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.particles.PixelParticle;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -365,6 +367,12 @@ public class MagesStaff extends MeleeWeapon {
 		emitter.fillTarget = false;
 		emitter.pour(StaffParticleFactory, 0.1f);
 		return emitter;
+	}
+
+	@Override
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnSingleObject(wand, whatToDo, newValue -> wand = newValue);
 	}
 
 	private static final String WAND = "wand";

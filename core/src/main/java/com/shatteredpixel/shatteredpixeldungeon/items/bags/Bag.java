@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.bags;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
@@ -32,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuickBag;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -138,6 +140,12 @@ public class Bag extends Item implements Iterable<Item> {
 		for (Item item : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)){
 			if (!item.unique) items.remove(item);
 		}
+	}
+
+	@Override
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnAllGameObjectsList(items, whatToDo);
 	}
 
 	private static final String ITEMS	= "inventory";

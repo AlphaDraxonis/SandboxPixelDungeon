@@ -24,15 +24,13 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -48,6 +46,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.MimicSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -274,34 +273,9 @@ public class Mimic extends Mob implements MobBasedOnDepth {
 	}
 
 	@Override
-	public boolean onDeleteLevelScheme(String name) {
-		boolean changedSth = false;
-		if (items != null) {
-			if (CustomDungeon.removeInvalidKeys(items, name)) changedSth = true;
-		}
-		return super.onDeleteLevelScheme(name) || changedSth;
-	}
-
-	@Override
-	public boolean onRenameLevelScheme(String oldName, String newName) {
-		boolean changedSth = CustomDungeon.renameInvalidKeys(items, oldName, newName);
-		return super.onRenameLevelScheme(oldName, newName) || changedSth;
-	}
-
-	@Override
-	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-		if (items != null) {
-			for (Item i : items) {
-				i.onMapSizeChange(newPosition, isPositionValid);
-			}
-		}
-		super.onMapSizeChange(newPosition, isPositionValid);
-	}
-
-	@Override
-	public void initRandoms() {
-		super.initRandoms();
-		if (items != null) RandomItem.replaceRandomItemsInList(items);
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnAllGameObjectsList(items, whatToDo);
 	}
 
 	@Override

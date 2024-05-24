@@ -23,10 +23,8 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -37,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.TormentedSpiritSprite;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 public class TormentedSpirit extends Wraith {
@@ -110,30 +109,8 @@ public class TormentedSpirit extends Wraith {
 	}
 
 	@Override
-	public boolean onDeleteLevelScheme(String name) {
-		boolean changedSth = false;
-		if (prize != null && prize.onDeleteLevelScheme(name)) {
-			if (!(prize instanceof RandomItem)) prize = null;
-			changedSth = true;
-		}
-		return changedSth || super.onDeleteLevelScheme(name);
-	}
-
-	@Override
-	public boolean onRenameLevelScheme(String oldName, String newName) {
-		boolean changedSth = prize != null && prize.onRenameLevelScheme(oldName, newName);
-		return super.onRenameLevelScheme(oldName, newName) || changedSth;
-	}
-
-	@Override
-	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-		super.onMapSizeChange(newPosition, isPositionValid);
-		if (prize != null) prize.onMapSizeChange(newPosition, isPositionValid);
-	}
-
-	@Override
-	public void initRandoms() {
-		super.initRandoms();
-		prize = RandomItem.initRandomStatsForItemSubclasses(prize);
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnSingleObject(prize, whatToDo, newValue -> prize = newValue);
 	}
 }

@@ -1,12 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
@@ -471,17 +471,17 @@ public class HeroSettings extends Component {
         }
 
         public void initRandoms() {
-            weapon = RandomItem.initRandomStatsForItemSubclasses(weapon);
-            armor = RandomItem.initRandomStatsForItemSubclasses(armor);
-            ring = RandomItem.initRandomStatsForItemSubclasses(ring);
-            artifact = RandomItem.initRandomStatsForItemSubclasses(artifact);
-            misc = RandomItem.initRandomStatsForItemSubclasses(misc);
+            GameObject.doOnSingleObject(weapon  , GameObject::initRandoms, newValue -> weapon   = newValue);
+            GameObject.doOnSingleObject(armor   , GameObject::initRandoms, newValue -> armor    = newValue);
+            GameObject.doOnSingleObject(ring    , GameObject::initRandoms, newValue -> ring     = newValue);
+            GameObject.doOnSingleObject(artifact, GameObject::initRandoms, newValue -> artifact = newValue);
+            GameObject.doOnSingleObject(misc    , GameObject::initRandoms, newValue -> misc     = newValue);
             if (weapon != null) weapon.setCursedKnown(true);
             if (armor != null) armor.setCursedKnown(true);
             if (ring != null) ring.setCursedKnown(true);
             if (artifact != null) artifact.setCursedKnown(true);
             if (misc != null) misc.setCursedKnown(true);
-            RandomItem.replaceRandomItemsInList(items);
+            GameObject.doOnAllGameObjectsList(items, GameObject::initRandoms);
         }
 
     }

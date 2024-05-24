@@ -28,15 +28,13 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs.Mob_lua;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartList;
-import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Reflection;
 import org.luaj.vm2.LuaValue;
 
 import java.util.ArrayList;
@@ -163,48 +161,15 @@ public class CustomObject implements Bundlable {
 
 	}
 
-	public static void deleteCustomObject(int identifier) {//TODO tzz tzz what if used in mob container e.g. yog dzwea fist, mob rotation...
+	public static void deleteCustomObject(int identifier) {
 		if (customObjects.containsKey(identifier)) {
 
 			CustomObject toDelete = customObjects.get(identifier);
 
-			Undo.startAction();
-
-			ActionPartList actionPart = new ActionPartList() {
-				@Override
-				public void undo() {
-					customObjects.put(identifier, toDelete);
-					Mobs.updateCustomMobsInInv();
-					super.undo();
-				}
-
-				@Override
-				public void redo() {
-					customObjects.remove(identifier);
-					Mobs.updateCustomMobsInInv();
-					super.redo();
-				}
-
-				@Override
-				public boolean hasContent() {
-					return true;
-				}
-			};
-
-			//TODO might want to be more flexible!
-			if (Dungeon.level != null) {
-				for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
-					if (m instanceof LuaClass && ((LuaClass) m).getIdentifier() == identifier) {
-						actionPart.addActionPart(MobItem.remove(m));
-					}
-				}
-			}
-
-			Undo.addActionPart(actionPart);
-
-			Undo.endAction();
-
-			actionPart.redo();
+			customObjects.remove(identifier);
+			Mobs.updateCustomMobsInInv();
+			Mobs.deleteCustomMobFromOtherContainers(toDelete, identifier, false);
+			Dungeon.customDungeon.deleteCustomObj(toDelete, identifier, true);
 		}
 	}
 
@@ -268,6 +233,27 @@ public class CustomObject implements Bundlable {
 	public static void reset() {
 		customObjects.clear();
 		nextCustomObjectID = 1;
+	}
+
+
+	public static <T extends Bundlable> T returnReplacementOnDeleteCustomObj(T obj, int identifier, boolean replace) {
+
+		if (identifier == -1) return null;
+
+		if (obj instanceof LuaClass && ((LuaClass) obj).getIdentifier() == identifier) {
+
+			if (replace) {
+				Bundle bundle = new Bundle();
+				bundle.put("obj", obj);
+				T replacement = (T) Reflection.newInstance(obj.getClass().getSuperclass());
+				replacement.restoreFromBundle(bundle.getBundle("obj"));
+				obj = replacement;
+			} else {
+				return null;
+			}
+		}
+
+		return obj;
 	}
 
 }

@@ -107,17 +107,19 @@ public abstract class Key extends Item {
 	}
 
 	@Override
-	public boolean onDeleteLevelScheme(String name) {
-		return levelName.equals(name);
+	public ModifyResult onDeleteLevelScheme(String name) {
+		return levelName.equals(name) ? ModifyResult.removeFully() : super.onDeleteLevelScheme(name);
 	}
 
 	@Override
-	public boolean onRenameLevelScheme(String oldName, String newName) {
-		if (levelName.equals(oldName)) {
-			levelName = newName;
-			return true;
-		}
-		return false;
+	public ModifyResult onRenameLevelScheme(String oldName, String newName) {
+		return overrideResult(super.onRenameLevelScheme(oldName, newName), key -> {
+			if (((Key) key).levelName.equals(oldName)) {
+				((Key) key).levelName = newName;
+				return true;
+			}
+			return false;
+		});
 	}
 
 	@Override

@@ -824,13 +824,7 @@ public class CustomLevel extends Level {
             if (isPositionValid.test(t.pos, nPos)) {
                 nTrap.put(nPos, t);
                 t.pos = nPos;
-                if (t instanceof GatewayTrap) {
-                    int telePos = ((GatewayTrap) t).telePos;
-                    if (telePos != -1) {
-                        int nTelePos = newPosition.get(telePos);
-                        ((GatewayTrap) t).telePos = isPositionValid.test(telePos, nTelePos) ? nTelePos : -1;
-                    }
-                }
+                t.onMapSizeChange(newPosition, isPositionValid);
             }
         }
         level.traps.clear();
@@ -887,6 +881,7 @@ public class CustomLevel extends Level {
                 if (isPositionValid.test(p.pos, nPos)) {
                     nPlant.put(nPos, p);
                     p.pos = nPos;
+                    p.onMapSizeChange(newPosition, isPositionValid);
                 }
             }
         }

@@ -157,7 +157,7 @@ public class WndEditorInv extends WndTabbed implements EditorInventoryWindow {
                     if (b instanceof Tiles.ParticleBag) {
                         ret.add(new Tiles.AddParticleButton());
                     }
-                    if (b instanceof Mobs.CustomMobsBag) {
+                    if (b instanceof Mobs.CustomMobsBag && WndEditorInv.INSTANCE != null) {
                         ret.add(new Mobs.AddCustomMobButton());
                     }
 

@@ -24,19 +24,13 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bee;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Swarm;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.ItemWithPos;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -47,16 +41,10 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SacrificeRo
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.watabou.utils.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SacrificialFire extends Blob {
 
@@ -173,27 +161,10 @@ public class SacrificialFire extends Blob {
 		return prizes.get(cell);
 	}
 
-	public boolean removeInvalidKeys(String name) {
-		boolean changedSth = false;
-		for (Integer cell : prizes.keySet()) {
-			Item i = prizes.get(cell);
-			if (i != null && i.onDeleteLevelScheme(name)) {
-				if (!(i instanceof RandomItem)) prizes.remove(cell);
-				changedSth = true;
-			}
-		}
-		return changedSth;
-	}
-
-	public boolean renameInvalidKeys(String oldName, String newName) {
-		boolean changedSth = false;
-		for (Integer cell : prizes.keySet()) {
-			Item i = prizes.get(cell);
-			if (i != null && i.onRenameLevelScheme(oldName, newName)) {
-				changedSth = true;
-			}
-		}
-		return changedSth;
+	@Override
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnAllGameObjectsMap(prizes, whatToDo);
 	}
 
 	public Map<Integer, Item> getPrizes() {//Only for changeMapSize

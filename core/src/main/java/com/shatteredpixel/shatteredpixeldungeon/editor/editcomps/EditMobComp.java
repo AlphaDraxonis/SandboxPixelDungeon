@@ -854,7 +854,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 }
             };
             add(test);
-        }//TODO tzz if editing: only view code
+        }//TODO tzz if not editing: only view code
 
 		rectComps = new Component[]{
 
@@ -1165,6 +1165,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         int pos = change.pos;
         boolean replaceSprite = change.spriteClass != template.spriteClass;
+        //TODO tzz dialogs, custom name etc??
         change.restoreFromBundle(bundle.getBundle("MOB"));
         change.pos = pos;
 

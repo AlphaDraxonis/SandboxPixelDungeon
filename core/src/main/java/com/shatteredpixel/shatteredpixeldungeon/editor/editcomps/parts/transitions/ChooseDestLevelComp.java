@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
@@ -8,8 +7,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSelectF
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseObjectComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.audio.Sample;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +29,6 @@ public class ChooseDestLevelComp extends ChooseObjectComp {
         Window w = new WndSelectFloor() {
             @Override
             public boolean onSelect(LevelSchemeLike levelScheme) {
-                Sample.INSTANCE.play(Assets.Sounds.CLICK);
                 selectObject(levelScheme);
                 return true;
             }
@@ -42,8 +38,7 @@ public class ChooseDestLevelComp extends ChooseObjectComp {
                 return ChooseDestLevelComp.this.filterLevels(levels);
             }
         };
-        if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-        else Game.scene().addToFront(w);
+        EditorScene.show(w);
     }
 
     public float getDW() {

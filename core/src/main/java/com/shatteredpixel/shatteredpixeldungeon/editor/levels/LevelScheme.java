@@ -3,13 +3,13 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
@@ -27,7 +27,6 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.watabou.utils.Random;
 import com.watabou.utils.*;
 
@@ -528,30 +527,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private void initRandomStats(long seed) {
         Random.pushGenerator(seed);
 
-        for (Mob m : mobsToSpawn) {
-            m.initRandoms();
-        }
-        RandomItem.replaceRandomItemsInList(itemsToSpawn);
-        if (type == CustomLevel.class) {
-            for (Heap h : level.heaps.valueList()) {
-                RandomItem.replaceRandomItemsInList(h.items);
-                if (h.items.isEmpty()) h.destroy();
-            }
-            for (Trap t : level.traps.valueList()) {//TODO might not work for Regular levels, but they can't contain random traps anyway
-                if (t instanceof RandomItem.RandomTrap) {
-                    Trap[] trapArray = ((RandomItem.RandomTrap) t).generateItems();
-                    Trap replace;
-                    if (trapArray == null || (replace = trapArray[0]) == null) {
-                        level.traps.remove(t.pos);
-                        level.map[t.pos] = Terrain.EMPTY;
-                    } else {
-                        level.setTrap( replace, t.pos );
-                        level.map[replace.pos] = replace.visible ? Terrain.TRAP : Terrain.SECRET_TRAP;
-                        level.secret[replace.pos] = !replace.visible;
-                    }
-                }
-            }
-        }
+		try {
+			CustomDungeon.doOnEverything(this, GameObject::initRandoms, l -> false, () -> {});
+		} catch (IOException e) {
+			//should already be loaded
+		}
+
         Random.popGenerator();
     }
 

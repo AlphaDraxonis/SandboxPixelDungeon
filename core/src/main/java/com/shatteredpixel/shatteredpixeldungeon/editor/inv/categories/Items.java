@@ -1,13 +1,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.TormentedSpirit;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
@@ -30,8 +25,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.*;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.SummoningTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.*;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.noosa.Image;
@@ -388,69 +381,28 @@ public enum Items implements EditorInvCategory<Item> {
     }
 
     public static void updateKeys(String oldLvlName, String newLvlName) {
-        for (Item item : bagWithKeys) {
-            maybeUpdateKeyLevel(((ItemItem) item).item(), oldLvlName, newLvlName);
-        }
-        maybeUpdateKeyLevel(SacrificialFire.prizeInInventory, oldLvlName, newLvlName);
 
-        for (Item bag : Mobs.bag.items){
-            if (bag instanceof Bag) {
-                for (Item mobItem : ((Bag) bag).items) {
-                    if (mobItem instanceof MobItem) {
-                        updateKeysInMobContainer(((MobItem) mobItem).getObject(), oldLvlName, newLvlName);
-                    }
-                }
-            } else if (bag instanceof MobItem) {
-                updateKeysInMobContainer(((MobItem) bag).getObject(), oldLvlName, newLvlName);
-            }
-        }
-        for (Item bag : Traps.bag.items){
-            if (bag instanceof Bag) {
-                for (Item trapItem : ((Bag) bag).items) {
-                    if (trapItem instanceof TrapItem) {
-                        updateKeysInTrapContainer(((TrapItem) trapItem).getObject(), oldLvlName, newLvlName);
-                    }
-                }
-            } else if (bag instanceof TrapItem) {
-                updateKeysInTrapContainer(((TrapItem) bag).getObject(), oldLvlName, newLvlName);
-            }
-        }
+        GameObject.doOnAllGameObjectsList(EditorItemBag.mainBag.items, item -> {
+            if (item instanceof ItemItem) maybeUpdateKeyLevel(((ItemItem) item).item(), oldLvlName, newLvlName);
+            return GameObject.ModifyResult.noChange();
+        });
+
+        maybeUpdateKeyLevel(SacrificialFire.prizeInInventory, oldLvlName, newLvlName);
     }
 
-    public static void maybeUpdateKeyLevel(Item i, String oldLvlName, String newLvlName) {
+    private static void maybeUpdateKeyLevel(Item i, String oldLvlName, String newLvlName) {
         if (i instanceof Key && (oldLvlName == null || ((Key) i).levelName == null || ((Key) i).levelName.equals(oldLvlName))) {
             ((Key) i).levelName = newLvlName;
-        } else if (i instanceof RandomItem<?>){
-            ((RandomItem<?>) i).updateInvalidKeys(oldLvlName, newLvlName);
-        }
-    }
-
-    private static void updateKeysInMobContainer(Mob m, String oldLvlName, String newLvlName) {
-        if (m instanceof Mimic && ((Mimic) m).items != null) {
-            for (Item item : ((Mimic) m).items) {
-                maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
-            }
-        }
-        else if (m instanceof Thief) {
-            maybeUpdateKeyLevel(((Thief) m).item, oldLvlName, newLvlName);
-        }
-        else if (m instanceof TormentedSpirit) {
-            maybeUpdateKeyLevel(((TormentedSpirit) m).prize, oldLvlName, newLvlName);
-        }
-        if (m.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
-            for (ItemsWithChanceDistrComp.ItemWithCount itemsWithCount : ((ItemsWithChanceDistrComp.RandomItemData) m.loot).distrSlots) {
-                for (Item item : itemsWithCount.items) {
-                    maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
+        } else if (i instanceof RandomItem<?>) {
+            GameObject.doOnAllGameObjectsList(((RandomItem<?>) i).getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI().distrSlots, item -> {
+                if (item instanceof ItemsWithChanceDistrComp.ItemWithCount) {
+                    GameObject.doOnAllGameObjectsList(((ItemsWithChanceDistrComp.ItemWithCount) item).items, item2 -> {
+                        maybeUpdateKeyLevel((Item) item2, oldLvlName, newLvlName);
+                        return GameObject.ModifyResult.noChange();
+                    });
                 }
-            }
-        }
-    }
-
-    private static void updateKeysInTrapContainer(Trap t, String oldLvlName, String newLvlName){
-        if (t instanceof SummoningTrap) {
-            for (Mob m : ((SummoningTrap) t).spawnMobs) {
-                updateKeysInMobContainer(m, oldLvlName, newLvlName);
-            }
+                return GameObject.ModifyResult.noChange();
+            });
         }
     }
 

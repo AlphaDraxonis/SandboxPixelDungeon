@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
@@ -31,10 +32,9 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
-public abstract class Trap implements Bundlable, Copyable<Trap> {
+public abstract class Trap extends GameObject implements Copyable<Trap> {
 
 	//trap colors
 	public static final int RED     = 0;
@@ -132,6 +132,11 @@ public abstract class Trap implements Bundlable, Copyable<Trap> {
 
 	public Image getSprite() {
 		return EditorUtilies.getTerrainFeatureTexture((active ? color : Trap.BLACK) + (shape * 16) + (visible ? 0 : 128));
+	}
+
+	@Override
+	public int sparseArrayKey() {
+		return pos;
 	}
 
 	private static final String POS	= "pos";

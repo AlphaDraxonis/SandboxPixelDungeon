@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
@@ -34,8 +35,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.Customizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Backpack;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -52,14 +51,14 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
+import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 import java.util.*;
 
-public class Item implements Bundlable, Customizable, Copyable<Item> {
+public class Item extends GameObject implements Customizable, Copyable<Item> {
 
 	protected static final String TXT_TO_STRING_LVL		= "%s %+d";
 	protected static final String TXT_TO_STRING_X		= "%s x%d";
@@ -519,18 +518,7 @@ public class Item implements Bundlable, Customizable, Copyable<Item> {
 		//do nothing by default
 	}
 
-	public boolean onDeleteLevelScheme(String name) {
-		return false;
-	}
-
-	public boolean onRenameLevelScheme(String oldName, String newName) {
-		return false;
-	}
-
-	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-	}
-
-	public static void evoke( Hero hero ) {
+	public static void evoke(Hero hero ) {
 		hero.sprite.emitter().burst( Speck.factory( Speck.EVOKE ), 5 );
 	}
 
@@ -635,7 +623,21 @@ public class Item implements Bundlable, Customizable, Copyable<Item> {
 	public static void updateQuickslot() {
 		GameScene.updateItemDisplays = true;
 	}
-	
+
+	@Override
+	public ModifyResult initRandoms() {
+		return overrideResult(super.initRandoms(), item -> {
+			Item i = (Item) item;
+			if (i.stackable && i.randQuantMin > -1) {
+				int qu = Random.Int(i.randQuantMin, i.randQuantMax);
+				if (qu <= 0) return null;
+				i.quantity(qu);
+				return true;
+			}
+			return false;
+		});
+	}
+
 	private static final String QUANTITY		= "quantity";
 	private static final String RAND_QUANT_MIN  = "rand_quant_min";
 	private static final String RAND_QUANT_MAX  = "rand_quant_max";

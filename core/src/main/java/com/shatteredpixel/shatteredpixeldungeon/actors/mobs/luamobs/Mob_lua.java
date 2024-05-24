@@ -7,8 +7,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
@@ -179,15 +177,15 @@ public class Mob_lua extends Rat implements LuaMob {
     }
 
     @Override
-    public void initRandoms() {
+    public ModifyResult initRandoms() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("initRandoms").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.initRandoms();
+                MethodOverride.A1 superMethod = null;
                 luaScript.get("initRandoms").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
             } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
-        super.initRandoms();
+        return super.initRandoms();
     }
 
     @Override
@@ -805,18 +803,6 @@ public class Mob_lua extends Rat implements LuaMob {
             } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
         }
         return super.act();
-    }
-
-    @Override
-    public void onMapSizeChange(IntFunction arg0, BiPredicate arg1) {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("onMapSizeChange").isnil()) {
-            try {
-                MethodOverride.VoidA2 superMethod = (a0, a1) -> super.onMapSizeChange((IntFunction) a0, (BiPredicate) a1);
-                luaScript.get("onMapSizeChange").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
-        }
-        super.onMapSizeChange(arg0, arg1);
     }
 
     @Override

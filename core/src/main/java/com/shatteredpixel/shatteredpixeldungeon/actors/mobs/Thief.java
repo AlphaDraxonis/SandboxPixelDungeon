@@ -22,12 +22,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -40,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ThiefSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 public class Thief extends Mob {
@@ -89,31 +88,9 @@ public class Thief extends Mob {
 	}
 
 	@Override
-	public boolean onDeleteLevelScheme(String name) {
-		boolean changedSth = false;
-		if (item != null && item.onDeleteLevelScheme(name)) {
-			if (!(item instanceof RandomItem)) item = null;
-			changedSth = true;
-		}
-		return changedSth || super.onDeleteLevelScheme(name);
-	}
-
-	@Override
-	public boolean onRenameLevelScheme(String oldName, String newName) {
-		boolean changedSth = item != null && item.onRenameLevelScheme(oldName, newName);
-		return super.onRenameLevelScheme(oldName, newName) || changedSth;
-	}
-
-	@Override
-	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-		super.onMapSizeChange(newPosition, isPositionValid);
-		if (item != null) item.onMapSizeChange(newPosition, isPositionValid);
-	}
-
-	@Override
-	public void initRandoms() {
-		super.initRandoms();
-		item = RandomItem.initRandomStatsForItemSubclasses(item);
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnSingleObject(item, whatToDo, newValue -> item = newValue);
 	}
 
 	//    @Override

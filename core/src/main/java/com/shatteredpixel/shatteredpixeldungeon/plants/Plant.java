@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.plants;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barkskin;
@@ -48,7 +49,7 @@ import com.watabou.utils.*;
 
 import java.util.ArrayList;
 
-public abstract class Plant implements Bundlable, Customizable, Copyable<Plant> {
+public abstract class Plant extends GameObject implements Customizable, Copyable<Plant> {
 
     public int image;
     public int pos;
@@ -58,6 +59,11 @@ public abstract class Plant implements Bundlable, Customizable, Copyable<Plant> 
     public Item dropItem;
 
     protected Class<? extends Plant.Seed> seedClass;
+
+    @Override
+    public int sparseArrayKey() {
+        return pos;
+    }
 
     public void trigger() {
 
@@ -108,6 +114,12 @@ public abstract class Plant implements Bundlable, Customizable, Copyable<Plant> 
             }
         }
 
+    }
+
+    @Override
+    public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+        return super.doOnAllGameObjects(whatToDo)
+                | doOnSingleObject(dropItem, whatToDo, newValue -> dropItem = newValue);
     }
 
     private static final String POS = "pos";

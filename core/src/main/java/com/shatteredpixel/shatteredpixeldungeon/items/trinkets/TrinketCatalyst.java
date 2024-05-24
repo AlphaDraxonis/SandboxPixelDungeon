@@ -21,8 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.trinkets;
 
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndReward;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -76,6 +77,12 @@ public class TrinketCatalyst extends Item {
 
 	public ArrayList<Trinket> rolledTrinkets = new ArrayList<>();//tzz set in editor!
 	public int numChoosableTrinkets = 3;// must always be  0 < this < Generator.Category.Trinket.classes.length
+
+	@Override
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnAllGameObjectsList(rolledTrinkets, whatToDo);
+	}
 
 	private static final String ROLLED_TRINKETS = "rolled_trinkets";
 	private static final String NUM_CHOOSABLE_TRINKETS = "num_choosable_trinkets";
@@ -153,7 +160,7 @@ public class TrinketCatalyst extends Item {
 			rolledTrinkets.remove(Random.Int(rolledTrinkets.size()));
 			curSize--;
 		}
-		RandomItem.replaceRandomItemsInList(rolledTrinkets);
+		GameObject.doOnAllGameObjectsList(rolledTrinkets, GameObject::initRandoms);
 	}
 
 	public static class WndTrinket extends WndReward {

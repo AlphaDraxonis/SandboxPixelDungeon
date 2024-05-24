@@ -325,6 +325,23 @@ public class EditItemComp extends DefaultEditComp<Item> {
             }
 
             if (item instanceof Key) {
+                Key k = (Key) item;
+
+                if (heap != null && heap.pos != -1) {
+                    int cell = k.cell;
+                    if (Dungeon.level == null || cell >= Dungeon.level.length()) cell = k.cell = -1;
+                    keyCell = new RedButton("") {
+                        @Override
+                        protected void onClick() {
+                            EditorScene.hideWindowsTemporarily();
+                            EditorScene.selectCell(keyCellPositionListener);
+                        }
+                    };
+                    if (cell == -1) keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
+                    else keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilies.cellToString(cell)));
+                    add(keyCell);
+                } else keyCell = null;
+
                 keylevel = new ChooseDestLevelComp(label("floor")) {
                     @Override
                     protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
@@ -337,12 +354,12 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     public void selectObject(Object object) {
                         super.selectObject(object);
                         if (object instanceof LevelScheme) {
-                            ((Key) item).levelName = EditorUtilies.getCodeName((LevelScheme) object);
+                            k.levelName = EditorUtilies.getCodeName((LevelScheme) object);
                         }
                         if (keyCell != null) {
-                            boolean canChangeKeyCell = Dungeon.level.name.equals(((Key) item).levelName);
-                            if (!canChangeKeyCell && ((Key) item).cell != -1) {
-                                ((Key) item).cell = -1;
+                            boolean canChangeKeyCell = Dungeon.level.name.equals(k.levelName);
+                            if (!canChangeKeyCell && k.cell != -1) {
+                                k.cell = -1;
                                 keyCell.text(label("key_cell_any"));
                             }
                             keyCell.enable(canChangeKeyCell);
@@ -350,23 +367,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
                         updateObj();
                     }
                 };
-                keylevel.selectObject(((Key) item).levelName);
+                keylevel.selectObject(k.levelName);
                 add(keylevel);
-
-                if (heap != null && heap.pos != -1) {
-                    int cell = ((Key) item).cell;
-                    if (Dungeon.level == null || cell >= Dungeon.level.length()) cell = ((Key) item).cell = -1;
-                    keyCell = new RedButton("") {
-                        @Override
-                        protected void onClick() {
-                            EditorScene.hideWindowsTemporarily();
-                            EditorScene.selectCell(keyCellPositionListener);
-                        }
-                    };
-                    if (cell == -1) keyCell.text(Messages.get(EditItemComp.class, "key_cell_any"));
-                    else keyCell.text(Messages.get(EditItemComp.class, "key_cell_fixed", EditorUtilies.cellToString(cell)));
-                    add(keyCell);
-                } else keyCell = null;
 
             }
 

@@ -1,6 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
@@ -8,6 +8,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 
 import java.util.List;
 
@@ -29,9 +30,9 @@ public abstract class QuestNPC<T extends Quest> extends NPC {
     }
 
     @Override
-    public void initRandoms() {
-        super.initRandoms();
-        initQuest(Dungeon.level.levelScheme);
+    public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+        return super.doOnAllGameObjects(whatToDo)
+                | doOnSingleObject(quest, whatToDo, newValue -> quest = newValue);
     }
 
     public abstract void createNewQuest();

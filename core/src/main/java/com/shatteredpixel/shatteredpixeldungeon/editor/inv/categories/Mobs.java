@@ -253,6 +253,26 @@ public enum Mobs implements EditorInvCategory<Mob> {
                 customMobsBag.items.add(new MobItem(customMob));
             }
         }
+
+    }
+
+    public static void deleteCustomMobFromOtherContainers(CustomObject toDelete, int identifier, boolean alwaysReplace) {
+
+//        for (Item bag : Mobs.bag.items){
+//            if (bag instanceof Bag) {
+//                for (Item mobItem : ((Bag) bag).items) {
+//                    if (mobItem instanceof MobItem) {
+//                        Mob m = ((MobItem) mobItem).getObject();
+//                        if (m instanceof DeleteCustomObjListener)
+//                            ((DeleteCustomObjListener) m).onDeleteCustomObj(toDelete, identifier, alwaysReplace);
+//                    }
+//                }
+//            } else if (bag instanceof MobItem) {
+//                Mob m = ((MobItem) bag).getObject();
+//                if (m instanceof DeleteCustomObjListener)
+//                    ((DeleteCustomObjListener) m).onDeleteCustomObj(toDelete, identifier, alwaysReplace);
+//            }
+//        }
     }
 
 

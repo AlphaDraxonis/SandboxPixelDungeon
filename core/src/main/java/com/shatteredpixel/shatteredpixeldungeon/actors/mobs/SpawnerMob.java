@@ -1,8 +1,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ import java.util.Set;
 
 public abstract class SpawnerMob extends Mob {
 
-    //Inheritors only need to initialise these 2 variables correctly.
+    //Inheritors only need to initialize these 2 variables correctly.
     //When spawning mobs, it is important that summonTemplate.getCopy() is called!
 
     protected Class<? extends Mob> defaultTemplateClass;
@@ -47,6 +49,12 @@ public abstract class SpawnerMob extends Mob {
         return (Mob) m.getCopy();
     }
 
+
+    @Override
+    public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+        return super.doOnAllGameObjects(whatToDo)
+                | doOnAllGameObjectsList(summonTemplate, whatToDo);
+    }
 
     private static final String SUMMONING_TEMPLATE = "summoning_templates";
     private static final String SUMMON_ROTATION = "summon_rotation";

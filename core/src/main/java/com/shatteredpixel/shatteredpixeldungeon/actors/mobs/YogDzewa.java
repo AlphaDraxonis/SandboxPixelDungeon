@@ -635,6 +635,13 @@ public class YogDzewa extends Mob {
 		return desc;
 	}
 
+	@Override
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnAllGameObjectsList(fistSummons, whatToDo)
+				| doOnAllGameObjectsList(challengeSummons, whatToDo);
+	}
+
 	private static final String PHASE = "phase";
 	private static final String SPAWNERS_ALIVE = "spawners_alive";
 

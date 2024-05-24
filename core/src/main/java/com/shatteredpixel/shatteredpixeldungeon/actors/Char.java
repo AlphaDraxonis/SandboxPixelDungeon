@@ -1170,7 +1170,12 @@ public abstract class Char extends Actor {
 	public void onOperateComplete() {
 		next();
 	}
-	
+
+	@Override
+	public int sparseArrayKey() {
+		return pos;
+	}
+
 	protected final HashSet<Class> resistances = new HashSet<>();
 	
 	//returns percent effectiveness after resistances

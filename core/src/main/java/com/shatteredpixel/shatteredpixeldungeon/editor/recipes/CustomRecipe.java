@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.recipes;
 
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -208,6 +209,6 @@ public class CustomRecipe extends Recipe implements Bundlable {
 
 	public void initRandom() {
         RandomItem.fillArrayAsGoodAsPossibleUsingRandomItems(itemInputs);
-        itemOutput = RandomItem.initRandomStatsForItemSubclasses(itemOutput);
+        GameObject.doOnSingleObject(itemOutput, GameObject::initRandoms, newValue -> itemOutput = newValue);
 	}
 }

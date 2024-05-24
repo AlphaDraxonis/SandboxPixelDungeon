@@ -26,6 +26,8 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -151,6 +153,15 @@ public class GatewayTrap extends Trap {
 			}
 		}
 
+	}
+
+	@Override
+	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
+		super.onMapSizeChange(newPosition, isPositionValid);
+		if (telePos != -1) {
+			int nPos = newPosition.get(telePos);
+			telePos = isPositionValid.test(telePos, nPos) ? nPos : -1;
+		}
 	}
 
 	private static final String TELE_POS = "tele_pos";

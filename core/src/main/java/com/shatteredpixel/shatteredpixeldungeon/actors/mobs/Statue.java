@@ -22,10 +22,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.WeaponSelectable {
@@ -62,11 +63,25 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 		createItems(false);
 	}
 
+
 	@Override
-	public void initRandoms() {
-		super.initRandoms();
-		createItems(false);
-		weapon(RandomItem.initRandomStatsForItemSubclasses(weapon()));
+	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+		return super.doOnAllGameObjects(whatToDo)
+				| doOnSingleObject(weapon, whatToDo, newValue -> weapon = newValue );
+	}
+
+	@Override
+	public ModifyResult initRandoms() {
+		ModifyResult result = super.initRandoms();
+		if (ModifyResult.isNoChange(result)) {
+			createItems(false);
+			return ModifyResult.singeReplacement(this);
+		}
+		if (ModifyResult.isRemovingFully(result) || result.newValues.length == 0) {
+			return result;
+		}
+		((Statue) result.newValues[0]).createItems(false);
+		return result;
 	}
 
 	@Override

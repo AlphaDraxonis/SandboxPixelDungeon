@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
@@ -24,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollingListPane;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Function;
 import com.watabou.utils.Reflection;
 
 public abstract class EditorItem<T> extends Item {
@@ -63,6 +65,15 @@ public abstract class EditorItem<T> extends Item {
 
     public void setObject(T obj) {
         this.obj = obj;
+    }
+
+    @Override
+    public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+        if (obj instanceof GameObject) {
+            return super.doOnAllGameObjects(whatToDo)
+                    | doOnSingleObject(((GameObject) obj), whatToDo, newValue -> obj = (T) newValue);
+        }
+        return super.doOnAllGameObjects(whatToDo);
     }
 
 

@@ -1,11 +1,11 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.levels;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
@@ -16,9 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItem
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.EffectDuration;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
@@ -33,7 +31,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrCo
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.Function;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
@@ -50,8 +47,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.SummoningTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
@@ -59,6 +54,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.io.IOException;
@@ -786,53 +782,76 @@ public class CustomDungeon implements Bundlable {
     }
 
 
-    public static boolean doOnAllMobs(Level level, Function<Mob, Boolean> whatToDo) {
-        boolean changedSth = false;
-        for (Zone zone : level.zoneMap.values()) {
-            if (zone.mobRotation != null) {
-                for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot : zone.mobRotation.distrSlots) {
-                    if (whatToDo.apply(((MobItem) mobRotationSlot.items.get(0)).mob())) changedSth = true;
+    public static void doOnEverything(LevelScheme levelScheme, Function<GameObject, GameObject.ModifyResult> whatToDo,
+                                      Function<CustomLevel, Boolean> extraTasksCL, Runnable ifNoCL) throws IOException {
+
+        GameObject.doOnAllGameObjectsList(levelScheme.itemsToSpawn, whatToDo);
+        GameObject.doOnAllGameObjectsList(levelScheme.mobsToSpawn, whatToDo);
+
+        if (levelScheme.getType() == CustomLevel.class) {
+            boolean load = levelScheme.getLevel() == null;
+            CustomLevel level;
+            if (load) level = (CustomLevel) levelScheme.loadLevel();
+            else level = (CustomLevel) levelScheme.getLevel();
+            if (level == null) return;//skip if level couldn't be loaded
+
+            boolean saveNeeded = false;
+
+            if (extraTasksCL.apply(level)) saveNeeded = true;
+
+            if (GameObject.doOnAllGameObjectsSparseArray(level.heaps, whatToDo)) saveNeeded = true;
+            for (Heap h : level.heaps.valueList()) {
+                if (h.isEmpty()) {
+                    level.heaps.remove(h.pos);
+                    h.destroyImages();
                 }
             }
-        }
 
-        for (Mob m : level.mobs) {
-            if (whatToDo.apply(m)) changedSth = true;
-        }
-
-        if (level instanceof CustomLevel) {
-            for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot : ((CustomLevel) level).getMobRotationVar().distrSlots) {
-                if (whatToDo.apply(((MobItem) mobRotationSlot.items.get(0)).mob())) changedSth = true;
-            }
-        }
-
-        if (doOnAllTraps(level, trap -> {
-            boolean result = false;
-            if (trap instanceof SummoningTrap) {
-                for (Mob m : ((SummoningTrap) trap).spawnMobs) if (whatToDo.apply(m)) result = true;
-            }
-            return result;
-        })) changedSth = true;
-
-        return changedSth;
-    }
-
-    public static boolean doOnAllTraps(Level level, Function<Trap, Boolean> whatToDo) {
-        boolean changedSth = false;
-
-        for (Trap t : level.traps.values()) {
-            if (whatToDo.apply(t)) changedSth = true;
-            if (t instanceof RandomItem.RandomTrap) {
-                for (ItemsWithChanceDistrComp.ItemWithCount items : ((RandomItem.RandomTrap) t).getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI().distrSlots) {
-                    for (Item item : items.items) {
-                        if (item instanceof TrapItem && whatToDo.apply(((TrapItem) item).getObject())) changedSth = true;
+            for (Zone zone : level.zoneMap.values()) {
+                if (zone.mobRotation != null) {
+                    if (GameObject.doOnAllGameObjectsList(zone.mobRotation.distrSlots, whatToDo)) saveNeeded = true;
+                    for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot
+                            : zone.mobRotation.distrSlots.toArray(new ItemsWithChanceDistrComp.ItemWithCount[0])) {
+                        if (mobRotationSlot.items == null || mobRotationSlot.items.isEmpty())
+                            zone.mobRotation.distrSlots.remove(mobRotationSlot);
                     }
                 }
-
             }
+
+            if (GameObject.doOnAllGameObjectsSet(level.mobs, whatToDo)) saveNeeded = true;
+
+			if (GameObject.doOnAllGameObjectsList(level.getMobRotationVar().distrSlots, whatToDo)) saveNeeded = true;
+			for (ItemsWithChanceDistrComp.ItemWithCount mobRotationSlot
+					: level.getMobRotationVar().distrSlots.toArray(new ItemsWithChanceDistrComp.ItemWithCount[0])) {
+				if (mobRotationSlot.items == null || mobRotationSlot.items.isEmpty())
+					level.getMobRotationVar().distrSlots.remove(mobRotationSlot);
+			}
+
+
+			if (GameObject.doOnAllGameObjectsSparseArray(level.traps, whatToDo)) saveNeeded = true;
+
+
+            if (GameObject.doOnAllGameObjectsSparseArray(level.plants, whatToDo)) saveNeeded = true;
+
+            //Remove invalid keys as sacrificial fire reward
+            SacrificialFire sacrificialFire = level.blobs.getOnly(SacrificialFire.class);
+            if (GameObject.doOnSingleObject(sacrificialFire, whatToDo, newValue -> {
+                if (newValue == null) level.blobs.remove(SacrificialFire.class);
+                else level.blobs.put(SacrificialFire.class, newValue);
+            })) saveNeeded = true;
+
+            if (load) {
+                if (saveNeeded) CustomDungeonSaves.saveLevel(level);
+                levelScheme.unloadLevel();
+            }
+            else if (level == EditorScene.getCustomLevel()) {
+                Undo.reset();//TODO maybe not best solution to reset all
+                EditorScene.updateHeapImagesAndSubIcons();
+            }
+        } else {
+            ifNoCL.run();
         }
 
-        return changedSth;
     }
 
 
@@ -876,21 +895,15 @@ public class CustomDungeon implements Bundlable {
 
         }
 
+        Function<GameObject, GameObject.ModifyResult> whatToDo = obj -> obj.onDeleteLevelScheme(n);
+
         //Remove transitions and keys
         for (LevelScheme ls : fs) {
             if (n.equals(ls.getChasm())) ls.setChasm(null, false);
             if (n.equals(ls.getPassage())) ls.setPassage(null);
 
-            removeInvalidKeys(ls.itemsToSpawn, n);
+            doOnEverything(ls, whatToDo, level -> {
 
-            for (Mob m : ls.mobsToSpawn) m.onDeleteLevelScheme(n);
-
-            if (ls.getType() == CustomLevel.class) {
-                boolean load = ls.getLevel() == null;
-                CustomLevel level;
-                if (load) level = (CustomLevel) ls.loadLevel();
-                else level = (CustomLevel) ls.getLevel();
-                if (level == null) continue;//skip if level couldn't be loaded
                 Set<Integer> toRemoveTransitions = new HashSet<>(4);
                 for (LevelTransition transition : level.transitions.values()) {
                     if (transition != null && Objects.equals(transition.destLevel, n)) {
@@ -899,45 +912,21 @@ public class CustomDungeon implements Bundlable {
                     }
                 }
 
-                boolean saveNeeded = !toRemoveTransitions.isEmpty();
+                boolean changedSth = !toRemoveTransitions.isEmpty();
+
+                for (int key : toRemoveTransitions) level.transitions.remove(key);
 
                 for (Zone zone : level.zoneMap.values()) {
                     if (zone.zoneTransition != null) {
                         if (Objects.equals(zone.zoneTransition.destLevel, n)) {
                             zone.zoneTransition = null;
-                            saveNeeded = true;
+                            changedSth = true;
                         }
                     }
                 }
 
-                //Remove invalid keys in heaps
-                for (Heap h : level.heaps.valueList()) {
-                    if (removeInvalidKeys(h.items, n)) {
-                        saveNeeded = true;
-                        if (h.isEmpty()) {
-                            level.heaps.remove(h.pos);
-                            h.destroyImages();
-                        }
-                    }
-                }
-
-                //Remove invalid keys as sacrificial fire reward
-                SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.getOnly(SacrificialFire.class);
-                if (sacrificialFire != null) {
-                    if (sacrificialFire.removeInvalidKeys(n)) saveNeeded = true;
-                }
-
-                if (doOnAllMobs(level, mob -> mob.onDeleteLevelScheme(n))) saveNeeded = true;
-
-                for (int key : toRemoveTransitions) level.transitions.remove(key);
-
-                if (saveNeeded) CustomDungeonSaves.saveLevel(level);
-                if (load) ls.unloadLevel();
-                else if (level == EditorScene.getCustomLevel() && levelScheme != level.levelScheme) {
-                    Undo.reset();//TODO maybe not best solution to reset all
-                    EditorScene.updateHeapImagesAndSubIcons();
-                }
-            } else {
+                return changedSth;
+            }, () -> {
                 if (Objects.equals(ls.getEntranceTransitionRegular().destLevel, n)) {
                     ls.getEntranceTransitionRegular().destLevel = Level.SURFACE;
                     ls.getEntranceTransitionRegular().destCell = -1;
@@ -945,39 +934,28 @@ public class CustomDungeon implements Bundlable {
                     ls.getExitTransitionRegular().destLevel = null;
                     ls.getExitTransitionRegular().destCell = -1;
                 }
-            }
+            });
         }
 
-        for (ItemDistribution<? extends Bundlable> distr : itemDistributions) {
-            if (distr instanceof ItemDistribution.Items) {
-                removeInvalidKeys((List<Item>) distr.getObjectsToDistribute(), n);
-            }
+        for (ItemDistribution<? extends Bundlable> distr : itemDistributions.toArray(new ItemDistribution[0])) {
+            GameObject.doOnAllGameObjectsList(distr.getObjectsToDistribute(), whatToDo);
             distr.getLevels().remove(n);
+            if (distr.getLevels().isEmpty()) {
+                itemDistributions.remove(distr);
+            }
         }
 
         for (HeroSettings.HeroStartItemsData si : startItems) {
-            removeInvalidKeys(si.items, n);
+            GameObject.doOnAllGameObjectsList(si.items, whatToDo);
         }
 
         //Set level for keys in inv
-        Items.updateKeys(n, EditorScene.getCustomLevel() == null ? null : EditorScene.getCustomLevel().name);
+        Items.updateKeys(n, EditorScene.getCustomLevel() == null ? null : EditorScene.getCustomLevel().name);//tzz
 
         EditorScene.updatePathfinder();
 
         CustomDungeonSaves.deleteLevelFile(n);
         CustomDungeonSaves.saveDungeon(this);
-    }
-
-    public static boolean removeInvalidKeys(List<Item> items, String invalidLevelName) {
-        if (items == null) return false;
-        boolean changedSth = false;
-        for (Item i : new ArrayList<>(items)) {
-            if (i != null && i.onDeleteLevelScheme(invalidLevelName)) {
-                if (!(i instanceof RandomItem)) items.remove(i);
-                changedSth = true;
-            }
-        }
-        return changedSth;
     }
 
     public void renameZone(Zone zone, String newName) {
@@ -1132,47 +1110,32 @@ public class CustomDungeon implements Bundlable {
         if (oldName.equals(ls.levelCreatedBefore)) ls.levelCreatedBefore = newName;
         if (oldName.equals(ls.levelCreatedAfter)) ls.levelCreatedAfter = newName;
 
-        renameInvalidKeys(ls.itemsToSpawn, oldName, newName);
+        Function<GameObject, GameObject.ModifyResult> whatToDo = obj -> obj.onRenameLevelScheme(oldName, newName);
 
-        for (Mob m : ls.mobsToSpawn) m.onRenameLevelScheme(oldName, newName);
+		try {
+			doOnEverything(ls, whatToDo, level -> {
 
-        try {
-            if (levelScheme.getType() == CustomLevel.class) {
-                CustomLevel level = (CustomLevel) levelScheme.loadLevel();
-                level.name = newName;
-                level.levelScheme = ls;
+				//TODO refactor to use the same as renaming logic!
+				for (LevelTransition transition : level.transitions.values()) {
+					if (transition != null) {
+						if (Objects.equals(transition.destLevel, oldName))
+							transition.destLevel = newName;
+						if (Objects.equals(transition.departLevel, oldName))
+							transition.departLevel = newName;
+					}
+				}
+				for (Zone zone : level.zoneMap.values()) {
+					if (zone.zoneTransition != null) {
+						if (Objects.equals(zone.zoneTransition.destLevel, oldName))
+							zone.zoneTransition.destLevel = newName;
+						if (Objects.equals(zone.zoneTransition.departLevel, oldName))
+							zone.zoneTransition.departLevel = newName;
+					}
+				}
 
-                //TODO refactor to use the same as renaming logic!
-                for (LevelTransition transition : level.transitions.values()) {
-                    if (transition != null) {
-                        if (Objects.equals(transition.destLevel, oldName))
-                            transition.destLevel = newName;
-                        if (Objects.equals(transition.departLevel, oldName))
-                            transition.departLevel = newName;
-                    }
-                }
-                for (Zone zone : level.zoneMap.values()) {
-                    if (zone.zoneTransition != null) {
-                        if (Objects.equals(zone.zoneTransition.destLevel, oldName))
-                            zone.zoneTransition.destLevel = newName;
-                        if (Objects.equals(zone.zoneTransition.departLevel, oldName))
-                            zone.zoneTransition.departLevel = newName;
-                    }
-                }
+				return true;
+			}, () -> {});
 
-                //Change invalid keys in heaps
-                for (Heap h : level.heaps.valueList()) {
-                    renameInvalidKeys(h.items, oldName, newName);
-                }
-
-                //Remove invalid keys as sacrificial fire reward
-                SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.getOnly(SacrificialFire.class);
-                if (sacrificialFire != null) sacrificialFire.renameInvalidKeys(oldName, newName);
-
-                doOnAllMobs(level, mob -> mob.onRenameLevelScheme(oldName, newName));
-
-                CustomDungeonSaves.saveLevel(level);
-            }
             lastEditedFloor = newName;
             CustomDungeonSaves.saveDungeon(this);
 
@@ -1209,7 +1172,6 @@ public class CustomDungeon implements Bundlable {
 
         try {
             String oldName = levelScheme.getName();
-            boolean savedItself = false;
 
             if (ratKingLevels.contains(oldName)) {
                 ratKingLevels.remove(oldName);
@@ -1218,6 +1180,8 @@ public class CustomDungeon implements Bundlable {
 
             if (oldName.equals(lastEditedFloor)) lastEditedFloor = newName;
             if (oldName.equals(startFloor)) startFloor = newName;
+
+            Function<GameObject, GameObject.ModifyResult> whatToDo = obj -> obj.onRenameLevelScheme(oldName, newName);
 
             //Change transitions and keys
             for (LevelScheme ls : floors.values()) {
@@ -1228,34 +1192,18 @@ public class CustomDungeon implements Bundlable {
                 if (oldName.equals(ls.levelCreatedBefore)) ls.levelCreatedBefore = newName;
                 if (oldName.equals(ls.levelCreatedAfter)) ls.levelCreatedAfter = newName;
 
-                renameInvalidKeys(ls.itemsToSpawn, oldName, newName);
-
-                for (Mob m : ls.mobsToSpawn) m.onRenameLevelScheme(oldName, newName);
-
-                if (ls.getType() == CustomLevel.class) {
-                    boolean load = ls.getLevel() == null;
-                    CustomLevel level;
-                    if (load) level = (CustomLevel) ls.loadLevel();
-                    else level = (CustomLevel) ls.getLevel();
-
-                    boolean saveWithOgName = level == null;
-                    if (saveWithOgName) {
-                        level = CustomDungeonSaves.loadLevelWithOgName(ls.getName());
-                        if (level == null) continue;//skip if level couldn't be loaded
-                        level.levelScheme = ls;
-                    }
-
-                    boolean saveNeeded = false;
+                doOnEverything(ls, whatToDo, level -> {
+                    boolean changedSth = false;
 
                     for (LevelTransition transition : level.transitions.values()) {
                         if (transition != null) {
                             if (Objects.equals(transition.destLevel, oldName)) {
                                 transition.destLevel = newName;
-                                saveNeeded = true;
+                                changedSth = true;
                             }
                             if (Objects.equals(transition.departLevel, oldName)) {
                                 transition.departLevel = newName;
-                                saveNeeded = true;
+                                changedSth = true;
                             }
                         }
                     }
@@ -1263,45 +1211,16 @@ public class CustomDungeon implements Bundlable {
                         if (zone.zoneTransition != null) {
                             if (Objects.equals(zone.zoneTransition.destLevel, oldName)) {
                                 zone.zoneTransition.destLevel = newName;
-                                saveNeeded = true;
+                                changedSth = true;
                             }
                             if (Objects.equals(zone.zoneTransition.departLevel, oldName)) {
                                 zone.zoneTransition.departLevel = newName;
-                                saveNeeded = true;
+                                changedSth = true;
                             }
                         }
                     }
-
-                    //Change invalid keys in heaps
-                    for (Heap h : level.heaps.valueList()) {
-                        if (renameInvalidKeys(h.items, oldName, newName)) {
-                            saveNeeded = true;
-                        }
-                    }
-
-                    //Remove invalid keys as sacrificial fire reward
-                    SacrificialFire sacrificialFire = (SacrificialFire) level.blobs.getOnly(SacrificialFire.class);
-                    if (sacrificialFire != null) {
-                        if (sacrificialFire.renameInvalidKeys(oldName, newName)) saveNeeded = true;
-                    }
-
-                    if (doOnAllMobs(level, mob -> mob.onRenameLevelScheme(oldName, newName))) saveNeeded = true;
-
-                    if (renameInvalidKeys(ls.itemsToSpawn, oldName, newName)) saveNeeded = true;
-
-                    if (saveNeeded) {
-                        if (ls == levelScheme) {
-                            level.name = newName;
-                            savedItself = true;
-                        }
-                        if (saveWithOgName) CustomDungeonSaves.saveLevelWithOgName(level);
-                        else CustomDungeonSaves.saveLevel(level);
-                    }
-                    if (load) ls.unloadLevel();
-                    else if (level == EditorScene.getCustomLevel() && levelScheme != level.levelScheme) {
-                        if (saveNeeded) EditorScene.updateHeapImagesAndSubIcons();
-                    }
-                } else {
+                    return changedSth;
+                }, () -> {
                     if (Objects.equals(ls.getEntranceTransitionRegular().destLevel, oldName)) {
                         ls.getEntranceTransitionRegular().destLevel = newName;
                     } else if (Objects.equals(ls.getExitTransitionRegular().destLevel, oldName)) {
@@ -1312,14 +1231,12 @@ public class CustomDungeon implements Bundlable {
                     } else if (Objects.equals(ls.getExitTransitionRegular().departLevel, oldName)) {
                         ls.getExitTransitionRegular().departLevel = newName;
                     }
-                }
+                });
 
             }
 
             for (ItemDistribution<? extends Bundlable> distr : itemDistributions) {
-                if (distr instanceof ItemDistribution.Items) {
-                    renameInvalidKeys((List<Item>) distr.getObjectsToDistribute(), oldName, newName);
-                }
+                GameObject.doOnAllGameObjectsList(distr.getObjectsToDistribute(), whatToDo);
                 if (distr.getLevels().contains(oldName)) {
                     distr.getLevels().remove(oldName);
                     distr.getLevels().add(newName);
@@ -1327,14 +1244,14 @@ public class CustomDungeon implements Bundlable {
             }
 
             for (HeroSettings.HeroStartItemsData si : startItems) {
-                renameInvalidKeys(si.items, oldName, newName);
+                GameObject.doOnAllGameObjectsList(si.items, whatToDo);
             }
 
             //Set level for keys in inv
-            Items.updateKeys(oldName, newName);
+            Items.updateKeys(oldName, newName);//tzz
 
             levelScheme.name = newName;
-            if (!savedItself && levelScheme.getType() == CustomLevel.class) {
+            if (levelScheme.getType() == CustomLevel.class) {
                 boolean unload = levelScheme.getLevel() != null;
                 Level level;
                 if (unload) level = levelScheme.loadLevel();
@@ -1369,15 +1286,46 @@ public class CustomDungeon implements Bundlable {
 
     }
 
-    public static boolean renameInvalidKeys(List<Item> items, String oldName, String newName) {
-        if (items == null) return false;
-        boolean changedSth = false;
-        for (Item i : new ArrayList<>(items)) {
-            if (i != null && i.onRenameLevelScheme(oldName, newName)) {
-                changedSth = true;
+    public void deleteCustomObj(CustomObject toDelete, int identifier, boolean alwaysReplace) {
+
+        if (!LuaManager.checkAccess("deleteCustomObj")) return;
+
+        try {
+
+            Function<GameObject, GameObject.ModifyResult> whatToDo = obj -> obj.onDeleteCustomObj(toDelete, identifier, alwaysReplace);
+
+            for (LevelScheme ls : floors.values()) {
+
+                doOnEverything(ls, whatToDo,
+                        level -> {
+                            return false;
+
+                        }, () -> {
+                        });
             }
+
+            for (ItemDistribution<? extends Bundlable> distr : itemDistributions) {
+                GameObject.doOnAllGameObjectsList(distr.getObjectsToDistribute(), whatToDo);
+            }
+
+            for (HeroSettings.HeroStartItemsData si : startItems) {
+                GameObject.doOnAllGameObjectsList(si.items, whatToDo);
+            }
+
+            if (EditorScene.getCustomLevel() != null) {
+                Undo.reset();//TODO maybe not best solution to reset all
+            }
+
+            EditorScene.updateDepthIcon();
+
+            EditorScene.updatePathfinder();
+
+            CustomDungeonSaves.saveDungeon(this);
+
+        } catch (IOException e) {
+            SandboxPixelDungeon.reportException(e);
         }
-        return changedSth;
+
     }
 
 

@@ -119,7 +119,28 @@ abstract public class Weapon extends KindOfWeapon {
 			availableUsesToID = Math.min(USES_TO_ID/2f, availableUsesToID + levelPercent * USES_TO_ID);
 		}
 	}
-	
+
+	@Override
+	public ModifyResult initRandoms() {
+		return overrideResult(super.initRandoms(), weapon -> {
+			Weapon w = (Weapon) weapon;
+			boolean changedSth = false;
+			if (w.augment == Weapon.Augment.RANDOM) {
+				w.augment = (com.watabou.utils.Random.Int(2) == 0) ? Weapon.Augment.DAMAGE : Weapon.Augment.SPEED;
+				changedSth = true;
+			}
+			if (w.enchantment instanceof RandomEnchantment) {
+				w.enchantment = Weapon.Enchantment.random();
+				changedSth = true;
+			}
+			if (w.enchantment instanceof RandomCurse) {
+				w.enchantment = Weapon.Enchantment.randomCurse();
+				changedSth = true;
+			}
+			return changedSth;
+		});
+	}
+
 	private static final String USES_LEFT_TO_ID = "uses_left_to_id";
 	private static final String AVAILABLE_USES  = "available_uses";
 	private static final String ENCHANTMENT	    = "enchantment";

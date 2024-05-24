@@ -1,15 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.inv.other;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.AugmentationSpinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -22,16 +19,18 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.util.List;
 
-public interface RandomItem<T> {
+public interface RandomItem<T extends GameObject> {
 
     String INTERNAL_RANDOM_ITEM = "internal_random_item";
 
@@ -48,30 +47,6 @@ public interface RandomItem<T> {
     //pls tell me if there is a better solution than copy paste:
     //I need random classes to extend classes like weapon or armor so I can still use these types everywhere else
     //ok maybe an alternative would be to create wrapper classes that extend each of these types and use a reference to the only real random class
-
-    static <T extends Item> void replaceRandomItemsInList(List<T> items) {
-        for (Item i : items.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {//i is also of type T
-
-            if (i instanceof RandomItem<?>) {
-                T[] newItems = ((RandomItem<T>) i).generateItems();//all the elements are also of type T
-                if (newItems == null) items.remove(i);
-                else {
-                    int indexAdd = items.indexOf(i);
-                    items.remove(i);
-                    for (int j = newItems.length - 1; j >= 0; j--) {
-                        T add = AugmentationSpinner.assignRandomAugmentation(newItems[j]);
-                        if (add != null) {
-                            add.spreadIfLoot = i.spreadIfLoot;
-                            items.add(indexAdd, add);
-                        }
-                    }
-                }
-            } else {
-                Item changed = AugmentationSpinner.assignRandomAugmentation(i);
-                if (changed == null) items.remove(i);
-            }
-        }
-    }
 
     static RandomItem<? extends Item> getNewRandomItem(Class<? extends Item> itemClass) {
         if (itemClass == Weapon.class) return new RandomWeapon();
@@ -94,67 +69,21 @@ public interface RandomItem<T> {
         return Messages.get(RandomItem.class, "desc");
     }
 
-    static boolean removeInvalidKeys(ItemsWithChanceDistrComp.RandomItemData internalRandomItem, String invalidLevelName) {
+    static boolean doOnAllGameObjects(RandomItem obj, Function<GameObject, GameObject.ModifyResult> whatToDo) {
         boolean removedSth = false;
-        for (ItemsWithChanceDistrComp.ItemWithCount items : internalRandomItem.distrSlots) {
-            if (CustomDungeon.removeInvalidKeys(items.items, invalidLevelName)) removedSth = true;
+        for (ItemsWithChanceDistrComp.ItemWithCount items : obj.getInternalRandomItem_ACCESS_ONLY_FOR_EDITING_UI().distrSlots) {
+            if (GameObject.doOnAllGameObjectsList(items.items, whatToDo)) removedSth = true;
         }
         return removedSth;
     }
 
-    static boolean renameInvalidKeys(ItemsWithChanceDistrComp.RandomItemData internalRandomItem, String oldName, String newName) {
-        boolean needsSave = false;
-        for (ItemsWithChanceDistrComp.ItemWithCount items : internalRandomItem.distrSlots) {
-            if (CustomDungeon.renameInvalidKeys(items.items, oldName, newName)) needsSave = true;
-        }
-        return needsSave;
-    }
-
-    void updateInvalidKeys(String oldLvlName, String newLvlName);
-    static void updateInvalidKeys(ItemsWithChanceDistrComp.RandomItemData internalRandomItem, String oldLvlName, String newLvlName) {
-        for (ItemsWithChanceDistrComp.ItemWithCount items : internalRandomItem.distrSlots) {
-            for (Item item : items.items) {
-                Items.maybeUpdateKeyLevel(item, oldLvlName, newLvlName);
-            }
-        }
-    }
-
-    static void repositionKeyCells(ItemsWithChanceDistrComp.RandomItemData internalRandomItem, IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-        for (ItemsWithChanceDistrComp.ItemWithCount items : internalRandomItem.distrSlots) {
-            for (Item item : items.items) {
-                if (item instanceof Key) {
-                    int cell = ((Key) item).cell;
-                    if (cell != -1) {
-                        int nCell = newPosition.get(cell);
-                        ((Key) item).cell = isPositionValid.test(cell, nCell) ? nCell : -1;
-                    }
-                }
-            }
-        }
-    }
-
-    public static <T extends Item> T initRandomStatsForItemSubclasses(T item) {
-        if (item instanceof RandomItem) {
-            T[] result = ((RandomItem<T>) item).generateItems();
-            if (result == null) return null;
-            result[0].spreadIfLoot = item.spreadIfLoot;
-            item = result[0];
-        }
-        return AugmentationSpinner.assignRandomAugmentation(item);
-    }
-
-    public static void fillArrayAsGoodAsPossibleUsingRandomItems(Item[] items) {
+    static void fillArrayAsGoodAsPossibleUsingRandomItems(Item[] items) {
         Item[][] generatedItems = new Item[items.length][];
         for (int i = 0; i < items.length; i++) {
             if (items[i] instanceof RandomItem) {
-                Item randomItem = items[i];
                 items[i] = null;
-                generatedItems[i] = ((RandomItem<Item>) randomItem).generateItems();
-                if (generatedItems[i] == null) continue;
-                for (int j = 0; j < generatedItems[i].length; j++) {
-                    generatedItems[i][j] = AugmentationSpinner.assignRandomAugmentation(generatedItems[i][j]);
-                    generatedItems[i][j].spreadIfLoot = randomItem.spreadIfLoot;
-                }
+                generatedItems[i] = new Item[]{items[i]};
+                GameObject.doOnAllGameObjectsArray(generatedItems[i], GameObject::initRandoms);
                 if (generatedItems[i].length > 0) items[i] = generatedItems[i][0];
             }
         }
@@ -244,27 +173,6 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public boolean onDeleteLevelScheme(String name) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, name);
-        }
-
-        @Override
-        public boolean onRenameLevelScheme(String oldName, String newName) {
-            return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
-        }
-
-        @Override
-        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
-            super.onMapSizeChange(newPosition, isPositionValid);
-        }
-
-        @Override
-        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
-            RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
-
-        @Override
         public int getMaxLoottableSize() {
             return 1_000_000;
         }
@@ -332,27 +240,6 @@ public interface RandomItem<T> {
         @Override
         public String desc() {
             return RandomItem.getDesc();
-        }
-
-        @Override
-        public boolean onDeleteLevelScheme(String name) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, name);
-        }
-
-        @Override
-        public boolean onRenameLevelScheme(String oldName, String newName) {
-            return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
-        }
-
-        @Override
-        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
-            super.onMapSizeChange(newPosition, isPositionValid);
-        }
-
-        @Override
-        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
-            RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
         }
 
         @Override
@@ -434,27 +321,6 @@ public interface RandomItem<T> {
         public String desc() {
             return RandomItem.getDesc();
         }
-
-        @Override
-        public boolean onDeleteLevelScheme(String name) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, name);
-        }
-
-        @Override
-        public boolean onRenameLevelScheme(String oldName, String newName) {
-            return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
-        }
-
-        @Override
-        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
-            super.onMapSizeChange(newPosition, isPositionValid);
-        }
-
-        @Override
-        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
-            RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
     }
 
 
@@ -524,27 +390,6 @@ public interface RandomItem<T> {
         public String desc() {
             return RandomItem.getDesc();
         }
-
-        @Override
-        public boolean onDeleteLevelScheme(String name) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, name);
-        }
-
-        @Override
-        public boolean onRenameLevelScheme(String oldName, String newName) {
-            return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
-        }
-
-        @Override
-        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
-            super.onMapSizeChange(newPosition, isPositionValid);
-        }
-
-        @Override
-        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
-            RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
     }
 
 
@@ -611,27 +456,6 @@ public interface RandomItem<T> {
             return RandomItem.getDesc();
         }
 
-        @Override
-        public boolean onDeleteLevelScheme(String name) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, name);
-        }
-
-        @Override
-        public boolean onRenameLevelScheme(String oldName, String newName) {
-            return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
-        }
-
-        @Override
-        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
-            super.onMapSizeChange(newPosition, isPositionValid);
-        }
-
-        @Override
-        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
-            RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
-
     }
 
 
@@ -696,27 +520,6 @@ public interface RandomItem<T> {
         @Override
         public String desc() {
             return RandomItem.getDesc();
-        }
-
-        @Override
-        public boolean onDeleteLevelScheme(String name) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, name);
-        }
-
-        @Override
-        public boolean onRenameLevelScheme(String oldName, String newName) {
-            return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
-        }
-
-        @Override
-        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
-            super.onMapSizeChange(newPosition, isPositionValid);
-        }
-
-        @Override
-        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
-            RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
         }
 
     }
@@ -788,27 +591,6 @@ public interface RandomItem<T> {
         @Override
         public String desc() {
             return RandomItem.getDesc();
-        }
-
-        @Override
-        public boolean onDeleteLevelScheme(String name) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, name);
-        }
-
-        @Override
-        public boolean onRenameLevelScheme(String oldName, String newName) {
-            return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
-        }
-
-        @Override
-        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
-            super.onMapSizeChange(newPosition, isPositionValid);
-        }
-
-        @Override
-        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
-            RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
         }
     }
 
@@ -894,27 +676,6 @@ public interface RandomItem<T> {
         public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
         }
 
-        @Override
-        public boolean onDeleteLevelScheme(String name) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, name);
-        }
-
-        @Override
-        public boolean onRenameLevelScheme(String oldName, String newName) {
-            return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
-        }
-
-        @Override
-        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
-            super.onMapSizeChange(newPosition, isPositionValid);
-        }
-
-        @Override
-        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
-            RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
-
     }
 
 
@@ -980,27 +741,6 @@ public interface RandomItem<T> {
         public String desc() {
             return RandomItem.getDesc();
         }
-
-        @Override
-        public boolean onDeleteLevelScheme(String name) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, name);
-        }
-
-        @Override
-        public boolean onRenameLevelScheme(String oldName, String newName) {
-            return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
-        }
-
-        @Override
-        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
-            super.onMapSizeChange(newPosition, isPositionValid);
-        }
-
-        @Override
-        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
-            RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
-        }
     }
 
 
@@ -1065,27 +805,6 @@ public interface RandomItem<T> {
         @Override
         public String desc() {
             return RandomItem.getDesc();
-        }
-
-        @Override
-        public boolean onDeleteLevelScheme(String name) {
-            return RandomItem.removeInvalidKeys(internalRandomItem, name);
-        }
-
-        @Override
-        public boolean onRenameLevelScheme(String oldName, String newName) {
-            return RandomItem.renameInvalidKeys(internalRandomItem, oldName, newName);
-        }
-
-        @Override
-        public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-            RandomItem.repositionKeyCells(internalRandomItem, newPosition, isPositionValid);
-            super.onMapSizeChange(newPosition, isPositionValid);
-        }
-
-        @Override
-        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
-            RandomItem.updateInvalidKeys(internalRandomItem, oldLvlName, newLvlName);
         }
 
         @Override
@@ -1159,8 +878,16 @@ public interface RandomItem<T> {
         }
 
         @Override
-        public void updateInvalidKeys(String oldLvlName, String newLvlName) {
+        public ModifyResult initRandoms() {
+            //super already assigns the values
+            return overrideResult(super.initRandoms(), trap -> {
+                Trap t = (Trap) trap;
+                t.pos = pos;
+                Dungeon.level.setTrap(t, t.pos);
+                Dungeon.level.map[t.pos] = t.visible ? Terrain.TRAP : Terrain.SECRET_TRAP;
+                Dungeon.level.secret[t.pos] = !t.visible;
+                return true;
+            });
         }
-
     }
 }

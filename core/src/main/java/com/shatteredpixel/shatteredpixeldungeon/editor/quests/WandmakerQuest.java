@@ -1,13 +1,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.quests;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RotHeart;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.RotLasher;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -28,6 +28,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 public class WandmakerQuest extends Quest {
@@ -44,6 +45,13 @@ public class WandmakerQuest extends Quest {
 
 
     @Override
+    public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+        return super.doOnAllGameObjects(whatToDo)
+                | doOnSingleObject(wand1, whatToDo, newValue -> wand1 = newValue)
+                | doOnSingleObject(wand2, whatToDo, newValue -> wand2 = newValue);
+    }
+
+    @Override
     public void initRandom(LevelScheme levelScheme) {
 
         if (wand1 == null) {
@@ -51,7 +59,7 @@ public class WandmakerQuest extends Quest {
             wand1.cursed = false;
             wand1.upgrade();
         } else {
-            wand1 = RandomItem.initRandomStatsForItemSubclasses(wand1);
+            GameObject.doOnSingleObject(wand1, GameObject::initRandoms, newValue -> wand1 = newValue);
             if (wand1 != null && wand1.identifyOnStart) wand1.identify();
         }
         if (wand2 == null) {
@@ -61,7 +69,7 @@ public class WandmakerQuest extends Quest {
             wand2.cursed = false;
             wand2.upgrade();
         } else {
-            wand2 = RandomItem.initRandomStatsForItemSubclasses(wand2);
+            GameObject.doOnSingleObject(wand2, GameObject::initRandoms, newValue -> wand2 = newValue);
             if (wand2 != null && wand2.identifyOnStart) wand2.identify();
         }
 

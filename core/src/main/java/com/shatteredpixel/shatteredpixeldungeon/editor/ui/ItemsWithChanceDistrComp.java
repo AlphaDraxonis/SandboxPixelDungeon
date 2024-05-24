@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui;
 
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
@@ -19,10 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Consumer;
-import com.watabou.utils.Random;
+import com.watabou.utils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -372,7 +370,7 @@ public abstract class ItemsWithChanceDistrComp extends Component {
         super.destroy();
     }
 
-    public static class ItemWithCount implements Bundlable {
+    public static class ItemWithCount extends GameObject {
 
         public List<Item> items = new ArrayList<>(3);
         private int count;
@@ -386,6 +384,12 @@ public abstract class ItemsWithChanceDistrComp extends Component {
 
         public int getCount() {
             return count;
+        }
+
+        @Override
+        public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+            return super.doOnAllGameObjects(whatToDo)
+                    | doOnAllGameObjectsList(items, whatToDo);
         }
 
         private static final String ITEMS = "items";

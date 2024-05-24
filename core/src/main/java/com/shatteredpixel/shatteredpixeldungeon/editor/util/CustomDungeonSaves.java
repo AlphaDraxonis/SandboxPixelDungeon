@@ -20,10 +20,7 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
 import com.watabou.noosa.Game;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.DeviceCompat;
-import com.watabou.utils.FileUtils;
+import com.watabou.utils.*;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

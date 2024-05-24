@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
@@ -16,7 +17,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.ItemContainer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
-import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
@@ -64,6 +64,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -142,17 +143,19 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     }
 
     @Override
-    public void initRandoms() {
-        super.initRandoms();
+    public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
         Belongings belongings = hero().belongings;
-        belongings.weapon = RandomItem.initRandomStatsForItemSubclasses(belongings.weapon);
-        belongings.armor = RandomItem.initRandomStatsForItemSubclasses(belongings.armor);
-        belongings.ring = RandomItem.initRandomStatsForItemSubclasses(belongings.ring);
-        belongings.artifact = RandomItem.initRandomStatsForItemSubclasses(belongings.artifact);
-        belongings.misc = RandomItem.initRandomStatsForItemSubclasses(belongings.misc);
-        RandomItem.replaceRandomItemsInList(internalHero.wands());
-        RandomItem.replaceRandomItemsInList(internalHero.potions());
-        RandomItem.replaceRandomItemsInList(internalHero.utilItems());
+        return super.doOnAllGameObjects(whatToDo)
+
+                | doOnSingleObject(belongings.weapon  , whatToDo, newValue -> belongings.weapon   = newValue)
+                | doOnSingleObject(belongings.armor   , whatToDo, newValue -> belongings.armor    = newValue)
+                | doOnSingleObject(belongings.ring    , whatToDo, newValue -> belongings.ring     = newValue)
+                | doOnSingleObject(belongings.artifact, whatToDo, newValue -> belongings.artifact = newValue)
+                | doOnSingleObject(belongings.misc    , whatToDo, newValue -> belongings.misc     = newValue)
+
+                | doOnAllGameObjectsList(internalHero.wands(), whatToDo)
+                | doOnAllGameObjectsList(internalHero.potions(), whatToDo)
+                | doOnAllGameObjectsList(internalHero.utilItems(), whatToDo);
     }
 
     @Override

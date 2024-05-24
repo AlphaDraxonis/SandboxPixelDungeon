@@ -358,7 +358,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
 
         if (obj.cell() >= 0) {
             for (Blob blob : Dungeon.level.blobs.values()) {
-                if (blob.volume > 0 && blob.cur[obj.cell()] > 0 && blob.tileDesc() != null) {
+                if (blob != null && blob.volume > 0 && blob.cur[obj.cell()] > 0 && blob.tileDesc() != null) {
                     if (desc.length() > 0) desc += "\n\n";
                     desc += blob.tileDesc();
                 }
