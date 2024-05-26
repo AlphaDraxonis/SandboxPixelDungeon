@@ -163,15 +163,20 @@ public class WndReward extends SimpleWindow {
 			}
 
 			if (questInitiator != null) {
-				String yell;
-				if (questInitiator instanceof Ghost)
-					yell = Messages.get(WndSadGhost.class, "farewell", Messages.titleCase(Dungeon.hero.name()));
-				else yell = Messages.get(WndWandmaker.class, "farewell", Messages.titleCase(Dungeon.hero.name()));
-				questInitiator.yell(yell);
-				questInitiator.die(null);
+				makeQuestInitiatorDisappear();
 			}
 		}
 
 		protected abstract void onSelectReward( Item reward );
+
+		protected void makeQuestInitiatorDisappear() {
+			String yell;
+			if (questInitiator instanceof Ghost)
+				yell = Messages.get(WndSadGhost.class, "farewell", Messages.titleCase(Dungeon.hero.name()));
+			else yell = Messages.get(WndWandmaker.class, "farewell", Messages.titleCase(Dungeon.hero.name()));
+			questInitiator.yell(yell);
+			questInitiator.die(null);
+		}
+
 	}
 }

@@ -21,67 +21,31 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 
-public class WndImp extends Window {
-	
-	private static final int WIDTH      = 120;
-	private static final int BTN_HEIGHT = 20;
-	private static final int GAP        = 2;
+public class WndImp extends WndReward {
 
 	public WndImp( final Imp imp, final DwarfToken tokens ) {
 		
 		super();
-		
-		IconTitle titlebar = new IconTitle();
-		titlebar.icon( new ItemSprite( tokens, null ) );
-		titlebar.label( Messages.titleCase( tokens.name() ) );
-		titlebar.setRect( 0, 0, WIDTH, 0 );
-		add( titlebar );
-		
-		RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "message"), 6 );
-		message.maxWidth(WIDTH);
-		message.setPos(0, titlebar.bottom() + GAP);
-		add( message );
-		
-		RedButton btnReward = new RedButton( Messages.get(this, "reward") ) {
-			@Override
-			protected void onClick() {
-				takeReward( imp, tokens, imp.quest.reward );
-			}
-		};
-		btnReward.setRect( 0, message.top() + message.height() + GAP, WIDTH, BTN_HEIGHT );
-		add( btnReward );
-		
-		resize( WIDTH, (int)btnReward.bottom() );
-	}
-	
-	private void takeReward( Imp imp, DwarfToken tokens, Item reward ) {
-		
-		hide();
-		
-		tokens.detachAll( Dungeon.hero.belongings.backpack );
-		if (reward == null) return;
 
-		reward.identify(false);
-		if (reward.doPickUp( Dungeon.hero )) {
-			GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", reward.name())) );
-		} else {
-			Dungeon.level.drop( reward, imp.pos ).sprite.drop();
-		}
-		
-		imp.flee();
-		
-		imp.quest.complete();
+		initComponents(
+				new IconTitle( new ItemSprite( tokens, null ), Messages.titleCase( tokens.name() ) ),
+				new SingleItemRewardsBody( Messages.get(this, "message"), imp, tokens, imp.quest.reward ) {
+					@Override
+					protected void onSelectReward(Item reward) {
+						reward.identify(false);
+					}
+
+					@Override
+					protected void makeQuestInitiatorDisappear() {
+						imp.flee();
+						imp.quest.complete();
+					}
+				}, null);
 	}
 }
