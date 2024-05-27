@@ -468,11 +468,11 @@ public class Dungeon {
 			if (t != null) pos = t.cell();
 		}
 
-		//Place hero at the entrance if they are out of the map (often used for pox = -1)
+		//Place hero at the entrance if they are out of the map (often used for pos = -1)
 		// or if they are in solid terrain (except in the mining level, where that happens normally)
 		if (pos < 0 || pos >= level.length()
-				|| (!(level instanceof MiningLevel) && !level.isPassable(pos) && !level.avoid[pos]) || Barrier.stopHero(pos, level)){
-			LevelTransition t = level.getTransition(null);
+				|| (/*!(level instanceof MiningLevel) &&*/ !level.isPassable(pos) && !level.avoid[pos]) || Barrier.stopHero(pos, level)){
+			LevelTransition t = pos == -1 ? level.getTransitionFromSurface() : level.getTransition(null);
 			if (t == null) {
 				Random.pushGenerator(Dungeon.seedCurLevel() + 5);
 				pos = EditorUtilies.getRandomCellGuaranteed(level, Dungeon.hero == null ? new Hero() : Dungeon.hero);

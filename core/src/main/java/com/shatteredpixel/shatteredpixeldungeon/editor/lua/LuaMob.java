@@ -63,7 +63,7 @@ public interface LuaMob extends LuaClass {
 			};
 
 			try {
-				CustomDungeon.doOnEverything(level.levelScheme, whatToDo, l -> false, () -> {});//TODO tzz we need to also do this whenever we are loading a levelscheme!
+				CustomDungeon.doOnEverything(level.levelScheme, whatToDo, false, l -> false, () -> {});//TODO tzz we need to also do this whenever we are loading a levelscheme!
 			} catch (IOException e) {
 				//level should already be loaded
 			}

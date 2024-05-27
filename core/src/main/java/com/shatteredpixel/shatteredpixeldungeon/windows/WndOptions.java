@@ -193,4 +193,9 @@ public class WndOptions extends Window {
 //			resize(width, (int) (height + plusHeight));
 //		}
 	}
+
+	public void appendMessage(String msg) {
+		tfMessage.text(tfMessage.text() + " " + msg);
+		layout(width);
+	}
 }

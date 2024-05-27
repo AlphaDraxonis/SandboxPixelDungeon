@@ -147,6 +147,12 @@ public final class ServerCommunication {
                     }
                 });
         }
+
+        public void appendMessage(String msg) {
+            if (waitWindow instanceof WndOptions) {
+                ((WndOptions) waitWindow).appendMessage(msg);
+            }
+        }
     }
 
     public static abstract class OnPreviewReceive extends ConnectionCallback {

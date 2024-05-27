@@ -863,6 +863,22 @@ public abstract class Level implements Bundlable {
         }
         return null;
     }
+
+	public LevelTransition getTransitionFromSurface() {
+		List<LevelTransition> results = new ArrayList<>(5);
+		for (LevelTransition transition : transitions.values()) {
+			if (transition.type == LevelTransition.Type.SURFACE) {
+				results.add(transition);
+			}
+		}
+		if (!results.isEmpty()) {
+			Random.pushGenerator(Dungeon.seedCurLevel());
+			LevelTransition ret = Random.element(results);
+			Random.popGenerator();
+			return ret;
+		}
+		return getTransition(null);
+	}
 //
 //    public LevelTransition getTransition(int cell) {
 //        for (LevelTransition transition : transitions) {

@@ -18,7 +18,7 @@ public class AdditionalCodePanel extends CodeInputPanel {
 
 	@Override
 	protected String convertToLuaCode() {
-		return textInput == null ? "" : textInput.getText();
+		return textInput == null ? textInputText == null ? "" : textInputText : textInput.getText();
 	}
 
 	@Override

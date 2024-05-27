@@ -73,7 +73,7 @@ public class MethodPanel extends CodeInputPanel {
 	@Override
 	protected String convertToLuaCode() {
 
-		if (textInput == null) return null;
+		if (textInput == null && (textInputText == null || textInputText.isEmpty())) return null;
 
 		StringBuilder b = new StringBuilder();
 
@@ -86,7 +86,7 @@ public class MethodPanel extends CodeInputPanel {
 		}
 		b.append(")\n");
 
-		b.append(textInput.getText());
+		b.append(textInput == null ? textInputText : textInput.getText());
 
 		b.append("\nend");
 

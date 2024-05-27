@@ -76,6 +76,9 @@ public class LuaManager {
 		globals.set("branch", LuaValue.valueOf(Dungeon.branch));
 		globals.set("version", LuaValue.valueOf(Game.version));
 		globals.set("versionCode", LuaValue.valueOf(Game.versionCode));
+		globals.set("seed", LuaValue.valueOf(Dungeon.seed));
+
+		if (Dungeon.levelName != null) globals.set("levelSeed", LuaValue.valueOf(Dungeon.seedCurLevel()));
 
 		updateStatistics();
 	}

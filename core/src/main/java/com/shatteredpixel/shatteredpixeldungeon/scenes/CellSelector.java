@@ -635,7 +635,10 @@ public class CellSelector extends ScrollArea {
 	}
 	
 	public static abstract class Listener {
-		public abstract void onSelect( Integer cell );
+
+		public long minShowingTime = -1;
+
+		public abstract void onSelect(Integer cell );
 
 		public void onSelectDragging(Integer cell) {
 			onSelect(cell);

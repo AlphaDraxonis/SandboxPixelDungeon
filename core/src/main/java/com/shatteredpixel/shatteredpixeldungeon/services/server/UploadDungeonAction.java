@@ -31,6 +31,7 @@ import com.badlogic.gdx.utils.Base64Coder;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.server.ServerDungeonList;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.Game;
 
 import java.io.FileNotFoundException;
@@ -50,6 +51,8 @@ public class UploadDungeonAction {
 	private List<Net.HttpRequest> openRequests = new ArrayList<>();
 
 	private String folderID;
+
+	private Thread notifyAboutLongTime;
 
 	//TODO tzz ask if want to include a dungeon before!
 	public UploadDungeonAction(String dungeonName, String description, String userName, int difficulty, ServerCommunication.UploadCallback callback) {
@@ -96,6 +99,22 @@ public class UploadDungeonAction {
 							folderID = result.substring(4);
 							ServerDungeonList.dungeons = null;
 							openResponses += files.length;
+
+							notifyAboutLongTime = new Thread(() -> {
+								try {
+									Thread.sleep(500);
+									if (notifyAboutLongTime != null) {
+										Game.runOnRenderThread(() -> {
+											callback.appendMessage(Messages.get(ServerCommunication.class, "large_files"));
+										});
+										notifyAboutLongTime = null;
+									}
+								} catch (InterruptedException e) {
+									notifyAboutLongTime = null;
+								}
+							});
+							notifyAboutLongTime.start();
+
 							for (FileHandle f : files) {
 								uploadFile(f);
 							}
@@ -202,7 +221,11 @@ public class UploadDungeonAction {
 		protected void decreaseOpenResponses() {
 			openResponses--;
 			if (openResponses <= 0) {
+
+				notifyAboutLongTime = null;
+
 				if (canceled) return;
+
 				if (errors.isEmpty()) Game.runOnRenderThread(() -> callback.successful(folderID));
 				else Game.runOnRenderThread(() -> callback.failed(errors.get(0)));
 			}

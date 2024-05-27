@@ -122,9 +122,9 @@ public class IDEWindow extends Component {
 					@Override
 					protected void onSelect(int index) {
 						selectScript(scripts.get(index), true);
-						LuaScript s = LuaScript.readFromFileContent(createFullScript(), scripts.get(index).pathFromRoot);
-						EditorUtilies.getParentWindow(IDEWindow.this).hide();
-						showWindow(customObject, s);
+//						LuaScript s = LuaScript.readFromFileContent(createFullScript(), scripts.get(index).pathFromRoot);
+//						EditorUtilies.getParentWindow(IDEWindow.this).hide();
+//						showWindow(customObject, s);
 					}
 				});
 			}
@@ -149,7 +149,8 @@ public class IDEWindow extends Component {
 
 			@Override
 			protected String convertToLuaCode() {
-				return "--" + (textInput == null ? "" : textInput.getText().replace('\n', (char) 29));
+				String comment = textInput == null ? textInputText == null ? "" : textInputText : textInput.getText();
+				return "--" + comment.replace('\n', (char) 29);
 			}
 
 			@Override
@@ -166,15 +167,29 @@ public class IDEWindow extends Component {
 			}
 
 			@Override
-			protected void onAddClick() {
-				super.onAddClick();
+			public void expand() {
+				onAdd(null, true);
 				remover.setVisible(false);
+
+				layoutParent();
 			}
 
 			@Override
-			protected void onRemove() {
-				super.onRemove();
+			public void fold() {
+				if (body != null) {
+					body.destroy();
+					remove(body);
+					body = null;
+				}
+				textInput = null;
+
 				adder.setVisible(false);
+				remover.setVisible(false);
+
+				fold.setVisible(false);
+				expand.setVisible(true);
+
+				layoutParent();
 			}
 		};
 		add(inputDesc);

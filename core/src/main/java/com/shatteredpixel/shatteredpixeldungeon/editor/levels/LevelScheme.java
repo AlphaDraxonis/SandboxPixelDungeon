@@ -528,7 +528,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         Random.pushGenerator(seed);
 
 		try {
-			CustomDungeon.doOnEverything(this, GameObject::initRandoms, l -> false, () -> {});
+			CustomDungeon.doOnEverything(this, GameObject::initRandoms, false, l -> false, () -> {});
 		} catch (IOException e) {
 			//should already be loaded
 		}

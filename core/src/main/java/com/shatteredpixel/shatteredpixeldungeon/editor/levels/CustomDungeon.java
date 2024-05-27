@@ -782,7 +782,7 @@ public class CustomDungeon implements Bundlable {
     }
 
 
-    public static void doOnEverything(LevelScheme levelScheme, Function<GameObject, GameObject.ModifyResult> whatToDo,
+    public static void doOnEverything(LevelScheme levelScheme, Function<GameObject, GameObject.ModifyResult> whatToDo, boolean resetUndo,
                                       Function<CustomLevel, Boolean> extraTasksCL, Runnable ifNoCL) throws IOException {
 
         GameObject.doOnAllGameObjectsList(levelScheme.itemsToSpawn, whatToDo);
@@ -845,7 +845,7 @@ public class CustomDungeon implements Bundlable {
                 levelScheme.unloadLevel();
             }
             else if (level == EditorScene.getCustomLevel()) {
-                Undo.reset();//TODO maybe not best solution to reset all
+                if (resetUndo) Undo.reset();//TODO maybe not best solution to reset all
                 EditorScene.updateHeapImagesAndSubIcons();
             }
         } else {
@@ -902,7 +902,7 @@ public class CustomDungeon implements Bundlable {
             if (n.equals(ls.getChasm())) ls.setChasm(null, false);
             if (n.equals(ls.getPassage())) ls.setPassage(null);
 
-            doOnEverything(ls, whatToDo, level -> {
+            doOnEverything(ls, whatToDo, true, level -> {
 
                 Set<Integer> toRemoveTransitions = new HashSet<>(4);
                 for (LevelTransition transition : level.transitions.values()) {
@@ -1113,7 +1113,7 @@ public class CustomDungeon implements Bundlable {
         Function<GameObject, GameObject.ModifyResult> whatToDo = obj -> obj.onRenameLevelScheme(oldName, newName);
 
 		try {
-			doOnEverything(ls, whatToDo, level -> {
+			doOnEverything(ls, whatToDo, true, level -> {
 
 				//TODO refactor to use the same as renaming logic!
 				for (LevelTransition transition : level.transitions.values()) {
@@ -1192,7 +1192,7 @@ public class CustomDungeon implements Bundlable {
                 if (oldName.equals(ls.levelCreatedBefore)) ls.levelCreatedBefore = newName;
                 if (oldName.equals(ls.levelCreatedAfter)) ls.levelCreatedAfter = newName;
 
-                doOnEverything(ls, whatToDo, level -> {
+                doOnEverything(ls, whatToDo, true, level -> {
                     boolean changedSth = false;
 
                     for (LevelTransition transition : level.transitions.values()) {
@@ -1296,7 +1296,7 @@ public class CustomDungeon implements Bundlable {
 
             for (LevelScheme ls : floors.values()) {
 
-                doOnEverything(ls, whatToDo,
+                doOnEverything(ls, whatToDo, true,
                         level -> {
                             return false;
 

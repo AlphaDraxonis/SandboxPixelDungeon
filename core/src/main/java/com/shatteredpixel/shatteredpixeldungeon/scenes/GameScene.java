@@ -1165,8 +1165,15 @@ public class GameScene extends DungeonScene {
 		}
 	}
 
+	private long lastTimeListenerWasChanged;
+
 	@Override
 	protected void selectCellImpl( CellSelector.Listener listener ) {
+		if (cellSelector.listener != listener) {
+			if (cellSelector.listener != null &&
+					System.currentTimeMillis() - lastTimeListenerWasChanged < cellSelector.listener.minShowingTime) return;
+			lastTimeListenerWasChanged = System.currentTimeMillis();
+		}
 		if (cellSelector.listener != null && cellSelector.listener != defaultCellListener){
 			cellSelector.listener.onSelect(null);
 		}

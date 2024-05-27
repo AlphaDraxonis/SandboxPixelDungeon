@@ -281,9 +281,16 @@ public enum Tiles {
         customTileBag.items.add(new CustomTileItem(customTile, -1));
     }
 
-    public static void removeCustomTile(CustomTileItem customTileItem) {
-        ownCustomTiles.remove(((CustomTileLoader.UserCustomTile) customTileItem.getObject()).identifier);
-        customTileBag.items.remove(customTileItem);
+    public static void removeCustomTile(CustomTileLoader.UserCustomTile customTile) {
+        ownCustomTiles.remove(customTile.identifier);
+        Item toRemove = null;
+        for (Item i : customTileBag.items) {
+            if (i instanceof CustomTileItem && ((CustomTileItem) i).getObject() == customTile) {
+                toRemove = i;
+                break;
+            }
+        }
+        if (toRemove != null) customTileBag.items.remove(toRemove);
     }
 
     public static class AddSimpleCustomTileButton extends ScrollingListPane.ListButton {

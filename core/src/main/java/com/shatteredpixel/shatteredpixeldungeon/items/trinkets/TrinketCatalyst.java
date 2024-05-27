@@ -77,6 +77,7 @@ public class TrinketCatalyst extends Item {
 
 	public ArrayList<Trinket> rolledTrinkets = new ArrayList<>();//tzz set in editor!
 	public int numChoosableTrinkets = 3;// must always be  0 < this < Generator.Category.Trinket.classes.length
+	private boolean paidEnergy;
 
 	@Override
 	public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
@@ -86,10 +87,12 @@ public class TrinketCatalyst extends Item {
 
 	private static final String ROLLED_TRINKETS = "rolled_trinkets";
 	private static final String NUM_CHOOSABLE_TRINKETS = "num_choosable_trinkets";
+	private static final String PAID_ENERGY = "paid_energy";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
+		bundle.put(PAID_ENERGY, paidEnergy);
 		bundle.put(NUM_CHOOSABLE_TRINKETS, numChoosableTrinkets);
 		if (!rolledTrinkets.isEmpty()){
 			bundle.put(ROLLED_TRINKETS, rolledTrinkets);
@@ -100,6 +103,7 @@ public class TrinketCatalyst extends Item {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		numChoosableTrinkets = bundle.getInt(NUM_CHOOSABLE_TRINKETS);
+		paidEnergy = bundle.getBoolean(PAID_ENERGY);
 		rolledTrinkets.clear();
 		if (bundle.contains(ROLLED_TRINKETS)){
 			rolledTrinkets.addAll((Collection<Trinket>) ((Collection<?>)bundle.getCollection( ROLLED_TRINKETS )));
@@ -115,7 +119,7 @@ public class TrinketCatalyst extends Item {
 
 		@Override
 		public int cost(ArrayList<Item> ingredients) {
-			if (ingredients.get(0) instanceof TrinketCatalyst && !((TrinketCatalyst) ingredients.get(0)).rolledTrinkets.isEmpty()){
+			if (ingredients.get(0) instanceof TrinketCatalyst && ((TrinketCatalyst) ingredients.get(0)).paidEnergy){
 				return 0; //costs 0 if rolledTrinkets has items as the player already paid 6 energy
 			}
 			return 6;
@@ -130,6 +134,7 @@ public class TrinketCatalyst extends Item {
 
 			ingredients.get(0).quantity(0);
 
+			newCata.paidEnergy = true;
 			newCata.initRandom();
 
 			Game.scene().addToFront(new WndTrinket(newCata));

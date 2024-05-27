@@ -93,15 +93,17 @@ public class CustomTileItem extends EditorItem<CustomTilemap> {
                             Tiles.addCustomTile(del);
                             WndEditorInv.updateCurrentTab();
                             super.undo();
+                            Dungeon.customDungeon.restoreToolbar();
                         }
 
                         @Override
                         public void redo() {
                             Dungeon.customDungeon.customTiles.remove(del);
-                            Tiles.removeCustomTile(CustomTileItem.this);
+                            Tiles.removeCustomTile(del);
                             WndEditorInv.updateCurrentTab();
                             super.redo();
                             EditorScene.revalidateCustomTiles();
+                            Dungeon.customDungeon.restoreToolbar();
                         }
 
                         @Override

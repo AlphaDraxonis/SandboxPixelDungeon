@@ -30,6 +30,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Base64Coder;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
@@ -52,6 +53,8 @@ public class DownloadDungeonAction {
 	private String downloadToDir;
 	private final String dungeonName;
 	private boolean isCreator;
+
+	private Thread notifyAboutLongTime;
 
 	public DownloadDungeonAction(String dungeonName, String folderID, ServerCommunication.OnDungeonReceive callback) {
 		this.dungeonName = dungeonName;
@@ -84,6 +87,22 @@ public class DownloadDungeonAction {
 					try {
 						Bundle[] bundles = Bundle.read(httpResponse.getResultAsStream()).getBundleArray();
 						isCreator = bundles[0].getBoolean("creator");
+
+						notifyAboutLongTime = new Thread(() -> {
+							try {
+								Thread.sleep(500);
+								if (notifyAboutLongTime != null) {
+									Game.runOnRenderThread(() -> {
+										callback.appendMessage(Messages.get(ServerCommunication.class, "large_files"));
+									});
+									notifyAboutLongTime = null;
+								}
+							} catch (InterruptedException e) {
+								notifyAboutLongTime = null;
+							}
+						});
+						notifyAboutLongTime.start();
+
 						for (int i = 1; i < bundles.length; i++) {
 							Bundle b = bundles[i];
 							String id = b.getString("id");
@@ -166,6 +185,8 @@ public class DownloadDungeonAction {
 			openResponses--;
 
 			if (openResponses <= 0) {
+
+				notifyAboutLongTime = null;
 
 				if (canceled) return;
 

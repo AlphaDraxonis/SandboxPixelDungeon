@@ -96,7 +96,7 @@ public class Burning extends BuffWithDuration implements Hero.Doom {
 			Buff.detach( target, Chill.class);
 
 			Hero hero = HeroSubclassAbilityBuff.targetHero(target);
-			if (target != null && hero.buff(TimekeepersHourglass.timeStasis.class) == null) {
+			if (hero != null && hero.buff(TimekeepersHourglass.timeStasis.class) == null) {
 
 				hero.damage( damage, this );
 				burnIncrement++;

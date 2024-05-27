@@ -80,7 +80,10 @@ import com.watabou.utils.Reflection;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 import org.luaj.vm2.lib.jse.JsePlatform;
+
+import java.lang.reflect.Array;
 
 public class LuaGlobals extends Globals {
 
@@ -121,7 +124,7 @@ public class LuaGlobals extends Globals {
 				if (arg.isstring()) {
 					if (arg.checkjstring().startsWith(Messages.MAIN_PACKAGE_NAME)) {
 						Class<?> result = Reflection.forName(arg.checkjstring());
-						if (Bundlable.class.isAssignableFrom(result)) {
+						if (result != null && Bundlable.class.isAssignableFrom(result)) {
 							return CoerceJavaToLua.coerce(result);
 						}
 					}
@@ -131,6 +134,30 @@ public class LuaGlobals extends Globals {
 				return LuaValue.NIL;
 			}
 		});
+
+		set("tostring", standardGlobals.get("tostring"));
+
+		LuaTable arrayUtils = new LuaTable();
+		arrayUtils.set("length", new OneArgFunction() {
+			@Override
+			public LuaValue call(LuaValue array) {
+				return LuaValue.valueOf(Array.getLength(CoerceLuaToJava.coerce(array, Object.class)));
+			}
+		});
+		arrayUtils.set("set", new ThreeArgFunction() {
+			@Override
+			public LuaValue call(LuaValue array, LuaValue index, LuaValue value) {
+				Array.set(CoerceLuaToJava.coerce(array, Object.class), index.toint(), CoerceLuaToJava.coerce(value, Object.class));
+				return LuaValue.NIL;
+			}
+		});
+		arrayUtils.set("get", new TwoArgFunction() {
+			@Override
+			public LuaValue call(LuaValue array, LuaValue index) {
+				return CoerceJavaToLua.coerce(Array.get(CoerceLuaToJava.coerce(array, Object.class), index.toint()));
+			}
+		});
+		set("Arrays", arrayUtils);
 
 		set("getActor", new OneArgFunction() {
 			@Override
@@ -188,7 +215,21 @@ public class LuaGlobals extends Globals {
 						: LuaValue.NIL;
 			}
 		});
-		set("random", randomUtils);
+		randomUtils.set("pushGenerator", new OneArgFunction() {
+			@Override
+			public LuaValue call(LuaValue seed) {
+				if (seed.islong()) Random.pushGenerator(seed.checklong());
+				return LuaValue.NIL;
+			}
+		});
+		randomUtils.set("popGenerator", new ZeroArgFunction() {
+			@Override
+			public LuaValue call() {
+				Random.popGenerator();
+				return LuaValue.NIL;
+			}
+		});
+		set("Random", randomUtils);
 
 		LuaTable gLog = new LuaTable();
 		gLog.set("i", new OneArgFunction() {//info, white
@@ -291,6 +332,9 @@ public class LuaGlobals extends Globals {
 				final String p = promptString;
 				Game.runOnRenderThread(() -> {
 					GameScene.selectCell(new CellSelector.Listener() {
+						{
+							minShowingTime = 50;
+						}
 						@Override
 						public void onSelect(Integer cell) {
 							try {
@@ -551,4 +595,19 @@ public class LuaGlobals extends Globals {
 		}
 		return null;
 	}
+
+//	private static LuaTable arrayToTable(Object array) {
+//		LuaTable result = new LuaTable();
+//
+//		int length = Array.getLength(array);
+//		for (int i = 0; i < length; ++i) {
+//
+//			Object v = Array.get(array, i);
+//			result.set(i, v != null && v.getClass().isArray()
+//					? arrayToTable(v)
+//					: CoerceJavaToLua.coerce(v));
+//
+//		}
+//		return result;
+//	}
 }

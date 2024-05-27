@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor;
 
 import com.shatteredpixel.shatteredpixeldungeon.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
@@ -87,6 +88,7 @@ public class EditorScene extends DungeonScene {
         Dungeon.branch = 0;
         GamesInProgress.curSlot = 0;
         FileUtils.setDefaultFileType(FileUtils.getFileTypeForCustomDungeons());
+        Actor.clear();
     }
 
     private static boolean firstTimeOpening = true;

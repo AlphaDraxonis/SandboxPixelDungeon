@@ -79,8 +79,11 @@ public class VariablesPanel extends CodeInputPanel {
 
 	@Override
 	protected String convertToLuaCode() {
+
+		if (textInput == null && (textInputText == null || textInputText.isEmpty())) return null;
+
 		return tableName + " = {\n" +
-				(textInput == null ? "" : textInput.getText()) +
+				(textInput == null ? textInputText : textInput.getText()) +
 				"\n}";
 	}
 
