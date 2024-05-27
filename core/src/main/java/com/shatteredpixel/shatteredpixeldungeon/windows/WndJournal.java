@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.journal.CustomDocumentPage;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
@@ -93,10 +94,12 @@ public class WndJournal extends WndTabbed {
 		catalogTab.setRect(0, 0, width, height);
 		catalogTab.updateList();
 
-		loreTab = new LoreTab();
-		add(loreTab);
-		loreTab.setRect(0, 0, width, height);
-		loreTab.updateList();
+		if (!Dungeon.customDungeon.foundPages.isEmpty()) {
+			loreTab = new LoreTab();
+			add(loreTab);
+			loreTab.setRect(0, 0, width, height);
+			loreTab.updateList();
+		} else if (last_index >= 4) last_index = 0;
 		
 		Tab[] tabs = {
 				new IconTab( new ItemSprite(ItemSpriteSheet.MASTERY, null) ) {
@@ -127,7 +130,7 @@ public class WndJournal extends WndTabbed {
 						if (value) last_index = 3;
 					}
 				},
-				new IconTab( new ItemSprite(ItemSpriteSheet.GUIDE_PAGE, null) ) {
+				loreTab == null ? null : new IconTab( new ItemSprite(ItemSpriteSheet.GUIDE_PAGE, null) ) {
 					protected void select( boolean value ) {
 						super.select( value );
 						loreTab.active = loreTab.visible = value;
@@ -137,7 +140,7 @@ public class WndJournal extends WndTabbed {
 		};
 		
 		for (Tab tab : tabs) {
-			add( tab );
+			if (tab != null) add( tab );
 		}
 		
 		layoutTabs();
@@ -152,7 +155,7 @@ public class WndJournal extends WndTabbed {
 		alchemyTab.layout();
 		notesTab.layout();
 		catalogTab.layout();
-		loreTab.layout();
+		if (loreTab != null) loreTab.layout();
 	}
 	
 	public static class GuideTab extends Component {
@@ -637,29 +640,26 @@ public class WndJournal extends WndTabbed {
 		private void updateList(){
 			list.addTitle(Messages.get(this, "title"));
 
-			for (Document doc : Document.values()){
-				if (!doc.isLoreDoc()) continue;
-
-				boolean found = doc.anyPagesFound();
+			for (CustomDocumentPage page : Dungeon.customDungeon.foundPages) {
 				ScrollingListPane.ListItem item = new ScrollingListPane.ListItem(
-						doc.pageSprite(),
+						new ItemSprite(page.image),
 						null,
-						found ? Messages.titleCase(doc.title()) : "???"
+						page.pageTitle()
 				){
 					@Override
 					public boolean onClick(float x, float y) {
-						if (inside( x, y ) && found) {
-							SandboxPixelDungeon.scene().addToFront( new WndDocument( doc ));
+						if (inside( x, y )) {
+							SandboxPixelDungeon.scene().addToFront( new WndStory(
+									new ItemSprite(page.image),
+									page.pageTitle(),
+									page.pageText() ));
+							hardlight(Window.WHITE);
 							return true;
 						} else {
 							return false;
 						}
 					}
 				};
-				if (!found){
-					item.hardlight(0x999999);
-					item.hardlightIcon(0x999999);
-				}
 				list.addItem(item);
 			}
 

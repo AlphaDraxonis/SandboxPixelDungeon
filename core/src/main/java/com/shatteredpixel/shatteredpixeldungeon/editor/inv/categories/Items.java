@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.journal.CustomDocumentPage;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.*;
@@ -315,6 +316,9 @@ public enum Items implements EditorInvCategory<Item> {
                 Stylus.class,
                 Honeypot.class,
                 Honeypot.ShatteredPot.class,
+
+                CustomDocumentPage.class,
+
                 MerchantsBeacon.class,
                 Ankh.class,
                 Waterskin.class,

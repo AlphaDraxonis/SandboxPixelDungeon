@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.journal.CustomDocumentPage;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.Brew;
@@ -98,6 +99,8 @@ public class CustomDungeon implements Bundlable {
     public int nextParticleID = 1;
     public Map<Integer, CustomParticle.ParticleProperty> particles;
 
+    public List<CustomDocumentPage> foundPages;
+
     public CustomDungeon(String name) {
 
         CustomObject.reset();
@@ -110,6 +113,7 @@ public class CustomDungeon implements Bundlable {
         blockedRecipes = new HashSet<>(5);
         blockedRecipeResults = new HashSet<>(5);
         particles = new HashMap<>();
+        foundPages = new ArrayList<>(2);
         heroesEnabled = new boolean[HeroClass.values().length];
         heroSubClassesEnabled = new boolean[heroesEnabled.length * 2];
         Arrays.fill(heroesEnabled, true);
@@ -542,6 +546,7 @@ public class CustomDungeon implements Bundlable {
     private static final String VIEW_2D = "view_2d";
     private static final String SEE_LEVEL_ON_DEATH = "see_level_on_death";
     private static final String NOT_REVEAL_SECRETS = "not_reveal_secrets";
+    private static final String FOUND_PAGES = "found_pages";
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     @Override
@@ -563,6 +568,8 @@ public class CustomDungeon implements Bundlable {
         bundle.put(SEE_LEVEL_ON_DEATH, seeLevelOnDeath);
         bundle.put(NOT_REVEAL_SECRETS, notRevealSecrets);
         bundle.put(FORCE_CHALLENGES, forceChallenges);
+
+        bundle.put(FOUND_PAGES, foundPages);
 
         int[] intArray = new int[blockedRecipes.size()];
         int index = 0;
@@ -735,6 +742,12 @@ public class CustomDungeon implements Bundlable {
             for (int i = 0; i < labels.length; i++) {
                 ringGemLabels.put(classes[i], labels[i]);
             }
+        }
+
+        foundPages = new ArrayList<>(2);
+        if (bundle.contains(FOUND_PAGES)) {
+            for (Bundlable b : bundle.getCollection(FOUND_PAGES))
+                foundPages.add((CustomDocumentPage) b);
         }
 
         int i = 0;

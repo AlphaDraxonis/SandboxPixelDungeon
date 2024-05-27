@@ -17,6 +17,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
@@ -26,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.FakeTenguShocker;
+import com.shatteredpixel.shatteredpixeldungeon.items.journal.CustomDocumentPage;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
@@ -37,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
@@ -77,6 +80,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledButton enchantBtn;
     protected StyledSpinner numChoosableTrinkets;
     protected ItemContainer<Trinket> rollTrinkets;
+    protected StyledSpinner docPageType;
+    protected StringInputComp docPageText, docPageTitle;
     protected ChooseDestLevelComp keylevel;
     protected StyledButton keyCell;
     protected StyledButton randomItem;
@@ -324,6 +329,51 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 add(shockerDuration);
             }
 
+            if (item instanceof CustomDocumentPage) {
+
+                List<String> types = CustomDocumentPage.types;
+                docPageType = new StyledSpinner(new SpinnerTextIconModel(true, ((CustomDocumentPage) item).type, types.toArray()) {
+
+                    @Override
+                    protected String getAsString(Object value) {
+                        String txt = Document.INTROS.pageTitle((String) value);
+                        if (txt != Messages.NO_TEXT_FOUND) return txt;
+                        return Messages.get(CustomDocumentPage.class, ((String) value));
+                    }
+
+                    @Override
+                    protected Image getIcon(Object value) {
+                        return new ItemSprite(CustomDocumentPage.getImage(types.indexOf(value)));
+                    }
+                }, Messages.get(EditHeapComp.class, "type"), 6);
+                docPageType.addChangeListener( () -> {
+                    ((CustomDocumentPage) item).setType(types.indexOf(docPageType.getValue()), heap);
+                    updateObj();
+                });
+                add(docPageType);
+
+                docPageTitle = new StringInputComp(label("doc_page_title"), ((CustomDocumentPage) item).title, 100, false, "") {
+                    @Override
+                    protected void onChange() {
+                        super.onChange();
+                        ((CustomDocumentPage) item).title = docPageTitle.getText();
+                        updateObj();
+                    }
+                };
+                add(docPageTitle);
+
+                docPageText = new StringInputComp(label("doc_page_text"), ((CustomDocumentPage) item).text, Integer.MAX_VALUE, true, "") {
+                    @Override
+                    protected void onChange() {
+                        super.onChange();
+                        ((CustomDocumentPage) item).text = docPageText.getText();
+                        updateObj();
+                    }
+                };
+                add(docPageText);
+
+            }
+
             if (item instanceof Key) {
                 Key k = (Key) item;
 
@@ -431,8 +481,8 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
 
         rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, chargeSpinner, levelSpinner, durabilitySpinner,
-                augmentationSpinner, curseBtn, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, spreadIfLoot};
-        linearComps = new Component[]{rollTrinkets, bagItems, randomItem, keylevel, keyCell};
+                augmentationSpinner, curseBtn, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, docPageType, spreadIfLoot};
+        linearComps = new Component[]{rollTrinkets, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
     }
 
     @Override
@@ -551,6 +601,10 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (blessed != null)                blessed.checked(((Ankh) obj).blessed);
         if (igniteBombOnDrop != null)       igniteBombOnDrop.checked(((Bomb) obj).igniteOnDrop);
         if (shockerDuration != null)        shockerDuration.setValue(((FakeTenguShocker) obj).duration);
+        if (docPageType != null)            docPageType.setValue(CustomDocumentPage.types.get(((CustomDocumentPage) obj).type));
+        if (docPageText != null)            docPageText.setText(((CustomDocumentPage) obj).text);
+        if (docPageTitle != null)           docPageTitle.setText(((CustomDocumentPage) obj).text);
+        if (numChoosableTrinkets != null)   numChoosableTrinkets.setValue((((TrinketCatalyst) obj).numChoosableTrinkets));
         if (keylevel != null)               keylevel.selectObject(((Key) obj).levelName);
         if (keyCell != null) {
             int cell = ((Key) obj).cell;
@@ -650,6 +704,13 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
         if (a instanceof Bag) {
             if (!isItemListEqual(((Bag) a).items, ((Bag) b).items)) return false;
+        }
+        if (a instanceof CustomDocumentPage) {
+            CustomDocumentPage ap = (CustomDocumentPage) a;
+            CustomDocumentPage bp = (CustomDocumentPage) b;
+            if (ap.type != bp.type) return false;
+            if ((ap.title == null ? "" : ap.title).equals(bp.title == null ? "" : bp.title)) return false;
+            if ((ap.text == null ? "" : ap.text).equals(bp.text == null ? "" : bp.text)) return false;
         }
         if (a instanceof TrinketCatalyst) {
             if (((TrinketCatalyst) a).numChoosableTrinkets != ((TrinketCatalyst) b).numChoosableTrinkets) return false;
