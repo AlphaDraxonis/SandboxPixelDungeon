@@ -48,6 +48,7 @@ public class GamesInProgress {
     private static final String GAME_FILE = "game.dat";
     private static final String LEVEL_FILE = "level_%s.dat";
     private static final String DEPTH_BRANCH_FILE = "depth%d-branch%d.dat";
+	private static final String CHECKPOINT_FOLDER = "checkpoint";
 
     public static boolean gameExists(int slot) {
         return FileUtils.dirExists(gameFolder(slot))
@@ -66,6 +67,10 @@ public class GamesInProgress {
         if (branch == 0) return gameFolder(slot) + "/" + Messages.format(LEVEL_FILE, levelName);
         return gameFolder(slot) + "/branch_" + branch + "/" + Messages.format(LEVEL_FILE, levelName);
     }
+
+	public static String checkpointFolder(int slot) {
+		return gameFolder(slot) + "/" + CHECKPOINT_FOLDER;
+	}
 
     public static int firstEmpty() {
         for (int i = 1; i <= MAX_SLOTS; i++) {
@@ -155,6 +160,8 @@ public class GamesInProgress {
 
 		info.testGame = Dungeon.isLevelTesting();
 
+		info.checkpointReached = Dungeon.reachedCheckpoint != null;
+
 		slotStates.put( slot, info );
 	}
 	
@@ -196,6 +203,8 @@ public class GamesInProgress {
 		public int maxDepth;
 
 		public boolean testGame;
+
+		public boolean checkpointReached;
 	}
 	
 	public static final Comparator<GamesInProgress.Info> scoreComparator = new Comparator<GamesInProgress.Info>() {

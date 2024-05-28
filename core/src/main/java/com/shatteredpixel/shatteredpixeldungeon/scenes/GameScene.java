@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -178,6 +179,10 @@ public class GameScene extends DungeonScene {
 		
 		for (Mob mob : Dungeon.level.mobs) {
 			addMobSprite( mob );
+		}
+
+		for (Checkpoint cp : Dungeon.level.checkpoints.values()) {
+			addCheckpointSprite( cp );
 		}
 
 		if (!Dungeon.customDungeon.view2d) {
@@ -1295,6 +1300,9 @@ public class GameScene extends DungeonScene {
 		ArrowCell arrowCell = Dungeon.level.arrowCells.get( cell );
 		if (arrowCell != null && arrowCell.visible) objects.add(arrowCell);
 
+		Checkpoint cp = Dungeon.level.checkpoints.get( cell );
+		if (cp != null) objects.add(cp);
+
 		return objects;
 	}
 
@@ -1311,6 +1319,7 @@ public class GameScene extends DungeonScene {
 				&& ((Barrier) obj).visible) names.add(Messages.titleCase( ((Barrier) obj).name() ));
 			else if (obj instanceof ArrowCell
 					&& ((ArrowCell) obj).visible) names.add(Messages.titleCase( ((ArrowCell) obj).name() ));
+			else if (obj instanceof Checkpoint) names.add(Messages.titleCase( ((Checkpoint) obj).name() ));
 		}
 		return names;
 	}
@@ -1343,6 +1352,8 @@ public class GameScene extends DungeonScene {
 			GameScene.show( new WndInfoBarrier((Barrier) o));
 		} else if ( o instanceof ArrowCell ){
 			GameScene.show( new WndInfoArrowCell((ArrowCell) o));
+		} else if ( o instanceof Checkpoint ){
+			GameScene.show( new WndInfoCheckpoint((Checkpoint) o));
 		} else if ( o instanceof Item ){
 			GameScene.show( new WndInfoItem((Item) o));
 		} else {
@@ -1401,6 +1412,9 @@ public class GameScene extends DungeonScene {
 			} else if (objects.get(0) instanceof ArrowCell) {
 				title = textLines.remove(0);
 				image = ((ArrowCell) objects.get(0)).getSprite();
+			} else if (objects.get(0) instanceof Checkpoint) {
+				title = textLines.remove(0);
+				image = ((Checkpoint) objects.get(0)).getSprite();
 			}
 
 			//determine first text line

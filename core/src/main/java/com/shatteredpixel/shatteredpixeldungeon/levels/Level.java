@@ -34,10 +34,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.CoinDoor;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Sign;
+import com.shatteredpixel.shatteredpixeldungeon.editor.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.*;
@@ -170,6 +168,7 @@ public abstract class Level implements Bundlable {
 	public SparseArray<Sign> signs;
 	public SparseArray<Barrier> barriers;
 	public SparseArray<ArrowCell> arrowCells;
+	public SparseArray<Checkpoint> checkpoints;
 	public HashSet<CustomTilemap> customTiles;
 	public HashSet<CustomTilemap> customWalls;
 	public SparseArray<CoinDoor> coinDoors;
@@ -209,6 +208,7 @@ public abstract class Level implements Bundlable {
 	private static final String SIGNS       = "signs";
 	private static final String BARRIERS    = "barriers";
 	private static final String ARROW_CELLS = "arrow_cells";
+	private static final String CHECKPOINTS = "checkpoints";
 	private static final String CUSTOM_TILES= "customTiles";
 	private static final String CUSTOM_WALLS= "customWalls";
 	private static final String COIN_DOORS = "coin_door";
@@ -347,6 +347,7 @@ public abstract class Level implements Bundlable {
 			signs = new SparseArray<>();
 			barriers = new SparseArray<>();
 			arrowCells = new SparseArray<>();
+			checkpoints = new SparseArray<>();
 			customTiles = new HashSet<>();
 			customWalls = new HashSet<>();
 			coinDoors = new SparseArray<>();
@@ -555,6 +556,7 @@ public abstract class Level implements Bundlable {
 		signs = new SparseArray<>();
 		barriers = new SparseArray<>();
 		arrowCells = new SparseArray<>();
+		checkpoints = new SparseArray<>();
 		customTiles = new HashSet<>();
 		customWalls = new HashSet<>();
 		coinDoors = new SparseArray<>();
@@ -653,6 +655,12 @@ public abstract class Level implements Bundlable {
 			arrowCells.put(arrowCell.pos, arrowCell);
 		}
 
+		collection = bundle.getCollection(CHECKPOINTS);
+		for (Bundlable p : collection) {
+			Checkpoint cp = (Checkpoint) p;
+			checkpoints.put(cp.pos, cp);
+		}
+
 		visualMap = map.clone();
 		visualRegions = new int[map.length];
 		collection = bundle.getCollection( CUSTOM_TILES );
@@ -744,6 +752,7 @@ public abstract class Level implements Bundlable {
 		bundle.put( SIGNS, signs.valueList() );
 		bundle.put( BARRIERS, barriers.valueList() );
 		bundle.put( ARROW_CELLS, arrowCells.valueList() );
+		bundle.put( CHECKPOINTS, checkpoints.valueList() );
 		bundle.put( CUSTOM_TILES, customTiles );
 		bundle.put( CUSTOM_WALLS, customWalls );
 		bundle.put( COIN_DOORS, coinDoors.valueList() );
@@ -1916,6 +1925,9 @@ public abstract class Level implements Bundlable {
 		if (!CustomDungeon.isEditing()) {
 			applyZoneBuffs(ch);
 			if (zone[ch.pos] != null) zone[ch.pos].onZoneEntered(ch);
+
+			if (checkpoints.get(ch.pos) != null)
+				checkpoints.get(ch.pos).reachCheckpoint();
 		}
 
 		if (!ch.isFlying() && pit[ch.pos]) {

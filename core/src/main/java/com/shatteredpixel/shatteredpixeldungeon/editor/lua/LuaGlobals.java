@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.WndCreator;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
@@ -523,6 +524,7 @@ public class LuaGlobals extends Globals {
 	private static String searchFullyQualifiedName(String simpleName) {
 		String result = null;
 		switch (simpleName) {
+			case "Checkpoint": return Checkpoint.class.getName();
 			case "ArrowCell": return ArrowCell.class.getName();
 			case "Barrier": return Barrier.class.getName();
 			case "Ballistica": return Ballistica.class.getName();
@@ -543,6 +545,7 @@ public class LuaGlobals extends Globals {
 			case "QuestNPC": return QuestNPC.class.getName();
 			case "NPC": return NPC.class.getName();
 			case "Buff": return Buff.class.getName();
+			case "Checkpoint": return Checkpoint.class.getName();
 			case "ArrowCell": return ArrowCell.class.getName();
 			case "Barrier": return Barrier.class.getName();
 			case "Ballistica": return Ballistica.class.getName();

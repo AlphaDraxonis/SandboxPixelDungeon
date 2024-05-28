@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -210,7 +211,7 @@ public abstract class DefaultEditComp<T> extends Component {
     }
 
 
-    public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap, Plant plant, Barrier barrier, ArrowCell arrowCell, int cell) {
+    public static void showWindow(int terrainType, int terrainImage, Heap heap, Mob mob, Trap trap, Plant plant, Barrier barrier, ArrowCell arrowCell, Checkpoint checkpoint, int cell) {
 
         CustomDungeon.knowsEverything = true;
 
@@ -228,10 +229,11 @@ public abstract class DefaultEditComp<T> extends Component {
         if (plant != null) numTabs++;
         if (barrier != null) numTabs++;
         if (arrowCell != null) numTabs++;
+        if (checkpoint != null) numTabs++;
 
         if (numTabs == 0) return;
         if (numTabs > 1 || (heap != null && !heap.items.isEmpty())) {
-            EditorScene.show(new EditCompWindowTabbed(tileItem, heap, mob, trap, plant, barrier, arrowCell, numTabs));
+            EditorScene.show(new EditCompWindowTabbed(tileItem, heap, mob, trap, plant, barrier, arrowCell, checkpoint, numTabs));
             return;
         }
 
@@ -255,9 +257,12 @@ public abstract class DefaultEditComp<T> extends Component {
         } else if (barrier != null) {
             content = new EditBarrierComp(barrier);
             actionPart = new BarrierActionPart.Modify(barrier);
-        } else {
+        } else if (arrowCell != null) {
             content = new EditArrowCellComp(arrowCell);
             actionPart = new ArrowCellActionPart.Modify(arrowCell);
+        } else {
+            content = new EditCheckpointComp(checkpoint);
+            actionPart = new CheckpointActionPart.Modify(checkpoint);
         }
 
         showSingleWindow(content, actionPart);

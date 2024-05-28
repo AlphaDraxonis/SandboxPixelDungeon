@@ -359,6 +359,15 @@ public class TileItem extends EditorItem {
                 }
             }
 
+            if (CheckpointItem.invalidPlacement(cell)) {
+                Checkpoint cp = level.checkpoints.get(cell);
+                if (cp != null) {
+                    ActionPart p = new CheckpointActionPart.Remove(cp);
+                    moreActions.addActionPart(p);
+                    p.redo();
+                }
+            }
+
             if (PlantItem.invalidPlacement(cell) || isTrapTerrainCell(terrainType)) {
                 Plant p = level.plants.get(cell);
                 if (p != null) {

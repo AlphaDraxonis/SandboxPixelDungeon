@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Tiles;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
@@ -75,6 +76,7 @@ public abstract class DungeonScene extends PixelScene {
 	protected TerrainFeaturesTilemap terrainFeatures;
 	protected BarrierTilemap barriers;
 	protected ArrowCellTilemap arrowCells;
+	protected Group checkpoints;
 
 	protected Group terrain;
 	protected Group customTiles;
@@ -169,6 +171,9 @@ public abstract class DungeonScene extends PixelScene {
 		terrain.add(barriers);
 
 		terrain.add( LevelColoring.getFloor() );
+
+		checkpoints = new Group();
+		terrain.add(checkpoints);
 	}
 
 	protected abstract void initAndAddDungeonTilemap();
@@ -402,6 +407,13 @@ public abstract class DungeonScene extends PixelScene {
 		}
 	}
 
+	protected void addCheckpointSprite(Checkpoint cp) {
+		Checkpoint.CheckpointSprite sprite = cp.getSprite();
+		checkpoints.add(sprite);sprite.visible = true;
+
+		sprite.link(cp);
+	}
+
 	protected void showBanner( Banner banner ) {
 		banner.camera = uiCamera;
 
@@ -456,6 +468,13 @@ public abstract class DungeonScene extends PixelScene {
 
 	public static void effect( Visual effect ) {
 		if (scene != null) scene.effects.add( effect );
+	}
+
+	public static void add( Checkpoint cp ) {
+		Dungeon.level.checkpoints.put(cp.pos, cp);
+		if (scene != null) {
+			scene.addCheckpointSprite(cp);
+		}
 	}
 
 
@@ -584,8 +603,9 @@ public abstract class DungeonScene extends PixelScene {
 		Plant plant = level.plants.get(cell);
 		Barrier barrier = level.barriers.get(cell);
 		ArrowCell arrowCell = level.arrowCells.get(cell);
+		Checkpoint checkpoint = level.checkpoints.get(cell);
 
-		DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, plant, barrier, arrowCell, cell);
+		DefaultEditComp.showWindow(terrainType, DungeonTileSheet.getVisualWithAlts(Tiles.getPlainImage(terrainType), cell), heap, mob, trap, plant, barrier, arrowCell, checkpoint, cell);
 	}
 
 

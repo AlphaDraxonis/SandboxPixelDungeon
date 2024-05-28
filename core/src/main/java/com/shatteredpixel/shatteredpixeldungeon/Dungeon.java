@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
@@ -33,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
@@ -204,6 +206,8 @@ public class Dungeon {
 	public static String[] completed;
 	private static Set<Integer> visitedDepths;
 
+	public static Checkpoint.ReachedCheckpoint reachedCheckpoint;
+
 	public static CustomDungeon customDungeon;
 	public static String levelName;
 
@@ -240,6 +244,8 @@ public class Dungeon {
 //        blacksmithLevel = RandomGenUtils.calculateQuestLevel(layout().getBlacksmithSpawnLevels());
 //        impLevel = RandomGenUtils.calculateQuestLevel(layout().getImpSpawnLevels());
         visitedDepths = new HashSet<>();
+
+		reachedCheckpoint = null;
 
 
         initialVersion = version = Game.versionCode;
@@ -672,6 +678,7 @@ public class Dungeon {
     private static final String COMPLETED = "completed";
     private static final String VISITED = "visited";
     private static final String VISITED_DEPTHS = "visited_depths";
+	private static final String REACHED_CHECKPOINT = "reached_checkpoint";
     private static final String CUSTOM_DUNGEON = "custom_dungeon";
     private static final String TEST_GAME = "test_game";
 
@@ -690,8 +697,9 @@ public class Dungeon {
             bundle.put(MOBS_TO_CHAMPION, mobsToChampion);
             bundle.put(HERO, hero);
             bundle.put(DEPTH, depth);
-            bundle.put( BRANCH, branch );
+            bundle.put(BRANCH, branch);
             bundle.put(LEVEL_NAME, levelName);
+			bundle.put(REACHED_CHECKPOINT, reachedCheckpoint);
 
             bundle.put(VISITED, visited);
             bundle.put(COMPLETED, completed);
@@ -784,6 +792,27 @@ public class Dungeon {
 	public static void loadGame( int save ) throws IOException {
 		loadGame( save, true );
 	}
+
+	public static void loadCheckpoint( int save ) throws IOException {
+
+		FileHandle gameFolder = FileUtils.getFileHandle(GamesInProgress.gameFolder(save));
+		FileHandle checkpointFolder = FileUtils.getFileHandle(GamesInProgress.checkpointFolder(save));
+
+		if (!checkpointFolder.exists() || !checkpointFolder.isDirectory()) {
+			throw new IOException("Checkpoint save not found!");
+		}
+
+		for (FileHandle file : gameFolder.list(".dat")) {
+			file.delete();
+		}
+
+		for (FileHandle file : checkpointFolder.list()) {
+			FileHandle dest = gameFolder.child(file.name());
+			file.copyTo(dest);
+		}
+
+		loadGame( save );
+	}
 	
 	public static void loadGame( int save, boolean fullLoad ) throws IOException {
 		
@@ -872,6 +901,8 @@ public class Dungeon {
         branch = bundle.getInt( BRANCH );
         levelName = bundle.getString(LEVEL_NAME);
 
+		reachedCheckpoint = (Checkpoint.ReachedCheckpoint) bundle.get(REACHED_CHECKPOINT);
+
 		gold = bundle.getInt( GOLD );
 		energy = bundle.getInt( ENERGY );
 
@@ -947,6 +978,7 @@ public class Dungeon {
         info.customSeed = bundle.getString(CUSTOM_SEED);
         info.daily = bundle.getBoolean(DAILY);
         info.dailyReplay = bundle.getBoolean(DAILY_REPLAY);
+		info.checkpointReached = bundle.get(REACHED_CHECKPOINT) != null;
         info.dungeonName = ((CustomDungeon) bundle.get(CUSTOM_DUNGEON)).getName();
 
         Hero.preview(info, bundle.getBundle(HERO));

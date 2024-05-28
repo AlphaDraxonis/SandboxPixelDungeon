@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.ActionPartModify;
@@ -41,7 +42,7 @@ public class EditCompWindowTabbed extends WndTabbed {
     private boolean fullyInitialized = false;
 
 
-    public EditCompWindowTabbed(TileItem tileItem, Heap heap, Mob mob, Trap trap, Plant plant, Barrier barrier, ArrowCell arrowCell, int numTabs) {
+    public EditCompWindowTabbed(TileItem tileItem, Heap heap, Mob mob, Trap trap, Plant plant, Barrier barrier, ArrowCell arrowCell, Checkpoint checkpoint, int numTabs) {
         actionPartModifyList.clear();
         items = getItemsFromHeap(heap, numTabs);
         if (heap != null) actionPartModifyList.add(new HeapActionPart.Modify(heap));
@@ -50,6 +51,7 @@ public class EditCompWindowTabbed extends WndTabbed {
         if (plant != null) actionPartModifyList.add(new PlantActionPart.Modify(plant));
         if (barrier != null) actionPartModifyList.add(new BarrierActionPart.Modify(barrier));
         if (arrowCell != null) actionPartModifyList.add(new ArrowCellActionPart.Modify(arrowCell));
+        if (checkpoint != null) actionPartModifyList.add(new CheckpointActionPart.Modify(checkpoint));
         if (tileItem != null) actionPartModifyList.add(new TileModify(tileItem.cell()));
 
 
@@ -182,6 +184,16 @@ public class EditCompWindowTabbed extends WndTabbed {
                 public void updateObj() {
                     super.updateObj();
                     if (comps.containsKey(arrowCell)) comps.get(arrowCell).tabBtn.setIcon(getIcon());
+                }
+            });
+        }
+        if (checkpoint != null) {
+            if (toSelect == null) toSelect = checkpoint;
+            initComp(new EditCheckpointComp(checkpoint) {
+                @Override
+                public void updateObj() {
+                    super.updateObj();
+                    if (comps.containsKey(checkpoint)) comps.get(checkpoint).tabBtn.setIcon(getIcon());
                 }
             });
         }

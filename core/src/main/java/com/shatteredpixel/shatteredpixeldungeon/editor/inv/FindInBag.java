@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.WellWater;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BlobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
@@ -147,6 +148,7 @@ public class FindInBag implements Bundlable {
 				}
 				else if (Barrier.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Tiles.bag.findItem(this);
 				else if (ArrowCell.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Tiles.bag.findItem(this);
+				else if (Checkpoint.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Tiles.bag.findItem(this);
 				else if (CustomTilemap.class.isAssignableFrom(clazz)) inBag = (EditorItem<T>) Tiles.bag.findItem(this);
 				else return null;
 				if (inBag != null && source != null) inBag.setObject((T) source);
@@ -163,6 +165,7 @@ public class FindInBag implements Bundlable {
 		if (heap != null && (obj = heap.peek()) != null) return obj;
 		if ((obj = level.plants.get(cell)) != null) return obj;
 		if ((obj = level.traps.get(cell)) != null) return obj;
+		if ((obj = level.checkpoints.get(cell)) != null) return obj;
 		if ((obj = level.arrowCells.get(cell)) != null) return obj;
 		if ((obj = level.barriers.get(cell)) != null) return obj;
 

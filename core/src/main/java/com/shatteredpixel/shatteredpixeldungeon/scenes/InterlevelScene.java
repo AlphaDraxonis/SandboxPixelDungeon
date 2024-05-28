@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LostBackpack;
@@ -59,7 +60,7 @@ public class InterlevelScene extends PixelScene {
 	private static float fadeTime;
 	
 	public enum Mode {
-		DESCEND, ASCEND, CONTINUE, RESURRECT, RETURN, FALL, RESET, NONE
+		DESCEND, ASCEND, CONTINUE, CHECKPOINT, RESURRECT, RETURN, FALL, RESET, NONE
 	}
 	public static Mode mode;
 
@@ -101,6 +102,10 @@ public class InterlevelScene extends PixelScene {
                 scrollSpeed = 0;
                 break;
             case CONTINUE:
+				scrollSpeed = 5;
+				break;
+			case CHECKPOINT:
+				fadeTime = SLOW_FADE;
                 scrollSpeed = 5;
                 break;
             case DESCEND:
@@ -219,6 +224,9 @@ public class InterlevelScene extends PixelScene {
 								break;
 							case CONTINUE:
 								restore();
+								break;
+							case CHECKPOINT:
+								restoreFromCheckpoint();
 								break;
 							case RESURRECT:
 								resurrect();
@@ -457,6 +465,29 @@ public class InterlevelScene extends PixelScene {
         }
         Dungeon.switchLevel(level, Dungeon.hero.pos);
     }
+
+	private void restoreFromCheckpoint() throws IOException {
+
+		Mob.clearHeldAllies();
+
+		GameLog.wipe();
+
+		Dungeon.loadCheckpoint(GamesInProgress.curSlot);
+		Level level;
+		if (Dungeon.levelHasBeenGenerated(Dungeon.levelName, Dungeon.branch)) {
+			level = Dungeon.loadLevel(GamesInProgress.curSlot);
+		} else {
+			level = Dungeon.newLevel(null, 0);
+		}
+		Dungeon.switchLevel(level, Dungeon.hero.pos);
+
+		if (Dungeon.reachedCheckpoint != null
+				&& Dungeon.levelName.equals(Dungeon.reachedCheckpoint.level)
+				&& Dungeon.branch == Dungeon.reachedCheckpoint.branch) {
+			Checkpoint cp = Dungeon.level.checkpoints.get(Dungeon.reachedCheckpoint.cell);
+			if (cp != null) cp.use();
+		}
+	}
 
     private void resurrect() {
 

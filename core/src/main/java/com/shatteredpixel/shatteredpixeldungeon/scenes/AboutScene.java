@@ -23,18 +23,9 @@ package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.watabou.input.PointerEvent;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.ColorBlock;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.PointerArea;
+import com.watabou.noosa.*;
 import com.watabou.noosa.ui.Component;
 
 public class AboutScene extends PixelScene {
@@ -236,6 +227,19 @@ public class AboutScene extends PixelScene {
 
 		addLine(myTranslation.bottom(), content);
 
+		//*** *** ***
+
+		CreditsBlock community = new CreditsBlock(true,
+				Window.TITLE_COLOR,
+				null,
+				null,
+				"Some items ideas and graphics: Tzardonic","",""
+		);
+		community.setRect((Camera.main.width - colWidth)/2f,  myTranslation.bottom()+10, colWidth, -1);
+		content.add(community);
+
+		addLine(community.bottom(), content);
+
 		//*** Freesound Credits ***
 
 		CreditsBlock freesound = new CreditsBlock(true,
@@ -267,7 +271,7 @@ public class AboutScene extends PixelScene {
 				"_Phone vibration.wav_ by _Breviceps_",
 				"www.freesound.org",
 				"https://www.freesound.org");
-		freesound.setRect(myTranslation.left()-10, myTranslation.bottom() + 4, colWidth+20, -1);
+		freesound.setRect(myTranslation.left()-10, community.bottom() + 4, colWidth+20, -1);
 		content.add(freesound);
 
 		content.setSize( fullWidth, freesound.bottom()+10 );

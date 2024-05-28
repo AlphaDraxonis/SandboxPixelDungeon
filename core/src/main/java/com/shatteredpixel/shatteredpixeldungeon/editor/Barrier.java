@@ -11,7 +11,7 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
-public class Barrier implements Bundlable {
+public class Barrier implements Bundlable, Copyable<Barrier> {
 
     public static final int NUM_BLOCK_TYPES = 5;
 
@@ -77,6 +77,7 @@ public class Barrier implements Bundlable {
         visible = bundle.getBoolean(VISIBLE);
     }
 
+    @Override
     public Barrier getCopy() {
         Barrier copy = new Barrier(pos, blocks);
         copy.visible = visible;

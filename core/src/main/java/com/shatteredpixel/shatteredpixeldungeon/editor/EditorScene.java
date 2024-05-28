@@ -197,6 +197,11 @@ public class EditorScene extends DungeonScene {
             addMobSprite(mob);
         }
 
+
+        for (Checkpoint cp : Dungeon.level.checkpoints.values()) {
+            addCheckpointSprite( cp );
+        }
+
         customWalls = new Group();
         add(customWalls);
 

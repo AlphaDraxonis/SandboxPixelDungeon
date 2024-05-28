@@ -4,10 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.SacrificialFire;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.TileSprite;
+import com.shatteredpixel.shatteredpixeldungeon.editor.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCustomTileComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditParticleComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.FindInBag;
@@ -215,7 +212,7 @@ public enum Tiles {
         bag.items.add(new TileBag("empty", EMPTY.terrains) {{items.add(new ArrowCellItem(new ArrowCell(-1)));}});
         bag.items.add(wallBag = new TileBag("wall", WALL.terrains));
         bag.items.add(new TileBag("door", DOOR.terrains));
-        bag.items.add(new TileBag("other", SPECIAL.terrains));
+        bag.items.add(new TileBag("other", SPECIAL.terrains) {{items.add(new CheckpointItem(new Checkpoint()));}});
         bag.items.add(customTileBag = new CustomTileBag());
 
         wallBag.items.add(2, new BarrierItem(new Barrier(-1)));

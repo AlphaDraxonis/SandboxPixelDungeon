@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
@@ -68,6 +69,7 @@ public class EditCompWindow extends Window {
         if (object instanceof Zone) return new EditZoneComp((Zone) object);
         if (object instanceof Barrier) return new EditBarrierComp((Barrier) object);
         if (object instanceof ArrowCell) return new EditArrowCellComp((ArrowCell) object);
+        if (object instanceof Checkpoint) return new EditCheckpointComp((Checkpoint) object);
         return null;
     }
 

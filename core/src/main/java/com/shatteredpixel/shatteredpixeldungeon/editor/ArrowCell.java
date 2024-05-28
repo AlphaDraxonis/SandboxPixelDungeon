@@ -7,7 +7,7 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 
-public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
+public class ArrowCell implements Bundlable, Copyable<ArrowCell>, PathFinder.ArrowCellInterface {
 
     public enum EnterMode {
         IF_NO_EXIT,
@@ -72,6 +72,7 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
         visible = bundle.getBoolean(VISIBLE);
     }
 
+    @Override
     public ArrowCell getCopy() {
         ArrowCell copy = new ArrowCell(pos, directionsLeaving, enterMode);
         copy.visible = visible;
@@ -88,7 +89,7 @@ public class ArrowCell implements Bundlable, PathFinder.ArrowCellInterface {
     }
 
     public String desc() {
-        return Messages.get(this, "desc");
+        return Messages.get(this, "desc");//TODO tzz also consider entrance rules!
     }
 
     public boolean allowsDirectionLeaving(int pathfinderNeighboursValue) {

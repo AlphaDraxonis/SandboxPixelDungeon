@@ -222,6 +222,7 @@ public class CustomLevel extends Level {
             signs = level.signs;
             barriers = level.barriers;
             arrowCells = level.arrowCells;
+            checkpoints = level.checkpoints;
             coinDoors = level.coinDoors;
             blobs = level.blobs;
             particles = level.particles;
@@ -862,6 +863,17 @@ public class CustomLevel extends Level {
         }
         level.arrowCells.clear();
         level.arrowCells.putAll(nArrowCells);
+
+        SparseArray<Checkpoint> nCheckpoint = new SparseArray<>();
+        for (Checkpoint cp : level.checkpoints.valueList()) {
+            int nPos = newPosition.get(cp.pos);
+            if (isPositionValid.test(cp.pos, nPos)) {
+                nCheckpoint.put(nPos, cp);
+                cp.pos = nPos;
+            }
+        }
+        level.checkpoints.clear();
+        level.checkpoints.putAll(nCheckpoint);
 
         SparseArray<CoinDoor> nCoinDoors = new SparseArray<>();
         for (CoinDoor c : level.coinDoors.valueList()) {

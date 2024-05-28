@@ -4,6 +4,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditRemoverComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.DefaultListItem;
@@ -200,6 +201,7 @@ public abstract class EditorItem<T> extends Item {
         ITEM,
         PLANT,
         TRAP,
+        CHECKPOINT,
         ARROW_CELL,
         BARRIER,
         CUSTOM_TILE,
@@ -213,6 +215,7 @@ public abstract class EditorItem<T> extends Item {
                 case ITEM: return ItemItem.remove(cell);
                 case PLANT: return PlantItem.remove(cell);
                 case TRAP: return TrapItem.remove(level.traps.get(cell));
+                case CHECKPOINT: return CheckpointItem.remove(cell);
                 case ARROW_CELL: return ArrowCellItem.remove(cell);
                 case BARRIER: return BarrierItem.remove(cell);
                 case CUSTOM_TILE: return CustomTileItem.remove(cell);
@@ -228,6 +231,7 @@ public abstract class EditorItem<T> extends Item {
                 case ITEM: return Items.bag.name();
                 case PLANT: return Plants.bag.name();
                 case TRAP: return Traps.bag.name();
+                case CHECKPOINT: return Messages.get(Checkpoint.class, "name");
                 case ARROW_CELL: return Messages.get(ArrowCell.class, "name");
                 case BARRIER: return Messages.get(Barrier.class, "name");
                 case CUSTOM_TILE: return Messages.get(Tiles.CustomTileBag.class, "name");
@@ -249,6 +253,7 @@ public abstract class EditorItem<T> extends Item {
                     Trap t = Reflection.newInstance(EditorInvCategory.getRandom(Traps.values()));
                     t.visible = true;
                     return t.getSprite();
+                case CHECKPOINT: return new Checkpoint.CheckpointSprite(new Checkpoint());
                 case ARROW_CELL: return EditorUtilies.getArrowCellTexture(ArrowCell.ALL, true);
                 case BARRIER: return EditorUtilies.getBarrierTexture(1);
                 case CUSTOM_TILE: return Icons.TALENT.get();
