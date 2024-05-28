@@ -341,6 +341,7 @@ public enum Items implements EditorInvCategory<Item> {
                 BowFragment.class,
                 BrokenHilt.class,
 
+                RatSkullOld.class,
                 CeremonialCandle.class,
                 CorpseDust.class,
                 Embers.class,

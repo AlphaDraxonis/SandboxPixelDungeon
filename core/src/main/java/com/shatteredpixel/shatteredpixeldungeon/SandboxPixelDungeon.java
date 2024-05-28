@@ -83,6 +83,10 @@ public class SandboxPixelDungeon extends Game {
 				com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.exit.ExitRoom.class,
 				"com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.ExitRoom" );
 
+		com.watabou.utils.Bundle.addAlias(
+				com.shatteredpixel.shatteredpixeldungeon.items.quest.RatSkullOld.class,
+				"com.shatteredpixel.shatteredpixeldungeon.items.quest.RatSkull" );
+
 		//pre-v2.3.0
 		com.watabou.utils.Bundle.addAlias(
 				com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb.ConjuredBomb.class,

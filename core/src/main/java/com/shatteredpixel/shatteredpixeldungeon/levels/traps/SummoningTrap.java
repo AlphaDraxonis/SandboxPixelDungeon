@@ -61,7 +61,10 @@ public class SummoningTrap extends Trap {
 				nMobs++;
 			}
 		}
-		if (useCustomConfig) nMobs = spawnMobs.size();
+		if (useCustomConfig) {
+			nMobs = spawnMobs.size();
+			Random.shuffle(spawnMobs);
+		}
 
 		ArrayList<Integer> candidates = new ArrayList<>();
 
@@ -95,7 +98,6 @@ public class SummoningTrap extends Trap {
 				int tries = 20;
 				do {
 					mob = useCustomConfig ? spawnMobs.get(index) : Dungeon.level.createMob();
-					if (useCustomConfig && mob instanceof MobBasedOnDepth) ((MobBasedOnDepth) mob).setLevel(Dungeon.depth);
 					index++;
 					tries--;
 					repeat = Char.hasProp(mob, Char.Property.LARGE) && !Dungeon.level.openSpace[point] || Barrier.stopChar(point, mob);
@@ -103,6 +105,8 @@ public class SummoningTrap extends Trap {
 				} while (repeat && (tries > 0 || useCustomConfig));
 			}
 			if (mob != null) {
+				mob = (Mob) mob.getCopy();
+				if (useCustomConfig && mob instanceof MobBasedOnDepth) ((MobBasedOnDepth) mob).setLevel(Dungeon.depth);
 				mob.state = mob.WANDERING;
 				mob.pos = point;
 				mob.setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME();

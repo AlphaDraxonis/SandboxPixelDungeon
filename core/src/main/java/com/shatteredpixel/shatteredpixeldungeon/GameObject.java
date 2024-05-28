@@ -249,6 +249,7 @@ public abstract class GameObject implements Bundlable {
 		boolean changedSth = false;
 		for (K key : map.keySet()) {
 			GameObject obj = map.get(key);
+			if (obj == null) continue;
 
 			ModifyResult result = whatToDo.apply(obj);
 
