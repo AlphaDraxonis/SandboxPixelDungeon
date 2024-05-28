@@ -52,8 +52,6 @@ public class UploadDungeonAction {
 
 	private String folderID;
 
-	private Thread notifyAboutLongTime;
-
 	//TODO tzz ask if want to include a dungeon before!
 	public UploadDungeonAction(String dungeonName, String description, String userName, int difficulty, ServerCommunication.UploadCallback callback) {
 		this.callback = callback;
@@ -100,20 +98,9 @@ public class UploadDungeonAction {
 							ServerDungeonList.dungeons = null;
 							openResponses += files.length;
 
-							notifyAboutLongTime = new Thread(() -> {
-								try {
-									Thread.sleep(500);
-									if (notifyAboutLongTime != null) {
-										Game.runOnRenderThread(() -> {
-											callback.appendMessage(Messages.get(ServerCommunication.class, "large_files"));
-										});
-										notifyAboutLongTime = null;
-									}
-								} catch (InterruptedException e) {
-									notifyAboutLongTime = null;
-								}
+							Game.runOnRenderThread(() -> {
+								callback.appendMessage(Messages.get(ServerCommunication.class, "connection_established"));
 							});
-							notifyAboutLongTime.start();
 
 							for (FileHandle f : files) {
 								uploadFile(f);
@@ -200,6 +187,9 @@ public class UploadDungeonAction {
 					if (result.startsWith("banned")) errors.add(new ServerCommunication.Banned());
 					else errors.add(new Exception(result));
 				}
+				else Game.runOnRenderThread(() -> {
+					callback.appendMessage(Messages.get(ServerCommunication.class, "sent"));
+				});
 			} else {
 				errors.add((new SocketException(String.valueOf(statusCode))));
 			}
@@ -221,8 +211,6 @@ public class UploadDungeonAction {
 		protected void decreaseOpenResponses() {
 			openResponses--;
 			if (openResponses <= 0) {
-
-				notifyAboutLongTime = null;
 
 				if (canceled) return;
 

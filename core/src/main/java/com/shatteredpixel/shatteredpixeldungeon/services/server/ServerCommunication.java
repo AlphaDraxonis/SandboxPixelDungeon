@@ -118,6 +118,9 @@ public final class ServerCommunication {
             waitWindow = new WndOptions(Messages.get(ServerCommunication.class, "wait_title"),
                     Messages.get(ServerCommunication.class, "wait_body"),
                     Messages.get(ServerCommunication.class, "wait_cancel")) {
+                {
+                    tfMessage.setHighlighting(false);
+                }
                 @Override
                 public void onBackPressed() {
                 }

@@ -54,8 +54,6 @@ public class DownloadDungeonAction {
 	private final String dungeonName;
 	private boolean isCreator;
 
-	private Thread notifyAboutLongTime;
-
 	public DownloadDungeonAction(String dungeonName, String folderID, ServerCommunication.OnDungeonReceive callback) {
 		this.dungeonName = dungeonName;
 		this.callback = callback;
@@ -88,20 +86,9 @@ public class DownloadDungeonAction {
 						Bundle[] bundles = Bundle.read(httpResponse.getResultAsStream()).getBundleArray();
 						isCreator = bundles[0].getBoolean("creator");
 
-						notifyAboutLongTime = new Thread(() -> {
-							try {
-								Thread.sleep(500);
-								if (notifyAboutLongTime != null) {
-									Game.runOnRenderThread(() -> {
-										callback.appendMessage(Messages.get(ServerCommunication.class, "large_files"));
-									});
-									notifyAboutLongTime = null;
-								}
-							} catch (InterruptedException e) {
-								notifyAboutLongTime = null;
-							}
+						Game.runOnRenderThread(() -> {
+							callback.appendMessage(Messages.get(ServerCommunication.class, "connection_established"));
 						});
-						notifyAboutLongTime.start();
 
 						for (int i = 1; i < bundles.length; i++) {
 							Bundle b = bundles[i];
@@ -160,6 +147,11 @@ public class DownloadDungeonAction {
 					String result = httpResponse.getResultAsString();
 					byte[] bytes = Base64Coder.decode(result.replace(' ', '+'));
 					CustomDungeonSaves.writeBytesToFileNoBackup(downloadToDir, path, bytes);
+
+					Game.runOnRenderThread(() -> {
+						callback.appendMessage(Messages.get(ServerCommunication.class, "received", path));
+					});
+
 				} catch (Exception e) {
 					errors.add(e);
 				}
@@ -185,8 +177,6 @@ public class DownloadDungeonAction {
 			openResponses--;
 
 			if (openResponses <= 0) {
-
-				notifyAboutLongTime = null;
 
 				if (canceled) return;
 
