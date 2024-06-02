@@ -642,8 +642,15 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 					}
 				}
 				for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
-					if (m instanceof DwarfKingMob && ((DwarfKingMob) m).getKingId() == id()) {
-						m.die(null);
+					if (m.alignment == alignment) {
+						if (m instanceof DwarfKingMob && ((DwarfKingMob) m).getKingId() == id()) {
+							m.die(null);
+						}
+					}
+				}
+				for (Buff b: buffs()){
+					if (b instanceof LifeLink){
+						b.detach();
 					}
 				}
 			}
