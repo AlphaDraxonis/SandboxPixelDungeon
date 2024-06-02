@@ -762,22 +762,19 @@ public abstract class Char extends Actor {
 		}
 
 		if (buff(Sickle.HarvestBleedTracker.class) != null){
-			if (isImmune(Bleeding.class)){
-				sprite.showStatus(CharSprite.POSITIVE, Messages.titleCase(Messages.get(this, "immune")));
-				buff(Sickle.HarvestBleedTracker.class).detach();
+			buff(Sickle.HarvestBleedTracker.class).detach();
+
+			if (!isImmune(Bleeding.class)){
+				Bleeding b = buff(Bleeding.class);
+				if (b == null){
+					b = new Bleeding();
+				}
+				b.announced = false;
+				b.set(dmg, Sickle.HarvestBleedTracker.class);
+				b.attachTo(this);
+				sprite.showStatus(CharSprite.WARNING, Messages.titleCase(b.name()) + " " + (int)b.left());
 				return;
 			}
-
-			Bleeding b = buff(Bleeding.class);
-			if (b == null){
-				b = new Bleeding();
-			}
-			b.announced = false;
-			b.set(dmg, Sickle.HarvestBleedTracker.class);
-			b.attachTo(this);
-			sprite.showStatus(CharSprite.WARNING, Messages.titleCase(b.name()) + " " + (int)b.left());
-			buff(Sickle.HarvestBleedTracker.class).detach();
-			return;
 		}
 
 		for (ChampionEnemy buff : buffs(ChampionEnemy.class)){
@@ -938,7 +935,7 @@ public abstract class Char extends Actor {
 	public void dieOnLand(){
 		die( null );
 	}
-	
+
 	public void die( Object src ) {
 		destroy();
 		if (src != Chasm.class) sprite.die();
