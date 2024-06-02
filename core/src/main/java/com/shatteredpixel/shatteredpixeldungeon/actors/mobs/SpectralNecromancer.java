@@ -111,7 +111,7 @@ public class SpectralNecromancer extends Necromancer {
 	public void die(Object cause) {
 		for (int ID : wraithIDs){
 			Actor a = Actor.findById(ID);
-			if (a instanceof Mob){
+			if (a instanceof Mob && ((Mob) a).alignment == alignment) {
 				((Mob) a).die(null);
 			}
 		}

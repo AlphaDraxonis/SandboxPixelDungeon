@@ -127,7 +127,7 @@ public class Necromancer extends SpawnerMob {
 			}
 		}
 		
-		if (mySummon != null && mySummon.isAlive()){
+		if (mySummon != null && mySummon.isAlive() && mySummon.alignment == alignment){
 			mySummon.die(null);
 		}
 		
