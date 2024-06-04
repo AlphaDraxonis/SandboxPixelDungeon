@@ -114,7 +114,8 @@ public class Succubus extends Mob {
 	
 	@Override
 	protected boolean getCloser( int target ) {
-		if (fieldOfView[target] && Dungeon.level.distance( pos, target ) > 2 && blinkCooldown <= 0 && !rooted) {
+		if (fieldOfView[target] && Dungeon.level.distance( pos, target ) > 2 && blinkCooldown <= 0 && !rooted
+				&& (!Char.hasProp(this, Property.AQUATIC) || Dungeon.level.water[target])) {
 			
 			if (blink( target )) {
 				spend(-1 / speed());

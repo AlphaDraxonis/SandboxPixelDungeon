@@ -636,7 +636,8 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 			boolean isCavesBossLevel = Dungeon.level instanceof CavesBossLevel;
 
 			if (state != HUNTING || rooted || target == pos || Dungeon.level.adjacent(pos, target)
-					|| ((!supercharged || !isCavesBossLevel) && (!destroyWalls || isCavesBossLevel))) {
+					|| ((!supercharged || !isCavesBossLevel) && (!destroyWalls || isCavesBossLevel))
+					|| hasProp(this, Property.AQUATIC) && !Dungeon.level.water[target]) {
 				return false;
 			}
 

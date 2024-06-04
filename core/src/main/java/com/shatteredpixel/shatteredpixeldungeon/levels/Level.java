@@ -1974,8 +1974,8 @@ public abstract class Level implements Bundlable {
 			Door.enter( ch.pos );
 		}
 
-		if (ch.isAlive() && ch instanceof Piranha && !water[ch.pos] && !CustomDungeon.isEditing()){
-			((Piranha) ch).dieOnLand();
+		if (ch.isAlive() && !water[ch.pos] && Char.hasProp(ch, Char.Property.AQUATIC) && !CustomDungeon.isEditing()){
+			ch.dieOnLand();
 		}
 
 		if (ch == Dungeon.hero) {

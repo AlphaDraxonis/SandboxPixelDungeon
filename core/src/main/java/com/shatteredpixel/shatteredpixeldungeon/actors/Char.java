@@ -927,6 +927,11 @@ public abstract class Char extends Actor {
 			}
 		}
 	}
+
+	//only used if it has the aquatic property
+	public void dieOnLand(){
+		die( null );
+	}
 	
 	public void die( Object src ) {
 		destroy();
@@ -1261,11 +1266,14 @@ public abstract class Char extends Actor {
 		FLYING,//just like normal flying attribute
 		//A character that acts in an unchanging manner. immune to AI state debuffs or stuns/slows
 		STATIC( new HashSet<Class>(),
-				new HashSet<Class>( Arrays.asList(AllyBuff.class, Dread.class, Terror.class, Amok.class, Charm.class, Sleep.class,Paralysis.class, Frost.class, Chill.class, Slow.class, Speed.class) ));
+				new HashSet<Class>( Arrays.asList(AllyBuff.class, Dread.class, Terror.class, Amok.class, Charm.class, Sleep.class,Paralysis.class, Frost.class, Chill.class, Slow.class, Speed.class) )),
+
+		AQUATIC ( new HashSet<Class>(),
+				new HashSet<Class>( Arrays.asList(Burning.class)));
 
 		static {
 			//WARNING keeping the same ordinal order is very important for bundling
-			if (STATIC.ordinal() != 14) throw new RuntimeException("Char.Property: PLEASE MAKE SURE THAT THE ORDINALS ARE ALWAYS IN THE CORRECT ORDER!!!");
+			if (AQUATIC.ordinal() != 15) throw new RuntimeException("Char.Property: PLEASE MAKE SURE THAT THE ORDINALS ARE ALWAYS IN THE CORRECT ORDER!!!");
 		}
 
 		private HashSet<Class> resistances;

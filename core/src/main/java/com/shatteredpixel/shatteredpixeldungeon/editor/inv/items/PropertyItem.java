@@ -83,6 +83,7 @@ public class PropertyItem extends EditorItem<Char.Property> {
             case IMMOVABLE: return new WandmakerSprite();
             case FLYING: return new SwarmSprite();
             case STATIC: return new RotHeartSprite();
+            case AQUATIC: return new PiranhaSprite();
         }
 
         return new ItemSprite(ItemSpriteSheet.SOMETHING);

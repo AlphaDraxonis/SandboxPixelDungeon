@@ -28,7 +28,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Freezing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
@@ -52,6 +51,8 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 		SLEEPING = new Sleeping();
 		WANDERING = new Wandering();
 		HUNTING = new Hunting();
+
+		properties.add(Property.AQUATIC);
 		
 		state = SLEEPING;
 
@@ -71,17 +72,6 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 		if (!hpSet) {
 			HP = HT;
 			hpSet = !CustomDungeon.isEditing();
-		}
-	}
-
-	@Override
-	protected boolean act() {
-		
-		if (!Dungeon.level.water[pos]) {
-			dieOnLand();
-			return true;
-		} else {
-			return super.act();
 		}
 	}
 	
@@ -112,10 +102,6 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 		return super.surprisedBy(enemy, attacking);
 	}
 
-	public void dieOnLand(){
-		die( null );
-	}
-
 	@Override
 	public void die( Object cause ) {
 		super.die( cause );
@@ -133,41 +119,14 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 	public boolean reset() {
 		return true;
 	}
-	
-	@Override
-	protected boolean getCloser( int target ) {
-		
-		if (rooted) {
-			return false;
-		}
-		
-		int step = Dungeon.findStep( this, target, Dungeon.level.water, fieldOfView, true );
-		if (step != -1) {
-			move( step );
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	@Override
-	protected boolean getFurther( int target ) {
-		int step = Dungeon.flee( this, target, Dungeon.level.water, fieldOfView, true );
-		if (step != -1) {
-			move( step );
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
+
 	{
 		for (Class c : new BlobImmunity().immunities()){
 			if (c != Electricity.class && c != Freezing.class){
 				immunities.add(c);
 			}
 		}
-		immunities.add( Burning.class );
+
 	}
 	
 	//if there is not a path to the enemy, piranhas act as if they can't see them

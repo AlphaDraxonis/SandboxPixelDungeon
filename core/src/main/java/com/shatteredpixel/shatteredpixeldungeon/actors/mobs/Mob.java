@@ -392,6 +392,11 @@ public abstract class Mob extends Char implements Customizable {
 	@Override
 	protected boolean act() {
 
+		if (!Dungeon.level.water[pos] && hasProp(this, Property.AQUATIC)) {
+			dieOnLand();
+			return true;
+		}
+
 		if (isBossMob && HP*2 > HT) {
 			bleeding = false;
 //            ((GooSprite)sprite).spray(false);
@@ -709,6 +714,16 @@ public abstract class Mob extends Char implements Customizable {
 			return false;
 		}
 
+		if (hasProp(this, Property.AQUATIC)) {
+			int step = Dungeon.findStep( this, target, Dungeon.level.water, fieldOfView, true );
+			if (step != -1) {
+				move( step );
+				return true;
+			} else {
+				return false;
+			}
+		}
+
 		int step = -1;
 
 		if (Dungeon.level.adjacent( pos, target ) && ArrowCell.allowsStep( pos, target )) {
@@ -833,6 +848,16 @@ public abstract class Mob extends Char implements Customizable {
 	protected boolean getFurther( int target ) {
 		if (rooted || target == pos) {
 			return false;
+		}
+
+		if (hasProp(this, Property.AQUATIC)) {
+			int step = Dungeon.flee( this, target, Dungeon.level.water, fieldOfView, true );
+			if (step != -1) {
+				move( step );
+				return true;
+			} else {
+				return false;
+			}
 		}
 		
 		int step = Dungeon.flee( this, target, Dungeon.level.getPassableVar(this), fieldOfView, true );
