@@ -51,7 +51,7 @@ public class SoulMark extends FlavourBuff {
 
 	@Override
 	public void fx(boolean on) {
-		if (on) target.sprite.add(CharSprite.State.MARKED);
+		if (on && !alwaysHidesFx) target.sprite.add(CharSprite.State.MARKED);
 		else target.sprite.remove(CharSprite.State.MARKED);
 	}
 }

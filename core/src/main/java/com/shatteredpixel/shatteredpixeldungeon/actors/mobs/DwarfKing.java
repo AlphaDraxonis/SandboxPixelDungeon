@@ -982,7 +982,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 
 		@Override
 		public void fx(boolean on) {
-			if (on && (particles == null || particles.parent == null)) {
+			if (on && !alwaysHidesFx && (particles == null || particles.parent == null)) {
 				particles = CellEmitter.get(pos);
 
 				if (summon == DKGolem.class){

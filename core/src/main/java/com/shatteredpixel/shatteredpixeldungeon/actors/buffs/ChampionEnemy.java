@@ -59,7 +59,7 @@ public abstract class ChampionEnemy extends Buff {
 
 	@Override
 	public void fx(boolean on) {
-		if (on && Mimic.isLikeMob(target)) target.sprite.aura( color );
+		if (on && !alwaysHidesFx && Mimic.isLikeMob(target)) target.sprite.aura( color );
 		else target.sprite.clearAura();
 	}
 

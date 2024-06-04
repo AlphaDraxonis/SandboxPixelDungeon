@@ -90,7 +90,7 @@ public class Healing extends Buff {
 	
 	@Override
 	public void fx(boolean on) {
-		if (on) target.sprite.add( CharSprite.State.HEALING );
+		if (on && !alwaysHidesFx) target.sprite.add( CharSprite.State.HEALING );
 		else    target.sprite.remove( CharSprite.State.HEALING );
 	}
 	

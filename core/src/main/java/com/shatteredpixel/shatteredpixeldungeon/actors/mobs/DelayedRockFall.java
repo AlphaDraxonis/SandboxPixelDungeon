@@ -82,7 +82,7 @@ public class DelayedRockFall extends FlavourBuff {
 
 	@Override
 	public void fx(boolean on) {
-		if (on && rockPositions != null){
+		if (on && !alwaysHidesFx && rockPositions != null){
 			for (int i : this.rockPositions){
 				Emitter e = CellEmitter.get(i);
 				e.y -= DungeonTilemap.SIZE*0.2f;

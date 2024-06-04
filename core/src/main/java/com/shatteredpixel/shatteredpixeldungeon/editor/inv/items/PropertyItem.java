@@ -81,7 +81,6 @@ public class PropertyItem extends EditorItem<Char.Property> {
             case PERMEABLE: return new GhostSprite();
             case LARGE: return new GolemSprite();
             case IMMOVABLE: return new WandmakerSprite();
-            case FLYING: return new SwarmSprite();
             case STATIC: return new RotHeartSprite();
             case AQUATIC: return new PiranhaSprite();
         }

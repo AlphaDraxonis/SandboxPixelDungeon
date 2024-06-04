@@ -1,11 +1,19 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DelayedRockFall;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Tengu;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfSirensSong;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.SummonElemental;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Blocking;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoBuff;
@@ -21,6 +29,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
 
     protected RedButton removeBuff;
     protected StyledSpinner duration, level;
+    protected StyledCheckBox showFx;
 
     private final Component[] comps, linearComps;
 
@@ -120,6 +129,20 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
             add(level);
         }
 
+        if (buff instanceof AnkhInvulnerability || buff instanceof Barrier || buff instanceof Blocking.BlockBuff || buff instanceof Tengu.BombAbility
+                || buff instanceof Burning || buff instanceof ScrollOfChallenge.ChallengeArena || buff instanceof ChampionEnemy || buff instanceof Chill
+                || buff instanceof Corruption || buff instanceof DelayedRockFall || buff instanceof Doom || buff instanceof ScrollOfSirensSong.Enthralled
+                || buff instanceof Ghoul.GhoulLifeLink || buff instanceof Healing || buff instanceof SummonElemental.InvisAlly || buff instanceof Levitation
+                || buff instanceof SoulMark || buff instanceof DwarfKing.Summoning) {
+            showFx = new StyledCheckBox(Messages.get(this, "show_fx"));
+            showFx.checked(!buff.alwaysHidesFx);
+            showFx.addChangeListener(v -> {
+                buff.alwaysHidesFx = !v;
+                if (buff.target != null) buff.fx(true);
+            });
+            add(showFx);
+        }
+
         if (buff.target != null) {
             removeBuff = new RedButton(Messages.get(this, "remove")) {
                 @Override
@@ -156,7 +179,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
 //        } else changeDuration = null;
 
 
-        comps = new Component[]{permanent, duration, level};
+        comps = new Component[]{permanent, duration, level, showFx};
         linearComps = new Component[]{removeBuff};
     }
 

@@ -799,7 +799,7 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 
 		@Override
 		public void fx(boolean on) {
-			fxStatic(on, bombPos, smokeEmitters);
+			fxStatic(on && !alwaysHidesFx, bombPos, smokeEmitters);
 		}
 
 		public static void fxStatic(boolean on, int bombPos, ArrayList<Emitter> smokeEmitters) {

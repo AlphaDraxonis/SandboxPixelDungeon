@@ -127,7 +127,7 @@ public class Frost extends FlavourBuff {
 
 	@Override
 	public void fx(boolean on) {
-		if (on) {
+		if (on && !alwaysHidesFx) {
 			target.sprite.add(CharSprite.State.FROZEN);
 			target.sprite.add(CharSprite.State.PARALYSED);
 		} else {

@@ -65,6 +65,7 @@ public class Buff extends Actor {
 
     public boolean permanent = false;
     public boolean zoneBuff = false;
+    public boolean alwaysHidesFx = false;
 
     public boolean attachTo(Char target) {
 
@@ -224,6 +225,7 @@ public class Buff extends Actor {
 
     public static final String PERMANENT = "permanent";
     public static final String ZONE_BUFF = "zone_buff";
+    public static final String ALWAYS_HIDES_FX = "always_hides_fx";
     public static final String TIME_WHEN_PAUSED = "time_when_paused";
     public static final String COOLDOWN_WHEN_PAUSED = "cooldown_when_paused";
 
@@ -232,6 +234,7 @@ public class Buff extends Actor {
         super.storeInBundle(bundle);
         bundle.put(PERMANENT, permanent);
         bundle.put(ZONE_BUFF, zoneBuff);
+        bundle.put(ALWAYS_HIDES_FX, alwaysHidesFx);
         bundle.put(TIME_WHEN_PAUSED, timeWhenPaused);
         bundle.put(COOLDOWN_WHEN_PAUSED, cooldownWhenPaused);
     }
@@ -241,6 +244,7 @@ public class Buff extends Actor {
         super.restoreFromBundle(bundle);
         permanent = bundle.getBoolean(PERMANENT);
         zoneBuff = bundle.getBoolean(ZONE_BUFF);
+        alwaysHidesFx = bundle.getBoolean(ALWAYS_HIDES_FX);
         timeWhenPaused = bundle.getFloat(TIME_WHEN_PAUSED);
         cooldownWhenPaused = bundle.getFloat(COOLDOWN_WHEN_PAUSED);
     }

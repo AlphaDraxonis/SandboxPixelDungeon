@@ -207,7 +207,7 @@ public class Burning extends BuffWithDuration implements Hero.Doom {
 
 	@Override
 	public void fx(boolean on) {
-		if (on) target.sprite.add(CharSprite.State.BURNING);
+		if (on && !alwaysHidesFx) target.sprite.add(CharSprite.State.BURNING);
 		else target.sprite.remove(CharSprite.State.BURNING);
 	}
 

@@ -164,7 +164,7 @@ public class ScrollOfChallenge extends ExoticScroll {
 
 		@Override
 		public void fx(boolean on) {
-			if (on){
+			if (on && !alwaysHidesFx){
 				for (int i : arenaPositions){
 					Emitter e = CellEmitter.get(i);
 					e.pour(ChallengeParticle.FACTORY, 0.05f);

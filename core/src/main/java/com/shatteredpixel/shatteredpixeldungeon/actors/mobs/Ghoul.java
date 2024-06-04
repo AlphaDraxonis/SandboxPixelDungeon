@@ -323,7 +323,7 @@ public class Ghoul extends Mob {
 
 		@Override
 		public void fx(boolean on) {
-			if (on && ghoul != null && ghoul.sprite == null){
+			if (on && !alwaysHidesFx && ghoul != null && ghoul.sprite == null){
 				GameScene.addSprite(ghoul);
 				((GhoulSprite)ghoul.sprite).crumple();
 			}
