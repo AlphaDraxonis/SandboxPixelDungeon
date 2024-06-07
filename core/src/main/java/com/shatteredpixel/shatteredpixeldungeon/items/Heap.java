@@ -314,6 +314,7 @@ public class Heap extends GameObject implements Copyable<Heap> {
 				destroy();
 			} else if (sprite != null) {
 				sprite.view(this).place( pos );
+				updateSubicon();
 			}
 			
 		}
@@ -370,6 +371,7 @@ public class Heap extends GameObject implements Copyable<Heap> {
 				destroy();
 			} else if (sprite != null) {
 				sprite.view(this).place( pos );
+				updateSubicon();
 			}
 		}
 	}
@@ -399,6 +401,7 @@ public class Heap extends GameObject implements Copyable<Heap> {
 				destroy();
 			} else if (sprite != null) {
 				sprite.view(this).place( pos );
+				updateSubicon();
 			}
 		}
 	}
@@ -598,7 +601,7 @@ public class Heap extends GameObject implements Copyable<Heap> {
 
 		if (i != null) {
 			Image copy = EditorUtilies.createSubIcon(i);
-			if (copy != null && isNotContainerType()) {
+			if (copy != null && !isContainerType()) {
 				subicon.copy(copy);
 				subicon.visible = true;
 				subicon.scale.set(0.8f);
@@ -620,7 +623,7 @@ public class Heap extends GameObject implements Copyable<Heap> {
 
 			} else subicon.visible = false;
 
-			if (i.quantity() > 1 && isNotContainerType()) {
+			if (i.quantity() > 1 && !isContainerType()) {
 
 				quantityDisplay.visible = true;
 				quantityDisplay.scale.set(0.65f);
@@ -660,7 +663,7 @@ public class Heap extends GameObject implements Copyable<Heap> {
 			//Code from ItemSlot
 			int trueLvl = i.trueLevel();
 			int buffedLvl = i.buffedLvl();
-			if ((trueLvl != 0 || buffedLvl != 0) && isNotContainerType()) {
+			if ((trueLvl != 0 || buffedLvl != 0) && !isContainerType()) {
 
 				itemLvl.visible = true;
 				itemLvl.scale.set(0.65f);
@@ -736,7 +739,7 @@ public class Heap extends GameObject implements Copyable<Heap> {
 		}
 	}
 
-	private boolean isNotContainerType() {
-		return type == Type.HEAP || type == Type.FOR_SALE;
+	private boolean isContainerType() {
+		return !(type == Type.HEAP || type == Type.FOR_SALE);
 	}
 }

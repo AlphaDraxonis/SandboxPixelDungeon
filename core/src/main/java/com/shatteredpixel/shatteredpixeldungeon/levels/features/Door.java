@@ -34,6 +34,7 @@ public class Door {
 
 	public static void enter( int pos ) {
 		Level.set( pos, Terrain.OPEN_DOOR );
+		if (Dungeon.level.visualMap[pos] == Terrain.DOOR) Dungeon.level.visualMap[pos] = Terrain.OPEN_DOOR;
 		GameScene.updateMap( pos );
 		if (pos >= Dungeon.level.width()) GameScene.updateMap( pos - Dungeon.level.width() );//for wall coloring
 
@@ -53,6 +54,7 @@ public class Door {
 		//door does not shut if anything else is also on it
 		if (Dungeon.level.heaps.get( pos ) == null && chars <= 1) {
 			Level.set( pos, Terrain.DOOR );
+			if (Dungeon.level.visualMap[pos] == Terrain.OPEN_DOOR) Dungeon.level.visualMap[pos] = Terrain.DOOR;
 			GameScene.updateMap( pos );
 			if (pos >= Dungeon.level.width()) GameScene.updateMap( pos - Dungeon.level.width() );//for wall coloring
 			if (Dungeon.level.heroFOV[pos])

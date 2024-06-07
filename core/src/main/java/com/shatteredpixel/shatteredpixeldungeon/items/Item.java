@@ -211,7 +211,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 	public Item merge( Item other ){
 		if (isSimilar( other )){
 			quantity += other.quantity;
-			if (quantity < 0 && other.quantity > 0 || quantity > 2_000_000_000) quantity = 2_000_000_000;
+			if (quantity < other.quantity || quantity > 2_000_000_000) quantity = 2_000_000_000;
 			other.quantity = 0;
 		}
 		return this;
