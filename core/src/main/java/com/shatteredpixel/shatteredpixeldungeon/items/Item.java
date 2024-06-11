@@ -323,7 +323,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 
 	}
 	
-	public boolean collect() {
+	public final boolean collect() {
 		return collect( Dungeon.hero.belongings.backpack );
 	}
 	

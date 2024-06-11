@@ -40,8 +40,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.curses.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfArcana;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.ParchmentScrap;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
@@ -186,6 +188,26 @@ public class Armor extends EquipableItem {
 		if (action.equals(AC_DETACH)){
 			detachSeal(hero);
 		}
+	}
+
+	@Override
+	public boolean collect(Bag container) {
+		if (super.collect(container)) {
+			if (isIdentified() && glyph != null){
+				Catalog.setSeen(glyph.getClass());
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public Item identify(boolean byHero) {
+		if (glyph != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
+			Catalog.setSeen(glyph.getClass());
+		}
+		return super.identify(byHero);
 	}
 
 	@Override
@@ -546,7 +568,7 @@ public class Armor extends EquipableItem {
 		if (permaCurse && cursed && isIdentified()) {
 			info += " " + Messages.get(this, "perma_curse");
 		}
-		
+
 		return info;
 	}
 
@@ -634,6 +656,10 @@ public class Armor extends EquipableItem {
 		// in case they take that talent in the future
 		if (seal != null){
 			seal.setGlyph(glyph);
+		}
+		if (isIdentified() && Dungeon.hero != null
+				&& Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)){
+			Catalog.setSeen(glyph.getClass());
 		}
 		return this;
 	}

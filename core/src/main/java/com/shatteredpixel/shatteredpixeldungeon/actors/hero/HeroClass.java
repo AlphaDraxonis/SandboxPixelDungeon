@@ -413,17 +413,17 @@ public enum HeroClass {
         return Messages.get(HeroClass.class, name());
     }
 
-    public String desc() {
-        return Messages.get(HeroClass.class, name() + "_desc");
-    }
+	public String desc(){
+		return Messages.get(HeroClass.class, name()+"_desc");
+	}
 
-    public String shortDesc() {
-        return Messages.get(HeroClass.class, name() + "_desc_short");
-    }
+	public String shortDesc(){
+		return Messages.get(HeroClass.class, name()+"_desc_short");
+	}
 
-    public HeroSubClass[] subClasses() {
-        return subClasses;
-    }
+	public HeroSubClass[] subClasses() {
+		return subClasses;
+	}
 
     public ArmorAbility[] armorAbilities() {
         switch (this) {

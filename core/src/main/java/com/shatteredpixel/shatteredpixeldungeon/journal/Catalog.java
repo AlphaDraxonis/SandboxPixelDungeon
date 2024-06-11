@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.journal;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
@@ -36,13 +37,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.GooBlob;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.remains.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Bundle;
@@ -54,6 +55,8 @@ public enum Catalog {
 	//EQUIPMENT
 	MELEE_WEAPONS,
 	ARMOR,
+	ENCHANTMENTS,
+	GLYPHS,
 	THROWN_WEAPONS,
 	WANDS,
 	RINGS,
@@ -75,16 +78,16 @@ public enum Catalog {
 	SPELLS,
 	MISC_CONSUMABLES;
 	
-	private LinkedHashMap<Class<? extends Item>, Boolean> seen = new LinkedHashMap<>();
+	private LinkedHashMap<Class<?>, Boolean> seen = new LinkedHashMap<>();
 	
-	public Collection<Class<? extends Item>> items(){
+	public Collection<Class<?>> items(){
 		return seen.keySet();
 	}
 
 	//should only be used when initializing
 	private void addItems( Class<?>... items){
 		for (Class<?> item : items){
-			seen.put((Class<? extends Item>) item, false);
+			seen.put(item, false);
 		}
 	}
 
@@ -121,6 +124,16 @@ public enum Catalog {
 		THROWN_WEAPONS.addItems(Generator.Category.MIS_T4.classes);
 		THROWN_WEAPONS.addItems(Generator.Category.MIS_T5.classes);
 
+		ENCHANTMENTS.addItems(Weapon.Enchantment.common);
+		ENCHANTMENTS.addItems(Weapon.Enchantment.uncommon);
+		ENCHANTMENTS.addItems(Weapon.Enchantment.rare);
+		ENCHANTMENTS.addItems(Weapon.Enchantment.curses);
+
+		GLYPHS.addItems(Armor.Glyph.common);
+		GLYPHS.addItems(Armor.Glyph.uncommon);
+		GLYPHS.addItems(Armor.Glyph.rare);
+		GLYPHS.addItems(Armor.Glyph.curses);
+
 		WANDS.addItems(Generator.Category.WAND.classes);
 
 		RINGS.addItems(Generator.Category.RING.classes);
@@ -129,7 +142,7 @@ public enum Catalog {
 
 		TRINKETS.addItems(Generator.Category.TRINKET.classes);
 
-		MISC_EQUIPMENT.addItems( SpiritBow.class, Waterskin.class, VelvetPouch.class,
+		MISC_EQUIPMENT.addItems(BrokenSeal.class, SpiritBow.class, Waterskin.class, VelvetPouch.class,
 				PotionBandolier.class, ScrollHolder.class, MagicalHolster.class, Amulet.class);
 
 
@@ -167,6 +180,7 @@ public enum Catalog {
 		MISC_CONSUMABLES.addItems( Gold.class, EnergyCrystal.class, Dewdrop.class,
 				IronKey.class, GoldenKey.class, CrystalKey.class, SkeletonKey.class,
 				TrinketCatalyst.class, Stylus.class, Torch.class, Honeypot.class, Ankh.class,
+				CorpseDust.class, Embers.class, CeremonialCandle.class, DarkGold.class, DwarfToken.class,
 				GooBlob.class, TengusMask.class, MetalShard.class, KingsCrown.class,
 				LiquidMetal.class, ArcaneResin.class,
 				SealShard.class, BrokenStaff.class, CloakScrap.class, BowFragment.class, BrokenHilt.class);
@@ -188,6 +202,8 @@ public enum Catalog {
 	static {
 		equipmentCatalogs.add(MELEE_WEAPONS);
 		equipmentCatalogs.add(ARMOR);
+		equipmentCatalogs.add(ENCHANTMENTS);
+		equipmentCatalogs.add(GLYPHS);
 		equipmentCatalogs.add(THROWN_WEAPONS);
 		equipmentCatalogs.add(WANDS);
 		equipmentCatalogs.add(RINGS);
@@ -212,7 +228,7 @@ public enum Catalog {
 		consumableCatalogs.add(MISC_CONSUMABLES);
 	}
 	
-	public static boolean isSeen(Class<? extends Item> itemClass){
+	public static boolean isSeen(Class<?> itemClass){
 		for (Catalog cat : values()) {
 			if (cat.seen.containsKey(itemClass)) {
 				return cat.seen.get(itemClass);
@@ -221,10 +237,10 @@ public enum Catalog {
 		return false;
 	}
 	
-	public static void setSeen(Class<? extends Item> itemClass){
+	public static void setSeen(Class<?> cls){
 		for (Catalog cat : values()) {
-			if (cat.seen.containsKey(itemClass) && !cat.seen.get(itemClass)) {
-				cat.seen.put(itemClass, true);
+			if (cat.seen.containsKey(cls) && !cat.seen.get(cls)) {
+				cat.seen.put(cls, true);
 				Journal.saveNeeded = true;
 			}
 		}
@@ -240,15 +256,15 @@ public enum Catalog {
 		ArrayList<Class> seen = new ArrayList<>();
 		
 		//if we have identified all items of a set, we use the badge to keep track instead.
-		if (!Badges.isUnlocked(Badges.Badge.ALL_ITEMS_IDENTIFIED)) {
+		//if (!Badges.isUnlocked(Badges.Badge.ALL_ITEMS_IDENTIFIED)) {
 			for (Catalog cat : values()) {
-				if (!Badges.isUnlocked(catalogBadges.get(cat))) {
-					for (Class<? extends Item> item : cat.items()) {
+				//if (!Badges.isUnlocked(catalogBadges.get(cat))) {
+					for (Class<?> item : cat.items()) {
 						if (cat.seen.get(item)) seen.add(item);
 					}
-				}
+				//}
 			}
-		}
+		//}
 		
 		bundle.put( CATALOG_ITEMS, seen.toArray(new Class[0]) );
 		
@@ -270,13 +286,13 @@ public enum Catalog {
 		}*/
 		
 		//catalog-specific badge logic
-		/*for (Catalog cat : values()){
+		for (Catalog cat : values()){
 			if (Badges.isUnlocked(catalogBadges.get(cat))){
-				for (Class<? extends Item> item : cat.items()){
+				for (Class<?> item : cat.items()){
 					cat.seen.put(item, true);
 				}
 			}
-		}*/
+		}
 		
 		//general save/load
 		if (bundle.contains(CATALOG_ITEMS)) {
@@ -286,7 +302,7 @@ public enum Catalog {
 			}
 			
 			for (Catalog cat : values()) {
-				for (Class<? extends Item> item : cat.items()) {
+				for (Class<?> item : cat.items()) {
 					if (seenClasses.contains(item)) {
 						cat.seen.put(item, true);
 					}
