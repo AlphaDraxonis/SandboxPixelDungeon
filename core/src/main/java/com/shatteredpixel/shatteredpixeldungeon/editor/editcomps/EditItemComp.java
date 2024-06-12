@@ -16,9 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItemDistr
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
@@ -66,6 +64,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected CurseButton curseBtn;
     protected LevelSpinner levelSpinner;
     protected ChargeSpinner chargeSpinner;
+    protected SpinnerLikeButton wandRecharging;
     protected DurabilitySpinner durabilitySpinner;
     protected StyledItemSelector magesStaffWand;
     protected StyledCheckBox hasSeal;
@@ -135,9 +134,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 }
 
                 @Override
-                public String getDisplayString() {
-                    if ((int) getValue() == 0) return label("no_quickslot");
-                    return super.getDisplayString();
+                protected String displayString(Object value) {
+                    if ((int) value == 0) return label("no_quickslot");
+                    return super.displayString(value);
                 }
 
                 @Override
@@ -196,12 +195,18 @@ public class EditItemComp extends DefaultEditComp<Item> {
             }
 
             if (item instanceof Wand) {//Check ItemItem#status() if you change sth
-                chargeSpinner = new ChargeSpinner((Wand) item) {
+                Wand w = (Wand) item;
+                chargeSpinner = new ChargeSpinner(w) {
                     @Override
                     protected void onChange() {
                         updateObj();
                     }
                 };
+
+                wandRecharging = new SpinnerLikeButton(new SpinnerEnumModel<>(Wand.RechargeRule.class, w.rechargeRule, v -> w.rechargeRule = v),
+                        label("charging_rule"));
+                add(wandRecharging);
+
             } else if (item instanceof Artifact && ((Artifact) item).chargeCap() > 0) {//Check ItemItem#status() if you change sth
                 chargeSpinner = new ChargeSpinner((Artifact) item) {
                     @Override
@@ -335,7 +340,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 docPageType = new StyledSpinner(new SpinnerTextIconModel(true, ((CustomDocumentPage) item).type, types.toArray()) {
 
                     @Override
-                    protected String getAsString(Object value) {
+                    protected String displayString(Object value) {
                         String txt = Document.INTROS.pageTitle((String) value);
                         if (txt != Messages.NO_TEXT_FOUND) return txt;
                         return Messages.get(CustomDocumentPage.class, ((String) value));
@@ -480,7 +485,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(randomItem);
         }
 
-        rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, chargeSpinner, levelSpinner, durabilitySpinner,
+        rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
                 augmentationSpinner, curseBtn, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, docPageType, spreadIfLoot};
         linearComps = new Component[]{rollTrinkets, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
     }
@@ -591,6 +596,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (curseBtn != null)               curseBtn.checked(obj.cursed);
         if (levelSpinner != null)           levelSpinner.setValue(obj.level());
         if (chargeSpinner != null)          chargeSpinner.updateValue(obj);
+        if (wandRecharging != null)         wandRecharging.setValue(((Wand) obj).rechargeRule);
         if (durabilitySpinner != null)      durabilitySpinner.updateValue(obj);
         if (augmentationSpinner != null)    augmentationSpinner.updateValue(obj);
         if (autoIdentify != null)           autoIdentify.checked(obj.identifyOnStart);
@@ -688,6 +694,10 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
         if (a instanceof MissileWeapon) {
             if (((MissileWeapon) a).baseUses != ((MissileWeapon) b).baseUses) return false;
+        }
+        if (a instanceof Wand) {
+            if (((Wand) a).curCharges != ((Wand) b).curCharges) return false;
+            if (((Wand) a).rechargeRule != ((Wand) b).rechargeRule) return false;
         }
         if (a instanceof MagesStaff) {
             if (areEqual(((MagesStaff) a).wand, ((MagesStaff) b).wand)) return false;
