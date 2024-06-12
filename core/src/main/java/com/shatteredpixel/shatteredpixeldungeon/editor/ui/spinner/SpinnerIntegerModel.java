@@ -49,7 +49,13 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
 
     @Override
     public Component createInputField(int fontSize) {
-        inputField = new Spinner.SpinnerTextBlock(Chrome.get(Chrome.Type.TOAST_WHITE), fontSize) {
+        valueDisplay = new Spinner.SpinnerTextBlock(Chrome.get(Chrome.Type.TOAST_WHITE), fontSize) {
+            @Override
+            public void showValue(Object value) {
+                textBlock.text(displayString(value));
+                layout();
+            }
+
             private Button button;
 
             @Override
@@ -70,7 +76,7 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
                 button.setRect(bg.x, bg.y, bg.width, bg.height);
             }
         };
-        return inputField;
+        return (Component) valueDisplay;
     }
 
 
@@ -83,21 +89,14 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         return value;
     }
 
-    public String getDisplayString() {
-        return value.toString();
-    }
-
     @Override
     public void setValue(Object value) {
         if (value == null || value instanceof Integer) {
             boolean changed = (this.value == null && value != null) || this.value != null && !this.value.equals(value);
             changeValue(this.value, value);
-            if (inputField instanceof Spinner.SpinnerTextBlock) {
-                Spinner.SpinnerTextBlock casted = (Spinner.SpinnerTextBlock) inputField;
-                casted.setText(getDisplayString());
-                casted.layout();
-            } else
-                System.out.println("failed show the value because the input field is not a Spinner.SpinnerTextBlock");
+            if (valueDisplay != null) {
+                valueDisplay.showValue(value);
+            }
             if (changed) fireStateChanged();
         } else {
 //            if (value instanceof Float) setValue((int) (float) value);
@@ -207,12 +206,6 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
 
     public int getAbsoluteMinimum() {
         return absoluteMinimum;
-    }
-
-    @Override
-    public void enable(boolean value) {
-        if (inputField instanceof Spinner.SpinnerTextBlock)
-            ((Spinner.SpinnerTextBlock) inputField).enable(value);
     }
 
     public void displayInputAnyNumberDialog() {

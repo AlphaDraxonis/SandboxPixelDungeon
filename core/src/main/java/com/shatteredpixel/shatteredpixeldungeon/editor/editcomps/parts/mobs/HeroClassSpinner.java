@@ -23,7 +23,7 @@ public class HeroClassSpinner extends StyledSpinner {
         }
 
         @Override
-        protected String getAsString(Object value) {
+        protected String displayString(Object value) {
             return Messages.titleCase(((HeroClass)value).title());
         }
 
@@ -48,7 +48,7 @@ public class HeroClassSpinner extends StyledSpinner {
             }
 
             @Override
-            protected String getAsString(Object value) {
+            protected String displayString(Object value) {
                 if (value == HeroSubClass.NONE) return Messages.get(SubclassSpinner.class, "none");
                 return Messages.titleCase(((HeroSubClass)value).title());
             }

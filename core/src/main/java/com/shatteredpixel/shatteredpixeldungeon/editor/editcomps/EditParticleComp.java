@@ -49,7 +49,7 @@ public class EditParticleComp extends DefaultEditComp<CustomParticle.ParticlePro
         Integer[] data = createTypeData();
         type = new StyledSpinner(new SpinnerTextModel(true, findIndex(obj.type, data), (Object[]) data) {
             @Override
-            protected String getAsString(Object value) {
+            protected String displayString(Object value) {
                 return Messages.get(Speck.class, String.valueOf(value));
             }
 

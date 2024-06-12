@@ -37,9 +37,9 @@ public class DurabilitySpinner extends StyledSpinner {
 		}
 
 		@Override
-		public String getDisplayString() {
-			if ((int) (getValue()) == MissileWeapon.MAX_DURABILITY) return INFINITY;
-			return super.getDisplayString();
+		protected String displayString(Object value) {
+			if ((int) (value) == MissileWeapon.MAX_DURABILITY) return INFINITY;
+			return super.displayString(value);
 		}
 
 		@Override

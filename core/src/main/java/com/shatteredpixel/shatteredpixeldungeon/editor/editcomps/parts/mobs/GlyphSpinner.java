@@ -47,7 +47,7 @@ public class GlyphSpinner extends StyledSpinner {
         }
 
         @Override
-        protected String getAsString(Object value) {
+        protected String displayString(Object value) {
             if (value == null) return Messages.get(GlyphSpinner.class, "none");
             return Messages.titleCase(Messages.get((Class<?>) value, "pure_name"));
         }

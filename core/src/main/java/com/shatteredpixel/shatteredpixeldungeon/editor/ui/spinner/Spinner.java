@@ -180,7 +180,7 @@ public class Spinner extends Component {
         return model.getChangeListeners();
     }
 
-    public static class SpinnerTextBlock extends Component {
+    public static class SpinnerTextBlock extends Component implements AbstractSpinnerModel.ValueDisplay {
 
         protected RenderedTextBlock textBlock;
         protected NinePatch bg;
@@ -197,8 +197,9 @@ public class Spinner extends Component {
             addToFront(textBlock);
         }
 
-        public void setText(String text) {
-            textBlock.text(text);
+        @Override
+        public void showValue(Object value) {
+            textBlock.text(value == null ? "<null>" : value.toString());
             layout();
         }
 
@@ -240,12 +241,12 @@ public class Spinner extends Component {
             this.textOffsetY = textOffsetY;
         }
 
-        public void enable(boolean value) {
+        @Override
+        public void enableValueField(boolean value) {
             textBlock.alpha(value ? 1.0f : 0.3f);
             textBlock.visible = value;
             bg.alpha(value ? 1.0f : 0.3f);
         }
-
     }
 
 

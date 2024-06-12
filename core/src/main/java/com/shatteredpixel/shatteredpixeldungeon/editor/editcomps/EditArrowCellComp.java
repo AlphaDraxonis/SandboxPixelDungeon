@@ -5,7 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ArrowCellItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerEnumModel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerLikeButton;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIcon;
@@ -20,7 +20,7 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
 
 
     protected StyledCheckBox[] directions;
-    protected StyledSpinner enterMode;
+    protected SpinnerLikeButton enterMode;
     protected StyledCheckBox visible;
 
     private final ArrowCellItem arrowCellItem;//used for linking the item with the sprite in the toolbar
@@ -65,9 +65,7 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
             }
         }
 
-        enterMode = new StyledSpinner(new SpinnerEnumModel<>(ArrowCell.EnterMode.class, obj.enterMode), Messages.get(this, "enter_mode"), 6);
-        enterMode.setButtonWidth(8);
-        enterMode.addChangeListener(() -> obj.enterMode = (ArrowCell.EnterMode) enterMode.getValue());
+        enterMode = new SpinnerLikeButton(new SpinnerEnumModel<>(ArrowCell.EnterMode.class, obj.enterMode, v -> obj.enterMode = v), Messages.get(this, "enter_mode"), 6);
         add(enterMode);
 
         visible = new StyledCheckBox(Messages.get(EditTrapComp.class, "visible")) {

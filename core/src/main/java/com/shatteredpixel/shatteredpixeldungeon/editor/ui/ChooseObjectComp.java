@@ -55,7 +55,7 @@ public abstract class ChooseObjectComp extends Component {
     protected abstract void doChange();
 
     public void selectObject(Object object) {
-        display.setText(objectToString(object));
+        display.showValue(objectToString(object));
         currentObject = object;
         layout();
     }
@@ -78,6 +78,6 @@ public abstract class ChooseObjectComp extends Component {
         active = value;
         changeObjBtn.enable(value);
         label.alpha(value ? 1 : 0.3f);
-        display.enable(value);
+        display.enableValueField(value);
     }
 }

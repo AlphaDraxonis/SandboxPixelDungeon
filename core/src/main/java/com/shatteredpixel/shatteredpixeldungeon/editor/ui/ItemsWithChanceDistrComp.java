@@ -351,8 +351,8 @@ public abstract class ItemsWithChanceDistrComp extends Component {
         }
 
         @Override
-        public String getDisplayString() {
-            return super.getDisplayString() + " " + calculatePercentage((int) getValue());
+        protected String displayString(Object value) {
+            return super.displayString(value) + " " + calculatePercentage((int) value);
         }
     }
 

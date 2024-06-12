@@ -1,8 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 
 import java.io.Serializable;
@@ -12,7 +10,7 @@ import java.util.List;
 public abstract class AbstractSpinnerModel implements SpinnerModel, Serializable {
 
 
-    protected Component inputField;
+    protected ValueDisplay valueDisplay;
     private List<Runnable> listeners = new ArrayList<>();
 
     /**
@@ -42,18 +40,45 @@ public abstract class AbstractSpinnerModel implements SpinnerModel, Serializable
 
     @Override
     public Component createInputField(int fontSize) {
-        inputField = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, fontSize, PixelScene.uiCamera.zoom);
-        return inputField;
+        valueDisplay = new Spinner.SpinnerTextBlock(Chrome.get(getChromeType()), fontSize) {
+            @Override
+            public void showValue(Object value) {
+                textBlock.text(displayString(value));
+                layout();
+            }
+        };
+        return ((Component) valueDisplay);
+    }
+
+    protected Chrome.Type getChromeType() {
+        return Chrome.Type.TOAST_WHITE;
     }
 
     @Override
     public void setValue(Object value) {
-        if (inputField instanceof TextInput)
-            ((TextInput) inputField).setText(value == null ? "null" : value.toString());
+        if (valueDisplay != null)
+            valueDisplay.showValue(value);
+    }
+
+    protected String displayString(Object value) {
+        return value == null ? "null" : value.toString();
+    }
+
+    @Override
+    public void enable(boolean value) {
+        if (valueDisplay != null)
+            valueDisplay.enableValueField(value);
     }
 
     @Override
     public int getClicksPerSecondWhileHolding() {
         return 0;
+    }
+
+    public interface ValueDisplay {
+
+        void showValue(Object value);
+        void enableValueField(boolean flag);
+
     }
 }

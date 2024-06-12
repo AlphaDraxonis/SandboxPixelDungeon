@@ -128,43 +128,43 @@ public class WndEditStats extends MultiWindowTabComp {
 
                 dmgMin = new IntegerSpinner(Messages.get(Mob.class, "dmg_min"),
                         0, Math.max(10, def.damageRollMin * 10), current.damageRollMin);
-                dmgMin.addChangeListener(() -> current.damageRollMin = dmgMin.getAsInt());
+                dmgMin.addChangeListener(() -> current.damageRollMin = dmgMin.castToInt());
                 content.add(dmgMin);
 
                 dmgMax = new IntegerSpinner(Messages.get(Mob.class, "dmg_max"),
                         0, Math.max(10, def.damageRollMax * 10), current.damageRollMax);
-                dmgMax.addChangeListener(() -> current.damageRollMax = dmgMax.getAsInt());
+                dmgMax.addChangeListener(() -> current.damageRollMax = dmgMax.castToInt());
                 content.add(dmgMax);
 
                 if (current instanceof Skeleton || current instanceof Warlock || current instanceof Brute || current instanceof DM100
                         || current instanceof Goo || current instanceof CrystalWisp || current instanceof Eye || current instanceof GnollGuard) {
                     specialDmgMin = new IntegerSpinner(Messages.get(Mob.class, "special_dmg_min"),
                             0, Math.max(10, def.specialDamageRollMin * 10), current.specialDamageRollMin);
-                    specialDmgMin.addChangeListener(() -> current.specialDamageRollMin = specialDmgMin.getAsInt());
+                    specialDmgMin.addChangeListener(() -> current.specialDamageRollMin = specialDmgMin.castToInt());
                     content.add(specialDmgMin);
 
                     specialDmgMax = new IntegerSpinner(Messages.get(Mob.class, "special_dmg_max"),
                             0, Math.max(10, def.specialDamageRollMax * 10), current.specialDamageRollMax);
-                    specialDmgMax.addChangeListener(() -> current.specialDamageRollMax = specialDmgMax.getAsInt());
+                    specialDmgMax.addChangeListener(() -> current.specialDamageRollMax = specialDmgMax.castToInt());
                     content.add(specialDmgMax);
                 }
 
             }
             tilesBeforeWakingUp = new IntegerSpinner(Messages.get(Mob.class, "tiles_before_waking_up"),
                     0, Math.max(10, def.tilesBeforeWakingUp * 10), current.tilesBeforeWakingUp);
-            tilesBeforeWakingUp.addChangeListener(() -> current.tilesBeforeWakingUp = tilesBeforeWakingUp.getAsInt());
+            tilesBeforeWakingUp.addChangeListener(() -> current.tilesBeforeWakingUp = tilesBeforeWakingUp.castToInt());
             content.add(tilesBeforeWakingUp);
 
             if (!(current instanceof HeroMob)) {
                 xp = new IntegerSpinner(Messages.get(Mob.class, "xp"),
                         0, Math.max(10, def.EXP * 10), current.EXP);
-                xp.addChangeListener(() -> current.EXP = xp.getAsInt());
+                xp.addChangeListener(() -> current.EXP = xp.castToInt());
                 content.add(xp);
             }
 
             maxLvl = new IntegerSpinner(Messages.get(Mob.class, "max_lvl"),
                     0, 30, current.maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL);
-            maxLvl.addChangeListener(() -> current.maxLvl = maxLvl.getAsInt() - Mob.DROP_LOOT_IF_ABOVE_MAX_LVL);
+            maxLvl.addChangeListener(() -> current.maxLvl = maxLvl.castToInt() - Mob.DROP_LOOT_IF_ABOVE_MAX_LVL);
             content.add(maxLvl);
 
             if (!(current instanceof Mimic)) {
@@ -310,7 +310,7 @@ public class WndEditStats extends MultiWindowTabComp {
         viewDistance = new IntegerSpinner(Messages.get(Mob.class, "view_distance"),
                 1, Math.min(Math.max(10, def.viewDistance * 10), ShadowCaster.MAX_DISTANCE), current.viewDistance);
         ((SpinnerIntegerModel) viewDistance.getModel()).setAbsoluteMaximum(ShadowCaster.MAX_DISTANCE);
-        viewDistance.addChangeListener(() -> current.viewDistance = viewDistance.getAsInt());
+        viewDistance.addChangeListener(() -> current.viewDistance = viewDistance.castToInt());
         content.add(viewDistance);
     }
 
@@ -319,7 +319,7 @@ public class WndEditStats extends MultiWindowTabComp {
         hp = new IntegerSpinner(Messages.get(Mob.class, "hp"),
                 1, Math.max(10, def.HT * 10), current.HT, true);
         hp.addChangeListener(() -> {
-            int val = hp.getAsInt();
+            int val = hp.castToInt();
             if (hp.isInfinity(val)) val = Char.INFINITE_HP;
             current.HT = current.HP = val;
         });
@@ -328,7 +328,7 @@ public class WndEditStats extends MultiWindowTabComp {
         attackSkill = new IntegerSpinner(Messages.get(Mob.class, "accuracy"),
                 0, Math.max(10, def.attackSkill * 10), current.attackSkill, true);
         attackSkill.addChangeListener(() -> {
-            int val = attackSkill.getAsInt();
+            int val = attackSkill.castToInt();
             if (attackSkill.isInfinity(val)) val = Char.INFINITE_ACCURACY;
             current.attackSkill = val;
         });
@@ -337,7 +337,7 @@ public class WndEditStats extends MultiWindowTabComp {
         defenseSkill = new IntegerSpinner(Messages.get(StoneOfAugmentation.WndAugment.class, "evasion"),
                 0, Math.max(10, def.defenseSkill * 10), current.defenseSkill, true);
         defenseSkill.addChangeListener(() -> {
-            int val = defenseSkill.getAsInt();
+            int val = defenseSkill.castToInt();
             if (defenseSkill.isInfinity(val)) val = Char.INFINITE_EVASION;
             current.defenseSkill = val;
         });
@@ -345,7 +345,7 @@ public class WndEditStats extends MultiWindowTabComp {
 
         armor = new IntegerSpinner(Messages.get(Mob.class, "armor"),
                 0, Math.max(10, def.damageReductionMax * 10), current.damageReductionMax);
-        armor.addChangeListener(() -> current.damageReductionMax = armor.getAsInt());
+        armor.addChangeListener(() -> current.damageReductionMax = armor.castToInt());
         content.add(armor);
     }
 
@@ -407,8 +407,8 @@ public class WndEditStats extends MultiWindowTabComp {
             super(new IntegerSpinnerModel(minimum, maximum, value, includeInfinity), name, 9);
         }
 
-        protected int getAsInt() {
-            return ((IntegerSpinnerModel) getModel()).getAsInt();
+        protected int castToInt() {
+            return ((IntegerSpinnerModel) getModel()).castToInt(getValue());
         }
 
         protected boolean isInfinity(int val) {
@@ -432,14 +432,14 @@ public class WndEditStats extends MultiWindowTabComp {
             inifity = maximum + 1;
         }
 
-        protected int getAsInt() {
-            return (int) getValue();
+        protected int castToInt(Object value) {
+            return (int) value;
         }
 
         @Override
-        public String getDisplayString() {
-            if (getAsInt() == inifity) return INFINITY;
-            return Integer.toString(getAsInt());
+        protected String displayString(Object value) {
+            if (castToInt(value) == inifity) return INFINITY;
+            return Integer.toString(castToInt(value));
         }
 
         @Override

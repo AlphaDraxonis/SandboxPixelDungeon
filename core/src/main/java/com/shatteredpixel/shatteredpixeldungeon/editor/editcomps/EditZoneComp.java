@@ -116,7 +116,7 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
             }
 
             @Override
-            protected String getAsString(Object value) {
+            protected String displayString(Object value) {
                 switch ((Zone.GrassType) value) {
                     case NONE:
                         return Messages.get(EditZoneComp.class, "no_grass");
@@ -192,9 +192,9 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
         } else data = new Object[]{null};
         chasmDest = new StyledSpinner(new SpinnerTextModel(true, index, data) {
             @Override
-            protected String getAsString(Object value) {
+            protected String displayString(Object value) {
                 if (value == null) return Messages.get(Zone.class, "none_zone");
-                return super.getAsString(value);
+                return super.displayString(value);
             }
         }, Messages.get(EditZoneComp.class, "chasm_dest") + ":", 9, new TileSprite(Terrain.CHASM));
         chasmDest.addChangeListener(() -> zone.chasmDestZone = (String) chasmDest.getValue());

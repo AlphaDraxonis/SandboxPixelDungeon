@@ -210,7 +210,7 @@ public class SetPotionScrollRingType extends Component {
         }
 
         @Override
-        protected String getAsString(Object value) {
+        protected String displayString(Object value) {
             return "";
         }
 

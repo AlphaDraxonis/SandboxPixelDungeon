@@ -62,7 +62,7 @@ public class AugmentationSpinner extends StyledSpinner {
         }
 
         @Override
-        protected String getAsString(Object value) {
+        protected String displayString(Object value) {
             if (value == Weapon.Augment.NONE) return Messages.get(AugmentationSpinner.class, "none");
             if (value == Weapon.Augment.RANDOM) return Messages.get(FeelingSpinner.class, "random");
             return Messages.get(StoneOfAugmentation.WndAugment.class, ((Weapon.Augment) value).name().toLowerCase(Locale.ENGLISH));
@@ -95,7 +95,7 @@ public class AugmentationSpinner extends StyledSpinner {
         }
 
         @Override
-        protected String getAsString(Object value) {
+        protected String displayString(Object value) {
             if (value == Armor.Augment.NONE) return Messages.get(AugmentationSpinner.class, "none");
             if (value == Armor.Augment.RANDOM) return Messages.get(FeelingSpinner.class, "random");
             return Messages.get(StoneOfAugmentation.WndAugment.class, ((Armor.Augment) value).name().toLowerCase(Locale.ENGLISH));

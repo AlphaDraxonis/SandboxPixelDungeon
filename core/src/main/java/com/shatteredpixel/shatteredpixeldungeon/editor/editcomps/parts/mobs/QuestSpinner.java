@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.Quest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerTextIconModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
@@ -47,7 +46,7 @@ public class QuestSpinner extends StyledSpinner {
         }
 
         @Override
-        protected String getAsString(Object value) {
+        protected String displayString(Object value) {
             return Messages.get(QuestSpinner.class, (String) value);
         }
 
@@ -64,8 +63,7 @@ public class QuestSpinner extends StyledSpinner {
 
         @Override
         public Component createInputField(int fontSize) {
-            inputField = new ShowField(Chrome.get(getChromeType()), fontSize-2);
-            return inputField;
+            return super.createInputField(Math.max(6, fontSize - 2));
         }
     }
 

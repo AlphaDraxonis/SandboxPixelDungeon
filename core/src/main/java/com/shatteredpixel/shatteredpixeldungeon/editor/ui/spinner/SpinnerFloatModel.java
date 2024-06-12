@@ -42,8 +42,8 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
     }
 
     @Override
-    public String getDisplayString() {
-        return getValue() == null ? super.getDisplayString() : String.format(Languages.getCurrentLocale(), precisionFormat, getAsFloat());
+    protected String displayString(Object value) {
+        return value == null ? super.displayString(value) : String.format(Languages.getCurrentLocale(), precisionFormat, getAsFloat());
     }
 
     @Override

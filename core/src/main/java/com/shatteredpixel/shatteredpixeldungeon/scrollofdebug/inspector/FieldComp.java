@@ -217,7 +217,7 @@ public class FieldComp extends ObjInspectorTabComp {
 	}
 
 	public void updateValueText() {
-		value.setText(fieldValueAsString(field, obj));
+		value.showValue(fieldValueAsString(field, obj));
 		if (setToNull != null) setToNull.enable(fieldValueCatchException(field, obj) != null);
 	}
 

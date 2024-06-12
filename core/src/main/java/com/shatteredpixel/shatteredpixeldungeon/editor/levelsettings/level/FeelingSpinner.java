@@ -34,7 +34,7 @@ public class FeelingSpinner extends StyledSpinner {
         }
 
         @Override
-        protected String getAsString(Object feeling) {
+        protected String displayString(Object feeling) {
             String text = feeling == null ? Messages.get(FeelingSpinner.class, "random") :
                     Messages.get(FeelingSpinner.class, feeling.toString().toLowerCase(Locale.ENGLISH));
             return Messages.titleCase(text);

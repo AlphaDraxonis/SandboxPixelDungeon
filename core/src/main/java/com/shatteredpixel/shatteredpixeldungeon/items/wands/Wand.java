@@ -71,6 +71,8 @@ public abstract class Wand extends Item {
 	public float partialCharge = 0f;
 	
 	protected Charger charger;
+
+	public RechargeRule rechargeRule = RechargeRule.ALWAYS;
 	
 	public boolean curChargeKnown = false;
 	
@@ -512,6 +514,7 @@ public abstract class Wand extends Item {
 	private static final String CUR_CHARGES         = "curCharges";
 	private static final String CUR_CHARGE_KNOWN    = "curChargeKnown";
 	private static final String PARTIALCHARGE       = "partialCharge";
+	private static final String RECHARGE_RULE       = "recharge_rule";
 	private static final String CURSE_INFUSION_BONUS= "curse_infusion_bonus";
 	private static final String RESIN_BONUS         = "resin_bonus";
 
@@ -523,6 +526,7 @@ public abstract class Wand extends Item {
 		bundle.put( CUR_CHARGES, curCharges );
 		bundle.put( CUR_CHARGE_KNOWN, curChargeKnown );
 		bundle.put( PARTIALCHARGE , partialCharge );
+		bundle.put( RECHARGE_RULE, rechargeRule );
 		bundle.put( CURSE_INFUSION_BONUS, curseInfusionBonus );
 		bundle.put( RESIN_BONUS, resinBonus );
 	}
@@ -540,6 +544,7 @@ public abstract class Wand extends Item {
 		curCharges = bundle.getInt( CUR_CHARGES );
 		curChargeKnown = bundle.getBoolean( CUR_CHARGE_KNOWN );
 		partialCharge = bundle.getFloat( PARTIALCHARGE );
+		rechargeRule = bundle.getEnum(RECHARGE_RULE, RechargeRule.class);
 	}
 	
 	@Override
@@ -704,6 +709,18 @@ public abstract class Wand extends Item {
 			return Messages.get(Wand.class, "prompt");
 		}
 	};
+
+	public enum RechargeRule {
+		ALWAYS, ONLY_WITH_BUFF, NEVER;
+
+		public boolean normal() {
+			return this == ALWAYS;
+		}
+
+		public boolean rechargeBuff() {
+			return this == ALWAYS || this == ONLY_WITH_BUFF;
+		}
+	}
 	
 	public class Charger extends Buff {
 		
@@ -748,18 +765,26 @@ public abstract class Wand extends Item {
 		}
 
 		private void recharge(){
-			int missingCharges = maxCharges - curCharges;
-			missingCharges = Math.max(0, missingCharges);
 
-			float turnsToCharge = (float) (BASE_CHARGE_DELAY
-					+ (SCALING_CHARGE_ADDITION * Math.pow(scalingFactor, missingCharges)));
+			if (rechargeRule.normal()) {
+				if (Regeneration.regenOn()) {
 
-			if (Regeneration.regenOn())
-				partialCharge += (1f/turnsToCharge) * RingOfEnergy.wandChargeMultiplier(target);
+					int missingCharges = maxCharges - curCharges;
+					missingCharges = Math.max(0, missingCharges);
 
-			for (Recharging bonus : target.buffs(Recharging.class)){
-				if (bonus != null && bonus.remainder() > 0f) {
-					partialCharge += CHARGE_BUFF_BONUS * bonus.remainder();
+					float turnsToCharge = (float) (BASE_CHARGE_DELAY
+							+ (SCALING_CHARGE_ADDITION * Math.pow(scalingFactor, missingCharges)));
+
+					partialCharge += (1f / turnsToCharge) * RingOfEnergy.wandChargeMultiplier(target);
+
+				}
+			}
+
+			if (rechargeRule.rechargeBuff()) {
+				for (Recharging bonus : target.buffs(Recharging.class)) {
+					if (bonus != null && bonus.remainder() > 0f) {
+						partialCharge += CHARGE_BUFF_BONUS * bonus.remainder();
+					}
 				}
 			}
 		}

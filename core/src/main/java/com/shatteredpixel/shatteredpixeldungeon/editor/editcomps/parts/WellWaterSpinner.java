@@ -109,7 +109,7 @@ public class WellWaterSpinner extends Spinner {
         }
 
         @Override
-        protected String getAsString(Object value) {
+        protected String displayString(Object value) {
             switch ((WellWaters) value) {
                 default:
                 case NONE:

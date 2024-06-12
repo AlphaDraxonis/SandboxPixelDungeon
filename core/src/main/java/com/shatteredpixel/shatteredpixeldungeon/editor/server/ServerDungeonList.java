@@ -90,8 +90,8 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			}
 
 			@Override
-			public String getDisplayString() {
-				return Messages.get(ServerDungeonList.class, "page", outsideSp == null ? lastPage+1 : (outsideSp.getValue()), numPages);
+			protected String displayString(Object value) {
+				return Messages.get(ServerDungeonList.class, "page", outsideSp == null ? lastPage+1 : value, numPages);
 			}
 
 			@Override

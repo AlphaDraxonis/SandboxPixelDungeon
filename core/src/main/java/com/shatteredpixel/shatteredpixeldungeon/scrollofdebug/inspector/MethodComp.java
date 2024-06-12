@@ -141,7 +141,7 @@ public class MethodComp extends ObjInspectorTabComp {
             else b.append(' ');
         }
         b.append(')');
-        value.setText(b.toString());
+        value.showValue(b.toString());
     }
 
 

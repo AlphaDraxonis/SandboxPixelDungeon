@@ -93,7 +93,7 @@ public class ChangeRegion extends Component {
             }
 
             @Override
-            protected String getAsString(Object value) {
+            protected String displayString(Object value) {
                 return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) value - 1]);
             }
         }, Messages.get(ChangeRegion.class, "region"), 9);
@@ -108,7 +108,7 @@ public class ChangeRegion extends Component {
             }
 
             @Override
-            protected String getAsString(Object value) {
+            protected String displayString(Object value) {
                 if ((int) value == LevelScheme.REGION_NONE) return Messages.get(ChangeRegion.class, "same");
                 return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) value - 1]);
             }

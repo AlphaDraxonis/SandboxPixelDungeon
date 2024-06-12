@@ -68,7 +68,7 @@ public class MobStateSpinner extends StyledSpinner {
         }
 
         @Override
-        protected String getAsString(Object value) {
+        protected String displayString(Object value) {
             States state = (States) value;
             return Messages.get(MobStateSpinner.class, state.name().toLowerCase(Locale.ENGLISH));
         }

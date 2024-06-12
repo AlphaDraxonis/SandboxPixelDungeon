@@ -73,8 +73,8 @@ public class LevelTab extends MultiWindowTabComp {
 
         hungerSpeed = new StyledSpinner(new SpinnerFloatModel(0f, 100f, level.levelScheme.hungerSpeed, 2, 0.1f) {
             @Override
-            public String getDisplayString() {
-                return "x " + super.getDisplayString();
+            protected String displayString(Object value) {
+                return "x " + super.displayString(value);
             }
 
             @Override

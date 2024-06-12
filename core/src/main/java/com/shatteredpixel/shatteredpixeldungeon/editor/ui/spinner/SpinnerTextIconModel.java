@@ -21,33 +21,24 @@ public abstract class SpinnerTextIconModel extends SpinnerTextModel {
         super(cycle, initValueIndex, data);
     }
 
-    @Override
-    protected void showValue() {
-        if (inputField == null) return;
-        Object value = getValue();
-        if (inputField instanceof ShowField) {
-            ShowField casted = (ShowField) inputField;
-            casted.setText(getAsString(value));
-            casted.setIcon(getIcon(value));
-            casted.setSubIcon(getSubIcon(value));
-            casted.layout();
-        } else
-            System.out.println("failed show the value because the input field is not a ShowField");
-        fireStateChanged();
-    }
-
     protected abstract Image getIcon(Object value);
 
     protected Image getSubIcon(Object value) {
         return null;
     }
 
-    ;
-
     @Override
     public Component createInputField(int fontSize) {
-        inputField = new ShowField(Chrome.get(getChromeType()), fontSize);
-        return inputField;
+        valueDisplay = new ShowField(Chrome.get(getChromeType()), fontSize) {
+            @Override
+            public void showValue(Object value) {
+                textBlock.text(displayString(value));
+                setIcon(getIcon(value));
+                setSubIcon(getSubIcon(value));
+                layout();
+            }
+        };
+        return (Component) valueDisplay;
     }
 
     public static class ShowField extends Spinner.SpinnerTextBlock {

@@ -1,6 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
@@ -89,14 +88,14 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
             }
 
             @Override
-            public String getDisplayString() {
+            protected String displayString(Object value) {
                 Item copy = heap.items.getLast().getCopy();
                 if (copy instanceof Potion) ((Potion) copy).anonymize();
                 else if (copy instanceof Scroll) ((Scroll) copy).anonymize();
                 else if (copy instanceof Ring) ((Ring) copy).anonymize();
                 else copy.identify(false);
                 float price = copy.value() * 5 * Dungeon.level.levelScheme.getPriceMultiplier();
-                return super.getDisplayString() + " = " + ((int)(getAsFloat() * price) + " " + Messages.get(Gold.class, "name"));
+                return super.displayString(value) + " = " + ((int)(getAsFloat() * price) + " " + Messages.get(Gold.class, "name"));
             }
         }, Messages.get(LevelTab.class, "shop_price"), 9);
         ((SpinnerIntegerModel) priceMultiplier.getModel()).setAbsoluteMinAndMax(0f, 10000f);
@@ -262,12 +261,11 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
 
         @Override
         public Component createInputField(int fontSize) {
-            inputField = new Spinner.SpinnerTextBlock(Chrome.get(getChromeType()), 8);
-            return inputField;
+            return super.createInputField(8);
         }
 
         @Override
-        protected String getAsString(Object value) {
+        protected String displayString(Object value) {
             Heap.Type type = (Heap.Type) value;
             heap.type = type;
             if (type == Heap.Type.HEAP)

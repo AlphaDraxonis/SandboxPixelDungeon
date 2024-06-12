@@ -1,8 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
-import com.watabou.noosa.ui.Component;
-
 import java.util.Objects;
 
 public class SpinnerTextModel extends AbstractSpinnerModel {
@@ -61,23 +58,15 @@ public class SpinnerTextModel extends AbstractSpinnerModel {
         }
     }
 
-    protected void showValue() {
-        if (inputField == null) return;
-        if (inputField instanceof Spinner.SpinnerTextBlock) {
-            Spinner.SpinnerTextBlock casted = (Spinner.SpinnerTextBlock) inputField;
-            casted.setText(getAsString(value));
-            casted.layout();
-        } else
-            System.out.println("failed show the value because the input field is not a Spinner.SpinnerTextBlock");
+    private void showValue() {
+        if (valueDisplay != null) {
+            valueDisplay.showValue(getValue());
+        }
         fireStateChanged();
     }
 
     public void changeValue(Object oldValue, Object newValue) {
         this.value = newValue;
-    }
-
-    protected String getAsString(Object value) {
-        return value.toString();
     }
 
     @Override
@@ -97,28 +86,12 @@ public class SpinnerTextModel extends AbstractSpinnerModel {
         return Spinner.FILL;
     }
 
-    @Override
-    public Component createInputField(int fontSize) {
-        inputField = new Spinner.SpinnerTextBlock(Chrome.get(getChromeType()), fontSize);
-        return inputField;
-    }
-
     public boolean isCycle() {
         return cycle;
     }
 
     public void setCycle(boolean cycle) {
         this.cycle = cycle;
-    }
-
-    protected Chrome.Type getChromeType() {
-        return Chrome.Type.TOAST_WHITE;
-    }
-
-    @Override
-    public void enable(boolean value) {
-        if (inputField instanceof Spinner.SpinnerTextBlock)
-            ((Spinner.SpinnerTextBlock) inputField).enable(value);
     }
 
     public int getCurrentIndex() {

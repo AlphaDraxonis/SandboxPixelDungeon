@@ -34,9 +34,9 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
                 Messages.get(WndDisableRecipes.class, "desc"),
                 new Object[][]{{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}}, new String[]{
                         Messages.get(WndDisableRecipes.class, "cat_1"),
-                        Messages.get(WndDisableRecipes.class, "cat_1"),
-                        Messages.get(WndDisableRecipes.class, "cat_1"),
-                        Messages.get(WndDisableRecipes.class, "cat_1"),
+                        Messages.get(WndDisableRecipes.class, "cat_2"),
+                        Messages.get(WndDisableRecipes.class, "cat_3"),
+                        Messages.get(WndDisableRecipes.class, "cat_4"),
                         Messages.get(WndDisableRecipes.class, "cat_5"),
                         Messages.get(WndDisableRecipes.class, "specific_potions"),
                         Messages.get(WndDisableRecipes.class, "specific_runestones"),
@@ -174,13 +174,13 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
                 }
                 return result;
             case 7:
-                for (Class c : Generator.Category.SCROLL.classes){
-                    result.add(new RecipeInfo(ItemSpriteSheet.SCROLL_HOLDER, -1, ExoticScroll.regToExo.get(c)));
+                for (Class c : Generator.Category.POTION.classes){
+                    result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, -1, ExoticPotion.regToExo.get(c)));
                 }
                 return result;
             case 8:
-                for (Class c : Generator.Category.POTION.classes){
-                    result.add(new RecipeInfo(ItemSpriteSheet.POTION_HOLDER, -1, ExoticPotion.regToExo.get(c)));
+                for (Class c : Generator.Category.SCROLL.classes){
+                    result.add(new RecipeInfo(ItemSpriteSheet.SCROLL_HOLDER, -1, ExoticScroll.regToExo.get(c)));
                 }
                 return result;
         }

@@ -568,9 +568,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
         } else if (mob instanceof DemonSpawner) {
             abilityCooldown = new StyledSpinner(new SpinnerIntegerModel(0, Integer.MAX_VALUE, (int) ((DemonSpawner) mob).maxSpawnCooldown) {
                 @Override
-                public String getDisplayString() {
-                    if ((int) getValue() == 0) return label("by_depth");
-                    return super.getDisplayString();
+                protected String displayString(Object value) {
+                    if ((int) value == 0) return label("by_depth");
+                    return super.displayString(value);
                 }
 
                 @Override
@@ -663,9 +663,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 }
 
                 @Override
-                public String getDisplayString() {
-                    if (((int) getValue()) == -1) return Messages.get(DestCellSpinner.class, "default");
-                    return super.getDisplayString();
+                protected String displayString(Object value) {
+                    if (((int) value) == -1) return Messages.get(DestCellSpinner.class, "default");
+                    return super.displayString(value);
                 }
 
                 @Override
@@ -744,8 +744,8 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     }
 
                     @Override
-                    public String getDisplayString() {
-                        switch ((int) getValue()) {
+                    protected String displayString(Object value) {
+                        switch ((int) value) {
                             case Mob.NORMAL_ALIGNMENT:
                                 return label("player_alignment_normal");
                             case Mob.NEUTRAL_ALIGNMENT:
@@ -753,7 +753,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                             case Mob.FRIENDLY_ALIGNMENT:
                                 return label("player_alignment_friendly");
                         }
-                        return super.getDisplayString();
+                        return super.displayString(value);
                     }
                 }, label("player_alignment"));
                 playerAlignment.setButtonWidth(9f);

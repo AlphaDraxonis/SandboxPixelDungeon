@@ -80,7 +80,7 @@ public class EditCustomTileComp extends EditTileComp {
             }
 
             @Override
-            protected String getAsString(Object value) {
+            protected String displayString(Object value) {
                 return TileItem.getName((int) value, -1);
             }
 

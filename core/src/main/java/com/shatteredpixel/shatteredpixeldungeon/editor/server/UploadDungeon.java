@@ -132,9 +132,9 @@ public class UploadDungeon extends Component implements MultiWindowTabComp.BackP
                             DungeonPreview.EXPERT,
                             DungeonPreview.INSANE}) {
                 @Override
-                protected String getAsString(Object value) {
+                protected String displayString(Object value) {
                     if (value instanceof Integer) return DungeonPreview.displayDifficulty((int) value);
-                    return super.getAsString(value);
+                    return super.displayString(value);
                 }
             }, Messages.get(UploadDungeon.class, "difficulty"), 9);
             add(difficulty);

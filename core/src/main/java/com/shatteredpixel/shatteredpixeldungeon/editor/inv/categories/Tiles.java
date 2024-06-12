@@ -371,10 +371,10 @@ public enum Tiles {
             region = new Spinner(new SpinnerIntegerModel(LevelScheme.REGION_SEWERS, LevelScheme.REGION_HALLS,
                     customTile == null ? Dungeon.level.levelScheme.getRegion() : customTile.region, true) {
                 @Override
-                public String getDisplayString() {
+                protected String displayString(Object value) {
                     if (imageTerrain != null) imageTerrain.setValue(imageTerrain.getValue());
                     if (realTerrain != null) realTerrain.setValue(realTerrain.getValue());
-                    return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) getValue() - 1]);
+                    return Document.INTROS.pageTitle(ChangeRegion.REGION_KEYS[(int) value - 1]);
                 }
 
                 @Override

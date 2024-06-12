@@ -1,9 +1,12 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.watabou.noosa.ui.Component;
+
+import java.util.Locale;
 
 public class SpinnerEnumModel<E extends Enum<E>> extends AbstractSpinnerModel {
 
@@ -13,11 +16,14 @@ public class SpinnerEnumModel<E extends Enum<E>> extends AbstractSpinnerModel {
     private E value;
     private int curIndex;
 
-    public SpinnerEnumModel(Class<E> enumClass, E val) {
+    private Consumer<E> updater;
+
+    public SpinnerEnumModel(Class<E> enumClass, E val, Consumer<E> updater) {
         this.enumClass = enumClass;
         values = enumClass.getEnumConstants();
         value = val;
         curIndex = findIndex(val);
+        this.updater = updater;
     }
 
     private int findIndex(E obj) {
@@ -34,7 +40,14 @@ public class SpinnerEnumModel<E extends Enum<E>> extends AbstractSpinnerModel {
 
     @Override
     public Component createInputField(int fontSize) {
-        inputField = new Spinner.SpinnerTextBlock(Chrome.get(Chrome.Type.TOAST_WHITE), fontSize) {
+        valueDisplay = new Spinner.SpinnerTextBlock(Chrome.get(Chrome.Type.TOAST_WHITE), fontSize) {
+
+            @Override
+            public void showValue(Object value) {
+                textBlock.text(displayString(value));
+                layout();
+            }
+
             private Button button;
 
             @Override
@@ -55,7 +68,7 @@ public class SpinnerEnumModel<E extends Enum<E>> extends AbstractSpinnerModel {
                 button.setRect(bg.x, bg.y, bg.width, bg.height);
             }
         };
-        return inputField;
+        return (Component) valueDisplay;
     }
 
 
@@ -76,13 +89,13 @@ public class SpinnerEnumModel<E extends Enum<E>> extends AbstractSpinnerModel {
         if (enumClass.isInstance(value)) {
             boolean changed = this.value == null || !this.value.equals(value);
             changeValue(this.value, value);
-            if (inputField instanceof Spinner.SpinnerTextBlock) {
-                Spinner.SpinnerTextBlock casted = (Spinner.SpinnerTextBlock) inputField;
-                casted.setText(getDisplayString());
-                casted.layout();
-            } else
-                System.out.println("failed show the value because the input field is not a Spinner.SpinnerTextBlock");
-            if (changed) fireStateChanged();
+            if (valueDisplay != null) {
+                valueDisplay.showValue(value);
+            }
+            if (changed) {
+                fireStateChanged();
+                updater.accept((E) value);
+            }
         } else {
             throw new IllegalArgumentException("illegal value");
         }
@@ -119,9 +132,7 @@ public class SpinnerEnumModel<E extends Enum<E>> extends AbstractSpinnerModel {
     }
 
     @Override
-    public void enable(boolean value) {
-        if (inputField instanceof Spinner.SpinnerTextBlock)
-            ((Spinner.SpinnerTextBlock) inputField).enable(value);
+    protected String displayString(Object value) {
+        return Messages.get(enumClass, ((E) value).name().toLowerCase(Locale.ENGLISH));
     }
-
 }
