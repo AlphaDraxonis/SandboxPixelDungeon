@@ -746,7 +746,7 @@ public abstract class Level implements Bundlable {
 		}
 
 		if (bundle.contains( "respawner" )){
-			respawner = (Respawner) bundle.get("respawner");
+			respawner = (MobSpawner) bundle.get("respawner");
 		}
 
 		buildFlagMaps();
@@ -904,7 +904,7 @@ public abstract class Level implements Bundlable {
 	}
 
 	public List<? extends Mob> getMobRotation() {
-		return Bestiary.getMobRotation(Dungeon.getSimulatedDepth());
+		return MobSpawner.getMobRotation(Dungeon.getSimulatedDepth());
 	}
 
 	abstract protected void createMobs();
@@ -1286,12 +1286,12 @@ public abstract class Level implements Bundlable {
 		return null;
 	}
 
-	private Respawner respawner;
+	private MobSpawner respawner;
 	private ZoneRespawner[] zoneRespawner;
 
 	public Actor addRespawner() {
 		if (respawner == null){
-			respawner = new Respawner();
+			respawner = new MobSpawner();
 			Actor.addDelayed(respawner, respawnCooldown());
 		} else {
 			Actor.add(respawner);
@@ -1581,7 +1581,7 @@ public abstract class Level implements Bundlable {
 		for (Checkpoint cp : checkpoints.values()) {
 			passable[cp.pos] = false;
 		}
-		
+
 		int lastRow = length() - width();
 		for (int i=0; i < width(); i++) {
 			passable[i] = avoid[i] = false;
