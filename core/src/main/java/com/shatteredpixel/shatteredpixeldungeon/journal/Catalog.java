@@ -50,6 +50,7 @@ import com.watabou.utils.Bundle;
 
 import java.util.*;
 
+//For items, but includes a few item-like effects, such as enchantments
 public enum Catalog {
 
 	//EQUIPMENT
