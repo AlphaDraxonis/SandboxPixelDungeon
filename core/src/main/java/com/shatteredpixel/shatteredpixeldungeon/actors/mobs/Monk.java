@@ -44,6 +44,7 @@ public class Monk extends Mob {
 		attackSkill = 30;
 		damageRollMin = 12;
 		damageRollMax = 25;
+		attackSpeed = 2f;
 		damageReductionMax = 2;
 
 		EXP = 11;
@@ -64,12 +65,12 @@ public class Monk extends Mob {
 //	public int attackSkill( Char target ) {
 //		return 30;
 //	}
-	
-	@Override
-	public float attackDelay() {
-		return super.attackDelay()*0.5f;
-	}
-	
+//
+//	@Override
+//	public float attackDelay() {
+//		return super.attackDelay()*0.5f;
+//	}
+//
 //	@Override
 //	public int drRoll() {
 //		return super.drRoll() + Char.combatRoll(0, 2);

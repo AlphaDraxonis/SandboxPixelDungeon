@@ -101,6 +101,7 @@ public abstract class Elemental extends Mob {
 		int otherDamageRollMax = other.specialDamageRollMin;
 		int otherSpecialDamageRollMin = other.specialDamageRollMax;
 		int otherSpecialDamageRollMax = other.damageRollMax;
+		float otherAttackSpeed = other.attackSpeed;
 		int otherDamageReductionMax = other.damageReductionMax;
 		int otherHT = other.HT;
 
@@ -110,6 +111,7 @@ public abstract class Elemental extends Mob {
 		other.damageRollMax = damageRollMax;
 		other.specialDamageRollMin = specialDamageRollMin;
 		other.specialDamageRollMax = specialDamageRollMax;
+		other.attackSpeed = attackSpeed;
 		other.damageReductionMax = damageReductionMax;
 		other.HT = HT;
 
@@ -121,6 +123,7 @@ public abstract class Elemental extends Mob {
 		other.damageRollMax = otherDamageRollMax;
 		other.specialDamageRollMin = otherSpecialDamageRollMin;
 		other.specialDamageRollMax = otherSpecialDamageRollMax;
+		other.attackSpeed = otherAttackSpeed;
 		other.damageReductionMax = otherDamageReductionMax;
 		other.HT = otherHT;
 

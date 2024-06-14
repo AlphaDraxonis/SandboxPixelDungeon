@@ -53,6 +53,7 @@ public class Thief extends Mob {
 		attackSkill = 12;
 		damageRollMin = 1;
 		damageRollMax = 10;
+		attackSpeed = 2f;
 		damageReductionMax = 3;
 
 		EXP = 5;
@@ -93,15 +94,15 @@ public class Thief extends Mob {
 				| doOnSingleObject(item, whatToDo, newValue -> item = newValue);
 	}
 
-	//    @Override
+//    @Override
 //    public int damageRoll() {
 //        return Char.combatRoll(1, 10);
 //    }
-
-	@Override
-	public float attackDelay() {
-		return super.attackDelay()*0.5f;
-	}
+//
+//	@Override
+//	public float attackDelay() {
+//		return super.attackDelay()*0.5f;
+//	}
 
 	@Override
 	public float lootChance() {

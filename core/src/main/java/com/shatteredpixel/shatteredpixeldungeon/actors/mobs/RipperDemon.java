@@ -49,6 +49,7 @@ public class RipperDemon extends Mob {
 		attackSkill = 30;
 		damageRollMin = 15;
 		damageRollMax = 25;
+		attackSpeed = 2f;
 		damageReductionMax = 4;
 		viewDistance = Light.DISTANCE;
 
@@ -77,12 +78,12 @@ public class RipperDemon extends Mob {
 //	public int attackSkill( Char target ) {
 //		return 30;
 //	}
-
-	@Override
-	public float attackDelay() {
-		return super.attackDelay()*0.5f;
-	}
-
+//
+//	@Override
+//	public float attackDelay() {
+//		return super.attackDelay()*0.5f;
+//	}
+//
 //	@Override
 //	public int drRoll() {
 //		return super.drRoll() + Char.combatRoll(0, 4);

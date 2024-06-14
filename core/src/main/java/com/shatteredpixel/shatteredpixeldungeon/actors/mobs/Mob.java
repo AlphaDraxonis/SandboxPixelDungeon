@@ -112,6 +112,7 @@ public abstract class Mob extends Char implements Customizable {
 	public int attackSkill = 0;//accuracy
 	public int damageRollMin = 0, damageRollMax = 0;
 	public int specialDamageRollMin = 0, specialDamageRollMax = 0;
+	public float attackSpeed = 1f;
 	public float statsScale = 1f;//only used in subclasses!
 	public int tilesBeforeWakingUp = 100;
 
@@ -207,6 +208,7 @@ public abstract class Mob extends Char implements Customizable {
 	private static final String DAMAGE_ROLL_MAX = "damage_roll_max";
 	private static final String SPECIAL_DAMAGE_ROLL_MIN = "special_damage_roll_min";
 	private static final String SPECIAL_DAMAGE_ROLL_MAX = "special_damage_roll_max";
+	private static final String ATTACK_SPEED = "attack_speed";
 	private static final String TILES_BEFORE_WAKING_UP = "tiles_before_waking_up";
 	private static final String GLYPH_ARMOR = "glyph_armor";
 	private static final String ENCHANT_WEAPON = "enchant_weapon";
@@ -258,6 +260,7 @@ public abstract class Mob extends Char implements Customizable {
             if (defaultMob.damageRollMax != damageRollMax) bundle.put(DAMAGE_ROLL_MAX, damageRollMax);
             if (defaultMob.specialDamageRollMin != specialDamageRollMin) bundle.put(SPECIAL_DAMAGE_ROLL_MIN, specialDamageRollMin);
             if (defaultMob.specialDamageRollMax != specialDamageRollMax) bundle.put(SPECIAL_DAMAGE_ROLL_MAX, specialDamageRollMax);
+			if (defaultMob.attackSpeed != attackSpeed) bundle.put(ATTACK_SPEED, attackSpeed);
             if (defaultMob.tilesBeforeWakingUp != tilesBeforeWakingUp) bundle.put(TILES_BEFORE_WAKING_UP, tilesBeforeWakingUp);
             if (defaultMob.EXP != EXP) bundle.put(XP, EXP);
             if (defaultMob.statsScale != statsScale) bundle.put(STATS_SCALE, statsScale);
@@ -329,6 +332,7 @@ public abstract class Mob extends Char implements Customizable {
 		if (bundle.contains(DAMAGE_ROLL_MAX)) damageRollMax = bundle.getInt(DAMAGE_ROLL_MAX);
 		if (bundle.contains(SPECIAL_DAMAGE_ROLL_MIN)) specialDamageRollMin = bundle.getInt(SPECIAL_DAMAGE_ROLL_MIN);
 		if (bundle.contains(SPECIAL_DAMAGE_ROLL_MAX)) specialDamageRollMax = bundle.getInt(SPECIAL_DAMAGE_ROLL_MAX);
+		if (bundle.contains(ATTACK_SPEED)) attackSpeed = bundle.getFloat(ATTACK_SPEED);
 		if (bundle.contains(TILES_BEFORE_WAKING_UP)) tilesBeforeWakingUp = bundle.getInt(TILES_BEFORE_WAKING_UP);
 		if (bundle.contains(XP)) EXP = bundle.getInt(XP);
 		if (bundle.contains(STATS_SCALE)) statsScale = bundle.getFloat(STATS_SCALE);
@@ -884,7 +888,7 @@ public abstract class Mob extends Char implements Customizable {
 	}
 
 	public float attackDelay() {
-		float delay = 1f;
+		float delay = 1f / attackSpeed;
 		if ( buff(Adrenaline.class) != null) delay /= 1.5f;
 		return delay;
 	}
@@ -1403,6 +1407,7 @@ public abstract class Mob extends Char implements Customizable {
 
             if (DefaultStatsCache.useStatsScale(this)) {
                 if (defaultStats.baseSpeed != baseSpeed || defaultStats.statsScale != statsScale
+						|| defaultStats.attackSpeed != attackSpeed
 						|| defaultStats.viewDistance != viewDistance
 						|| defaultStats.tilesBeforeWakingUp != tilesBeforeWakingUp
 						|| !defProps.equals(props)
@@ -1418,7 +1423,9 @@ public abstract class Mob extends Char implements Customizable {
                         desc.append('\n').append(Messages.get(Mob.class, "stats_scale")).append(": ").append(defaultStats.statsScale).append(" -> _").append(statsScale).append('_');
                     if (defaultStats.baseSpeed != baseSpeed)
                         desc.append('\n').append(Messages.get(StoneOfAugmentation.WndAugment.class, "speed")).append(": ").append(defaultStats.baseSpeed).append(" -> _").append(baseSpeed).append('_');
-                    if (defaultStats.viewDistance != viewDistance)
+					if (defaultStats.attackSpeed != attackSpeed)
+						desc.append('\n').append(Messages.get(Mob.class, "attack_speed")).append(": ").append(defaultStats.attackSpeed).append(" -> _").append(attackSpeed).append('_');
+					if (defaultStats.viewDistance != viewDistance)
                         desc.append('\n').append(Messages.get(Mob.class, "view_distance")).append(": ").append(defaultStats.viewDistance).append(" -> _").append(viewDistance).append('_');
                     if (this instanceof Brute) {
                         desc.append(infoStatsChangedHPAccuracyEvasionArmor(defaultStats));
@@ -1453,6 +1460,9 @@ public abstract class Mob extends Char implements Customizable {
 							desc.append('\n').append(Messages.get(Mob.class, "special_dmg_min")).append(": ").append(defaultStats.specialDamageRollMin).append(" -> _").append(specialDamageRollMin).append('_');
 						if (defaultStats.specialDamageRollMax != specialDamageRollMax)
 							desc.append('\n').append(Messages.get(Mob.class, "special_dmg_max")).append(": ").append(defaultStats.specialDamageRollMax).append(" -> _").append(specialDamageRollMax).append('_');
+						if (defaultStats.attackSpeed != attackSpeed)
+							desc.append('\n').append(Messages.get(Mob.class, "attack_speed")).append(": ").append(defaultStats.attackSpeed).append(" -> _").append(attackSpeed).append('_');
+
 					}
 
 					if (defaultStats.tilesBeforeWakingUp != tilesBeforeWakingUp)
@@ -1518,6 +1528,7 @@ public abstract class Mob extends Char implements Customizable {
 				&& maxLvl == other.maxLvl
 				&& specialDamageRollMin == other.specialDamageRollMin
 				&& specialDamageRollMax == other.specialDamageRollMax
+				&& attackSpeed == other.attackSpeed
 				&& tilesBeforeWakingUp == other.tilesBeforeWakingUp
 				&& properties.equals(other.properties);
 	}
