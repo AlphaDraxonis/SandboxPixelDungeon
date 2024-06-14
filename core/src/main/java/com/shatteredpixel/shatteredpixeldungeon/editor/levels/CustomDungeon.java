@@ -959,7 +959,7 @@ public class CustomDungeon implements Bundlable {
         }
 
         for (HeroSettings.HeroStartItemsData si : startItems) {
-            GameObject.doOnAllGameObjectsList(si.items, whatToDo);
+            si.doOnAllGameObjects(whatToDo);
         }
 
         //Set level for keys in inv
@@ -1257,7 +1257,7 @@ public class CustomDungeon implements Bundlable {
             }
 
             for (HeroSettings.HeroStartItemsData si : startItems) {
-                GameObject.doOnAllGameObjectsList(si.items, whatToDo);
+                si.doOnAllGameObjects(whatToDo);
             }
 
             //Set level for keys in inv
@@ -1322,7 +1322,7 @@ public class CustomDungeon implements Bundlable {
             }
 
             for (HeroSettings.HeroStartItemsData si : startItems) {
-                GameObject.doOnAllGameObjectsList(si.items, whatToDo);
+                si.doOnAllGameObjects(whatToDo);
             }
 
             if (EditorScene.getCustomLevel() != null) {

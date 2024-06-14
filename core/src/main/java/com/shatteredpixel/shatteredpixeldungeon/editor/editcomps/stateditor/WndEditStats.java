@@ -204,7 +204,7 @@ public class WndEditStats extends MultiWindowTabComp {
             };
             content.add(enchantments);
 
-            properties = new PropertyListContainer(current, null) {
+            properties = new PropertyListContainer(current.getPropertiesVar_ACCESS_ONLY_FOR_EDITING_UI(), null) {
                 @Override
                 protected void onSlotNumChange() {
                     super.onSlotNumChange();

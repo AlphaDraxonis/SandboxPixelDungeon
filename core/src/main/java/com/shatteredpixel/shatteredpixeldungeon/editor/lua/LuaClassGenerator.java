@@ -253,6 +253,7 @@ public final class LuaClassGenerator {
         methods.remove("onDeleteLevelScheme");
         methods.remove("setDurationForBuff");
         methods.remove("moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob");
+        methods.remove("getPropertiesVar_ACCESS_ONLY_FOR_EDITING_UI");
         methods.remove("spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY");
         methods.remove("setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME");
 

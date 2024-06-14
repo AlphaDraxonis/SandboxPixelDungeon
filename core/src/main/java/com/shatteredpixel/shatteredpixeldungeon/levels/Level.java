@@ -1540,7 +1540,7 @@ public abstract class Level implements Bundlable {
 
 	public boolean isPassable(int cell, Char c) {
 		if (c == null) return isPassable(cell);
-		if (c instanceof Hero || c instanceof HeroMob) return isPassableHero(cell);
+		if (c instanceof Hero/* || c instanceof HeroMob*/) return isPassableHero(cell);
 		if (c.alignment == Char.Alignment.ENEMY) return isPassableMob(cell);
 		return isPassableAlly(cell);
 	}
@@ -1577,7 +1577,7 @@ public abstract class Level implements Bundlable {
 	}
 
 	public boolean[] getPassableVar(Char ch) {
-		if (ch instanceof Hero || ch instanceof HeroMob) return getPassableHeroVar();
+		if (ch instanceof Hero/* || ch instanceof HeroMob*/) return getPassableHeroVar();
 		if (ch.alignment == Char.Alignment.ENEMY) return getPassableMobVar();
 		return passableAlly;
 	}
@@ -1975,7 +1975,10 @@ public abstract class Level implements Bundlable {
 		}
 
 		if (ch.isAlive() && !water[ch.pos] && Char.hasProp(ch, Char.Property.AQUATIC) && !CustomDungeon.isEditing()){
-			ch.dieOnLand();
+			if (!TileItem.isEntranceTerrainCell(Dungeon.level.map[ch.pos]) && !TileItem.isExitTerrainCell(Dungeon.level.map[ch.pos])
+					|| !(ch instanceof Hero)) {
+				ch.dieOnLand();
+			}
 		}
 
 		if (ch == Dungeon.hero) {

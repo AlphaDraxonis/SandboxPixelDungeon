@@ -392,11 +392,6 @@ public abstract class Mob extends Char implements Customizable {
 	@Override
 	protected boolean act() {
 
-		if (!Dungeon.level.water[pos] && hasProp(this, Property.AQUATIC)) {
-			dieOnLand();
-			return true;
-		}
-
 		if (isBossMob && HP*2 > HT) {
 			bleeding = false;
 //            ((GooSprite)sprite).spray(false);

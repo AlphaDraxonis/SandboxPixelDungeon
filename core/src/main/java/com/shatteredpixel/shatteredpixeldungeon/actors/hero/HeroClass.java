@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.hero;
 
 import com.shatteredpixel.shatteredpixeldungeon.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Challenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.ElementalStrike;
@@ -60,6 +61,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingSp
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+
+import java.util.Collection;
 
 public enum HeroClass {
 
@@ -107,6 +110,9 @@ public enum HeroClass {
 
         HeroSettings.HeroStartItemsData generalItems = Dungeon.customDungeon.startItems[0].getCopy();
         HeroSettings.HeroStartItemsData classItems = Dungeon.customDungeon.startItems[getIndex() + 1].getCopy();
+
+        addProperties(hero, generalItems.properties);
+        addProperties(hero, classItems.properties);
 
         collectStartEq(hero, generalItems);
         collectStartEq(hero, classItems);
@@ -394,6 +400,12 @@ public enum HeroClass {
                     break;
                 }
             }
+    }
+
+    private static void addProperties(Char ch, Collection<Char.Property> properties) {
+        for (Char.Property prop : properties) {
+            ch.getPropertiesVar_ACCESS_ONLY_FOR_EDITING_UI().add(prop);
+        }
     }
 
     public String title() {

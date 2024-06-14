@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
@@ -124,6 +125,15 @@ public abstract class Char extends Actor {
 
 	@Override
 	protected boolean act() {
+
+		if (!Dungeon.level.water[pos] && hasProp(this, Property.AQUATIC)) {
+			if (!TileItem.isEntranceTerrainCell(Dungeon.level.map[pos]) && !TileItem.isExitTerrainCell(Dungeon.level.map[pos])
+					|| !(this instanceof Hero)) {
+				dieOnLand();
+				return true;
+			}
+		}
+
 		if (fieldOfView == null || fieldOfView.length != Dungeon.level.length()){
 			fieldOfView = new boolean[Dungeon.level.length()];
 		}
@@ -1149,7 +1159,7 @@ public abstract class Char extends Actor {
 	}
 
 	public boolean[] modPassable(boolean[] passable){
-		if (properties.contains(Property.PERMEABLE)) {
+		if (Char.hasProp(this, Property.PERMEABLE)) {
 			for (int i = 0; i < passable.length; i++) {
 				if (!passable[i]) {
 					if ((Terrain.flags[Dungeon.level.map[i]] & Terrain.SOLID) != 0
@@ -1228,7 +1238,7 @@ public abstract class Char extends Actor {
 		return buff(Challenge.SpectatorFreeze.class) != null || buff(AnkhInvulnerability.class) != null;
 	}
 
-	protected HashSet<Property> properties = new HashSet<>();
+	protected final HashSet<Property> properties = new HashSet<>();
 
 	public HashSet<Property> properties() {
 		HashSet<Property> props = new HashSet<>(properties);
@@ -1237,6 +1247,10 @@ public abstract class Char extends Actor {
 			props.add(Property.LARGE);
 		}
 		return props;
+	}
+
+	public HashSet<Property> getPropertiesVar_ACCESS_ONLY_FOR_EDITING_UI() {
+		return properties;
 	}
 
 	public enum Property{

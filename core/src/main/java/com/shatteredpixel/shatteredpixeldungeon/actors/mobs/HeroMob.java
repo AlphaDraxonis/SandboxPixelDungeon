@@ -886,6 +886,12 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             return false;
         }
 
+        @Override
+        public HashSet<Property> properties() {
+            if (owner == null) return super.properties();
+            return owner.properties();
+        }
+
         public List<Item> wands() {
             return ((InternalHeroBelongings) belongings).wands.items;
         }

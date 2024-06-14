@@ -17,16 +17,16 @@ import java.util.Set;
 
 public class PropertyListContainer extends ItemContainerWithLabel<PropertyItem> {
 
-    private Char ch;
+    private Set<Char.Property> properties;
 
-    public PropertyListContainer(Char ch, DefaultEditComp<?> editComp) {
-        super(createPropertyItemList(ch), editComp, Messages.get(PropertyListContainer.class, "properties") + ":");
-        this.ch = ch;
+    public PropertyListContainer(Set<Char.Property> properties, DefaultEditComp<?> editComp) {
+        super(createPropertyItemList(properties), editComp, Messages.get(PropertyListContainer.class, "properties") + ":");
+        this.properties = properties;
     }
 
-    private static List<PropertyItem> createPropertyItemList(Char ch) {
+    private static List<PropertyItem> createPropertyItemList(Set<Char.Property> properties) {
         List<PropertyItem> asPropertyItems = new ArrayList<>();
-        for (Char.Property p : ch.properties) {
+        for (Char.Property p : properties) {
             asPropertyItems.add(new PropertyItem(p));
         }
         return asPropertyItems;
@@ -74,12 +74,12 @@ public class PropertyListContainer extends ItemContainerWithLabel<PropertyItem> 
     }
 
     protected Char.Property doAddProperty(Char.Property property) {
-        ch.properties.add(property);
+        properties.add(property);
         return property;
     }
 
     protected void doRemoveProperty(Char.Property property) {
-        ch.properties.remove(property);
+        properties.remove(property);
     }
 
     protected Set<Char.Property> getPropertiesToIgnore() {

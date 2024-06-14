@@ -1620,7 +1620,7 @@ public class Hero extends Char {
 	
 	private boolean getCloser( final int target ) {
 
-		if (target == pos)
+		if (target == pos || Char.hasProp(this, Property.IMMOVABLE))
 			return false;
 
 		if (rooted) {
@@ -1635,7 +1635,8 @@ public class Hero extends Char {
 			path = null;
 
 			if (Actor.findChar( target ) == null) {
-				if (com.shatteredpixel.shatteredpixeldungeon.editor.Barrier.canEnterCell(target, this, true, false)) {
+				if (com.shatteredpixel.shatteredpixeldungeon.editor.Barrier.canEnterCell(target, this, true, false)
+				 	&& (!Char.hasProp(this, Property.LARGE) || Dungeon.level.openSpace[target])) {
 					step = target;
 				}
 				if (walkingToVisibleTrapInFog
@@ -2006,7 +2007,14 @@ public class Hero extends Char {
 		
 		return stealth;
 	}
-	
+
+	@Override
+	public void dieOnLand() {
+		Dungeon.fail(null);
+		GLog.n(Messages.get(this, "die_on_land"));
+		super.dieOnLand();
+	}
+
 	@Override
 	public void die( Object cause ) {
 		

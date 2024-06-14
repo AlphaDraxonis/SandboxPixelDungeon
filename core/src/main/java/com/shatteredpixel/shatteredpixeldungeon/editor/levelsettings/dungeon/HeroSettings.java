@@ -2,6 +2,8 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.PropertyListContainer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
@@ -35,10 +37,13 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 import com.watabou.utils.PointF;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class HeroSettings extends Component {
 
@@ -138,6 +143,7 @@ public class HeroSettings extends Component {
         private final ItemContainerWithLabel<Item> startItems;
         private final ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
         private final StyledSpinner startGold, startEnergy, plusLvl, plusStr;
+        private final PropertyListContainer properties;
 
         private final Component itemSelectorParent;
 
@@ -323,6 +329,24 @@ public class HeroSettings extends Component {
                 }
             };
             add(startItems);
+
+            properties = new PropertyListContainer(data.properties, null) {
+                @Override
+                protected void onSlotNumChange() {
+                    super.onSlotNumChange();
+                    if (properties != null) {
+                        DungeonTab.updateLayout();
+                    }
+                }
+
+                @Override
+                protected Set<Char.Property> getPropertiesToIgnore() {
+                    Set<Char.Property> result = super.getPropertiesToIgnore();
+                    result.add(Char.Property.PERMEABLE);
+                    return result;
+                }
+            };
+            add(properties);
         }
 
         @Override
@@ -351,7 +375,11 @@ public class HeroSettings extends Component {
             posY = itemSelectorParent.bottom() + gap;
             startItems.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
             PixelScene.align(startItems);
-            posY = startItems.bottom() + gap;
+            posY = startItems.bottom() + gap * 2;
+
+            properties.setRect(x, posY, width, WndMenuEditor.BTN_HEIGHT);
+            PixelScene.align(properties);
+            posY = properties.bottom() + gap;
 
             height = (posY - y - gap);
         }
@@ -365,7 +393,7 @@ public class HeroSettings extends Component {
                 + " (" + activeSubCls + "/" + heroClass.subClasses().length + ")";
     }
 
-    public static class HeroStartItemsData implements Bundlable, Copyable<HeroStartItemsData> {
+    public static class HeroStartItemsData extends GameObject implements Copyable<HeroStartItemsData> {
         public Weapon weapon;
         public Armor armor;
         public Ring ring;
@@ -375,6 +403,8 @@ public class HeroSettings extends Component {
         public int gold, energy;
         public int plusLvl;//default is 0
         public int plusStr;//default is 0
+
+        public Set<Char.Property> properties = new HashSet<>();
 
         private boolean needToAddDefaultConfiguration = false;
 
@@ -388,6 +418,7 @@ public class HeroSettings extends Component {
         private static final String LVL = "lvl";
         private static final String STR = "str";
         private static final String ITEMS = "items";
+        private static final String PROPERTIES = "properties";
 
         @Override
         public void storeInBundle(Bundle bundle) {
@@ -401,6 +432,14 @@ public class HeroSettings extends Component {
             bundle.put(ENERGY, energy);
             bundle.put(LVL, plusLvl);
             bundle.put(STR, plusStr);
+
+            int[] enumOrdinals = new int[properties.size()];
+            int index = 0;
+            for (Char.Property p : properties) {
+                enumOrdinals[index] = p.ordinal();
+                index++;
+            }
+            bundle.put(PROPERTIES, enumOrdinals);
 
             bundle.put(ITEMS, items);
         }
@@ -426,6 +465,15 @@ public class HeroSettings extends Component {
             }
             for (Bundlable b : bundle.getCollection(ITEMS)) {
                 items.add((Item) b);
+            }
+
+            int[] enumOrdinals = bundle.getIntArray(PROPERTIES);
+            if (enumOrdinals != null) {
+                properties.clear();
+                Char.Property[] props = Char.Property.values();
+                for (int i = 0; i < enumOrdinals.length; i++) {
+                    properties.add(props[enumOrdinals[i]]);
+                }
             }
         }
 
@@ -470,7 +518,19 @@ public class HeroSettings extends Component {
             return startItems;
         }
 
-        public void initRandoms() {
+        @Override
+        public boolean doOnAllGameObjects(Function<GameObject, ModifyResult> whatToDo) {
+            return super.doOnAllGameObjects(whatToDo)
+                    || doOnSingleObject(weapon  , whatToDo, newValue -> weapon   = newValue)
+                    || doOnSingleObject(armor   , whatToDo, newValue -> armor    = newValue)
+                    || doOnSingleObject(ring    , whatToDo, newValue -> ring     = newValue)
+                    || doOnSingleObject(artifact, whatToDo, newValue -> artifact = newValue)
+                    || doOnSingleObject(misc    , whatToDo, newValue -> misc     = newValue)
+                    || doOnAllGameObjectsList(items, whatToDo);
+        }
+
+        @Override
+        public ModifyResult initRandoms() {
             GameObject.doOnSingleObject(weapon  , GameObject::initRandoms, newValue -> weapon   = newValue);
             GameObject.doOnSingleObject(armor   , GameObject::initRandoms, newValue -> armor    = newValue);
             GameObject.doOnSingleObject(ring    , GameObject::initRandoms, newValue -> ring     = newValue);
@@ -482,6 +542,8 @@ public class HeroSettings extends Component {
             if (artifact != null) artifact.setCursedKnown(true);
             if (misc != null) misc.setCursedKnown(true);
             GameObject.doOnAllGameObjectsList(items, GameObject::initRandoms);
+
+            return ModifyResult.noChange();
         }
 
     }
