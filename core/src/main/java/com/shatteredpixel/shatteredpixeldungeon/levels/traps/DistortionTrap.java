@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -143,6 +144,7 @@ public class DistortionTrap extends Trap{
 			if ((t = Dungeon.level.traps.get(mob.pos)) != null && t.active){
 				if (t.disarmedByActivation) t.disarm();
 				t.reveal();
+				Bestiary.trackEncounter(t.getClass());
 				t.activate();
 			}
 			ScrollOfTeleportation.appear(mob, mob.pos);

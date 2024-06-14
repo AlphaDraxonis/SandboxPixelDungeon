@@ -28,6 +28,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilities;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.usercontent.interfaces.CustomGameObjectClass;
@@ -101,6 +102,7 @@ public abstract class Trap extends GameObject implements Copyable<Trap> {
 			}
 			if (disarmedByActivation) disarm();
 			if (revealedWhenTriggered) Dungeon.level.discover(pos);
+			Bestiary.trackEncounter(getClass());
 			activate();
 		}
 	}
