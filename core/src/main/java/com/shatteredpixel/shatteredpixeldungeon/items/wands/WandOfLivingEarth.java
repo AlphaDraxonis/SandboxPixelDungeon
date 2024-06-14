@@ -368,10 +368,17 @@ public class WandOfLivingEarth extends DamageWand {
 		}
 
 		@Override
-		public String desc() {
+		public String description() {
 			if (customDesc != null) return super.desc();
-			int secondArg = Dungeon.isChallenged(Challenges.NO_ARMOR) ? 2 + wandLevel : 3 + 3*wandLevel;
-			return Messages.get(this, "desc", wandLevel, secondArg);
+			String desc = Messages.get(this, "desc");
+
+			if (Actor.chars().contains(this)) {
+				int secondArg = Dungeon.isChallenged(Challenges.NO_ARMOR) ? 2 + wandLevel : 3 + 3*wandLevel;
+				desc += "\n\n" + Messages.get(this, "wand_info", wandLevel, secondArg);
+			}
+
+			return desc;
+			
 		}
 		
 		{

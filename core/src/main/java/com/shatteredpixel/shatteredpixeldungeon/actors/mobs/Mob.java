@@ -1177,7 +1177,7 @@ public abstract class Mob extends Char implements Customizable {
 				Statistics.enemiesSlain++;
 				Badges.validateMonstersSlain();
 				Statistics.qualifiedForNoKilling = false;
-				Bestiary.trackKill(getClass());
+				Bestiary.trackEncounter(getClass());
 
 				AscensionChallenge.processEnemyKill(this);
 				

@@ -242,7 +242,11 @@ public class Statue extends Mob implements MobBasedOnDepth, ItemSelectables.Weap
 	@Override
 	public String desc() {
 		if (customDesc != null) return super.desc();
-		return Messages.get(this, "desc", weapon == null ? "___" : weapon().name());
+		String desc = Messages.get(this, "desc");
+		if (weapon != null || CustomDungeon.isEditing()){
+			desc += "\n\n" + Messages.get(this, "desc_weapon", weapon == null ? "___" : weapon().name());
+		}
+		return desc;
 	}
 
 	{

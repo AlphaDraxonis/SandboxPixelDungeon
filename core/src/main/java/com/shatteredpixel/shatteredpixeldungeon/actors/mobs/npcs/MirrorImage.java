@@ -186,7 +186,7 @@ public class MirrorImage extends NPC {
 		
 		hero = (Hero)Actor.findById(heroID);
 		if (hero != null) {
-			armTier = hero.tier();
+			armTier = hero.tier();//TODO tzz seehr wichtig if no hero, it might use armTier = 1; in catalog!
 			((MirrorSprite)s).updateArmor( hero );
 		}
 		return s;
@@ -196,7 +196,7 @@ public class MirrorImage extends NPC {
 	public boolean shouldSpriteBeVisible() {
 		return Dungeon.level.heroFOV[pos];
 	}
-	
+
 	{
 		immunities.add( ToxicGas.class );
 		immunities.add( CorrosiveGas.class );

@@ -239,7 +239,7 @@ public class PrismaticImage extends NPC {
 		
 		hero = (Hero)Actor.findById(heroID);
 		if (hero != null) {
-			armTier = hero.tier();
+			armTier = hero.tier();//TODO tzz catalog! armTier =1 if hero is null
 			((PrismaticSprite)s).updateArmor( hero );
 		}
 		return s;

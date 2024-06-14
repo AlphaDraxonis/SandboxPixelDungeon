@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.mobs.ItemSelectables;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -144,6 +145,7 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	@Override
 	public CharSprite sprite() {
 		CharSprite sprite = super.sprite();
+		//TODO tzz seeehr wichtig check if armor is null in atalog, should be t3 in that case
 		StatueSprite.setArmor(sprite, armor == null ? 0 : armor.tier);
 		return sprite;
 	}
@@ -176,9 +178,13 @@ public class ArmoredStatue extends Statue implements ItemSelectables.ArmorSelect
 	}
 
 	@Override
-	public String desc() {
+	public String description() {
 		if (customDesc != null || armor == null && Dungeon.hero != null) return super.desc();
-		return Messages.get(this, "desc", weapon == null ? "___" : weapon().name(), armor == null ? "___" : armor().name());
+		String desc = Messages.get(this, "desc");
+		if (weapon != null && armor != null || CustomDungeon.isEditing()){
+			desc += "\n\n" + Messages.get(this, "desc_arm_wep", weapon == null ? "___" : weapon().name(), armor == null ? "___" : armor().name());
+		}
+		return desc;
 	}
 
 }
