@@ -29,13 +29,16 @@ public class SlowExtendWindow extends Window {
     protected ScrollPane scrollPane;
 
     /**
-     * @param endWidth    width the window has after the animation
-     * @param endHeight   height the window has after the animation
+     * @param endWidth    width the window has after the animation, dividable by 2
+     * @param endHeight   height the window has after the animation, dividable by 2
      * @param orientation how it appears, defines if starting width or starting height is 0 or already the endSize
      * @param startPos    fix position on screen it cannot change, kinda like offset, a border ALWAYS touches this point in the center of the border
      */
     public SlowExtendWindow(int endWidth, int endHeight, Orientation orientation, Point startPos) {
         super();
+
+        if (endWidth % 2 != 0) endWidth++;
+        if (endHeight % 2 != 0) endHeight++;
 
         this.endWidth = endWidth;
         this.endHeight = endHeight;
@@ -96,7 +99,7 @@ public class SlowExtendWindow extends Window {
         super.offset(xOffset, yOffset);
         camera = ownCamera;
 
-        if (scrollPane != null) scrollPane.layout(orientation.offsetY < 0 || orientation.offsetX < 0);
+        if (scrollPane != null) scrollPane.layout(orientation.offsetY != 0 || orientation.offsetX != 0);
     }
 
     @Override
