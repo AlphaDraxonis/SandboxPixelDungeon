@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs.Mob_lua;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
@@ -42,15 +41,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CustomObject implements Bundlable {
+public class CustomObject extends LuaCodeHolder {
 
 	public LuaClass luaClass;
 	public String name;
-
-	public String pathToScript;
-
-	private LuaValue script;
-	private LuaValue staticVarsTemp;
 
 	private static LuaValue globalVars;
 
@@ -58,41 +52,6 @@ public class CustomObject implements Bundlable {
 		if (luaClass instanceof Mob) return ((Mob) luaClass).sprite();
 		return new ItemSprite();
 	}
-
-	public void loadScript() {
-
-		LuaScript ls = CustomDungeonSaves.readLuaFile(pathToScript);
-		if (ls != null) {
-			script = LuaManager.globals.load(ls.code).call();
-			if (staticVarsTemp != null) {
-				script.set("static", staticVarsTemp);
-				staticVarsTemp = null;
-			}
-		}
-		else script = null;
-
-//		script = LuaManager.globals.load(
-//				vars +
-////                         "function attackSkill(this, vars) " +
-////                         "if vars.item == nil then" +
-////                         "   vars.item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
-////                         " else  level:drop(luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing\"), this.pos + level:width()).sprite:drop()" +
-////                         " end  vars.static.aNumber = vars.static.aNumber + 1 return vars.static.aNumber" +
-////                         " end " +
-//
-//						"function die(this, vars, super, cause) " +
-//						"local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
-//						"level:drop(item, this.pos + level:width()).sprite:drop()" +
-//						"super:call({cause})" +
-//						" end  " +
-//
-//						"return {" +
-////                         "attackProc = attackProc; " +
-//						"die = die;" +
-//						"vars = vars " +
-//						"}").call();
-	}
-
 
 	public static void loadScripts() {
 		LuaManager.callStaticInitializers();
@@ -123,30 +82,19 @@ public class CustomObject implements Bundlable {
 
 	private static final String LUA_CLASS = "lua_class";
 	private static final String NAME = "name";
-	private static final String PATH_TO_SCRIPT = "path_to_script";
-	private static final String STATIC_VARS = "static_vars";
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		luaClass = (LuaClass) bundle.get(LUA_CLASS);
 		name = bundle.getString(NAME);
-		pathToScript = bundle.getString(PATH_TO_SCRIPT);
-
-		LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, STATIC_VARS);
-		if (loaded != null && loaded.istable()) {
-			staticVarsTemp = loaded.checktable();
-		}
+		super.restoreFromBundle(bundle);
 	}
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		bundle.put(LUA_CLASS, luaClass);
 		bundle.put(NAME, name);
-		bundle.put(PATH_TO_SCRIPT, pathToScript);
-
-		if (script != null && script.get("static").istable() && !CustomDungeon.isEditing()) {
-			LuaManager.storeVarInBundle(bundle, script.get("static"), STATIC_VARS);
-		}
+		super.storeInBundle(bundle);
 	}
 
 	public static void assignNewID(CustomObject customObject) {

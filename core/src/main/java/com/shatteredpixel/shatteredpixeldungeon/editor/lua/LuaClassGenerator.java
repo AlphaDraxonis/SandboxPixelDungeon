@@ -26,15 +26,18 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Rat;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorInvCategory;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -141,18 +144,57 @@ public final class LuaClassGenerator {
     private LuaClassGenerator() {
     }
 
+    public static void generateLevelSourceFiles() {
+        generateLevelFile(CavesBossLevel.class);
+        generateLevelFile(CavesLevel.class);
+        generateLevelFile(CavesBossLevel.class);
+        generateLevelFile(CityBossLevel.class);
+        generateLevelFile(CityLevel.class);
+        generateLevelFile(DeadEndLevel.class);
+        generateLevelFile(HallsBossLevel.class);
+        generateLevelFile(HallsLevel.class);
+        generateLevelFile(LastLevel.class);
+        generateLevelFile(LastShopLevel.class);
+        generateLevelFile(MiningLevel.class);
+        generateLevelFile(PrisonBossLevel.class);
+        generateLevelFile(PrisonLevel.class);
+        generateLevelFile(SewerBossLevel.class);
+        generateLevelFile(SewerLevel.class);
+        generateLevelFile(CustomLevel.class);
+    }
+
     public static void generateSourceFiles() {
 
         Class[][] mobs = EditorInvCategory.getAll(Mobs.values());
 
-        generateFile(Mob.class);
-        generateFile(Rat.class);
-        generateFile(Ghost.class);
-        generateFile(SentryRoom.Sentry.class);
+//        generateFile(Mob.class);
+//        generateFile(Rat.class);
+//        generateFile(Ghost.class);
+//        generateFile(SentryRoom.Sentry.class);
     }
 
-    private static void generateFile(Class<?> inputClass) {
-        String source = generateSourceCode(inputClass);
+    private static void generateLevelFile(Class<?> inputClass) {
+        String source = generateSourceCodeLevel(inputClass);
+
+        String path = ROOT_DIR
+                + (Level.class.getPackage().getName() + ".lualevels.").replaceAll("\\.", "/")
+                + inputClass.getSimpleName() + "_lua.java";
+
+        File f = new File(path);
+
+        if (f.exists()) f.delete();
+
+		try {
+			f.createNewFile();
+		} catch (IOException e) {
+            e.printStackTrace();
+		}
+
+		try (FileWriter writer = new FileWriter(f)){
+            writer.write(source);
+        } catch (IOException e) {
+            e.printStackTrace();
+		}
 
 //        String path = TODO tzz need to override bundlabe in generateCode!!!!!
     }
@@ -169,8 +211,8 @@ public final class LuaClassGenerator {
     //        //in storeInBundle: find a way to properly store all of that automatically
     //        //test if they are separate
 
-    public static String generateSourceCode(Class<?> inputClass) {
-        String pckge = "package " + inputClass.getPackage().getName() + ".luamobs;\n\n";
+    public static String generateSourceCodeMob(Class<?> inputClass) {
+        String pckge = "package " + Mob.class.getPackage().getName() + ".luamobs;\n\n";
         String imprt = "import " + Messages.MAIN_PACKAGE_NAME + "actors.*;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "actors.buffs.*;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "actors.mobs.*;\n" +
@@ -241,8 +283,6 @@ public final class LuaClassGenerator {
         //TODO tzz don't forget Methods from Bundlable!
         //And tell: if you want to store sth like the currently targeted enemy, store the id and ...
 
-        StringBuilder overrideMethods = new StringBuilder();
-
         Map<String, Method> methods = new HashMap<>();
         findAllMethodsToOverride(inputClass, Actor.class, methods);
         methods.remove("storeInBundle");
@@ -257,13 +297,136 @@ public final class LuaClassGenerator {
         methods.remove("spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY");
         methods.remove("setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME");
 
-        for (Method m : methods.values()) {
+        return pckge
+                + imprt
+                + classHead
+                + declaringVars
+                + implementLuaClassStuff
+                + bundlingMethods
+                + overrideMethods(methods.values(), "CustomObject.getScript(identifier)")
+                + "}";
+    }
+
+    public static String generateSourceCodeLevel(Class<?> inputClass) {
+        String accessScript = "levelScheme.luaScript.getScript()";
+        String pckge = "package " + Level.class.getPackage().getName() + ".lualevels;\n\n";
+        String imprt = "import " + Messages.MAIN_PACKAGE_NAME + "actors.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "actors.buffs.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "actors.mobs.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "actors.hero.Hero;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.levels.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.lua.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.ui.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "editor.util.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "items.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "levels.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "sprites.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "windows.WndError;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "scenes.DungeonScene;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "levels.builders.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "levels.painters.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "levels.features.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "levels.rooms.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "levels.traps.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "plants.Plant;\n" +
+                "import com.watabou.noosa.Game;\n" +
+                "import com.watabou.utils.Bundle;\n" +
+                "import org.luaj.vm2.*;\n" +
+                "import org.luaj.vm2.lib.jse.CoerceJavaToLua;\n" +
+                "import java.util.*;\n\n";
+        String classHead = "public class " + inputClass.getSimpleName() + "_lua extends " + inputClass.getSimpleName() +" implements LuaLevel {\n\n";
+        String declaringVars = "    private LuaTable vars;\n";
+        String bundlingMethods =
+                        "    @Override\n" +
+                        "    public void setVars(LuaValue vars) {\n" +
+                        "        this.vars = vars;\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public void storeInBundle(Bundle bundle) {\n" +
+                        "        super.storeInBundle(bundle);\n" +
+                        "        if (vars != null) {\n" +
+                        "            LuaManager.storeVarInBundle(bundle, vars, LuaClass.VARS);\n" +
+                        "        }\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public void restoreFromBundle(Bundle bundle) {\n" +
+                        "        super.restoreFromBundle(bundle);\n" +
+                        "\n" +
+                        "        LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, LuaClass.VARS);\n" +
+                        "        if (loaded != null && loaded.istable()) vars = loaded.checktable();\n" +
+                        "    }\n\n";
+
+        Map<String, Method> methods = new HashMap<>();
+        findAllMethodsToOverride(inputClass, Level.class, methods);
+        methods.remove("storeInBundle");
+        methods.remove("restoreFromBundle");
+
+        methods.remove("setSize");
+        methods.remove("width");
+        methods.remove("height");
+        methods.remove("tilesTex");
+        methods.remove("waterTex");
+        methods.remove("getTransition");
+        methods.remove("addVisuals");
+        methods.remove("addWallVisuals");
+        methods.remove("findMob");
+        methods.remove("addRespawner");
+        methods.remove("addZoneRespawner");
+        methods.remove("buildFlagMaps");
+        methods.remove("isPassable");
+        methods.remove("isPassableHero");
+        methods.remove("isPassableMob");
+        methods.remove("isPassableAlly");
+        methods.remove("getPassableVar");
+        methods.remove("getPassableHeroVar");
+        methods.remove("getPassableMobVar");
+        methods.remove("getPassableAllyVar");
+        methods.remove("getPassableAndAnyVarForBoth");
+        methods.remove("getPassableAndAvoidVar");
+        methods.remove("removeSimpleCustomTile");
+        methods.remove("cleanWalls");
+        methods.remove("cleanWallCell");
+        methods.remove("distance");
+        methods.remove("adjacent");
+        methods.remove("trueDistance");
+        methods.remove("insideMap");
+        methods.remove("cellToPoint");
+        methods.remove("pointToCell");
+        methods.remove("appendNoTransWarning");
+
+        //CustomLevel
+        methods.remove("updateTransitionCells");
+
+//        methods.remove("getCopy");
+//        methods.remove("onRenameLevelScheme");
+//        methods.remove("onDeleteLevelScheme");
+//        methods.remove("setDurationForBuff");
+//        methods.remove("moveBuffSilentlyToOtherChar_ACCESS_ONLY_FOR_HeroMob");
+//        methods.remove("getPropertiesVar_ACCESS_ONLY_FOR_EDITING_UI");
+//        methods.remove("spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY");
+//        methods.remove("setFirstAddedToTrue_ACCESS_ONLY_FOR_CUSTOMLEVELS_THAT_ARE_ENTERED_FOR_THE_FIRST_TIME");
+
+        return pckge
+                + imprt
+                + classHead
+                + declaringVars
+                + bundlingMethods
+                + overrideMethods(methods.values(), accessScript)
+                + "}";
+    }
+
+    private static String overrideMethods(Collection<Method> methods, String accessScript) {
+        StringBuilder overrideMethods = new StringBuilder();
+
+        for (Method m : methods) {
 
             Class<?> returnType = m.getReturnType();
             String returnTypeName = className(returnType);
 
             overrideMethods.append('\n');
-            overrideMethods.append("    @Override\n");
+            overrideMethods.append("    @Override\n    ");
             overrideMethods.append(Modifier.toString(m.getModifiers())).append(" ");
 
             overrideMethods.append(returnTypeName).append(" ");
@@ -288,7 +451,7 @@ public final class LuaClassGenerator {
             boolean useInvoke = paramTypes.length >= 1;
 
             overrideMethods.append(") {\n");
-            overrideMethods.append("        LuaValue luaScript = CustomObject.getScript(identifier);\n");
+            overrideMethods.append("        LuaValue luaScript = " + accessScript + ";\n");
             overrideMethods.append("        if (luaScript != null && !luaScript.get(\"").append(m.getName()).append("\").isnil()) {\n");
 
             overrideMethods.append("            try {\n");
@@ -372,14 +535,7 @@ public final class LuaClassGenerator {
 
         }
 
-        return pckge
-                + imprt
-                + classHead
-                + declaringVars
-                + implementLuaClassStuff
-                + bundlingMethods
-                + overrideMethods
-                + "}";
+        return overrideMethods.toString();
     }
 
     private static String className(Class<?> clazz) {

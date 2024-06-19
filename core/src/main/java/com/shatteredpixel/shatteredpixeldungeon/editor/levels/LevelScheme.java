@@ -10,6 +10,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.TransitionEditPart;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.GhostQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.ImpQuest;
@@ -94,6 +97,9 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             affectedByNoScrolls = true, rollForChampionIfChampionChallenge = true;
 
 
+    public LuaCodeHolder luaScript;
+
+
     public LevelScheme() {
     }
 
@@ -130,6 +136,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     //These setters are ONLY for NewFloorComp
     public void setType(Class<? extends Level> type) {
+        if (type.getSimpleName().endsWith("_lua")) type = (Class<? extends Level>) type.getSuperclass();
         this.type = type;
         if (type != CustomLevel.class) region = getRegion(type);
     }
@@ -419,6 +426,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         this.level = level;
         setType(level.getClass());
         level.levelScheme = this;
+
+        if (luaScript != null) luaScript.loadScript();
     }
 
     public void setFeeling(Level.Feeling feeling) {
@@ -438,11 +447,20 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         Dungeon.hero.pos = -1;
         if (type != CustomLevel.class) {
             Random.pushGenerator(seed);
-            Dungeon.levelName = name;
-            level = Reflection.newInstance(type);
-            Dungeon.level = level;
+            level = luaScript == null ? Reflection.newInstance(type)
+                    : (Level) Reflection.newInstance(LuaLevel.getLuaLevelClass(type));
             level.name = name;
             level.levelScheme = this;
+
+            if (luaScript != null) {
+                if (luaScript.getScript() == null) luaScript.loadScript();
+                if (luaScript.getScript().get("vars").istable()) {
+                    ((LuaLevel) level).setVars(LuaManager.deepCopyLuaValue(luaScript.getScript().get("vars")).checktable());
+                }
+            }
+
+            Dungeon.level = level;
+            Dungeon.levelName = name;
             level.feeling = feeling;
             initRandomStats(Random.Long());
             level.create();
@@ -450,14 +468,22 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             Random.popGenerator();
         } else {
             try {
-                level = CustomDungeonSaves.loadLevel(name);//make sure the levels are different objects
+                level = CustomDungeonSaves.loadLevel(name, luaScript);//make sure the levels are different objects
             } catch (IOException e) {
                 SandboxPixelDungeon.reportException(e);
             } catch (CustomDungeonSaves.RenameRequiredException e) {
                 throw new RuntimeException(e);//Caught by InterlevelScene
             }
-            level.levelScheme = this;
             level.name = name;
+            level.levelScheme = this;
+
+            if (luaScript != null) {
+                if (luaScript.getScript() == null) luaScript.loadScript();
+                if (luaScript.getScript().get("vars").istable()) {
+                    ((LuaLevel) level).setVars(LuaManager.deepCopyLuaValue(luaScript.getScript().get("vars")).checktable());
+                }
+            }
+
             Dungeon.level = level;
             Dungeon.levelName = name;
             initRandomStats(seed);
@@ -637,6 +663,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String NATURAL_REGEN = "natural_regen";
     private static final String HUNGER_SPEED = "hunger_speed";
     private static final String BUILDER = "builder";
+    private static final String LUA_SCRIPT = "lua_script";
     private static final String SPAWN_TORCH_IF_DARKNESS = "spawn_torch_if_darkness";
     private static final String REDUCE_VIEW_DISTANCE_IF_DARKNESS = "reduce_view_distance_if_darkness";
     private static final String AFFECTED_BY_NO_SCROLLS = "affected_by_no_scrolls";
@@ -703,6 +730,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         bundle.put(HUNGER_SPEED, hungerSpeed);
         bundle.put(NATURAL_REGEN, naturalRegeneration);
         if (builder != null) bundle.put(BUILDER, builder);
+
+        if (luaScript != null && !luaScript.pathToScript.isEmpty()) bundle.put(LUA_SCRIPT, luaScript);
     }
 
     @Override
@@ -793,6 +822,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             if (bundle.contains("hunger_depletion")) hungerSpeed = bundle.getBoolean("hunger_depletion") ? 1f: 0f;
             else hungerSpeed = bundle.getFloat(HUNGER_SPEED);
         }
+
+        luaScript = (LuaCodeHolder) bundle.get(LUA_SCRIPT);
     }
 
     public Point getSizeIfUnloaded() {
@@ -816,11 +847,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public Level loadLevel(boolean removeInvalidTransitions) {
         if (type == CustomLevel.class) {
             try {
-                level = CustomDungeonSaves.loadLevel(name, removeInvalidTransitions);
+                level = CustomDungeonSaves.loadLevel(name, removeInvalidTransitions, null);
                 level.levelScheme = this;
                 if (region == REGION_NONE) region = ((CustomLevel) level).storeRegionTempSoItCanBeTransferredToLevelScheme;
                 levelLoadingException = null;
-            }catch (GdxRuntimeException gdxEx){
+            } catch (GdxRuntimeException gdxEx) {
                 levelLoadingException = gdxEx.getCause() instanceof IOException ? (Exception) gdxEx.getCause() : gdxEx;
                 SandboxPixelDungeon.reportException(levelLoadingException);
             } catch (IOException e) {
@@ -840,6 +871,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     public void unloadLevel() {
         level = null;
+        if (luaScript != null) luaScript.unloadScript();
     }
 
 
@@ -860,21 +892,22 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     }
 
     public static int getRegion(Class<? extends Level> level) {
-        if (level == SewerLevel.class || level == SewerBossLevel.class) return REGION_SEWERS;
-        if (level == PrisonLevel.class || level == PrisonBossLevel.class) return REGION_PRISON;
-        if (level == CavesLevel.class || level == CavesBossLevel.class || MiningLevel.class.isAssignableFrom(level)) return REGION_CAVES;
-        if (level == CityLevel.class || level == CityBossLevel.class) return REGION_CITY;
-        if (level == HallsLevel.class || level == HallsBossLevel.class || level == LastLevel.class || level == DeadEndLevel.class)
+        if (SewerLevel.class.isAssignableFrom(level) || SewerBossLevel.class.isAssignableFrom(level)) return REGION_SEWERS;
+        if (PrisonLevel.class.isAssignableFrom(level) || PrisonBossLevel.class.isAssignableFrom(level)) return REGION_PRISON;
+        if (CavesLevel.class.isAssignableFrom(level) || CavesBossLevel.class.isAssignableFrom(level) || MiningLevel.class.isAssignableFrom(level)) return REGION_CAVES;
+        if (CityLevel.class.isAssignableFrom(level) || CityBossLevel.class.isAssignableFrom(level)) return REGION_CITY;
+        if (HallsLevel.class.isAssignableFrom(level) || HallsBossLevel.class.isAssignableFrom(level)
+                || LastLevel.class.isAssignableFrom(level) || DeadEndLevel.class.isAssignableFrom(level))
             return REGION_HALLS;
         return REGION_NONE;
     }
 
     public static int getBoss(Class<? extends Level> level) {
-        if (level == SewerBossLevel.class) return REGION_SEWERS;
-        if (level == PrisonBossLevel.class) return REGION_PRISON;
-        if (level == CavesBossLevel.class) return REGION_CAVES;
-        if (level == CityBossLevel.class) return REGION_CITY;
-        if (level == HallsBossLevel.class) return REGION_HALLS;
+        if (SewerBossLevel.class.isAssignableFrom(level)) return REGION_SEWERS;
+        if (PrisonBossLevel.class.isAssignableFrom(level)) return REGION_PRISON;
+        if (CavesBossLevel.class.isAssignableFrom(level)) return REGION_CAVES;
+        if (CityBossLevel.class.isAssignableFrom(level)) return REGION_CITY;
+        if (HallsBossLevel.class.isAssignableFrom(level)) return REGION_HALLS;
         return REGION_NONE;
     }
 

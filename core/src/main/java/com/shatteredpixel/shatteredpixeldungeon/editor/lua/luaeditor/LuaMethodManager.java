@@ -30,6 +30,9 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -108,6 +111,23 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			addMethod(85, Mob.class.getMethod("isImmune", Class.class), "effect");
 			addMethod(86, Mob.class.getMethod("isInvulnerable", Class.class), "effect");
 			addMethod(87, Char.class.getDeclaredMethod("spend", float.class), "time");
+
+
+
+			//Level.class
+//			addMethod(1401, Level.class.getMethod("create"));
+			addMethod(1402, Level.class.getMethod("initForPlay"));
+
+			addMethod(1411, Level.class.getMethod("randomRespawnCell", Char.class, boolean.class), "ch", "guarantee");
+			addMethod(1412, Level.class.getDeclaredMethod("isValidSpawnCell", Char.class, int.class), "ch", "cell");
+			addMethod(1413, Level.class.getMethod("fallCell", boolean.class, String.class), "fallIntoPit", "destZone");
+
+			addMethod(1421, Level.class.getMethod("occupyCell", Char.class), "ch");
+
+			addMethod(1431, Level.class.getMethod("plant", Plant.Seed.class, int.class), "seed", "pos");
+			addMethod(1432, Level.class.getMethod("uproot", int.class), "pos");
+			addMethod(1433, Level.class.getMethod("setTrap", Trap.class, int.class), "trap", "pos");
+			addMethod(1434, Level.class.getMethod("disarmTrap", int.class, boolean.class), "pos", "reveal");
 
 
 		} catch (NoSuchMethodException e) {

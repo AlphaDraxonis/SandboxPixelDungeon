@@ -631,6 +631,7 @@ public class CustomLevel extends Level {
             blobs.remove(Alchemy.class);
         }
     }
+
     //----------------------
 
     public static TextureFilm getTextureFilm(String theme) {
@@ -641,17 +642,6 @@ public class CustomLevel extends Level {
         }
         return tf;
     }
-
-    public boolean isBorder(int cell) {
-        int row = cell / width;
-        int col = cell % width;
-        return (row == 0 || row == height - 1 || col == 0 || col == width - 1);
-    }
-
-
-//    public CustomLevel createCopiedFloor() {
-//        return new CustomLevel(this);
-//    }
 
     public static void changeMapSize(Level level, int newWidth, int newHeight, int addTop, int addLeft) {
         if (level.width() == newWidth && level.height() == newHeight) return;

@@ -5,6 +5,9 @@ import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledCheckBox;
@@ -48,6 +51,8 @@ public class LevelTab extends MultiWindowTabComp {
         StyledCheckBox naturalRegen, allowPickaxeMining, rememberLayout, magicMappingDisabled;
         StyledButton bossLevelRetexture;
         StyledButton levelColoring;
+
+        StyledButton editScript;
 
         final Level level = Dungeon.level;
 
@@ -208,10 +213,25 @@ public class LevelTab extends MultiWindowTabComp {
         };
         content.add(levelColoring);
 
+        editScript = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "test tzz") {
+            @Override
+            protected void onClick() {
+                if (level.levelScheme.luaScript == null) {
+                    level.levelScheme.luaScript = new LuaCodeHolder();
+                    level.levelScheme.luaScript.clazz = LuaLevel.getLuaLevelClass(level.getClass());
+                    level.levelScheme.luaScript.pathToScript = "";
+                }
+                //TODO tzz a way to delete it again
+                IDEWindow.showWindow(level.levelScheme.luaScript);
+            }
+        };
+        content.add(editScript);
+
         mainWindowComps = new Component[]{
                 region, mobSpawn, changeSize,
                 hungerSpeed, naturalRegen, allowPickaxeMining, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                 depth, viewDistance, shopPrice, rememberLayout, magicMappingDisabled, levelColoring, bossLevelRetexture
+                ,editScript
         };
     }
 

@@ -29,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -73,11 +73,11 @@ public class IDEWindow extends Component {
 	private Component outsideSp;
 
 	private final Class<?> clazz;
-	private final CustomObject customObject;
+	private final LuaCodeHolder luaCodeHolder;
 
-	public IDEWindow(CustomObject customObject, LuaScript script, Runnable layoutParent) {
-		this.customObject = customObject;
-		this.clazz = customObject.luaClass.getClass();
+	public IDEWindow(LuaCodeHolder luaCodeHolder, LuaScript script, Runnable layoutParent) {
+		this.luaCodeHolder = luaCodeHolder;
+		this.clazz = luaCodeHolder.clazz;
 
 		pathLabel = PixelScene.renderTextBlock("Path tzz",9);
 		add(pathLabel);
@@ -267,7 +267,7 @@ public class IDEWindow extends Component {
 	private String createFullScript() {
 		StringBuilder b = new StringBuilder();
 
-		if (script == null) script = new LuaScript(customObject.luaClass.getClass().getSuperclass(), null, customObject.pathToScript);
+		if (script == null) script = new LuaScript(luaCodeHolder.clazz.getSuperclass(), null, luaCodeHolder.pathToScript);
 
 		script.desc = inputDesc.convertToLuaCode().substring(2);//uncomment, removes --
 		b.append('\n');
@@ -319,31 +319,32 @@ public class IDEWindow extends Component {
 	}
 
 	private void save() {
-		customObject.pathToScript = pathInput.getText();
-		if (!customObject.pathToScript.endsWith(".lua")) customObject.pathToScript += ".lua";
+		luaCodeHolder.pathToScript = pathInput.getText();
+		if (!luaCodeHolder.pathToScript.endsWith(".lua")) luaCodeHolder.pathToScript += ".lua";
 		String content = createFullScript();
 		try {
-			CustomDungeonSaves.writeClearText(CustomDungeonSaves.getExternalFilePath(customObject.pathToScript), content);
-			EditorScene.show(new WndMessage(Messages.get(IDEWindow.class, "write_file_successful", customObject.pathToScript)));
+			CustomDungeonSaves.writeClearText(CustomDungeonSaves.getExternalFilePath(luaCodeHolder.pathToScript), content);
+			EditorScene.show(new WndMessage(Messages.get(IDEWindow.class, "write_file_successful", luaCodeHolder.pathToScript)));
 		} catch (Exception e) {
 			EditorScene.show(new WndError(Messages.get(IDEWindow.class, "write_file_exception", e.getClass().getSimpleName(), e.getMessage())));
 		}
 	}
 
-	public static void showWindow(CustomObject customObject) {
-		showWindow(customObject, CustomDungeonSaves.readLuaFile(customObject.pathToScript));
+	public static SimpleWindow showWindow(LuaCodeHolder luaCodeHolder) {
+		return showWindow(luaCodeHolder, CustomDungeonSaves.readLuaFile(luaCodeHolder.pathToScript));
 	}
 
-	public static void showWindow(CustomObject customObject, LuaScript script) {
+	public static SimpleWindow showWindow(LuaCodeHolder luaCodeHolder, LuaScript script) {
 
 		SimpleWindow w = new SimpleWindow((int) (PixelScene.uiCamera.width * 0.8f),  (int) (PixelScene.uiCamera.height * 0.9f));
 
-		IDEWindow ideWindow = new IDEWindow(customObject, script, w::layout);
+		IDEWindow ideWindow = new IDEWindow(luaCodeHolder, script, w::layout);
 
 		w.initComponents(null, ideWindow, ideWindow.getOutsideSp(), 0f, 0f, new ScrollPaneWithScrollbar(ideWindow));
 
 		EditorScene.show(w);
 
+		return w;
 	}
 
 	public void selectScript(LuaScript script, boolean force) {//TODO tzz add option to delete scripts!

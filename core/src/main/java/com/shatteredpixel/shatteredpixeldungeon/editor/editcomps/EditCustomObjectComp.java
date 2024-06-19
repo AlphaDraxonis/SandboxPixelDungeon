@@ -34,7 +34,7 @@ public class EditCustomObjectComp extends DefaultEditComp<CustomObject> {
                 super.setSelectedItem(selectedItem);
                 if (selectedItem instanceof MobItem) {
                     Mob mob = ((MobItem) selectedItem).getObject();
-                    Class<?> clazz = Reflection.forName(mob.getClass().getName() + "_lua");
+                    Class<?> clazz = Reflection.forName(mob.getClass().getName() + "_lua");//TODO tzz does this actually work?
                     if (clazz == null) clazz = Mob_lua.class;//tzz remove
                     obj.luaClass = clazz == null || !LuaClass.class.isAssignableFrom(clazz) ? null : (LuaClass) Reflection.newInstance(clazz);
                 }

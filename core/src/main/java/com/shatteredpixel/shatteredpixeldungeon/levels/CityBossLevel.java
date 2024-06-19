@@ -270,6 +270,7 @@ public class CityBossLevel extends Level {
 	protected void createMobs() {
 	}
 
+	@Override
 	public Actor addRespawner() {
 		return null;
 	}

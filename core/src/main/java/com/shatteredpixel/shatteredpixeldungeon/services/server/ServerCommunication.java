@@ -45,8 +45,7 @@ public final class ServerCommunication {
                 return false;
             }
 
-            //TODO tzz make a new url file for v1.2.0!
-            String scriptLoadURL = "https://script.google.com/macros/s/AKfycbzR6JDJgBdSn0U0m10R2VMvF2Ou9kGg8XnPna_XO-BbN5IE9H9jzwLZ5-9CTcplfq5pyQ/exec";
+            String scriptLoadURL = "https://script.google.com/macros/s/AKfycbwrKEC3IN-d0spHExbHfOHzAYMD2mJh_7x3efW5l2fBYlidcIHNb19_CtGTmRJlrep8Ow/exec";
             Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
             httpRequest.setUrl(scriptLoadURL);
 

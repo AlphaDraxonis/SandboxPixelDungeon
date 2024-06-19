@@ -10,10 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitio
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaMob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -176,16 +173,26 @@ public class CustomDungeonSaves {
     }
 
     public static CustomLevel loadLevel(String name) throws IOException, RenameRequiredException {
-        return loadLevel(name, true);
+        return loadLevel(name, null);
     }
 
-    public static CustomLevel loadLevel(String name, boolean removeInvalidTransitions) throws IOException, RenameRequiredException {
+    public static CustomLevel loadLevel(String name, LuaCodeHolder luaScript) throws IOException, RenameRequiredException {
+        return loadLevel(name, true, luaScript);
+    }
+
+    public static CustomLevel loadLevel(String name, boolean removeInvalidTransitions, LuaCodeHolder luaScript) throws IOException, RenameRequiredException {
         FileHandle file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name));
         if (!file.exists())//Still: it is important to rename old ones properly before or they might override other files
             file = FileUtils.getFileHandle(curDirectory + LEVEL_FOLDER + Messages.format(LEVEL_FILE, name.replace(' ', '_')));
         else if (name.contains(" ") && file.exists() && curDirectory.contains("custom_dungeons"))
             throw new RenameRequiredException(file, name);
-        CustomLevel customLevel = (CustomLevel) FileUtils.bundleFromStream(file.read()).get(FLOOR);
+        Bundle bundle = FileUtils.bundleFromStream(file.read());
+        if (luaScript != null) {
+            String originalClass = bundle.getBundle(FLOOR).getString("__className");
+            originalClass = originalClass.substring(originalClass.lastIndexOf('.'));
+            bundle.getBundle(FLOOR).put("__className", LuaLevel.getLuaLevelClassName(originalClass));
+        }
+        CustomLevel customLevel = (CustomLevel) bundle.get(FLOOR);
 
         //checks if all transitions are still valid, can even remove transitions AFTER the game was started if necessary
         if (removeInvalidTransitions) {

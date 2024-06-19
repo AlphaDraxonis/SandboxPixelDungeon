@@ -191,7 +191,8 @@ public class SewerBossLevel extends SewerLevel {
 			});
 		}
 	}
-	
+
+	@Override
 	public void unseal() {
 		super.unseal();
 

@@ -429,6 +429,7 @@ public class LuaGlobals extends Globals {
 			public LuaValue call(LuaValue cell) {
 				if (cell.isint()) {
 					DungeonScene.updateMap(cell.checkint());
+					Dungeon.level.cleanWallCell(cell.checkint());
 				}
 				return LuaValue.NIL;
 			}
@@ -438,6 +439,7 @@ public class LuaGlobals extends Globals {
 			@Override
 			public LuaValue call() {
 				DungeonScene.updateMap();
+				Dungeon.level.cleanWalls();
 				return LuaValue.NIL;
 			}
 		});

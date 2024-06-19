@@ -1411,7 +1411,7 @@ public abstract class Level implements Bundlable {
 				|| !isPassable(cell, ch)
 				|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
 				|| Actor.findChar( cell ) != null
-				|| (ch instanceof Piranha && map[cell] != Terrain.WATER)
+				|| !Piranha.canSurviveOnCell(ch, cell)
 				|| (ch instanceof SentryRoom.Sentry && map[cell] != Terrain.PEDESTAL)
 				|| findMob(cell) != null
 				|| (!Zone.canSpawnMobs(this, cell) && !(ch == null || ch instanceof Hero || ch instanceof NPC)) );
@@ -1673,18 +1673,22 @@ public abstract class Level implements Bundlable {
 
 		for (int i=0; i < length(); i++) {
 			
-			boolean d = false;
-			
-			for (int j=0; j < PathFinder.NEIGHBOURS9.length; j++) {
-				int n = i + PathFinder.NEIGHBOURS9[j];
-				if (n >= 0 && n < length() && map[n] != Terrain.WALL && map[n] != Terrain.WALL_DECO) {
-					d = true;
-					break;
-				}
-			}
-			
-			discoverable[i] = d;
+			cleanWallCell(i);
 		}
+	}
+
+	public void cleanWallCell(int cell) {
+		boolean d = false;
+
+		for (int j=0; j < PathFinder.NEIGHBOURS9.length; j++) {
+			int n = cell + PathFinder.NEIGHBOURS9[j];
+			if (n >= 0 && n < length() && map[n] != Terrain.WALL && map[n] != Terrain.WALL_DECO) {
+				d = true;
+				break;
+			}
+		}
+
+		discoverable[cell] = d;
 	}
 
 	public void setTerrain( int cell, int terrain ){//used for Lua
@@ -1711,6 +1715,11 @@ public abstract class Level implements Bundlable {
 		level.avoid[cell]			= (flags & Terrain.AVOID) != 0;
 		level.pit[cell]			    = (flags & Terrain.PIT) != 0;
 		level.water[cell]			= terrain == Terrain.WATER;
+
+		if (!level.insideMap(cell)) {
+			level.passable[cell] = level.avoid[cell] = false;
+			level.losBlocking[cell] = level.solid[cell] = true;
+		}
 
 		Trap trap = level.traps.get(cell);
 		if (trap != null && !trap.canBeSearchedByMagic && level.map[trap.pos] == Terrain.SECRET_TRAP) {
@@ -1740,6 +1749,10 @@ public abstract class Level implements Bundlable {
                 }
             }
         }
+
+		if (level.visualRegions[cell] == REGION_NONE) {
+			level.visualMap[cell] = terrain;
+		}
     }
 
     public Heap drop(Item item, int cell) {
@@ -1974,11 +1987,8 @@ public abstract class Level implements Bundlable {
 			Door.enter( ch.pos );
 		}
 
-		if (ch.isAlive() && !water[ch.pos] && Char.hasProp(ch, Char.Property.AQUATIC) && !CustomDungeon.isEditing()){
-			if (!TileItem.isEntranceTerrainCell(Dungeon.level.map[ch.pos]) && !TileItem.isExitTerrainCell(Dungeon.level.map[ch.pos])
-					|| !(ch instanceof Hero)) {
-				ch.dieOnLand();
-			}
+		if (ch.isAlive() && !Piranha.canSurviveOnCell(ch, ch.pos) && !CustomDungeon.isEditing()){
+			ch.dieOnLand();
 		}
 
 		if (ch == Dungeon.hero) {

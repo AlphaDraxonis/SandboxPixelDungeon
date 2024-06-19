@@ -29,9 +29,11 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Electricity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Freezing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.BlobImmunity;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.PiranhaSprite;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -175,4 +177,11 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 			return new Piranha();
 		}
 	}
+
+
+	public static boolean canSurviveOnCell(Char ch, int cell) {
+		return Dungeon.level.water[cell] || (Terrain.flags[Dungeon.level.map[cell]] & Terrain.WATER) != 0 || !Char.hasProp(ch, Property.AQUATIC)
+				|| (ch instanceof Hero && (TileItem.isEntranceTerrainCell(Dungeon.level.map[cell]) || TileItem.isExitTerrainCell(Dungeon.level.map[cell])));
+	}
+
 }
