@@ -43,7 +43,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Surprise;
@@ -176,7 +175,7 @@ public abstract class Mob extends Char implements Customizable {
 	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
 		super.onMapSizeChange(newPosition, isPositionValid);
 		if (turnToCell != -1) {
-			int nTurn = newPosition.get(turnToCell);
+			int nTurn = newPosition.apply(turnToCell);
 			turnToCell = isPositionValid.test(turnToCell, nTurn) ? nTurn : -1;
 		}
 	}

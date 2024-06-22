@@ -1,13 +1,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs.Mob_lua;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaMob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.noosa.Image;
@@ -34,9 +34,12 @@ public class EditCustomObjectComp extends DefaultEditComp<CustomObject> {
                 super.setSelectedItem(selectedItem);
                 if (selectedItem instanceof MobItem) {
                     Mob mob = ((MobItem) selectedItem).getObject();
-                    Class<?> clazz = Reflection.forName(mob.getClass().getName() + "_lua");//TODO tzz does this actually work?
-                    if (clazz == null) clazz = Mob_lua.class;//tzz remove
+                    Class<?> clazz = Reflection.forName(LuaMob.getLuaMobClassName(mob.getClass()));
+
                     obj.luaClass = clazz == null || !LuaClass.class.isAssignableFrom(clazz) ? null : (LuaClass) Reflection.newInstance(clazz);
+
+                    if (obj.luaClass instanceof Mob)
+                        ((Mob) obj.luaClass).pos = -1;
                 }
                 updateObj();
             }

@@ -1,11 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CAVES;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_CITY;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_HALLS;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_PRISON;
-import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.REGION_SEWERS;
-
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
@@ -31,13 +25,11 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.watabou.utils.IntFunction;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+
+import static com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme.*;
 
 public class DungeonToJsonConverter {
 
@@ -312,7 +304,7 @@ public class DungeonToJsonConverter {
             if (validityCheck.test(obj)) {
                 b.append("{");
                 if (getPos != null) {
-                    appendCoordWithoutBrackets(b, getPos.get(obj), width);
+                    appendCoordWithoutBrackets(b, getPos.apply(obj), width);
                     b.append(",");
                 }
                 appendObject.accept(obj);

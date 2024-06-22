@@ -55,6 +55,8 @@ public class VariablesPanel extends CodeInputPanel {
 
 	@Override
 	public void fold() {
+		textInputText = textInput.getText();
+
 		if (body != null) {
 			body.destroy();
 			remove(body);

@@ -163,14 +163,15 @@ public final class LuaClassGenerator {
         generateLevelFile(CustomLevel.class);
     }
 
-    public static void generateSourceFiles() {
+    public static void generateMobFiles() {
 
-        Class[][] mobs = EditorInvCategory.getAll(Mobs.values());
+        Class<?>[][] mobs = EditorInvCategory.getAll(Mobs.values());
 
-//        generateFile(Mob.class);
-//        generateFile(Rat.class);
-//        generateFile(Ghost.class);
-//        generateFile(SentryRoom.Sentry.class);
+        for (Class<?>[] classes : mobs) {
+            for (Class<?> c : classes) {
+                generateMobFile(c);
+            }
+        }
     }
 
     private static void generateLevelFile(Class<?> inputClass) {
@@ -195,8 +196,30 @@ public final class LuaClassGenerator {
         } catch (IOException e) {
             e.printStackTrace();
 		}
+    }
 
-//        String path = TODO tzz need to override bundlabe in generateCode!!!!!
+    private static void generateMobFile(Class<?> inputClass) {
+        String source = generateSourceCodeMob(inputClass);
+
+        String path = ROOT_DIR
+                + (Mob.class.getPackage().getName() + ".luamobs.").replaceAll("\\.", "/")
+                + inputClass.getSimpleName() + "_lua.java";
+
+        File f = new File(path);
+
+        if (f.exists()) f.delete();
+
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (FileWriter writer = new FileWriter(f)){
+            writer.write(source);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //private LuaValue luaVars;//LuaTable mit variablen, wird gespeichert,  bei restoreFromBundle() werden nur die Werte übernommen, die tatsächlich noch vorhanden sind
@@ -216,20 +239,31 @@ public final class LuaClassGenerator {
         String imprt = "import " + Messages.MAIN_PACKAGE_NAME + "actors.*;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "actors.buffs.*;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "actors.mobs.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "actors.mobs.npcs.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "actors.hero.Hero;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "editor.levels.*;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "editor.lua.*;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "editor.ui.*;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "editor.util.*;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "items.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "items.armor.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "items.weapon.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "items.wands.*;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "levels.*;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "levels.rooms.special.SentryRoom;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "sprites.*;\n" +
                 "import " + Messages.MAIN_PACKAGE_NAME + "windows.WndError;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "ui.Window;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "scenes.DungeonScene;\n" +
+                "import " + Messages.MAIN_PACKAGE_NAME + "GameObject;\n" +
                 "import com.watabou.noosa.Game;\n" +
-                "import com.watabou.utils.Bundle;\n" +
+                "import com.watabou.utils.*;\n" +
                 "import org.luaj.vm2.*;\n" +
                 "import org.luaj.vm2.lib.jse.CoerceJavaToLua;\n" +
                 "import java.util.*;\n\n";
-        String classHead = "public class " + inputClass.getSimpleName() + "_lua extends " + inputClass.getSimpleName() +" implements LuaMob {\n\n";
+        String extents = inputClass.getSimpleName();
+        if (inputClass.getEnclosingClass() != null) extents = inputClass.getEnclosingClass().getSimpleName() + "." + extents;
+        String classHead = "public class " + inputClass.getSimpleName() + "_lua extends " + extents +" implements LuaMob {\n\n";
         String declaringVars = "    private int identifier;\n"
                 + "    private boolean inheritsStats = true;\n"
                 + "    private LuaTable vars;\n";
@@ -253,7 +287,12 @@ public final class LuaClassGenerator {
                         "    @Override\n" +
                         "    public boolean getInheritsStats() {\n" +
                         "        return inheritsStats;\n" +
-                        "    }";
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public LuaClass newInstance() {\n" +
+                        "        return (LuaClass) getCopy();\n" +
+                        "    }\n\n";
         String bundlingMethods =
                 "@Override\n" +
                         "    public void storeInBundle(Bundle bundle) {\n" +

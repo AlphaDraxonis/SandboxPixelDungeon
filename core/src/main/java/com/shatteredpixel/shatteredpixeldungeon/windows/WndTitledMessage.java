@@ -78,6 +78,7 @@ public class WndTitledMessage extends Window {
     public void setHighligtingEnabled(boolean enableHighligthing) {
         content.setHighligtingEnabled(enableHighligthing);
         resize((int) Math.ceil(content.width()), (int) Math.ceil(content.height()));
+        content.setPos(0, 0);
     }
 
     @Override

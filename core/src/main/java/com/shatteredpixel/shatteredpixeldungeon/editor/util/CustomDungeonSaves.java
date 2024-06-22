@@ -189,7 +189,7 @@ public class CustomDungeonSaves {
         Bundle bundle = FileUtils.bundleFromStream(file.read());
         if (luaScript != null) {
             String originalClass = bundle.getBundle(FLOOR).getString("__className");
-            originalClass = originalClass.substring(originalClass.lastIndexOf('.'));
+            originalClass = originalClass.substring(originalClass.lastIndexOf('.') + 1);
             bundle.getBundle(FLOOR).put("__className", LuaLevel.getLuaLevelClassName(originalClass));
         }
         CustomLevel customLevel = (CustomLevel) bundle.get(FLOOR);

@@ -44,7 +44,11 @@ public class GlyphArmor extends Armor {
 
 	@Override
 	public boolean hasGlyph(Class<? extends Glyph> type, Char owner) {
-		return glyphs.containsKey(type) && owner.buff(MagicImmune.class) == null;
+		if (owner.buff(MagicImmune.class) == null) {
+			//after this returned true, the hidden assumption glyph != null && type.isInstance(glyph) is made
+			return (glyph = glyphs.get(type)) != null;
+		}
+		return false;
 	}
 
 	@Override

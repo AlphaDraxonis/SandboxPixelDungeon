@@ -26,7 +26,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs.Mob_lua;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
@@ -99,9 +99,8 @@ public class CustomObject extends LuaCodeHolder {
 
 	public static void assignNewID(CustomObject customObject) {
 		while (customObjects.containsKey(nextCustomObjectID++)) ;
-
-		customObject.luaClass = new Mob_lua();//tzz this is just temporarily!
-		((Mob_lua) customObject.luaClass).pos = -1;
+		
+		customObject.clazz = customObject.luaClass.getClass();
 
 
 		customObjects.put(nextCustomObjectID, customObject);
@@ -136,7 +135,6 @@ public class CustomObject extends LuaCodeHolder {
 
 
 	private static final String NODE = "lua_static";
-	private static final String NEXT_CUSTOM_OBJECT_ID = "next_custom_object_id";
 	private static final String CUSTOM_OBJECTS = "custom_objects";
 	private static final String GLOBAL_VARS = "global_vars";
 
@@ -149,8 +147,6 @@ public class CustomObject extends LuaCodeHolder {
 		}
 
 		Bundle node = bundle.getBundle(NODE);
-
-		nextCustomObjectID = node.getInt(NEXT_CUSTOM_OBJECT_ID);
 
 		for (Bundlable b : node.getCollection(CUSTOM_OBJECTS)) {
 			CustomObject clo = (CustomObject) b;
@@ -165,7 +161,6 @@ public class CustomObject extends LuaCodeHolder {
 
 	public static void store(Bundle bundle) {
 		Bundle node = new Bundle();
-		node.put(NEXT_CUSTOM_OBJECT_ID, nextCustomObjectID);
 		node.put(CUSTOM_OBJECTS, customObjects.values());
 		bundle.put(NODE, node);
 
@@ -195,6 +190,16 @@ public class CustomObject extends LuaCodeHolder {
 				bundle.put("obj", obj);
 				T replacement = (T) Reflection.newInstance(obj.getClass().getSuperclass());
 				replacement.restoreFromBundle(bundle.getBundle("obj"));
+
+				if (obj instanceof Mob) {
+					if (((Mob) obj).sprite != null) {
+						EditorScene.add(((Mob) replacement));
+						((Mob) obj).sprite.remove();
+						((Mob) obj).sprite.destroy();
+					}
+				}
+				//TODO maybe add items etc here as well...
+
 				obj = replacement;
 			} else {
 				return null;

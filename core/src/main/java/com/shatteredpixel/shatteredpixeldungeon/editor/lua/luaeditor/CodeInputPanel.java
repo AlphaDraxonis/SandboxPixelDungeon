@@ -55,6 +55,8 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 
 	@Override
 	public void fold() {
+		textInputText = textInput.getText();
+
 		if (body != null) {
 			body.destroy();
 			remove(body);
@@ -154,6 +156,8 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 		return code == null ? null : LuaManager.compile(code);
 	}
 
+	protected void onTextChange() {}
+
 	private class BodyWrapper extends Component {
 		@Override
 		protected void createChildren(Object... params) {
@@ -164,7 +168,13 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 					super.layout();
 				}
 
-//				@Override
+				@Override
+				public void setText(String text) {
+					super.setText(text);
+					onTextChange();
+				}
+
+				//				@Override
 //				public void setText(String text) {
 //					super.setText(text);
 //					if (info != null) {

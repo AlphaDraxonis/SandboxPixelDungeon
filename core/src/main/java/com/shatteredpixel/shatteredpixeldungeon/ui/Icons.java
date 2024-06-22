@@ -95,6 +95,7 @@ public enum Icons {
 	TRASH,
 	BOOKMARK,
 	SORT,
+	MENU,
 	SCROLL_BAR_THUMB_TOP,
 	BACK,
 	SWAP,
@@ -334,6 +335,9 @@ public enum Icons {
 				break;
 			case SORT:
 				icon.frame(icon.texture.uvRectBySize(224, 112, 11, 11));
+				break;
+			case MENU:
+				icon.frame(icon.texture.uvRectBySize(235, 112, 10, 10));
 				break;
 			case SCROLL_BAR_THUMB_TOP:
 				icon.frame(icon.texture.uvRectBySize(219, 81, 5, 9));

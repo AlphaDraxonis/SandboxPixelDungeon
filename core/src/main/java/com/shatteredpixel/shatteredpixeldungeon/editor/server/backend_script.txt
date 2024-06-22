@@ -458,7 +458,7 @@ function sendNotificationEmail(fileName, msg, description, int_version) {
 
 //SUPPLY URL SCRIPT (This is the script it first connects to so it can then read the URL for the actual script. That way, I can update the real script later.)
 const FOLDR     = "1miViNNWVeAaqg3GkCoO4HzcqolsRnKXc";
-const FILE_NAME = "url.txt";
+const FILE_NAME = "url12.txt";
 
 function doGet(e) {
   const folder = DriveApp.getFolderById(FOLDR);

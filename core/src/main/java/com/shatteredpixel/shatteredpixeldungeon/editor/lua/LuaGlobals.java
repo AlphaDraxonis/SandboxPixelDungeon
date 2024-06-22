@@ -27,8 +27,10 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
@@ -114,6 +116,27 @@ public class LuaGlobals extends Globals {
 					}
 					String fullName = searchFullyQualifiedName(arg.checkjstring());
 					if (fullName != null) return newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2));
+				}
+				return LuaValue.NIL;
+			}
+		});
+
+		set("newCus", new VarArgFunction() {
+
+			@Override
+			public Varargs invoke(Varargs varargs) {
+				LuaValue arg = varargs.arg1();
+				if (arg.isstring()) {
+					String s = arg.tojstring();
+					for (CustomObject obj : CustomObject.customObjects.values()) {
+						if (obj.name.equals(s)) return CoerceJavaToLua.coerce(obj.luaClass.newInstance());
+					}
+				}
+				if (arg.isint()) {
+					LuaClass original = CustomObject.getLuaClass(arg.checkint());
+					return original == null
+							? LuaValue.NIL
+							: CoerceJavaToLua.coerce(original.newInstance());
 				}
 				return LuaValue.NIL;
 			}
@@ -228,6 +251,18 @@ public class LuaGlobals extends Globals {
 			public LuaValue call() {
 				Random.popGenerator();
 				return LuaValue.NIL;
+			}
+		});
+		randomUtils.set("dungeonSeed", new ZeroArgFunction() {
+			@Override
+			public LuaValue call() {
+				return LuaValue.valueOf(Dungeon.seed);
+			}
+		});
+		randomUtils.set("levelSeed", new ZeroArgFunction() {
+			@Override
+			public LuaValue call() {
+				return LuaValue.valueOf(Dungeon.seedCurLevel());
 			}
 		});
 		set("Random", randomUtils);
@@ -383,6 +418,31 @@ public class LuaGlobals extends Globals {
 					if (obj instanceof Mob) {
 						((Mob) obj).pos = pos.checkint();
 						Level.placeMob((Mob) obj);
+					}
+				}
+				return LuaValue.NIL;
+			}
+		});
+
+		set("affectBuff", new ThreeArgFunction() {
+			@Override
+			public LuaValue call(LuaValue target, LuaValue buff, LuaValue duration) {
+				if (target.isuserdata() && buff.isuserdata()) {
+					Object obj = target.checkuserdata();
+					if (obj instanceof Char) {
+						Object b = buff.touserdata();
+						Class<?> buffClass = b instanceof Class ? (Class<?>) b : b.getClass();
+
+						if (duration.isnil() || !duration.isnumber() || !FlavourBuff.class.isAssignableFrom(buffClass)) {
+
+							if (Buff.class.isAssignableFrom(buffClass)) {
+								return CoerceJavaToLua.coerce(Buff.affect((Char) obj, ((Class<? extends Buff>) buffClass)));
+							}
+
+						} else {
+							return CoerceJavaToLua.coerce(Buff.affect((Char) obj, ((Class<? extends FlavourBuff>) buffClass), duration.tofloat()));
+						}
+
 					}
 				}
 				return LuaValue.NIL;

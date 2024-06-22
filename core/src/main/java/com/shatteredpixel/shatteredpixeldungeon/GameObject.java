@@ -28,10 +28,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Function;
+import com.watabou.utils.IntFunction;
 import com.watabou.utils.SparseArray;
 
 import java.util.ArrayList;

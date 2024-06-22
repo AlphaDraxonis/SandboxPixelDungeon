@@ -21,7 +21,8 @@ public class SlowExtendWindow extends Window {
     // null = size stays the same
     private Boolean extending = true;
 
-    protected final int endWidth, endHeight;
+    protected final int endWidth;
+    protected int endHeight;
     protected final Orientation orientation;
     protected final Point startPos;
 

@@ -31,7 +31,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.utils.Function;
+import com.watabou.utils.Reflection;
 
 import java.io.IOException;
 
@@ -68,5 +70,17 @@ public interface LuaMob extends LuaClass {
 				//level should already be loaded
 			}
 		}
+	}
+
+	static String getLuaMobClassName(Class<?> clazz) {
+		return getLuaMobClassName(clazz.getSimpleName());
+	}
+
+	static String getLuaMobClassName(String simpleClassName) {
+		return Messages.MAIN_PACKAGE_NAME + "actors.mobs.luamobs." + simpleClassName + "_lua";
+	}
+
+	static Class<?> getLuaMobClass(Class<?> clazz) {
+		return Reflection.forName(LuaMob.getLuaMobClassName(clazz));
 	}
 }

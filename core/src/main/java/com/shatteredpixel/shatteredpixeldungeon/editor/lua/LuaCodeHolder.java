@@ -30,7 +30,7 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import org.luaj.vm2.LuaValue;
 
-//TODO make levelscgmeeme responsible for loading this one, change access in LuaClassGenerator to do it via levelscheme
+//TODO make levelschmeeme responsible for loading this one, change access in LuaClassGenerator to do it via levelscheme
 public class LuaCodeHolder implements Bundlable {
 
 	public Class<?> clazz;

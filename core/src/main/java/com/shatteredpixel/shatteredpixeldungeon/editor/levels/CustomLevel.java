@@ -19,7 +19,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrCo
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
@@ -777,7 +776,7 @@ public class CustomLevel extends Level {
 
         List<Mob> removeEntities = new ArrayList<>();
         for (Mob m : level.mobs) {
-            int nPos = newPosition.get(m.pos);
+            int nPos = newPosition.apply(m.pos);
             if (!isPositionValid.test(m.pos, nPos)) removeEntities.add(m);
             else {
                 m.pos = nPos;
@@ -789,14 +788,14 @@ public class CustomLevel extends Level {
 
         if (level.bossmobAt != -1) {
             int old = level.bossmobAt;
-            level.bossmobAt = newPosition.get(old);
+            level.bossmobAt = newPosition.apply(old);
             if (!isPositionValid.test(old, level.bossmobAt)) level.bossmobAt = Level.NO_BOSS_MOB;
         }
 
         //Cant avoid some copy paste because Shattered has really good code
         SparseArray<Heap> nHeaps = new SparseArray<>();
         for (Heap h : level.heaps.valueList()) {
-            int nPos = newPosition.get(h.pos);
+            int nPos = newPosition.apply(h.pos);
             if (isPositionValid.test(h.pos, nPos)) {
                 nHeaps.put(nPos, h);
                 h.pos = nPos;
@@ -811,7 +810,7 @@ public class CustomLevel extends Level {
 
         SparseArray<Trap> nTrap = new SparseArray<>();
         for (Trap t : level.traps.valueList()) {
-            int nPos = newPosition.get(t.pos);
+            int nPos = newPosition.apply(t.pos);
             if (isPositionValid.test(t.pos, nPos)) {
                 nTrap.put(nPos, t);
                 t.pos = nPos;
@@ -823,7 +822,7 @@ public class CustomLevel extends Level {
 
         SparseArray<Sign> nSign = new SparseArray<>();
         for (Sign s : level.signs.valueList()) {
-            int nPos = newPosition.get(s.pos);
+            int nPos = newPosition.apply(s.pos);
             if (isPositionValid.test(s.pos, nPos)) {
                 nSign.put(nPos, s);
                 s.pos = nPos;
@@ -834,7 +833,7 @@ public class CustomLevel extends Level {
 
         SparseArray<Barrier> nBarriers = new SparseArray<>();
         for (Barrier b : level.barriers.valueList()) {
-            int nPos = newPosition.get(b.pos);
+            int nPos = newPosition.apply(b.pos);
             if (isPositionValid.test(b.pos, nPos)) {
                 nBarriers.put(nPos, b);
                 b.pos = nPos;
@@ -845,7 +844,7 @@ public class CustomLevel extends Level {
 
         SparseArray<ArrowCell> nArrowCells = new SparseArray<>();
         for (ArrowCell ac : level.arrowCells.valueList()) {
-            int nPos = newPosition.get(ac.pos);
+            int nPos = newPosition.apply(ac.pos);
             if (isPositionValid.test(ac.pos, nPos)) {
                 nArrowCells.put(nPos, ac);
                 ac.pos = nPos;
@@ -856,7 +855,7 @@ public class CustomLevel extends Level {
 
         SparseArray<Checkpoint> nCheckpoint = new SparseArray<>();
         for (Checkpoint cp : level.checkpoints.valueList()) {
-            int nPos = newPosition.get(cp.pos);
+            int nPos = newPosition.apply(cp.pos);
             if (isPositionValid.test(cp.pos, nPos)) {
                 nCheckpoint.put(nPos, cp);
                 cp.pos = nPos;
@@ -867,7 +866,7 @@ public class CustomLevel extends Level {
 
         SparseArray<CoinDoor> nCoinDoors = new SparseArray<>();
         for (CoinDoor c : level.coinDoors.valueList()) {
-            int nPos = newPosition.get(c.pos);
+            int nPos = newPosition.apply(c.pos);
             if (isPositionValid.test(c.pos, nPos)) {
                 nCoinDoors.put(nPos, c);
                 c.pos = nPos;
@@ -879,7 +878,7 @@ public class CustomLevel extends Level {
         SparseArray<Plant> nPlant = new SparseArray<>();
         for (Plant p : level.plants.valueList()) {
             if (p != null) {
-                int nPos = newPosition.get(p.pos);
+                int nPos = newPosition.apply(p.pos);
                 if (isPositionValid.test(p.pos, nPos)) {
                     nPlant.put(nPos, p);
                     p.pos = nPos;
@@ -898,7 +897,7 @@ public class CustomLevel extends Level {
         List<Integer> cells = new ArrayList<>(level.levelScheme.entranceCells);
         level.levelScheme.entranceCells.clear();
         for (int cell : cells) {
-            int pos = newPosition.get(cell);
+            int pos = newPosition.apply(cell);
             if (isPositionValid.test(cell, pos)) level.levelScheme.entranceCells.add(pos);
         }
         Collections.sort(level.levelScheme.entranceCells);
@@ -906,7 +905,7 @@ public class CustomLevel extends Level {
         cells = new ArrayList<>(level.levelScheme.exitCells);
         level.levelScheme.exitCells.clear();
         for (int cell : cells) {
-            int pos = newPosition.get(cell);
+            int pos = newPosition.apply(cell);
             if (isPositionValid.test(cell, pos)) level.levelScheme.exitCells.add(pos);
         }
         Collections.sort(level.levelScheme.exitCells);
@@ -974,13 +973,13 @@ public class CustomLevel extends Level {
 
     private static LevelTransition checkLevelTransitionsDepartCell(LevelTransition transition, Level level,
                                                      IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
-        int posDepart = newPosition.get(transition.departCell);
-        int posCenter = newPosition.get(transition.centerCell);
+        int posDepart = newPosition.apply(transition.departCell);
+        int posCenter = newPosition.apply(transition.centerCell);
         //TODO consider the size of the transitions but atm they cant be set!
-//            int left = newPosition.get(transition.left);
-//            int top = newPosition.get(transition.top);
-//            int right = newPosition.get(transition.right);
-//            int bottom = newPosition.get(transition.bottom);
+//            int left = newPosition.apply(transition.left);
+//            int top = newPosition.apply(transition.top);
+//            int right = newPosition.apply(transition.right);
+//            int bottom = newPosition.apply(transition.bottom);
         if (isPositionValid.test(transition.departCell, posDepart)
                 && isPositionValid.test(transition.centerCell, posCenter)
 //                    && isPositionValid.test(transition.left, left)
@@ -1001,7 +1000,7 @@ public class CustomLevel extends Level {
     private static Boolean checkLevelTransitionsDestCell(LevelTransition transition, Level level,
                                                      IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
         if (transition != null && Objects.equals(transition.destLevel, level.name) && transition.destCell >= 0) {
-            int dest = newPosition.get(transition.destCell);
+            int dest = newPosition.apply(transition.destCell);
             if (isPositionValid.test(transition.destCell, dest)) {
                 if (dest != transition.destCell) {
                     transition.destCell = dest;
@@ -1017,7 +1016,7 @@ public class CustomLevel extends Level {
     private static void checkRegularLevelTransitions(LevelTransition transition, String levelWithChanges,
                                                      IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
         if (transition != null && Objects.equals(transition.destLevel, levelWithChanges)) {
-            int dest = newPosition.get(transition.destCell);
+            int dest = newPosition.apply(transition.destCell);
             if (isPositionValid.test(transition.destCell, dest)) {
                 if (dest != transition.destCell) transition.destCell = dest;
             } else {
@@ -1034,7 +1033,7 @@ public class CustomLevel extends Level {
                 b.volume = 0;
                 if (b.cur != null) {
                     for (int i = 0; i < b.cur.length; i++) {
-                        int newIndex = newPosition.get(i);
+                        int newIndex = newPosition.apply(i);
                         if (isPositionValid.test(i, newIndex)) {
                             b.volume += b.cur[i];
                             nCur[newIndex] = b.cur[i];
@@ -1052,7 +1051,7 @@ public class CustomLevel extends Level {
                         if (i != null) i.onMapSizeChange(newPosition, isPositionValid);
                     }
                     for (Integer oldPos : prizes.keySet()) {
-                        int nPos = newPosition.get(oldPos);
+                        int nPos = newPosition.apply(oldPos);
                         if (isPositionValid.test(oldPos, nPos)) {
                             newPrizePositions.put(nPos, prizes.get(oldPos));
                         }

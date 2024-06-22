@@ -1,5 +1,5 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.util;
 
-public interface IntFunction<T> {
-    int get(T t);
+public interface BiConsumer<T, U> {
+    void accept(T t, U u);
 }

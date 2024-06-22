@@ -27,7 +27,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -36,6 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.IntFunction;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -159,7 +159,7 @@ public class GatewayTrap extends Trap {
 	public void onMapSizeChange(IntFunction<Integer> newPosition, BiPredicate<Integer, Integer> isPositionValid) {
 		super.onMapSizeChange(newPosition, isPositionValid);
 		if (telePos != -1) {
-			int nPos = newPosition.get(telePos);
+			int nPos = newPosition.apply(telePos);
 			telePos = isPositionValid.test(telePos, nPos) ? nPos : -1;
 		}
 	}

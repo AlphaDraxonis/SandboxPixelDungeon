@@ -13,12 +13,12 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.ZonePrompt;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.IntFunction;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.IntFunction;
 import com.watabou.utils.Reflection;
 
 import java.util.*;
@@ -216,7 +216,7 @@ public class Zone implements Bundlable {
             Set<Integer> cellIterator = new HashSet<>(z.cells);
             z.cells.clear();
             for (Integer cell : cellIterator) {
-                int nPos = newPosition.get(cell);
+                int nPos = newPosition.apply(cell);
                 if (isPositionValid.test(cell, nPos)) {
                     z.cells.add(nPos);
                 }

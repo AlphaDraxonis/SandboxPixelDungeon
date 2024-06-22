@@ -17,6 +17,7 @@ public abstract class QuestNPC<T extends Quest> extends NPC {
     public T quest;
 
     public QuestNPC() {
+        createNewQuest();
     }
 
     public QuestNPC(T quest) {
