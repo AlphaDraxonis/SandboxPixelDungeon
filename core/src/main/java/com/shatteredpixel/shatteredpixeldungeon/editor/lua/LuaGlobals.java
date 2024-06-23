@@ -580,7 +580,6 @@ public class LuaGlobals extends Globals {
 				return LuaValue.TRUE;
 			}
 		});
-		//TODO tzz code to create a new custom mob
 	}
 
 	private static String searchFullyQualifiedName(String simpleName) {

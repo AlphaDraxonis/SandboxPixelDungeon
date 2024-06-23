@@ -75,7 +75,7 @@ public class TrinketCatalyst extends Item {
 		}
 	}
 
-	public ArrayList<Trinket> rolledTrinkets = new ArrayList<>();//tzz set in editor!
+	public ArrayList<Trinket> rolledTrinkets = new ArrayList<>();
 	public int numChoosableTrinkets = 3;// must always be  0 < this < Generator.Category.Trinket.classes.length
 	private boolean paidEnergy;
 

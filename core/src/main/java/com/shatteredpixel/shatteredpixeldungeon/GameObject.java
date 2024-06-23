@@ -45,7 +45,7 @@ import java.util.Set;
 public abstract class GameObject implements Bundlable {
 
 	public int sparseArrayKey() {
-		return 0;//tzz check if everywhere implemented!
+		return 0;
 	}
 
 	/**

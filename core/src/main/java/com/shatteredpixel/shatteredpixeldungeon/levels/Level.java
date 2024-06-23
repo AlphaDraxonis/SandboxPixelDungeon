@@ -1717,7 +1717,7 @@ public abstract class Level implements Bundlable {
 		level.water[cell]			= terrain == Terrain.WATER;
 
 		if (!level.insideMap(cell)) {
-			level.passable[cell] = level.avoid[cell] = false;
+			level.passable[cell] = level.passableHero[cell] = level.passableMob[cell] = level.passableAlly[cell] = level.avoid[cell] = false;
 			level.losBlocking[cell] = level.solid[cell] = true;
 		}
 

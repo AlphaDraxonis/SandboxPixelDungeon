@@ -21,6 +21,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.PermaGas;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaMob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
@@ -30,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerFloatModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerIntegerModel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
@@ -50,14 +52,12 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWea
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndGameInProgress;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoMob;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndJournal;
+import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundle;
@@ -847,14 +847,19 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
 
         if (mob instanceof LuaMob) {
-            test = new RedButton("Edit code") {
+            test = new RedButton(CustomDungeon.isEditing() ? "Edit code tzz" : "view") {
                 @Override
                 protected void onClick() {
-                    IDEWindow.showWindow(CustomObject.customObjects.get(((LuaMob) mob).getIdentifier()));
+                    LuaCodeHolder luaCodeHolder = CustomObject.customObjects.get(((LuaMob) mob).getIdentifier());
+                    if (CustomDungeon.isEditing()) {
+                        IDEWindow.showWindow(luaCodeHolder);
+                    } else {
+                        GameScene.show(new WndTitledMessage(Icons.INFO.get(), luaCodeHolder.pathToScript, CustomDungeonSaves.readLuaFile(luaCodeHolder.pathToScript).code));
+                    }
                 }
             };
             add(test);
-        }//TODO tzz if not editing: only view code
+        }
 
 		rectComps = new Component[]{
 
@@ -1165,7 +1170,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         int pos = change.pos;
         boolean replaceSprite = change.spriteClass != template.spriteClass;
-        //TODO tzz dialogs, custom name etc??
         change.restoreFromBundle(bundle.getBundle("MOB"));
         change.pos = pos;
 

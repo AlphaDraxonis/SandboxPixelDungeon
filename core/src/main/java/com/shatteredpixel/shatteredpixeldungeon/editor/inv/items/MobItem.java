@@ -60,7 +60,6 @@ public class MobItem extends EditorItem<Mob> {
         if (mob instanceof LuaClass) {
             return CustomObject.getName(((LuaClass) mob).getIdentifier());
         }
-        //TODO tzz might wanna add more detailed if is luaclass and placed etc
 
         if (MobSpriteItem.canChangeSprite(mob)) {
             Mob defaultMob = DefaultStatsCache.getDefaultObject(mob.getClass());

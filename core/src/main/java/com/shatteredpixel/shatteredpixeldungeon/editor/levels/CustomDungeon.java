@@ -963,7 +963,7 @@ public class CustomDungeon implements Bundlable {
         }
 
         //Set level for keys in inv
-        Items.updateKeys(n, EditorScene.getCustomLevel() == null ? null : EditorScene.getCustomLevel().name);//tzz
+        Items.updateKeys(n, EditorScene.getCustomLevel() == null ? null : EditorScene.getCustomLevel().name);
 
         EditorScene.updatePathfinder();
 

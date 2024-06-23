@@ -87,7 +87,7 @@ public enum Buffs implements EditorInvCategory<Buff> {
 
     @Override
     public Image getSprite() {
-        return new ItemSprite();//tzz
+        return new ItemSprite();//TODO add icons
     }
 
     public static final EditorItemBag bag = new EditorItemBag("name", 0) {};

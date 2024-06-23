@@ -144,7 +144,7 @@ public class WildMagic extends ArmorAbility {
 					@Override
 					public void call() {
 						cur.onZap(aim);
-						boolean alsoCursedZap = Random.Float() < WondrousResin.extraCurseEffectChance();
+						boolean alsoCursedZap = Random.Float() < WondrousResin.extraCurseEffectChance(hero);
 						if (Game.timeTotal - startTime < 0.33f) {
 							hero.sprite.parent.add(new Delayer(0.33f - (Game.timeTotal - startTime)) {
 								@Override
@@ -152,7 +152,7 @@ public class WildMagic extends ArmorAbility {
 									if (alsoCursedZap){
 										CursedWand.cursedZap(cur,
 												hero,
-												new Ballistica(hero.pos, cell, Ballistica.MAGIC_BOLT),
+												new Ballistica(hero.pos, cell, Ballistica.REAL_MAGIC_BOLT, null),
 												new Callback() {
 													@Override
 													public void call() {
@@ -168,7 +168,7 @@ public class WildMagic extends ArmorAbility {
 							if (alsoCursedZap){
 								CursedWand.cursedZap(cur,
 										hero,
-										new Ballistica(hero.pos, cell, Ballistica.MAGIC_BOLT),
+										new Ballistica(hero.pos, cell, Ballistica.REAL_MAGIC_BOLT, null),
 										new Callback() {
 											@Override
 											public void call() {

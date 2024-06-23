@@ -1561,7 +1561,7 @@ public class Hero extends Char {
 
 				//only do a simple check for mind visioned enemies, better performance
 				if ((!mindVisionEnemies.contains(m) && QuickSlotButton.autoAim(m) != -1)
-						|| (mindVisionEnemies.contains(m) && new Ballistica( pos, m.pos, Ballistica.PROJECTILE ).collisionPos == m.pos)) {
+						|| (mindVisionEnemies.contains(m) && new Ballistica( pos, m.pos, Ballistica.REAL_PROJECTILE, null ).collisionPos == m.pos)) {
 					if (target == null) {
 						target = m;
 					} else if (distance(target) > distance(m)) {

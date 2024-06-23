@@ -47,35 +47,6 @@ public final class LuaClassGenerator {
         int i = 0;
     }
 
-    //TODO list
-    //write tutorial (should mention most important stuff for common classes)
-
-    //expose and update certain variables
-
-    //add custom mob stuff (like editcomp)
-
-    //add ui for editing scripts:
-    //top: select file
-    //button to open github
-    //methods are listed in foldable comps, use button to enable these, navigator buttons to go to the next edited method
-    //for all the methods in a SELECTED order:
-    // show declaration line, including real param names
-    // for the correct order, assign to each method name a array with param names and int priority
-    // exclude methods that are usually not uncluded
-    //field for "additonal code" (this could be used to declare other methods not included in normal methods)
-    //button insert template: will override affected methods, show info which methods are changed
-
-    //add utilies wrapper to use certain STATIC methods from items or traps, and to show windows?
-    //show window: only message, wndtitledmsg, wndscroll, wndquest, wandmaker quest window with varargs num rewards, open journal(int page)
-
-    //ACHTUNG variable names cannot start with "__type" !!! tzz TODO very important!
-
-    //TODO: implement static: for this mob type, and super_static for ALL custom mobs
-    //These ("static" and "globals") are seserverd names and cannot be used as names for vaiables!
-    //they cannot even be declared as new variables at any time!
-
-    //Whenever a game is started or loaded / it should also load all scripts of all custom mob types, and
-
     private static final String funAttackSkill =
             "function attackSkill(this) " +
                     "    return 999999" +
@@ -109,33 +80,6 @@ public final class LuaClassGenerator {
                     "globalValue = 99" +
                     "}" +
                     " }  ";
-
-    public static void initStatic() {
-
-//        LuaClassGenerator.luaScript = LuaClassGenerator.globals.load(
-//                 vars +
-////                         "function attackSkill(this, vars) " +
-////                         "if vars.item == nil then" +
-////                         "   vars.item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
-////                         " else  level:drop(luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing\"), this.pos + level:width()).sprite:drop()" +
-////                         " end  vars.static.aNumber = vars.static.aNumber + 1 return vars.static.aNumber" +
-////                         " end " +
-//
-//                         funDie +
-//
-//                        "return {" +
-//                         "attackSkill = attackSkill; " +
-////                         "attackProc = attackProc; " +
-//                         "die = die;" +
-//                         "vars = vars " +
-//                         "}").call();
-
-    }
-
-    //LuaClassGenerator.globals.load(
-    //       " vars = { item = nil; test = 66 }       function attackSkill(this, vars) " + " local item = nil if item==nil then return luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\") else  return level end end" + "   " + "return {" +
-    //    "attackSkill = attackSkill; " +      "vars = vars " + "}").call().get("attackSkill").call()
-
 
     private static final String ROOT_DIR = System.getProperty("user.home")
             + "/ZZDaten/Freizeit/Programmieren/ShatteredPD/SPD-Sandbox/Projekt/core/src/main/java/";
