@@ -65,7 +65,10 @@ public class EditArrowCellComp extends DefaultEditComp<ArrowCell> {
             }
         }
 
-        enterMode = new SpinnerLikeButton(new SpinnerEnumModel<>(ArrowCell.EnterMode.class, obj.enterMode, v -> obj.enterMode = v), Messages.get(this, "enter_mode"), 6);
+        enterMode = new SpinnerLikeButton(new SpinnerEnumModel<>(ArrowCell.EnterMode.class, obj.enterMode, v -> {
+            obj.enterMode = v;
+            updateObj();
+        }), Messages.get(this, "enter_mode"));
         add(enterMode);
 
         visible = new StyledCheckBox(Messages.get(EditTrapComp.class, "visible")) {

@@ -53,7 +53,7 @@ public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 		model.valueDisplay = new AbstractSpinnerModel.ValueDisplay() {
 			@Override
 			public void showValue(Object value) {
-				SpinnerLikeButton.this.value.text(value == null ? "<null>": value.toString());
+				SpinnerLikeButton.this.value.text(model.displayString(value));
 				SpinnerLikeButton.this.layout();
 			}
 

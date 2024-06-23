@@ -7,6 +7,8 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 
+import java.util.Locale;
+
 public class ArrowCell implements Bundlable, Copyable<ArrowCell>, PathFinder.ArrowCellInterface {
 
     public enum EnterMode {
@@ -89,7 +91,7 @@ public class ArrowCell implements Bundlable, Copyable<ArrowCell>, PathFinder.Arr
     }
 
     public String desc() {
-        return Messages.get(this, "desc");//TODO tzz also consider entrance rules!
+        return Messages.get(this, "desc") + " " + Messages.get(ArrowCell.EnterMode.class, enterMode.name().toLowerCase(Locale.ENGLISH) + "_desc");
     }
 
     public boolean allowsDirectionLeaving(int pathfinderNeighboursValue) {
