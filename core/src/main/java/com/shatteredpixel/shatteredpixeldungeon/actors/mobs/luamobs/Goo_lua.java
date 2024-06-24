@@ -92,7 +92,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.canAttack((Char) a0);
                boolean ret = luaScript.get("canAttack").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.canAttack(arg0);
     }
@@ -105,7 +105,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Boolean> superMethod = () -> super.heroShouldInteract();
                boolean ret = luaScript.get("heroShouldInteract").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.heroShouldInteract();
     }
@@ -117,7 +117,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.throwItems();
                luaScript.get("throwItems").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.throwItems();
     }
@@ -130,7 +130,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.isTargeting((Char) a0);
                boolean ret = luaScript.get("isTargeting").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.isTargeting(arg0);
     }
@@ -142,7 +142,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.onAdd();
                luaScript.get("onAdd").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.onAdd();
     }
@@ -154,7 +154,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.setLevel((int) a0);
                luaScript.get("setLevel").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.setLevel(arg0);
     }
@@ -166,7 +166,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.onOperateComplete();
                luaScript.get("onOperateComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.onOperateComplete();
     }
@@ -179,7 +179,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Float> superMethod = () -> super.spawningWeight();
                float ret = luaScript.get("spawningWeight").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.spawningWeight();
     }
@@ -191,7 +191,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.setFlying((boolean) a0);
                luaScript.get("setFlying").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.setFlying(arg0);
     }
@@ -204,7 +204,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<GameObject.ModifyResult> superMethod = () -> super.initRandoms();
                GameObject.ModifyResult ret = (GameObject.ModifyResult) luaScript.get("initRandoms").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.initRandoms();
     }
@@ -217,7 +217,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Float> superMethod = () -> super.stealth();
                float ret = luaScript.get("stealth").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.stealth();
     }
@@ -230,22 +230,22 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Float> superMethod = () -> super.cooldown();
                float ret = luaScript.get("cooldown").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.cooldown();
     }
 
     @Override
-    public synchronized HashSet buffs(Class arg0) {
+    public synchronized LinkedHashSet buffs() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("buffs").isnil()) {
             try {
-                MethodOverride.A1<HashSet> superMethod = (a0) -> super.buffs((Class) a0);
-               HashSet ret = (HashSet) luaScript.get("buffs").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().touserdata();
+                MethodOverride.A0<LinkedHashSet> superMethod = () -> super.buffs();
+               LinkedHashSet ret = (LinkedHashSet) luaScript.get("buffs").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
-        return super.buffs(arg0);
+        return super.buffs();
     }
 
     @Override
@@ -256,7 +256,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Integer> superMethod = () -> super.id();
                int ret = luaScript.get("id").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.id();
     }
@@ -268,7 +268,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.onAttackComplete();
                luaScript.get("onAttackComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.onAttackComplete();
     }
@@ -281,7 +281,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Boolean> superMethod = () -> super.shouldSpriteBeVisible();
                boolean ret = luaScript.get("shouldSpriteBeVisible").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.shouldSpriteBeVisible();
     }
@@ -293,9 +293,21 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.timeToNow();
                luaScript.get("timeToNow").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.timeToNow();
+    }
+
+    @Override
+    public void playZapAnim(int arg0) {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("playZapAnim").isnil()) {
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.playZapAnim((int) a0);
+               luaScript.get("playZapAnim").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.playZapAnim(arg0);
     }
 
     @Override
@@ -306,7 +318,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Char> superMethod = () -> super.chooseEnemyImpl();
                Char ret = (Char) luaScript.get("chooseEnemyImpl").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.chooseEnemyImpl();
     }
@@ -319,7 +331,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Float> superMethod = () -> super.lootChance();
                float ret = luaScript.get("lootChance").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.lootChance();
     }
@@ -331,7 +343,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.zap();
                luaScript.get("zap").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.zap();
     }
@@ -343,7 +355,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.destroy();
                luaScript.get("destroy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.destroy();
     }
@@ -356,7 +368,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<String> superMethod = () -> super.defenseVerb();
                String ret = luaScript.get("defenseVerb").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.defenseVerb();
     }
@@ -369,7 +381,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.doOnAllGameObjects((Function) a0);
                boolean ret = luaScript.get("doOnAllGameObjects").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.doOnAllGameObjects(arg0);
     }
@@ -382,7 +394,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Boolean> superMethod = () -> super.reset();
                boolean ret = luaScript.get("reset").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.reset();
     }
@@ -394,7 +406,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.spendConstant((float) a0);
                luaScript.get("spendConstant").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.spendConstant(arg0);
     }
@@ -407,7 +419,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Integer> superMethod = () -> super.drRoll();
                int ret = luaScript.get("drRoll").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.drRoll();
     }
@@ -420,7 +432,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Integer> superMethod = () -> super.randomDestination();
                int ret = luaScript.get("randomDestination").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.randomDestination();
     }
@@ -432,7 +444,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.tellDialog();
                luaScript.get("tellDialog").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.tellDialog();
     }
@@ -445,7 +457,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Boolean> superMethod = () -> super.isFlying();
                boolean ret = luaScript.get("isFlying").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.isFlying();
     }
@@ -458,7 +470,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<boolean[]> superMethod = (a0) -> super.modPassable((boolean[]) a0);
                boolean[] ret = (boolean[]) luaScript.get("modPassable").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().touserdata();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.modPassable(arg0);
     }
@@ -470,7 +482,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA2 superMethod = (a0, a1) -> super.damage((int) a0, a1);
                luaScript.get("damage").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.damage(arg0, arg1);
     }
@@ -483,7 +495,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.getFurther((int) a0);
                boolean ret = luaScript.get("getFurther").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.getFurther(arg0);
     }
@@ -495,7 +507,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.restoreEnemy();
                luaScript.get("restoreEnemy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.restoreEnemy();
     }
@@ -507,7 +519,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.onZapComplete();
                luaScript.get("onZapComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.onZapComplete();
     }
@@ -520,22 +532,9 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.cellIsPathable((int) a0);
                boolean ret = luaScript.get("cellIsPathable").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.cellIsPathable(arg0);
-    }
-
-    @Override
-    public int attackSkill(Char arg0) {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("attackSkill").isnil()) {
-            try {
-                MethodOverride.A1<Integer> superMethod = (a0) -> super.attackSkill((Char) a0);
-               int ret = luaScript.get("attackSkill").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toint();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
-        }
-        return super.attackSkill(arg0);
     }
 
     @Override
@@ -546,9 +545,22 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<ItemsWithChanceDistrComp.RandomItemData> superMethod = () -> super.convertLootToRandomItemData();
                ItemsWithChanceDistrComp.RandomItemData ret = (ItemsWithChanceDistrComp.RandomItemData) luaScript.get("convertLootToRandomItemData").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.convertLootToRandomItemData();
+    }
+
+    @Override
+    public int attackSkill(Char arg0) {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("attackSkill").isnil()) {
+            try {
+                MethodOverride.A1<Integer> superMethod = (a0) -> super.attackSkill((Char) a0);
+               int ret = luaScript.get("attackSkill").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.attackSkill(arg0);
     }
 
     @Override
@@ -559,7 +571,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A4<Boolean> superMethod = (a0, a1, a2, a3) -> super.attack((Char) a0, (float) a1, (float) a2, (float) a3);
                boolean ret = luaScript.get("attack").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1), LuaValue.valueOf(arg2), LuaValue.valueOf(arg3)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.attack(arg0, arg1, arg2, arg3);
     }
@@ -572,7 +584,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<CharSprite> superMethod = () -> super.sprite();
                CharSprite ret = (CharSprite) luaScript.get("sprite").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.sprite();
     }
@@ -585,7 +597,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Item> superMethod = () -> super.createLoot();
                Item ret = (Item) luaScript.get("createLoot").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.createLoot();
     }
@@ -597,7 +609,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.updateSpriteVisibility();
                luaScript.get("updateSpriteVisibility").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.updateSpriteVisibility();
     }
@@ -610,7 +622,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.getCloser((int) a0);
                boolean ret = luaScript.get("getCloser").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.getCloser(arg0);
     }
@@ -623,7 +635,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<String> superMethod = () -> super.getCustomName();
                String ret = luaScript.get("getCustomName").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.getCustomName();
     }
@@ -635,7 +647,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.setPlayerAlignment((int) a0);
                luaScript.get("setPlayerAlignment").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.setPlayerAlignment(arg0);
     }
@@ -648,7 +660,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A2<Boolean> superMethod = (a0, a1) -> super.moveSprite((int) a0, (int) a1);
                boolean ret = luaScript.get("moveSprite").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0), LuaValue.valueOf(arg1)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.moveSprite(arg0, arg1);
     }
@@ -661,7 +673,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Integer> superMethod = () -> super.sparseArrayKey();
                int ret = luaScript.get("sparseArrayKey").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.sparseArrayKey();
     }
@@ -674,7 +686,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<String> superMethod = () -> super.getCustomDesc();
                String ret = luaScript.get("getCustomDesc").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.getCustomDesc();
     }
@@ -687,7 +699,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<DirectableAlly> superMethod = () -> super.getDirectableAlly();
                DirectableAlly ret = (DirectableAlly) luaScript.get("getDirectableAlly").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.getDirectableAlly();
     }
@@ -699,7 +711,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.diactivate();
                luaScript.get("diactivate").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.diactivate();
     }
@@ -711,7 +723,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.aggro((Char) a0);
                luaScript.get("aggro").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.aggro(arg0);
     }
@@ -723,7 +735,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.onMotionComplete();
                luaScript.get("onMotionComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.onMotionComplete();
     }
@@ -735,7 +747,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.updateSpriteState();
                luaScript.get("updateSpriteState").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.updateSpriteState();
     }
@@ -747,7 +759,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.onRemove();
                luaScript.get("onRemove").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.onRemove();
     }
@@ -760,7 +772,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Buff> superMethod = (a0) -> super.buff((Class) a0);
                Buff ret = (Buff) luaScript.get("buff").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().touserdata();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.buff(arg0);
     }
@@ -772,7 +784,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.die(a0);
                luaScript.get("die").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.die(arg0);
     }
@@ -785,7 +797,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.blockSound((float) a0);
                boolean ret = luaScript.get("blockSound").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.blockSound(arg0);
     }
@@ -798,7 +810,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.isCharmedBy((Char) a0);
                boolean ret = luaScript.get("isCharmedBy").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.isCharmedBy(arg0);
     }
@@ -811,7 +823,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<List> superMethod = () -> super.createActualLoot();
                List ret = (List) luaScript.get("createActualLoot").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.createActualLoot();
     }
@@ -823,7 +835,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.setCustomName((String) a0);
                luaScript.get("setCustomName").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.setCustomName(arg0);
     }
@@ -835,7 +847,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.clearTime();
                luaScript.get("clearTime").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.clearTime();
     }
@@ -847,7 +859,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.doDropLoot((Item) a0);
                luaScript.get("doDropLoot").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.doDropLoot(arg0);
     }
@@ -860,7 +872,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Boolean> superMethod = () -> super.isActive();
                boolean ret = luaScript.get("isActive").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.isActive();
     }
@@ -873,7 +885,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Boolean> superMethod = () -> super.act();
                boolean ret = luaScript.get("act").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.act();
     }
@@ -885,7 +897,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA2 superMethod = (a0, a1) -> super.onMapSizeChange((IntFunction) a0, (BiPredicate) a1);
                luaScript.get("onMapSizeChange").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.onMapSizeChange(arg0, arg1);
     }
@@ -897,7 +909,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.hitSound((float) a0);
                luaScript.get("hitSound").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.hitSound(arg0);
     }
@@ -909,7 +921,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.spendToWhole();
                luaScript.get("spendToWhole").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.spendToWhole();
     }
@@ -921,7 +933,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.restoreCurrentZone((Level) a0);
                luaScript.get("restoreCurrentZone").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.restoreCurrentZone(arg0);
     }
@@ -934,7 +946,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<String> superMethod = () -> super.info();
                String ret = luaScript.get("info").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.info();
     }
@@ -947,7 +959,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.add((Buff) a0);
                boolean ret = luaScript.get("add").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.add(arg0);
     }
@@ -960,7 +972,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.canInteract((Char) a0);
                boolean ret = luaScript.get("canInteract").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.canInteract(arg0);
     }
@@ -972,7 +984,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.increaseLimitedDropCount((Item) a0);
                luaScript.get("increaseLimitedDropCount").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.increaseLimitedDropCount(arg0);
     }
@@ -985,7 +997,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Float> superMethod = (a0) -> super.resist((Class) a0);
                float ret = luaScript.get("resist").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().tofloat();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.resist(arg0);
     }
@@ -998,7 +1010,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A2<Integer> superMethod = (a0, a1) -> super.attackProc((Char) a0, (int) a1);
                int ret = luaScript.get("attackProc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.attackProc(arg0, arg1);
     }
@@ -1011,7 +1023,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Boolean> superMethod = () -> super.isAlive();
                boolean ret = luaScript.get("isAlive").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.isAlive();
     }
@@ -1023,7 +1035,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.setCustomDesc((String) a0);
                luaScript.get("setCustomDesc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.setCustomDesc(arg0);
     }
@@ -1035,7 +1047,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.yell((String) a0);
                luaScript.get("yell").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.yell(arg0);
     }
@@ -1048,7 +1060,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Integer> superMethod = () -> super.damageRoll();
                int ret = luaScript.get("damageRoll").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.damageRoll();
     }
@@ -1061,7 +1073,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<String> superMethod = () -> super.name();
                String ret = luaScript.get("name").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.name();
     }
@@ -1073,7 +1085,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.postpone((float) a0);
                luaScript.get("postpone").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.postpone(arg0);
     }
@@ -1086,7 +1098,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.isImmune((Class) a0);
                boolean ret = luaScript.get("isImmune").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.isImmune(arg0);
     }
@@ -1098,7 +1110,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.next();
                luaScript.get("next").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.next();
     }
@@ -1110,7 +1122,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.setDurationForFlavourBuff((int) a0);
                luaScript.get("setDurationForFlavourBuff").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.setDurationForFlavourBuff(arg0);
     }
@@ -1123,7 +1135,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Integer> superMethod = (a0) -> super.distance((Char) a0);
                int ret = luaScript.get("distance").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toint();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.distance(arg0);
     }
@@ -1136,7 +1148,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<String> superMethod = () -> super.description();
                String ret = luaScript.get("description").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.description();
     }
@@ -1149,7 +1161,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.interact((Char) a0);
                boolean ret = luaScript.get("interact").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.interact(arg0);
     }
@@ -1162,7 +1174,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Float> superMethod = () -> super.attackDelay();
                float ret = luaScript.get("attackDelay").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.attackDelay();
     }
@@ -1175,7 +1187,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.remove((Buff) a0);
                boolean ret = luaScript.get("remove").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.remove(arg0);
     }
@@ -1188,7 +1200,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Float> superMethod = () -> super.speed();
                float ret = luaScript.get("speed").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.speed();
     }
@@ -1201,7 +1213,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A2<Boolean> superMethod = (a0, a1) -> super.surprisedBy((Char) a0, (boolean) a1);
                boolean ret = luaScript.get("surprisedBy").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.surprisedBy(arg0, arg1);
     }
@@ -1213,7 +1225,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.spend((float) a0);
                luaScript.get("spend").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.spend(arg0);
     }
@@ -1225,7 +1237,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.clearEnemy();
                luaScript.get("clearEnemy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.clearEnemy();
     }
@@ -1238,7 +1250,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Integer> superMethod = (a0) -> super.defenseSkill((Char) a0);
                int ret = luaScript.get("defenseSkill").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toint();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.defenseSkill(arg0);
     }
@@ -1250,7 +1262,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.notice();
                luaScript.get("notice").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.notice();
     }
@@ -1262,7 +1274,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA2 superMethod = (a0, a1) -> super.move((int) a0, (boolean) a1);
                luaScript.get("move").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0), LuaValue.valueOf(arg1)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.move(arg0, arg1);
     }
@@ -1274,7 +1286,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.playBossMusic((String) a0);
                luaScript.get("playBossMusic").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.playBossMusic(arg0);
     }
@@ -1286,7 +1298,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.dieOnLand();
                luaScript.get("dieOnLand").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.dieOnLand();
     }
@@ -1299,7 +1311,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.isInvulnerable((Class) a0);
                boolean ret = luaScript.get("isInvulnerable").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.isInvulnerable(arg0);
     }
@@ -1311,7 +1323,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.addBossProperty();
                luaScript.get("addBossProperty").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.addBossProperty();
     }
@@ -1323,7 +1335,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA1 superMethod = (a0) -> super.beckon((int) a0);
                luaScript.get("beckon").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.beckon(arg0);
     }
@@ -1336,22 +1348,9 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.areStatsEqual((Mob) a0);
                boolean ret = luaScript.get("areStatsEqual").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.areStatsEqual(arg0);
-    }
-
-    @Override
-    public int shielding() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("shielding").isnil()) {
-            try {
-                MethodOverride.A0<Integer> superMethod = () -> super.shielding();
-               int ret = luaScript.get("shielding").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
-        }
-        return super.shielding();
     }
 
     @Override
@@ -1362,9 +1361,22 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Boolean> superMethod = () -> super.canSurpriseAttack();
                boolean ret = luaScript.get("canSurpriseAttack").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.canSurpriseAttack();
+    }
+
+    @Override
+    public int shielding() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("shielding").isnil()) {
+            try {
+                MethodOverride.A0<Integer> superMethod = () -> super.shielding();
+               int ret = luaScript.get("shielding").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.shielding();
     }
 
     @Override
@@ -1374,7 +1386,7 @@ public class Goo_lua extends Goo implements LuaMob {
             try {
                 MethodOverride.VoidA0 superMethod = () -> super.rollToDropLoot();
                luaScript.get("rollToDropLoot").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.rollToDropLoot();
     }
@@ -1387,7 +1399,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A2<Integer> superMethod = (a0, a1) -> super.defenseProc((Char) a0, (int) a1);
                int ret = luaScript.get("defenseProc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.defenseProc(arg0, arg1);
     }
@@ -1400,7 +1412,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<Boolean> superMethod = () -> super.avoidsHazards();
                boolean ret = luaScript.get("avoidsHazards").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.avoidsHazards();
     }
@@ -1413,7 +1425,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A1<Boolean> superMethod = (a0) -> super.doAttack((Char) a0);
                boolean ret = luaScript.get("doAttack").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.doAttack(arg0);
     }
@@ -1426,7 +1438,7 @@ public class Goo_lua extends Goo implements LuaMob {
                 MethodOverride.A0<HashSet> superMethod = () -> super.properties();
                HashSet ret = (HashSet) luaScript.get("properties").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
                 return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(()->	DungeonScene.show(new WndError(error))); }
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.properties();
     }

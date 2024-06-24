@@ -173,6 +173,11 @@ public class Eye extends Mob {
 		deathGaze();
 	}
 
+	@Override
+	public void playZapAnim(int target) {
+		EyeSprite.playZap(sprite.parent, sprite, target, this);
+	}
+
 	public void deathGaze(){
 		if (!beamCharged || beamCooldown > 0 || beam == null)
 			return;

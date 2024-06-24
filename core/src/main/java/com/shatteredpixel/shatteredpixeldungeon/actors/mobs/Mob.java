@@ -886,6 +886,10 @@ public abstract class Mob extends Char implements Customizable {
 		return null;
 	}
 
+	public void playZapAnim(int target) {
+		onZapComplete();
+	}
+
 	public float attackDelay() {
 		float delay = 1f / attackSpeed;
 		if ( buff(Adrenaline.class) != null) delay /= 1.5f;

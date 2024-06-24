@@ -43,6 +43,11 @@ public class FungalSpinner extends Spinner {
 	}
 
 	@Override
+	public void playZapAnim(int target) {
+		FungalSpinnerSprite.playZap(sprite.parent, sprite, target, this);
+	}
+
+	@Override
 	protected void applyWebToCell(int cell) {
 		GameScene.add(Blob.seed(cell, 40, Regrowth.class));
 	}

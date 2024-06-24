@@ -167,6 +167,11 @@ public class Golem extends Mob {
 	}
 
 	@Override
+	public void playZapAnim(int target) {
+		GolemSprite.playZap(sprite.parent, sprite, target, this);
+	}
+
+	@Override
 	protected void zap() {
 		teleportEnemy();
 	}

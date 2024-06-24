@@ -265,6 +265,11 @@ public abstract class YogFist extends Mob {
 
 		}
 
+		@Override
+		public void playZapAnim(int target) {
+			FistSprite.Burning.playZap(sprite.parent, sprite, target, this);
+		}
+
 		{
 			immunities.add(Frost.class);
 
@@ -361,6 +366,11 @@ public abstract class YogFist extends Mob {
 
 		}
 
+		@Override
+		public void playZapAnim(int target) {
+			FistSprite.Soiled.playZap(sprite.parent, sprite, target, this);
+		}
+
 		private boolean canSpreadGrass(int cell){
 			int yogPos = Dungeon.level.exit() + Dungeon.level.width()*3;
 			return (!(Dungeon.level instanceof HallsBossLevel) || Dungeon.level.distance(cell, yogPos) > 4)
@@ -421,6 +431,11 @@ public abstract class YogFist extends Mob {
 		}
 
 		@Override
+		public void playZapAnim(int target) {
+			FistSprite.Rotting.playZap(sprite.parent, sprite, target, this);
+		}
+
+		@Override
 		public int attackProc( Char enemy, int damage ) {
 			damage = super.attackProc( enemy, damage );
 
@@ -471,6 +486,11 @@ public abstract class YogFist extends Mob {
 			Buff.affect(enemy, Cripple.class, 4f);
 		}
 
+		@Override
+		public void playZapAnim(int target) {
+			FistSprite.Rusted.playZap(sprite.parent, sprite, target, this);
+		}
+
 	}
 
 	public static class BrightFist extends YogFist {
@@ -513,6 +533,11 @@ public abstract class YogFist extends Mob {
 				enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
 			}
 
+		}
+
+		@Override
+		public void playZapAnim(int target) {
+			FistSprite.Bright.playZap(sprite.parent, sprite, target, this);
 		}
 
 		@Override
@@ -588,6 +613,11 @@ public abstract class YogFist extends Mob {
 				enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
 			}
 
+		}
+
+		@Override
+		public void playZapAnim(int target) {
+			FistSprite.Dark.playZap(sprite.parent, sprite, target, this);
 		}
 
 		@Override

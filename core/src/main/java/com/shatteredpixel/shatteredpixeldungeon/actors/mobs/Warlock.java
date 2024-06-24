@@ -106,7 +106,12 @@ public class Warlock extends Mob implements Callback {
 			}
 		}
 	}
-	
+
+	@Override
+	public void playZapAnim(int target) {
+		WarlockSprite.playZap(sprite.parent, sprite, target, this);
+	}
+
 	//used so resistances can differentiate between melee and magical attacks
 	public static class DarkBolt{}
 

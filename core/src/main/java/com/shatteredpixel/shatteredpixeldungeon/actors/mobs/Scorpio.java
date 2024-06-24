@@ -105,6 +105,11 @@ public class Scorpio extends Mob {
 	}
 
 	@Override
+	public void playZapAnim(int target) {
+		ScorpioSprite.playZap(sprite.parent, sprite, target, this);
+	}
+
+	@Override
 	protected boolean getCloser( int target ) {
 		if (state == HUNTING) {
 			return enemySeen && getFurther( target );

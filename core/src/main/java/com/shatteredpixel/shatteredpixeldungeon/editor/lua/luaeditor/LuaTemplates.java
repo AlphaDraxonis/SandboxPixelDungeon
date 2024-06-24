@@ -38,7 +38,7 @@ import java.util.List;
 
 public class LuaTemplates {
 
-	private static final LuaScript KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY;
+	private static final LuaScript KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK;
 
 	private static final LuaScript REPLACES_WALLS_WITH_EMBERS;
 
@@ -118,18 +118,49 @@ public class LuaTemplates {
 				"    vars = vars; static = static; defenseSkill = defenseSkill; surprisedBy = surprisedBy; act = act; isInvulnerable = isInvulnerable; isAlive = isAlive;\n" +
 				"}";
 
+		RANGED_ATTACK = new LuaScript(Mob.class, "Adds a ranged attack to (melee) mobs.\nSee Additional code to change the animation.", "");
+		RANGED_ATTACK.code = "function canAttack(this, vars, super, enemy)\n" +
+				"return super:call(enemy)\n" +
+				"or ballistica(this.pos, enemy.pos, Ballistica.REAL_MAGIC_BOLT, nil).collisionPos == enemy.pos;\n" +
+				"end\n" +
+				"\n" +
+				"function doAttack(this, vars, super, enemy)\n" +
+				"if level:adjacent( this.pos, enemy.pos )\n" +
+				"or ballistica(this.pos, enemy.pos, Ballistica.REAL_MAGIC_BOLT, nil).collisionPos ~= enemy.pos\n" +
+				"then\n" +
+				"    return super:call(enemy);\n" +
+				"end\n" +
+				"\n" +
+				"if this.sprite ~= null\n" +
+				" and (this.sprite.visible or enemy.sprite.visible) then\n" +
+				"    this.sprite:zap( enemy.pos );\n" +
+				"    return false;\n" +
+				"else\n" +
+				"    this:zap();\n" +
+				"\t\t\t\treturn true;\n" +
+				"end;\n" +
+				"end\n" +
+				"\n" +
+				"function playZapAnim(this, vars, super, target)\n" +
+				"    Zaps.warlock(this.sprite.parent, this.sprite, target, this); --change attack animation here (mob class name in camelCase)\n" +
+				"end\n" +
+				"\n" +
+				"\n" +
+				"\n" +
+				"return {\n" +
+				"    vars = vars; static = static; canAttack = canAttack; doAttack = doAttack; playZapAnim = playZapAnim; \n" +
+				"}";
+
 
 		REPLACES_WALLS_WITH_EMBERS = new LuaScript(Level.class, "When first entering, 50% of all walls are replaced with embers.", "");
 		REPLACES_WALLS_WITH_EMBERS.code = "vars = {} static = {} function initForPlay(this, vars, super) super:call();\n" +
 				"\n" +
 				"-- btw, it is very important that you don't try accessing this using 'level', instead use 'this'\n\n" +
 				"Random.pushGenerator(Random.levelSeed());\n" +
-				"local embers = 9; -- see constant in Terrain.java\n" +
-				"local wall = 4; -- see constant in Terrain.java\n" +
 				"local length = this:length();\n" +
 				"    for pos = 0, length - 1 do\n" +
-				"        if Random.int(2) == 0 and Arrays.get(this.map, pos) == wall then\n" +
-				"            this:setTerrain(pos, embers);\n" +
+				"        if Random.int(2) == 0 and Arrays.get(this.map, pos) == TERRAIN.WALL then\n" +
+				"            this:setTerrain(pos, Terrain.EMBERS);\n" +
 				"        end\n" +
 				"    end\n" +
 				"\n" +
@@ -139,7 +170,7 @@ public class LuaTemplates {
 				"\nend" +
 				"\n\nreturn {vars = vars; static = static; initForPlay = initForPlay}";
 
-		TEMPLATES = new LuaScript[]{KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY,
+		TEMPLATES = new LuaScript[]{KILL_HERO_ON_DIE, SPAWN_MOB_ON_DIE, CRYSTAL_GUARDIAN_RECOVERY, RANGED_ATTACK,
 				REPLACES_WALLS_WITH_EMBERS};
 	}
 

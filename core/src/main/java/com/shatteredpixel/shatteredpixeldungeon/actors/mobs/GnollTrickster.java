@@ -86,6 +86,11 @@ public class GnollTrickster extends Gnoll {
 	}
 
 	@Override
+	public void playZapAnim(int target) {
+		GnollTricksterSprite.playZap(sprite.parent, sprite, target, this);
+	}
+
+	@Override
 	public int attackProc( Char enemy, int damage ) {
 		damage = super.attackProc( enemy, damage );
 		//The gnoll's attacks get more severe the more the player lets it hit them

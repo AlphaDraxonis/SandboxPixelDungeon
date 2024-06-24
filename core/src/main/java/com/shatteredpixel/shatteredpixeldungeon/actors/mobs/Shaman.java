@@ -165,6 +165,11 @@ public abstract class Shaman extends Mob {
 		protected void debuff( Char enemy ) {
 			Buff.prolong( enemy, Weakness.class, Weakness.DURATION );
 		}
+
+		@Override
+		public void playZapAnim(int target) {
+			ShamanSprite.Red.playZap(sprite.parent, sprite, target, this);
+		}
 	}
 	
 	public static class BlueShaman extends Shaman {
@@ -176,6 +181,11 @@ public abstract class Shaman extends Mob {
 		protected void debuff( Char enemy ) {
 			Buff.prolong( enemy, Vulnerable.class, Vulnerable.DURATION );
 		}
+
+		@Override
+		public void playZapAnim(int target) {
+			ShamanSprite.Blue.playZap(sprite.parent, sprite, target, this);
+		}
 	}
 	
 	public static class PurpleShaman extends Shaman {
@@ -186,6 +196,11 @@ public abstract class Shaman extends Mob {
 		@Override
 		protected void debuff( Char enemy ) {
 			Buff.prolong( enemy, Hex.class, Hex.DURATION );
+		}
+
+		@Override
+		public void playZapAnim(int target) {
+			ShamanSprite.Purple.playZap(sprite.parent, sprite, target, this);
 		}
 	}
 	

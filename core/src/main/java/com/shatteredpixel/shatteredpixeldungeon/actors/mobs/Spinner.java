@@ -185,6 +185,11 @@ public class Spinner extends Mob {
 		shootWeb();
 	}
 
+	@Override
+	public void playZapAnim(int target) {
+		SpinnerSprite.playZap(sprite.parent, sprite, target, this);
+	}
+
 	public void shootWeb(){
 		int webPos = webPos();
 		if (webPos != -1){

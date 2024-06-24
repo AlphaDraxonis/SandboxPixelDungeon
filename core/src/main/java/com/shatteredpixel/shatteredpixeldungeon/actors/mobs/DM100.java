@@ -90,6 +90,11 @@ public class DM100 extends DMMob {
 		return super.canAttack(enemy)
 				|| new Ballistica( pos, enemy.pos, Ballistica.REAL_MAGIC_BOLT, null).collisionPos == enemy.pos;
 	}
+
+	@Override
+	public void playZapAnim(int target) {
+		DM100Sprite.playZap(sprite.parent, sprite, target, this);
+	}
 	
 	//used so resistances can differentiate between melee and magical attacks
 	public static class LightningBolt{}
@@ -156,4 +161,5 @@ public class DM100 extends DMMob {
 		}
 		next();
 	}
+
 }

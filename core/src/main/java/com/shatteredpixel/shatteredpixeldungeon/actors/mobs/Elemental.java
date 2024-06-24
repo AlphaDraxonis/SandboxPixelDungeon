@@ -266,6 +266,11 @@ public abstract class Elemental extends Mob {
 			}
 			if (enemy.sprite.visible) Splash.at( enemy.sprite.center(), sprite.blood(), 5);
 		}
+
+		@Override
+		public void playZapAnim(int target) {
+			ElementalSprite.Fire.playZap(sprite.parent, sprite, target, this);
+		}
 	}
 	
 	//used in wandmaker quest, a fire elemental with lower ACC/EVA/DMG, no on-hit fire
@@ -369,6 +374,11 @@ public abstract class Elemental extends Mob {
 				}
 
 			}
+		}
+
+		@Override
+		public void playZapAnim(int target) {
+			ElementalSprite.NewbornFire.playZap(sprite.parent, sprite, target, this);
 		}
 
 		@Override
@@ -499,6 +509,11 @@ public abstract class Elemental extends Mob {
 			Freezing.freeze( enemy.pos );
 			if (enemy.sprite.visible) Splash.at( enemy.sprite.center(), sprite.blood(), 5);
 		}
+
+		@Override
+		public void playZapAnim(int target) {
+			ElementalSprite.Frost.playZap(sprite.parent, sprite, target, this);
+		}
 	}
 	
 	public static class ShockElemental extends Elemental {
@@ -567,6 +582,11 @@ public abstract class Elemental extends Mob {
 		@Override
 		protected void rangedProc( Char enemy ) {
 			CursedWand.cursedEffect(null, this, enemy);
+		}
+
+		@Override
+		public void playZapAnim(int target) {
+			ElementalSprite.Chaos.playZap(sprite.parent, sprite, target, this);
 		}
 	}
 	

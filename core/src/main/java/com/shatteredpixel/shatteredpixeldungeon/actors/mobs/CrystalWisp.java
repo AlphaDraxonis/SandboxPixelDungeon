@@ -120,6 +120,11 @@ public class CrystalWisp extends Mob{
 		}
 	}
 
+	@Override
+	public void playZapAnim(int target) {
+		CrystalWispSprite.playZap(sprite.parent, sprite, target, this);
+	}
+
 	//used so resistances can differentiate between melee and magical attacks
 	public static class LightBeam {}
 

@@ -298,6 +298,11 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	}
 
 	@Override
+	public void playZapAnim(int target) {
+		TenguSprite.playZap(sprite.parent, sprite, target, this);
+	}
+
+	@Override
 	public void hitSound(float pitch) {
 		if (sprite instanceof TenguSprite || Dungeon.level.adjacent(pos, target)) super.hitSound(pitch);
 	}

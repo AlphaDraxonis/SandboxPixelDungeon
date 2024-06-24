@@ -75,6 +75,11 @@ public class DM201 extends DM200 {
 	}
 
 	@Override
+	public void playZapAnim(int target) {
+		DM201Sprite.playZap(sprite.parent, sprite, target, this);
+	}
+
+	@Override
 	protected boolean canVent(int target) {
 		return false;
 	}

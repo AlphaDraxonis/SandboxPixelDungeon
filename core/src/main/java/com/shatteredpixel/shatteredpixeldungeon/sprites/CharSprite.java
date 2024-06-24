@@ -24,7 +24,9 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.*;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.FlameParticle;
@@ -281,36 +283,10 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	protected void playZapAnim(int cell) {
 		//if it implements its own zap, then do that, otherwise just look for the correct animation based on the char this sprite belongs to
 
-		if (ch instanceof Warlock) WarlockSprite.playZap(parent, this, cell, ch);
-		else if (ch instanceof DM100) DM100Sprite.playZap(parent, this, cell, ch);
-		else if (ch instanceof DM201) DM201Sprite.playZap(parent, this, cell, ch);
-		else if (ch instanceof DM200) DM200Sprite.playZap(parent, this, cell, ch);
-		else if (ch instanceof FungalSpinner) FungalSpinnerSprite.playZap(parent, this, cell, ch);
-		else if (ch instanceof Spinner) SpinnerSprite.playZap(parent, this, cell, ch);
-		else if (ch instanceof Golem) GolemSprite.playZap(parent, this, cell, ch);
+		if (ch instanceof DM100) DM100Sprite.playZap(parent, this, cell, ch);
 		else if (ch instanceof Eye) EyeSprite.playZap(parent, this, cell, ch);
-		else if (ch instanceof Scorpio) ScorpioSprite.playZap(parent, this, cell, ch);
-		else if (ch instanceof GnollTrickster) GnollTricksterSprite.playZap(parent, this, cell, ch);
-		else if (ch instanceof CrystalWisp) CrystalWispSprite.playZap(parent, this, cell, ch);
 
-		else if (ch instanceof Shaman.RedShaman) ShamanSprite.Red.playZap(parent, this, cell, ch);
-		else if (ch instanceof Shaman.BlueShaman) ShamanSprite.Blue.playZap(parent, this, cell, ch);
-		else if (ch instanceof Shaman.PurpleShaman) ShamanSprite.Purple.playZap(parent, this, cell, ch);
-
-		else if (ch instanceof Elemental.NewbornFireElemental) ElementalSprite.NewbornFire.playZap(parent, this, cell, ch);
-		else if (ch instanceof Elemental.FireElemental) ElementalSprite.Fire.playZap(parent, this, cell, ch);
-		else if (ch instanceof Elemental.FrostElemental) ElementalSprite.Frost.playZap(parent, this, cell, ch);
-		else if (ch instanceof Elemental.ChaosElemental) ElementalSprite.Chaos.playZap(parent, this, cell, ch);
-
-		else if (ch instanceof YogFist.BrightFist) FistSprite.Bright.playZap(parent, this, cell, ch);
-		else if (ch instanceof YogFist.BurningFist) FistSprite.Burning.playZap(parent, this, cell, ch);
-		else if (ch instanceof YogFist.DarkFist) FistSprite.Dark.playZap(parent, this, cell, ch);
-		else if (ch instanceof YogFist.RottingFist) FistSprite.Rotting.playZap(parent, this, cell, ch);
-		else if (ch instanceof YogFist.RustedFist) FistSprite.Rusted.playZap(parent, this, cell, ch);
-		else if (ch instanceof YogFist.SoiledFist) FistSprite.Soiled.playZap(parent, this, cell, ch);
-
-		else if (ch instanceof DM300) DM300Sprite.playZap(parent, this, cell, ch);
-		else if (ch instanceof Tengu) TenguSprite.playZap(parent, this, cell, ch);
+		else if (ch instanceof Mob) ((Mob) ch).playZapAnim(cell);
 
 		else ch.onZapComplete();
 	}

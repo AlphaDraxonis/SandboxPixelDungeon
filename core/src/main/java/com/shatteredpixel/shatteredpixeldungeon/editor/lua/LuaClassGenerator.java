@@ -499,7 +499,7 @@ public final class LuaClassGenerator {
             overrideMethods.append(returnTypeString).append(";\n");
             if (!returnString.isEmpty())
                 overrideMethods.append("                return ret;\n");
-            overrideMethods.append("            } catch (LuaError error) { Game.runOnRenderThread(()->\tDungeonScene.show(new WndError(error))); }\n");
+            overrideMethods.append("            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }\n");
             overrideMethods.append("        }\n");
 
             overrideMethods.append("        ");

@@ -148,6 +148,11 @@ public class DM200 extends DMMob {
 
 	}
 
+	@Override
+	public void playZapAnim(int target) {
+		DM200Sprite.playZap(sprite.parent, sprite, target, this);
+	}
+
 	protected boolean canVent(int target){
 		if (ventCooldown > 0) return false;
 		PathFinder.buildDistanceMap(target, BArray.not(Dungeon.level.solid, null), Dungeon.level.distance(pos, target)+1);

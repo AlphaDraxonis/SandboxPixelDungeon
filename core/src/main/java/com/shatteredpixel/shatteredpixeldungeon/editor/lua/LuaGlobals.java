@@ -64,6 +64,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -72,11 +73,13 @@ import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.Visual;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -107,7 +110,7 @@ public class LuaGlobals extends Globals {
 						LuaValue result = newInstance.invoke(arg, varargs.subargs(2)).arg1();
 						if (result.isuserdata()) {
 							Object obj = result.checkuserdata();
-							if (obj instanceof Bundlable || obj instanceof CharSprite || obj instanceof Ballistica) return result;
+							if (obj instanceof Bundlable || obj instanceof CharSprite) return result;
 							else {
 								if (obj instanceof Gizmo) ((Gizmo) obj).destroy();
 								throw new IllegalArgumentException("Instancing class " + arg.checkjstring() + " is not permitted for security reasons!");
@@ -154,6 +157,21 @@ public class LuaGlobals extends Globals {
 					}
 					String fullName = searchFullyQualifiedName(arg.checkjstring());
 					if (fullName != null) return CoerceJavaToLua.coerce(Reflection.forName(fullName));
+				}
+				return LuaValue.NIL;
+			}
+		});
+
+		set("ballistica", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs varargs) {
+				LuaValue from = varargs.arg(1);
+				LuaValue to = varargs.arg(2);
+				LuaValue params = varargs.arg(3);
+				LuaValue usePassable = varargs.arg(4);
+				if (from.isint() && to.isint() && params.isint() && (usePassable.isnil() || usePassable.isuserdata(Char.class))) {
+					Ballistica ballistica = new Ballistica(from.toint(), to.toint(), params.toint(), (Char) usePassable.touserdata());
+					return CoerceJavaToLua.coerce(ballistica);
 				}
 				return LuaValue.NIL;
 			}
@@ -239,6 +257,19 @@ public class LuaGlobals extends Globals {
 						: LuaValue.NIL;
 			}
 		});
+		randomUtils.set("combatRoll", new TwoArgFunction() {
+			@Override
+			public LuaValue call(LuaValue min, LuaValue max) {
+				if (max.isnil()) {
+					return min.isint()
+							? LuaValue.valueOf(Char.combatRoll(0, min.checkint()))
+							: LuaValue.NIL;
+				}
+				return min.isint() && max.isint()
+						? LuaValue.valueOf(Char.combatRoll(min.checkint(), max.checkint()))
+						: LuaValue.NIL;
+			}
+		});
 		randomUtils.set("pushGenerator", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue seed) {
@@ -271,36 +302,41 @@ public class LuaGlobals extends Globals {
 		gLog.set("i", new OneArgFunction() {//info, white
 			@Override
 			public LuaValue call(LuaValue text) {
-				if (text.isstring()) GLog.i(text.checkjstring());
-				return LuaValue.NIL;
+				String s = luaToString(text);
+				if (s != null) GLog.i(s);
+				return s == null ? LuaValue.NIL : LuaValue.valueOf(s);
 			}
 		});
 		gLog.set("p", new OneArgFunction() {//positive, green
 			@Override
 			public LuaValue call(LuaValue text) {
-				if (text.isstring()) GLog.p(text.checkjstring());
-				return LuaValue.NIL;
+				String s = luaToString(text);
+				if (s != null) GLog.p(s);
+				return s == null ? LuaValue.NIL : LuaValue.valueOf(s);
 			}
 		});
 		gLog.set("n", new OneArgFunction() {//negative, red
 			@Override
 			public LuaValue call(LuaValue text) {
-				if (text.isstring()) GLog.n(text.checkjstring());
-				return LuaValue.NIL;
+				String s = luaToString(text);
+				if (s != null) GLog.n(s);
+				return s == null ? LuaValue.NIL : LuaValue.valueOf(s);
 			}
 		});
 		gLog.set("h", new OneArgFunction() {//highlight, yellow
 			@Override
 			public LuaValue call(LuaValue text) {
-				if (text.isstring()) GLog.h(text.checkjstring());
-				return LuaValue.NIL;
+				String s = luaToString(text);
+				if (s != null) GLog.h(s);
+				return s == null ? LuaValue.NIL : LuaValue.valueOf(s);
 			}
 		});
 		gLog.set("w", new OneArgFunction() {//warning, orange
 			@Override
 			public LuaValue call(LuaValue text) {
-				if (text.isstring()) GLog.w(text.checkjstring());
-				return LuaValue.NIL;
+				String s = luaToString(text);
+				if (s != null) GLog.w(s);
+				return s == null ? LuaValue.NIL : LuaValue.valueOf(s);
 			}
 		});
 		set("log", gLog);
@@ -580,6 +616,257 @@ public class LuaGlobals extends Globals {
 				return LuaValue.TRUE;
 			}
 		});
+
+		LuaTable terrainConstants = new LuaTable();
+
+		terrainConstants.set("CHASM", Terrain.CHASM);
+		terrainConstants.set("EMPTY", Terrain.EMPTY);
+		terrainConstants.set("GRASS", Terrain.GRASS);
+
+		terrainConstants.set("EMPTY_WELL", Terrain.EMPTY_WELL);
+		terrainConstants.set("WALL", Terrain.WALL);
+		terrainConstants.set("DOOR", Terrain.DOOR);
+		terrainConstants.set("OPEN_DOOR", Terrain.OPEN_DOOR);
+		terrainConstants.set("ENTRANCE", Terrain.ENTRANCE);
+		terrainConstants.set("ENTRANCE_SP", Terrain.ENTRANCE_SP);
+		terrainConstants.set("EXIT", Terrain.EXIT);
+		terrainConstants.set("EMBERS", Terrain.EMBERS);
+		terrainConstants.set("LOCKED_DOOR", Terrain.LOCKED_DOOR);
+		terrainConstants.set("CRYSTAL_DOOR", Terrain.CRYSTAL_DOOR);
+		terrainConstants.set("PEDESTAL", Terrain.PEDESTAL);
+		terrainConstants.set("WALL_DECO", Terrain.WALL_DECO);
+		terrainConstants.set("BARRICADE", Terrain.BARRICADE);
+		terrainConstants.set("EMPTY_SP", Terrain.EMPTY_SP);
+		terrainConstants.set("HIGH_GRASS", Terrain.HIGH_GRASS);
+		terrainConstants.set("FURROWED_GRASS", Terrain.FURROWED_GRASS);
+
+		terrainConstants.set("SECRET_DOOR", Terrain.SECRET_DOOR);
+		terrainConstants.set("SECRET_TRAP", Terrain.SECRET_TRAP);
+		terrainConstants.set("TRAP", Terrain.TRAP);
+		terrainConstants.set("INACTIVE_TRAP", Terrain.INACTIVE_TRAP);
+
+		terrainConstants.set("EMPTY_DECO", Terrain.EMPTY_DECO);
+		terrainConstants.set("LOCKED_EXIT", Terrain.LOCKED_EXIT);
+
+		terrainConstants.set("UNLOCKED_EXIT", Terrain.UNLOCKED_EXIT);
+		terrainConstants.set("WELL", Terrain.WELL);
+		terrainConstants.set("BOOKSHELF", Terrain.BOOKSHELF);
+		terrainConstants.set("ALCHEMY", Terrain.ALCHEMY);
+
+		terrainConstants.set("SIGN", Terrain.SIGN);
+		terrainConstants.set("SIGN_SP", Terrain.SIGN_SP);
+		terrainConstants.set("CUSTOM_DECO", Terrain.CUSTOM_DECO);
+		terrainConstants.set("CUSTOM_DECO_EMPTY", Terrain.CUSTOM_DECO_EMPTY);
+		terrainConstants.set("STATUE", Terrain.STATUE);
+		terrainConstants.set("STATUE_SP", Terrain.STATUE_SP);
+		terrainConstants.set("MINE_CRYSTAL", Terrain.MINE_CRYSTAL);
+		terrainConstants.set("MINE_BOULDER", Terrain.MINE_BOULDER);
+		terrainConstants.set("WATER", Terrain.WATER);
+
+		terrainConstants.set("SECRET_LOCKED_DOOR", Terrain.SECRET_LOCKED_DOOR);
+		terrainConstants.set("SECRET_CRYSTAL_DOOR", Terrain.SECRET_CRYSTAL_DOOR);
+		terrainConstants.set("COIN_DOOR", Terrain.COIN_DOOR);
+		terrainConstants.set("MIMIC_DOOR", Terrain.MIMIC_DOOR);
+
+		set("Terrain", terrainConstants);
+
+		LuaTable ballisticaConstants = new LuaTable();
+
+		ballisticaConstants.set("STOP_TARGET", Ballistica.STOP_TARGET);
+		ballisticaConstants.set("STOP_CHARS", Ballistica.STOP_CHARS);
+		ballisticaConstants.set("STOP_SOLID", Ballistica.STOP_SOLID);
+		ballisticaConstants.set("IGNORE_SOFT_SOLID", Ballistica.IGNORE_SOFT_SOLID);
+		ballisticaConstants.set("STOP_BARRIER_PROJECTILES", Ballistica.STOP_BARRIER_PROJECTILES);
+		ballisticaConstants.set("PROJECTILE", Ballistica.PROJECTILE);
+		ballisticaConstants.set("REAL_PROJECTILE", Ballistica.REAL_PROJECTILE);
+		ballisticaConstants.set("MAGIC_BOLT", Ballistica.MAGIC_BOLT);
+		ballisticaConstants.set("REAL_MAGIC_BOLT", Ballistica.REAL_MAGIC_BOLT);
+		ballisticaConstants.set("WONT_STOP", Ballistica.WONT_STOP);
+
+		set("Ballistica", ballisticaConstants);
+
+
+		LuaTable zaps = new LuaTable();
+
+		abstract class ZapHandler extends VarArgFunction {
+			@Override
+			public Varargs invoke(Varargs varargs) {
+				LuaValue parent = varargs.arg(1);
+				LuaValue sprite = varargs.arg(2);
+				LuaValue target = varargs.arg(3);
+				LuaValue ch = varargs.arg(4);
+				if (parent.isuserdata(Group.class) && sprite.isuserdata(Visual.class) && target.isint() && ch.isuserdata(Char.class)) {
+					callMethod((Group) parent.touserdata(), (Visual) sprite.touserdata(), target.toint(), (Char) ch.touserdata());
+				}
+				return LuaValue.NIL;
+			}
+
+			protected abstract void callMethod(Group parent, Visual sprite, int target, Char ch);
+		}
+		zaps.set("warlock", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				WarlockSprite.playZap(parent, sprite, target, ch);
+			}
+		});
+//		zaps.set("dm100", new ZapHandler() {
+//			@Override
+//			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+//				DM100Sprite.playZap(parent, sprite, target, ch);
+//			}
+//		});
+		zaps.set("dm200", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				DM200Sprite.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("dm201", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				DM201Sprite.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("fungalSpinner", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				FungalSpinnerSprite.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("spinner", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				SpinnerSprite.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("golem", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				GolemSprite.playZap(parent, sprite, target, ch);
+			}
+		});
+//		zaps.set("eye", new ZapHandler() {
+//			@Override
+//			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+//				EyeSprite.playZap(parent, sprite, target, ch);
+//			}
+//		});
+		zaps.set("scorpio", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				ScorpioSprite.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("gnollTrickster", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				GnollTricksterSprite.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("crystalWisp", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				CrystalWispSprite.Red.playZap(parent, (CharSprite) sprite, target, ch);
+			}
+		});
+		zaps.set("redShaman", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				ShamanSprite.Red.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("blueShaman", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				ShamanSprite.Blue.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("purpleShaman", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				ShamanSprite.Purple.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("newbornFireElemental", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				ElementalSprite.NewbornFire.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("fireElemental", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				ElementalSprite.Fire.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("frostElemental", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				ElementalSprite.Frost.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("chaosElemental", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				ElementalSprite.Chaos.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("brightFist", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				FistSprite.Bright.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("burningFist", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				FistSprite.Burning.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("darkFist", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				FistSprite.Dark.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("rottingFist", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				FistSprite.Rotting.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("rustedFist", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				FistSprite.Rusted.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("soiledFist", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				FistSprite.Soiled.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("warlock", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				WarlockSprite.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("dm300", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				DM300Sprite.playZap(parent, sprite, target, ch);
+			}
+		});
+		zaps.set("tengu", new ZapHandler() {
+			@Override
+			protected void callMethod(Group parent, Visual sprite, int target, Char ch) {
+				TenguSprite.playZap(parent, sprite, target, ch);
+			}
+		});
+
+		set("Zaps", zaps);
 	}
 
 	private static String searchFullyQualifiedName(String simpleName) {
@@ -657,6 +944,16 @@ public class LuaGlobals extends Globals {
 				if (classes[i][j].getSimpleName().equals(simpleName)) return classes[i][j].getName();
 			}
 		}
+		return null;
+	}
+
+	private static String luaToString(LuaValue luaValue) {
+		if (luaValue.isstring()) return luaValue.checkjstring();
+		if (luaValue.isint()) return String.valueOf(luaValue.checkint());
+		if (luaValue.islong()) return String.valueOf(luaValue.checklong());
+		if (luaValue.isboolean()) return String.valueOf(luaValue.checkboolean());
+		if (luaValue.isnil()) return "nil";
+		if (luaValue.isuserdata()) return luaValue.touserdata().toString();
 		return null;
 	}
 
