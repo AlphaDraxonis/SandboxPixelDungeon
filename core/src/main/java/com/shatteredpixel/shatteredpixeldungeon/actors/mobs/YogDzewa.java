@@ -407,8 +407,8 @@ public class YogDzewa extends Mob {
 		int dmgTaken = preHP - HP;
 
 		if (dmgTaken > 0) {
-			abilityCooldown -= dmgTaken / 10f;
-			summonCooldown -= dmgTaken / 10f;
+			abilityCooldown -= dmgTaken /  (HT / 100f);
+			summonCooldown -= dmgTaken /  (HT / 100f);
 		}
 
 		if (phase < 4 && HP <= HT - tenPercentOfMaxHP*3*phase){
