@@ -21,12 +21,11 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 //similar to WndOptions, but tries to place multiple buttons per row
 public class WndOptionsCondensed extends WndOptions {
@@ -40,65 +39,37 @@ public class WndOptionsCondensed extends WndOptions {
 	}
 
 	@Override
-	protected void initBody(String... options) {
+	protected float layoutButtons(int width) {
 
 		float pos = 0;
 
-		if (tfTitle instanceof RenderedTextBlock) {
-			pos += MARGIN;
-			((RenderedTextBlock) tfTitle).maxWidth(width - MARGIN * 2);
-			tfTitle.setPos(MARGIN, pos);
-		} else {
-			tfTitle.setRect(0, pos, width, 0);
-		}
-		pos = tfTitle.bottom() + 2*MARGIN;
+		LinkedList<RedButton> buttonsToDistribute = new LinkedList<>();
 
-		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
-
-		tfMessage.maxWidth(width);
-		tfMessage.setPos( 0, pos );
-
-		pos = tfMessage.bottom() + 2*MARGIN;
-
-		ArrayList<RedButton> buttons = new ArrayList<>();
-
-		for (int i=0; i < options.length; i++) {
-			final int index = i;
-			RedButton btn = new RedButton( options[i] ) {
-				@Override
-				protected void onClick() {
-					hide();
-					onSelect( index );
-				}
-			};
-			Image icon = getIcon(i);
-			if (icon != null) btn.icon(icon);
-			btn.enable(enabled(i));
-			btn.setSize(btn.reqWidth(), BUTTON_HEIGHT);
-			add( btn );
-			buttons.add(btn);
+		for (int i=0; i < buttons.length; i++) {
+			buttons[i].setSize(buttons[i].reqWidth(), BUTTON_HEIGHT);
+			buttonsToDistribute.add(buttons[i]);
 		}
 
 		ArrayList<RedButton> curRow = new ArrayList<>();
 		float widthLeftThisRow = width;
 
-		while( !buttons.isEmpty() ){
-			RedButton btn = buttons.get(0);
+		while( !buttonsToDistribute.isEmpty() ){
+			RedButton btn = buttonsToDistribute.getFirst();
 
 			widthLeftThisRow -= btn.width();
 			if (curRow.isEmpty()) {
 				curRow.add(btn);
-				buttons.remove(btn);
+				buttonsToDistribute.remove(btn);
 			} else {
 				widthLeftThisRow -= MARGIN;
 				if (widthLeftThisRow >= 0) {
 					curRow.add(btn);
-					buttons.remove(btn);
+					buttonsToDistribute.remove(btn);
 				}
 			}
 
 			//layout current row. Currently forces a max of 5 buttons but can work with more
-			if (buttons.isEmpty() || widthLeftThisRow <= 0 || curRow.size() >= 5){
+			if (buttonsToDistribute.isEmpty() || widthLeftThisRow <= 0 || curRow.size() >= 5){
 
 				//re-use this variable for laying out the buttons
 				widthLeftThisRow = width - (curRow.size()-1);
@@ -164,7 +135,7 @@ public class WndOptionsCondensed extends WndOptions {
 
 		}
 
-		resize( width, (int)(pos - MARGIN) );
+		return pos;
 	}
 
 	@Override

@@ -130,20 +130,11 @@ public class WndOptions extends Window {
 		tfMessage.setPos(0, pos);
 		pos = tfMessage.bottom() + 2*MARGIN;
 
-		float posInSp = 0;
 
-		for (int i = 0; i < buttons.length; i++) {
-			if (infos[i] == null) {
-				buttons[i].setRect(0, posInSp, width, BUTTON_HEIGHT);
-			} else {
-				buttons[i].setRect(0, posInSp, width - BUTTON_HEIGHT, BUTTON_HEIGHT);
-				infos[i].setRect(width-BUTTON_HEIGHT, posInSp, BUTTON_HEIGHT, BUTTON_HEIGHT);
-			}
+		float spaceForButtons = layoutButtons(width);
 
-			posInSp += BUTTON_HEIGHT + MARGIN;
-		}
 
-		content.setSize(width, posInSp - MARGIN);
+		content.setSize(width, spaceForButtons - MARGIN);
 
 		float spHeight = Math.min(content.height(), PixelScene.uiCamera.height * 0.88f - pos);
 
@@ -151,6 +142,21 @@ public class WndOptions extends Window {
 
 		sp.setRect(0, pos, width, spHeight);
 
+	}
+
+	protected float layoutButtons(int width) {
+		float pos = 0;
+		for (int i = 0; i < buttons.length; i++) {
+			if (infos[i] == null) {
+				buttons[i].setRect(0, pos, width, BUTTON_HEIGHT);
+			} else {
+				buttons[i].setRect(0, pos, width - BUTTON_HEIGHT, BUTTON_HEIGHT);
+				infos[i].setRect(width-BUTTON_HEIGHT, pos, BUTTON_HEIGHT, BUTTON_HEIGHT);
+			}
+
+			pos += BUTTON_HEIGHT + MARGIN;
+		}
+		return pos;
 	}
 
 	@Override
