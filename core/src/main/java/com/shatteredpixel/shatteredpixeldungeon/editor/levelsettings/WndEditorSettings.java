@@ -38,6 +38,7 @@ public class WndEditorSettings extends WndTabbed {
     private final DungeonTab dungeonTab;
     private final TransitionTab transitionTab;
     private final LevelGenComp levelGenTab;
+    private final LuaOverviewTab luaOverviewTab;
     private final TabComp[] ownTabs;
 
     public static int last_index = 0;
@@ -65,7 +66,9 @@ public class WndEditorSettings extends WndTabbed {
                         EditorScene.updateDepthIcon();
                     }
                 },
-                transitionTab = new TransitionTab()};
+                transitionTab = new TransitionTab(),
+                luaOverviewTab = new LuaOverviewTab()
+        };
 
         Tab[] tabs = new Tab[ownTabs.length];
         for (int i = 0; i < ownTabs.length; i++) {
@@ -74,6 +77,7 @@ public class WndEditorSettings extends WndTabbed {
             ownTabs[i].updateList();
             int index = i;
             tabs[i] = new IconTab(ownTabs[i].createIcon()) {
+                @Override
                 protected void select(boolean value) {
                     super.select(value);
                     ownTabs[index].active = ownTabs[index].visible = value;

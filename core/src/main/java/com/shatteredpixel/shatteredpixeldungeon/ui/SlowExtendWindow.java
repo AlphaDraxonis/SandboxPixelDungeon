@@ -21,31 +21,15 @@ public class SlowExtendWindow extends Window {
     // null = size stays the same
     private Boolean extending = true;
 
-    protected final int endWidth;
+    protected int endWidth;
     protected int endHeight;
-    protected final Orientation orientation;
-    protected final Point startPos;
+    protected Orientation orientation;
+    protected Point startPos;
 
     protected Camera spCamera;
     protected ScrollPane scrollPane;
 
-    /**
-     * @param endWidth    width the window has after the animation, dividable by 2
-     * @param endHeight   height the window has after the animation, dividable by 2
-     * @param orientation how it appears, defines if starting width or starting height is 0 or already the endSize
-     * @param startPos    fix position on screen it cannot change, kinda like offset, a border ALWAYS touches this point in the center of the border
-     */
-    public SlowExtendWindow(int endWidth, int endHeight, Orientation orientation, Point startPos) {
-        super();
-
-        if (endWidth % 2 != 0) endWidth++;
-        if (endHeight % 2 != 0) endHeight++;
-
-        this.endWidth = endWidth;
-        this.endHeight = endHeight;
-        this.orientation = orientation;
-        this.startPos = startPos;
-
+    public SlowExtendWindow(){
         chrome.camera = camera;
         camera = new Camera(0, 0,
                 (int) chrome.width - chrome.marginLeft(),
@@ -55,6 +39,36 @@ public class SlowExtendWindow extends Window {
         camera.y = chrome.camera.y - chrome.marginTop();
         camera.scroll.set(chrome.camera.scroll);
         Camera.add(camera);
+    }
+
+    /**
+     * @param endWidth    width the window has after the animation, dividable by 2
+     * @param endHeight   height the window has after the animation, dividable by 2
+     * @param orientation how it appears, defines if starting width or starting height is 0 or already the endSize
+     * @param startPos    fix position on screen it cannot change, kinda like offset, a border ALWAYS touches this point in the center of the border
+     */
+    public SlowExtendWindow(int endWidth, int endHeight, Orientation orientation, Point startPos) {
+        this();
+        setAttributes(endWidth, endHeight, orientation, startPos, 0.3f);
+    }
+
+    /**
+     * @param endWidth    width the window has after the animation, dividable by 2
+     * @param endHeight   height the window has after the animation, dividable by 2
+     * @param orientation how it appears, defines if starting width or starting height is 0 or already the endSize
+     * @param startPos    fix position on screen it cannot change, kinda like offset, a border ALWAYS touches this point in the center of the border
+     * @param timeToOpenWindow time to open the window in <b>seconds</b>
+     */
+    protected void setAttributes(int endWidth, int endHeight, Orientation orientation, Point startPos, float timeToOpenWindow) {
+        if (endWidth % 2 != 0) endWidth++;
+        if (endHeight % 2 != 0) endHeight++;
+
+        this.endWidth = endWidth;
+        this.endHeight = endHeight;
+        this.orientation = orientation;
+        this.startPos = startPos;
+
+        speed = endHeight / (timeToOpenWindow * 100);
 
         if (orientation.offsetX == 0) resize(endWidth, 0);
         else resize(0, endHeight);

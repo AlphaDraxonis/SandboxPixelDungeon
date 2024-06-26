@@ -29,7 +29,11 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.PopupMenu;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.SimpleWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiConsumer;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
@@ -49,7 +53,6 @@ import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.Point;
 
 import java.util.Arrays;
 import java.util.List;
@@ -110,7 +113,7 @@ public class IDEWindow extends Component {//tzz save when close!,
 		changeScript = new IconButton(Icons.CHANGES.get()) {
 			@Override
 			protected void onClick() {
-				List<LuaScript> scripts = CustomDungeonSaves.findScripts(script -> script.type == clazz.getSuperclass());
+				List<LuaScript> scripts = CustomDungeonSaves.findScripts(script -> script.type == clazz);
 
 				String[] options = new String[scripts.size()];
 				int i = 0;
@@ -306,7 +309,7 @@ public class IDEWindow extends Component {//tzz save when close!,
 	private String createFullScript() {
 		StringBuilder b = new StringBuilder();
 
-		if (script == null) script = new LuaScript(luaCodeHolder.clazz.getSuperclass(), null, luaCodeHolder.pathToScript);
+		if (script == null) script = new LuaScript(luaCodeHolder.clazz, null, luaCodeHolder.pathToScript);
 
 		script.desc = inputDesc.convertToLuaCode().substring(2);//uncomment, removes --
 		b.append('\n');
@@ -362,7 +365,7 @@ public class IDEWindow extends Component {//tzz save when close!,
 		if (!luaCodeHolder.pathToScript.endsWith(".lua")) luaCodeHolder.pathToScript += ".lua";
 
 		for (LuaScript ls : CustomDungeonSaves.findScripts(null)) {
-			if (luaCodeHolder.pathToScript.equals(ls.pathFromRoot) && ls.type != clazz.getSuperclass()) {
+			if (luaCodeHolder.pathToScript.equals(ls.pathFromRoot) && ls.type != clazz) {
 				EditorScene.show(new WndError(Messages.get(IDEWindow.class, "save_duplicate_name_error", luaCodeHolder.pathToScript)) {{setHighligtingEnabled(false);}});
 				return false;
 			}
@@ -570,142 +573,88 @@ public class IDEWindow extends Component {//tzz save when close!,
 		}
 	}
 
-	static int endWidth() {
-		return PixelScene.landscape() ? 200 : Math.min(150, (int) (PixelScene.uiCamera.width * 0.8));//TODO tzz
-	}
-
-	private class OutsideSpMenuPopup extends SlowExtendWindow {
-
-		public static final float TIME_TO_OPEN_WINDOW = 0.15f;//in seconds
-
-
-		private RedButton newInstance, insertLineTemplate, insertFullTemplate, viewDocumentation;
+	private class OutsideSpMenuPopup extends PopupMenu {
 
 		public OutsideSpMenuPopup(int posX, int posY) {
-			super(
-					endWidth(),
-//					(int) ((PixelScene.uiCamera.height / 2) * 0.85f + posY),
-					0,
-					Orientation.BOTTOM_TO_TOP,
-					new Point(posX - endWidth()/2, posY));
 
-
-			float pY = 1;
-
-			newInstance = new RedButton(Messages.get(IDEWindow.class, "new_instance")) {
-				@Override
-				protected void onClick() {
-					chooseClassName((clName, obj) -> {
-						OutsideSpMenuPopup.this.hideImmediately();
-						String text;
-						if (obj instanceof LuaClass) {
-							boolean useID = false;
-							CustomObject selected = CustomObject.customObjects.get(((LuaClass) obj).getIdentifier());
-							for (CustomObject cusObj : CustomObject.customObjects.values()) {
-								if (cusObj != selected && cusObj.name.equals(selected.name)) {
-									useID = true;
-								}
-							}
-							text = "newCus(" + (useID ? ((LuaClass) obj).getIdentifier() : "\"" + selected.name + "\"") +")";
+			finishInstantiation(new RedButton[] {
+					new NewInstanceButton(this) {
+						@Override
+						protected void onSelect(String insertText) {
+							TextInput textInput = TextInput.getWithFocus();
+							if (textInput != null && textInput != pathInput) textInput.insert(insertText);
 						}
-						else text = "new(\"" + clName + "\")";
-						TextInput textInput = TextInput.getWithFocus();
-						if (textInput != null && textInput != pathInput) textInput.insert(text);
-					});
-				}
-			};
-			add(newInstance);
-			newInstance.setRect(0, pY, endWidth, 15);
-			PixelScene.align(newInstance);
-			pY += 2 + newInstance.height();
+					},
+					new RedButton(Messages.get(IDEWindow.class, "insert_full")) {
+						@Override
+						protected void onClick() {
+							LuaTemplates.show(script -> {
+								selectScript(script, false);
+								OutsideSpMenuPopup.this.hideImmediately();
+							}, clazz);
+						}
+					},
+					new RedButton(Messages.get(IDEWindow.class, "view_documentation")) {
+						@Override
+						protected void onClick() {
+							//TODO tzz way to add class("xxx");
+//							LuaTemplates.show(script -> selectScript(script, false));
+						}
+					},
+					new RedButton(Messages.get(IDEWindow.class, "insert_line")) {
+						@Override
+						protected void onClick() {
+							//TODO tzz way to add class("xxx");
+//							LuaTemplates.show(script -> selectScript(script, false));
+						}
+					},
 
-			insertFullTemplate = new RedButton(Messages.get(IDEWindow.class, "insert_full")) {
-				@Override
-				protected void onClick() {
-					LuaTemplates.show(script -> {
-						selectScript(script, false);
-						OutsideSpMenuPopup.this.hideImmediately();
-					}, clazz);
-				}
-			};
-			add(insertFullTemplate);
-			insertFullTemplate.setRect(0, pY, endWidth, 15);
-			PixelScene.align(insertFullTemplate);
-			pY += 2 + insertFullTemplate.height();
-
-			insertLineTemplate = new RedButton(Messages.get(IDEWindow.class, "insert_line")) {
-				@Override
-				protected void onClick() {
-					//TODO tzz way to add class("xxx");
-//					LuaTemplates.show(script -> selectScript(script, false));
-				}
-			};
-			add(insertLineTemplate);
-			insertLineTemplate.setRect(0, pY, endWidth, 15);
-			PixelScene.align(insertLineTemplate);
-			pY += 2 + insertLineTemplate.height();
-
-			viewDocumentation = new RedButton(Messages.get(IDEWindow.class, "view_documentation")) {
-				@Override
-				protected void onClick() {
-					//TODO tzz way to add class("xxx");
-//					LuaTemplates.show(script -> selectScript(script, false));
-				}
-			};
-			add(viewDocumentation);
-			viewDocumentation.setRect(0, pY, endWidth, 15);
-			PixelScene.align(viewDocumentation);
-			pY += 2 + viewDocumentation.height();
-
-			endHeight = (int) Math.ceil(pY - 2);
-			if (endHeight % 2 != 0) endHeight++;
-
-			speed = endHeight / (TIME_TO_OPEN_WINDOW * 100);
+			}, posX, posY, 200);
 		}
+	}
 
-		private void chooseClassName(BiConsumer<String, Object> whatToDo) {
-			WndEditorInv.chooseClass = true;
-			EditorScene.selectItem(new WndBag.ItemSelectorInterface() {
-				@Override
-				public String textPrompt() {
-					return null;
-				}
+	public static void chooseClassName(BiConsumer<String, Object> whatToDo) {
+		WndEditorInv.chooseClass = true;
+		EditorScene.selectItem(new WndBag.ItemSelectorInterface() {
+			@Override
+			public String textPrompt() {
+				return null;
+			}
 
-				@Override
-				public Class<? extends Bag> preferredBag() {
-					return null;
-				}
+			@Override
+			public Class<? extends Bag> preferredBag() {
+				return null;
+			}
 
-				@Override
-				public List<Bag> getBags() {
-					return Arrays.asList(Mobs.bag, Items.bag, Traps.bag, Plants.bag, Buffs.bag);
-				}
+			@Override
+			public List<Bag> getBags() {
+				return Arrays.asList(Mobs.bag, Items.bag, Traps.bag, Plants.bag, Buffs.bag);
+			}
 
-				@Override
-				public boolean itemSelectable(Item item) {
-					return true;
-				}
+			@Override
+			public boolean itemSelectable(Item item) {
+				return true;
+			}
 
-				@Override
-				public void onSelect(Item item) {
-					WndEditorInv.chooseClass = false;
-					Object obj;
-					if (item instanceof EditorItem) obj = ((EditorItem<?>) item).getObject();
-					else obj = item;
-					if (obj == null) return;
-					Class<?> clazz = obj.getClass();
-					while (LuaClass.class.isAssignableFrom(clazz) || LuaLevel.class.isAssignableFrom(clazz)) clazz = clazz.getSuperclass();
-					String clName = clazz.getSimpleName();
-					if (clName.equals("Barrier")) clName = clazz.getName();
-					whatToDo.accept(clName, obj);
-				}
+			@Override
+			public void onSelect(Item item) {
+				WndEditorInv.chooseClass = false;
+				Object obj;
+				if (item instanceof EditorItem) obj = ((EditorItem<?>) item).getObject();
+				else obj = item;
+				if (obj == null) return;
+				Class<?> clazz = obj.getClass();
+				while (LuaClass.class.isAssignableFrom(clazz) || LuaLevel.class.isAssignableFrom(clazz)) clazz = clazz.getSuperclass();
+				String clName = clazz.getSimpleName();
+				if (clName.equals("Barrier")) clName = clazz.getName();
+				whatToDo.accept(clName, obj);
+			}
 
-				@Override
-				public boolean acceptsNull() {
-					return false;
-				}
-			});
-		}
+			@Override
+			public boolean acceptsNull() {
+				return false;
+			}
+		});
 	}
 
 

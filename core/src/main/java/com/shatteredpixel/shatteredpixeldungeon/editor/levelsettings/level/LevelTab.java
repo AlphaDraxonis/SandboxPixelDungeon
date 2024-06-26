@@ -6,7 +6,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.MultiWindowTabComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.StyledButtonWithIconAndText;
@@ -218,10 +217,9 @@ public class LevelTab extends MultiWindowTabComp {
             protected void onClick() {
                 if (level.levelScheme.luaScript == null) {
                     level.levelScheme.luaScript = new LuaCodeHolder();
-                    level.levelScheme.luaScript.clazz = LuaLevel.getLuaLevelClass(level.getClass());
+                    level.levelScheme.luaScript.clazz = level.getClass();
                     level.levelScheme.luaScript.pathToScript = "";
                 }
-                //TODO tzz a way to delete it again
                 IDEWindow.showWindow(level.levelScheme.luaScript);
             }
         };

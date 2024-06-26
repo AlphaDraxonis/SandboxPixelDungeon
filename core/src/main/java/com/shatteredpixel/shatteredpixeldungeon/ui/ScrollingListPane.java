@@ -32,7 +32,7 @@ public class ScrollingListPane extends ScrollPane {
 
     private ArrayList<Component> items = new ArrayList<>();
 
-    private static final int ITEM_HEIGHT = 18;
+    public static final int ITEM_HEIGHT = 18;
 
     public ScrollingListPane() {
         super(new Component());
@@ -241,6 +241,11 @@ public class ScrollingListPane extends ScrollPane {
 
         protected int getLabelMaxWidth() {
             return (int) (width - ICON_WIDTH - 1);
+        }
+
+        protected final void layoutIconButtonOnRight(IconButton button) {//IMPORTANT: also override getLabelMaxWidth() if this is used
+            button.setRect(width - 3 - button.icon().width(), y + (height - button.icon().height()) * 0.5f, button.icon().width(), button.icon().height());
+            hotArea.width = button.left() - 1;
         }
 
     }

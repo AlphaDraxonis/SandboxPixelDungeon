@@ -40,7 +40,6 @@ import java.util.List;
 
 import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndNewFloor.MARGIN;
 
-//If you wanna see trash, then this file is the perfect place (FIXME)
 public class LevelGenComp extends WndNewFloor.OwnTab {
 
     private ScrollPane sp;

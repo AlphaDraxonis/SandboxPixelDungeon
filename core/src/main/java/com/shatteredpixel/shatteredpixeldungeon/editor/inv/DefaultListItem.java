@@ -82,8 +82,7 @@ public class DefaultListItem extends AdvancedListPaneItem {
         super.layout();
 
         if (editButton != null) {
-            editButton.setRect(width - 3 - editButton.icon().width(), y + (height - editButton.icon().height()) * 0.5f, editButton.icon().width(), editButton.icon().height());
-            hotArea.width = editButton.left() - 1;
+            layoutIconButtonOnRight(editButton);
         }
 
     }

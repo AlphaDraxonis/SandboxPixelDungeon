@@ -401,6 +401,11 @@ public class CustomDungeonSaves {
         return result;
     }
 
+    public static boolean deleteScriptFile(String pathFromRoot) {
+        FileHandle file = FileUtils.getFileHandle(getExternalFilePath(pathFromRoot));
+        return file.delete();
+    }
+
     public static LuaScript readLuaFile(String pathToScript) {
         FileHandle file = FileUtils.getFileHandle(getExternalFilePath(pathToScript));
         if (!file.exists() || file.isDirectory()) return null;

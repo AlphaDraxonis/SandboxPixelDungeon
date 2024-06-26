@@ -40,16 +40,4 @@ public class AdditionalCodePanel extends CodeInputPanel {
 		}
 		setCode(forceChange, b.toString());
 	}
-
-	@Override
-	protected void onAddClick() {
-		super.onAddClick();
-		remover.setVisible(false);
-	}
-
-	@Override
-	protected void onRemove() {
-		super.onRemove();
-		adder.setVisible(false);
-	}
 }

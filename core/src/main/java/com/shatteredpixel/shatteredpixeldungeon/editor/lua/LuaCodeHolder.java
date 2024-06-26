@@ -30,7 +30,6 @@ import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import org.luaj.vm2.LuaValue;
 
-//TODO make levelschmeeme responsible for loading this one, change access in LuaClassGenerator to do it via levelscheme
 public class LuaCodeHolder implements Bundlable {
 
 	public Class<?> clazz;
@@ -39,6 +38,13 @@ public class LuaCodeHolder implements Bundlable {
 
 	LuaValue script;
 	private LuaValue staticVarsTemp;
+
+	public LuaCodeHolder() {}
+
+	public LuaCodeHolder(LuaScript fromScript) {
+		clazz = fromScript.type;
+		pathToScript = fromScript.pathFromRoot;
+	}
 
 	public void loadScript() {
 		LuaScript ls = CustomDungeonSaves.readLuaFile(pathToScript);
