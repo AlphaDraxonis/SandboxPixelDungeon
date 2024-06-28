@@ -122,6 +122,10 @@ public class Tilemap extends Visual {
 	protected void updateVertices() {
 
 		moveToUpdating();
+
+		//safety reason for idk
+		if ((updating.bottom-1)*mapWidth + updating.left >= data.length)
+			return;
 		
 		float x1, y1, x2, y2;
 		int pos;

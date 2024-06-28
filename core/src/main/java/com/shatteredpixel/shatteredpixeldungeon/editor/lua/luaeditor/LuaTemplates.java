@@ -159,7 +159,7 @@ public class LuaTemplates {
 				"Random.pushGenerator(Random.levelSeed());\n" +
 				"local length = this:length();\n" +
 				"    for pos = 0, length - 1 do\n" +
-				"        if Random.int(2) == 0 and Arrays.get(this.map, pos) == TERRAIN.WALL then\n" +
+				"        if Random.int(2) == 0 and Arrays.get(this.map, pos) == Terrain.WALL then\n" +
 				"            this:setTerrain(pos, Terrain.EMBERS);\n" +
 				"        end\n" +
 				"    end\n" +

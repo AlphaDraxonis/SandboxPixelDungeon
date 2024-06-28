@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 
 public class LuaScript implements Comparable<LuaScript>, Copyable<LuaScript> {
 
-	public final Class<?> type;
+	public Class<?> type;
 	public String desc;
 	public String code;
 

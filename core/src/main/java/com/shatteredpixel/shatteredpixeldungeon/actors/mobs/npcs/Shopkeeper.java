@@ -192,7 +192,7 @@ public class Shopkeeper extends NPC {
 
 	//shopkeepers are greedy!
 	public static int sellPrice(Item item, float heapPrice) {
-		return (int) (item.value() * 5 * Dungeon.customDungeon.getFloor(Dungeon.levelName).getPriceMultiplier() * heapPrice);
+		return (int) (item.value() * 5 * Dungeon.customDungeon.getFloor(Dungeon.levelName).shopPriceMultiplier * heapPrice);
 	}
 
 	public static WndBag sell() {

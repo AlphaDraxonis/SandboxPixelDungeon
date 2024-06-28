@@ -11,11 +11,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.TransitionTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level.LevelTab;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.LevelListPane;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.Spinner;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -72,7 +71,8 @@ public class WndEditFloorInOverview extends WndTabbed {
                 super.onFeelingChange();
                 listItem.updateLevel();
             }
-        }};
+        }, new LevelTab(null, levelScheme)
+        };
 
         WndTabbed.Tab[] tabs = new WndTabbed.Tab[ownTabs.length];
         for (int i = 0; i < ownTabs.length; i++) {
@@ -109,7 +109,6 @@ public class WndEditFloorInOverview extends WndTabbed {
         protected ColorBlock line;
 
         protected RenderedTextBlock title;
-        protected Spinner depth;
         protected ChooseDestLevelComp passage, chasm;
         protected RedButton delete, open;
 
@@ -222,17 +221,6 @@ public class WndEditFloorInOverview extends WndTabbed {
             };
             add(copy);
 
-            depth = new DepthSpinner(levelScheme.getDepth(), 8) {
-                @Override
-                protected void onChange(int newDepth) {
-                    levelScheme.setDepth(newDepth);
-                    listItem.updateLevel();
-                }
-            };
-            depth.setButtonWidth(15);
-            depth.setAlignmentSpinnerX(Spinner.ALIGNMENT_CENTER);
-            content.add(depth);
-
             //From TransitionTab
             passage = new ChooseDestLevelComp(Messages.get(TransitionTab.class, "passage")) {
                 @Override
@@ -339,8 +327,6 @@ public class WndEditFloorInOverview extends WndTabbed {
             float titlePos = title.bottom() + 5;
 
             float pos = 0;
-            depth.setRect(0, pos, width, WndEditorSettings.ITEM_HEIGHT);
-            pos = depth.bottom() + 2;
             passage.setRect(0, pos, width, WndEditorSettings.ITEM_HEIGHT);
             pos = passage.bottom() + 2;
             chasm.setRect(0, pos, width, WndEditorSettings.ITEM_HEIGHT);

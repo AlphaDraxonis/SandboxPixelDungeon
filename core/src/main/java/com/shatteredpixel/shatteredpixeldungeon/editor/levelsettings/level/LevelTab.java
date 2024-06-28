@@ -2,8 +2,9 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor.IDEWindow;
@@ -16,10 +17,10 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.SpinnerInteger
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.StyledSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.spinner.impls.DepthSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -37,7 +38,7 @@ public class LevelTab extends MultiWindowTabComp {
     //boolean ignoreTerrainForScore
     //DecorationPainter
 
-    public LevelTab() {
+    public LevelTab(final CustomLevel level, final LevelScheme levelScheme) {
 
         title = new IconTitle(Icons.get(Icons.PREFS), Messages.get(this, "title"));
         add(title);
@@ -53,29 +54,31 @@ public class LevelTab extends MultiWindowTabComp {
 
         StyledButton editScript;
 
-        final Level level = Dungeon.level;
+        if (level != null) {
+            region = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "region"), 8) {
+                @Override
+                protected void onClick() {
+                    ChangeRegion changeRegion = new ChangeRegion(() -> closeCurrentSubMenu());
+                    changeContent(ChangeRegion.createTitle(), changeRegion, changeRegion.getOutsideSp());
+                }
+            };
+            region.icon(Icons.get(Icons.CHANGES));
+            content.add(region);
+        } else region = null;
 
-        region = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "region"), 8) {
-            @Override
-            protected void onClick() {
-                ChangeRegion changeRegion = new ChangeRegion(() -> closeCurrentSubMenu());
-                changeContent(ChangeRegion.createTitle(), changeRegion, changeRegion.getOutsideSp());
-            }
-        };
-        region.icon(Icons.get(Icons.CHANGES));
-        content.add(region);
+        if (level != null) {
+            mobSpawn = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "mobs"), 8) {
+                @Override
+                protected void onClick() {
+                    MobSettings ms = new MobSettings();
+                    changeContent(ms.createTitle(), ms, ms.getOutsideSp(), 0f, 0f);
+                }
+            };
+            mobSpawn.icon(new GnollSprite());
+            content.add(mobSpawn);
+        } else mobSpawn = null;
 
-        mobSpawn = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "mobs"), 8) {
-            @Override
-            protected void onClick() {
-                MobSettings ms = new MobSettings();
-                changeContent(ms.createTitle(), ms, ms.getOutsideSp(), 0f, 0f);
-            }
-        };
-        mobSpawn.icon(new GnollSprite());
-        content.add(mobSpawn);
-
-        hungerSpeed = new StyledSpinner(new SpinnerFloatModel(0f, 100f, level.levelScheme.hungerSpeed, 2, 0.1f) {
+        hungerSpeed = new StyledSpinner(new SpinnerFloatModel(0f, 100f, levelScheme.hungerSpeed, 2, 0.1f) {
             @Override
             protected String displayString(Object value) {
                 return "x " + super.displayString(value);
@@ -86,14 +89,14 @@ public class LevelTab extends MultiWindowTabComp {
                 return Spinner.FILL;
             }
         }, Messages.get(this, "hunger_speed"), 8, new ItemSprite(ItemSpriteSheet.RATION));
-        hungerSpeed.addChangeListener(() -> level.levelScheme.hungerSpeed = ((SpinnerFloatModel) hungerSpeed.getModel()).getAsFloat());
+        hungerSpeed.addChangeListener(() -> levelScheme.hungerSpeed = ((SpinnerFloatModel) hungerSpeed.getModel()).getAsFloat());
         content.add(hungerSpeed);
 
         naturalRegen = new StyledCheckBox(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "regeneration")) {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
-                level.levelScheme.naturalRegeneration = value;
+                levelScheme.naturalRegeneration = value;
             }
 
             @Override
@@ -101,7 +104,7 @@ public class LevelTab extends MultiWindowTabComp {
                 return super.textSize() - 1;
             }
         };
-        naturalRegen.checked(level.levelScheme.naturalRegeneration);
+        naturalRegen.checked(levelScheme.naturalRegeneration);
         RectF r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.POTION_HEALING);
         if (r != null) {
             Image icon = new Image(Assets.Sprites.ITEM_ICONS);
@@ -115,7 +118,7 @@ public class LevelTab extends MultiWindowTabComp {
             @Override
             public void checked(boolean value) {
                 super.checked(value);
-                level.levelScheme.allowPickaxeMining = value;
+                levelScheme.allowPickaxeMining = value;
             }
 
             @Override
@@ -123,7 +126,7 @@ public class LevelTab extends MultiWindowTabComp {
                 return SPDSettings.language() == Languages.GERMAN ? 6 : super.textSize() - 1;
             }
         };
-        allowPickaxeMining.checked(level.levelScheme.allowPickaxeMining);
+        allowPickaxeMining.checked(levelScheme.allowPickaxeMining);
         allowPickaxeMining.icon(new ItemSprite(ItemSpriteSheet.PICKAXE));
         content.add(allowPickaxeMining);
 
@@ -136,8 +139,8 @@ public class LevelTab extends MultiWindowTabComp {
         Image icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_MAGICMAP);
         icon.scale.set(DungeonTilemap.SIZE / Math.max(icon.width(), icon.height()));
         rememberLayout.icon(icon);
-        rememberLayout.checked(level.levelScheme.rememberLayout);
-        rememberLayout.addChangeListener(v -> level.levelScheme.rememberLayout = v);
+        rememberLayout.checked(levelScheme.rememberLayout);
+        rememberLayout.addChangeListener(v -> levelScheme.rememberLayout = v);
         content.add(rememberLayout);
 
         magicMappingDisabled = new StyledCheckBox(Messages.get(this, "magic_mapping_disabled")) {
@@ -149,64 +152,71 @@ public class LevelTab extends MultiWindowTabComp {
         icon = EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_MAGICMAP);
         icon.scale.set(DungeonTilemap.SIZE / Math.max(icon.width(), icon.height()));
         magicMappingDisabled.icon(icon);
-        magicMappingDisabled.checked(level.levelScheme.magicMappingDisabled);
-        magicMappingDisabled.addChangeListener(v -> level.levelScheme.magicMappingDisabled = v);
+        magicMappingDisabled.checked(levelScheme.magicMappingDisabled);
+        magicMappingDisabled.addChangeListener(v -> levelScheme.magicMappingDisabled = v);
         content.add(magicMappingDisabled);
 
-        changeSize = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(ChangeMapSize.class, "title"), 8) {
+        if (level != null) {
+            changeSize = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(ChangeMapSize.class, "title"), 8) {
 
-            @Override
-            protected void onClick() {
-                ChangeMapSize changeMapSize = new ChangeMapSize(() -> closeCurrentSubMenu());
-                changeContent(ChangeMapSize.createTitle(), changeMapSize, changeMapSize.getOutsideSp());
-            }
-        };
-        changeSize.icon(Icons.RULER.get());
-        content.add(changeSize);
+                @Override
+                protected void onClick() {
+                    ChangeMapSize changeMapSize = new ChangeMapSize(() -> closeCurrentSubMenu());
+                    changeContent(ChangeMapSize.createTitle(), changeMapSize, changeMapSize.getOutsideSp());
+                }
+            };
+            changeSize.icon(Icons.RULER.get());
+            content.add(changeSize);
+        } else changeSize = null;
 
-        bossLevelRetexture = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(BossLevelRetexture.class, "title"), 8) {
+        if (level != null) {
+            bossLevelRetexture = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(BossLevelRetexture.class, "title"), 8) {
 
-            @Override
-            protected void onClick() {
-                BossLevelRetexture content = new BossLevelRetexture();
-                changeContent(BossLevelRetexture.createTitle(), content, null);
-            }
-        };
-//        bossLevelRetexture.icon(Icons.SKULL.get());
-        content.add(bossLevelRetexture);
+                @Override
+                protected void onClick() {
+                    BossLevelRetexture content = new BossLevelRetexture();
+                    changeContent(BossLevelRetexture.createTitle(), content, null);
+                }
+            };
+//          bossLevelRetexture.icon(Icons.SKULL.get());
+            content.add(bossLevelRetexture);
+        } else bossLevelRetexture = null;
 
 
-        viewDistance = new StyledSpinner(new SpinnerIntegerModel(1, ShadowCaster.MAX_DISTANCE, level.viewDistance) {
-            {
-                setAbsoluteMaximum(ShadowCaster.MAX_DISTANCE);
-            }
-            @Override
-            public float getInputFieldWidth(float height) {
-                return Spinner.FILL;
-            }
-        }, Messages.get(LevelTab.class, "view_distance"), 8);
-        viewDistance.addChangeListener(() -> level.viewDistance = (int) viewDistance.getValue());
-        content.add(viewDistance);
+        if (level != null) {
+            viewDistance = new StyledSpinner(new SpinnerIntegerModel(1, ShadowCaster.MAX_DISTANCE, level.viewDistance) {
+                {
+                    setAbsoluteMaximum(ShadowCaster.MAX_DISTANCE);
+                }
 
-        depth = new StyledSpinner(DepthSpinner.createModel(level.levelScheme.getDepth(), height -> (float) Spinner.FILL),
+                @Override
+                public float getInputFieldWidth(float height) {
+                    return Spinner.FILL;
+                }
+            }, Messages.get(LevelTab.class, "view_distance"), 8);
+            viewDistance.addChangeListener(() -> level.viewDistance = (int) viewDistance.getValue());
+            content.add(viewDistance);
+        } else viewDistance = null;
+
+        depth = new StyledSpinner(DepthSpinner.createModel(levelScheme.getDepth(), height -> (float) Spinner.FILL),
                 DepthSpinner.createLabel(), 8);
-        depth.addChangeListener(() -> level.levelScheme.setDepth((Integer) depth.getValue()));
+        depth.addChangeListener(() -> levelScheme.setDepth((Integer) depth.getValue()));
         content.add(depth);
 
-        shopPrice = new StyledSpinner(new SpinnerFloatModel(0.1f, 10f, level.levelScheme.getPriceMultiplier(),2,0.1f) {
+        shopPrice = new StyledSpinner(new SpinnerFloatModel(0.1f, 10f, levelScheme.shopPriceMultiplier,2,0.1f) {
             @Override
             public float getInputFieldWidth(float height) {
                 return Spinner.FILL;
             }
         }, Messages.get(LevelTab.class, "shop_price"), 8);
         ((SpinnerIntegerModel) shopPrice.getModel()).setAbsoluteMinAndMax(0f, 10000f);
-        shopPrice.addChangeListener(() -> level.levelScheme.setShopPriceMultiplier(((SpinnerFloatModel) shopPrice.getModel()).getAsFloat()));
+        shopPrice.addChangeListener(() -> levelScheme.shopPriceMultiplier = ((SpinnerFloatModel) shopPrice.getModel()).getAsFloat());
         content.add(shopPrice);
 
         levelColoring = new StyledButtonWithIconAndText(Chrome.Type.GREY_BUTTON_TR, Messages.get(ChangeLevelColoring.class, "title"), 8) {
             @Override
             protected void onClick() {
-                ChangeLevelColoring content = new ChangeLevelColoring(Dungeon.level.levelScheme);
+                ChangeLevelColoring content = new ChangeLevelColoring(levelScheme);
                 changeContent(ChangeLevelColoring.createTitle(), content, null);
             }
         };
@@ -215,12 +225,12 @@ public class LevelTab extends MultiWindowTabComp {
         editScript = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "test tzz") {
             @Override
             protected void onClick() {
-                if (level.levelScheme.luaScript == null) {
-                    level.levelScheme.luaScript = new LuaCodeHolder();
-                    level.levelScheme.luaScript.clazz = level.getClass();
-                    level.levelScheme.luaScript.pathToScript = "";
+                if (levelScheme.luaScript == null) {
+                    levelScheme.luaScript = new LuaCodeHolder();
+                    levelScheme.luaScript.clazz = levelScheme.getType();
+                    levelScheme.luaScript.pathToScript = "";
                 }
-                IDEWindow.showWindow(level.levelScheme.luaScript);
+                IDEWindow.showWindow(levelScheme.luaScript);
             }
         };
         content.add(editScript);
@@ -228,7 +238,7 @@ public class LevelTab extends MultiWindowTabComp {
         mainWindowComps = new Component[]{
                 region, mobSpawn, changeSize,
                 hungerSpeed, naturalRegen, allowPickaxeMining, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                depth, viewDistance, shopPrice, rememberLayout, magicMappingDisabled, levelColoring, bossLevelRetexture
+                depth, viewDistance, shopPrice, PixelScene.landscape() && viewDistance == null ? levelColoring : null, rememberLayout, magicMappingDisabled, PixelScene.landscape() && viewDistance == null ? null : levelColoring, bossLevelRetexture
                 ,editScript
         };
     }

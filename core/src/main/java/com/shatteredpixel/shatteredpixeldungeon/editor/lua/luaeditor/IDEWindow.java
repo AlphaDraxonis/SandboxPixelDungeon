@@ -423,6 +423,7 @@ public class IDEWindow extends Component {//tzz save when close!,
 	}
 
 	public void selectScript(LuaScript script, boolean force) {//TODO tzz add option to delete scripts!
+		if (script != null) script.type = clazz;
 		this.script = script;
 		String cleanedCode;
 		LuaScript currentScript;

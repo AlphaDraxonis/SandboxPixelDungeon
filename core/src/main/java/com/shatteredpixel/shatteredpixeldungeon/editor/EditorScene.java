@@ -283,6 +283,11 @@ public class EditorScene extends DungeonScene {
         terrain.add( tiles );
     }
 
+    @Override
+    public synchronized void draw() {
+        super.draw();
+    }
+
     public static void setDisplayZoneState(boolean enable) {
 
         if (scene == null) {

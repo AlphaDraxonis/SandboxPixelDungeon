@@ -392,10 +392,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         return Random.Int(2);
     }
 
-    public float getPriceMultiplier() {
-        return shopPriceMultiplier;
-    }
-
     public void setChasm(String chasm, boolean revalidateZones) {
         this.chasm = chasm;
         LevelScheme newChasm = customDungeon.getFloor(chasm);
@@ -433,10 +429,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
     public void setDepth(int depth) {
         this.depth = depth;
-    }
-
-    public void setShopPriceMultiplier(float shopPriceMultiplier) {
-        this.shopPriceMultiplier = shopPriceMultiplier;
     }
 
     public Level initLevel() {
