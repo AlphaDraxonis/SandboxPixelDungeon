@@ -390,6 +390,36 @@ public class LuaGlobals extends Globals {
 				return LuaValue.NIL;
 			}
 		});
+		set("showOptionsWindow", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs varargs) {
+				LuaValue sixthArg = varargs.arg(6);
+				LuaFunction onSelect = sixthArg.isfunction() ? sixthArg.checkfunction() : null;
+				Game.runOnRenderThread(() -> {
+					try {
+						WndCreator.showOptionsWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), varargs.arg(5), onSelect);
+					} catch (LuaError e) {
+						DungeonScene.show(new WndError(e));
+					}
+				});
+				return LuaValue.NIL;
+			}
+		});
+		set("showCompactOptionsWindow", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs varargs) {
+				LuaValue sixthArg = varargs.arg(6);
+				LuaFunction onSelect = sixthArg.isfunction() ? sixthArg.checkfunction() : null;
+				Game.runOnRenderThread(() -> {
+					try {
+						WndCreator.showCondensedOptionsWindow(varargs.arg(1), varargs.arg(2), varargs.arg(3), varargs.arg(4), varargs.arg(5), onSelect);
+					} catch (LuaError e) {
+						DungeonScene.show(new WndError(e));
+					}
+				});
+				return LuaValue.NIL;
+			}
+		});
 
 		set("showCellSelector", new TwoArgFunction() {
 			@Override

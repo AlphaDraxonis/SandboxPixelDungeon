@@ -107,6 +107,24 @@ public class LuaManager {
 		return globals.load(code);
 	}
 
+	/**
+	 * <b><u>Not</u> USABLE FOR STRINGS!!!</b>
+	 */
+	public static <T> T[] luaTableToJavaArray(LuaTable table, T[] result) {
+		for (int i = 0; i < result.length; i++) {
+			result[i] = (T) table.get(i + 1).touserdata();
+		}
+		return result;
+	}
+
+	public static String[] luaTableToJavaArray(LuaTable table) {
+		String[] result = new String[table.length()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = table.get(i + 1).tojstring();
+		}
+		return result;
+	}
+
 
 	//*** FOR BUNDLING ***
 

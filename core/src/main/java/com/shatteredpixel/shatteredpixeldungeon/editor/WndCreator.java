@@ -26,6 +26,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
@@ -37,10 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.*;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.util.Locale;
@@ -166,10 +164,7 @@ public final class WndCreator {
 		if (rewards.isnil() || !rewards.istable()) throw new LuaError(new IllegalArgumentException());
 
 		LuaTable luaList = rewards.checktable();
-		Item[] rewardItems = new Item[luaList.length()];
-		for (int i = 0; i < rewardItems.length; i++) {
-			rewardItems[i] = (Item) luaList.get(i + 1).touserdata();
-		}
+		Item[] rewardItems = LuaManager.luaTableToJavaArray(luaList, new Item[luaList.length()]);
 
 		return showItemRewardWindow(parseMessage(msg), parseTitle(title), parseIcon(icon), parseMob(questInitiator), parseItem(payItem), rewardItems, onSelectReward);
 	}
@@ -198,6 +193,85 @@ public final class WndCreator {
 								}
 							}
 						}, null);
+			}
+		};
+		GameScene.show(w);
+		return w;
+	}
+
+	public static Window showOptionsWindow(LuaValue msg, LuaValue title, LuaValue icon, LuaValue options, LuaValue infos, LuaFunction onSelect) {
+		if (options.isnil() || !options.istable()) throw new LuaError(new IllegalArgumentException());
+
+		LuaTable luaList = options.checktable();
+		String[] opt = LuaManager.luaTableToJavaArray(luaList, new String[luaList.length()]);
+		String[] inf;
+		if (infos.istable()) {
+			luaList = infos.checktable();
+			inf = LuaManager.luaTableToJavaArray(luaList, new String[luaList.length()]);
+		} else inf = null;
+
+		return showOptionsWindow(parseMessage(msg), parseTitle(title), parseIcon(icon), opt, inf, onSelect);
+	}
+
+	public static Window showCondensedOptionsWindow(LuaValue msg, LuaValue title, LuaValue icon, LuaValue options, LuaValue infos, LuaFunction onSelect) {
+		if (options.isnil() || !options.istable()) throw new LuaError(new IllegalArgumentException());
+
+		String[] opt = LuaManager.luaTableToJavaArray(options.checktable());
+		String[] inf = infos.istable() ? LuaManager.luaTableToJavaArray(infos.checktable()) : null;
+
+		return showCondensedOptionsWindow(parseMessage(msg), parseTitle(title), parseIcon(icon), opt, inf, onSelect);
+	}
+
+	public static Window showOptionsWindow(String msg, String titleText, Image icon, String[] options, String[] infoTexts, LuaValue onSelectReward) {
+		Window w = new WndOptions(icon, titleText, msg, options) {
+			@Override
+			protected void onSelect(int index) {
+				if (onSelectReward != null) {
+					try {
+						onSelectReward.call(LuaInteger.valueOf(index));
+					} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
+				}
+			}
+
+			@Override
+			protected void onInfo(int index) {
+				GameScene.show(new WndTitledMessage(
+						Icons.get(Icons.INFO),
+						Messages.titleCase(options[index]),
+						infoTexts[index]));
+			}
+
+			@Override
+			protected boolean hasInfo(int index) {
+				return infoTexts != null && infoTexts.length > index && infoTexts[index] != null;
+			}
+		};
+		GameScene.show(w);
+		return w;
+	}
+
+	public static Window showCondensedOptionsWindow(String msg, String titleText, Image icon, String[] options, String[] infoTexts, LuaValue onSelectReward) {
+		Window w = new WndOptionsCondensed(icon, titleText, msg, options) {
+			@Override
+			protected void onSelect(int index) {
+				if (onSelectReward != null) {
+					try {
+						onSelectReward.call(LuaInteger.valueOf(index));
+					} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
+				}
+			}
+
+			@Override
+			protected void onInfo(int index) {
+				GameScene.show(new WndTitledMessage(
+						Icons.get(Icons.INFO),
+						Messages.titleCase(options[index]),
+						infoTexts[index]));
+			}
+
+			@Override
+			protected boolean hasInfo(int index) {
+				return infoTexts != null && infoTexts.length > index && infoTexts[index] != null;
 			}
 		};
 		GameScene.show(w);
