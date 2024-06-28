@@ -30,6 +30,10 @@ import com.watabou.utils.Point;
 
 public class StatueRoom extends SpecialRoom {
 
+	{
+		spawnItemsOnLevel.add(new IronKey());
+	}
+
 	public void paint( Level level ) {
 
 		Painter.fill( level, this, Terrain.WALL );
@@ -40,9 +44,6 @@ public class StatueRoom extends SpecialRoom {
 		int cy = c.y;
 		
 		Door door = entrance();
-		
-		door.set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey() );
 		
 		if (door.x == left) {
 			
@@ -69,5 +70,10 @@ public class StatueRoom extends SpecialRoom {
 		Statue statue = Statue.random();
 		statue.pos = cx + cy * level.width();
 		level.mobs.add( statue );
+
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(level);
+
+		door.set( Door.Type.LOCKED );
 	}
 }

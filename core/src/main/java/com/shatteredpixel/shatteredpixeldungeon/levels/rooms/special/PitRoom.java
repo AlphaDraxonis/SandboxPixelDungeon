@@ -65,7 +65,21 @@ public class PitRoom extends SpecialRoom {
 		Painter.set( level, well, Terrain.EMPTY_WELL );
 		
 		int remains = level.pointToCell(center());
-		
+
+		if (!itemsGenerated) generateItems(level);
+
+		for (Item i : spawnItemsInRoom) {
+			level.drop( i, remains ).setHauntedIfCursed().type = Heap.Type.SKELETON;
+		}
+		spawnItemsInRoom.clear();
+
+		level.drop( new CrystalKey(), remains );
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
 		Item mainLoot = null;
 		do {
 			switch (Random.Int(3)){
@@ -82,17 +96,15 @@ public class PitRoom extends SpecialRoom {
 					break;
 			}
 		} while ( mainLoot == null || Challenges.isItemBlocked(mainLoot));
-		level.drop(mainLoot, remains).setHauntedIfCursed().type = Heap.Type.SKELETON;
-		
+		spawnItemsInRoom.add(mainLoot);
+
 		int n = Random.IntRange( 1, 2 );
 		for (int i=0; i < n; i++) {
-			level.drop( prize( level ), remains ).setHauntedIfCursed();
+			spawnItemsInRoom.add(prize(level));
 		}
-
-		level.drop( new CrystalKey(), remains );
 	}
-	
-	private static Item prize( Level level ) {
+
+	private static Item prize(Level level ) {
 		return Generator.random( Random.oneOf(
 			Generator.Category.POTION,
 			Generator.Category.SCROLL,

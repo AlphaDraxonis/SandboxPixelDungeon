@@ -48,6 +48,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
@@ -800,6 +801,9 @@ public class CustomDungeon implements Bundlable {
 
         GameObject.doOnAllGameObjectsList(levelScheme.itemsToSpawn, whatToDo);
         GameObject.doOnAllGameObjectsList(levelScheme.mobsToSpawn, whatToDo);
+
+        for (Room r : levelScheme.roomsToSpawn)
+            r.doOnAllGameObjects(whatToDo);
 
         if (levelScheme.getType() == CustomLevel.class) {
             boolean load = levelScheme.getLevel() == null;

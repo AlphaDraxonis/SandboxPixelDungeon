@@ -36,6 +36,10 @@ import com.watabou.utils.Random;
 
 public class TreasuryRoom extends SpecialRoom {
 
+	{
+		spawnItemsOnLevel.add(new IronKey());
+	}
+
 	public void paint( Level level ) {
 		
 		Painter.fill( level, this, Terrain.WALL );
@@ -44,23 +48,23 @@ public class TreasuryRoom extends SpecialRoom {
 		Painter.set( level, center(), Terrain.STATUE );
 		
 		Heap.Type heapType = Random.Int( 2 ) == 0 ? Heap.Type.CHEST : Heap.Type.HEAP;
-		
-		int n = Random.IntRange( 2, 3 );
-		float mimicChance = 1/5f * MimicTooth.mimicChanceMultiplier();
-		for (int i=0; i < n; i++) {
-			Item item = level.findPrizeItem(TrinketCatalyst.class);
-			if (item == null) item = new Gold().random();
 
+		float mimicChance = 1/5f * MimicTooth.mimicChanceMultiplier();
+		for (Item item : spawnItemsInRoom) {
+			int tries = 30;
+			boolean isMimic = heapType == Heap.Type.CHEST && Dungeon.depth > 1 && Random.Float() < mimicChance;
 			int pos;
 			do {
 				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY || level.heaps.get( pos ) != null || level.findMob(pos) != null);
-			if (heapType == Heap.Type.CHEST && Dungeon.depth > 1 && Random.Float() < mimicChance){
+				if (tries < -30) isMimic = false;
+			} while (level.map[pos] != Terrain.EMPTY || (level.heaps.get( pos ) != null && tries-- > 0) || isMimic && level.findMob(pos) != null);
+			if (isMimic){
 				level.mobs.add(Mimic.spawnAt(pos, item));
 			} else {
 				level.drop( item, pos ).type = heapType;
 			}
 		}
+		spawnItemsInRoom.clear();
 		
 		if (heapType == Heap.Type.HEAP) {
 			for (int i=0; i < 6; i++) {
@@ -73,6 +77,17 @@ public class TreasuryRoom extends SpecialRoom {
 		}
 		
 		entrance().set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey() );
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		int n = Random.IntRange( 2, 3 );
+		for (int i=0; i < n; i++) {
+			Item item = level.findPrizeItem(TrinketCatalyst.class);
+			if (item == null) item = new Gold().random();
+			spawnItemsInRoom.add(item);
+		}
 	}
 }

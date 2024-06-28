@@ -2,6 +2,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
@@ -22,6 +23,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -357,7 +359,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
         content.add(sectionItems);
         content.add(sectionMobs);
 
-        if (newLevelScheme.getName() == null || newLevelScheme.getType() != CustomLevel.class) {
+        if (newLevelScheme.getName() == null || RegularLevel.class.isAssignableFrom(newLevelScheme.getType())) {
             List<RoomItem> listRooms = new ArrayList<>();
             for (Room room : newLevelScheme.roomsToSpawn) listRooms.add(new RoomItem(room));
             sectionRooms = new SpawnSectionMore<RoomItem>("rooms", new ItemContainer<RoomItem>(listRooms) {
@@ -387,6 +389,7 @@ public class LevelGenComp extends WndNewFloor.OwnTab {
                         if (numSmiths < numSmithRooms)
                             ((SpawnSectionMore<MobItem>) sectionMobs).container.addNewItem(new MobItem(new Blacksmith(new BlacksmithQuest())));
                     }
+                    item.room().doOnAllGameObjects(obj -> obj.onRenameLevelScheme(Dungeon.levelName, newLevelScheme.getName()));
                     super.doAddItem(item);
                 }
 

@@ -21,14 +21,20 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms;
 
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.RandomItem;
+import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public abstract class Room extends Rect implements Graph.Node, Bundlable, Copyable<Room> {
 	
@@ -37,6 +43,10 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable, Copyab
 	
 	public int distance;
 	public int price = 1;
+
+	public boolean itemsGenerated = false;
+	public List<Item> spawnItemsOnLevel = new ArrayList<>(3);
+	public List<Item> spawnItemsInRoom = new ArrayList<>(3);
 	
 	public Room(){
 		super();
@@ -349,6 +359,56 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable, Copyab
 		return inside(p);
 	}
 
+	public void generateItems(Level level) {
+		itemsGenerated = true;
+	}
+
+	public final void placeItemsAnywhere(Level level) {
+		for (Item i : spawnItemsInRoom) {
+			int pos;
+			int tries = 30;
+			do {
+				pos = level.pointToCell(random());
+				tries--;
+			} while ((Terrain.PASSABLE & Terrain.flags[level.map[pos]]) != Terrain.PASSABLE || (level.heaps.get( pos ) != null && (tries-- > 0 || (level.heaps.get(pos).type != Heap.Type.HEAP && tries > -200))));
+			level.drop( i, pos);
+			if (level.map[pos] == Terrain.HIGH_GRASS || level.map[pos] == Terrain.FURROWED_GRASS) {
+				level.map[pos] = Terrain.GRASS;
+			}
+		}
+		spawnItemsInRoom.clear();
+	}
+
+	protected final void placeItemsAnywhere(int terrain, Level level) {
+		for (Item i : spawnItemsInRoom) {
+			int pos;
+			int tries = 30;
+			do {
+				pos = level.pointToCell(random());
+			} while (level.map[pos] != terrain || (level.heaps.get( pos ) != null && (tries-- > 0 || (level.heaps.get(pos).type != Heap.Type.HEAP && tries > -200))));
+			level.drop( i, pos);
+			if (level.map[pos] == Terrain.HIGH_GRASS || level.map[pos] == Terrain.FURROWED_GRASS) {
+				level.map[pos] = Terrain.GRASS;
+			}
+		}
+		spawnItemsInRoom.clear();
+	}
+
+	protected final void placeItemsAnywhere(Room area, Level level) {
+		for (Item i : spawnItemsInRoom) {
+			int pos;
+			int tries = 30;
+			do {
+				pos = level.pointToCell(area.random(0));
+			} while ((Terrain.PASSABLE & Terrain.flags[level.map[pos]]) != Terrain.PASSABLE || (level.heaps.get( pos ) != null && (tries-- > 0 || (level.heaps.get(pos).type != Heap.Type.HEAP && tries > -200))));
+			level.drop( i, pos);
+			if (level.map[pos] == Terrain.HIGH_GRASS || level.map[pos] == Terrain.FURROWED_GRASS) {
+				level.map[pos] = Terrain.GRASS;
+			}
+		}
+		spawnItemsInRoom.clear();
+	}
+
 	public final ArrayList<Point> itemPlaceablePoints(Level l){
 		ArrayList<Point> points = new ArrayList<>();
 		for (int i = left; i <= right; i++) {
@@ -374,6 +434,14 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable, Copyab
 			}
 		}
 		return points;
+	}
+
+	public boolean doOnAllGameObjects(Function<GameObject, GameObject.ModifyResult> whatToDo) {
+		if (this instanceof RandomItem) {
+			return RandomItem.doOnAllGameObjects((RandomItem) this, whatToDo);
+		}
+		return GameObject.doOnAllGameObjectsList(spawnItemsInRoom, whatToDo)
+				| GameObject.doOnAllGameObjectsList(spawnItemsOnLevel, whatToDo);
 	}
 
 	
@@ -412,6 +480,10 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable, Copyab
 		}
 		return edges;
 	}
+
+	private static final String ITEMS_GENERATED = "items_generated";
+	private static final String SPAWN_ITEMS_ON_LEVEL = "spawn_items_on_level";
+	private static final String SPAWN_ITEMS_IN_ROOM = "spawn_items_in_room";
 	
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -419,6 +491,10 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable, Copyab
 		bundle.put( "top", top );
 		bundle.put( "right", right );
 		bundle.put( "bottom", bottom );
+
+		bundle.put(SPAWN_ITEMS_ON_LEVEL, spawnItemsOnLevel);
+		bundle.put(SPAWN_ITEMS_IN_ROOM, spawnItemsInRoom);
+		bundle.put(ITEMS_GENERATED, itemsGenerated);
 	}
 	
 	@Override
@@ -427,6 +503,20 @@ public abstract class Room extends Rect implements Graph.Node, Bundlable, Copyab
 		top = bundle.getInt( "top" );
 		right = bundle.getInt( "right" );
 		bottom = bundle.getInt( "bottom" );
+
+		itemsGenerated = bundle.getBoolean(ITEMS_GENERATED);
+
+		spawnItemsOnLevel.clear();
+		if (bundle.contains(SPAWN_ITEMS_ON_LEVEL)) {
+			for (Bundlable item : bundle.getCollection(SPAWN_ITEMS_ON_LEVEL))
+				spawnItemsOnLevel.add((Item) item);
+		}
+
+		spawnItemsInRoom.clear();
+		if (bundle.contains(SPAWN_ITEMS_IN_ROOM)) {
+			for (Bundlable item : bundle.getCollection(SPAWN_ITEMS_IN_ROOM))
+				spawnItemsInRoom.add((Item) item);
+		}
 	}
 
 	@Override

@@ -28,21 +28,20 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.journal.AlchemyPage;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
-import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 public class LaboratoryRoom extends SpecialRoom {
+
+	{
+		spawnItemsOnLevel.add(new IronKey());
+	}
 
 	public void paint( Level level ) {
 		
@@ -68,64 +67,26 @@ public class LaboratoryRoom extends SpecialRoom {
 		if (!CustomDungeon.isEditing())
 			Blob.seed( pot.x + level.width() * pot.y, 1, Alchemy.class, level );
 
-		int pos;
-		do {
-			pos = level.pointToCell(random());
-		} while (
-				level.map[pos] != Terrain.EMPTY_SP ||
-						level.heaps.get( pos ) != null);
-		level.drop( new EnergyCrystal().quantity(5), pos );
-
-		int n = Random.NormalIntRange( 1, 2 );
-		for (int i=0; i < n; i++) {
-			do {
-				pos = level.pointToCell(random());
-			} while (
-				level.map[pos] != Terrain.EMPTY_SP ||
-				level.heaps.get( pos ) != null);
-			level.drop( prize( level ), pos );
-		}
-		
-		//guide pages
-		Collection<String> allPages = Document.ALCHEMY_GUIDE.pageNames();
-		ArrayList<String> missingPages = new ArrayList<>();
-		for ( String page : allPages){
-			if (!Document.ALCHEMY_GUIDE.isPageFound(page)){
-				missingPages.add(page);
-			}
-		}
-		
-		//5 pages in sewers, 10 in prison+
-		int chapterTarget;
-		if (missingPages.size() <= 5){
-			chapterTarget = 2;
-		} else {
-			chapterTarget = 1;
-		}
-		
-		if(!missingPages.isEmpty() && chapter >= chapterTarget){
-			
-			//for each chapter ahead of the target chapter, drop 1 additional page
-			int pagesToDrop = Math.min(missingPages.size(), (chapter - chapterTarget) + 1);
-			
-			for (int i = 0; i < pagesToDrop; i++) {
-				AlchemyPage p = new AlchemyPage();
-				p.page(missingPages.remove(0));
-				do {
-					pos = level.pointToCell(random());
-				} while (
-						level.map[pos] != Terrain.EMPTY_SP ||
-								level.heaps.get(pos) != null);
-				level.drop(p, pos);
-			}
-		}
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(Terrain.EMPTY_SP, level);
 
 		entrance.set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey() );
 		
 	}
-	
-	private static Item prize( Level level ) {
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+		spawnItemsInRoom.add(new EnergyCrystal().quantity(5));
+
+		int n = Random.NormalIntRange( 1, 2 );
+
+		for (int i=0; i < n; i++) {
+			spawnItemsInRoom.add( prize( level ) );
+		}
+	}
+
+	private static Item prize(Level level ) {
 
 		Item prize = level.findPrizeItem( TrinketCatalyst.class );
 		if (prize == null){

@@ -27,23 +27,13 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
-import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
-import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
-import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
+import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.LeatherArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.MailArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ScaleArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.SmallRation;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
@@ -61,12 +51,10 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ShopRoom extends SpecialRoom {
-
-	protected ArrayList<Item> itemsToSpawn;
 	
 	@Override
 	public int minWidth() {
@@ -79,18 +67,20 @@ public class ShopRoom extends SpecialRoom {
 	}
 
 	public int spacesNeeded(){
-		if (itemsToSpawn == null) itemsToSpawn = generateItems();
+		if (!itemsGenerated) generateItems(null);
 
 		//sandbags spawn based on current level of an hourglass the player may be holding
 		// so, to avoid rare cases of min sizes differing based on that, we ignore all sandbags
 		// and then add 4 items in all cases, which is max number of sandbags that can be in the shop
-		int spacesNeeded = itemsToSpawn.size();
-		for (Item i : itemsToSpawn){
+		int spacesNeeded = spawnItemsInRoom.size();
+		int sandBagsFound = 0;
+		for (Item i : spawnItemsInRoom){
 			if (i instanceof TimekeepersHourglass.sandBag){
-				spacesNeeded--;
+				sandBagsFound++;
 			}
 		}
-		spacesNeeded += 4;
+		spacesNeeded -= sandBagsFound;
+		spacesNeeded += Math.max(4, sandBagsFound);
 
 		//we also add 1 more space, for the shopkeeper
 		spacesNeeded++;
@@ -124,9 +114,7 @@ public class ShopRoom extends SpecialRoom {
 
 	protected void placeItems( Level level ){
 
-		if (itemsToSpawn == null){
-			itemsToSpawn = generateItems();
-		}
+		if (!itemsGenerated) generateItems(level);
 
 		Point entryInset = new Point(entrance());
 		if (entryInset.y == top){
@@ -143,7 +131,7 @@ public class ShopRoom extends SpecialRoom {
 
 		int inset = 1;
 
-		for (Item item : itemsToSpawn.toArray(new Item[0])) {
+		for (Item item : spawnItemsInRoom.toArray(new Item[0])) {
 
 			//place items in a clockwise pattern
 			if (curItemPlace.x == left+inset && curItemPlace.y != top+inset){
@@ -191,32 +179,35 @@ public class ShopRoom extends SpecialRoom {
 
 			int cell = level.pointToCell(curItemPlace);
 			level.drop( item, cell ).type = Heap.Type.FOR_SALE;
-			itemsToSpawn.remove(item);
+			spawnItemsInRoom.remove(item);
 		}
 
 		//we didn't have enough space to place everything neatly, so now just fill in anything left
-		if (!itemsToSpawn.isEmpty()){
+		if (!spawnItemsInRoom.isEmpty()){
 			for (Point p : getPoints()){
 				int cell = level.pointToCell(p);
 				if ((level.map[cell] == Terrain.EMPTY_SP || level.map[cell] == Terrain.EMPTY)
 						&& level.heaps.get(cell) == null && level.findMob(cell) == null){
-					level.drop( itemsToSpawn.remove(0), level.pointToCell(p) ).type = Heap.Type.FOR_SALE;
+					level.drop( spawnItemsInRoom.remove(0), level.pointToCell(p) ).type = Heap.Type.FOR_SALE;
 				}
-				if (itemsToSpawn.isEmpty()){
+				if (spawnItemsInRoom.isEmpty()){
 					break;
 				}
 			}
 		}
 
-		if (!itemsToSpawn.isEmpty()){
-			SandboxPixelDungeon.reportException(new RuntimeException("failed to place all items in a shop!"));
+		if (!spawnItemsInRoom.isEmpty()){
+			SandboxPixelDungeon.reportException(new RuntimeException("failed to place all items in a shop! Items left: " + spawnItemsInRoom.size()));
 		}
 
 	}
-	
-	protected static ArrayList<Item> generateItems() {
 
-		ArrayList<Item> itemsToSpawn = new ArrayList<>();
+	@Override
+	public void generateItems(Level level) {
+
+		super.generateItems(level);
+
+		List<Item> itemsToSpawn = spawnItemsInRoom;
 
 		MeleeWeapon w;
 		switch (Dungeon.level.levelScheme.getRegion()) {
@@ -347,8 +338,6 @@ public class ShopRoom extends SpecialRoom {
 		Random.pushGenerator(Random.Long());
 			Random.shuffle(itemsToSpawn);
 		Random.popGenerator();
-
-		return itemsToSpawn;
 	}
 
 	protected static Bag ChooseBag(Belongings pack){

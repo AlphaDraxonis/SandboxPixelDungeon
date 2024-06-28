@@ -32,6 +32,10 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Random;
 
 public class RunestoneRoom extends SpecialRoom {
+
+	{
+		spawnItemsOnLevel.add(new IronKey());
+	}
 	
 	@Override
 	public int minWidth() { return 6; }
@@ -49,21 +53,24 @@ public class RunestoneRoom extends SpecialRoom {
 		
 		Painter.drawInside( level, this, entrance(), 2, Terrain.EMPTY_SP);
 		Painter.fill( level, this, 2, Terrain.EMPTY );
-		
-		int n = Random.NormalIntRange(2, 3);
-		int dropPos;
-		for (int i = 0; i < n; i++) {
-			do {
-				dropPos = level.pointToCell(random());
-			} while (level.map[dropPos] != Terrain.EMPTY || level.heaps.get( dropPos ) != null);
-			level.drop(prize(level), dropPos);
-		}
+
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(Terrain.EMPTY, level);
 		
 		entrance().set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey() );
 	}
-	
-	private static Item prize( Level level ) {
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		int n = Random.NormalIntRange(2, 3);
+		for (int i = 0; i < n; i++) {
+			spawnItemsInRoom.add(prize(level));
+		}
+	}
+
+	private static Item prize(Level level ) {
 
 		Item prize = level.findPrizeItem( TrinketCatalyst.class );
 		if (prize == null){

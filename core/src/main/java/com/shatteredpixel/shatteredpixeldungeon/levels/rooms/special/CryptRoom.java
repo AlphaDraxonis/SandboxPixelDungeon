@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -34,7 +33,11 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Point;
 
-public class CryptRoom extends SpecialRoom {
+public class CryptRoom extends SingleRewardSpecialRoom {
+
+	{
+		spawnItemsOnLevel.add(new IronKey());
+	}
 
 	public void paint( Level level ) {
 		
@@ -46,10 +49,7 @@ public class CryptRoom extends SpecialRoom {
 		int cy = c.y;
 		
 		Door entrance = entrance();
-		
-		entrance.set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey() );
-		
+
 		if (entrance.x == left) {
 			Painter.set( level, new Point( right-1, top+1 ), Terrain.STATUE );
 			Painter.set( level, new Point( right-1, bottom-1 ), Terrain.STATUE );
@@ -67,15 +67,28 @@ public class CryptRoom extends SpecialRoom {
 			Painter.set( level, new Point( right-1, top+1 ), Terrain.STATUE );
 			cy = top + 2;
 		}
-		
-		level.drop( prize( level ), cx + cy * level.width() ).type = Heap.Type.TOMB;
+
+		if (!itemsGenerated) generateItems(level);
+
+		level.drop( prize, cx + cy * level.width() ).type = Heap.Type.TOMB;
+
+		placeItemsAnywhere(level);
+
+		entrance.set( Door.Type.LOCKED );
 	}
-	
-	private static Item prize( Level level ) {
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		if (prize == null) prize = prize(level);
+	}
+
+	private static Item prize(Level level ) {
 		
 		//1 floor set higher than normal
-		Armor prize = Generator.randomArmor( Dungeon.level.levelScheme.getRegion());
-		
+		Armor prize = Generator.randomArmor( level.levelScheme.getRegion());
+
 		if (Challenges.isItemBlocked(prize)){
 			return new Gold().random();
 		}

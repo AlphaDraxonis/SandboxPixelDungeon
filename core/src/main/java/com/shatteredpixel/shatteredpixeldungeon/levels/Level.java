@@ -236,8 +236,6 @@ public abstract class Level implements Bundlable {
 
 				for (Item item : levelScheme.prizeItemsToSpawn) {
 					addItemToSpawn(item);
-					if (item instanceof Scroll || item instanceof Potion || item instanceof Ring)
-						item.reset();//important for scroll runes being inited
 				}
 
 				addItemToSpawn(Generator.random(Generator.Category.FOOD));
@@ -433,6 +431,8 @@ public abstract class Level implements Bundlable {
 				if ((i instanceof EquipableItem || i instanceof Wand)) i.identify();
  			}
 			for (Item i : h.items) {
+				if (i instanceof Scroll || i instanceof Potion || i instanceof Ring)
+					i.reset();//important for scroll runes being inited
 				if (i instanceof Bomb) {
 					if (i.getClass() == Bomb.class && i.quantity() >= 2) i.image = ItemSpriteSheet.DBL_BOMB;
 					if (((Bomb) i).igniteOnDrop) {

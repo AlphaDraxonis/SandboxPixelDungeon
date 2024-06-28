@@ -1,6 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
@@ -10,7 +11,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSe
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndNewDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -25,6 +28,7 @@ import com.watabou.utils.PathFinder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.*;
 
 public class WndNewFloor extends WndTabbed {
@@ -90,7 +94,8 @@ public class WndNewFloor extends WndTabbed {
         if (positive) {
             String name = CustomDungeon.maybeFixIncorrectNameEnding(newFloorComp.textBox.getText());
 
-            for (String floors : owner.floorNames()) {
+            Collection<String> floorNames = owner.floorNames();
+            for (String floors : floorNames) {
                 if (floors.replace(' ', '_').equals(name.replace(' ', '_'))) {
                     WndNewDungeon.showNameWarning();
                     return;
@@ -99,6 +104,14 @@ public class WndNewFloor extends WndTabbed {
             if (name.equals(Level.SURFACE) || name.equals(Level.NONE) || name.equals(Level.ANY) ||  name.contains("\"")) {
                 WndNewDungeon.showNameWarning();
                 return;
+            }
+
+            for (Room r : newLevelScheme.roomsToSpawn) {
+                r.doOnAllGameObjects(obj -> {
+                    if (obj instanceof Key && !floorNames.contains(((Key) obj).name()))
+                         return obj.onRenameLevelScheme(((Key) obj).name(), newLevelScheme.getName());
+                    return GameObject.ModifyResult.noChange();
+                });
             }
 
             // Create an ExecutorService with a single thread

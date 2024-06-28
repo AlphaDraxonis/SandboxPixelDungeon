@@ -46,8 +46,6 @@ public class SecretGardenRoom extends SecretRoom {
 			}
 		}
 		
-		entrance().set( Door.Type.HIDDEN );
-		
 		level.plant(new Starflower.Seed(), plantPos(level));
 		level.plant(new WandOfRegrowth.Seedpod.Seed(), plantPos( level ));
 		level.plant(new WandOfRegrowth.Dewcatcher.Seed(), plantPos( level ));
@@ -58,7 +56,7 @@ public class SecretGardenRoom extends SecretRoom {
 			level.plant(new WandOfRegrowth.Dewcatcher.Seed(), plantPos( level ));
 		}
 		
-		Foliage light = (Foliage)level.blobs.getOnly( Foliage.class );
+		Foliage light = level.blobs.getOnly( Foliage.class );
 		if (light == null) {
 			light = new Foliage();
 		}
@@ -68,6 +66,8 @@ public class SecretGardenRoom extends SecretRoom {
 			}
 		}
 		level.blobs.put( Foliage.class, light );
+
+		entrance().set( Door.Type.HIDDEN );
 	}
 	
 	private int plantPos( Level level ){

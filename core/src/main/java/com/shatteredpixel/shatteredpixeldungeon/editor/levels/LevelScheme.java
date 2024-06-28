@@ -22,9 +22,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
@@ -67,7 +64,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     int region = REGION_SEWERS;//only for custom levels
     private int numInRegion = 3;
     private Level.Feeling feeling = Level.Feeling.NONE;
-    private float shopPriceMultiplier = 1f;
+    public float shopPriceMultiplier = 1f;
 
     private long seed;
     private boolean seedSet = false;
@@ -587,8 +584,6 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
         if (type == CustomLevel.class) itemsToSpawn.addAll(prizeItemsToSpawn);
 
         for (Item item : itemsToSpawn) {
-            if (item instanceof Scroll || item instanceof Potion || item instanceof Ring)
-                item.reset();//important for scroll runes being inited
             int cell;
             if (level instanceof CustomLevel) cell = ((CustomLevel) level).randomDropCell();
             else if (level instanceof RegularLevel) cell = ((RegularLevel) level).randomDropCell();
@@ -663,11 +658,11 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     private static final String NATURAL_REGEN = "natural_regen";
     private static final String HUNGER_SPEED = "hunger_speed";
     private static final String BUILDER = "builder";
-    private static final String LUA_SCRIPT = "lua_script";
     private static final String SPAWN_TORCH_IF_DARKNESS = "spawn_torch_if_darkness";
     private static final String REDUCE_VIEW_DISTANCE_IF_DARKNESS = "reduce_view_distance_if_darkness";
     private static final String AFFECTED_BY_NO_SCROLLS = "affected_by_no_scrolls";
     private static final String ROLL_FOR_CHAMPION_IF_CHAMPION_CHALLENGE = "roll_for_champion_if_champion_challenge";
+    private static final String LUA_SCRIPT = "lua_script";
 
     private static final String LEVEL_COLORING = "level_coloring";
     private static final String LEVEL_COLORING_ALPHA = "level_coloring_alpha";

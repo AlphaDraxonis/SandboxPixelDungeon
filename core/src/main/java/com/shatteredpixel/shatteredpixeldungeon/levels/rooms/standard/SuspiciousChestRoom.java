@@ -31,6 +31,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Random;
 
+import java.util.Collections;
+
 public class SuspiciousChestRoom extends StandardRoom {
 
 	@Override
@@ -52,21 +54,33 @@ public class SuspiciousChestRoom extends StandardRoom {
 			door.set( Door.Type.REGULAR );
 		}
 
-		Item i = level.findPrizeItem();
-
-		if ( i == null ){
-			i = new Gold().random();
-		}
-
 		int center = level.pointToCell(center());
 
 		Painter.set(level, center, Terrain.PEDESTAL);
 
-		float mimicChance = 1/3f * MimicTooth.mimicChanceMultiplier();
-		if (Random.Float() < mimicChance) {
-			level.mobs.add(Mimic.spawnAt(center, i));
-		} else {
-			level.drop(i, center).type = Heap.Type.CHEST;
+		if (!itemsGenerated) generateItems(level);
+
+		//most valuable item is first
+		Collections.sort(spawnItemsInRoom, (i1, i2) -> Integer.compare(Item.trueValue(i2), Item.trueValue(i1)));
+
+		if (!spawnItemsInRoom.isEmpty()) {
+			float mimicChance = 1 / 3f * MimicTooth.mimicChanceMultiplier();
+			if (Random.Float() < mimicChance) {
+				level.mobs.add(Mimic.spawnAt(center, spawnItemsInRoom.remove(0)));
+			} else {
+				level.drop(spawnItemsInRoom.remove(0), center).type = Heap.Type.CHEST;
+			}
 		}
+		placeItemsAnywhere(level);
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		Item i = level.findPrizeItem();
+		if ( i == null ) i = new Gold().random();
+
+		spawnItemsInRoom.add(i);
 	}
 }

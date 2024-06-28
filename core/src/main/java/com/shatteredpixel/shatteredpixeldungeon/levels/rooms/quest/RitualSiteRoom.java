@@ -35,6 +35,13 @@ import com.watabou.utils.Point;
 
 public class RitualSiteRoom extends StandardRoom {
 
+	{
+		spawnItemsOnLevel.add(new CeremonialCandle());
+		spawnItemsOnLevel.add(new CeremonialCandle());
+		spawnItemsOnLevel.add(new CeremonialCandle());
+		spawnItemsOnLevel.add(new CeremonialCandle());
+	}
+
 	private int ownRitualPos;
 	
 	@Override
@@ -63,11 +70,6 @@ public class RitualSiteRoom extends StandardRoom {
 		level.customTiles.add(vis);
 		
 		Painter.fill(level, c.x-1, c.y-1, 3, 3, Terrain.CUSTOM_DECO_EMPTY);
-
-		level.addItemToSpawn(new CeremonialCandle());
-		level.addItemToSpawn(new CeremonialCandle());
-		level.addItemToSpawn(new CeremonialCandle());
-		level.addItemToSpawn(new CeremonialCandle());
 
 		ownRitualPos = c.x + (level.width() * c.y);
 	}

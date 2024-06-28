@@ -217,7 +217,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
             }
             if (chargeSpinner != null) add(chargeSpinner);
 
-            if (item.isUpgradable() || item instanceof Artifact || item instanceof Trinket) {
+            if (LevelSpinner.availableForItem(item)) {
                 levelSpinner = new LevelSpinner(item) {
                     @Override
                     protected void onChange() {

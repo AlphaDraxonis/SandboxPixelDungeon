@@ -22,7 +22,6 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -33,6 +32,10 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SecretMazeRoom extends SecretRoom {
 	
@@ -81,38 +84,62 @@ public class SecretMazeRoom extends SecretRoom {
 		int entrancePos = (entrance.x - left) + width()*(entrance.y - top);
 		
 		PathFinder.buildDistanceMap( entrancePos, passable );
-		
-		int bestDist = 0;
-		Point bestDistP = new Point();
+
+		if (!itemsGenerated) generateItems(level);
+
+		int posRequired = spawnItemsInRoom.size();
+		List<Integer> deadEnds = new ArrayList<>();
+
+		//most valuable item is first
+		Collections.sort(spawnItemsInRoom, (i1, i2) -> Integer.compare(Item.trueValue(i2), Item.trueValue(i1)));
+
+		idkHowToName:
 		for (int i = 0; i < PathFinder.distance.length; i++){
-			if (PathFinder.distance[i] != Integer.MAX_VALUE
-					&& PathFinder.distance[i] > bestDist){
-				bestDist = PathFinder.distance[i];
-				bestDistP.x = (i % width()) + left;
-				bestDistP.y = (i / width()) + top;
+			if (PathFinder.distance[i] != Integer.MAX_VALUE) {
+
+				for (int j : PathFinder.NEIGHBOURS4) {
+					int n = i + j;//no check for bounds required as maze has walls
+					if (PathFinder.distance[n] != Integer.MAX_VALUE
+							&& PathFinder.distance[n] > PathFinder.distance[i]) break idkHowToName;
+				}
+
+				deadEnds.add(i);
+
 			}
 		}
-		
-		Item prize;
-		//1 floor set higher in probability, never cursed
-		do {
-			if (Random.Int(2) == 0) {
-				prize = Generator.randomWeapon(Dungeon.level.levelScheme.getRegion(),true);
-			} else {
-				prize = Generator.randomArmor(Dungeon.level.levelScheme.getRegion());
-			}
-		} while (prize.cursed || Challenges.isItemBlocked(prize));
-		prize.setCursedKnown(true);
-		
-		//33% chance for an extra update.
-		if (Random.Int(3) == 0){
-			prize.upgrade();
+		//furthest away is first
+		Collections.sort(deadEnds, (p1, p2) -> Integer.compare(p2, p1));
+
+		int i = 0;
+		int posAvailable = deadEnds.size();
+		for (Item item : spawnItemsInRoom) {
+			if (i >= posAvailable) i -= posAvailable;
+			level.drop(item, deadEnds.get(i++)).type = Heap.Type.CHEST;
 		}
-		
-		level.drop(prize, level.pointToCell(bestDistP)).type = Heap.Type.CHEST;
 		
 		PathFinder.setMapSize(level.width(), level.height());
 		
 		entrance().set(Door.Type.HIDDEN);
 	}
+
+	private static Item prize(Level level) {
+		Item prize;
+		//1 floor set higher in probability, never cursed
+		do {
+			if (Random.Int(2) == 0) {
+				prize = Generator.randomWeapon(level.levelScheme.getRegion(),true);
+			} else {
+				prize = Generator.randomArmor(level.levelScheme.getRegion());
+			}
+		} while (prize.cursed || Challenges.isItemBlocked(prize));
+		prize.setCursedKnown(true);
+
+		//33% chance for an extra update.
+		if (Random.Int(3) == 0){
+			prize.upgrade();
+		}
+
+		return prize;
+	}
+
 }

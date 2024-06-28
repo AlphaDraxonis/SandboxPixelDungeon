@@ -42,6 +42,13 @@ import java.util.Arrays;
 
 public class CrystalVaultRoom extends SpecialRoom {
 
+	{
+		spawnItemsOnLevel.add(new IronKey());
+		spawnItemsOnLevel.add(new CrystalKey());
+	}
+
+	public Item p1, p2;
+
 	//fixed size to improve presentation and provide space for crystal mimics
 	@Override
 	public int minHeight() { return 7; }
@@ -59,8 +66,8 @@ public class CrystalVaultRoom extends SpecialRoom {
 		Random.shuffle(prizeClasses);
 		
 		Item i1, i2;
-		i1 = prize();
-		i2 = prize();
+		i1 = p1 != null ? p1 : prize();
+		i2 = p2 != null ? p2 : prize();
 
 		int i1Pos, i2Pos;
 		int doorPos = level.pointToCell(entrance());
@@ -82,10 +89,10 @@ public class CrystalVaultRoom extends SpecialRoom {
 		Painter.set(level, i1Pos, Terrain.PEDESTAL);
 		Painter.set(level, i2Pos, Terrain.PEDESTAL);
 
-		level.addItemToSpawn( new CrystalKey() );
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(level);
 		
 		entrance().set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey() );
 	}
 	
 	private Item prize() {

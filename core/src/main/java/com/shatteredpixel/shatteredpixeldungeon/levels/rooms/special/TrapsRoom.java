@@ -29,21 +29,16 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLevitation
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.ExplosiveTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FlashingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FlockTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrimTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrippingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PoisonDartTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.TeleportationTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WarpingTrap;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
 public class TrapsRoom extends SpecialRoom {
+
+	{
+		spawnItemsOnLevel.add(new PotionOfLevitation());
+	}
 
 	public void paint( Level level ) {
 		 
@@ -96,22 +91,31 @@ public class TrapsRoom extends SpecialRoom {
 				level.setTrap(Reflection.newInstance(trapClass).reveal(), cell);
 			}
 		}
+
+		if (!itemsGenerated) generateItems(level);
 		
 		int pos = x + y * level.width();
 		if (Random.Int( 3 ) == 0) {
 			if (lastRow == Terrain.CHASM) {
 				Painter.set( level, pos, Terrain.EMPTY );
 			}
-			level.drop( prize( level ), pos ).type = Heap.Type.CHEST;
 		} else {
 			Painter.set( level, pos, Terrain.PEDESTAL );
-			level.drop( prize( level ), pos ).type = Heap.Type.CHEST;
 		}
-		
-		level.addItemToSpawn( new PotionOfLevitation() );
+
+		for (Item i : spawnItemsInRoom) {
+			level.drop( i, pos ).type = Heap.Type.CHEST;
+		}
+		spawnItemsInRoom.clear();
 	}
-	
-	private static Item prize( Level level ) {
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+		spawnItemsInRoom.add(prize(level));
+	}
+
+	private static Item prize(Level level ) {
 
 		Item prize;
 

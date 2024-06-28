@@ -64,19 +64,9 @@ public class BlacksmithRoom extends StandardRoom {
 		}
 
 		Painter.fill( level, this, 2, Terrain.EMPTY_SP );
-		
-		for (int i=0; i < 2; i++) {
-			int pos;
-			do {
-				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY_SP);
-			level.drop(
-				Generator.random( Random.oneOf(
-					Generator.Category.ARMOR,
-					Generator.Category.WEAPON,
-					Generator.Category.MISSILE
-				) ), pos );
-		}
+
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(Terrain.EMPTY_SP, level);
 
 //		do {
 			entrancePos = level.pointToCell(random( 2 ));
@@ -98,6 +88,20 @@ public class BlacksmithRoom extends StandardRoom {
 			if (level.map[cell] == Terrain.TRAP){
 				level.setTrap(new BurningTrap().reveal(), cell);
 			}
+		}
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		for (int i=0; i < 2; i++) {
+			spawnItemsInRoom.add(
+					Generator.random( Random.oneOf(
+							Generator.Category.ARMOR,
+							Generator.Category.WEAPON,
+							Generator.Category.MISSILE
+					) ));
 		}
 	}
 

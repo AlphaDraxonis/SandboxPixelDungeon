@@ -35,21 +35,20 @@ public class SecretArtilleryRoom extends SecretRoom {
 		Painter.fill(level, this, 1, Terrain.EMPTY_SP);
 		
 		Painter.set(level, center(), Terrain.STATUE_SP);
-		
-		for (int i = 0; i < 3; i++){
-			int itemPos;
-			do{
-				itemPos = level.pointToCell(random());
-			} while ( level.map[itemPos] != Terrain.EMPTY_SP
-					|| level.heaps.get(itemPos) != null);
-			
-			if( i == 0 ){
-				level.drop(new Bomb.DoubleBomb(), itemPos);
-			} else {
-				level.drop(Generator.randomMissile(true), itemPos);
-			}
-		}
+
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(Terrain.EMPTY_SP, level);
 		
 		entrance().set(Door.Type.HIDDEN);
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		spawnItemsInRoom.add(new Bomb.DoubleBomb());
+		for (int i = 1; i < 3; i++){
+			spawnItemsInRoom.add(Generator.randomMissile(true));
+		}
 	}
 }

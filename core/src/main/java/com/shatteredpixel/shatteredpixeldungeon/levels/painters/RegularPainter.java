@@ -122,6 +122,9 @@ public abstract class RegularPainter extends Painter {
 			}
 			placeDoors( r );
 			r.paint( level );
+
+			if (!r.itemsGenerated) r.generateItems(level);
+			r.placeItemsAnywhere(level);
 		}
 		
 		paintDoors( level, rooms );

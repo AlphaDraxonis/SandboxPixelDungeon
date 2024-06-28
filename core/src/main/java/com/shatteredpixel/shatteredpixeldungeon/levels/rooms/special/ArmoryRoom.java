@@ -34,6 +34,10 @@ import com.watabou.utils.Random;
 
 public class ArmoryRoom extends SpecialRoom {
 
+	{
+		spawnItemsOnLevel.add(new IronKey());
+	}
+
 	public void paint( Level level ) {
 		
 		Painter.fill( level, this, Terrain.WALL );
@@ -53,28 +57,27 @@ public class ArmoryRoom extends SpecialRoom {
 		if (statue != null) {
 			Painter.set( level, statue, Terrain.STATUE );
 		}
+
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(Terrain.EMPTY, level);
 		
+		entrance.set( Door.Type.LOCKED );
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
 		int n = Random.IntRange( 2, 3 );
 		prizeCats = new float[]{1,1,1,1};
 		for (int i=0; i < n; i++) {
-			int pos;
-			do {
-				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY || level.heaps.get( pos ) != null);
-			level.drop( prize( level ), pos );
+			spawnItemsInRoom.add(prize( level ));
 		}
 
 		Item cata = level.findPrizeItem(TrinketCatalyst.class);
 		if (cata != null){
-			int pos;
-			do {
-				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY || level.heaps.get( pos ) != null);
-			level.drop( cata, pos );
+			spawnItemsInRoom.add(cata);
 		}
-		
-		entrance.set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey() );
 	}
 
 	//only a max of 1 prize from each category can be dropped at a time

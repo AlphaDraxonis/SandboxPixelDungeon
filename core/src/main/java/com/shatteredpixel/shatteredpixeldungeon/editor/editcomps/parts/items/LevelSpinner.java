@@ -50,4 +50,8 @@ public class LevelSpinner extends StyledSpinner {
             return Spinner.FILL;
         }
     }
+
+    public static boolean availableForItem(Item item) {
+        return item.isUpgradable() || item instanceof Artifact || item instanceof Trinket;
+    }
 }

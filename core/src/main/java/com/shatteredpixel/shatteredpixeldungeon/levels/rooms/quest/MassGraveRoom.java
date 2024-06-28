@@ -40,9 +40,16 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.Tilemap;
 import com.watabou.utils.Random;
 
-import java.util.ArrayList;
-
 public class MassGraveRoom extends SpecialRoom {
+
+	{
+		spawnItemsOnLevel.add(new PotionOfLiquidFlame());
+
+		//100% corpse dust, 2x100% 1 coin, 2x30% coins, 1x60% random item, 1x30% armor
+		spawnItemsInRoom.add(new CorpseDust());
+		spawnItemsInRoom.add(new Gold(1));
+		spawnItemsInRoom.add(new Gold(1));
+	}
 	
 	@Override
 	public int minWidth() { return 7; }
@@ -51,10 +58,6 @@ public class MassGraveRoom extends SpecialRoom {
 	public int minHeight() { return 7; }
 	
 	public void paint(Level level){
-
-		Door entrance = entrance();
-		entrance.set(Door.Type.BARRICADE);
-		level.addItemToSpawn(new PotionOfLiquidFlame());
 
 		Painter.fill(level, this, Terrain.WALL);
 		Painter.fill(level, this, 1, Terrain.CUSTOM_DECO_EMPTY);
@@ -76,25 +79,30 @@ public class MassGraveRoom extends SpecialRoom {
 			level.mobs.add( skele );
 		}
 
-		ArrayList<Item> items = new ArrayList<>();
-		//100% corpse dust, 2x100% 1 coin, 2x30% coins, 1x60% random item, 1x30% armor
-		items.add(new CorpseDust());
-		items.add(new Gold(1));
-		items.add(new Gold(1));
-		if (Random.Float() <= 0.3f) items.add(new Gold());
-		if (Random.Float() <= 0.3f) items.add(new Gold());
-		if (Random.Float() <= 0.6f) items.add(Generator.random());
-		if (Random.Float() <= 0.3f) items.add(Generator.randomArmor());
+		if (!itemsGenerated) generateItems(level);
 
-		for (Item item : items){
+		for (Item i : spawnItemsInRoom) {
 			int pos;
+			int tries = 30;
 			do {
 				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.CUSTOM_DECO_EMPTY || level.heaps.get(pos) != null);
-			Heap h = level.drop(item, pos);
-			h.setHauntedIfCursed();
-			h.type = Heap.Type.SKELETON;
+			} while (level.map[pos] != Terrain.CUSTOM_DECO_EMPTY || (level.heaps.get( pos ) != null && tries-- > 0));
+			level.drop(i, pos).setHauntedIfCursed().type = Heap.Type.SKELETON;
 		}
+		spawnItemsInRoom.clear();
+
+		entrance().set(Door.Type.BARRICADE);
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		//100% corpse dust, 2x100% 1 coin, 2x30% coins, 1x60% random item, 1x30% armor
+		if (Random.Float() <= 0.3f) spawnItemsInRoom.add(new Gold());
+		if (Random.Float() <= 0.3f) spawnItemsInRoom.add(new Gold());
+		if (Random.Float() <= 0.6f) spawnItemsInRoom.add(Generator.random());
+		if (Random.Float() <= 0.3f) spawnItemsInRoom.add(Generator.randomArmor());
 	}
 
 	@Override

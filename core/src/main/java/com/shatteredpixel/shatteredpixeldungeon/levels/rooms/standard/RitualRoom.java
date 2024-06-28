@@ -29,7 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
-public class RitualRoom extends StandardRoom {
+public class RitualRoom extends SingleRewardStandardRoom {
 
 	@Override
 	public int minWidth() {
@@ -77,20 +77,30 @@ public class RitualRoom extends StandardRoom {
 			}
 		}
 
-		placeloot(level, c);
+		Item newPrize = placeloot(level, c);
+		if (!itemsGenerated && newPrize != null) level.drop(newPrize, level.pointToCell(c));
+		else level.drop(prize, level.pointToCell(c));
+
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(level);
 
 		for (Door door : connected.values()) {
 			door.set( Door.Type.REGULAR );
 		}
 	}
 
-	protected void placeloot(Level level, Point p){
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+	}
+
+	protected Item placeloot(Level level, Point p){
 		Item prize = Random.Int(2) == 0 ? level.findPrizeItem() : null;
 
 		if (prize == null){
 			prize = Generator.random( Random.oneOf(Generator.Category.POTION, Generator.Category.SCROLL));
 		}
 
-		level.drop(prize, level.pointToCell(p));
+		return prize;
 	}
 }

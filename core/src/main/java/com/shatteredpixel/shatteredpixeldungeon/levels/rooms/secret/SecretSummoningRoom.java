@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -47,9 +48,14 @@ public class SecretSummoningRoom extends SecretRoom {
 	public void paint(Level level) {
 		Painter.fill(level, this, Terrain.WALL);
 		Painter.fill(level, this, 1, Terrain.SECRET_TRAP);
-		
-		Point center = center();
-		level.drop(Generator.random(), level.pointToCell(center)).setHauntedIfCursed().type = Heap.Type.SKELETON;
+
+		if (!itemsGenerated) generateItems(level);
+
+		int pos = level.pointToCell(center());
+		for (Item i : spawnItemsInRoom) {
+			level.drop( i, pos ).setHauntedIfCursed().type = Heap.Type.SKELETON;
+		}
+		spawnItemsInRoom.clear();
 		
 		for (Point p : getPoints()){
 			int cell = level.pointToCell(p);
@@ -60,5 +66,10 @@ public class SecretSummoningRoom extends SecretRoom {
 		
 		entrance().set(Door.Type.HIDDEN);
 	}
-	
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+		spawnItemsInRoom.add(Generator.random());
+	}
 }

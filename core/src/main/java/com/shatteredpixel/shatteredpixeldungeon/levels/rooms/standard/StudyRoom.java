@@ -22,14 +22,13 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
-public class StudyRoom extends StandardRoom {
+public class StudyRoom extends SingleRewardStandardRoom {
 	
 	@Override
 	public int minWidth() {
@@ -77,15 +76,24 @@ public class StudyRoom extends StandardRoom {
 		
 		Point center = center();
 		Painter.set( level, center, Terrain.PEDESTAL );
-		
-		Item prize = (Random.Int(2) == 0) ? level.findPrizeItem() : null;
-		
+
+		if (!itemsGenerated) generateItems(level);
+
 		if (prize != null) {
 			level.drop(prize, (center.x + center.y * level.width()));
-		} else {
-			level.drop(Generator.random( Random.oneOf(
-					Generator.Category.POTION,
-					Generator.Category.SCROLL)), (center.x + center.y * level.width()));
 		}
+
+		placeItemsAnywhere(level);
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		if (prize == null) prize = (Random.Int(2) == 0)
+				? level.findPrizeItem()
+				: Generator.random( Random.oneOf(
+				    Generator.Category.POTION,
+					Generator.Category.SCROLL));
 	}
 }

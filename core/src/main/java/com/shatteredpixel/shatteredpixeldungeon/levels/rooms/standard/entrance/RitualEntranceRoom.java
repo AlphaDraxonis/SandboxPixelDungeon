@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.entrance;
 
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -35,8 +36,10 @@ public class RitualEntranceRoom extends RitualRoom implements EntranceRoomInterf
 	}
 
 	@Override
-	protected void placeloot(Level level, Point p) {
+	protected Item placeloot(Level level, Point p) {
 		Painter.set(level, p, Terrain.ENTRANCE);
 		level.addRegularEntrance(level.pointToCell(p));
+
+		return null;
 	}
 }

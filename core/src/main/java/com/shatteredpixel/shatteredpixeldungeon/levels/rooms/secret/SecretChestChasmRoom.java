@@ -29,8 +29,13 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Point;
+import com.watabou.utils.Random;
 
 public class SecretChestChasmRoom extends SecretRoom {
+
+	{
+		spawnItemsOnLevel.add(new PotionOfLevitation());
+	}
 	
 	//width and height are controlled here so that this room always requires 2 levitation potions
 	
@@ -53,64 +58,69 @@ public class SecretChestChasmRoom extends SecretRoom {
 	public int maxHeight() {
 		return 9;
 	}
-	
+
 	@Override
 	public void paint(Level level) {
 		Painter.fill(level, this, Terrain.WALL);
 		Painter.fill(level, this, 1, Terrain.CHASM);
+
+		if (!itemsGenerated) generateItems(level);
 		
 		int chests = 0;
-		
-		Point p = new Point(left+3, top+3);
-		Painter.set(level, p, Terrain.EMPTY_SP);
-		level.drop(Generator.randomUsingDefaults(), level.pointToCell(p)).type = Heap.Type.LOCKED_CHEST;
-		if (level.heaps.get(level.pointToCell(p)) != null) chests++;
-		
-		p.x = right-3;
-		Painter.set(level, p, Terrain.EMPTY_SP);
-		level.drop(Generator.randomUsingDefaults(), level.pointToCell(p)).type = Heap.Type.LOCKED_CHEST;
-		if (level.heaps.get(level.pointToCell(p)) != null) chests++;
-		
-		p.y = bottom-3;
-		Painter.set(level, p, Terrain.EMPTY_SP);
-		level.drop(Generator.randomUsingDefaults(), level.pointToCell(p)).type = Heap.Type.LOCKED_CHEST;
-		if (level.heaps.get(level.pointToCell(p)) != null) chests++;
-		
-		p.x = left+3;
-		Painter.set(level, p, Terrain.EMPTY_SP);
-		level.drop(Generator.randomUsingDefaults(), level.pointToCell(p)).type = Heap.Type.LOCKED_CHEST;
-		if (level.heaps.get(level.pointToCell(p)) != null) chests++;
-		
-		p = new Point(left+1, top+1);
-		Painter.set(level, p, Terrain.EMPTY_SP);
-		if (chests > 0) {
-			level.drop(new GoldenKey(), level.pointToCell(p));
-			chests--;
+
+		Point[] chestPositions = chestPositions();
+		for (int i = 0; i < chestPositions.length; i++) {
+			fillChest(1, chestPositions[i], level);
+			if (level.heaps.get(level.pointToCell(chestPositions[i])) != null) chests++;
+			else chestPositions[i] = null;
 		}
-		
-		p.x = right-1;
-		Painter.set(level, p, Terrain.EMPTY_SP);
-		if (chests > 0) {
-			level.drop(new GoldenKey(), level.pointToCell(p));
-			chests--;
+
+		int itemsPerChest = spawnItemsInRoom.size() / chests;
+		int chestsWithMoreItems = spawnItemsInRoom.size() % chests;
+
+		for (Point p : chestPositions) {
+			if (p == null) continue;
+			int plus = 0;
+			if (Random.Int(chests - chestsWithMoreItems) < chestsWithMoreItems) {
+				plus++;
+				chestsWithMoreItems--;
+			}
+			fillChest(itemsPerChest + plus, p, level);
 		}
-		
-		p.y = bottom-1;
-		Painter.set(level, p, Terrain.EMPTY_SP);
-		if (chests > 0) {
-			level.drop(new GoldenKey(), level.pointToCell(p));
-			chests--;
+
+		for (Point p : chestPositions()) {
+			Painter.set(level, p, Terrain.EMPTY_SP);
+			if (chests > 0) {
+				level.drop(new GoldenKey(), level.pointToCell(p));
+				chests--;
+			}
 		}
-		
-		p.x = left+1;
-		Painter.set(level, p, Terrain.EMPTY_SP);
-		if (chests > 0) {
-			level.drop(new GoldenKey(), level.pointToCell(p));
-			chests--;
-		}
-		
-		level.addItemToSpawn(new PotionOfLevitation());
 		
 		entrance().set(Door.Type.HIDDEN);
+	}
+
+	private void fillChest(int numItems, Point p, Level level) {
+		if (!spawnItemsInRoom.isEmpty()) {
+			level.drop(spawnItemsInRoom.get(0), level.pointToCell(p)).type = Heap.Type.LOCKED_CHEST;
+			spawnItemsInRoom.remove(0);
+		}
+	}
+
+	private Point[] chestPositions() {
+		return new Point[] {
+				new Point(left+3, top+3),
+				new Point(right-3, top+3),
+				new Point(right-3, bottom-3),
+				new Point(left+3, bottom-3)
+		};
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		for (int i = 0; i < 4; i++) {
+			spawnItemsInRoom.add(Generator.randomUsingDefaults());
+		}
 	}
 }

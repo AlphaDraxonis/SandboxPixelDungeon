@@ -59,32 +59,30 @@ public class SecretLaboratoryRoom extends SecretRoom {
 		Painter.fill( level, this, Terrain.WALL );
 		Painter.fill( level, this, 1, Terrain.EMPTY_SP );
 		
-		entrance().set( Door.Type.HIDDEN );
-		
 		Point pot = center();
 		Painter.set( level, pot, Terrain.ALCHEMY );
 
 		if (!CustomDungeon.isEditing())
 			Blob.seed( pot.x + level.width() * pot.y, 1, Alchemy.class, level );
 
-		int pos;
-		do {
-			pos = level.pointToCell(random());
-		} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get( pos ) != null);
-		level.drop( new EnergyCrystal().quantity(Random.IntRange(3, 5)), pos );
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(Terrain.EMPTY_SP, level);
 
-		do {
-			pos = level.pointToCell(random());
-		} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get( pos ) != null);
-		level.drop( new EnergyCrystal().quantity(Random.IntRange(3, 5)), pos );
+		entrance().set( Door.Type.HIDDEN );
+		
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		spawnItemsInRoom.add(new EnergyCrystal().quantity(Random.IntRange(3, 5)));
+		spawnItemsInRoom.add(new EnergyCrystal().quantity(Random.IntRange(3, 5)));
 
 		int n = Random.IntRange( 2, 3 );
 		HashMap<Class<? extends Potion>, Float> chances = new HashMap<>(potionChances);
 		for (int i=0; i < n; i++) {
-			do {
-				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get( pos ) != null);
-			
+
 			Class<?extends Potion> potionCls = Random.chances(chances);
 			chances.put(potionCls, 0f);
 
@@ -94,9 +92,7 @@ public class SecretLaboratoryRoom extends SecretRoom {
 				}
 			}
 
-			level.drop( Reflection.newInstance(potionCls), pos );
+			spawnItemsInRoom.add(Reflection.newInstance(potionCls));
 		}
-		
 	}
-	
 }

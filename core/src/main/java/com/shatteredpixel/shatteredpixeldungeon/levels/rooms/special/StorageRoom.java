@@ -32,32 +32,39 @@ import com.watabou.utils.Random;
 
 public class StorageRoom extends SpecialRoom {
 
+	{
+		spawnItemsOnLevel.add(new PotionOfLiquidFlame());
+	}
+
 	public void paint( Level level ) {
 		
 		Painter.fill( level, this, Terrain.WALL );
 		Painter.fill( level, this, 1, Terrain.EMPTY_SP );
 
-		boolean honeyPot = Random.Int( 2 ) == 0;
-		
-		int n = Random.IntRange( 3, 4 );
-		for (int i=0; i < n; i++) {
-			int pos;
-			do {
-				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get(pos) != null);
-			if (honeyPot){
-				level.drop( new Honeypot(), pos);
-				honeyPot = false;
-			} else {
-				level.drop( prize(level), pos);
-			}
-		}
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(Terrain.EMPTY_SP, level);
 		
 		entrance().set( Door.Type.BARRICADE );
-		level.addItemToSpawn( new PotionOfLiquidFlame() );
 	}
-	
-	private static Item prize( Level level ) {
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		boolean honeyPot = Random.Int( 2 ) == 0;
+
+		int n = Random.IntRange( 3, 4 );
+		for (int i=0; i < n; i++) {
+			if (honeyPot) {
+				spawnItemsInRoom.add(new Honeypot());
+				honeyPot = false;
+			} else {
+				spawnItemsInRoom.add(prize(level));
+			}
+		}
+	}
+
+	private static Item prize(Level level ) {
 
 		if (Random.Int(3) != 0){
 			Item prize = level.findPrizeItem();

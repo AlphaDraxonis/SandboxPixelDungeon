@@ -12,9 +12,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
@@ -89,12 +86,7 @@ public class EditHeapComp extends DefaultEditComp<Heap> {
 
             @Override
             protected String displayString(Object value) {
-                Item copy = heap.items.getLast().getCopy();
-                if (copy instanceof Potion) ((Potion) copy).anonymize();
-                else if (copy instanceof Scroll) ((Scroll) copy).anonymize();
-                else if (copy instanceof Ring) ((Ring) copy).anonymize();
-                else copy.identify(false);
-                float price = copy.value() * 5 * Dungeon.level.levelScheme.getPriceMultiplier();
+                float price = Item.trueValue(heap.items.getLast()) * 5 * Dungeon.level.levelScheme.shopPriceMultiplier;
                 return super.displayString(value) + " = " + ((int)(getAsFloat() * price) + " " + Messages.get(Gold.class, "name"));
             }
         }, Messages.get(LevelTab.class, "shop_price"), 9);

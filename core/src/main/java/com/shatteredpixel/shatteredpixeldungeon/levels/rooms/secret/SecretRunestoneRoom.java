@@ -22,7 +22,10 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -30,6 +33,10 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Point;
 
 public class SecretRunestoneRoom extends SecretRoom {
+
+	{
+		spawnItemsOnLevel.add(new PotionOfLiquidFlame());
+	}
 	
 	@Override
 	public void paint(Level level) {
@@ -60,29 +67,31 @@ public class SecretRunestoneRoom extends SecretRoom {
 				Painter.fill(level, left+1, top+1, width()-2, center.y-top-1, Terrain.EMPTY_SP);
 			}
 		}
-		
-		level.addItemToSpawn(new PotionOfLiquidFlame());
-		
-		int dropPos;
-		
-		do{
-			dropPos = level.pointToCell(random());
-		} while (level.map[dropPos] != Terrain.EMPTY);
-		level.drop( Generator.randomUsingDefaults(Generator.Category.STONE), dropPos);
-		
-		do{
-			dropPos = level.pointToCell(random());
-		} while (level.map[dropPos] != Terrain.EMPTY || level.heaps.get(dropPos) != null);
-		level.drop( Generator.randomUsingDefaults(Generator.Category.STONE), dropPos);
-		
-		do{
-			dropPos = level.pointToCell(random());
-		} while (level.map[dropPos] != Terrain.EMPTY_SP);
-		level.drop( new StoneOfEnchantment(), dropPos);
+
+		if (!itemsGenerated) generateItems(level);
+
+		for (Item i : spawnItemsInRoom) {
+			int terrain = i instanceof StoneOfEnchantment || i instanceof ScrollOfUpgrade ? Terrain.ENTRANCE_SP : Terrain.EMPTY;
+			int pos;
+			int tries = 30;
+			do {
+				pos = level.pointToCell(random());
+			} while (level.map[pos] != terrain || (level.heaps.get( pos ) != null && (tries-- > 0 || (level.heaps.get(pos).type != Heap.Type.HEAP && tries > -200))));
+			level.drop( i, pos);
+		}
+		spawnItemsInRoom.clear();
 		
 		entrance.set(Door.Type.HIDDEN);
 	}
-	
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+		spawnItemsOnLevel.add(Generator.randomUsingDefaults(Generator.Category.STONE));
+		spawnItemsOnLevel.add(Generator.randomUsingDefaults(Generator.Category.STONE));
+		spawnItemsInRoom.add(new StoneOfEnchantment());
+	}
+
 	@Override
 	public boolean canPlaceWater(Point p) {
 		return false;

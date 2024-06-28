@@ -35,6 +35,10 @@ import com.watabou.utils.Random;
 
 public class PoolRoom extends SpecialRoom {
 
+	{
+		spawnItemsOnLevel.add(new PotionOfInvisibility());
+	}
+
 	private static final int NPIRANHAS	= 3;
 	
 	@Override
@@ -84,10 +88,15 @@ public class PoolRoom extends SpecialRoom {
 		}
 		
 		int pos = x + y * level.width();
-		level.drop( prize( level ), pos ).type = Heap.Type.CHEST;
+
+		if (!itemsGenerated) generateItems(level);
+
+		for (Item i : spawnItemsInRoom) {
+			level.drop( i, pos ).type = Heap.Type.CHEST;
+		}
+		spawnItemsInRoom.clear();
+
 		Painter.set( level, pos, Terrain.PEDESTAL );
-		
-		level.addItemToSpawn( new PotionOfInvisibility() );
 		
 		for (int i=0; i < NPIRANHAS; i++) {
 			Piranha piranha = Piranha.random();
@@ -97,8 +106,16 @@ public class PoolRoom extends SpecialRoom {
 			level.mobs.add( piranha );
 		}
 	}
-	
-	private static Item prize( Level level ) {
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		spawnItemsInRoom.add(prize(level));
+
+	}
+
+	private static Item prize(Level level ) {
 
 		Item prize;
 

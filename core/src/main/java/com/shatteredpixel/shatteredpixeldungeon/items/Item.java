@@ -38,6 +38,9 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Backpack;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
@@ -596,6 +599,15 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 	//item's value in gold coins
 	public int value() {
 		return 10 * quantity;
+	}
+
+	public static int trueValue(Item item) {
+		Item copy = item.getCopy();
+		if (copy instanceof Potion) ((Potion) copy).anonymize();
+		else if (copy instanceof Scroll) ((Scroll) copy).anonymize();
+		else if (copy instanceof Ring) ((Ring) copy).anonymize();
+		else copy.identify(false);
+		return copy.value();
 	}
 
 	//item's value in energy crystals

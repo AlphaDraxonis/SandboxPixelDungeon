@@ -35,7 +35,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
-public class SacrificeRoom extends SpecialRoom {
+public class SacrificeRoom extends SingleRewardSpecialRoom {
 
 	@Override
 	public int minWidth() { return 7; }
@@ -76,13 +76,23 @@ public class SacrificeRoom extends SpecialRoom {
 		Painter.fill( level, c.x - 1, c.y - 1, 3, 3, Terrain.EMBERS );
 		Painter.set( level, c, Terrain.PEDESTAL );
 
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(level);
+
 		int cell = level.pointToCell(c);
-		Blob.seed( cell, 6 + Dungeon.depth * 4, SacrificialFire.class, level ).setPrize(cell, prize(level));
+		Blob.seed( cell, 6 + Dungeon.depth * 4, SacrificialFire.class, level ).setPrize(cell, prize);
 
 		door.set( Door.Type.EMPTY );
 	}
 
-	public static Item prize( Level level ) {
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		if (prize == null) prize = prize(level);
+	}
+
+	public static Item prize(Level level ) {
 
 		//1 floor set higher than normal
 		Weapon prize = Generator.randomWeapon( level.levelScheme.getRegion());

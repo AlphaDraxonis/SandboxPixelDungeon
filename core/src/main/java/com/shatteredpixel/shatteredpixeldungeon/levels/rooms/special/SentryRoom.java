@@ -57,6 +57,10 @@ import com.watabou.utils.Rect;
 
 public class SentryRoom extends SpecialRoom {
 
+	{
+		spawnItemsOnLevel.add(new PotionOfHaste());
+	}
+
 	@Override
 	public int minWidth() { return 7; }
 	public int minHeight() { return 7; }
@@ -170,11 +174,23 @@ public class SentryRoom extends SpecialRoom {
 		level.mobs.add( sentry );
 
 		Painter.set(level, treasurePos, Terrain.PEDESTAL);
-		level.drop( prize( level ), level.pointToCell(treasurePos) ).type = Heap.Type.CHEST;
 
-		level.addItemToSpawn(new PotionOfHaste());
+		if (!itemsGenerated) generateItems(level);
+
+		int pos = level.pointToCell(treasurePos);
+		for (Item i : spawnItemsInRoom) {
+			level.drop( i, pos ).type = Heap.Type.CHEST;
+		}
+		spawnItemsInRoom.clear();
 
 		entrance.set( Door.Type.REGULAR );
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		spawnItemsInRoom.add(prize(level));
 	}
 
 	private static Item prize(Level level ) {

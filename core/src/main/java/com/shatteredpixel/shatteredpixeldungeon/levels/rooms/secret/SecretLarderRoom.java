@@ -21,10 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.ChargrilledMeat;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Pasty;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -55,27 +53,27 @@ public class SecretLarderRoom extends SecretRoom {
 		Painter.set(level, c, Terrain.GRASS);
 		
 		level.plant(new BlandfruitBush.Seed(), level.pointToCell(c));
-		
-		int extraFood = (int)(Hunger.STARVING - Hunger.HUNGRY) * (Dungeon.level.levelScheme.getRegion());
-		
-		while (extraFood > 0){
-			Food food;
-			if (extraFood >= Hunger.STARVING){
-				food = new Pasty();
-				extraFood -= Hunger.STARVING;
-			} else {
-				food = new ChargrilledMeat();
-				extraFood -= (Hunger.STARVING - Hunger.HUNGRY);
-			}
-			int foodPos;
-			do {
-				foodPos = level.pointToCell(random());
-			} while (level.map[foodPos] != Terrain.EMPTY_SP || level.heaps.get(foodPos) != null);
-			level.drop(food, foodPos);
-		}
+
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(Terrain.EMPTY_SP, level);
 		
 		entrance().set(Door.Type.HIDDEN);
 	}
-	
-	
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		int extraFood = (int)(Hunger.STARVING - Hunger.HUNGRY) * (level.levelScheme.getRegion());
+
+		while (extraFood > 0){
+			if (extraFood >= Hunger.STARVING){
+				spawnItemsInRoom.add(new Pasty());
+				extraFood -= Hunger.STARVING;
+			} else {
+				spawnItemsInRoom.add(new ChargrilledMeat());
+				extraFood -= (Hunger.STARVING - Hunger.HUNGRY);
+			}
+		}
+	}
 }

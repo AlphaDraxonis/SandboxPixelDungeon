@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.LevelSpinner;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -35,6 +36,11 @@ import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
 public class CrystalChoiceRoom extends SpecialRoom {
+
+	{
+		spawnItemsOnLevel.add(new IronKey());
+		spawnItemsOnLevel.add(new CrystalKey());
+	}
 
 	@Override
 	public int minWidth() { return 7; }
@@ -101,37 +107,66 @@ public class CrystalChoiceRoom extends SpecialRoom {
 			room2 = tmp;
 		}
 
-		int n = Random.NormalIntRange(3, 4);
-		for (int i = 0; i < n; i++){
-			Item reward = Generator.random(Random.oneOf(
-					Generator.Category.POTION,
-					Generator.Category.SCROLL
-			));
+		if (!itemsGenerated) generateItems(level);
+
+		for (Item i : spawnItemsInRoom) {
+			boolean isEq = LevelSpinner.availableForItem(i);
 			int pos;
-			do {
-				if (room1.square() >= 16){
-					pos = level.pointToCell(room1.random(1));
-				} else {
-					pos = level.pointToCell(room1.random(0));
+			int tries = 30;
+			if (isEq) {
+				pos = level.pointToCell(room2.center());
+
+				if (level.heaps.get(pos) != null) {
+					if (room2.square() >= 16) {
+						pos = level.pointToCell(room2.random(1));
+					} else {
+						pos = level.pointToCell(room2.random(0));
+					}
 				}
-			} while (level.heaps.get(pos) != null);
-			level.drop(reward, pos);
+
+			} else {
+
+				do {
+
+					if (room1.square() >= 16) {
+						pos = level.pointToCell(room1.random(1));
+					} else {
+						pos = level.pointToCell(room1.random(0));
+					}
+
+				} while (level.heaps.get(pos) != null && tries-- > 0);
+
+			}
+			Heap heap = level.drop( i, pos);
+
+			if (isEq) {
+				heap.type = Heap.Type.CHEST;
+				//opening the chest is optional, so it doesn't count for exploration bonus
+				heap.autoExplored = true;
+			}
 		}
 
-		Item hidden = Generator.random(Random.oneOf(
+		spawnItemsInRoom.clear();
+
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		int n = Random.NormalIntRange(3, 4);
+		for (int i = 0; i < n; i++){
+			spawnItemsInRoom.add(Generator.random(Random.oneOf(
+							Generator.Category.POTION,
+							Generator.Category.SCROLL
+			)));
+		}
+
+		spawnItemsInRoom.add(Generator.random(Random.oneOf(
 				Generator.Category.WAND,
 				Generator.Category.RING,
 				Generator.Category.ARTIFACT
-		));
-		Heap chest = level.drop(hidden, level.pointToCell(room2.center()));
-		chest.type = Heap.Type.CHEST;
-		//opening the chest is optional, so it doesn't count for exploration bonus
-		chest.autoExplored = true;
-
-		level.addItemToSpawn( new CrystalKey() );
-
-		entrance().set( Door.Type.LOCKED );
-		level.addItemToSpawn( new IronKey() );
-
+		)));
 	}
+
 }

@@ -35,6 +35,10 @@ import com.watabou.utils.Random;
 
 public class LibraryRoom extends SpecialRoom {
 
+	{
+		spawnItemsOnLevel.add(new IronKey());
+	}
+
 	public void paint( Level level ) {
 		
 		Painter.fill( level, this, Terrain.WALL );
@@ -44,27 +48,26 @@ public class LibraryRoom extends SpecialRoom {
 		
 		Painter.fill( level, left + 1, top+1, width() - 2, 1 , Terrain.BOOKSHELF );
 		Painter.drawInside(level, this, entrance, 1, Terrain.EMPTY_SP );
-		
-		int n = Random.NormalIntRange( 1, 3 );
-		for (int i=0; i < n; i++) {
-			int pos;
-			do {
-				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get( pos ) != null);
-			Item item;
-			if (i == 0)
-				item = Random.Int(2) == 0 ? new ScrollOfIdentify() : new ScrollOfRemoveCurse();
-			else
-				item = prize( level );
-			level.drop( item, pos );
-		}
+
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(Terrain.EMPTY_SP, level);
 		
 		entrance.set( Door.Type.LOCKED );
-		
-		level.addItemToSpawn( new IronKey() );
 	}
-	
-	private static Item prize( Level level ) {
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		int n = Random.NormalIntRange( 1, 3 );
+
+		spawnItemsInRoom.add(Random.Int(2) == 0 ? new ScrollOfIdentify() : new ScrollOfRemoveCurse());
+		for (int i=1; i < n; i++) {
+			spawnItemsInRoom.add(prize( level ));
+		}
+	}
+
+	private static Item prize(Level level ) {
 		
 		Item prize = level.findPrizeItem( TrinketCatalyst.class );
 		if (prize == null){

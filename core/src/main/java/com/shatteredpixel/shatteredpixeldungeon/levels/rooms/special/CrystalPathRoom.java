@@ -44,6 +44,12 @@ import java.util.Comparator;
 
 public class CrystalPathRoom extends SpecialRoom {
 
+	{
+		spawnItemsOnLevel.add(new CrystalKey());
+		spawnItemsOnLevel.add(new CrystalKey());
+		spawnItemsOnLevel.add(new CrystalKey());
+	}
+
 	@Override
 	public int minWidth() { return 7; }
 	public int minHeight() { return 7; }
@@ -241,10 +247,6 @@ public class CrystalPathRoom extends SpecialRoom {
 		//player can only see these if they unlock the previous doors, so don't count them for exploration
 		level.drop(potions.remove(0), shuffle == 1 ? prize1 : prize2).autoExplored = true;
 		level.drop(scrolls.remove(0), shuffle == 1 ? prize2 : prize1).autoExplored = true;
-
-		level.addItemToSpawn( new CrystalKey() );
-		level.addItemToSpawn( new CrystalKey() );
-		level.addItemToSpawn( new CrystalKey() );
 
 		entrance().set( Door.Type.UNLOCKED );
 

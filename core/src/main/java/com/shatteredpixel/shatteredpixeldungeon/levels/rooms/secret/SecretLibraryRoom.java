@@ -72,16 +72,21 @@ public class SecretLibraryRoom extends SecretRoom {
 		} else {
 			Painter.drawInside(level, this, entrance, (height() - 3) / 2, Terrain.EMPTY_SP);
 		}
+
+		if (!itemsGenerated) generateItems(level);
+		placeItemsAnywhere(Terrain.EMPTY_SP, level);
+
 		entrance.set( Door.Type.HIDDEN );
-		
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
 		int n = Random.IntRange( 2, 3 );
 		HashMap<Class<? extends Scroll>, Float> chances = new HashMap<>(scrollChances);
 		for (int i=0; i < n; i++) {
-			int pos;
-			do {
-				pos = level.pointToCell(random());
-			} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get( pos ) != null);
-			
+
 			Class<?extends Scroll> scrollCls = Random.chances(chances);
 			chances.put(scrollCls, 0f);
 
@@ -91,8 +96,7 @@ public class SecretLibraryRoom extends SecretRoom {
 				}
 			}
 
-			level.drop( Reflection.newInstance(scrollCls), pos );
+			spawnItemsInRoom.add(Reflection.newInstance(scrollCls));
 		}
 	}
-	
 }

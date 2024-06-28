@@ -31,6 +31,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
 import com.watabou.utils.Random;
 import com.watabou.utils.Rect;
 
+import java.util.Collections;
+
 public class GrassyGraveRoom extends StandardRoom {
 
 	@Override
@@ -56,15 +58,40 @@ public class GrassyGraveRoom extends StandardRoom {
 		int w = width() - 2;
 		int h = height() - 2;
 		int nGraves = Math.max( w, h ) / 2;
-		
-		int index = Random.Int( nGraves );
+
+		if (!itemsGenerated) generateItems(level);
+
+		int itemsPerGrave = spawnItemsInRoom.size() / nGraves;
+		int gravesWithMoreItems = spawnItemsInRoom.size() % nGraves;
+
+		int[] numItemsAt = new int[nGraves];
+		for (int i = 0; i < numItemsAt.length; i++) {
+			int plus = 0;
+			if (Random.Int(nGraves - gravesWithMoreItems) < gravesWithMoreItems) {
+				plus++;
+				gravesWithMoreItems--;
+			}
+			numItemsAt[i] = itemsPerGrave + plus;
+		}
+		Collections.shuffle(spawnItemsInRoom);
 		
 		int shift = Random.Int( 2 );
 		for (int i=0; i < nGraves; i++) {
 			int pos = w > h ?
 					left + 1 + shift + i * 2 + (top + 2 + Random.Int( h-2 )) * level.width() :
 					(left + 2 + Random.Int( w-2 )) + (top + 1 + shift + i * 2) * level.width();
-			level.drop( i == index ? Generator.random() : new Gold().random(), pos ).type = Heap.Type.TOMB;
+			for (int j = 0; j < numItemsAt[i]; j++) {
+				level.drop( spawnItemsInRoom.remove(0), pos ).type = Heap.Type.TOMB;
+			}
+			if (numItemsAt[i] == 0) {
+				level.drop( new Gold().random(), pos ).type = Heap.Type.TOMB;
+			}
 		}
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+		spawnItemsInRoom.add(Generator.random());
 	}
 }

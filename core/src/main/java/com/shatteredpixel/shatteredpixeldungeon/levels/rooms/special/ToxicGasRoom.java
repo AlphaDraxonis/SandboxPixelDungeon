@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -37,8 +38,13 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.utils.Point;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ToxicGasRoom extends SpecialRoom {
+
+	{
+		spawnItemsOnLevel.add(new PotionOfPurity());
+	}
 
 	@Override
 	public int minWidth() { return 7; }
@@ -93,20 +99,51 @@ public class ToxicGasRoom extends SpecialRoom {
 		}
 
 		goldPositions.remove((Integer) furthestPos);
+
+		if (!itemsGenerated) generateItems(level);
+
+		Item mainGold = null;
+		List<Item> spawnsInChest = new ArrayList<>(5);
+		for (Item item : spawnItemsInRoom.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
+			if (item instanceof Gold || item instanceof TrinketCatalyst) {
+				spawnItemsInRoom.remove(item);
+				spawnsInChest.add(item);
+			}
+		}
+		for (Item item : spawnsInChest) {
+			if (item instanceof Gold && (mainGold == null || item.quantity() > mainGold.quantity())) {
+				mainGold = item;
+			}
+		}
+		if (mainGold != null){
+			spawnsInChest.remove(mainGold);
+			level.drop(mainGold, furthestPos).type = Heap.Type.SKELETON;
+		}
+		for (Item i : spawnsInChest.toArray(EditorUtilies.EMPTY_ITEM_ARRAY)) {
+			level.drop(i, goldPositions.remove(0)).type = Heap.Type.CHEST;
+			spawnsInChest.remove(i);
+			if (goldPositions.isEmpty()) break;
+		}
+		spawnItemsInRoom.addAll(spawnsInChest);
+		placeItemsAnywhere(level);
+
+		entrance().set( Door.Type.UNLOCKED );
+
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
 		Item mainGold = new Gold().random();
 		mainGold.quantity(mainGold.quantity()*2);
-		level.drop(mainGold, furthestPos).type = Heap.Type.SKELETON;
+		spawnItemsInRoom.add(mainGold);
 
 		for (int i = 0; i < 2; i++){
 			Item item = level.findPrizeItem(TrinketCatalyst.class);
 			if (item == null) item = new Gold().random();
-			level.drop(item, goldPositions.remove(0)).type = Heap.Type.CHEST;
+			spawnItemsInRoom.add(item);
 		}
-
-		level.addItemToSpawn(new PotionOfPurity());
-
-		entrance().set( Door.Type.UNLOCKED );
-
 	}
 
 	@Override

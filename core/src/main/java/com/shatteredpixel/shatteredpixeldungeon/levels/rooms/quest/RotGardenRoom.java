@@ -39,6 +39,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 public class RotGardenRoom extends SpecialRoom {
+
+	{
+		spawnItemsOnLevel.add(new IronKey());
+	}
 	
 	@Override
 	public int minWidth() { return 10; }
@@ -50,7 +54,6 @@ public class RotGardenRoom extends SpecialRoom {
 
 		Door entrance = entrance();
 		entrance.set(Door.Type.LOCKED);
-		level.addItemToSpawn(new IronKey());
 
 		//define basic terrain, mostly high grass with some chaotically placed wall tiles
 		Painter.fill(level, this, Terrain.WALL);
