@@ -405,7 +405,7 @@ public abstract class Wand extends Item {
 			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(curUser, this) );
 			availableUsesToID -= uses;
 			usesLeftToID -= uses;
-			if (usesLeftToID <= 0 || curUser.pointsInTalent(Talent.SCHOLARS_INTUITION) == 2) {
+			if (usesLeftToID <= 0 || curUser.pointsInTalent(Talent.SCHOLARS_INTUITION) >= 2) {
 				identify();
 				if (curUser == Dungeon.hero) {
 					GLog.p(Messages.get(Wand.class, "identify"));
@@ -599,8 +599,8 @@ public abstract class Wand extends Item {
 					return;
 				}
 
-				float shield = curUser.HT * (0.04f*curCharges);
-				if (curUser.pointsInTalent(Talent.SHIELD_BATTERY) == 2) shield *= 1.5f;
+				float factor = 0.02f + 0.02f * curUser.pointsInTalent(Talent.SHIELD_BATTERY);
+				float shield = curUser.HT * (factor*curCharges);
 				Buff.affect(curUser, Barrier.class).setShield(Math.round(shield));
 				curUser.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(Math.round(shield)), FloatingText.SHIELDING);
 				curCharges = 0;

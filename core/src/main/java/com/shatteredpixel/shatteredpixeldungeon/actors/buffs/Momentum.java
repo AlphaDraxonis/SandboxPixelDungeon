@@ -116,7 +116,7 @@ public class Momentum extends HeroSubclassAbilityBuff {
 	public float speedMultiplier(){
 		if (freerunning()){
 			return 2;
-		} else if (target.invisible > 0 && targetHero().pointsInTalent(Talent.SPEEDY_STEALTH) == 3){
+		} else if (target.invisible > 0 && targetHero().pointsInTalent(Talent.SPEEDY_STEALTH) >= 3){
 			return 2;
 		} else {
 			return 1;

@@ -406,10 +406,10 @@ public enum Talent {
 			Buff.affect(hero, BrokenSeal.WarriorShield.class);
 		}
 
-		if (talent == VETERANS_INTUITION && hero.pointsInTalent(VETERANS_INTUITION) == 2){
+		if (talent == VETERANS_INTUITION && hero.pointsInTalent(VETERANS_INTUITION) >= 2){
 			if (hero.belongings.armor() != null)  hero.belongings.armor.identify();
 		}
-		if (talent == THIEFS_INTUITION && hero.pointsInTalent(THIEFS_INTUITION) == 2){
+		if (talent == THIEFS_INTUITION && hero.pointsInTalent(THIEFS_INTUITION) >= 2){
 			if (hero.belongings.ring instanceof Ring) hero.belongings.ring.identify();
 			if (hero.belongings.misc instanceof Ring) hero.belongings.misc.identify();
 			for (Item item : Dungeon.hero.belongings){
@@ -422,7 +422,7 @@ public enum Talent {
 			if (hero.belongings.ring instanceof Ring) hero.belongings.ring.setKnown();
 			if (hero.belongings.misc instanceof Ring) ((Ring) hero.belongings.misc).setKnown();
 		}
-		if (talent == ADVENTURERS_INTUITION && hero.pointsInTalent(ADVENTURERS_INTUITION) == 2){
+		if (talent == ADVENTURERS_INTUITION && hero.pointsInTalent(ADVENTURERS_INTUITION) >= 2){
 			if (hero.belongings.weapon() != null) hero.belongings.weapon().identify();
 		}
 
@@ -639,17 +639,17 @@ public enum Talent {
 	}
 
 	public static void onItemEquipped( Hero hero, Item item ){
-		if (hero.pointsInTalent(VETERANS_INTUITION) == 2 && item instanceof Armor){
+		if (hero.pointsInTalent(VETERANS_INTUITION) >= 2 && item instanceof Armor){
 			item.identify();
 		}
 		if (hero.hasTalent(THIEFS_INTUITION) && item instanceof Ring){
-			if (hero.pointsInTalent(THIEFS_INTUITION) == 2){
+			if (hero.pointsInTalent(THIEFS_INTUITION) >= 2){
 				item.identify();
 			} else {
 				((Ring) item).setKnown();
 			}
 		}
-		if (hero.pointsInTalent(ADVENTURERS_INTUITION) == 2 && item instanceof Weapon){
+		if (hero.pointsInTalent(ADVENTURERS_INTUITION) >= 2 && item instanceof Weapon){
 			item.identify();
 		}
 	}

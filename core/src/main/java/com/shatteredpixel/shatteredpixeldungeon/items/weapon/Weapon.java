@@ -412,11 +412,11 @@ abstract public class Weapon extends KindOfWeapon {
 			}
 
 			if (attacker.buff(Talent.SpiritBladesTracker.class) != null
-					&& ((Hero)attacker).pointsInTalent(Talent.SPIRIT_BLADES) == 4){
+					&& ((Hero)attacker).pointsInTalent(Talent.SPIRIT_BLADES) >= 4){
 				multi += 0.1f;
 			}
 			if (attacker.buff(Talent.StrikingWaveTracker.class) != null
-					&& ((Hero)attacker).pointsInTalent(Talent.STRIKING_WAVE) == 4){
+					&& ((Hero)attacker).pointsInTalent(Talent.STRIKING_WAVE) >= 4){
 				multi += 0.2f;
 			}
 

@@ -441,7 +441,7 @@ public class Hero extends Char {
 		if (buff(Talent.RestoredAgilityTracker.class) != null){
 			if (pointsInTalent(Talent.LIQUID_AGILITY) == 1){
 				evasion *= 4f;
-			} else if (pointsInTalent(Talent.LIQUID_AGILITY) == 2){
+			} else if (pointsInTalent(Talent.LIQUID_AGILITY) >= 2){
 				return INFINITE_EVASION;
 			}
 		}
@@ -1509,6 +1509,7 @@ public class Hero extends Char {
 		if (buff(Talent.WarriorFoodImmunity.class) != null){
 			if (pointsInTalent(Talent.IRON_STOMACH) == 1)       dmg = Math.round(dmg*0.25f);
 			else if (pointsInTalent(Talent.IRON_STOMACH) == 2)  dmg = Math.round(dmg*0.00f);
+			else if (pointsInTalent(Talent.IRON_STOMACH) > 2)   dmg = 0;
 		}
 
 		int preHP = HP + shielding();
@@ -2335,10 +2336,10 @@ public class Hero extends Char {
 		
 		boolean smthFound = false;
 
-		boolean circular = pointsInTalent(Talent.WIDE_SEARCH) == 1;
+		boolean circular = pointsInTalent(Talent.WIDE_SEARCH) % 2 == 1;
 		int distance = heroClass == HeroClass.ROGUE ? 2 : 1;
-		if (hasTalent(Talent.WIDE_SEARCH)) distance++;
-		
+		distance += (int) Math.ceil(pointsInTalent(Talent.WIDE_SEARCH) / 2f - 0.001f);//tzz check if it works ggv
+
 		boolean foresight = buff(Foresight.class) != null;
 		boolean foresightScan = foresight && !Dungeon.level.mapped[pos];
 

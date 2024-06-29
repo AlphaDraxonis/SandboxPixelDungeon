@@ -25,11 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
@@ -124,7 +120,7 @@ public class DeathMark extends ArmorAbility {
 				for (Char near : Actor.chars()) {
 					if (near != ch && near.alignment == Char.Alignment.ENEMY
 							&& PathFinder.distance[near.pos] != Integer.MAX_VALUE) {
-						if (Dungeon.hero.pointsInTalent(Talent.FEAR_THE_REAPER) == 4) {
+						if (Dungeon.hero.pointsInTalent(Talent.FEAR_THE_REAPER) >= 4) {
 							Buff.prolong(near, Terror.class, 5f).object = Dungeon.hero.id();
 						}
 						Buff.prolong(near, Cripple.class, 5f);
