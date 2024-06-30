@@ -43,6 +43,8 @@ public class WndTextInput extends Window {
 
 	protected TextInput textBox;
 
+	public final RenderedTextBlock messageBody;
+
 	protected RedButton btnCopy;
 	protected RedButton btnPaste;
 
@@ -77,13 +79,14 @@ public class WndTextInput extends Window {
 		}
 
 		if (body != null) {
-			final RenderedTextBlock txtBody = PixelScene.renderTextBlock(body, 6);
-			txtBody.maxWidth(width);
-			txtBody.setPos(0, pos);
-			add(txtBody);
+			messageBody = PixelScene.renderTextBlock(body, 6);
+			messageBody.maxWidth(width);
+			messageBody.setPos(0, pos);
+			add(messageBody);
 
-			pos = txtBody.bottom() + 2 * MARGIN;
+			pos = messageBody.bottom() + 2 * MARGIN;
 		}
+		else messageBody = null;
 
 		textBox = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), multiLine, PixelScene.uiCamera.zoom){
 			@Override

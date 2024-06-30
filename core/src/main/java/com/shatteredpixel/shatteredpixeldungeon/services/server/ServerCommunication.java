@@ -86,8 +86,7 @@ public final class ServerCommunication {
                 }).run();
             }
         }
-        return "https://script.google.com/macros/s/AKfycbx2kLLDdyQtzJIy9FDRQZijQ0PpDCtwYb7p0cgBriHEsxSqo-3B0obrOIjzGWQqnRdO1A/exec";
-//        return URL == null ? "https://script.google.com/macros/s/AKfycbwbBmqKmTGIbeR9CjMhMh9J8ykp4EhiL7qBWzi95jAkCYDvR0Rl1Ank-5xyeeOWdk1JsQ/exec" : URL;
+        return URL == null ? "https://script.google.com/macros/s/AKfycbz3TNz5F57DZmfIHplSko_VuPnVTVV6ym5cR2ZzB0PqaZBfn7UAikdM9FPG0F2XLNqFzQ/exec" : URL;
     }
 
     static String getUUID() {
@@ -127,8 +126,8 @@ public final class ServerCommunication {
                 @Override
                 protected void onSelect(int index) {
                     if (index == 0) {
-                        Gdx.net.cancelHttpRequest(httpRequest);
                         if (onCancel != null) onCancel.run();
+                        else Gdx.net.cancelHttpRequest(httpRequest);
                     }
                 }
             };
@@ -154,6 +153,22 @@ public final class ServerCommunication {
             if (waitWindow instanceof WndOptions) {
                 ((WndOptions) waitWindow).appendMessage(msg);
             }
+        }
+
+        public void hideCancel() {
+            Game.runOnRenderThread(() -> {
+                if (waitWindow != null) waitWindow.hide();
+                waitWindow = new WndOptions(Messages.get(ServerCommunication.class, "wait_title"),
+                        !(waitWindow instanceof WndOptions)  ? Messages.get(ServerCommunication.class, "wait_body") : ((WndOptions) waitWindow).getMessage()) {
+                    {
+                        tfMessage.setHighlighting(false);
+                    }
+                    @Override
+                    public void onBackPressed() {
+                    }
+                };
+                Game.scene().addToFront(waitWindow);
+            });
         }
     }
 
@@ -346,7 +361,7 @@ public final class ServerCommunication {
         Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.GET);
         httpRequest.setUrl(getURL() + "?action=deleteDungeon&dungeonID=" + dungeonID + "&userID=" + getUUID() + "&salt=" + dungeonName.hashCode());
 
-        callback.showWindow(httpRequest);
+        callback.hideCancel();
 
         Gdx.net.sendHttpRequest(httpRequest, new UploadDataListener(callback));
     }

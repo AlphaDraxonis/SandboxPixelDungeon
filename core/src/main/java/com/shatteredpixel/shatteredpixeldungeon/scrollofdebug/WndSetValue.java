@@ -89,6 +89,7 @@ public class WndSetValue extends Window {
 				}
 			}
 		};
+		w.messageBody.setHighlighting(false);
 		w.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {
 			@Override
 			public boolean acceptChar(TextField textField, char c) {
@@ -151,6 +152,7 @@ public class WndSetValue extends Window {
 				}
 			}
 		};
+		w.messageBody.setHighlighting(false);
 		w.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {
 			@Override
 			public boolean acceptChar(TextField textField, char c) {
@@ -214,6 +216,10 @@ public class WndSetValue extends Window {
 				Messages.get(WndSetValue.class, "cancel")
 		) {
 			private boolean rejectHide = false;
+
+			{
+				messageBody.setHighlighting(false);
+			}
 
 			@Override
 			public void onSelect(boolean positive, String text) {

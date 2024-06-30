@@ -204,4 +204,8 @@ public class WndOptions extends Window {
 		tfMessage.text(tfMessage.text() + " " + msg);
 		layout(width);
 	}
+
+	public String getMessage() {
+		return tfMessage.text();
+	}
 }

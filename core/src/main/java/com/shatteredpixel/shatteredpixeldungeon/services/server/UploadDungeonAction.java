@@ -82,9 +82,13 @@ public class UploadDungeonAction {
 
 			callback.showWindow(httpRequest, () -> {
 				canceled = true;
-				for (Net.HttpRequest request : openRequests.toArray(new Net.HttpRequest[0])) Gdx.net.cancelHttpRequest(request);//tzz not working!
+				for (Net.HttpRequest request : openRequests.toArray(new Net.HttpRequest[0])) Gdx.net.cancelHttpRequest(request);
 				openRequests.clear();
 				openResponses = 0;
+
+				if (folderID != null) {
+					sendCancel(folderID, folderID);
+				}
 			});
 
 			Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
@@ -95,6 +99,10 @@ public class UploadDungeonAction {
 						String result = httpResponse.getResultAsString();
 						if (result.startsWith("true")) {
 							folderID = result.substring(4);
+							if (canceled) {
+								UploadDungeonAction.sendCancel(folderID, folderID);
+								return;
+							}
 							ServerDungeonList.dungeons = null;
 							openResponses += files.length;
 
@@ -154,7 +162,7 @@ public class UploadDungeonAction {
 			httpRequest.setContent("content=" + b);
 
 			openRequests.add(httpRequest);
-			Gdx.net.sendHttpRequest(httpRequest, new FileUploadListener() {
+			Gdx.net.sendHttpRequest(httpRequest, new FileUploadListener(file.name()) {
 				@Override
 				protected void decreaseOpenResponses() {
 					openRequests.remove(httpRequest);
@@ -178,6 +186,12 @@ public class UploadDungeonAction {
 
 	private class FileUploadListener implements Net.HttpResponseListener {
 
+		private final String fileName;
+
+		private FileUploadListener(String fileName) {
+			this.fileName = fileName;
+		}
+
 		@Override
 		public void handleHttpResponse(Net.HttpResponse httpResponse) {
 			int statusCode = httpResponse.getStatus().getStatusCode();
@@ -188,7 +202,7 @@ public class UploadDungeonAction {
 					else errors.add(new Exception(result));
 				}
 				else Game.runOnRenderThread(() -> {
-					callback.appendMessage(Messages.get(ServerCommunication.class, "sent"));
+					callback.appendMessage(Messages.get(ServerCommunication.class, "sent", fileName));
 				});
 			} else {
 				errors.add((new SocketException(String.valueOf(statusCode))));
@@ -214,10 +228,63 @@ public class UploadDungeonAction {
 
 				if (canceled) return;
 
-				if (errors.isEmpty()) Game.runOnRenderThread(() -> callback.successful(folderID));
+				if (errors.isEmpty()) {
+					sendFinish();
+				}
 				else Game.runOnRenderThread(() -> callback.failed(errors.get(0)));
 			}
 		}
 
+	}
+
+	private void sendFinish() {
+		callback.hideCancel();
+
+		Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
+		httpRequest.setUrl(ServerCommunication.getURL()
+				+ "?action=finishUpload"
+				+ "&dungeonID=" + folderID
+				+ "&userID=" + ServerCommunication.getUUID());
+		httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		httpRequest.setContent("empty");
+
+		Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+			@Override
+			public void handleHttpResponse(Net.HttpResponse httpResponse) {
+				int statusCode = httpResponse.getStatus().getStatusCode();
+				if (statusCode == 200) {
+					String result = httpResponse.getResultAsString();
+					if (result.startsWith("true")) {
+						Game.runOnRenderThread(() -> callback.successful(folderID));
+					} else if (result.startsWith("banned"))
+						Game.runOnRenderThread(() -> callback.failed(new ServerCommunication.Banned()));
+					else Game.runOnRenderThread(() -> callback.failed(new Exception(result)));
+				} else {
+					Game.runOnRenderThread(() -> callback.failed(new SocketException(String.valueOf(statusCode))));
+				}
+			}
+
+			@Override
+			public void failed(Throwable throwable) {
+				Game.runOnRenderThread(() -> callback.failed(throwable));
+			}
+
+			@Override
+			public void cancelled() {
+			}
+		});
+	}
+
+	public static void sendCancel(String dungeonID, String userIdFileName) {
+		Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
+		httpRequest.setUrl(ServerCommunication.getURL()
+				+ "?action=cancel"
+				+ "&dungeonID=" + dungeonID
+				+ "&userIdFileName=" + userIdFileName
+				+ "&userID=" + ServerCommunication.getUUID());
+		httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		httpRequest.setContent("empty");
+
+		Gdx.net.sendHttpRequest(httpRequest, null);
 	}
 }

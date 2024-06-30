@@ -30,6 +30,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Base64Coder;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.Game;
 
 import java.io.FileNotFoundException;
@@ -49,31 +50,14 @@ public class UpdateDungeonAction {
 	private List<Net.HttpRequest> openRequests = new ArrayList<>();
 
 	private String folderID;
+	private String oldDungeonID;
+
+	private FileHandle[] files;
 
 	public UpdateDungeonAction(DungeonPreview oldDungeonPreview, String dungeonName, String description, int difficulty, ServerCommunication.UploadCallback callback) {
 		this.callback = callback;
 		try {
 
-			DungeonPreview uploadPreview = new DungeonPreview();
-			uploadPreview.title = dungeonName == null ? oldDungeonPreview.title : dungeonName;
-			uploadPreview.description = description;
-			uploadPreview.version = Game.version;
-			uploadPreview.intVersion = Game.versionCode;
-			uploadPreview.uploader = oldDungeonPreview.uploader;
-			uploadPreview.difficulty = difficulty;
-
-			Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
-			httpRequest.setUrl(ServerCommunication.getURL()
-					+ "?action=updateStart"
-					+ "&userID=" + ServerCommunication.getUUID()
-					+ "&folderID=" + oldDungeonPreview.dungeonFileID
-					+ "&changeFiles=" + (dungeonName != null)
-					+ uploadPreview.writeArgumentsForURL());
-			httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
-			httpRequest.setContent("empty");
-
-
-			final FileHandle[] files;
 			if (dungeonName == null) {
 				files = null;
 			} else {
@@ -85,11 +69,35 @@ public class UpdateDungeonAction {
 				}
 			}
 
+			DungeonPreview uploadPreview = new DungeonPreview();
+			uploadPreview.title = dungeonName == null ? oldDungeonPreview.title : dungeonName;
+			uploadPreview.description = description;
+			uploadPreview.version = Game.version;
+			uploadPreview.intVersion = Game.versionCode;
+			uploadPreview.uploader = oldDungeonPreview.uploader;
+			uploadPreview.difficulty = difficulty;
+
+			oldDungeonID = oldDungeonPreview.dungeonFileID;
+
+			Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
+			httpRequest.setUrl(ServerCommunication.getURL()
+					+ "?action=updateStart"
+					+ "&userID=" + ServerCommunication.getUUID()
+					+ "&folderID=" + oldDungeonPreview.dungeonFileID
+					+ "&changeFiles=" + (dungeonName != null)
+					+ uploadPreview.writeArgumentsForURL());
+			httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
+			httpRequest.setContent("empty");
+
 			callback.showWindow(httpRequest, () -> {
 				canceled = true;
-				for (Net.HttpRequest request : openRequests.toArray(new Net.HttpRequest[0])) Gdx.net.cancelHttpRequest(request);//tzz not working!
+				for (Net.HttpRequest request : openRequests.toArray(new Net.HttpRequest[0])) Gdx.net.cancelHttpRequest(request);
 				openRequests.clear();
 				openResponses = 0;
+
+				if (folderID != null) {
+					UploadDungeonAction.sendCancel(folderID, files == null ? oldDungeonID : folderID);
+				}
 			});
 
 			Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
@@ -100,8 +108,12 @@ public class UpdateDungeonAction {
 						String result = httpResponse.getResultAsString();
 						if (result.startsWith("true")) {
 							folderID = result.substring(4);
+							if (canceled) {
+								UploadDungeonAction.sendCancel(folderID, files == null ? oldDungeonID : folderID);
+								return;
+							}
 							if (files == null) {
-								Game.runOnRenderThread(() -> callback.successful(folderID));
+								sendFinish();
 							} else {
 								openResponses += files.length;
 								for (FileHandle f : files) {
@@ -157,7 +169,7 @@ public class UpdateDungeonAction {
 			httpRequest.setContent("content=" + b);
 
 			openRequests.add(httpRequest);
-			Gdx.net.sendHttpRequest(httpRequest, new FileUploadListener() {
+			Gdx.net.sendHttpRequest(httpRequest, new FileUploadListener(file.name()) {
 				@Override
 				protected void decreaseOpenResponses() {
 					openRequests.remove(httpRequest);
@@ -181,6 +193,12 @@ public class UpdateDungeonAction {
 
 	private class FileUploadListener implements Net.HttpResponseListener {
 
+		private final String fileName;
+
+		private FileUploadListener(String fileName) {
+			this.fileName = fileName;
+		}
+
 		@Override
 		public void handleHttpResponse(Net.HttpResponse httpResponse) {
 			int statusCode = httpResponse.getStatus().getStatusCode();
@@ -190,6 +208,9 @@ public class UpdateDungeonAction {
 					if (result.startsWith("banned")) errors.add(new ServerCommunication.Banned());
 					else errors.add(new Exception(result));
 				}
+				else Game.runOnRenderThread(() -> {
+					callback.appendMessage(Messages.get(ServerCommunication.class, "sent", fileName));
+				});
 			} else {
 				errors.add((new SocketException(String.valueOf(statusCode))));
 			}
@@ -212,10 +233,54 @@ public class UpdateDungeonAction {
 			openResponses--;
 			if (openResponses <= 0) {
 				if (canceled) return;
-				if (errors.isEmpty()) Game.runOnRenderThread(() -> callback.successful(folderID));
+
+				if (errors.isEmpty()) {
+					sendFinish();
+				}
+
 				else Game.runOnRenderThread(() -> callback.failed(errors.get(0)));
 			}
 		}
 
+	}
+
+	private void sendFinish() {
+		callback.hideCancel();
+
+		Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
+		httpRequest.setUrl(ServerCommunication.getURL()
+				+ "?action=finishUpdate"
+				+ "&dungeonID=" + folderID
+				+ "&oldDungeon=" + oldDungeonID
+				+ "&changeFiles=" + (files != null)
+				+ "&userID=" + ServerCommunication.getUUID());
+		httpRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		httpRequest.setContent("empty");
+
+		Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
+			@Override
+			public void handleHttpResponse(Net.HttpResponse httpResponse) {
+				int statusCode = httpResponse.getStatus().getStatusCode();
+				if (statusCode == 200) {
+					String result = httpResponse.getResultAsString();
+					if (result.startsWith("true")) {
+						Game.runOnRenderThread(() -> callback.successful(files == null ? oldDungeonID : folderID));
+					} else if (result.startsWith("banned"))
+						Game.runOnRenderThread(() -> callback.failed(new ServerCommunication.Banned()));
+					else Game.runOnRenderThread(() -> callback.failed(new Exception(result)));
+				} else {
+					Game.runOnRenderThread(() -> callback.failed(new SocketException(String.valueOf(statusCode))));
+				}
+			}
+
+			@Override
+			public void failed(Throwable throwable) {
+				Game.runOnRenderThread(() -> callback.failed(throwable));
+			}
+
+			@Override
+			public void cancelled() {
+			}
+		});
 	}
 }

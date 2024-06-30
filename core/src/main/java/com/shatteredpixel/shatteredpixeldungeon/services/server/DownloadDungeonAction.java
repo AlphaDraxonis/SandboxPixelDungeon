@@ -63,7 +63,8 @@ public class DownloadDungeonAction {
 
 		callback.showWindow(httpRequest, () -> {
 			canceled = true;
-			for (Net.HttpRequest request : openRequests.toArray(new Net.HttpRequest[0])) Gdx.net.cancelHttpRequest(request);//tzz not working!
+			Gdx.net.cancelHttpRequest(httpRequest);
+			for (Net.HttpRequest request : openRequests.toArray(new Net.HttpRequest[0])) Gdx.net.cancelHttpRequest(request);
 			openRequests.clear();
 			openResponses = 0;
 
@@ -77,6 +78,7 @@ public class DownloadDungeonAction {
 		Gdx.net.sendHttpRequest(httpRequest, new Net.HttpResponseListener() {
 			@Override
 			public void handleHttpResponse(Net.HttpResponse httpResponse) {
+				if (canceled) return;
 				int statusCode = httpResponse.getStatus().getStatusCode();
 				if (statusCode == 200) {
 
@@ -141,6 +143,7 @@ public class DownloadDungeonAction {
 
 		@Override
 		public void handleHttpResponse(Net.HttpResponse httpResponse) {
+			if (canceled) return;
 			int statusCode = httpResponse.getStatus().getStatusCode();
 			if (statusCode == 200) {
 				try {

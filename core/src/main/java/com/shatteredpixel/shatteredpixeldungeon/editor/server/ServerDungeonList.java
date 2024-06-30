@@ -220,7 +220,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			content.setSize(width, 0);
 			content.setSize(width, EditorUtilies.layoutCompsLinear(GAP, content, mainWindowComps));
 		}
-		upload.setRect(width - 17, height - 15, 16, 16);
+		upload.setRect(x + width - 17, y + height - 15, 16, 16);
 	}
 
 	@Override
@@ -324,18 +324,33 @@ public class ServerDungeonList extends MultiWindowTabComp {
 
 		@Override
 		protected void layout() {
-			if (desc == null) super.layout();
-			else {
-				desc.maxWidth(getLabelMaxWidth() - 3);
-				label.maxWidth(getLabelMaxWidth());
-				height = label.height() + desc.height() + 9;
+			if (desc == null) {
 				super.layout();
-				label.setPos(label.left(), y + 3);
-				desc.setPos(label.left() + 3, label.bottom() + 4);
+				return;
 			}
+
+			desc.maxWidth(getLabelMaxWidth() - 3);
+			label.maxWidth(getLabelMaxWidth());
+			height = label.height() + desc.height() + 9;
+			super.layout();
+			label.setPos(label.left(), y + 3);
 
 			label2.setPos(label.right(), label.top());
 			label3.setPos(label2.right(), label2.top());
+			
+			if (label3.right() > width - 3) {
+				if (label3.width() + label2.width() < label.maxWidth()) {
+					label2.setPos(label.left(), label.bottom() + 4);
+					label3.setPos(label2.right(), label2.top());
+				} else if (label2.right() <= width - 3) {
+					label3.setPos(label.left(), label.bottom() + 4);
+				} else {
+					label2.setPos(label.left(), label.bottom() + 4);
+					label3.setPos(label2.left(), label2.bottom() + 4);
+				}
+			}
+
+			if (desc != null) desc.setPos(label.left() + 3, label.bottom() + 4);
 		}
 
 		@Override
@@ -393,7 +408,8 @@ public class ServerDungeonList extends MultiWindowTabComp {
 					super.closeCurrentSubMenu();
 					if (outsideSp != null) {
 						outsideSp.setVisible(numPages > 1);
-						serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - outsideSp.height() - 4);
+						if (outsideSp.visible)
+							serverDungeonList.setSize(WndServerDungeonList.this.width, WndServerDungeonList.this.height - outsideSp.height() - 4);
 					}
 				}
 			});
