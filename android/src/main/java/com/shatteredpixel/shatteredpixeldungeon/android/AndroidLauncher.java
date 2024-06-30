@@ -58,7 +58,7 @@ import com.watabou.utils.FileUtils;
 
 public class AndroidLauncher extends AndroidApplication {
 
-	public static final boolean FILE_ACCESS_ENABLED_ON_ANDROID_11 = true;//GPlay doesn't like apps that want to do this
+	public static final boolean FILE_ACCESS_ENABLED_ON_ANDROID_11 = false;//GPlay doesn't like apps that want to do this
 
 	static final int REQUEST_DIRECTORY = 123, REQUEST_READ_EXTERNAL_STORAGE = 124;
 	static Consumer<FileHandle> selectFileCallback;
