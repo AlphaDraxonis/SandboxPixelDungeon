@@ -55,6 +55,9 @@ import java.util.*;
 
 public class EditorScene extends DungeonScene {
 
+    public static boolean isEditing;
+
+
     private static EditorScene scene;
 
     private DungeonTerrainTilemap tiles;
@@ -97,6 +100,7 @@ public class EditorScene extends DungeonScene {
     private static PointF mainCameraPos;
 
     public static void open(CustomLevel customLevel) {
+        isEditing = true;
         displayZones = false;
         if (customLevel != EditorScene.customLevel) {
             String oldLvlName;
@@ -125,6 +129,7 @@ public class EditorScene extends DungeonScene {
             EditorScene.customLevel.levelScheme.unloadLevel();
             customLevel = null;
         }
+        isEditing = false;
     }
 
     public static void resetCameraPos() {

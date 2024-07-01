@@ -177,6 +177,7 @@ public class SideControlPane extends Component {
                 if (GamesInProgress.selectedClass == null)
                     GamesInProgress.selectedClass = HeroClass.WARRIOR;
                 GamesInProgress.curSlot = GamesInProgress.TEST_SLOT;
+                EditorScene.isEditing = false;
                 SandboxPixelDungeon.switchScene(HeroSelectScene.class);
             } catch (IOException | CustomDungeonSaves.RenameRequiredException e) {
                 SandboxPixelDungeon.reportException(e);

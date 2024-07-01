@@ -481,7 +481,7 @@ public class CustomDungeon implements Bundlable {
     }
 
     public static boolean isEditing() {
-        return Dungeon.hero == null;
+        return EditorScene.isEditing;
     }
 
     public static boolean knowsEverything() {
