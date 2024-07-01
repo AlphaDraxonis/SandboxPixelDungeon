@@ -247,8 +247,9 @@ public class Generator {
 					WandOfRegrowth.class,
 
 					WandOfInstability.class,
+					WandOfSummoning.class,
 			};
-			WAND.defaultProbs = new float[]{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  0 };
+			WAND.defaultProbs = new float[]{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,  0, 0 };
 			WAND.probs = WAND.defaultProbs.clone();
 			
 			//see generator.randomWeapon

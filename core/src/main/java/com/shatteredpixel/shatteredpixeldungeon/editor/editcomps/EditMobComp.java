@@ -590,7 +590,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     asMobItems.add(new MobItem(m));
                 }
             }
-            summonMobs = new ItemContainerWithLabel<MobItem>(asMobItems, label("summon_mob")) {
+            summonMobs = new ItemContainerWithLabel<MobItem>(asMobItems, this, label("summon_mob")) {
                 @Override
                 public boolean itemSelectable(Item item) {
                     return item instanceof MobItem;
@@ -615,12 +615,6 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                 @Override
                 public Class<? extends Bag> preferredBag() {
                     return Mobs.bag.getClass();
-                }
-
-                @Override
-                protected void onSlotNumChange() {
-                    super.onSlotNumChange();
-                    EditMobComp.this.layout();
                 }
             };
             add(summonMobs);

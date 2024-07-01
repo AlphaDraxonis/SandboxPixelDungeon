@@ -498,7 +498,7 @@ public abstract class Mob extends Char implements Customizable {
 		}
 
 		if (following) {
-			if (playerAlignment == NORMAL_ALIGNMENT && !(this instanceof NPC)) return Dungeon.hero;
+			if (playerAlignment == NORMAL_ALIGNMENT && alignment == Alignment.ENEMY && !(this instanceof NPC)) return Dungeon.hero;
 		}
 
 		//if we are an alert enemy, auto-hunt a target that is affected by aggression, even another enemy

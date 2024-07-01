@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.ArmorAbility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -132,6 +133,10 @@ public class ElementalBlast extends ArmorAbility {
 		if (wandCls == null){
 			GLog.w(Messages.get(this, "no_staff"));
 			return;
+		}
+
+		if (wandCls == WandOfInstability.class) {
+			wandCls = ((WandOfInstability) ((MagesStaff) hero.belongings.getItem(MagesStaff.class)).wand).oneTimeRandomWand();
 		}
 
 		int aoeSize = 4 + hero.pointsInTalent(Talent.BLAST_RADIUS);
@@ -355,7 +360,18 @@ public class ElementalBlast extends ArmorAbility {
 										Buff.prolong( mob, Roots.class, effectMulti*Roots.DURATION );
 										charsHit++;
 									}
+
+
+								//*** Wand of Summoning ***
+								} else if (finalWandCls == WandOfSummoning.class) {
+									Wraith w = Wraith.spawnAt(target, Wraith.class);
+									if (w != null) {
+										Buff.affect(w, Corruption.class);
+										Buff.affect(w, AnkhInvulnerability.class, 15);
+										Buff.affect(w, Adrenaline.class).permanent = true;
+									}
 								}
+
 							}
 
 						}

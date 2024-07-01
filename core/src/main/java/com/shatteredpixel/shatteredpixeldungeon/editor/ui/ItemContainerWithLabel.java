@@ -27,8 +27,8 @@ public class ItemContainerWithLabel<T extends Item> extends ItemContainer<T> {
         this(itemList, editComp, label, reverseUiOrder, 0, Integer.MAX_VALUE);
     }
 
-	public ItemContainerWithLabel(List<T> itemList, DefaultEditComp<?> editComp, String label, boolean reversceUiOrder, int minSlots, int maxSlots) {
-		super(itemList, editComp, reversceUiOrder, minSlots, maxSlots);
+	public ItemContainerWithLabel(List<T> itemList, DefaultEditComp<?> editComp, String label, boolean reverseUiOrder, int minSlots, int maxSlots) {
+		super(itemList, editComp, reverseUiOrder, minSlots, maxSlots);
 
         this.label = PixelScene.renderTextBlock(label, 9);
         add(this.label);

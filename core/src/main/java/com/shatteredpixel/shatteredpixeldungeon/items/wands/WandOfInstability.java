@@ -94,11 +94,15 @@ public class WandOfInstability extends Wand {
 
 	private void maybeSetCurWandEffect() {
 		if (curWandEffect == null) {
-			curWandEffect = Reflection.newInstance(Random.element(RANDOM_WAND_EFFECTS));
+			curWandEffect = Reflection.newInstance(oneTimeRandomWand());
 			curWandEffect.level(level());
 			curWandEffect.cursed = cursed;
 			curWandEffect.curCharges = curCharges;
 		}
+	}
+
+	public Class<? extends Wand> oneTimeRandomWand() {
+		return Random.element(RANDOM_WAND_EFFECTS);
 	}
 
 	@Override

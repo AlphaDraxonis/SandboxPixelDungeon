@@ -143,14 +143,14 @@ public class Wraith extends Mob implements MobBasedOnDepth {
 		}
 	}
 
-	public static void showSpawnParticle(Wraith w) {
-		w.sprite.alpha( 0 );
-		w.sprite.parent.add( new AlphaTweener( w.sprite, 1, 0.5f ) );
+	public static void showSpawnParticle(Mob wraith) {
+		wraith.sprite.alpha( 0 );
+		wraith.sprite.parent.add( new AlphaTweener( wraith.sprite, 1, 0.5f ) );
 
-		if (w instanceof TormentedSpirit){
-			w.sprite.emitter().burst(ChallengeParticle.FACTORY, 10);
+		if (wraith instanceof TormentedSpirit){
+			wraith.sprite.emitter().burst(ChallengeParticle.FACTORY, 10);
 		} else {
-			w.sprite.emitter().burst(ShadowParticle.CURSE, 5);
+			wraith.sprite.emitter().burst(ShadowParticle.CURSE, 5);
 		}
 	}
 

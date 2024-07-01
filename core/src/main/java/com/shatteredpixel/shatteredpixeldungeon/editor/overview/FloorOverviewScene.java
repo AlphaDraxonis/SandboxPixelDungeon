@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.overview;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.EditorItemBag;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
@@ -32,6 +33,9 @@ public class FloorOverviewScene extends PixelScene {
 
     @Override
     public void create() {
+
+        EditorScene.isEditing = true;
+
         super.create();
 
         instance = this;

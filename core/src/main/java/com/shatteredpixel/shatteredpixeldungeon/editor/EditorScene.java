@@ -613,12 +613,15 @@ public class EditorScene extends DungeonScene {
 //        Emitter.freezeEmitters = false;
 
         if (Dungeon.customDungeon.getFloor(Dungeon.level.name) != null && error == null) {
+            boolean wasEditing = EditorScene.isEditing;
             try {
+                EditorScene.isEditing = true;
                 CustomDungeonSaves.saveDungeon(Dungeon.customDungeon);
                 CustomDungeonSaves.saveLevel(Dungeon.level);//only save if not already deleted
             } catch (IOException e) {
                 SandboxPixelDungeon.reportException(e);
             }
+            EditorScene.isEditing = wasEditing;
         }
 
         super.destroy();

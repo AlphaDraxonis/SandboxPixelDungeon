@@ -2,12 +2,14 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.editcomps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.ReorderHeapComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.customizables.ChangeItemCustomizable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.parts.transitions.ChooseDestLevelComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TrapItem;
@@ -34,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfEnc
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfSummoning;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
@@ -79,6 +82,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledButton enchantBtn;
     protected StyledSpinner numChoosableTrinkets;
     protected ItemContainer<Trinket> rollTrinkets;
+    protected ItemContainer<MobItem> summonMobs;
     protected StyledSpinner docPageType;
     protected StringInputComp docPageText, docPageTitle;
     protected ChooseDestLevelComp keylevel;
@@ -334,6 +338,45 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 add(shockerDuration);
             }
 
+            if (item instanceof WandOfSummoning) {
+                List<MobItem> asMobItems = new ArrayList<>();
+                if (((WandOfSummoning) item).summonTemplate != null) {
+                    for (Mob m : ((WandOfSummoning) item).summonTemplate) {
+                        asMobItems.add(new MobItem(m));
+                    }
+                }
+                summonMobs = new ItemContainerWithLabel<MobItem>(asMobItems, this, label("summon_mob"), false, 1, Integer.MAX_VALUE) {
+                    @Override
+                    public boolean itemSelectable(Item item) {
+                        return item instanceof MobItem;
+                    }
+
+                    @Override
+                    protected void doAddItem(MobItem mobItem) {
+                        mobItem = (MobItem) mobItem.getCopy();
+                        super.doAddItem(mobItem);
+                        ((WandOfSummoning) item).summonTemplate.add(mobItem.mob());
+                        ((WandOfSummoning) item).nextSummon = null;
+                    }
+
+                    @Override
+                    protected boolean removeSlot(ItemContainer<MobItem>.Slot slot) {
+                        if (super.removeSlot(slot)) {
+                            ((WandOfSummoning) item).summonTemplate.remove(((MobItem) slot.item()).mob());
+                            ((WandOfSummoning) item).nextSummon = null;
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public Class<? extends Bag> preferredBag() {
+                        return Mobs.bag.getClass();
+                    }
+                };
+                add(summonMobs);
+            }
+
             if (item instanceof CustomDocumentPage) {
 
                 List<String> types = CustomDocumentPage.types;
@@ -487,7 +530,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
         rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
                 augmentationSpinner, curseBtn, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, docPageType, spreadIfLoot};
-        linearComps = new Component[]{rollTrinkets, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
+        linearComps = new Component[]{rollTrinkets, summonMobs, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
     }
 
     @Override
@@ -701,6 +744,9 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
         if (a instanceof MagesStaff) {
             if (areEqual(((MagesStaff) a).wand, ((MagesStaff) b).wand)) return false;
+        }
+        if (a instanceof WandOfSummoning) {
+            if (!EditMobComp.isMobListEqual(((WandOfSummoning) a).summonTemplate, ((WandOfSummoning) b).summonTemplate)) return false;
         }
         if (a instanceof Key) {
             if (!((Key) a).levelName.equals(((Key) b).levelName)) return false;
