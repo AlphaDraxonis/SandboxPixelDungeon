@@ -4,6 +4,7 @@ package com.shatteredpixel.shatteredpixeldungeon.ui;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
+import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.Point;
 
 //This Window slowly moves into the screen from a given starting point, making it ideal as a popup-window
@@ -86,11 +87,19 @@ public class SlowExtendWindow extends Window {
 
         camera.resize((int) chrome.width - chrome.marginLeft(), (int) chrome.height - chrome.marginTop());
 
-        camera.x = (int) (Game.width - camera.screenWidth()) / 2;
-        camera.x += xOffset * camera.zoom - chrome.marginLeft();
+        if (DeviceCompat.isDesktop()) {//no idea why this is necessary...
+            camera.x = (int) (Game.width - camera.screenWidth()) / 2;
+            camera.x += (int) (xOffset * camera.zoom - chrome.marginLeft() + 1);
 
-        camera.y = (int) (Game.height - camera.screenHeight()) / 2;
-        camera.y += yOffset * camera.zoom - chrome.marginTop();
+            camera.y = (int) (Game.height - camera.screenHeight()) / 2;
+            camera.y += (int) (yOffset * camera.zoom - chrome.marginTop());
+        } else {
+            camera.x = (int) (Game.width - camera.screenWidth()) / 2 - chrome.marginHor() - 1;
+            camera.x += (int) (xOffset * camera.zoom - chrome.marginLeft());
+
+            camera.y = (int) (Game.height - camera.screenHeight()) / 2 - chrome.marginVer() - 1;
+            camera.y += (int) (yOffset * camera.zoom - chrome.marginTop());
+        }
 
         if (scrollPane != null) {
             if (orientation.changesWidth) {

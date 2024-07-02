@@ -19,8 +19,7 @@ public class PopupMenu extends SlowExtendWindow {
 	protected void finishInstantiation(StyledButton[] buttons, int posX, int posY, int maxWidth, Orientation orientation) {
 		this.buttons = buttons;
 
-
-		float pY = 1;
+		float pY = 0;
 
 		for (StyledButton btn : buttons) {
 			add(btn);
@@ -34,11 +33,10 @@ public class PopupMenu extends SlowExtendWindow {
 			PixelScene.align(btn);
 			pY += 2 + btn.height();
 		}
+		pY -= 2;
 
-		endHeight = (int) Math.ceil(pY - 2);
+		endHeight = (int) Math.ceil(pY);
 
 		setAttributes(endWidth, endHeight, orientation, new Point(posX - endWidth / 2, posY), TIME_TO_OPEN_WINDOW);
 	}
-
-
 }
