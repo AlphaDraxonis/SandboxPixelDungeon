@@ -52,6 +52,7 @@ public class WandOfInstability extends Wand {
 		RANDOM_WAND_EFFECTS.add(WandOfMagicMissile.class);
 		RANDOM_WAND_EFFECTS.add(WandOfPrismaticLight.class);
 		RANDOM_WAND_EFFECTS.add(WandOfRegrowth.class);
+		RANDOM_WAND_EFFECTS.add(WandOfSummoning.class);
 		RANDOM_WAND_EFFECTS.add(WandOfTransfusion.class);
 		RANDOM_WAND_EFFECTS.add(WandOfWarding.class);
 	}
@@ -84,6 +85,11 @@ public class WandOfInstability extends Wand {
 	@Override
 	public void fx(Ballistica beam, Callback callback) {
 		curWandEffect.fx(beam, callback);
+	}
+
+	@Override
+	public void staffFx(MagesStaff.StaffParticle particle) {
+		curWandEffect.staffFx(particle);//tzz test
 	}
 
 	@Override

@@ -105,7 +105,6 @@ public class WandOfSummoning extends Wand {
 			ch = Actor.findChar(target);
 			if (ch != null && !currentSummons.contains(ch)){
 				GLog.w( Messages.get(this, "bad_location"));
-//				Dungeon.level.pressCell(bolt.collisionPos);
 				return;
 			}
 		}
@@ -114,7 +113,6 @@ public class WandOfSummoning extends Wand {
 
 		if (!Dungeon.level.isPassableAlly(target)){
 			GLog.w( Messages.get(this, "bad_location"));
-//			Dungeon.level.pressCell(target);
 			
 		} else if (ch != null){
 			if (currentSummons.contains(ch)) {
@@ -130,7 +128,6 @@ public class WandOfSummoning extends Wand {
 				}
 			} else {
 				GLog.w( Messages.get(this, "bad_location"));
-//				Dungeon.level.pressCell(target);
 			}
 			
 		} else {
@@ -144,6 +141,8 @@ public class WandOfSummoning extends Wand {
 			}
 
 			nextSummon.pos = target;
+			nextSummon.EXP = 0;
+			nextSummon.loot = null;
 
 			GameScene.add(nextSummon, 1f);
 
@@ -183,9 +182,10 @@ public class WandOfSummoning extends Wand {
 			if (!currentSummons.isEmpty()) {
 				Char heal = Random.element(currentSummons);
 				int before = heal.HP;
-				heal.HP = (int) Math.min(heal.HT, heal.HT * healingPerCharge(buffedLvl()) * powerMulti);
-				if (Dungeon.level.heroFOV[heal.pos]) {
-					heal.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(heal.HP - before), FloatingText.HEALING);
+				heal.HP = (int) Math.min(heal.HT, before + heal.HT * healingPerCharge(buffedLvl()) * powerMulti);
+				int healed = heal.HP - before;
+				if (healed > 0 && Dungeon.level.heroFOV[heal.pos]) {
+					heal.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(healed), FloatingText.HEALING);
 				}
 			}
 		}
