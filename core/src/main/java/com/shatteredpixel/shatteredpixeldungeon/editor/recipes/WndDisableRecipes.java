@@ -16,6 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfYendor;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -161,6 +162,7 @@ public class WndDisableRecipes extends WndChooseOneInCategories {
                 result.add(new RecipeInfo(ItemSpriteSheet.MAGIC_INFUSE, 219, MagicalInfusion.class));
                 result.add(new RecipeInfo(ItemSpriteSheet.CURSE_INFUSE, 217, CurseInfusion.class));
                 result.add(new RecipeInfo(ItemSpriteSheet.RECYCLE, 222, Recycle.class));
+                result.add(new RecipeInfo(ItemSpriteSheet.WAND_YENDOR, 303, WandOfYendor.class));
                 return result;
 
             case 5:

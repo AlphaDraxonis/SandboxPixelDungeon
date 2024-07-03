@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.CursedWand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
@@ -58,18 +59,18 @@ public class WildMagic extends ArmorAbility {
 	}
 
 	@Override
-	protected void activate(ClassArmor armor, Hero hero, Integer target) {
-		if (target == null){
+	protected void activate(ClassArmor armor, Hero hero, Integer target) {//if something is changed here, also look down!
+		if (target == null){//if something is changed here, also look down!
+			return;//if something is changed here, also look down!
+		}
+
+		if (target == hero.pos){//if something is changed here, also look down!
+			GLog.w(Messages.get(this, "self_target"));//if something is changed here, also look down!
 			return;
 		}
 
-		if (target == hero.pos){
-			GLog.w(Messages.get(this, "self_target"));
-			return;
-		}
-
-		ArrayList<Wand> wands = hero.belongings.getAllItems(Wand.class);
-		Random.shuffle(wands);
+		ArrayList<Wand> wands = hero.belongings.getAllItems(Wand.class);//if something is changed here, also look down!
+		Random.shuffle(wands);//if something is changed here, also look down!
 
 		float chargeUsePerShot = 0.5f * (float)Math.pow(0.67f, hero.pointsInTalent(Talent.CONSERVED_MAGIC));
 
@@ -79,7 +80,7 @@ public class WildMagic extends ArmorAbility {
 			}
 		}
 
-		int maxWands = 4 + Dungeon.hero.pointsInTalent(Talent.FIRE_EVERYTHING);
+		int maxWands = 4 + hero.pointsInTalent(Talent.FIRE_EVERYTHING);
 
 		//second and third shots
 		if (wands.size() < maxWands){
@@ -108,6 +109,83 @@ public class WildMagic extends ArmorAbility {
 			}
 		}
 
+		if (wands.size() == 0){//if something is changed here, also look down!
+			GLog.w(Messages.get(this, "no_wands"));//if something is changed here, also look down!
+			return;
+		}
+
+		hero.busy();//if something is changed here, also look down!
+
+		Random.shuffle(wands);//if something is changed here, also look down!
+
+		Buff.affect(hero, WildMagicTracker.class, 0f);//if something is changed here, also look down!
+
+		armor.charge -= chargeUse(hero);//if something is changed here, also look down!
+		armor.updateQuickslot();
+
+		zapWand(wands, hero, target);//if something is changed here, also look down!
+
+	}
+
+	protected void activateCopy(Hero hero, Integer target, ArrayList<Wand> wands) {
+
+		new Item() {
+			{
+				GameScene.cancel();
+				Item.curUser = hero;
+				Item.curItem = this;
+			}
+		};
+
+		if (target == null){
+			return;
+		}
+
+		if (target == hero.pos){
+			GLog.w(Messages.get(this, "self_target"));
+			return;
+		}
+
+//		wands = wands;
+//		Random.shuffle(wands); // we don' shuffle here as WandOfWarding should be last
+
+//		float chargeUsePerShot = 0.5f * (float)Math.pow(0.67f, hero.pointsInTalent(Talent.CONSERVED_MAGIC));
+//
+//		for (Wand w : wands.toArray(new Wand[0])){
+//			if (w.curCharges < 1 && w.partialCharge < chargeUsePerShot){
+//				wands.remove(w);
+//			}
+//		}
+
+//		int maxWands = 4 + hero.pointsInTalent(Talent.FIRE_EVERYTHING);
+//
+//		//second and third shots
+//		if (wands.size() < maxWands){
+//			ArrayList<Wand> seconds = new ArrayList<>(wands);
+//			ArrayList<Wand> thirds = new ArrayList<>(wands);
+//
+//			for (Wand w : wands){
+//				float totalCharge = w.curCharges + w.partialCharge;
+//				if (totalCharge < 2*chargeUsePerShot){
+//					seconds.remove(w);
+//				}
+//				if (totalCharge < 3*chargeUsePerShot
+//						|| Random.Int(4) >= Dungeon.hero.pointsInTalent(Talent.FIRE_EVERYTHING)){
+//					thirds.remove(w);
+//				}
+//			}
+//
+//			Random.shuffle(seconds);
+//			while (!seconds.isEmpty() && wands.size() < maxWands){
+//				wands.add(seconds.remove(0));
+//			}
+//
+//			Random.shuffle(thirds);
+//			while (!thirds.isEmpty() && wands.size() < maxWands){
+//				wands.add(thirds.remove(0));
+//			}
+//		}
+
 		if (wands.size() == 0){
 			GLog.w(Messages.get(this, "no_wands"));
 			return;
@@ -115,12 +193,12 @@ public class WildMagic extends ArmorAbility {
 
 		hero.busy();
 
-		Random.shuffle(wands);
+//		Random.shuffle(wands); // we don' shuffle here as WandOfWarding should be last
 
 		Buff.affect(hero, WildMagicTracker.class, 0f);
 
-		armor.charge -= chargeUse(hero);
-		armor.updateQuickslot();
+//		armor.charge -= chargeUse(hero);
+//		armor.updateQuickslot();
 
 		zapWand(wands, hero, target);
 

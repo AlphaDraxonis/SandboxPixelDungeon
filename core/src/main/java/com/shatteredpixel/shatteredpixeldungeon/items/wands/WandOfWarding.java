@@ -80,6 +80,8 @@ public class WandOfWarding extends Wand {
 					maxWardEnergy += 2 + ((Charger) buff).wand().level();
 				} else if (((Charger) buff).wand() instanceof WandOfInstability){
 					hasWandOfInstability = true;
+				} else if (((Charger) buff).wand() instanceof WandOfYendor){
+					maxWardEnergy += (2 + ((Charger) buff).wand().level()) * 2;
 				}
 			}
 		}

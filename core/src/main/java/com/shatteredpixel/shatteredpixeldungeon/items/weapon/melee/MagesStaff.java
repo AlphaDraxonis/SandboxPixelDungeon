@@ -219,6 +219,14 @@ public class MagesStaff extends MeleeWeapon {
 
 	public Item imbueWand(Wand wand, Char owner){
 
+		if (wand instanceof WandOfYendor) {
+			owner.die(wand);
+			if (owner == Dungeon.hero) {
+				Dungeon.fail(wand.getClass());
+				GLog.n(Messages.get(wand.getClass(), "imbue"));
+			}
+		}
+
 		int oldStaffcharges = this.wand != null ? this.wand.curCharges : 0;
 
 		if (owner == Dungeon.hero && Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION)){
