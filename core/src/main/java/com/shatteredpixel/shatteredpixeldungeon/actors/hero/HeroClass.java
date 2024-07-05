@@ -40,10 +40,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.En
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.HeroicLeap;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.Shockwave;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.dungeon.HeroSettings;
-import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
-import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
+import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
@@ -383,9 +380,11 @@ public enum HeroClass {
                 i.reset();
                 if (i.identifyOnStart) i.identify();
                 if (i instanceof Key) Notes.add((Key) i);
+                else if (i instanceof Gold) Dungeon.gold += i.quantity();
+                else if (i instanceof EnergyCrystal) Dungeon.energy += i.quantity();
                 else {
                     i.collect();
-                     maybePutIntoToolbar(i);
+                    maybePutIntoToolbar(i);
                 }
             }
         }

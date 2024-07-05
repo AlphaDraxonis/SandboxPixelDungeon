@@ -42,8 +42,6 @@ public class DungeonToJsonConverter {
         List<String> floors = new ArrayList<>(dungeon.floorNames());
         b.append('{');
         appendParam(b, "start", dungeon.getStart());
-        if (dungeon.startItems[0].gold > 0) appendParam(b, "gold", dungeon.startItems[0].gold);
-        if (dungeon.startItems[0].energy  > 0) appendParam(b, "energy", dungeon.startItems[0].energy);
         //TODO bones (if bones can spawn)
 
 

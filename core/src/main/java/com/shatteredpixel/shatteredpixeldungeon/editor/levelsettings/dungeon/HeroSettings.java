@@ -38,7 +38,6 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Function;
-import com.watabou.utils.PointF;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -142,7 +141,7 @@ public class HeroSettings extends Component {
         private RedButton subClassesEnabled;
         private final ItemContainerWithLabel<Item> startItems;
         private final ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
-        private final StyledSpinner startGold, startEnergy, plusLvl, plusStr;
+        private final StyledSpinner plusLvl, plusStr;
         private final PropertyListContainer properties;
 
         private final Component itemSelectorParent;
@@ -243,35 +242,6 @@ public class HeroSettings extends Component {
             startMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
             itemSelectorParent.add(startMisc);
 
-            startGold = new StyledSpinner(new SpinnerIntegerModel(0, 10000, data.gold) {
-                @Override
-                public float getInputFieldWidth(float height) {
-                    return Spinner.FILL;
-                }
-
-                @Override
-                public int getClicksPerSecondWhileHolding() {
-                    return 150;
-                }
-            }, Messages.titleCase(Messages.get(Gold.class, "name")), 10, Icons.GOLD.get());
-            startGold.icon().scale = new PointF(0.5f, 0.5f);
-            startGold.addChangeListener(() -> data.gold = (int) startGold.getValue());
-            itemSelectorParent.add(startGold);
-            startEnergy = new StyledSpinner(new SpinnerIntegerModel(0, 1000, data.energy) {
-                @Override
-                public float getInputFieldWidth(float height) {
-                    return Spinner.FILL;
-                }
-
-                @Override
-                public int getClicksPerSecondWhileHolding() {
-                    return super.getClicksPerSecondWhileHolding() / 10;
-                }
-            }, Messages.titleCase(Messages.get(EnergyCrystal.class, "name")), 10, Icons.ENERGY.get());
-            startEnergy.icon().scale = new PointF(0.5f, 0.5f);
-            startEnergy.addChangeListener(() -> data.energy = (int) startEnergy.getValue());
-            itemSelectorParent.add(startEnergy);
-
             plusLvl = new StyledSpinner(new SpinnerIntegerModel(1, 30, 1 + data.plusLvl) {
                 {
                     setAbsoluteMinimum(1);
@@ -296,11 +266,6 @@ public class HeroSettings extends Component {
             add(itemSelectorParent);
 
             startItems = new ItemContainerWithLabel<Item>(data.items, Messages.get(HeroSettings.class, "items")) {
-
-                @Override
-                public boolean itemSelectable(Item item) {
-                    return !(item instanceof Gold || item instanceof EnergyCrystal);
-                }
 
                 @Override
                 protected void onSlotNumChange() {
@@ -369,7 +334,6 @@ public class HeroSettings extends Component {
             itemSelectorParent.setSize(width, 0);
             itemSelectorParent.setRect(x, posY, width,  EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
                     new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-                            startGold, startEnergy, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                             plusLvl, plusStr}));
             PixelScene.align(itemSelectorParent);
             posY = itemSelectorParent.bottom() + gap;
@@ -400,7 +364,6 @@ public class HeroSettings extends Component {
         public Artifact artifact;
         public KindofMisc misc;
         public List<Item> items = new ArrayList<>(4);
-        public int gold, energy;
         public int plusLvl;//default is 0
         public int plusStr;//default is 0
 
@@ -413,8 +376,6 @@ public class HeroSettings extends Component {
         private static final String RING = "ring";
         private static final String ARTIFACT = "artifact";
         private static final String MISC = "misc";
-        private static final String GOLD = "gold";
-        private static final String ENERGY = "energy";
         private static final String LVL = "lvl";
         private static final String STR = "str";
         private static final String ITEMS = "items";
@@ -427,9 +388,6 @@ public class HeroSettings extends Component {
             bundle.put(RING, ring);
             bundle.put(ARTIFACT, artifact);
             bundle.put(MISC, misc);
-            bundle.put(GOLD, gold);
-            bundle.put(ENERGY, energy);
-            bundle.put(ENERGY, energy);
             bundle.put(LVL, plusLvl);
             bundle.put(STR, plusStr);
 
@@ -451,8 +409,6 @@ public class HeroSettings extends Component {
             ring = (Ring) bundle.get(RING);
             artifact = (Artifact) bundle.get(ARTIFACT);
             misc = (KindofMisc) bundle.get(MISC);
-            gold = bundle.getInt(GOLD);
-            energy = bundle.getInt(ENERGY);
 
             needToAddDefaultConfiguration = !bundle.contains(LVL);
             plusLvl = bundle.getInt(LVL);
@@ -462,6 +418,14 @@ public class HeroSettings extends Component {
                 for (Bundlable b : bundle.getCollection("bags")) {
                     items.add((Item) b);
                 }
+            }
+            if (bundle.contains("gold")) {
+                int quant = bundle.getInt("gold");
+                if (quant > 0) items.add(new Gold(quant));
+            }
+            if (bundle.contains("energy")) {
+                int quant = bundle.getInt("energy");
+                if (quant > 0) items.add(new EnergyCrystal(quant));
             }
             for (Bundlable b : bundle.getCollection(ITEMS)) {
                 items.add((Item) b);

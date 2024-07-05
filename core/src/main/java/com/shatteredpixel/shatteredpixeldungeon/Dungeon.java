@@ -308,8 +308,8 @@ public class Dungeon {
         depth = customDungeon.getFloor(levelName).getDepth();
         branch = 0;
 
-        gold = Dungeon.customDungeon.startItems[0].gold + Dungeon.customDungeon.startItems[indexCurHero + 1].gold;
-        energy = Dungeon.customDungeon.startItems[0].energy + Dungeon.customDungeon.startItems[indexCurHero + 1].energy;
+		gold = 0;
+		energy = 0;
 
         droppedItems = new HashMap<>();
 
