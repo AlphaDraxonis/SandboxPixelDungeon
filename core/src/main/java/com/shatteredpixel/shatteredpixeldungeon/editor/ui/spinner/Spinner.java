@@ -36,7 +36,7 @@ public class Spinner extends Component {
             @Override
             protected void onClick() {
                 setValue(getNextValue());
-                if (!isClickHolding()) afterClick();
+                if (!isClickHolding()) model.afterClick();
             }
 
             @Override
@@ -47,14 +47,14 @@ public class Spinner extends Component {
             @Override
             protected void onPointerUp() {
                 super.onPointerUp();
-                afterClick();
+                model.afterClick();
             }
         };
         leftButton = new RedButton("<") {
             @Override
             protected void onClick() {
                 setValue(getPreviousValue());
-                if (!isClickHolding()) afterClick();
+                if (!isClickHolding()) model.afterClick();
             }
 
             @Override
@@ -65,7 +65,7 @@ public class Spinner extends Component {
             @Override
             protected void onPointerUp() {
                 super.onPointerUp();
-                afterClick();
+                model.afterClick();
             }
         };
         inputField = model.createInputField((int) params[2]);
@@ -116,9 +116,6 @@ public class Spinner extends Component {
         leftButton.enable(value);
         getModel().enable(value);
         label.alpha(value ? 1.0f : 0.3f);
-    }
-
-    protected void afterClick() {
     }
 
     public float getAlignmentSpinnerX() {

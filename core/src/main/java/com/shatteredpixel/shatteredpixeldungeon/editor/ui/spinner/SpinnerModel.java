@@ -66,6 +66,10 @@ public interface SpinnerModel {
     Object getPreviousValue();
 
 
+    default void afterClick() {
+    }
+
+
     public void addChangeListener(Runnable listener) ;
     public void removeChangeListener(Runnable listener);
     public Runnable[] getChangeListeners();

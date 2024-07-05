@@ -10,10 +10,12 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class LotusLevelSpinner extends StyledSpinner {
 
-
     public LotusLevelSpinner(WandOfRegrowth.Lotus lotus) {
-        super(new SpinnerIntegerModel(0, 200, lotus.getLvl()), Messages.get(LevelSpinner.class,"label"), 9,
-                EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_UPGRADE));
+        super(new LotusLevelSpinnerModel(lotus), Messages.get(LevelSpinner.class,"label"), 9,
+              EditorUtilies.createSubIcon(ItemSpriteSheet.Icons.SCROLL_UPGRADE));
+
+        ((LotusLevelSpinnerModel) getModel()).onAfterClick = () -> updateDesc(true);
+
         icon.scale.set(9f / icon.height());
         addChangeListener(() -> {
             lotus.setLevel((int) getValue());
@@ -21,11 +23,20 @@ public class LotusLevelSpinner extends StyledSpinner {
         });
     }
 
-    @Override
-    protected void afterClick() {
-        updateDesc(true);
+    protected void updateDesc(boolean forceUpdate) {
     }
 
-    protected void updateDesc(boolean foreceUpdate) {
+    private static final class LotusLevelSpinnerModel extends SpinnerIntegerModel {
+        private Runnable onAfterClick;
+
+        public LotusLevelSpinnerModel(WandOfRegrowth.Lotus lotus) {
+            super(0, 200, lotus.getLvl());
+        }
+
+        @Override
+        public void afterClick() {
+            onAfterClick.run();
+        }
     }
+
 }

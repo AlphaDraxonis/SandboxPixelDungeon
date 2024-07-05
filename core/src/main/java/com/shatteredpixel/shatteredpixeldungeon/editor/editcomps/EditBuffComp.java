@@ -54,13 +54,12 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
                     public float getInputFieldWidth(float height) {
                         return Spinner.FILL;
                     }
-                }, Messages.get(this, "duration")) {
+
                     @Override
-                    protected void afterClick() {
-                        super.afterClick();
+                    public void afterClick() {
                         updateObj();
                     }
-                };
+                }, Messages.get(this, "duration"));
                 duration.addChangeListener(() -> {
                     if (((int) (((BuffWithDuration) buff).left = (int) duration.getValue())) % 20 == 0)
                         updateObj();//pretty expensive call for longer texts, so it is better to call this less
@@ -72,13 +71,12 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
                     public float getInputFieldWidth(float height) {
                         return Spinner.FILL;
                     }
-                }, Messages.get(this, "duration")) {
+
                     @Override
-                    protected void afterClick() {
-                        super.afterClick();
+                    public void afterClick() {
                         updateObj();
                     }
-                };
+                }, Messages.get(this, "duration"));
                 duration.addChangeListener(() -> {
                     int val = (int) duration.getValue();
                     buff.setDurationForFlavourBuff(val);
@@ -97,13 +95,12 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
-            }, Messages.get(this, "level")) {
+
                 @Override
-                protected void afterClick() {
-                    super.afterClick();
+                public void afterClick() {
                     updateObj();
                 }
-            };
+            }, Messages.get(this, "level"));
             level.addChangeListener(() -> {
                 if (((int) (((BuffWithDuration) buff).left = (int) level.getValue())) % 20 == 0)
                     updateObj();//pretty expensive call for longer texts, so it is better to call this less
@@ -115,13 +112,12 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
                 public float getInputFieldWidth(float height) {
                     return Spinner.FILL;
                 }
-            }, Messages.get(this, "level")) {
+
                 @Override
-                protected void afterClick() {
-                    super.afterClick();
+                public void afterClick() {
                     updateObj();
                 }
-            };
+            }, Messages.get(this, "level"));
             level.addChangeListener(() -> {
                 if (((int) (((Corrosion) buff).damage = (int) level.getValue())) % 20 == 0)
                     updateObj();//pretty expensive call for longer texts, so it is better to call this less

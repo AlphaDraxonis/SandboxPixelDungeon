@@ -216,6 +216,9 @@ public class SpinnerIntegerModel extends AbstractSpinnerModel {
         WndSetValue.enterInteger(min, max, (int)getValue(),
                 Messages.get(this, "input_dialog_title"),
                 Messages.get(this, "input_dialog_body", String.valueOf((int) min), String.valueOf((int) max),
-                        String.valueOf(getMinimum()), String.valueOf(getMaximum())), this::setValue);
+                String.valueOf(getMinimum()), String.valueOf(getMaximum())), val -> {
+                        setValue(val);
+                        afterClick();
+                });
     }
 }
