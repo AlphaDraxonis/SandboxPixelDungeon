@@ -81,6 +81,11 @@ public class ScrollOfRemoveCurse extends InventoryScroll {
 	}
 
 	public static boolean uncursable( Item item ){
+
+		if (item.permaCurse && item.cursed && item.isIdentified()) {
+			return false;
+		}
+
 		if (item.isEquipped(Dungeon.hero) && Dungeon.hero.buff(Degrade.class) != null) {
 			return true;
 		} if ((item instanceof EquipableItem || item instanceof Wand) && ((!item.isIdentified() && !item.cursedKnown()) || item.cursed)){
@@ -119,6 +124,9 @@ public class ScrollOfRemoveCurse extends InventoryScroll {
 			if (item != null) {
 				item.setCursedKnown(true);
 				if (item.cursed) {
+					if (item.permaCurse) {
+						continue;
+					}
 					procced = true;
 					item.cursed = false;
 				}

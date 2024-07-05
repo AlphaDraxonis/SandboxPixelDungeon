@@ -375,6 +375,10 @@ public class MeleeWeapon extends Weapon {
 			}
 		}
 
+		if (permaCurse && cursed && isIdentified()) {
+			info += " " + Messages.get(this, "perma_curse");
+		}
+
 		//the mage's staff has no ability as it can only be gained by the mage
 		if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.DUELIST && !(this instanceof MagesStaff)){
 			info += "\n\n" + abilityInfo();

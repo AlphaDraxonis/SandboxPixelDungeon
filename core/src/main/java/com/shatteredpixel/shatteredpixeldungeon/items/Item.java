@@ -93,6 +93,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 	
 	public boolean cursed;
 	private boolean cursedKnown;
+	public boolean permaCurse;
 
 	public boolean identifyOnStart = false;
 	
@@ -660,6 +661,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 	private static final String LEVEL_KNOWN		= "levelKnown";
 	private static final String CURSED			= "cursed";
 	private static final String CURSED_KNOWN	= "cursedKnown";
+	private static final String PERMA_CURSED	= "perma_cursed";
 	private static final String IDENTIFY_ON_START = "identify_on_start";
 	private static final String QUICKSLOT		= "quickslotpos";
 	private static final String KEPT_LOST       = "kept_lost";
@@ -679,6 +681,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 		bundle.put( LEVEL_KNOWN, levelKnown );
 		bundle.put( CURSED, cursed );
 		bundle.put( CURSED_KNOWN, cursedKnown );
+		bundle.put(PERMA_CURSED, permaCurse);
 		bundle.put( IDENTIFY_ON_START, identifyOnStart );
 		if (Dungeon.quickslot.contains(this)) {
 			bundle.put( QUICKSLOT, Dungeon.quickslot.getSlot(this) );
@@ -693,6 +696,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 		quantity	= bundle.getInt( QUANTITY );
 		levelKnown	= bundle.getBoolean( LEVEL_KNOWN );
 		cursedKnown	= bundle.getBoolean( CURSED_KNOWN );
+		permaCurse  = bundle.getBoolean( PERMA_CURSED );
 		identifyOnStart = bundle.getBoolean(IDENTIFY_ON_START);
 
 		if (bundle.contains(RAND_QUANT_MIN)) {//remove when support for Shattered v2.2.0 drops kkm

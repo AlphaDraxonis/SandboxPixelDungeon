@@ -293,8 +293,10 @@ abstract public class Weapon extends KindOfWeapon {
 				enchant(null);
 			}
 		}
-		
-		cursed = false;
+
+		if (cursed && permaCurse)
+			GLog.n(Messages.get(this, "perma_curse_remove"));
+		else cursed = false;
 
 		return super.upgrade();
 	}

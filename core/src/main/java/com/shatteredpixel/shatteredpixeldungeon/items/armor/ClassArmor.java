@@ -125,6 +125,7 @@ abstract public class ClassArmor extends Armor {
 		}
 		classArmor.glyphHardened = armor.glyphHardened;
 		classArmor.cursed = armor.cursed;
+		classArmor.permaCurse = armor.permaCurse;
 		classArmor.curseInfusionBonus = armor.curseInfusionBonus;
 		classArmor.masteryPotionBonus = armor.masteryPotionBonus;
 		if (armor.levelKnown && armor.cursedKnown()) {

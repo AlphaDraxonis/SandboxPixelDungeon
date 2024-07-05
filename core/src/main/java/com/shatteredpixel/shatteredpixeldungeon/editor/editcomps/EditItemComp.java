@@ -65,6 +65,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledSpinner quantity, quickslotPos;
 
     protected CurseButton curseBtn;
+    protected StyledCheckBox permaCursed;
     protected LevelSpinner levelSpinner;
     protected ChargeSpinner chargeSpinner;
     protected SpinnerLikeButton wandRecharging;
@@ -165,13 +166,26 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
         if (!(item instanceof RandomItem)) {
             if (!(item instanceof MissileWeapon) && (item instanceof Weapon || item instanceof Armor || item instanceof Ring || item instanceof Artifact || item instanceof Wand)) {
+
+
+                permaCursed = new StyledCheckBox(label("perma_curse"));
+                permaCursed.checked(item.permaCurse);
+                permaCursed.addChangeListener(v -> item.permaCurse = v);
+                permaCursed.enable(item.cursed);
+                add(permaCursed);
+
                 curseBtn = new CurseButton(item) {
                     @Override
                     protected void onChange() {
                         updateObj();
+                        permaCursed.enable(item.cursed);
+                        if (!item.cursed) {
+                            permaCursed.checked(false);
+                        }
                     }
                 };
                 add(curseBtn);
+
                 cursedKnown = new StyledCheckBox(label("cursed_known"));
                 cursedKnown.checked(item.getCursedKnownVar());
                 cursedKnown.addChangeListener(item::setCursedKnown);
@@ -529,7 +543,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
 
         rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
-                augmentationSpinner, curseBtn, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, docPageType, spreadIfLoot};
+                augmentationSpinner, curseBtn, permaCursed, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, docPageType, spreadIfLoot};
         linearComps = new Component[]{rollTrinkets, summonMobs, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
     }
 
@@ -644,6 +658,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (augmentationSpinner != null)    augmentationSpinner.updateValue(obj);
         if (autoIdentify != null)           autoIdentify.checked(obj.identifyOnStart);
         if (cursedKnown != null)            cursedKnown.checked(obj.getCursedKnownVar());
+        if (permaCursed != null)            permaCursed.checked(obj.permaCurse);
         if (spreadIfLoot != null)           spreadIfLoot.checked(obj.spreadIfLoot);
         if (magesStaffWand != null)         magesStaffWand.setSelectedItem(((MagesStaff) obj).wand);
         if (hasSeal != null)                hasSeal.checked(((Armor) obj).checkSeal() != null);
@@ -706,6 +721,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
 
         if (!ignoreQuantity && a.quantity() != b.quantity()) return false;
         if (a.cursed != b.cursed) return false;
+        if (a.permaCurse != b.permaCurse) return false;
         if (a.level() != b.level()) return false;
         if ((a.getCursedKnownVar() || a.identifyOnStart) != (b.getCursedKnownVar() || b.identifyOnStart)) return false;
         if ((a.levelKnown || a.identifyOnStart) != (b.levelKnown || b.identifyOnStart)) return false;

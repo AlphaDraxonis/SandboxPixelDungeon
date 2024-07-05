@@ -137,16 +137,19 @@ public class Artifact extends KindofMisc {
 
 	@Override
 	public String info() {
+		String desc = desc();
+
 		if (cursed && cursedKnown() && !isEquipped( Dungeon.hero )) {
-			return desc() + "\n\n" + Messages.get(Artifact.class, "curse_known");
-			
+			desc += "\n\n" + Messages.get(Artifact.class, "curse_known");
 		} else if (!isIdentified() && cursedKnown() && !isEquipped( Dungeon.hero)) {
-			return desc()+ "\n\n" + Messages.get(Artifact.class, "not_cursed");
-			
-		} else {
-			return desc();
-			
+			desc += "\n\n" + Messages.get(Artifact.class, "not_cursed");
 		}
+
+		if (permaCurse && cursed && isIdentified()) {
+			desc += " " + Messages.get(this, "perma_curse");
+		}
+
+		return desc;
 	}
 
 	@Override

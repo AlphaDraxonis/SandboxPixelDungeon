@@ -179,6 +179,10 @@ public class Ring extends KindofMisc {
 			desc += "\n\n" + Messages.get(Ring.class, "not_cursed");
 			
 		}
+
+		if (permaCurse && cursed && isIdentified()) {
+			desc += " " + Messages.get(this, "perma_curse");
+		}
 		
 		if (isKnown()) {
 			desc += "\n\n" + statsInfo();
@@ -196,7 +200,9 @@ public class Ring extends KindofMisc {
 		super.upgrade();
 		
 		if (Random.Int(3) == 0) {
-			cursed = false;
+			if (cursed && permaCurse)
+				GLog.n(Messages.get(this, "perma_curse_remove"));
+			else cursed = false;
 		}
 		
 		return this;

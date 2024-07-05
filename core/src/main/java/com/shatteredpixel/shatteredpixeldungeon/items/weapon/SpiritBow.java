@@ -175,6 +175,10 @@ public class SpiritBow extends Weapon {
             info += "\n\n" + Messages.get(Weapon.class, "not_cursed");
         }
 
+		if (permaCurse && cursed && isIdentified()) {
+			info += " " + Messages.get(this, "perma_curse");
+		}
+
         info += "\n\n" + Messages.get(MissileWeapon.class, "distance");
 
         return info;

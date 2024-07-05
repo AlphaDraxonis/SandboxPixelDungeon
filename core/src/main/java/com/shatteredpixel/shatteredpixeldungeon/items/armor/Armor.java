@@ -448,8 +448,10 @@ public class Armor extends EquipableItem {
 				}
 			}
 		}
-		
-		cursed = false;
+
+		if (cursed && permaCurse)
+			GLog.n(Messages.get(this, "perma_curse_remove"));
+		else cursed = false;
 
 		if (seal != null && seal.level() == 0)
 			seal.upgrade();
@@ -540,6 +542,9 @@ public class Armor extends EquipableItem {
 			} else {
 				info += "\n\n" + Messages.get(Armor.class, "not_cursed");
 			}
+		}
+		if (permaCurse && cursed && isIdentified()) {
+			info += " " + Messages.get(this, "perma_curse");
 		}
 		
 		return info;

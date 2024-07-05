@@ -263,6 +263,10 @@ public abstract class Wand extends Item {
 			desc += "\n\n" + Messages.get(Wand.class, "not_cursed");
 		}
 
+		if (permaCurse && cursed && isIdentified()) {
+			desc += " " + Messages.get(this, "perma_curse");
+		}
+
 		if (Dungeon.hero!=null && Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){
 			desc += "\n\n" + Messages.get(this, "bmage_desc");
 		}
@@ -306,7 +310,9 @@ public abstract class Wand extends Item {
 		super.upgrade();
 
 		if (Random.Int(3) == 0) {
-			cursed = false;
+			if (cursed && permaCurse)
+				GLog.n(Messages.get(this, "perma_curse_remove"));
+			else cursed = false;
 		}
 
 		if (resinBonus > 0){
