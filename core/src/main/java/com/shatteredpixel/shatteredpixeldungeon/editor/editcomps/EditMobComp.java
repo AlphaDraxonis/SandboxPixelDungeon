@@ -841,7 +841,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
 
         if (mob instanceof LuaMob) {
-            test = new RedButton(CustomDungeon.isEditing() ? "Edit code tzz" : "view") {
+            test = new RedButton(label(CustomDungeon.isEditing() ? "edit_code" : "view_code")) {
                 @Override
                 protected void onClick() {
                     LuaCodeHolder luaCodeHolder = CustomObject.customObjects.get(((LuaMob) mob).getIdentifier());

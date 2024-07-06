@@ -25,8 +25,6 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndE
 
 public class CategoryScroller extends Component {
 
-    private static final int MAX_BUTTONS_PER_ROW = 7;
-
     public final ScrollingListPane list;
     private final Category[] categories;
     private final RedButton[] categoryButtons;
@@ -119,7 +117,7 @@ public class CategoryScroller extends Component {
 
 
     private boolean processKey() {
-        if (indicesWithNonEmptyCats.length > MAX_BUTTONS_PER_ROW) {
+        if (indicesWithNonEmptyCats.length > maxButtonsPerRow()) {
             if (curAction == SPDAction.S) {
                 int index = (int) (selectedVisIndex + Math.ceil(indicesWithNonEmptyCats.length / 2f)) % indicesWithNonEmptyCats.length;
                 selectVisibleCategory(index);
@@ -169,7 +167,7 @@ public class CategoryScroller extends Component {
     protected void layout() {
 
         if (categoryButtons != null) {
-            if (indicesWithNonEmptyCats.length <= MAX_BUTTONS_PER_ROW) {
+            if (indicesWithNonEmptyCats.length <= maxButtonsPerRow()) {
                 float buttonWidth = width() / indicesWithNonEmptyCats.length;
                 for (int i = 0; i < indicesWithNonEmptyCats.length; i++) {
                     int catIndex = indicesWithNonEmptyCats[i];
@@ -195,6 +193,10 @@ public class CategoryScroller extends Component {
         }
 
         selectVisibleCategory(selectedVisIndex);
+    }
+
+    private static int maxButtonsPerRow() {
+        return PixelScene.landscape() ? 9 : 7;
     }
 
     @Override

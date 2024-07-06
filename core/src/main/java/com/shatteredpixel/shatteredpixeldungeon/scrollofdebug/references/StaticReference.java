@@ -18,6 +18,6 @@ public class StaticReference extends Reference {
 
     @Override
     public Object valueViaParent() throws ReferenceNotFoundException {
-        return null;//tzz maybe not correct
+        return null;
     }
 }

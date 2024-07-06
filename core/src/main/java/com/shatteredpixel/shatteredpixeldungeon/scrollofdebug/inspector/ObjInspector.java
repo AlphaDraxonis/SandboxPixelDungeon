@@ -18,7 +18,7 @@ public class ObjInspector extends Component {
 
     protected final Reference reference;
 
-    protected final MultiWindowTabComp.OutsideSpSwitchTabs outsideSp;
+    protected MultiWindowTabComp.OutsideSpSwitchTabs outsideSp;
 
     private final Title title;
     private final FieldsTab fieldsTab;
@@ -56,32 +56,34 @@ public class ObjInspector extends Component {
             add(tab);
         }
 
-        outsideSp = new MultiWindowTabComp.OutsideSpSwitchTabs() {
+//        outsideSp = new MultiWindowTabComp.OutsideSpSwitchTabs() {
+//
+//            @Override
+//            protected void createChildren(Object... params) {
+//                tabs = new TabControlButton[ObjInspector.this.tabs.length];
+//                for (int i = 0; i < tabs.length; i++) {
+//                    tabs[i] = new MultiWindowTabComp.OutsideSpSwitchTabs.TabControlButton(i);
+//                    add(tabs[i]);
+//                }
+//
+//                super.createChildren(params);
+//
+//                select(currentIndex);
+//            }
+//
+//            @Override
+//            public void select(int index) {
+//                ObjInspector.this.selectTab(index);
+//                super.select(index);
+//            }
+//
+//            @Override
+//            public String getTabName(int index) {
+//                return ObjInspector.getTabName(index);
+//            }
+//        };
 
-            @Override
-            protected void createChildren(Object... params) {
-                tabs = new TabControlButton[ObjInspector.this.tabs.length];
-                for (int i = 0; i < tabs.length; i++) {
-                    tabs[i] = new MultiWindowTabComp.OutsideSpSwitchTabs.TabControlButton(i);
-                    add(tabs[i]);
-                }
-
-                super.createChildren(params);
-
-                select(currentIndex);
-            }
-
-            @Override
-            public void select(int index) {
-                ObjInspector.this.selectTab(index);
-                super.select(index);
-            }
-
-            @Override
-            public String getTabName(int index) {
-                return ObjInspector.getTabName(index);
-            }
-        };
+        selectTab(0);
     }
 
     private void selectTab(int index) {

@@ -10,6 +10,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaMob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
@@ -20,7 +21,7 @@ public class EditCustomObjectComp extends DefaultEditComp<CustomObject> {
     public EditCustomObjectComp(CustomObject customObject) {
         super(customObject);
 
-        chooseType = new ItemSelector("TYPEtzz", Item.class, null, ItemSelector.NullTypeSelector.DISABLED) {
+        chooseType = new ItemSelector(Messages.get(this, "type"), Item.class, null, ItemSelector.NullTypeSelector.DISABLED) {
             {
                 selector.preferredBag = Mobs.bag.getClass();
             }

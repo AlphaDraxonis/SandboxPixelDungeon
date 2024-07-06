@@ -79,16 +79,6 @@ public class LuaManager {
 		globals.set("seed", LuaValue.valueOf(Dungeon.seed));
 
 		if (Dungeon.levelName != null) globals.set("levelSeed", LuaValue.valueOf(Dungeon.seedCurLevel()));
-
-		updateStatistics();
-	}
-
-	public static void updateStatistics() {//tzz
-		if (Dungeon.hero != null) {
-//			globals.set("limitedDrops", CoerceJavaToLua.coerce(Dungeon.LimitedDrops.values()));
-		} else {
-//			globals.set("limitedDrops", ((LuaValue) null));
-		}
 	}
 
 

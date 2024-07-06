@@ -83,8 +83,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 
 			if (anims.zap != null) zap = anims.zap.clone();
 			else {
-				zap = new Animation(1000, false);
-				zap.frames(new RectF());
+				zap = attack.clone();
 			}
 			if (anims.operate != null) operate = anims.operate.clone();
 			else {

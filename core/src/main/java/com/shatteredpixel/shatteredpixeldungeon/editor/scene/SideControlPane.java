@@ -10,24 +10,29 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MindVision;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelSchemeLike;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.overview.floor.WndSelectFloor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.*;
 import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.WndScrollOfDebug;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PointF;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class SideControlPane extends Component {
 
@@ -44,21 +49,30 @@ public class SideControlPane extends Component {
             buttons[2] = new FillBtn();
             buttons[3] = new ToggleZoneViewBtn();
         } else {
-            buttons = new SideControlButton[8];
+            buttons = new SideControlButton[9];
             buttons[0] = new ExitBtn();
-//            buttons[1] = new SoDebugBtn();
             buttons[1] = new DamageBtn();
-            buttons[2] = DeviceCompat.isDebug() ? new DebugBtn() : new SecretsBtn();
-            buttons[3] = new MindVisionBtn();
-            buttons[4] = new MappingBtn();
-            buttons[5] = new KeyBtn();
-            buttons[6] = new SpeedBtn();
-            buttons[7] = new InvisBtn();
+            buttons[2] = new KeyBtn();
+            buttons[3] = new SpeedBtn();
+            buttons[4] = new InvisBtn();
+            buttons[5] = new MindVisionBtn();
+            buttons[6] = new MappingBtn();
+            buttons[7] = new TeleportToFloorBtn();
+            buttons[8] = new DebugBtn();
         }
 
         for (Component button : buttons) {
             add(button);
         }
+    }
+
+    public void reduceHeight() {
+        for (SideControlButton btn : buttons) {
+            btn.icon.scale.set(btn.icon.scale.x * 0.97f);
+            btn.bg.scale.set(btn.bg.scale.x * 0.97f);
+            btn.setSize(btn.bg.width(), btn.bg.height());
+        }
+        layout();
     }
 
     @Override
@@ -151,7 +165,7 @@ public class SideControlPane extends Component {
 
         @Override
         protected String hoverText() {
-            return Messages.titleCase(Messages.get(this, "label"));
+            return Messages.titleCase(Messages.get(this, "label"));//tzz
         }
     }
 
@@ -248,26 +262,12 @@ public class SideControlPane extends Component {
         }
     }
 
-    public static final class DebugBtn extends SideControlButton {
-
-        private DebugBtn() {
-            super(4);
-            enable(true);
-        }
-
-        @Override
-        protected void onClick() {
-//            WndInspectObject.show(Rat.class, 0, null);
-            GameScene.show(new WndScrollOfDebug());
-        }
-    }
-
     public static final class DamageBtn extends SideControlButton {
 
         private static boolean shouldBeEnabled;
 
         private DamageBtn() {
-            super(5);
+            super(4);
             enable(shouldBeEnabled);
         }
 
@@ -279,12 +279,66 @@ public class SideControlPane extends Component {
         }
     }
 
+    public static final class KeyBtn extends SideControlButton {
+        private static boolean shouldBeEnabled;
+
+        private KeyBtn() {
+            super(5);
+            enable(shouldBeEnabled);
+        }
+
+
+        @Override
+        protected void enable(boolean value) {
+            super.enable(value);
+            shouldBeEnabled = value;
+            Dungeon.customDungeon.permaKey = value;
+        }
+    }
+
+    public static final class SpeedBtn extends SideControlButton {
+        private static boolean shouldBeEnabled;
+
+        private SpeedBtn() {
+            super(6);
+            enable(shouldBeEnabled);
+        }
+
+        @Override
+        protected void enable(boolean value) {
+            super.enable(value);
+            shouldBeEnabled = value;
+            Dungeon.customDungeon.extraSpeed = value;
+        }
+    }
+
+    public static final class InvisBtn extends SideControlButton {
+        private static boolean shouldBeEnabled;
+
+        private InvisBtn() {
+            super(7);
+            enable(shouldBeEnabled);
+        }
+
+        @Override
+        protected void enable(boolean value) {
+            super.enable(value);
+            shouldBeEnabled = value;
+            if (Dungeon.customDungeon.permaInvis = value)
+                Buff.affect(Dungeon.hero, Invisibility.class, 1);
+            else {
+                Buff b = Dungeon.hero.buff(Invisibility.class);
+                if (b != null) b.detach();
+            }
+        }
+    }
+
     public static final class SecretsBtn extends SideControlButton {
 
         private static boolean shouldBeEnabled;
 
         private SecretsBtn() {
-            super(6);
+            super(8);
             enable(shouldBeEnabled);
         }
 
@@ -301,7 +355,7 @@ public class SideControlPane extends Component {
         private static boolean shouldBeEnabled;
 
         private MindVisionBtn() {
-            super(7);
+            super(9);
             enable(shouldBeEnabled);
         }
 
@@ -322,7 +376,7 @@ public class SideControlPane extends Component {
     public static final class MappingBtn extends SideControlButton {
 
         private MappingBtn() {
-            super(8);
+            super(10);
             enable(true);
         }
 
@@ -352,57 +406,52 @@ public class SideControlPane extends Component {
         }
     }
 
-    public static final class KeyBtn extends SideControlButton {
-        private static boolean shouldBeEnabled;
+    public static final class TeleportToFloorBtn extends SideControlButton {
 
-        private KeyBtn() {
-            super(9);
-            enable(shouldBeEnabled);
-        }
-
-
-        @Override
-        protected void enable(boolean value) {
-            super.enable(value);
-            shouldBeEnabled = value;
-            Dungeon.customDungeon.permaKey = value;
-        }
-    }
-
-    public static final class SpeedBtn extends SideControlButton {
-        private static boolean shouldBeEnabled;
-
-        private SpeedBtn() {
-            super(10);
-            enable(shouldBeEnabled);
-        }
-
-        @Override
-        protected void enable(boolean value) {
-            super.enable(value);
-            shouldBeEnabled = value;
-            Dungeon.customDungeon.extraSpeed = value;
-        }
-    }
-
-    public static final class InvisBtn extends SideControlButton {
-        private static boolean shouldBeEnabled;
-
-        private InvisBtn() {
+        private TeleportToFloorBtn() {
             super(11);
-            enable(shouldBeEnabled);
+            enable(true);
         }
 
         @Override
-        protected void enable(boolean value) {
-            super.enable(value);
-            shouldBeEnabled = value;
-            if (Dungeon.customDungeon.permaInvis = value)
-                Buff.affect(Dungeon.hero, Invisibility.class, 1);
-            else {
-                Buff b = Dungeon.hero.buff(Invisibility.class);
-                if (b != null) b.detach();
-            }
+        protected void onClick() {
+            EditorScene.show(new WndSelectFloor() {
+                @Override
+                public boolean onSelect(LevelSchemeLike levelScheme) {
+                    if (levelScheme instanceof LevelScheme) {
+                        Level.beforeTransition();
+                        InterlevelScene.curTransition = new LevelTransition(Dungeon.level, Dungeon.hero.pos, -1, ((LevelScheme) levelScheme).getName());
+                        InterlevelScene.mode = ((LevelScheme) levelScheme).getDepth() >= Dungeon.depth
+                                ? InterlevelScene.Mode.DESCEND
+                                : InterlevelScene.Mode.ASCEND;
+
+                        Game.switchScene(InterlevelScene.class);
+                    }
+                    return true;
+                }
+
+                @Override
+                protected List<LevelSchemeLike> filterLevels(Collection<? extends LevelSchemeLike> levels) {
+                    List<LevelSchemeLike> levelsList = new ArrayList<>();
+                    for (LevelSchemeLike ls : super.filterLevels(levels)) {
+                        levelsList.add(ls);
+                    }
+                    return levelsList;
+                }
+            });
+        }
+    }
+
+    public static final class DebugBtn extends SideControlButton {
+
+        private DebugBtn() {
+            super(12);
+            enable(true);
+        }
+
+        @Override
+        protected void onClick() {
+            GameScene.show(new WndScrollOfDebug());
         }
     }
 

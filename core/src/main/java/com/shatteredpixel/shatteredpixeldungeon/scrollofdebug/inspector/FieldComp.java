@@ -77,13 +77,13 @@ public class FieldComp extends ObjInspectorTabComp {
 		value = new Spinner.SpinnerTextBlock(Chrome.get(Chrome.Type.TOAST_WHITE), 7);
 		add(value);
 
-		take = new IconButton(Icons.BOOKMARK.get()) {
-			@Override
-			protected void onClick() {
-				onTake();
-			}
-		};
-		add(take);
+//		take = new IconButton(Icons.BOOKMARK.get()) {
+//			@Override
+//			protected void onClick() {
+//				onTake();
+//			}
+//		};
+//		add(take);
 
 		valueBoxBtn = new Button() {
 			@Override
@@ -149,14 +149,14 @@ public class FieldComp extends ObjInspectorTabComp {
 		}
 
 		float widthForButtons = 0;
-		take.setRect(x + width - take.icon().width() - 2, y + (height - take.icon().height()) * 0.5f, take.icon().width(), take.icon().height());
-		widthForButtons = take.width() + 2;
+//		take.setRect(x + width - take.icon().width() - 2, y + (height - take.icon().height()) * 0.5f, take.icon().width(), take.icon().height());
+//		widthForButtons = take.width() + 2;
 		if (setToNull != null) {
-			setToNull.setRect(take.left() - setToNull.icon().width() - 1, y + (height - setToNull.icon().height()) * 0.5f, setToNull.icon().width(), setToNull.icon().height());
+			setToNull.setRect(x + width - 1  - setToNull.icon().width() - 1, y + (height - setToNull.icon().height()) * 0.5f, setToNull.icon().width(), setToNull.icon().height());
 			widthForButtons += setToNull.width() + 1;
 		}
 
-		float valueFieldWidth = Math.min(100, Math.max(20, take.right() - nameTxt.right()));
+		float valueFieldWidth = Math.min(100, Math.max(20, x + width - 2 - nameTxt.right()));
 		value.setRect(x + width - valueFieldWidth, y, valueFieldWidth, height);
 
 		if (inspectType != null) {
@@ -164,7 +164,7 @@ public class FieldComp extends ObjInspectorTabComp {
 		}
 
 		if (valueBoxBtn != null) {
-			valueBoxBtn.setRect(value.left() - 2, value.top() - 2, take.right() - widthForButtons - value.left(), value.height() + 4);
+			valueBoxBtn.setRect(value.left() - 2, value.top() - 2, x + width - 2 - widthForButtons - value.left(), value.height() + 4);
 		}
 	}
 

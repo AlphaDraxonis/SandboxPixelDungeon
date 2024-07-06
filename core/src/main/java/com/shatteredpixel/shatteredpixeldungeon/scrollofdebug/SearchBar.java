@@ -14,7 +14,7 @@ public class SearchBar extends Component {
 	@Override
 	protected void createChildren(Object... params) {
 
-		label = PixelScene.renderTextBlock(Messages.get(this, "labeltzz"), 8);
+		label = PixelScene.renderTextBlock(Messages.get(this, "label"), 8);
 		add(label);
 
 		input = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, PixelScene.uiCamera.zoom) {

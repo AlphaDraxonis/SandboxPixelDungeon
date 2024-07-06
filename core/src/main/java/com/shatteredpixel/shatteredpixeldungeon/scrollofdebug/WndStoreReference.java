@@ -44,7 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 
-public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
+public class WndStoreReference extends SimpleWindow {
 
 	private TextInput nameInput;
 	private StyledCheckBox asAccessChain, asValue;
@@ -64,18 +64,19 @@ public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
 				add(nameInput);
 
 				//TODO tzz dont allow as reference if parent reference is null (e.g. return value from a method)
-				asAccessChain = new StyledCheckBox(Messages.get(WndStoreReference.class, "as_reference")) {
-					@Override
-					public void checked(boolean value) {
-						super.checked(value);
-						if (asValue != null && asValue.checked() == value) asValue.checked(!value);
-					}
-				};
-				add(asAccessChain);
+//				asAccessChain = new StyledCheckBox(Messages.get(WndStoreReference.class, "as_reference")) {
+//					@Override
+//					public void checked(boolean value) {
+//						super.checked(value);
+//						if (asValue != null && asValue.checked() == value) asValue.checked(!value);
+//					}
+//				};
+//				add(asAccessChain);
 
 				asValue = new StyledCheckBox(Messages.get(WndStoreReference.class, "as_value")) {
 					@Override
 					public void checked(boolean value) {
+						value = true;
 						super.checked(value);
 						if (asAccessChain != null && asAccessChain.checked() == value) asAccessChain.checked(!value);
 					}
@@ -90,7 +91,7 @@ public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
 			protected void layout() {
 				height = 0;
 				height = EditorUtilies.layoutCompsLinear(2, this, nameInput) + 3;
-				height = EditorUtilies.layoutStyledCompsInRectangles(2, width,2, this, asValue, asAccessChain);
+				height = EditorUtilies.layoutStyledCompsInRectangles(2, width,1, this, asValue, asAccessChain);
 			}
 		};
 
@@ -105,7 +106,7 @@ public class WndStoreReference extends SimpleWindow {//tzz 3 strings missing!
 					protected void onClick() {
 						hide();
 						Reference ref;
-						if (asAccessChain.checked()) {
+						if (asAccessChain != null && asAccessChain.checked()) {
 							ref = new AccessChainReference(field.getType(), nameInput.getText(), reference, field);
 //							Object val;
 //							try {

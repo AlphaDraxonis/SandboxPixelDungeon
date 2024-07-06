@@ -762,6 +762,10 @@ public class GameScene extends DungeonScene {
 			}
 		}
 
+		while (scene.sideControlPane.bottom() >= scene.log.top() - 16) {
+			scene.sideControlPane.reduceHeight();
+		}
+
 		float pos = scene.toolbar.top();
 		if (tagsOnLeft && SPDSettings.interfaceSize() > 0){
 			pos = scene.status.top();

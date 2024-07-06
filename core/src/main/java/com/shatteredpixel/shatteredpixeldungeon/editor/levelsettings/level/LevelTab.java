@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.level;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndEditorSettings;
@@ -222,7 +223,7 @@ public class LevelTab extends MultiWindowTabComp {
         };
         content.add(levelColoring);
 
-        editScript = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "test tzz") {
+        editScript = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(EditMobComp.class, "edit_code")) {
             @Override
             protected void onClick() {
                 if (levelScheme.luaScript == null) {

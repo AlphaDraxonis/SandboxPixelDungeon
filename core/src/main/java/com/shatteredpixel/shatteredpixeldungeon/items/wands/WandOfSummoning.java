@@ -85,7 +85,7 @@ public class WandOfSummoning extends Wand {
 
 		Char ch = Actor.findChar(target);
 		if (ch != null && !currentSummons.contains(ch)){
-			GLog.w(Messages.get(this, "bad_location"));//tzz
+			GLog.w(Messages.get(this, "bad_location"));
 			return false;
 		}
 

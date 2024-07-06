@@ -43,7 +43,7 @@ import java.util.Map;
 
 public final class LuaClassGenerator {
 
-    public static void enterClass(){
+    public static void enterClass() {
         int i = 0;
     }
 
@@ -129,17 +129,17 @@ public final class LuaClassGenerator {
 
         if (f.exists()) f.delete();
 
-		try {
-			f.createNewFile();
-		} catch (IOException e) {
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
             e.printStackTrace();
-		}
+        }
 
-		try (FileWriter writer = new FileWriter(f)){
+        try (FileWriter writer = new FileWriter(f)) {
             writer.write(source);
         } catch (IOException e) {
             e.printStackTrace();
-		}
+        }
     }
 
     private static void generateMobFile(Class<?> inputClass) {
@@ -159,24 +159,12 @@ public final class LuaClassGenerator {
             e.printStackTrace();
         }
 
-        try (FileWriter writer = new FileWriter(f)){
+        try (FileWriter writer = new FileWriter(f)) {
             writer.write(source);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    //private LuaValue luaVars;//LuaTable mit variablen, wird gespeichert,  bei restoreFromBundle() werden nur die Werte übernommen, die tatsächlich noch vorhanden sind
-    //
-    //    {
-    //
-    ////        //TODO tzz find better way of copying, extract methods and make static
-    ////        LuaTable originalVars = LuaClassGenerator.luaScript.get("vars").checktable();
-    ////        luaVars = LuaClassGenerator.deepCopyLuaValue(originalVars);
-    //
-    //        //in restoreFromBundle: check what has been saved, and only override those vars that are still present
-    //        //in storeInBundle: find a way to properly store all of that automatically
-    //        //test if they are separate
 
     public static String generateSourceCodeMob(Class<?> inputClass) {
         String pckge = "package " + Mob.class.getPackage().getName() + ".luamobs;\n\n";
@@ -207,7 +195,7 @@ public final class LuaClassGenerator {
                 "import java.util.*;\n\n";
         String extents = inputClass.getSimpleName();
         if (inputClass.getEnclosingClass() != null) extents = inputClass.getEnclosingClass().getSimpleName() + "." + extents;
-        String classHead = "public class " + inputClass.getSimpleName() + "_lua extends " + extents +" implements LuaMob {\n\n";
+        String classHead = "public class " + inputClass.getSimpleName() + "_lua extends " + extents + " implements LuaMob {\n\n";
         String declaringVars = "    private int identifier;\n"
                 + "    private boolean inheritsStats = true;\n"
                 + "    private LuaTable vars;\n";
@@ -263,8 +251,6 @@ public final class LuaClassGenerator {
                         "            if (script.get(\"static\").istable()) vars.set(\"static\", script.get(\"static\"));\n" +
                         "        }\n" +
                         "    }\n\n";
-        //TODO tzz don't forget Methods from Bundlable!
-        //And tell: if you want to store sth like the currently targeted enemy, store the id and ...
 
         Map<String, Method> methods = new HashMap<>();
         findAllMethodsToOverride(inputClass, Actor.class, methods);
@@ -317,10 +303,10 @@ public final class LuaClassGenerator {
                 "import org.luaj.vm2.*;\n" +
                 "import org.luaj.vm2.lib.jse.CoerceJavaToLua;\n" +
                 "import java.util.*;\n\n";
-        String classHead = "public class " + inputClass.getSimpleName() + "_lua extends " + inputClass.getSimpleName() +" implements LuaLevel {\n\n";
+        String classHead = "public class " + inputClass.getSimpleName() + "_lua extends " + inputClass.getSimpleName() + " implements LuaLevel {\n\n";
         String declaringVars = "    private LuaTable vars;\n";
         String bundlingMethods =
-                        "    @Override\n" +
+                "    @Override\n" +
                         "    public void setVars(LuaValue vars) {\n" +
                         "        this.vars = vars;\n" +
                         "    }\n" +
@@ -448,8 +434,7 @@ public final class LuaClassGenerator {
                     if (returnType == int.class) overrideMethods.append("Integer");
                     else if (returnType == char.class) overrideMethods.append("Character");
                     else overrideMethods.append(Messages.capitalize(returnTypeName));
-                }
-                else overrideMethods.append(returnTypeName);
+                } else overrideMethods.append(returnTypeName);
                 overrideMethods.append('>');
             }
 
@@ -468,7 +453,7 @@ public final class LuaClassGenerator {
                     overrideMethods.append(' ');
                 }
                 overrideMethods.append('a').append(i);
-                if (i+1 < paramTypes.length) overrideMethods.append(", ");
+                if (i + 1 < paramTypes.length) overrideMethods.append(", ");
             }
             overrideMethods.append(");\n");
 
@@ -544,173 +529,4 @@ public final class LuaClassGenerator {
         }
     }
 
-
-
-//    public static LuaTable updateTable(LuaTable returnTable, LuaTable dataSupplier) {
-//        if (returnTable != null && dataSupplier != null) {
-//            for (LuaValue k : dataSupplier.keys()) {
-//                String keyAsString = k.toString();
-//                LuaValue v = returnTable.get(keyAsString);
-//                if (!v.isnil()) {
-//                    returnTable.set(keyAsString, dataSupplier.get(keyAsString));
-//                } else {
-//
-//                }
-//            }
-//        }
-//        return returnTable;
-//    }
-
-
-
-
-//    private static final String VARS = "vars";
-//
-//    @Override
-//    public void storeInBundle(Bundle bundle) {
-//        super.storeInBundle(bundle);
-//        if (vars != null) {
-//            LuaClassGenerator.storeVarInBundle(bundle, vars, VARS);
-//        }
-//    }
-//
-//    //TODO tzz test: what happens if a bundlable is NOT stored as null in bundle, but IS in default script???
-//    @Override
-//    public void restoreFromBundle(Bundle bundle) {
-//        super.restoreFromBundle(bundle);
-//        LuaValue loaded = LuaClassGenerator.restoreVarFromBundle(bundle, VARS);
-//        if (loaded != null && loaded.istable()) {
-//            vars = LuaClassGenerator.updateTable(loaded.checktable(), vars);
-//            if (LuaClassGenerator.luaScript != null && LuaClassGenerator.luaScript.get("vars").istable()) {
-//              vars.set("static", LuaClassGenerator.luaScript.get("vars").get("static"));
-//              vars.set("globals", LuaClassGenerator.luaScript.get("vars").get("globals"));
-//          }
-//        }
-//    }
-
 }
-
-//    private static Map<String, Class<? extends LuaClass>> luaClassesCache = new HashMap<>();
-//
-//    public static Class<? extends LuaClass> forName(String inputClass) {
-//        return generateLuaClass(Reflection.forName(inputClass.replace("_lua", "")));
-//    }
-//
-//    public static Class<? extends LuaClass> generateLuaClass(Class<?> inputClass) {
-//
-//        String fullyQualifiedName = inputClass.getName() + "_lua";
-//        if (luaClassesCache.containsKey(fullyQualifiedName)) {
-//            return luaClassesCache.get(fullyQualifiedName);
-//        }
-//
-//        String classSource = generateClassSource(inputClass);
-//        Class<? extends LuaClass> generatedClass = compileClass(fullyQualifiedName, classSource);
-//
-//        luaClassesCache.put(fullyQualifiedName, generatedClass);
-//
-//        return generatedClass;
-//    }
-//
-//    private static String generateClassSource(Class<?> inputClass) {
-//        String package2 = inputClass.getPackage().getName();
-//        package2 = "com.watabou.utils";
-//        String source = "package " + package2 + ";\n" +
-//                "public class " + inputClass.getSimpleName() + "_lua implements com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass {\n" +
-//                "    private String identifier;\n" +
-//                "\n" +
-//                "    public void setIdentifier(String identifier) {\n" +
-//                "        this.identifier = identifier;\n" +
-//                "    }\n" +
-//                "\n" +
-//                "    public String getIdentifier() {\n" +
-//                "        return this.identifier;\n" +
-//                "    }\n" +
-//                "}";
-//
-//        return source;
-//    }
-//
-//    private static Class<? extends LuaClass> compileClass(String className, String classSource) {
-//        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-//        MemoryFileManager fileManager = new MemoryFileManager(compiler.getStandardFileManager(null, null, null));
-//        JavaFileObject javaFileObject = new MemoryJavaSourceFile(className, classSource);
-//
-//        compiler.getTask(null, fileManager, null, null, null, Collections.singletonList(javaFileObject)).call();
-//
-//        try {
-//            return (Class<? extends LuaClass>) fileManager.getClassLoader(null).loadClass(className);
-//        } catch (ClassNotFoundException e) {
-//            throw new RuntimeException("Failed to load compiled class: " + className, e);
-//        }
-//    }
-//}
-//
-//class MemoryJavaClassFile extends SimpleJavaFileObject {
-//    private final ByteArrayOutputStream outputStream;
-//
-//    MemoryJavaClassFile(String name) {
-//        super(URI.create("file:///" + name.replace('.', '/') + Kind.CLASS.extension), Kind.CLASS);
-//        outputStream = new ByteArrayOutputStream();
-//    }
-//
-//    @Override
-//    public OutputStream openOutputStream() {
-//        return outputStream;
-//    }
-//
-//    byte[] getBytes() {
-//        return outputStream.toByteArray();
-//    }
-//}
-//
-//// Utility class to represent Java source code in memory
-//class MemoryJavaSourceFile extends SimpleJavaFileObject {
-//    private final CharSequence source;
-//
-//    MemoryJavaSourceFile(String name, CharSequence source) {
-//        super(URI.create("file:///" + name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
-//        this.source = source;
-//    }
-//
-//    @Override
-//    public CharSequence getCharContent(boolean ignoreEncodingErrors) {
-//        return source;
-//    }
-//}
-//
-//// Utility class to compile and load classes in memory
-//class MemoryFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
-//    private final MemoryClassLoader classLoader;
-//
-//    MemoryFileManager(StandardJavaFileManager fileManager) {
-//        super(fileManager);
-//        classLoader = new MemoryClassLoader();
-//    }
-//
-//    @Override
-//    public ClassLoader getClassLoader(Location location) {
-//        return classLoader;
-//    }
-//
-//    @Override
-//    public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) {
-//        return new MemoryJavaClassFile(className);
-//    }
-//
-//    // Utility class to load classes from compiled bytes
-//    private static class MemoryClassLoader extends ClassLoader {
-//        private final Map<String, MemoryJavaClassFile> classFileMap = new HashMap<>();
-//        void addClassFile(String className, MemoryJavaClassFile classFile) {
-//            classFileMap.put(className, classFile);
-//        }
-//        @Override
-//        protected Class<?> findClass(String name) throws ClassNotFoundException {
-//            MemoryJavaClassFile file = classFileMap.get(name);
-//            if (file != null) {
-//                byte[] bytes = file.getBytes();
-//                return defineClass(name, bytes, 0, bytes.length);
-//            }
-//            throw new ClassNotFoundException(name);
-//        }
-//    }
-//}

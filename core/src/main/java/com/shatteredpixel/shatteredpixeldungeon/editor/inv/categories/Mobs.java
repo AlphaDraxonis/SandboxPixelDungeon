@@ -220,7 +220,7 @@ public enum Mobs implements EditorInvCategory<Mob> {
 
     public static class CustomMobsBag extends EditorItemBag {
         public CustomMobsBag() {
-            super("nametzz", -1);
+            super("name", -1);
         }
 
         @Override
@@ -278,7 +278,7 @@ public enum Mobs implements EditorInvCategory<Mob> {
 
     public static class AddCustomMobButton extends ScrollingListPane.ListButton {
         protected RedButton createButton() {
-            return new RedButton(Messages.get(Tiles.WndCreateCustomTile.class, "titletzz")) {
+            return new RedButton(Messages.get(Mobs.class, "add_custom_mob")) {
                 @Override
                 protected void onClick() {
                     EditorScene.show(new EditCustomObjectComp.WndNewCustomObject());

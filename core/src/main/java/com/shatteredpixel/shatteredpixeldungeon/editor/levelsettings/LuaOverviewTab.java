@@ -67,7 +67,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
 	public LuaOverviewTab() {
 
-		title = PixelScene.renderTextBlock(Messages.get(LuaOverviewTab.class, "title"), 12);
+		title = PixelScene.renderTextBlock(Messages.get(LuaOverviewTab.class, "scripts_title"), 12);
 		title.hardlight(Window.TITLE_COLOR);
 		add(title);
 
@@ -115,8 +115,8 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 //			@Override
 //			public String getTabName(int index) {
 //				switch (index) {
-//					case 0: return Messages.get(LuaOverviewTab.class, "scripts_title tzz");
-//					case 1: return Messages.get(LuaOverviewTab.class, "global_vars");
+//					case 0: return Messages.get(LuaOverviewTab.class, "scripts_title");
+//					case 1: return Messages.get(LuaOverviewTab.class, "vars_title");
 //				}
 //				return "null";
 //			}
@@ -129,7 +129,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 		title.setVisible(index == 0);
 		if (outsideSpExtraBtn != null) outsideSpExtraBtn.destroy();
 		if (index == 1) {
-			outsideSpExtraBtn = new RedButton("Add tzz") {
+			outsideSpExtraBtn = new RedButton("Add - (LuaOverviewTab line 132)") {
 				@Override
 				protected void onClick() {
 					CustomObject.globalVarsDefaults.add("");
@@ -173,7 +173,7 @@ public class LuaOverviewTab extends WndEditorSettings.TabComp {
 
 	@Override
 	public String hoverText() {
-		return Messages.get(LuaOverviewTab.class, "title");
+		return Messages.get(LuaOverviewTab.class, "scripts_title");
 	}
 
 	@Override

@@ -48,7 +48,7 @@ public class WndCustomizeTalents extends Window {
 //			talents.add(new LinkedHashMap<>());
 //		}
 
-		//TODO test tzz: do duplicates work?
+		//TODO test: do duplicates work?
 
 		//Klasse 1:
 		//1-5 talents per row, layout like talentstab, plus button takes as much space as one talent

@@ -42,7 +42,5 @@ public interface LuaClass extends Bundlable {
         return CustomObject.getLuaClass(getIdentifier()) == this;
     }
 
-    //TODO tzz we also need a way to override mob sprites...
-
     LuaClass newInstance();
 }

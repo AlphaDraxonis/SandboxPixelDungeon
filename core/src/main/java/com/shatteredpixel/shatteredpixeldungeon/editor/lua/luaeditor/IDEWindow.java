@@ -25,6 +25,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
@@ -57,16 +58,7 @@ import com.watabou.noosa.ui.Component;
 import java.util.Arrays;
 import java.util.List;
 
-public class IDEWindow extends Component {//tzz save when close!,
-
-	//Top: select file (if file not exists: will be created when saved (always ask for saving when trying to close, and compile))
-
-	//Prominent toolbar: insert template (script, method, line), toggle visibility of fully qualified names, COMPILE (+ view errors), paste cut copy
-
-	//Have an area for declaring variables
-	//Space for many methods
-	//Space for additional code
-	//Space for writing script name and description, so it can be used as template flawlessly
+public class IDEWindow extends Component {
 
 	private LuaScript script;
 
@@ -88,7 +80,7 @@ public class IDEWindow extends Component {//tzz save when close!,
 		this.luaCodeHolder = luaCodeHolder;
 		this.clazz = luaCodeHolder.clazz;
 
-		pathLabel = PixelScene.renderTextBlock(Messages.get(IDEWindow.class, "path"),9);//tzz make sure the file is not already taken for another type!
+		pathLabel = PixelScene.renderTextBlock(Messages.get(IDEWindow.class, "path"),9);
 		add(pathLabel);
 
 		pathInput = new TextInput(Chrome.get(Chrome.Type.TOAST_WHITE), false, PixelScene.uiCamera.zoom) {
@@ -113,7 +105,13 @@ public class IDEWindow extends Component {//tzz save when close!,
 		changeScript = new IconButton(Icons.CHANGES.get()) {
 			@Override
 			protected void onClick() {
-				List<LuaScript> scripts = CustomDungeonSaves.findScripts(script -> script.type == clazz);
+				List<LuaScript> scripts = CustomDungeonSaves.findScripts(script -> {
+					Class<?> luca = script.type;
+					while (!luca.isAssignableFrom(clazz)) {
+						luca = script.type.getSuperclass();
+					}
+					return luca != GameObject.class && luca != Object.class;
+				});
 
 				String[] options = new String[scripts.size()];
 				int i = 0;
@@ -365,9 +363,17 @@ public class IDEWindow extends Component {//tzz save when close!,
 		if (!luaCodeHolder.pathToScript.endsWith(".lua")) luaCodeHolder.pathToScript += ".lua";
 
 		for (LuaScript ls : CustomDungeonSaves.findScripts(null)) {
-			if (luaCodeHolder.pathToScript.equals(ls.pathFromRoot) && ls.type != clazz) {
-				EditorScene.show(new WndError(Messages.get(IDEWindow.class, "save_duplicate_name_error", luaCodeHolder.pathToScript)) {{setHighligtingEnabled(false);}});
-				return false;
+			if (luaCodeHolder.pathToScript.equals(ls.pathFromRoot)) {
+				Class<?> luca = script.type;
+				while (!luca.isAssignableFrom(clazz)) {
+					luca = script.type.getSuperclass();
+				}
+				if (luca == GameObject.class || luca == Object.class) {
+					EditorScene.show(new WndError(Messages.get(IDEWindow.class, "save_duplicate_name_error", luaCodeHolder.pathToScript)) {{
+						setHighligtingEnabled(false);
+					}});
+					return false;
+				}
 			}
 		}
 
@@ -422,7 +428,7 @@ public class IDEWindow extends Component {//tzz save when close!,
 		return w;
 	}
 
-	public void selectScript(LuaScript script, boolean force) {//TODO tzz add option to delete scripts!
+	public void selectScript(LuaScript script, boolean force) {
 		if (script != null) script.type = clazz;
 		this.script = script;
 		String cleanedCode;
@@ -601,12 +607,13 @@ public class IDEWindow extends Component {//tzz save when close!,
 							//tzz actually view documentation
 						}
 					},
-					new RedButton(Messages.get(IDEWindow.class, "insert_line")) {
-						@Override
-						protected void onClick() {
-							//TODO tzz way to add class("xxx");
-						}
-					},
+//					new RedButton(Messages.get(IDEWindow.class, "insert_line")) {
+//						@Override
+//						protected void onClick() {
+//							//TODO way to add class("xxx");
+//							//and some other examples...
+//						}
+//					},
 
 			}, posX, posY, 200);
 		}

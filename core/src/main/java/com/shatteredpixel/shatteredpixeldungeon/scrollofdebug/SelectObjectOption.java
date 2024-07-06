@@ -1,12 +1,15 @@
 package com.shatteredpixel.shatteredpixeldungeon.scrollofdebug;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
-import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.editor.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Consumer;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -15,6 +18,8 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
@@ -45,7 +50,7 @@ public enum SelectObjectOption {
 		}
 
 		public static String title() {
-			return Messages.get(SelectObjectOption.SelectPrimitiveOption.class, "title");//"Choose type of primitve" tzz
+			return Messages.get(SelectObjectOption.SelectPrimitiveOption.class, "title");
 		}
 
 		public static SelectPrimitiveOption[] options(Class<?> type) {
@@ -104,7 +109,7 @@ public enum SelectObjectOption {
 		}
 
 		public String label() {
-			return Messages.get(this, name().toLowerCase(Locale.ENGLISH) + "_label") + name();//tzz
+			return Messages.get(this, name().toLowerCase(Locale.ENGLISH) + "_label");
 		}
 	}
 
@@ -112,14 +117,14 @@ public enum SelectObjectOption {
 
 		List<SelectObjectOption> result = new ArrayList<>(6);
 
-		result.add(FROM_REFERENCE);//always possible
+//		result.add(FROM_REFERENCE);//always possible
 
 		if (WndSetValue.isPrimitiveLike(type) || type == Object.class) {
 			result.add(PRIMITIVE);
 		}
 
 		if (returnValueOf_getMatchingBagsForNewObject != null
-				|| type == Heap.class || type == int.class || type == Integer.class) {
+				|| type == Heap.class || type == int.class || type == Integer.class || type == Sign.class) {
 			result.add(FROM_LEVEL);
 		}
 
@@ -165,6 +170,36 @@ public enum SelectObjectOption {
 			case FROM_REFERENCE:
 				break;
 			case FROM_LEVEL:
+				GameScene.hideWindowsTemporarily();
+				GameScene.selectCell(new CellSelector.Listener() {
+					@Override
+					public void onSelect(Integer cell) {
+						if (cell != null && cell >= 0 && cell <= Dungeon.level.length()) {
+							if (type == Integer.class) onSelect.accept(cell);
+							else if (Mob.class.isAssignableFrom(type)) onSelect.accept(Dungeon.level.findMob(cell));
+							else if (Heap.class.isAssignableFrom(type)) onSelect.accept(Dungeon.level.heaps.get(cell));
+							else if (Item.class.isAssignableFrom(type)) onSelect.accept(Dungeon.level.heaps.get(cell) == null ? null : Dungeon.level.heaps.get(cell).peek());
+							else if (Trap.class.isAssignableFrom(type)) onSelect.accept(Dungeon.level.traps.get(cell));
+							else if (Plant.class.isAssignableFrom(type)) onSelect.accept(Dungeon.level.plants.get(cell));
+							else if (Barrier.class.isAssignableFrom(type)) onSelect.accept(Dungeon.level.barriers.get(cell));
+							else if (ArrowCell.class.isAssignableFrom(type)) onSelect.accept(Dungeon.level.arrowCells.get(cell));
+							else if (Sign.class.isAssignableFrom(type)) onSelect.accept(Dungeon.level.signs.get(cell));
+							else if (Buff.class.isAssignableFrom(type)) {
+								Char ch = Actor.findChar(cell);
+								if (ch == null || ch.buffs(((Class<? extends Buff>) type)).isEmpty()) onSelect.accept(null);
+								else onSelect.accept(ch.buffs(((Class<? extends Buff>) type)).iterator().next());
+							} else if (CustomTilemap.class.isAssignableFrom(type)) {
+								onSelect.accept(CustomTileItem.findAnyCustomTileAt(cell));
+							}
+						}
+						GameScene.reshowWindows();
+					}
+
+					@Override
+					public String prompt() {
+						return "propmt tzz";
+					}
+				});
 				break;
 			case NEW_OBJECT:
 
@@ -215,6 +250,6 @@ public enum SelectObjectOption {
 	}
 
 	public String label() {
-		return Messages.get(this, name().toLowerCase(Locale.ENGLISH) + "_label") + name();//tzz
+		return Messages.get(this, name().toLowerCase(Locale.ENGLISH) + "_label");
 	}
 }
