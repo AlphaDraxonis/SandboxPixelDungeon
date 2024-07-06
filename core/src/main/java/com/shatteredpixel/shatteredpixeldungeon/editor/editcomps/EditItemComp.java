@@ -55,7 +55,7 @@ import java.util.*;
 
 public class EditItemComp extends DefaultEditComp<Item> {
 
-    public static boolean showSpreadIfLoot;
+    public static boolean showSpreadIfLoot, showOnlyCheckType;
 
     private final Heap heap;
 
@@ -76,6 +76,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
     protected StyledCheckBox autoIdentify;
     protected StyledCheckBox cursedKnown;
     protected StyledCheckBox spreadIfLoot;
+    protected StyledCheckBox exactItemInRecipe;
     protected StyledCheckBox blessed;
     protected StyledCheckBox igniteBombOnDrop;
     protected StyledSpinner shockerDuration;
@@ -163,6 +164,14 @@ public class EditItemComp extends DefaultEditComp<Item> {
             add(spreadIfLoot);
         }
         showSpreadIfLoot = false;
+
+        if (heap == null && showOnlyCheckType) {
+            exactItemInRecipe = new StyledCheckBox(label("only_check_type"));
+            exactItemInRecipe.checked(!item.onlyCheckTypeIfRecipe);
+            exactItemInRecipe.addChangeListener(v -> item.onlyCheckTypeIfRecipe = !v);
+            add(exactItemInRecipe);
+        }
+        showOnlyCheckType = false;
 
         if (!(item instanceof RandomItem)) {
             if (!(item instanceof MissileWeapon) && (item instanceof Weapon || item instanceof Armor || item instanceof Ring || item instanceof Artifact || item instanceof Wand)) {
@@ -501,6 +510,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                     @Override
                     public boolean itemSelectable(Item item) {
 //                        if (item instanceof Bag) return false;
+                        if (item instanceof Gold || item instanceof EnergyCrystal) return false;
                         if (!bag.canHold(item)) return false;
 
                         if (item.stackable) {
@@ -543,7 +553,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         }
 
         rectComps = new Component[]{quantity, quickslotPos, numChoosableTrinkets, shockerDuration, chargeSpinner, wandRecharging, levelSpinner, durabilitySpinner,
-                augmentationSpinner, curseBtn, permaCursed, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, docPageType, spreadIfLoot};
+                augmentationSpinner, curseBtn, permaCursed, cursedKnown, autoIdentify, enchantBtn, magesStaffWand, hasSeal, blessed, igniteBombOnDrop, docPageType, spreadIfLoot, exactItemInRecipe};
         linearComps = new Component[]{rollTrinkets, summonMobs, docPageTitle, docPageText, bagItems, randomItem, keylevel, keyCell};
     }
 
@@ -660,6 +670,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if (cursedKnown != null)            cursedKnown.checked(obj.getCursedKnownVar());
         if (permaCursed != null)            permaCursed.checked(obj.permaCurse);
         if (spreadIfLoot != null)           spreadIfLoot.checked(obj.spreadIfLoot);
+        if (exactItemInRecipe != null)      exactItemInRecipe.checked(!obj.onlyCheckTypeIfRecipe);
         if (magesStaffWand != null)         magesStaffWand.setSelectedItem(((MagesStaff) obj).wand);
         if (hasSeal != null)                hasSeal.checked(((Armor) obj).checkSeal() != null);
         if (blessed != null)                blessed.checked(((Ankh) obj).blessed);
@@ -726,6 +737,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
         if ((a.getCursedKnownVar() || a.identifyOnStart) != (b.getCursedKnownVar() || b.identifyOnStart)) return false;
         if ((a.levelKnown || a.identifyOnStart) != (b.levelKnown || b.identifyOnStart)) return false;
         if (a.spreadIfLoot != b.spreadIfLoot) return false;
+        if (a.onlyCheckTypeIfRecipe != b.onlyCheckTypeIfRecipe) return false;
 
         if (!Objects.equals(a.getCustomName(), b.getCustomName())) return false;
         if (!Objects.equals(a.getCustomDesc(), b.getCustomDesc())) return false;

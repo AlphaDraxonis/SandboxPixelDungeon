@@ -16,6 +16,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +35,7 @@ public class CustomRecipe extends Recipe implements Bundlable {
     private static final String INPUT = "input_";
     private static final String OUTPUT = "output";
     private static final String COST = "cost";
-    private static final String NUM_INGREDIENTS = "num_ingredients";//only relevant after game has started
+    private static final String NUM_INGREDIENTS = "num_ingredients";//only relevant AFTER the game has started
 
     @Override
     public void restoreFromBundle(Bundle bundle) {
@@ -79,7 +80,9 @@ public class CustomRecipe extends Recipe implements Bundlable {
         for (Item ingredient : ingredients) {
             if (!ingredient.isIdentified()) return false;
             for (int i = 0; i < itemInputs.length; i++) {
-                if (EditItemComp.areEqual(ingredient, itemInputs[i], true)) {
+                if (itemInputs[i] != null && (
+                           itemInputs[i].onlyCheckTypeIfRecipe && ingredient.getClass() == itemInputs[i].getClass()
+                        || EditItemComp.areEqual(ingredient, itemInputs[i], true))) {
                     neededQuantity[i] -= ingredient.quantity();
                     break;
                 }
@@ -111,7 +114,9 @@ public class CustomRecipe extends Recipe implements Bundlable {
 
         for (Item ingredient : ingredients) {
             for (int i = 0; i < itemInputs.length; i++) {
-                if (EditItemComp.areEqual(ingredient, itemInputs[i], true) && neededQuantity[i] > 0) {
+                if (neededQuantity[i] > 0 && itemInputs[i] != null && (
+                        itemInputs[i].onlyCheckTypeIfRecipe && ingredient.getClass() == itemInputs[i].getClass()
+                                || EditItemComp.areEqual(ingredient, itemInputs[i], true))) {
                     if (neededQuantity[i] <= ingredient.quantity()) {
                         ingredient.quantity(ingredient.quantity() - neededQuantity[i]);
                         neededQuantity[i] = 0;
@@ -211,4 +216,36 @@ public class CustomRecipe extends Recipe implements Bundlable {
         RandomItem.fillArrayAsGoodAsPossibleUsingRandomItems(itemInputs);
         GameObject.doOnSingleObject(itemOutput, GameObject::initRandoms, newValue -> itemOutput = newValue);
 	}
+
+    public boolean doOnAllGameObjects(Function<GameObject, GameObject.ModifyResult> whatToDo) {
+
+        boolean changedSth = false;
+        Item[] newInputs = new Item[3];
+        for (int i = 0; i < itemInputs.length; i++) {
+            Item obj = itemInputs[i];
+
+            GameObject.ModifyResult result = whatToDo.apply(obj);
+
+            if (GameObject.ModifyResult.isNoChange(result)) {
+                if (obj.doOnAllGameObjects(whatToDo)) changedSth = true;
+                newInputs[i] = obj;
+            }
+
+            else if (GameObject.ModifyResult.isRemovingFully(result)) {
+                changedSth = true;
+                newInputs[i] = null;
+            }
+
+            else {
+                for (GameObject v : result.newValues) {
+                    if (v instanceof Item) {
+                        if (v.doOnAllGameObjects(whatToDo)) changedSth = true;
+                        newInputs[i] = (Item) v;
+                        break;
+                    }
+                }
+            }
+        }
+        return changedSth | GameObject.doOnSingleObject(itemOutput, whatToDo, v -> itemOutput = v);
+    }
 }

@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.recipes;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditCompWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditItemComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Items;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
@@ -255,6 +256,7 @@ public class CustomRecipeList extends Component {
                 if (item != null) {
                     boolean wasStackable = item.stackable;
                     if (slot != INDEX_OUTPUT) item.stackable = false;
+                    EditItemComp.showOnlyCheckType = true;
                     EditorScene.show(new EditCompWindow(item) {
                         {
                             item.stackable = wasStackable;//don't show quantity spinner
