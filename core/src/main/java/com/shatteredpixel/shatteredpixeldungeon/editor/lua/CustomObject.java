@@ -37,7 +37,10 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
 import org.luaj.vm2.LuaValue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CustomObject extends LuaCodeHolder {
 
@@ -164,13 +167,13 @@ public class CustomObject extends LuaCodeHolder {
 
 		globalVarsDefaults.clear();
 
-		LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, GLOBAL_VARS);
-		if (loaded != null && loaded.istable()) {
-			globalVars = loaded.checktable();
-		} else {
-			String[] array = node.getStringArray(GLOBAL_VARS_DEFAULTS);
-			if (array != null) globalVarsDefaults.addAll(Arrays.asList(array));
-		}
+//		LuaValue loaded = LuaManager.restoreVarFromBundle(bundle, GLOBAL_VARS);
+//		if (loaded != null && loaded.istable()) {
+//			globalVars = loaded.checktable();
+//		} else {
+//			String[] array = node.getStringArray(GLOBAL_VARS_DEFAULTS);
+//			if (array != null) globalVarsDefaults.addAll(Arrays.asList(array));
+//		}
 	}
 
 	public static void store(Bundle bundle) {

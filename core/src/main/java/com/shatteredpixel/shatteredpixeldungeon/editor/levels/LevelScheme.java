@@ -443,7 +443,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
             if (luaScript != null) {
                 if (luaScript.getScript() == null) luaScript.loadScript();
-                if (luaScript.getScript().get("vars").istable()) {
+                if (luaScript.getScript() == null) luaScript = null;
+                else if (luaScript.getScript().get("vars").istable()) {
                     ((LuaLevel) level).setVars(LuaManager.deepCopyLuaValue(luaScript.getScript().get("vars")).checktable());
                 }
             }
@@ -468,7 +469,8 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
 
             if (luaScript != null) {
                 if (luaScript.getScript() == null) luaScript.loadScript();
-                if (luaScript.getScript().get("vars").istable()) {
+                if (luaScript.getScript() == null) luaScript = null;
+                else if (luaScript.getScript().get("vars").istable()) {
                     ((LuaLevel) level).setVars(LuaManager.deepCopyLuaValue(luaScript.getScript().get("vars")).checktable());
                 }
             }

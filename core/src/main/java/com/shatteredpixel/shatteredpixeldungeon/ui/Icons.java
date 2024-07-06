@@ -129,6 +129,7 @@ public enum Icons {
 	ALERT,
 	LOST,
 	DEPTH,      //depth icons have two variants, for regular and seeded runs
+	DEFAULT_DEPTH,//no runType
 	DEPTH_CHASM,
 	DEPTH_WATER,
 	DEPTH_GRASS,
@@ -438,6 +439,9 @@ public enum Icons {
 				break;
 			case DEPTH:
 				icon.frame( icon.texture.uvRectBySize( 48, 64 + runTypeOfs(), 6, 7 ) );
+				break;
+			case DEFAULT_DEPTH:
+				icon.frame( icon.texture.uvRectBySize( 48, 64, 6, 7 ) );
 				break;
 			case DEPTH_CHASM:
 				icon.frame( icon.texture.uvRectBySize( 56, 64 + runTypeOfs(), 7, 7 ) );

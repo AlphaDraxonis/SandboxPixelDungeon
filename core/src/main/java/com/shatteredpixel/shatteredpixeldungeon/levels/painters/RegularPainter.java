@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.painters;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Patch;
@@ -123,6 +124,8 @@ public abstract class RegularPainter extends Painter {
 			placeDoors( r );
 			r.paint( level );
 
+			for (Item i : r.spawnItemsOnLevel)
+				level.addItemToSpawn(i);
 			if (!r.itemsGenerated) r.generateItems(level);
 			r.placeItemsAnywhere(level);
 		}

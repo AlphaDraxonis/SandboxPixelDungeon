@@ -598,15 +598,13 @@ public class IDEWindow extends Component {//tzz save when close!,
 					new RedButton(Messages.get(IDEWindow.class, "view_documentation")) {
 						@Override
 						protected void onClick() {
-							//TODO tzz way to add class("xxx");
-//							LuaTemplates.show(script -> selectScript(script, false));
+							//tzz actually view documentation
 						}
 					},
 					new RedButton(Messages.get(IDEWindow.class, "insert_line")) {
 						@Override
 						protected void onClick() {
 							//TODO tzz way to add class("xxx");
-//							LuaTemplates.show(script -> selectScript(script, false));
 						}
 					},
 

@@ -70,6 +70,7 @@ public class SecretChestChasmRoom extends SecretRoom {
 
 		Point[] chestPositions = chestPositions();
 		for (int i = 0; i < chestPositions.length; i++) {
+			Painter.set(level, chestPositions[i], Terrain.EMPTY_SP);
 			fillChest(1, chestPositions[i], level);
 			if (level.heaps.get(level.pointToCell(chestPositions[i])) != null) chests++;
 			else chestPositions[i] = null;
@@ -88,7 +89,7 @@ public class SecretChestChasmRoom extends SecretRoom {
 			fillChest(itemsPerChest + plus, p, level);
 		}
 
-		for (Point p : chestPositions()) {
+		for (Point p : keyPositions()) {
 			Painter.set(level, p, Terrain.EMPTY_SP);
 			if (chests > 0) {
 				level.drop(new GoldenKey(), level.pointToCell(p));
@@ -101,8 +102,7 @@ public class SecretChestChasmRoom extends SecretRoom {
 
 	private void fillChest(int numItems, Point p, Level level) {
 		if (!spawnItemsInRoom.isEmpty()) {
-			level.drop(spawnItemsInRoom.get(0), level.pointToCell(p)).type = Heap.Type.LOCKED_CHEST;
-			spawnItemsInRoom.remove(0);
+			level.drop(spawnItemsInRoom.remove(0), level.pointToCell(p)).type = Heap.Type.LOCKED_CHEST;
 		}
 	}
 
@@ -112,6 +112,15 @@ public class SecretChestChasmRoom extends SecretRoom {
 				new Point(right-3, top+3),
 				new Point(right-3, bottom-3),
 				new Point(left+3, bottom-3)
+		};
+	}
+
+	private Point[] keyPositions() {
+		return new Point[] {
+				new Point(left+1, top+1),
+				new Point(right-1, top+1),
+				new Point(right-1, bottom-1),
+				new Point(left+1, bottom-1)
 		};
 	}
 

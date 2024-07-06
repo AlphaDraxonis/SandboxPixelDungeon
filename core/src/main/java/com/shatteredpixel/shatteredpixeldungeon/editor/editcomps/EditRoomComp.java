@@ -27,7 +27,7 @@ public class EditRoomComp extends DefaultEditComp<Room> {
 
     private void initComps() {
 
-//        spawnItemsInRoom = new ItemContainerWithLabel<Item>(obj.spawnItemsInRoom, Messages.get(HeroSettings.class, "itzztems")) {
+//        spawnItemsInRoom = new ItemContainerWithLabel<Item>(obj.spawnItemsInRoom, Messages.get(HeroSettings.class, "spawn_items_in_room")) {
 //
 //            @Override
 //            protected void onSlotNumChange() {

@@ -13,7 +13,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.overview.FloorOverviewSce
 import com.shatteredpixel.shatteredpixeldungeon.editor.server.UploadDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.services.server.ServerCommunication;
@@ -38,13 +37,13 @@ import static com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.W
 public class WndSelectDungeon extends Window {
 
     private enum SortMode {
-        ALPABETICALLY,
+        ALPHABETICALLY,
         LAST_MODIFIED;
 
         public SortMode nextMode() {
             switch (this) {
-				case ALPABETICALLY: return LAST_MODIFIED;
-				case LAST_MODIFIED: return ALPABETICALLY;
+				case ALPHABETICALLY: return LAST_MODIFIED;
+				case LAST_MODIFIED: return ALPHABETICALLY;
 			}
             return LAST_MODIFIED;
         }
@@ -173,7 +172,7 @@ public class WndSelectDungeon extends Window {
         listPane.clear();
         Collections.sort(allInfos, (o1, o2) -> {
 			switch (sortMode) {
-				case ALPABETICALLY: return o1.name.compareTo(o2.name);
+				case ALPHABETICALLY: return o1.name.compareTo(o2.name);
 				case LAST_MODIFIED: return Long.compare(o2.lastModified, o1.lastModified);
 			}
 			return 0;
@@ -210,7 +209,7 @@ public class WndSelectDungeon extends Window {
         public ListItem(CustomDungeonSaves.Info info) {
             super(Chrome.Type.GREY_BUTTON_TR, info.name, 9);
 
-            depthIcon = Icons.get(Level.Feeling.NONE);
+            depthIcon = Icons.get(Icons.DEFAULT_DEPTH);
             depthIcon.scale.set(1.2f);
             add(depthIcon);
             depthText = PixelScene.renderTextBlock(Integer.toString(info.numLevels), 7);

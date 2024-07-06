@@ -14,6 +14,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTitledMessage;
+import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
@@ -280,77 +281,96 @@ public class ServerDungeonList extends MultiWindowTabComp {
 				: new DungeonPreviewItem(preview);
 	}
 
-	private class DungeonPreviewItem extends ScrollingListPane.ListItem {
+	private class DungeonPreviewItem extends Button {
 
 		private final DungeonPreview preview;
 
-		protected RenderedTextBlock desc;
+		protected RenderedTextBlock title, by, creator, desc;
 
-		protected RenderedTextBlock label2, label3;
+		protected ColorBlock line;
 
 		private DungeonPreviewItem(String error) {
-			super(new Image(), Messages.get(ServerCommunication.class, "error") + ": " + error);
+			super();
 			preview = null;
+
+			title.text( Messages.get(ServerCommunication.class, "error") + ": " + error );
+			desc = by = creator = null;
 		}
 
 		private DungeonPreviewItem(DungeonPreview preview) {
-			super(new Image(), null, preview.title);
+			super();
 			this.preview = preview;
 
-			desc.text(preview.description);
+			title.text( preview.title );
+			by.text(Messages.get(ServerDungeonList.class, "title_entry"));
+			creator.text("_" + preview.uploader + "_");
 
-			label2.text(Messages.get(ServerDungeonList.class, "title_entry"));
-			label3.text("_" + preview.uploader + "_");
+			desc.text(preview.description);
 		}
 
 		@Override
 		protected void createChildren(Object... params) {
 			super.createChildren(params);
 
-			label.setHighlighting(false);
-			label.hardlight(Window.TITLE_COLOR);
+			title = PixelScene.renderTextBlock(7);
+			title.setHighlighting(false);
+			title.hardlight(Window.TITLE_COLOR);
+			add(title);
 
-			label2 = PixelScene.renderTextBlock(7);
-			label2.setHighlighting(false);
-			add(label2);
+			by = PixelScene.renderTextBlock(7);
+			by.setHighlighting(false);
+			add(by);
 
-			label3 = PixelScene.renderTextBlock(7);
-			add(label3);
+			creator = PixelScene.renderTextBlock(7);
+			add(creator);
 
 			desc = PixelScene.renderTextBlock(6);
 			desc.maxNumLines = 3;
 			add(desc);
+
+			line = new ColorBlock(1, 1, 0xFF222222);
+			add(line);
 		}
 
 		@Override
 		protected void layout() {
-			if (desc == null) {
-				super.layout();
-				return;
+
+			title.maxWidth((int) width);
+
+			if (desc != null) {
+				by.maxWidth((int) width);
+				creator.maxWidth((int) width);
+				desc.maxWidth((int) width - 3);
 			}
 
-			desc.maxWidth(getLabelMaxWidth() - 3);
-			label.maxWidth(getLabelMaxWidth());
-			height = label.height() + desc.height() + 9;
-			super.layout();
-			label.setPos(label.left(), y + 3);
+			title.setPos(x + 1, y + 3);
 
-			label2.setPos(label.right(), label.top());
-			label3.setPos(label2.right(), label2.top());
-			
-			if (label3.right() > width - 3) {
-				if (label3.width() + label2.width() < label.maxWidth()) {
-					label2.setPos(label.left(), label.bottom() + 4);
-					label3.setPos(label2.right(), label2.top());
-				} else if (label2.right() <= width - 3) {
-					label3.setPos(label.left(), label.bottom() + 4);
-				} else {
-					label2.setPos(label.left(), label.bottom() + 4);
-					label3.setPos(label2.left(), label2.bottom() + 4);
+			line.size(width, 1);
+			line.x = x;
+			line.y = y;
+
+			if (desc != null) {
+				by.setPos(title.right(), title.top());
+				creator.setPos(by.right(), by.top());
+
+				if (creator.right() > width - 3) {
+					if (creator.width() + by.width() < title.maxWidth()) {
+						by.setPos(title.left(), title.bottom() + 4);
+						creator.setPos(by.right(), by.top());
+					} else if (by.right() <= width - 3) {
+						creator.setPos(title.left(), title.bottom() + 4);
+					} else {
+						by.setPos(title.left(), title.bottom() + 4);
+						creator.setPos(by.left(), by.bottom() + 4);
+					}
 				}
+				desc.setPos(title.left() + 3, creator.bottom() + 4);
+				height = desc.bottom() - y + 1;
+			} else {
+				height = title.bottom() + 1;
 			}
 
-			if (desc != null) desc.setPos(label.left() + 3, label.bottom() + 4);
+			super.layout();
 		}
 
 		@Override

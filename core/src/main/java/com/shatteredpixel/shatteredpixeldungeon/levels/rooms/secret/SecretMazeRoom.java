@@ -33,10 +33,6 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class SecretMazeRoom extends SecretRoom {
 	
 	@Override
@@ -87,39 +83,71 @@ public class SecretMazeRoom extends SecretRoom {
 
 		if (!itemsGenerated) generateItems(level);
 
-		int posRequired = spawnItemsInRoom.size();
-		List<Integer> deadEnds = new ArrayList<>();
+		//furthest away is first
+//		Map<Integer, Integer> deadEnds = new TreeMap<>((k1, k2) -> {
+//			int compare = Integer.compare(PathFinder.distance[k2], PathFinder.distance[k1]);
+//			return compare == 0
+//					? k1.compareTo(k2)
+//					: compare;
+//		});
+//
+//		//most valuable item is first
+//		Collections.sort(spawnItemsInRoom, (i1, i2) -> Integer.compare(Item.trueValue(i2), Item.trueValue(i1)));
+//		spawnItemsInRoom.add(new Gold());
+//
+//		PathFinder.buildDistanceMap(entrance.x - left, passable);
+//
+//		checkOneCell:
+//		for (int i = 0; i < PathFinder.distance.length; i++){
+//			if (PathFinder.distance[i] != Integer.MAX_VALUE) {
+//
+//				for (int j : PathFinder.NEIGHBOURS4) {
+//					int n = i + j;//no check for bounds required as maze has walls
+//					if (PathFinder.distance[n] != Integer.MAX_VALUE
+//							&& PathFinder.distance[n] > PathFinder.distance[i]) continue checkOneCell;
+//				}
+//
+//				deadEnds.put(i, PathFinder.distance[i]);
+//
+//			}
+//		}
+//
+//		PathFinder.setMapSize(level.width(), level.height());
+//
+//		int itemsRemaining = spawnItemsInRoom.size();
+//		dropItems:
+//		while (true) {
+//			for (int pos : deadEnds.keySet()) {
+//				level.drop(spawnItemsInRoom.remove(0), level.pointToCell(new Point(left + pos%width(),top +  pos/width()))).type = Heap.Type.CHEST;
+//				itemsRemaining--;
+//				if (itemsRemaining <= 0) break dropItems;
+//			}
+//		}
 
-		//most valuable item is first
-		Collections.sort(spawnItemsInRoom, (i1, i2) -> Integer.compare(Item.trueValue(i2), Item.trueValue(i1)));
-
-		idkHowToName:
+		int bestDist = 0;
+		Point bestDistP = new Point();
 		for (int i = 0; i < PathFinder.distance.length; i++){
-			if (PathFinder.distance[i] != Integer.MAX_VALUE) {
-
-				for (int j : PathFinder.NEIGHBOURS4) {
-					int n = i + j;//no check for bounds required as maze has walls
-					if (PathFinder.distance[n] != Integer.MAX_VALUE
-							&& PathFinder.distance[n] > PathFinder.distance[i]) break idkHowToName;
-				}
-
-				deadEnds.add(i);
-
+			if (PathFinder.distance[i] != Integer.MAX_VALUE
+					&& PathFinder.distance[i] > bestDist){
+				bestDist = PathFinder.distance[i];
+				bestDistP.x = (i % width()) + left;
+				bestDistP.y = (i / width()) + top;
 			}
 		}
-		//furthest away is first
-		Collections.sort(deadEnds, (p1, p2) -> Integer.compare(p2, p1));
 
-		int i = 0;
-		int posAvailable = deadEnds.size();
-		for (Item item : spawnItemsInRoom) {
-			if (i >= posAvailable) i -= posAvailable;
-			level.drop(item, deadEnds.get(i++)).type = Heap.Type.CHEST;
-		}
-		
+		level.drop(spawnItemsInRoom.remove(0), level.pointToCell(bestDistP)).type = Heap.Type.CHEST;
+
 		PathFinder.setMapSize(level.width(), level.height());
-		
+
+
 		entrance().set(Door.Type.HIDDEN);
+	}
+
+	@Override
+	public void generateItems(Level level) {
+		super.generateItems(level);
+
+		spawnItemsInRoom.add(prize(level));
 	}
 
 	private static Item prize(Level level) {

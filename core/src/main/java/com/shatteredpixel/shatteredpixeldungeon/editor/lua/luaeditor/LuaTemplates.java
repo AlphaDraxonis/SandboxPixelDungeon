@@ -52,7 +52,7 @@ public class LuaTemplates {
 		SPAWN_MOB_ON_DIE = new LuaScript(Mob.class, "When this mob dies, a wraith (or another mob) is spawned in its place.", "");
 		SPAWN_MOB_ON_DIE.code = "vars = {} static = {} function die(this, vars, super, cause) super:call(cause);\n" +
 				"\n" +
-				"mob = new(\"Wraith\");\n" +
+				"local mob = new(\"Wraith\");\n" +
 				"\n" +
 				"--affectBuff(mob, new(\"Corruption\")); -- uncomment to add this buff\n" +
 				"\n" +

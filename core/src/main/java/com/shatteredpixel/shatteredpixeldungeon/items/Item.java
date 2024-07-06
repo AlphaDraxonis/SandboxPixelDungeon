@@ -111,6 +111,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 	public int reservedQuickslot;
 
 	public boolean spreadIfLoot = false;//drops to adjacent cells, used by Eye, Goo or DM300 in Shattered for example, ONLY used if part of mob loot
+	public boolean onlyCheckTypeIfRecipe = false;
 
 	public static final Comparator<Item> itemComparator = new Comparator<Item>() {
 		@Override
@@ -236,16 +237,30 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 		}
 
         if (!(this instanceof Bag)) {
-            Set<Backpack> backpacks = new HashSet<>(3);
+            List<Backpack> backpacks = new ArrayList<>(3);
             for (Item item : items) {
                 if (item instanceof Bag && ((Bag) item).canHold(this)) {
-                    if (item instanceof Backpack) backpacks.add((Backpack) item);
+					Bag bag = (Bag) item;
+                    if (item instanceof Backpack) {
+						if (stackable) {
+							for (Item i : bag.items) {
+								if (isSimilar(i)) {
+									if (collect(bag)) {
+										break;
+									};
+								}
+							}
+						}
+						backpacks.add((Backpack) bag);
+					}
                     else if (collect((Bag) item)) {
                         return true;
                     }
                 }
             }
-            //add to backpacks last
+			//add to a backpack if no other options
+			//prefer filling one backpack first
+			Collections.sort(backpacks, (b1, b2) -> Integer.compare(b1.capacity() - b1.items.size(), b2.capacity() - b2.items.size()));
             for (Backpack item : backpacks) {
                 if (collect(item)) {
                     return true;
@@ -392,7 +407,8 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 		return getClass() == item.getClass()
 				&& Objects.equals(customImage, item.customImage)
 				&& Objects.equals(customName, item.customName)
-				&& Objects.equals(customDesc, item.customDesc);
+				&& Objects.equals(customDesc, item.customDesc)
+				&& onlyCheckTypeIfRecipe == onlyCheckTypeIfRecipe;
 	}
 
 	protected void onDetach(){}
@@ -667,6 +683,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 	private static final String KEPT_LOST       = "kept_lost";
 	private static final String RESERVED_QUICKSLOT = "reserved_quickslot";
 	private static final String SPREAD_IF_LOOT = "spread_if_loot";
+	private static final String ONLY_CHECK_TYPE_IF_RECIPE = "only_check_type_if_recipe";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -689,6 +706,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 		bundle.put( KEPT_LOST, keptThoughLostInvent );
 		bundle.put( RESERVED_QUICKSLOT, reservedQuickslot );
 		bundle.put( SPREAD_IF_LOOT, spreadIfLoot );
+		bundle.put( ONLY_CHECK_TYPE_IF_RECIPE, onlyCheckTypeIfRecipe );
 	}
 	
 	@Override
@@ -732,6 +750,7 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
         keptThoughLostInvent = bundle.getBoolean(KEPT_LOST);
         reservedQuickslot = bundle.getInt(RESERVED_QUICKSLOT);
         spreadIfLoot = bundle.getBoolean(SPREAD_IF_LOOT);
+        onlyCheckTypeIfRecipe = bundle.getBoolean(ONLY_CHECK_TYPE_IF_RECIPE);
     }
 
 	@Override

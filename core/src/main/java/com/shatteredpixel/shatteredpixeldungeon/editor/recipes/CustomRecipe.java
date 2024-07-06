@@ -223,6 +223,7 @@ public class CustomRecipe extends Recipe implements Bundlable {
         Item[] newInputs = new Item[3];
         for (int i = 0; i < itemInputs.length; i++) {
             Item obj = itemInputs[i];
+            if (obj == null) continue;
 
             GameObject.ModifyResult result = whatToDo.apply(obj);
 

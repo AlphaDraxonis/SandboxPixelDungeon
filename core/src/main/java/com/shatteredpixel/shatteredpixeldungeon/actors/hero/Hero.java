@@ -216,7 +216,7 @@ public class Hero extends Char {
 		bundle.put( CLASS, heroClass );
 		bundle.put( SUBCLASS, subClass );
 		bundle.put( ABILITY, armorAbility );
-		Talent.storeTalentsInBundle( bundle, this );
+		Talent.storeTalentsInBundle( bundle, talents, metamorphedTalents );
 		
 		bundle.put( ATTACK, attackSkill );
 		bundle.put( DEFENSE, defenseSkill );
@@ -2338,7 +2338,7 @@ public class Hero extends Char {
 
 		boolean circular = pointsInTalent(Talent.WIDE_SEARCH) % 2 == 1;
 		int distance = heroClass == HeroClass.ROGUE ? 2 : 1;
-		distance += (int) Math.ceil(pointsInTalent(Talent.WIDE_SEARCH) / 2f - 0.001f);//tzz check if it works ggv
+		distance += (int) Math.ceil(pointsInTalent(Talent.WIDE_SEARCH) / 2f - 0.001f);
 
 		boolean foresight = buff(Foresight.class) != null;
 		boolean foresightScan = foresight && !Dungeon.level.mapped[pos];

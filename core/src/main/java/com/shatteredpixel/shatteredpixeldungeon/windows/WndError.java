@@ -21,7 +21,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.badlogic.gdx.Gdx;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.Game;
 import org.luaj.vm2.LuaError;
@@ -39,6 +41,10 @@ public class WndError extends WndTitledMessage {
 		this( addLineNumbers(error.getMessage()) );
 		content.sp.scrollTo(0, text.bottom());
 		setHighligtingEnabled(false);
+
+		if (Game.scene() instanceof InterlevelScene) {
+			Gdx.app.getClipboard().setContents(addLineNumbers(error.getMessage()));
+		}
 	}
 
 	public WndError ( Throwable throwable ) {

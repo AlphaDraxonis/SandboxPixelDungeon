@@ -64,7 +64,10 @@ import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 public enum Talent {
 
@@ -772,85 +775,29 @@ public enum Talent {
 			talents.add(new LinkedHashMap<>());
 		}
 
-		ArrayList<Talent> tierTalents = new ArrayList<>();
-
 		//tier 1
-		switch (cls){
-			case WARRIOR: default:
-				Collections.addAll(tierTalents, HEARTY_MEAL, VETERANS_INTUITION, PROVOKED_ANGER, IRON_WILL);
-				break;
-			case MAGE:
-				Collections.addAll(tierTalents, EMPOWERING_MEAL, SCHOLARS_INTUITION, LINGERING_MAGIC, BACKUP_BARRIER);
-				break;
-			case ROGUE:
-				Collections.addAll(tierTalents, CACHED_RATIONS, THIEFS_INTUITION, SUCKER_PUNCH, PROTECTIVE_SHADOWS);
-				break;
-			case HUNTRESS:
-				Collections.addAll(tierTalents, NATURES_BOUNTY, SURVIVALISTS_INTUITION, FOLLOWUP_STRIKE, NATURES_AID);
-				break;
-			case DUELIST:
-				Collections.addAll(tierTalents, STRENGTHENING_MEAL, ADVENTURERS_INTUITION, PATIENT_STRIKE, AGGRESSIVE_BARRIER);
-				break;
-		}
-		for (Talent talent : tierTalents){
+		for (Talent talent : availableTalents(cls, null, 1)){
 			if (replacements.containsKey(talent)){
 				talent = replacements.get(talent);
 			}
 			talents.get(0).put(talent, 0);
 		}
-		tierTalents.clear();
 
 		//tier 2
-		switch (cls){
-			case WARRIOR: default:
-				Collections.addAll(tierTalents, IRON_STOMACH, LIQUID_WILLPOWER, RUNIC_TRANSFERENCE, LETHAL_MOMENTUM, IMPROVISED_PROJECTILES);
-				break;
-			case MAGE:
-				Collections.addAll(tierTalents, ENERGIZING_MEAL, INSCRIBED_POWER, WAND_PRESERVATION, ARCANE_VISION, SHIELD_BATTERY);
-				break;
-			case ROGUE:
-				Collections.addAll(tierTalents, MYSTICAL_MEAL, INSCRIBED_STEALTH, WIDE_SEARCH, SILENT_STEPS, ROGUES_FORESIGHT);
-				break;
-			case HUNTRESS:
-				Collections.addAll(tierTalents, INVIGORATING_MEAL, LIQUID_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES);
-				break;
-			case DUELIST:
-				Collections.addAll(tierTalents, FOCUSED_MEAL, LIQUID_AGILITY, WEAPON_RECHARGING, LETHAL_HASTE, SWIFT_EQUIP);
-				break;
-		}
-		for (Talent talent : tierTalents){
+		for (Talent talent :availableTalents(cls, null, 2)){
 			if (replacements.containsKey(talent)){
 				talent = replacements.get(talent);
 			}
 			talents.get(1).put(talent, 0);
 		}
-		tierTalents.clear();
 
 		//tier 3
-		switch (cls){
-			case WARRIOR: default:
-				Collections.addAll(tierTalents, HOLD_FAST, STRONGMAN);
-				break;
-			case MAGE:
-				Collections.addAll(tierTalents, DESPERATE_POWER, ALLY_WARP);
-				break;
-			case ROGUE:
-				Collections.addAll(tierTalents, ENHANCED_RINGS, LIGHT_CLOAK);
-				break;
-			case HUNTRESS:
-				Collections.addAll(tierTalents, POINT_BLANK, SEER_SHOT);
-				break;
-			case DUELIST:
-				Collections.addAll(tierTalents, PRECISE_ASSAULT, DEADLY_FOLLOWUP);
-				break;
-		}
-		for (Talent talent : tierTalents){
+		for (Talent talent : availableTalents(cls, null, 3)){
 			if (replacements.containsKey(talent)){
 				talent = replacements.get(talent);
 			}
 			talents.get(2).put(talent, 0);
 		}
-		tierTalents.clear();
 
 		//tier4
 		//TBD
@@ -867,45 +814,10 @@ public enum Talent {
 			talents.add(new LinkedHashMap<>());
 		}
 
-		ArrayList<Talent> tierTalents = new ArrayList<>();
-
 		//tier 3
-		switch (cls){
-			case BERSERKER: default:
-				Collections.addAll(tierTalents, ENDLESS_RAGE, DEATHLESS_FURY, ENRAGED_CATALYST);
-				break;
-			case GLADIATOR:
-				Collections.addAll(tierTalents, CLEAVE, LETHAL_DEFENSE, ENHANCED_COMBO);
-				break;
-			case BATTLEMAGE:
-				Collections.addAll(tierTalents, EMPOWERED_STRIKE, MYSTICAL_CHARGE, EXCESS_CHARGE);
-				break;
-			case WARLOCK:
-				Collections.addAll(tierTalents, SOUL_EATER, SOUL_SIPHON, NECROMANCERS_MINIONS);
-				break;
-			case ASSASSIN:
-				Collections.addAll(tierTalents, ENHANCED_LETHALITY, ASSASSINS_REACH, BOUNTY_HUNTER);
-				break;
-			case FREERUNNER:
-				Collections.addAll(tierTalents, EVASIVE_ARMOR, PROJECTILE_MOMENTUM, SPEEDY_STEALTH);
-				break;
-			case SNIPER:
-				Collections.addAll(tierTalents, FARSIGHT, SHARED_ENCHANTMENT, SHARED_UPGRADES);
-				break;
-			case WARDEN:
-				Collections.addAll(tierTalents, DURABLE_TIPS, BARKSKIN, SHIELDING_DEW);
-				break;
-			case CHAMPION:
-				Collections.addAll(tierTalents, VARIED_CHARGE, TWIN_UPGRADES, COMBINED_LETHALITY);
-				break;
-			case MONK:
-				Collections.addAll(tierTalents, UNENCUMBERED_SPIRIT, MONASTIC_VIGOR, COMBINED_ENERGY);
-				break;
-		}
-		for (Talent talent : tierTalents){
+		for (Talent talent : availableTalents(null, cls, 3)){
 			talents.get(2).put(talent, 0);
 		}
-		tierTalents.clear();
 
 	}
 
@@ -927,10 +839,10 @@ public enum Talent {
 
 	private static final String TALENT_TIER = "talents_tier_";
 
-	public static void storeTalentsInBundle( Bundle bundle, Hero hero ){
-		if (!hero.talents.isEmpty()) {
+	public static void storeTalentsInBundle( Bundle bundle, ArrayList<LinkedHashMap<Talent, Integer>> talents, LinkedHashMap<Talent, Talent> replacements ){
+		if (!talents.isEmpty()) {
 			for (int i = 0; i < MAX_TALENT_TIERS; i++) {
-				LinkedHashMap<Talent, Integer> tier = hero.talents.get(i);
+				LinkedHashMap<Talent, Integer> tier = talents.get(i);
 				Bundle tierBundle = new Bundle();
 
 				for (Talent talent : tier.keySet()) {
@@ -945,9 +857,12 @@ public enum Talent {
 			}
 		}
 
+		if (replacements == null) return;
+
+
 		Bundle replacementsBundle = new Bundle();
-		for (Talent t : hero.metamorphedTalents.keySet()){
-			replacementsBundle.put(t.name(), hero.metamorphedTalents.get(t));
+		for (Talent t : replacements.keySet()){
+			replacementsBundle.put(t.name(), replacements.get(t));
 		}
 		bundle.put("replacements", replacementsBundle);
 	}
@@ -1022,6 +937,60 @@ public enum Talent {
 				}
 			}
 		}
+	}
+
+	public static Talent[] availableTalents(HeroClass heroClass, HeroSubClass subClass, int tier) {
+		if (tier == 1) {
+			switch (heroClass) {
+				case WARRIOR:   return new Talent[] {HEARTY_MEAL, VETERANS_INTUITION, PROVOKED_ANGER, IRON_WILL};
+				case MAGE:      return new Talent[] {EMPOWERING_MEAL, SCHOLARS_INTUITION, LINGERING_MAGIC, BACKUP_BARRIER};
+				case ROGUE:     return new Talent[] {CACHED_RATIONS, THIEFS_INTUITION, SUCKER_PUNCH, PROTECTIVE_SHADOWS};
+				case HUNTRESS:  return new Talent[] {NATURES_BOUNTY, SURVIVALISTS_INTUITION, FOLLOWUP_STRIKE, NATURES_AID};
+				case DUELIST:   return new Talent[] {STRENGTHENING_MEAL, ADVENTURERS_INTUITION, PATIENT_STRIKE, AGGRESSIVE_BARRIER};
+				default: 	    return new Talent[0];
+			}
+		}
+		if (tier == 2) {
+			switch (heroClass) {
+				case WARRIOR:   return new Talent[] {IRON_STOMACH, LIQUID_WILLPOWER, RUNIC_TRANSFERENCE, LETHAL_MOMENTUM, IMPROVISED_PROJECTILES};
+				case MAGE:      return new Talent[] {ENERGIZING_MEAL, INSCRIBED_POWER, WAND_PRESERVATION, ARCANE_VISION, SHIELD_BATTERY};
+				case ROGUE:     return new Talent[] {MYSTICAL_MEAL, INSCRIBED_STEALTH, WIDE_SEARCH, SILENT_STEPS, ROGUES_FORESIGHT};
+				case HUNTRESS:  return new Talent[] {INVIGORATING_MEAL, LIQUID_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES};
+				case DUELIST:   return new Talent[] {FOCUSED_MEAL, LIQUID_AGILITY, WEAPON_RECHARGING, LETHAL_HASTE, SWIFT_EQUIP};
+				default: 	    return new Talent[0];
+			}
+		}
+		if (tier == 3) {
+			if (heroClass != null) {
+				switch (heroClass) {
+					case WARRIOR:   return new Talent[] {HOLD_FAST, STRONGMAN};
+					case MAGE:      return new Talent[] {DESPERATE_POWER, ALLY_WARP};
+					case ROGUE:     return new Talent[] {ENHANCED_RINGS, LIGHT_CLOAK};
+					case HUNTRESS:  return new Talent[] {POINT_BLANK, SEER_SHOT};
+					case DUELIST:   return new Talent[] {PRECISE_ASSAULT, DEADLY_FOLLOWUP};
+					default: 	    return new Talent[0];
+				}
+			}
+			if (subClass != null) {
+				switch (subClass) {
+					case BERSERKER:		return new Talent[] {ENDLESS_RAGE, DEATHLESS_FURY, ENRAGED_CATALYST};
+					case GLADIATOR:		return new Talent[] {CLEAVE, LETHAL_DEFENSE, ENHANCED_COMBO};
+					case BATTLEMAGE:	return new Talent[] {EMPOWERED_STRIKE, MYSTICAL_CHARGE, EXCESS_CHARGE};
+					case WARLOCK:		return new Talent[] {SOUL_EATER, SOUL_SIPHON, NECROMANCERS_MINIONS};
+					case ASSASSIN:		return new Talent[] {ENHANCED_LETHALITY, ASSASSINS_REACH, BOUNTY_HUNTER};
+					case FREERUNNER:	return new Talent[] {EVASIVE_ARMOR, PROJECTILE_MOMENTUM, SPEEDY_STEALTH};
+					case SNIPER:		return new Talent[] {FARSIGHT, SHARED_ENCHANTMENT, SHARED_UPGRADES};
+					case WARDEN:		return new Talent[] {DURABLE_TIPS, BARKSKIN, SHIELDING_DEW};
+					case CHAMPION:		return new Talent[] {VARIED_CHARGE, TWIN_UPGRADES, COMBINED_LETHALITY};
+					case MONK:			return new Talent[] {UNENCUMBERED_SPIRIT, MONASTIC_VIGOR, COMBINED_ENERGY};
+					default:			return new Talent[0];
+				}
+			}
+		}
+
+		//tier 4: use heroClass.armorAbilities()[n].talents(); and add don't forget  new Ratmogrify().talents()
+
+		return new Talent[0];
 	}
 
 }

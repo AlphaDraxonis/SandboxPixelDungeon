@@ -966,6 +966,10 @@ public class CustomDungeon implements Bundlable {
             si.doOnAllGameObjects(whatToDo);
         }
 
+        for (CustomRecipe recipe : recipes) {
+            recipe.doOnAllGameObjects(whatToDo);
+        }
+
         //Set level for keys in inv
         Items.updateKeys(n, EditorScene.getCustomLevel() == null ? null : EditorScene.getCustomLevel().name);
 
@@ -1264,8 +1268,12 @@ public class CustomDungeon implements Bundlable {
                 si.doOnAllGameObjects(whatToDo);
             }
 
+            for (CustomRecipe recipe : recipes) {
+                recipe.doOnAllGameObjects(whatToDo);
+            }
+
             //Set level for keys in inv
-            Items.updateKeys(oldName, newName);//tzz
+            Items.updateKeys(oldName, newName);
 
             levelScheme.name = newName;
             if (levelScheme.getType() == CustomLevel.class) {
@@ -1327,6 +1335,10 @@ public class CustomDungeon implements Bundlable {
 
             for (HeroSettings.HeroStartItemsData si : startItems) {
                 si.doOnAllGameObjects(whatToDo);
+            }
+
+            for (CustomRecipe recipe : recipes) {
+                recipe.doOnAllGameObjects(whatToDo);
             }
 
             if (EditorScene.getCustomLevel() != null) {

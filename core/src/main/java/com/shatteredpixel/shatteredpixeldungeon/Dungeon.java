@@ -639,12 +639,10 @@ public class Dungeon {
 //		return depth < 5 && !LimitedDrops.TRINKET_CATA.dropped() && Random.Int(4-depth) == 0;
 	}
 
-	public static boolean labRoomNeeded(){//tzz
-		//one laboratory each floor set, in floor 3 or 4, 1/2 chance each floor
-		int region = 1+depth/5;
-		if (region > LimitedDrops.LAB_ROOM.count){
-			int floorThisRegion = depth%5;
-			if (floorThisRegion >= 4 || (floorThisRegion == 3 && Random.Int(2) == 0)){
+	public static boolean labRoomNeeded() {
+		LevelScheme ls = curLvlScheme();
+		if (ls.getRegion() > LimitedDrops.LAB_ROOM.count){
+			if (ls.getNumInRegion() >= 4 || (ls.getNumInRegion() == 3 && Random.Int(2) == 0)){
 				return true;
 			}
 		}

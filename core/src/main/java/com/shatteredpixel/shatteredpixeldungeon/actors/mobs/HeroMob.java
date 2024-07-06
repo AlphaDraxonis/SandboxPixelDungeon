@@ -531,7 +531,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
             return;
         }
 
-        if (item instanceof SpiritBow) {//TODO tzz what if projecting enchantment???!!!
+        if (item instanceof SpiritBow) {//TODO we ignore projecting enchantment
             ((SpiritBow) item).knockArrow().cast(internalHero, target);
             return;
         }

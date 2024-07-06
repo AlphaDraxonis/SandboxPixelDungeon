@@ -61,6 +61,8 @@ public abstract class MultiWindowTabComp extends WndEditorSettings.TabComp {
         } else {
             subMenuComp.setRect(x, posY, width, height);
         }
+
+        sp.givePointerPriority();
     }
 
     protected void layoutOwnContent() {

@@ -89,7 +89,7 @@ public class WandOfInstability extends Wand {
 
 	@Override
 	public void staffFx(MagesStaff.StaffParticle particle) {
-		curWandEffect.staffFx(particle);//tzz test
+		curWandEffect.staffFx(particle);
 	}
 
 	@Override

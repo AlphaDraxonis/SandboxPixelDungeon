@@ -83,8 +83,8 @@ public interface RandomItem<T extends GameObject> {
             if (items[i] instanceof RandomItem) {
                 items[i] = null;
                 generatedItems[i] = new Item[]{items[i]};
-                GameObject.doOnAllGameObjectsArray(generatedItems[i], GameObject::initRandoms);
-                if (generatedItems[i].length > 0) items[i] = generatedItems[i][0];
+                Item[] generated = GameObject.doOnAllGameObjectsArray(generatedItems[i], GameObject::initRandoms);
+                if (generated != null && generated.length > 0) items[i] = generated[0];
             }
         }
         int indexOne = 0;

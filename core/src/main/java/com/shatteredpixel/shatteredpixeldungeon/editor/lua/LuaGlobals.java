@@ -83,6 +83,7 @@ import com.watabou.noosa.Visual;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
+import com.watabou.utils.SparseArray;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
@@ -90,6 +91,7 @@ import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.lang.reflect.Array;
+import java.util.Map;
 
 public class LuaGlobals extends Globals {
 
@@ -197,6 +199,38 @@ public class LuaGlobals extends Globals {
 			@Override
 			public LuaValue call(LuaValue array, LuaValue index) {
 				return CoerceJavaToLua.coerce(Array.get(CoerceLuaToJava.coerce(array, Object.class), index.toint()));
+			}
+		});
+		arrayUtils.set("iterate", new TwoArgFunction() {
+			@Override
+			public LuaValue call(LuaValue array, LuaValue consumer) {
+				Object java = CoerceLuaToJava.coerce(array, Object.class);
+				LuaFunction function = consumer.checkfunction();
+				if (java instanceof SparseArray) {
+					for (Object obj : ((SparseArray<?>) java).values()) {
+						function.call(CoerceJavaToLua.coerce(obj));
+					}
+					return LuaValue.TRUE;
+				}
+				else if (java instanceof Map<?, ?>) {
+					for (Object obj : ((Map<?, ?>) java).values()) {
+						function.call(CoerceJavaToLua.coerce(obj));
+					}
+					return LuaValue.TRUE;
+				}
+				else if (java instanceof Iterable) {
+					for (Object obj : ((Iterable<?>) java)) {
+						function.call(CoerceJavaToLua.coerce(obj));
+					}
+					return LuaValue.TRUE;
+				}
+				else if (java.getClass().isArray()) {
+					int length = Array.getLength(java);
+					for (int i = 0; i < length; i++) {
+						function.call(CoerceJavaToLua.coerce(Array.get(java, i)));
+					}
+				}
+				return LuaValue.NIL;
 			}
 		});
 		set("Arrays", arrayUtils);
