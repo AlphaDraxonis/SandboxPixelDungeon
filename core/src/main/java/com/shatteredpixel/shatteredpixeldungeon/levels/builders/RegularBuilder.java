@@ -136,7 +136,7 @@ public abstract class RegularBuilder extends Builder {
 			if (r instanceof StandardRoom){
 				for (int i = 1; i < ((StandardRoom) r).connectionWeight(); i++)
 					rooms.add(r);
-			}
+			}//00303003
 		}
 	}
 	

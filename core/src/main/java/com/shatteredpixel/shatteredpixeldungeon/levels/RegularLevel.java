@@ -179,7 +179,9 @@ public abstract class RegularLevel extends Level {
 			}
 		}
 
-		initRooms.addAll(levelScheme.roomsToSpawn);
+		for (Room r : levelScheme.roomsToSpawn) {
+			initRooms.add(r.getCopy());//things like size are not bundled but randomized each time!
+		}
 
 		if (!name.equals(Level.NONE)) {
 			for (Room r : initRooms) {

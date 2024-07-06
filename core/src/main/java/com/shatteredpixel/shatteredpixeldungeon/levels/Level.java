@@ -330,6 +330,8 @@ public abstract class Level implements Bundlable {
 			if (feeling == null) feeling = Feeling.NONE;//this also includes default case
 
 		}
+
+		System.currentTimeMillis();
 		
         do {
 			width = height = length = 0;
