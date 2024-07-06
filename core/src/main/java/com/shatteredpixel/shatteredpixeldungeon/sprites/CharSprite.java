@@ -256,6 +256,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		animCallback = callback;
 		turnTo( ch.pos, cell );
 		if (attack != null) play( attack );
+		else onComplete(attack);
 	}
 	
 	public void operate( int cell ) {
@@ -266,6 +267,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		animCallback = callback;
 		turnTo( ch.pos, cell );
 		if (operate != null) play( operate );
+		else onComplete(operate);
 	}
 	
 	public void zap( int cell ) {

@@ -9,6 +9,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.MobSprites;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobSpriteItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levelsettings.WndMenuEditor;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemContainerWithLabel;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemSelector;
@@ -27,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.AbstractWndChooseSubclass;
@@ -141,6 +145,7 @@ public class HeroSettings extends Component {
         private RedButton subClassesEnabled;
         private final ItemContainerWithLabel<Item> startItems;
         private final ItemSelector startWeapon, startArmor, startRing, startArti, startMisc;
+        private final ItemSelector sprite;
         private final StyledSpinner plusLvl, plusStr;
         private final PropertyListContainer properties;
 
@@ -242,6 +247,37 @@ public class HeroSettings extends Component {
             startMisc.setShowWhenNull(ItemSpriteSheet.SOMETHING);
             itemSelectorParent.add(startMisc);
 
+            final MobSpriteItem curentSprite = data.spriteClass == null ? null : new MobSpriteItem(data.spriteClass);
+            sprite = new StyledItemSelector(Messages.get(HeroSettings.class, "sprite"),
+                    MobSpriteItem.class, curentSprite == null ? EditorItem.NULL_ITEM : curentSprite, ItemSelector.NullTypeSelector.NOTHING) {
+                MobSpriteItem currentSprite = curentSprite;
+                {
+                    selector.preferredBag = MobSprites.bag.getClass();
+                }
+                @Override
+                public void change() {
+                    EditorScene.selectItem(selector);
+                }
+                @Override
+                public void setSelectedItem(Item selectedItem) {
+                    super.setSelectedItem(selectedItem);
+
+                    if (selectedItem == currentSprite) return;
+
+                    if (selectedItem instanceof MobSpriteItem) {
+                        currentSprite = (MobSpriteItem) selectedItem;
+                        data.spriteClass = currentSprite.getObject();
+                    } else {
+                        currentSprite = null;
+                        data.spriteClass = null;
+                    }
+
+                }
+            };
+            sprite.setShowWhenNull(ItemSpriteSheet.SOMETHING);
+            itemSelectorParent.add(sprite);
+
+
             plusLvl = new StyledSpinner(new SpinnerIntegerModel(1, 30, 1 + data.plusLvl) {
                 {
                     setAbsoluteMinimum(1);
@@ -333,7 +369,7 @@ public class HeroSettings extends Component {
             }
             itemSelectorParent.setSize(width, 0);
             itemSelectorParent.setRect(x, posY, width,  EditorUtilies.layoutStyledCompsInRectangles(gap, width, itemSelectorParent,
-                    new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
+                    new Component[]{startWeapon, startArmor, startRing, startArti, startMisc, sprite, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
                             plusLvl, plusStr}));
             PixelScene.align(itemSelectorParent);
             posY = itemSelectorParent.bottom() + gap;
@@ -369,6 +405,8 @@ public class HeroSettings extends Component {
 
         public Set<Char.Property> properties = new HashSet<>();
 
+        public Class<? extends CharSprite> spriteClass;
+
         private boolean needToAddDefaultConfiguration = false;
 
         private static final String WEAPON = "weapon";
@@ -380,6 +418,7 @@ public class HeroSettings extends Component {
         private static final String STR = "str";
         private static final String ITEMS = "items";
         private static final String PROPERTIES = "properties";
+        private static final String SPRITE_CLASS = "sprite_class";
 
         @Override
         public void storeInBundle(Bundle bundle) {
@@ -390,6 +429,7 @@ public class HeroSettings extends Component {
             bundle.put(MISC, misc);
             bundle.put(LVL, plusLvl);
             bundle.put(STR, plusStr);
+            bundle.put(SPRITE_CLASS, spriteClass);
 
             int[] enumOrdinals = new int[properties.size()];
             int index = 0;
@@ -439,6 +479,8 @@ public class HeroSettings extends Component {
                     properties.add(props[enumOrdinals[i]]);
                 }
             }
+
+            spriteClass = bundle.getClass(SPRITE_CLASS);
         }
 
         @Override

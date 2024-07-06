@@ -35,6 +35,7 @@ import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PointF;
 import com.watabou.utils.RectF;
+import com.watabou.utils.Reflection;
 
 public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	
@@ -50,8 +51,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 
 	public HeroSprite(Hero hero) {
 		super();
-		
-		texture( hero.heroClass.spritesheet() );
+
 		updateArmor(hero);
 		
 		if (hero == Dungeon.hero) link( hero );
@@ -68,31 +68,66 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 
 	public void updateArmor(Hero hero) {
 
-		TextureFilm film = new TextureFilm( tiers(), hero.tier(), FRAME_WIDTH, FRAME_HEIGHT );
-		
-		idle = new Animation( 1, true );
-		idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
-		
-		run = new Animation( RUN_FRAMERATE, true );
-		run.frames( film, 2, 3, 4, 5, 6, 7 );
-		
-		die = new Animation( 20, false );
-		die.frames( film, 8, 9, 10, 11, 12, 11 );
-		
-		attack = new Animation( 15, false );
-		attack.frames( film, 13, 14, 15, 0 );
-		
-		zap = attack.clone();
-		
-		operate = new Animation( 8, false );
-		operate.frames( film, 16, 17, 16, 17 );
-		if (Dungeon.isLevelTesting()) operate.delay = 0.04f;
-		
-		fly = new Animation( 1, true );
-		fly.frames( film, 18 );
+		if (hero.internalSpriteClass != null) {
 
-		read = new Animation( 20, false );
-		read.frames( film, 19, 20, 20, 20, 20, 20, 20, 20, 20, 19 );
+			CharSprite anims = Reflection.newInstance(hero.internalSpriteClass);
+
+			if (anims instanceof StatueSprite) ((StatueSprite) anims).setArmor(hero.tier());
+
+			texture(anims.texture);
+
+			idle = anims.idle.clone();
+			run = anims.run.clone();
+			die = anims.die.clone();
+			attack = anims.attack.clone();
+
+			if (anims.zap != null) zap = anims.zap.clone();
+			else {
+				zap = new Animation(1000, false);
+				zap.frames(new RectF());
+			}
+			if (anims.operate != null) operate = anims.operate.clone();
+			else {
+				operate = idle.clone();
+				operate.frames(idle.frames[0]);
+			}
+
+			fly = read = null;
+
+			anims.destroy();
+
+		} else {
+
+			texture( hero.heroClass.spritesheet() );
+
+			TextureFilm film = new TextureFilm( tiers(), hero.tier(), FRAME_WIDTH, FRAME_HEIGHT );
+
+			idle = new Animation( 1, true );
+			idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
+
+			run = new Animation( RUN_FRAMERATE, true );
+			run.frames( film, 2, 3, 4, 5, 6, 7 );
+
+			die = new Animation( 20, false );
+			die.frames( film, 8, 9, 10, 11, 12, 11 );
+
+			attack = new Animation( 15, false );
+			attack.frames( film, 13, 14, 15, 0 );
+
+			zap = attack.clone();
+
+			operate = new Animation( 8, false );
+			operate.frames( film, 16, 17, 16, 17 );
+
+			fly = new Animation( 1, true );
+			fly.frames( film, 18 );
+
+			read = new Animation( 20, false );
+			read.frames( film, 19, 20, 20, 20, 20, 20, 20, 20, 20, 19 );
+
+		}
+
+		if (Dungeon.isLevelTesting()) operate.delay = 0.04f;
 		
 		if (hero.isAlive())
 			idle();
@@ -110,7 +145,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	public void move( int from, int to ) {
 		super.move( from, to );
 		if (ch != null && ch.isFlying()) {
-			play( fly );
+			if (fly != null) play( fly );
 		}
 		Camera.main.panFollow(this, 20f);
 	}
@@ -119,26 +154,30 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 	public void idle() {
 		super.idle();
 		if (ch != null && ch.isFlying()) {
-			play( fly );
+			if (fly != null) play( fly );
 		}
 	}
 
 	@Override
 	public void jump( int from, int to, float height, float duration,  Callback callback ) {
 		super.jump( from, to, height, duration, callback );
-		play( fly );
+		if (fly != null) play( fly );
 		Camera.main.panFollow(this, 20f);
 	}
 
 	public synchronized void read() {
-		animCallback = new Callback() {
-			@Override
-			public void call() {
-				idle();
-				ch.onOperateComplete();
-			}
-		};
-		play( read );
+		if (read != null) {
+			animCallback = new Callback() {
+				@Override
+				public void call() {
+					idle();
+					ch.onOperateComplete();
+				}
+			};
+			play(read);
+		} else {
+			ch.onOperateComplete();
+		}
 	}
 
 	@Override
@@ -187,7 +226,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 
 	public static class HeroMobSprite extends MobSprite implements HeroSpriteLike {
 
-		private Animation fly;
+		private Animation fly, read;
 
 		public HeroMobSprite() {
 			//for reflection
@@ -216,6 +255,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 			else if (curAnim == zap) play = 4;
 			else if (curAnim == operate) play = 5;
 			else if (curAnim == fly) play = 6;
+			else if (curAnim == read) play = 7;
 			else play = 0;
 
 			texture( hero.heroClass.spritesheet() );
@@ -231,6 +271,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 					case 4: play(zap); break;
 					case 5: play(operate); break;
 					case 6: play(fly); break;
+					case 7: play(read); break;
 				}
 			}
 			else die();
@@ -246,6 +287,7 @@ public class HeroSprite extends CharSprite implements HeroSpriteLike {
 			zap = anims.zap.clone();
 			operate = anims.operate.clone();
 			fly = anims.fly.clone();
+			read = anims.read.clone();
 
 			anims.destroy();
 		}

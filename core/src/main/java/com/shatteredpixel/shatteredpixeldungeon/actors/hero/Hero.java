@@ -122,6 +122,8 @@ public class Hero extends Char {
 	public ArmorAbility armorAbility = null;
 	public ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
 	public LinkedHashMap<Talent, Talent> metamorphedTalents = new LinkedHashMap<>();
+
+	public Class<? extends CharSprite> internalSpriteClass;//used to skin hero sprite (null to use default)
 	
 	int attackSkill = STARTING_ATK_SKILL;
 	int defenseSkill = STARTING_DEF_SKILL;
@@ -200,6 +202,7 @@ public class Hero extends Char {
 	private static final String CLASS       = "class";
 	private static final String SUBCLASS    = "subClass";
 	private static final String ABILITY     = "armorAbility";
+	private static final String SPRITE_CLASS= "sprite_class";
 
 	private static final String ATTACK		= "attackSkill";
 	private static final String DEFENSE		= "defenseSkill";
@@ -212,6 +215,8 @@ public class Hero extends Char {
 	public void storeInBundle( Bundle bundle ) {
 
 		super.storeInBundle( bundle );
+
+		bundle.put(SPRITE_CLASS, internalSpriteClass);
 
 		bundle.put( CLASS, heroClass );
 		bundle.put( SUBCLASS, subClass );
@@ -240,6 +245,8 @@ public class Hero extends Char {
 		HTBoost = bundle.getInt(HTBOOST);
 
 		super.restoreFromBundle( bundle );
+
+		internalSpriteClass = bundle.getClass(SPRITE_CLASS);
 
 		heroClass = bundle.getEnum( CLASS, HeroClass.class );
 		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );
