@@ -716,8 +716,10 @@ public abstract class RegularLevel extends Level {
 					}
 				}
 
-				int pos = Random.element(candidateCells);
-				mobs.add(Mimic.spawnAt(pos, EbonyMimic.class, false));
+				if (!candidateCells.isEmpty()) {
+					int pos = Random.element(candidateCells);
+					mobs.add(Mimic.spawnAt(pos, EbonyMimic.class, false));
+				}
 			}
 		Random.popGenerator();
 

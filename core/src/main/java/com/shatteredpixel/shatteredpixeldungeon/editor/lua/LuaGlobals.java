@@ -32,6 +32,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ArrowCell;
@@ -40,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.Checkpoint;
 import com.shatteredpixel.shatteredpixeldungeon.editor.WndCreator;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.Zone;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
@@ -65,7 +68,9 @@ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWea
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -75,7 +80,9 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
@@ -91,6 +98,7 @@ import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.Map;
 
 public class LuaGlobals extends Globals {
@@ -275,7 +283,7 @@ public class LuaGlobals extends Globals {
 						: LuaValue.NIL;
 			}
 		});
-		set("messages", messages);
+		set("Messages", messages);
 
 		LuaTable randomUtils = new LuaTable();
 		randomUtils.set("int", new TwoArgFunction() {
@@ -302,6 +310,22 @@ public class LuaGlobals extends Globals {
 				return min.isint() && max.isint()
 						? LuaValue.valueOf(Char.combatRoll(min.checkint(), max.checkint()))
 						: LuaValue.NIL;
+			}
+		});
+		randomUtils.set("element", new OneArgFunction() {
+			@Override
+			public LuaValue call(LuaValue collection) {
+				Object java = CoerceLuaToJava.coerce(collection, Object.class);
+				if (java instanceof SparseArray<?>) {
+					return CoerceJavaToLua.coerce(Random.element((((SparseArray<?>) java).valueList())));
+				}
+				else if (java instanceof Collection<?>) {
+					return CoerceJavaToLua.coerce(Random.element(((Collection<?>) java)));
+				}
+				else if (java.getClass().isArray()) {
+					return CoerceJavaToLua.coerce(Array.get(java, Random.Int(Array.getLength(java))));
+				}
+				return LuaValue.NIL;
 			}
 		});
 		randomUtils.set("pushGenerator", new OneArgFunction() {
@@ -373,7 +397,7 @@ public class LuaGlobals extends Globals {
 				return s == null ? LuaValue.NIL : LuaValue.valueOf(s);
 			}
 		});
-		set("log", gLog);
+		set("GLog", gLog);
 
 		set("print", gLog.get("i"));
 
@@ -489,6 +513,45 @@ public class LuaGlobals extends Globals {
 				return LuaValue.NIL;
 			}
 		});
+		set("showItemSelector", new ThreeArgFunction() {
+			@Override
+			public LuaValue call(LuaValue prompt, LuaValue itemSelectable, LuaValue onSelect) {
+				String promptString;
+				if (prompt.isnil() || !prompt.isstring()) promptString = Messages.get(WndResurrect.class, "prompt");
+				else {
+					promptString = prompt.checkjstring();
+					String msg = Messages.get(promptString);
+					if (msg != Messages.NO_TEXT_FOUND) promptString = msg;
+				}
+				final String p = promptString;
+				Game.runOnRenderThread(() -> {
+					GameScene.selectItem(new WndBag.ItemSelector() {
+						@Override
+						public String textPrompt() {
+							return p;
+						}
+
+						@Override
+						public boolean itemSelectable(Item item) {
+							if ( !itemSelectable.isfunction()) return true;
+							try {
+								LuaValue result = itemSelectable.checkfunction().call(CoerceJavaToLua.coerce(item));
+								return result.isboolean() && result == LuaValue.TRUE;
+							} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
+							return false;
+						}
+
+						@Override
+						public void onSelect(Item item) {
+							try {
+								onSelect.call(CoerceJavaToLua.coerce(item));
+							} catch (LuaError error) { Game.runOnRenderThread(() ->	DungeonScene.show(new WndError(error))); }
+						}
+					});
+				});
+				return LuaValue.NIL;
+			}
+		});
 
 		set("cellToString", new OneArgFunction() {
 			@Override
@@ -555,8 +618,8 @@ public class LuaGlobals extends Globals {
 				if (item.isuserdata() && pos.isint()) {
 					Object obj = item.checkuserdata();
 					if (obj instanceof Item) {
-						if (from.isnil()) Dungeon.level.drop((Item) obj, pos.toint()).sprite.drop();
-						else if (from.isint()) Dungeon.level.drop((Item) obj, pos.toint()).sprite.drop(from.checkint());
+						if (!from.isint()) Dungeon.level.drop((Item) obj, pos.toint()).sprite.drop();
+						else Dungeon.level.drop((Item) obj, pos.toint()).sprite.drop(from.checkint());
 					}
 				}
 				return LuaValue.NIL;
@@ -569,10 +632,23 @@ public class LuaGlobals extends Globals {
 				if (item.isuserdata()) {
 					Object obj = item.checkuserdata();
 					if (obj instanceof Item) {
-						((Item) obj).collect();
+						if (!((Item) obj).collect()) {
+							Dungeon.level.drop((Item) obj, Dungeon.hero.pos);
+						}
 					}
 				}
 				return LuaValue.NIL;
+			}
+		});
+		set("collectKey", new TwoArgFunction() {
+			@Override
+			public LuaValue call(LuaValue itemKey, LuaValue pos) {
+				if (!itemKey.isuserdata()) return LuaValue.NIL;
+				Object obj = itemKey.checkuserdata();
+				if (!(obj instanceof Key)) return LuaValue.NIL;
+				int cell = pos.isint() ? pos.checkint() : Dungeon.hero.pos;
+				((Key) obj).instantPickupKey(cell);
+				return LuaValue.TRUE;
 			}
 		});
 
@@ -633,8 +709,11 @@ public class LuaGlobals extends Globals {
 					if (objA instanceof Trap)    return LuaValue.valueOf(EditTrapComp.areEqual(((Trap) objA), (Trap) objB));
 					if (objA instanceof Plant)   return LuaValue.valueOf(EditPlantComp.areEqual(((Plant) objA), (Plant) objB));
 					if (objA instanceof Heap)    return LuaValue.valueOf(EditHeapComp.areEqual(((Heap) objA), (Heap) objB));
+					if (objA instanceof Buff)    return LuaValue.valueOf(EditBuffComp.areEqual(((Buff) objA), (Buff) objB));
 					if (objA instanceof Barrier) return LuaValue.valueOf(EditBarrierComp.areEqual(((Barrier) objA), (Barrier) objB));
+					if (objA instanceof ArrowCell) return LuaValue.valueOf(EditArrowCellComp.areEqual(((ArrowCell) objA), (ArrowCell) objB));
 					if (objA instanceof Room)    return LuaValue.valueOf(EditRoomComp.areEqual(((Room) objA), (Room) objB));
+					if (objA instanceof Checkpoint)    return LuaValue.valueOf(EditCheckpointComp.areEqual(((Checkpoint) objA), (Checkpoint) objB));
 
 				}
 				return LuaValue.FALSE;
@@ -667,17 +746,6 @@ public class LuaGlobals extends Globals {
 				if (!energy.isint()) return LuaValue.NIL;
 				Dungeon.energy = energy.checkint();
 				return LuaValue.valueOf(Dungeon.energy);
-			}
-		});
-		set("collectKey", new TwoArgFunction() {
-			@Override
-			public LuaValue call(LuaValue itemKey, LuaValue pos) {
-				if (!itemKey.isuserdata()) return LuaValue.NIL;
-				Object obj = itemKey.checkuserdata();
-				if (!(obj instanceof Key)) return LuaValue.NIL;
-				int cell = pos.isint() ? pos.checkint() : Dungeon.hero.pos;
-				((Key) obj).instantPickupKey(cell);
-				return LuaValue.TRUE;
 			}
 		});
 
@@ -748,6 +816,23 @@ public class LuaGlobals extends Globals {
 		ballisticaConstants.set("WONT_STOP", Ballistica.WONT_STOP);
 
 		set("Ballistica", ballisticaConstants);
+
+
+		addEnum(Level.Feeling.class);
+		addEnum(Char.Alignment.class);
+		addEnum(Char.Property.class);
+		addEnum(Buff.buffType.class);
+		addEnum(HeroClass.class);
+		addEnum(HeroSubClass.class);
+		addEnum(ArrowCell.EnterMode.class);
+		addEnum(Zone.GrassType.class);
+		addEnum(Heap.Type.class);
+		addEnum(Armor.Augment.class);
+		addEnum(Weapon.Augment.class);
+		addEnum(Wand.RechargeRule.class);
+		addEnum(LevelTransition.Type.class);
+		addEnum(StandardRoom.SizeCategory.class);
+		addEnum(CharSprite.State.class);
 
 
 		LuaTable zaps = new LuaTable();
@@ -1019,6 +1104,30 @@ public class LuaGlobals extends Globals {
 		if (luaValue.isnil()) return "nil";
 		if (luaValue.isuserdata()) return luaValue.touserdata().toString();
 		return null;
+	}
+
+	private void addEnum(Class<? extends Enum<?>> enumClass) {
+
+		LuaTable values = new LuaTable();
+		for (Enum<?> e : enumClass.getEnumConstants()) {
+			values.set(e.name(), LuaValue.userdataOf(e));
+		}
+
+		Class<?> mostEnclosingClass = enumClass;
+
+		do {
+			Class<?> enclosingClass = mostEnclosingClass.getEnclosingClass();
+
+			if (enclosingClass == null) break;
+
+			LuaTable enclosingTable = new LuaTable();
+			enclosingTable.set(mostEnclosingClass.getSimpleName(), values);
+
+			values = enclosingTable;
+			mostEnclosingClass = enclosingClass;
+		} while (true);
+
+		set(mostEnclosingClass.getSimpleName(), values);
 	}
 
 //	private static LuaTable arrayToTable(Object array) {

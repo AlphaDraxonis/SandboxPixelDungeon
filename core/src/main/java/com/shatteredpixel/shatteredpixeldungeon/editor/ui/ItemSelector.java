@@ -39,7 +39,7 @@ public class ItemSelector extends Component {
     protected IconButton changeBtn;
     private final NullTypeSelector nullTypeSelector;
 
-    protected final AnyItemSelectorWnd selector;
+    protected AnyItemSelectorWnd selector;
 
     private int showWhenNull = -1;
 

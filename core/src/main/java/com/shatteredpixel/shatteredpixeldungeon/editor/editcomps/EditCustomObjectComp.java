@@ -4,6 +4,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.Mobs;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.EditorItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.ItemItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.MobItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.CustomObject;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
@@ -23,6 +25,34 @@ public class EditCustomObjectComp extends DefaultEditComp<CustomObject> {
 
         chooseType = new ItemSelector(Messages.get(this, "type"), Item.class, null, ItemSelector.NullTypeSelector.DISABLED) {
             {
+                selector = new AnyItemSelectorWnd(Item.class, false) {
+                    @Override
+                    public void onSelect(Item item) {
+                        if (item == null) return;//if window is canceled
+                        if (item instanceof EditorItem.NullItemClass) setSelectedItem(null);
+                        else
+                            setSelectedItem(item instanceof ItemItem ? ((ItemItem) item).item().getCopy() : item.getCopy());
+                    }
+
+                    @Override
+                    public boolean acceptsNull() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean itemSelectable(Item item) {
+                        if (super.itemSelectable(item)) {
+                            Object obj = item;
+                            if (obj instanceof ItemItem) obj = ((ItemItem) obj).getObject();
+                            else if (obj instanceof EditorItem) {
+                                Object o = ((EditorItem<?>) obj).getObject();
+                                return !(o instanceof LuaClass);
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
+                };
                 selector.preferredBag = Mobs.bag.getClass();
             }
             @Override

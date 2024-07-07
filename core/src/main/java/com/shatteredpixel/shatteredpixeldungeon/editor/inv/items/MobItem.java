@@ -3,6 +3,7 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.items;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.DefaultStatsCache;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.EbonyMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.DefaultEditComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
@@ -103,7 +104,8 @@ public class MobItem extends EditorItem<Mob> {
     }
 
     public static boolean invalidPlacement(Mob mob, int cell) {
-        return Dungeon.level.solid[cell] || (Dungeon.level.pit[cell] && !mob.isFlying()) || !Dungeon.level.insideMap(cell)
+        return (Dungeon.level.solid[cell] && (!(mob instanceof EbonyMimic) || !TileItem.isDoor(Dungeon.level.map[cell])))
+                || (Dungeon.level.pit[cell] && !mob.isFlying()) || !Dungeon.level.insideMap(cell)
                 || (!Dungeon.level.openSpace[cell] && Char.hasProp(mob, Char.Property.LARGE));
     }
 

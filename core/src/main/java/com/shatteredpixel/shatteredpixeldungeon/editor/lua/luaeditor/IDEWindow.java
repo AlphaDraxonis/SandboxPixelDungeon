@@ -24,8 +24,10 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
+import com.badlogic.gdx.files.FileHandle;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.WndEditorInv;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories.*;
@@ -108,7 +110,7 @@ public class IDEWindow extends Component {
 				List<LuaScript> scripts = CustomDungeonSaves.findScripts(script -> {
 					Class<?> luca = script.type;
 					while (!luca.isAssignableFrom(clazz)) {
-						luca = script.type.getSuperclass();
+						luca = luca.getSuperclass();
 					}
 					return luca != GameObject.class && luca != Object.class;
 				});
@@ -362,17 +364,27 @@ public class IDEWindow extends Component {
 		luaCodeHolder.pathToScript = pathInput.getText();
 		if (!luaCodeHolder.pathToScript.endsWith(".lua")) luaCodeHolder.pathToScript += ".lua";
 
-		for (LuaScript ls : CustomDungeonSaves.findScripts(null)) {
-			if (luaCodeHolder.pathToScript.equals(ls.pathFromRoot)) {
-				Class<?> luca = script.type;
-				while (!luca.isAssignableFrom(clazz)) {
-					luca = script.type.getSuperclass();
-				}
-				if (luca == GameObject.class || luca == Object.class) {
-					EditorScene.show(new WndError(Messages.get(IDEWindow.class, "save_duplicate_name_error", luaCodeHolder.pathToScript)) {{
-						setHighligtingEnabled(false);
-					}});
-					return false;
+		FileHandle saveTo = CustomDungeonSaves.getAdditionalFilesDir().child(luaCodeHolder.pathToScript.replace(' ', '_'));
+		if (saveTo.exists()) {
+			if (script == null || !script.pathFromRoot.equals(luaCodeHolder.pathToScript)){
+				EditorScene.show(new WndError(Messages.get(IDEWindow.class, "script_in_use_body")));
+				return false;
+			}
+		}
+
+		if (script != null) {
+			for (LuaScript ls : CustomDungeonSaves.findScripts(null)) {
+				if (luaCodeHolder.pathToScript.equals(ls.pathFromRoot)) {
+					Class<?> luca = script.type;
+					while (!luca.isAssignableFrom(clazz)) {
+						luca = script.type.getSuperclass();
+					}
+					if (luca == GameObject.class || luca == Object.class) {
+						EditorScene.show(new WndError(Messages.get(IDEWindow.class, "save_duplicate_name_error", luaCodeHolder.pathToScript)) {{
+							setHighligtingEnabled(false);
+						}});
+						return false;
+					}
 				}
 			}
 		}
@@ -401,7 +413,7 @@ public class IDEWindow extends Component {
 			}
 			@Override
 			public void hide() {
-				if (ideWindow.unsavedChanges) {
+				if (ideWindow.unsavedChanges || true) {
 					if (!ideWindow.save()) {
 						Runnable superHide = super::hide;
 						GameScene.show(new WndOptions(Icons.WARNING.get(),
@@ -476,18 +488,18 @@ public class IDEWindow extends Component {
 			};
 			add(btnCompile);
 
-			btnSave = new RedButton(Messages.get(IDEWindow.class, "save")){
-				@Override
-				protected void onClick() {
-					save();
-				}
-
-				@Override
-				protected String hoverText() {
-					return Messages.get(IDEWindow.class, "save");
-				}
-			};
-			add(btnSave);
+//			btnSave = new RedButton(Messages.get(IDEWindow.class, "save")){
+//				@Override
+//				protected void onClick() {
+//					save();
+//				}
+//
+//				@Override
+//				protected String hoverText() {
+//					return Messages.get(IDEWindow.class, "save");
+//				}
+//			};
+//			add(btnSave);
 
 			btnCopy = new RedButton(""){
 				@Override
@@ -566,14 +578,14 @@ public class IDEWindow extends Component {
 			btnCopy.setRect(posX - gap - h, y, h, h);
 			posX = btnCopy.left();
 
-			float w = (posX - x - gap*6) / 2f;
-			btnSave.setRect(x + gap*2, y, w, h);
-			btnCompile.setRect(btnSave.right() + gap*2, y, w, h);
+			float w = (posX - x - gap*4) / 1f;
+//			btnSave.setRect(x + gap*2, y, w, h);
+			btnCompile.setRect(x + gap*2, y, w, h);
 
 			PixelScene.align(btnOpenMenu);
 			PixelScene.align(btnPaste);
 			PixelScene.align(btnCopy);
-			PixelScene.align(btnSave);
+//			PixelScene.align(btnSave);
 			PixelScene.align(btnCompile);
 
 			height = h;
@@ -604,7 +616,7 @@ public class IDEWindow extends Component {
 					new RedButton(Messages.get(IDEWindow.class, "view_documentation")) {
 						@Override
 						protected void onClick() {
-							//tzz actually view documentation
+							SandboxPixelDungeon.platform.openURI("https://docs.google.com/document/d/1uXWzyO0wXJ6jDfKB3wrzVcFY4WvaCsX7oLtc5EkxDi0/?usp=sharing");
 						}
 					},
 //					new RedButton(Messages.get(IDEWindow.class, "insert_line")) {

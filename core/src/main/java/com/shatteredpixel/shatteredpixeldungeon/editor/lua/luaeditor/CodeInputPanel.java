@@ -27,12 +27,17 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
+import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableCompWithAdd;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptionsCondensed;
 import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 
@@ -42,6 +47,10 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 
 	protected TextInput textInput;
 	protected RenderedTextBlock info;
+
+	{
+		remover.icon(Icons.TRASH.get());
+	}
 
 	@Override
 	protected int titleFontSize() {
@@ -80,9 +89,20 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 
 	@Override
 	protected void onRemove() {
-		super.onRemove();
-		textInput = null;
-		textInputText = null;
+		Runnable superCall = super::onRemove;
+		EditorScene.show(new WndOptionsCondensed(Icons.WARNING.get(),
+				Messages.get(CodeInputPanel.class, "remove_title"),
+				Messages.get(CodeInputPanel.class, "remove_body"),
+				Messages.get(HeroSelectScene.class, "daily_yes"), Messages.get(HeroSelectScene.class, "daily_no")){
+			@Override
+			protected void onSelect(int index) {
+				if (index == 0) {
+					superCall.run();
+					textInput = null;
+					textInputText = null;
+				}
+			}
+		});
 	}
 
 	@Override

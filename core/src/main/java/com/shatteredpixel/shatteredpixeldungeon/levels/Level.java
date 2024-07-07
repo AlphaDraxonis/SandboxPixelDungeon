@@ -1986,7 +1986,7 @@ public abstract class Level implements Bundlable {
 		}
 
 		if (map[ch.pos] == Terrain.DOOR){
-			Door.enter( ch.pos );
+			if (!CustomDungeon.isEditing()) Door.enter( ch.pos );
 		}
 
 		if (ch.isAlive() && !Piranha.canSurviveOnCell(ch, ch.pos) && !CustomDungeon.isEditing()){
