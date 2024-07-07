@@ -155,7 +155,7 @@ public class LuaTemplates {
 		REPLACES_WALLS_WITH_EMBERS = new LuaScript(Level.class, "When first entering, 50% of all walls are replaced with embers.", "");
 		REPLACES_WALLS_WITH_EMBERS.code = "vars = {} static = {} function initForPlay(this, vars, super) super:call();\n" +
 				"\n" +
-				"-- btw, it is very important that you don't try accessing this using 'level', instead use 'this'\n\n" +
+				"-- btw, it is very important that you don't try accessing this using 'level', instead use 'this'\n" +
 				"Random.pushGenerator(Random.levelSeed());\n" +
 				"local length = this:length();\n" +
 				"    for pos = 0, length - 1 do\n" +
@@ -182,7 +182,7 @@ public class LuaTemplates {
 
 	private static String desc(LuaScript script) {
 		if (script == KILL_HERO_ON_DIE) return Messages.get(LuaTemplates.class, "kill_hero_death_desc");
-		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_name");
+		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_desc");
 		return Messages.NO_TEXT_FOUND;
 	}
 
@@ -194,7 +194,7 @@ public class LuaTemplates {
 		LuaScript[][] twoDArray = new LuaScript[1][];
 		twoDArray[0] = available.toArray(new LuaScript[0]);
 		EditorScene.show(new WndChooseOneInCategories(
-				Messages.get(LuaTemplates.class, "choose_template_title"), Messages.get(LuaTemplates.class, "choose_template_desc"),
+				Messages.get(LuaTemplates.class, "choose_template_title"), Messages.get(LuaTemplates.class, "choose_template_body"),
 				twoDArray, new String[]{Messages.get(LuaTemplates.class, "templates")}) {
 			@Override
 			protected ChooseOneInCategoriesBody.BtnRow[] createCategoryRows(Object[] category) {

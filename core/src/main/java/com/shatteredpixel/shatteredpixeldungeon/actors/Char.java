@@ -621,13 +621,13 @@ public abstract class Char extends Actor {
 		//do nothing by default
 	}
 
-	//look for calls on an casted object and remove the cast, this cast was made by a shattered update!
+	//look for calls on a casted object and remove the cast, this cast was made by a shattered update!
 	public void onZapComplete() {
 		zap();
 		next();
 	}
 
-	public int attackSkill( Char target ) {//accurancy
+	public int attackSkill( Char target ) {//accuracy
 		return 0;
 	}
 	

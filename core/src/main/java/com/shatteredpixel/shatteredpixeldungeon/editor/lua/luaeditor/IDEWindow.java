@@ -442,7 +442,7 @@ public class IDEWindow extends Component {
 
 	public void selectScript(LuaScript script, boolean force) {
 		if (script != null) script.type = clazz;
-		this.script = script;
+		if (force) this.script = script;
 		String cleanedCode;
 		LuaScript currentScript;
 		if (force) {

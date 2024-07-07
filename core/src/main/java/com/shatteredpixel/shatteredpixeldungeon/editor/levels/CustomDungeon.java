@@ -1136,6 +1136,14 @@ public class CustomDungeon implements Bundlable {
         Function<GameObject, GameObject.ModifyResult> whatToDo = obj -> obj.onRenameLevelScheme(oldName, newName);
 
 		try {
+            if (levelScheme.getType() == CustomLevel.class) {
+                bundle = new Bundle();
+                bundle.put("Level", levelScheme.loadLevel());
+                CustomLevel level = (CustomLevel) bundle.get("Level");
+                level.name = newName;
+                CustomDungeonSaves.saveLevel(level);
+            }
+
 			doOnEverything(ls, true, whatToDo, true, level -> {
 
 				//TODO refactor to use the same as renaming logic!

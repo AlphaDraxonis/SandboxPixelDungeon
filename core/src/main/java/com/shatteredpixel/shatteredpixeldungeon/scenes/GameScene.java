@@ -1460,6 +1460,8 @@ public class GameScene extends DungeonScene {
 				textLines.add(0, Messages.get(GameScene.class, "go_here"));
 			} else if (objects.get(0) instanceof ArrowCell) {
 				textLines.add(0, Messages.get(GameScene.class, "go_here"));
+			} else if (objects.get(0) instanceof Checkpoint) {
+				textLines.add(0, Messages.get(GameScene.class, "go_here"));
 			}
 
 			//final text formatting
