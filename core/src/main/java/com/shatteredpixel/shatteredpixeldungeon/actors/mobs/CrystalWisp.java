@@ -129,7 +129,7 @@ public class CrystalWisp extends Mob{
 	public static class LightBeam {}
 
 	@Override
-	protected void zap() {
+	public void zap() {
 		spend( 1f );
 
 		Invisibility.dispel(this);

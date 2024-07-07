@@ -169,7 +169,7 @@ public class Eye extends Mob {
 	public static class DeathGaze{}
 
 	@Override
-	protected void zap() {
+	public void zap() {
 		deathGaze();
 	}
 

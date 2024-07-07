@@ -73,7 +73,7 @@ public class Guard extends Mob {
 //		return Char.combatRoll(4, 12);
 //	}
 
-	private boolean chain(int target){
+	public boolean chain(int target){
 		if (chainCooldown > 0 || enemy.properties().contains(Property.IMMOVABLE))
 			return false;
 

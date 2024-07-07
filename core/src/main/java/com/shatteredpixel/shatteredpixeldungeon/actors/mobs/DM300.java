@@ -361,7 +361,7 @@ public class DM300 extends DMMob implements MobBasedOnDepth {
 	}
 
 	@Override
-	protected void zap() {
+	public void zap() {
 		ventGas(enemy);
 	}
 

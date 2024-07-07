@@ -169,7 +169,7 @@ public class Thief extends Mob {
 		return super.defenseProc(enemy, damage);
 	}
 
-	protected boolean steal( Hero hero ) {
+	public boolean steal(Hero hero) {
 
 		Item toSteal = hero.belongings.randomUnequipped();
 

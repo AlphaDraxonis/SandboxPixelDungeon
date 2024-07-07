@@ -224,7 +224,7 @@ public class SpiritHawk extends ArmorAbility {
 		}
 
 		@Override
-		protected void spend(float time) {
+		public void spend(float time) {
 			super.spend(time);
 			timeRemaining -= time;
 		}

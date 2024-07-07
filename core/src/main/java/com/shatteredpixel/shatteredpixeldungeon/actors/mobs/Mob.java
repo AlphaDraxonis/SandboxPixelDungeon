@@ -104,7 +104,7 @@ public abstract class Mob extends Char implements Customizable {
 	
 	public Class<? extends CharSprite> spriteClass;
 	
-	protected int target = -1;
+	public int target = -1;
 	public boolean following;
 
 	public int defenseSkill = 0;//evasion
@@ -135,7 +135,7 @@ public abstract class Mob extends Char implements Customizable {
 	public int EXP = 1;
 	public int maxLvl = Hero.MAX_LEVEL-1;
 	
-	protected Char enemy;
+	public Char enemy;
 	protected int enemyID = -1; //used for save/restore
 	protected boolean enemySeen;
 	protected boolean alerted = false;

@@ -142,7 +142,7 @@ public abstract class Char extends Actor {
 		return false;
 	}
 
-	protected void throwItems(){
+	public void throwItems(){
 		Heap heap = Dungeon.level.heaps.get( pos );
 		if (heap != null && heap.type == Heap.Type.HEAP
 				&& !(heap.peek() instanceof Tengu.BombAbility.BombItem)
@@ -617,7 +617,7 @@ public abstract class Char extends Actor {
 		}
 	}
 
-	protected void zap() {
+	public void zap() {
 		//do nothing by default
 	}
 
@@ -972,7 +972,7 @@ public abstract class Char extends Actor {
 	}
 
 	@Override
-	protected void spend( float time ) {
+	public void spend(float time) {
 
 		float timeScale = 1f;
 		if (buff( Slow.class ) != null) {

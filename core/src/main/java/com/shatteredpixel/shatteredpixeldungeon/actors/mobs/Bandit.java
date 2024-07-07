@@ -40,7 +40,7 @@ public class Bandit extends Thief {
 	}
 	
 	@Override
-	protected boolean steal( Hero hero ) {
+	public boolean steal(Hero hero) {
 		if (super.steal( hero )) {
 			
 			Buff.prolong( hero, Blindness.class, Blindness.DURATION/2f );

@@ -172,7 +172,7 @@ public class Golem extends Mob {
 	}
 
 	@Override
-	protected void zap() {
+	public void zap() {
 		teleportEnemy();
 	}
 
@@ -204,7 +204,7 @@ public class Golem extends Mob {
 		enemyTeleCooldown = maxTeleCooldown;
 	}
 
-	private boolean canTele(int target){
+	public boolean canTele(int target){
 		if (enemyTeleCooldown > 0) return false;
 		PathFinder.buildDistanceMap(target, BArray.not(Dungeon.level.solid, null), Dungeon.level.distance(pos, target)+1);
 		//zaps can go around blocking terrain, but not through it

@@ -451,7 +451,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		return Dungeon.level instanceof CityBossLevel ? CityBossLevel.throne : initialThrone;
 	}
 
-	private HashSet<Mob> getSubjects(){
+	public HashSet<Mob> getSubjects(){
 		HashSet<Mob> subjects = new HashSet<>();
 		for (Mob m : Dungeon.level.mobs){
 			if (m.alignment == alignment
@@ -831,7 +831,7 @@ public class DwarfKing extends Mob implements MobBasedOnDepth {
 		}
 
 		@Override
-		protected void zap() {
+		public void zap() {
 			if (enemy == Dungeon.hero){
 				Statistics.bossScores[3] -= 400;
 			}

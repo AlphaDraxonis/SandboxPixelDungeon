@@ -122,7 +122,7 @@ public abstract class Shaman extends Mob {
 	public static class EarthenBolt{}
 
 	@Override
-	protected void zap() {
+	public void zap() {
 		spend( 1f );
 
 		Invisibility.dispel(this);

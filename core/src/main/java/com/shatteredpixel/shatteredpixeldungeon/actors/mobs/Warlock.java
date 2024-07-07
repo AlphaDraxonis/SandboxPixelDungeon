@@ -116,7 +116,7 @@ public class Warlock extends Mob implements Callback {
 	public static class DarkBolt{}
 
 	@Override
-	protected void zap() {
+	public void zap() {
 		spend( TIME_TO_ZAP );
 
 		Invisibility.dispel(this);

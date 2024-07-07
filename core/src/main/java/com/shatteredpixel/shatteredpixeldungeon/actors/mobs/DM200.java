@@ -135,7 +135,7 @@ public class DM200 extends DMMob {
 	}
 
 	@Override
-	protected void zap(){
+	public void zap(){
 		spend( TICK );
 		ventCooldown = maxVentCooldown;
 

@@ -184,7 +184,7 @@ public abstract class Elemental extends Mob {
 	}
 
 	@Override
-	protected void zap() {
+	public void zap() {
 		spend( 1f );
 
 		Invisibility.dispel(this);
@@ -382,7 +382,7 @@ public abstract class Elemental extends Mob {
 		}
 
 		@Override
-		protected void zap() {
+		public void zap() {
 			if (targetingPos != -1) {
 				spend(1f);
 

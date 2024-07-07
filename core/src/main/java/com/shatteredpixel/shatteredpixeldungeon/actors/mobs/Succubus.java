@@ -132,7 +132,7 @@ public class Succubus extends Mob {
 		}
 	}
 	
-	private boolean blink( int target ) {
+	public boolean blink(int target) {
 		
 		Ballistica route = new Ballistica( pos, target, Ballistica.PROJECTILE, null);
 		int cell = route.collisionPos;

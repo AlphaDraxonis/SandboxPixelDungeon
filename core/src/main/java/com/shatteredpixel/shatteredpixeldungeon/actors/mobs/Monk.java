@@ -95,7 +95,7 @@ public class Monk extends Mob {
 	}
 	
 	@Override
-	protected void spend( float time ) {
+	public void spend(float time) {
 		focusCooldown -= time;
 		super.spend( time );
 	}

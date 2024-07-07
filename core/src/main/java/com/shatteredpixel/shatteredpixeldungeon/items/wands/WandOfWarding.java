@@ -329,7 +329,7 @@ public class WandOfWarding extends Wand {
 		}
 
 		@Override
-		protected void zap() {
+		public void zap() {
 			spend( 1f );
 
 			//always hits

@@ -123,7 +123,7 @@ public class DM100 extends DMMob {
 	}
 
 	@Override
-	protected void zap() {
+	public void zap() {
 		spend( TIME_TO_ZAP );
 
 		Invisibility.dispel(this);
