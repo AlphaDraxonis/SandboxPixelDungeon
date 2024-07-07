@@ -24,10 +24,12 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.editcomps.EditMobComp;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.LevelScheme;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.Undo;
 import com.shatteredpixel.shatteredpixeldungeon.editor.scene.undo.parts.MobActionPart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
@@ -65,7 +67,11 @@ public interface LuaMob extends LuaClass {
 			};
 
 			try {
-				CustomDungeon.doOnEverything(level.levelScheme, whatToDo, false, l -> false, () -> {});//TODO tzz ggv tzz we need to also do this whenever we are loading a levelscheme!
+				CustomDungeon.doOnEverything(level.levelScheme, true, whatToDo, false, l -> false, () -> {});//TODO tzz ggv tzz we need to also do this whenever we are loading a levelscheme!
+
+				for (LevelScheme ls : Dungeon.customDungeon.levelSchemes()) {
+					CustomDungeon.doOnEverything(ls, false, whatToDo, false, l -> false, () -> {});
+				}
 			} catch (IOException e) {
 				//level should already be loaded
 			}
