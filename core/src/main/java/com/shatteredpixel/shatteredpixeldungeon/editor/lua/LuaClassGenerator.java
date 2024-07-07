@@ -88,6 +88,8 @@ public final class LuaClassGenerator {
     private LuaClassGenerator() {
     }
 
+    public static void genaaa_IMPORTANT_BeforeGeneratingMakeSure_ACCESS_CHECHER_isPublicgenerateLevelSourceFilesgenerateMobFiles(){}
+
     public static void generateLevelSourceFiles() {
         generateLevelFile(CavesBossLevel.class);
         generateLevelFile(CavesLevel.class);
@@ -307,7 +309,7 @@ public final class LuaClassGenerator {
         String declaringVars = "    private LuaTable vars;\n";
         String bundlingMethods =
                 "    @Override\n" +
-                        "    public void setVars(LuaValue vars) {\n" +
+                        "    public void setVars(LuaTable vars) {\n" +
                         "        this.vars = vars;\n" +
                         "    }\n" +
                         "\n" +

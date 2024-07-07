@@ -660,7 +660,7 @@ public class Hero extends Char {
 	}
 
 	@Override
-	public void spend( float time ) {
+	public void spend(float time) {
 		super.spend(time);
 		updatePermaBuffs(time);
 	}

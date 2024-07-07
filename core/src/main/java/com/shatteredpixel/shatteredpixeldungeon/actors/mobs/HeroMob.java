@@ -671,7 +671,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     }
 
     @Override
-    protected void spend(float time) {
+    public void spend(float time) {
         updateInternalStats();
         super.spend(time);
         internalHero.superSpend(time);

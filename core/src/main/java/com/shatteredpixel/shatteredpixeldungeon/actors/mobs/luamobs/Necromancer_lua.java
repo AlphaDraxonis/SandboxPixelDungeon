@@ -1,30 +1,31 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.*;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.*;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.*;
-import com.shatteredpixel.shatteredpixeldungeon.items.*;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.*;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.*;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.*;
-import com.shatteredpixel.shatteredpixeldungeon.levels.*;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DirectableAlly;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
 import com.watabou.noosa.Game;
-import com.watabou.utils.*;
-import org.luaj.vm2.*;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Function;
+import com.watabou.utils.IntFunction;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import java.util.*;
+
+import java.util.HashSet;
+import java.util.List;
 
 public class Necromancer_lua extends Necromancer implements LuaMob {
 
@@ -111,7 +112,7 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
     }
 
     @Override
-    protected void throwItems() {
+    public void throwItems() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("throwItems").isnil()) {
             try {
@@ -198,19 +199,6 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
     }
 
     @Override
-    public GameObject.ModifyResult initRandoms() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("initRandoms").isnil()) {
-            try {
-                MethodOverride.A0<GameObject.ModifyResult> superMethod = () -> super.initRandoms();
-               GameObject.ModifyResult ret = (GameObject.ModifyResult) luaScript.get("initRandoms").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.initRandoms();
-    }
-
-    @Override
     public float stealth() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("stealth").isnil()) {
@@ -221,6 +209,19 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.stealth();
+    }
+
+    @Override
+    public GameObject.ModifyResult initRandoms() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("initRandoms").isnil()) {
+            try {
+                MethodOverride.A0<GameObject.ModifyResult> superMethod = () -> super.initRandoms();
+               GameObject.ModifyResult ret = (GameObject.ModifyResult) luaScript.get("initRandoms").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.initRandoms();
     }
 
     @Override
@@ -237,16 +238,16 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
     }
 
     @Override
-    public synchronized LinkedHashSet buffs() {
+    public synchronized HashSet buffs(Class arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("buffs").isnil()) {
             try {
-                MethodOverride.A0<LinkedHashSet> superMethod = () -> super.buffs();
-               LinkedHashSet ret = (LinkedHashSet) luaScript.get("buffs").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                MethodOverride.A1<HashSet> superMethod = (a0) -> super.buffs((Class) a0);
+               HashSet ret = (HashSet) luaScript.get("buffs").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
-        return super.buffs();
+        return super.buffs(arg0);
     }
 
     @Override
@@ -351,7 +352,7 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
     }
 
     @Override
-    protected void zap() {
+    public void zap() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("zap").isnil()) {
             try {
@@ -439,6 +440,18 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
     }
 
     @Override
+    protected void tellDialog() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("tellDialog").isnil()) {
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.tellDialog();
+               luaScript.get("tellDialog").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.tellDialog();
+    }
+
+    @Override
     protected int randomDestination() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("randomDestination").isnil()) {
@@ -449,18 +462,6 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.randomDestination();
-    }
-
-    @Override
-    protected void tellDialog() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("tellDialog").isnil()) {
-            try {
-                MethodOverride.VoidA0 superMethod = () -> super.tellDialog();
-               luaScript.get("tellDialog").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.tellDialog();
     }
 
     @Override
@@ -502,18 +503,6 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
     }
 
     @Override
-    public void restoreEnemy() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("restoreEnemy").isnil()) {
-            try {
-                MethodOverride.VoidA0 superMethod = () -> super.restoreEnemy();
-               luaScript.get("restoreEnemy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.restoreEnemy();
-    }
-
-    @Override
     protected boolean getFurther(int arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("getFurther").isnil()) {
@@ -524,6 +513,18 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.getFurther(arg0);
+    }
+
+    @Override
+    public void restoreEnemy() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("restoreEnemy").isnil()) {
+            try {
+                MethodOverride.VoidA0 superMethod = () -> super.restoreEnemy();
+               luaScript.get("restoreEnemy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.restoreEnemy();
     }
 
     @Override
@@ -642,19 +643,6 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
     }
 
     @Override
-    public String getCustomName() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("getCustomName").isnil()) {
-            try {
-                MethodOverride.A0<String> superMethod = () -> super.getCustomName();
-               String ret = luaScript.get("getCustomName").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.getCustomName();
-    }
-
-    @Override
     public void setPlayerAlignment(int arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("setPlayerAlignment").isnil()) {
@@ -677,6 +665,19 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.moveSprite(arg0, arg1);
+    }
+
+    @Override
+    public String getCustomName() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("getCustomName").isnil()) {
+            try {
+                MethodOverride.A0<String> superMethod = () -> super.getCustomName();
+               String ret = luaScript.get("getCustomName").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.getCustomName();
     }
 
     @Override
@@ -830,18 +831,6 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
     }
 
     @Override
-    public void setCustomName(String arg0) {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("setCustomName").isnil()) {
-            try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.setCustomName((String) a0);
-               luaScript.get("setCustomName").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.setCustomName(arg0);
-    }
-
-    @Override
     public List createActualLoot() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("createActualLoot").isnil()) {
@@ -852,6 +841,18 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.createActualLoot();
+    }
+
+    @Override
+    public void setCustomName(String arg0) {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("setCustomName").isnil()) {
+            try {
+                MethodOverride.VoidA1 superMethod = (a0) -> super.setCustomName((String) a0);
+               luaScript.get("setCustomName").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.setCustomName(arg0);
     }
 
     @Override
@@ -1246,7 +1247,7 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
     }
 
     @Override
-    protected void spend(float arg0) {
+    public void spend(float arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("spend").isnil()) {
             try {
@@ -1381,19 +1382,6 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
     }
 
     @Override
-    public boolean canSurpriseAttack() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("canSurpriseAttack").isnil()) {
-            try {
-                MethodOverride.A0<Boolean> superMethod = () -> super.canSurpriseAttack();
-               boolean ret = luaScript.get("canSurpriseAttack").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.canSurpriseAttack();
-    }
-
-    @Override
     public int shielding() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("shielding").isnil()) {
@@ -1404,6 +1392,19 @@ public class Necromancer_lua extends Necromancer implements LuaMob {
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.shielding();
+    }
+
+    @Override
+    public boolean canSurpriseAttack() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("canSurpriseAttack").isnil()) {
+            try {
+                MethodOverride.A0<Boolean> superMethod = () -> super.canSurpriseAttack();
+               boolean ret = luaScript.get("canSurpriseAttack").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.canSurpriseAttack();
     }
 
     @Override
