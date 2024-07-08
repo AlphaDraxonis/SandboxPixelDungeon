@@ -132,6 +132,8 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 		if (usesAvailable() <= 0) {
 			FileUtils.getFileHandle(GamesInProgress.checkpointFolder(GamesInProgress.curSlot)).deleteDirectory();
 			Dungeon.reachedCheckpoint = null;
+		} else {
+			doSave();
 		}
 	}
 
@@ -144,11 +146,15 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 			return;
 		}
 
-		Sample.INSTANCE.play(Assets.Sounds.DEWDROP);
+		Sample.INSTANCE.play(Assets.Sounds.DEWDROP, 1.5f);
 
 		Dungeon.reachedCheckpoint = new ReachedCheckpoint();
 		Dungeon.reachedCheckpoint.set(pos);
 
+		doSave();
+	}
+
+	private void doSave() {
 		FileHandle gameFolder = FileUtils.getFileHandle(GamesInProgress.gameFolder(GamesInProgress.curSlot));
 		FileHandle checkpointFolder = FileUtils.getFileHandle(GamesInProgress.checkpointFolder(GamesInProgress.curSlot));
 
@@ -170,7 +176,6 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 			FileHandle dest = checkpointFolder.child(file.name());
 			file.copyTo(dest);
 		}
-
 	}
 
 	public static class ReachedCheckpoint implements Bundlable {
@@ -211,6 +216,8 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 	private static final String TOTAL_DEBUFF_CURING = "total_debuff_curing";
 	private static final String TOTAL_UNCURSE = "total_uncurse";
 
+	private static final String TIMES_USED = "times_used";
+
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		pos = bundle.getInt(POS);
@@ -220,6 +227,8 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 		totalSatiates = bundle.getInt(TOTAL_SATIATES);
 		totalDebuffCuring = bundle.getInt(TOTAL_DEBUFF_CURING);
 		totalUncurse = bundle.getInt(TOTAL_UNCURSE);
+
+		timesUsed = bundle.getInt(TIMES_USED);
 	}
 
 	@Override
@@ -231,6 +240,8 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 		bundle.put(TOTAL_SATIATES, totalSatiates);
 		bundle.put(TOTAL_DEBUFF_CURING, totalDebuffCuring);
 		bundle.put(TOTAL_UNCURSE, totalUncurse);
+
+		bundle.put(TIMES_USED, timesUsed);
 	}
 
 	@Override
