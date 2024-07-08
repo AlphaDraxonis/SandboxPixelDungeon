@@ -25,6 +25,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.quest;
 
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 
 public class RatSkullOld extends Item {
@@ -33,4 +35,13 @@ public class RatSkullOld extends Item {
 		image = ItemSpriteSheet.RAT_SKULL;
 	}
 
+	@Override
+	public String name() {
+		return Messages.get(RatSkull.class, "name");
+	}
+
+	@Override
+	public boolean isUpgradable() {
+		return false;
+	}
 }
