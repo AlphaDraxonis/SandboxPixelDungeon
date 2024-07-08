@@ -1770,6 +1770,20 @@ public abstract class Mob extends Char implements Customizable {
 
 				} else {
 
+					ArrowCell arrowCell = Dungeon.level.arrowCells.get(pos);
+					if (arrowCell != null && !arrowCell.allowsWaiting) {
+						List<Integer> candidates = new ArrayList<>();
+						for (int i : PathFinder.NEIGHBOURS8) {
+							if (arrowCell.allowsDirectionLeaving(i) && cellIsPathable(pos + i)) {
+								candidates.add(pos + i);
+							}
+						}
+						if (!candidates.isEmpty() && getCloser(Random.element(candidates))) {
+							spend( 1 / speed() );
+							return moveSprite( oldPos,  pos );
+						}
+					}
+
 					//if moving towards an enemy isn't possible, try to switch targets to another enemy that is closer
 					//unless we have already done that and still can't move toward them, then move on.
 					if (!recursing) {

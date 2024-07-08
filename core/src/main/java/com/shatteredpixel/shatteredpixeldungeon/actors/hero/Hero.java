@@ -97,6 +97,7 @@ import com.watabou.utils.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class Hero extends Char {
 
@@ -1690,9 +1691,15 @@ public class Hero extends Char {
 				}
 			}
 
-			if (path == null) return false;
-			step = path.removeFirst();
+			if (path == null) {
+				step = chooseForceMovingTarget();
+			}
+			else step = path.removeFirst();
 
+		}
+
+		if (step == -1) {
+			step = chooseForceMovingTarget();
 		}
 
 		if (step != -1) {
@@ -1734,6 +1741,30 @@ public class Hero extends Char {
 			
 		}
 
+	}
+
+	private int chooseForceMovingTarget() {
+		ArrowCell arrowCell = Dungeon.level.arrowCells.get(pos);
+		if (arrowCell != null && !arrowCell.allowsWaiting) {
+			List<Integer> candidates = new ArrayList<>();
+			for (int i : PathFinder.NEIGHBOURS8) {
+				int n = pos + i;
+				if (arrowCell.allowsDirectionLeaving(i) && Actor.findChar(n) == null) {
+					if (com.shatteredpixel.shatteredpixeldungeon.editor.Barrier.canEnterCell(n, this, true, false)
+							&& (!Char.hasProp(this, Property.LARGE) || Dungeon.level.openSpace[n])) {
+						candidates.add(n);
+						if (!Dungeon.level.avoid[n] && !isFlying()) {
+							candidates.add(n);
+							candidates.add(n);
+						}
+					}
+				}
+				if (!candidates.isEmpty()) {
+					return Random.element(candidates);
+				}
+			}
+		}
+		return -1;
 	}
 	
 	public boolean handle( int cell ) {
