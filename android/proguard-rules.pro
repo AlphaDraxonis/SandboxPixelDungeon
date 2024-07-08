@@ -11,6 +11,9 @@
 # mapping file can be found in core/build/outputs/mapping after running a release build
 -keepattributes SourceFile,LineNumberTable
 
+# Keep all classes from LuaJ library
+-keep class org.luaj.vm2.** { *; }
+
 # libGDX stuff
 -dontwarn android.support.**
 -dontwarn com.badlogic.gdx.backends.android.AndroidFragmentApplication
@@ -38,3 +41,55 @@
     boolean reportFixture(long);
     float   reportRayFixture(long, float, float, float, float, float);
 }
+
+
+
+#The Android Gradle plugin said I should add this, and because it wouldn't work otherwise, I added this without knowing why it is necessary...
+-dontwarn javax.script.AbstractScriptEngine
+-dontwarn javax.script.Bindings
+-dontwarn javax.script.Compilable
+-dontwarn javax.script.CompiledScript
+-dontwarn javax.script.ScriptContext
+-dontwarn javax.script.ScriptEngine
+-dontwarn javax.script.ScriptEngineFactory
+-dontwarn javax.script.ScriptException
+-dontwarn javax.script.SimpleBindings
+-dontwarn javax.script.SimpleScriptContext
+-dontwarn org.apache.bcel.classfile.Field
+-dontwarn org.apache.bcel.classfile.JavaClass
+-dontwarn org.apache.bcel.classfile.Method
+-dontwarn org.apache.bcel.generic.AASTORE
+-dontwarn org.apache.bcel.generic.ALOAD
+-dontwarn org.apache.bcel.generic.ANEWARRAY
+-dontwarn org.apache.bcel.generic.ASTORE
+-dontwarn org.apache.bcel.generic.ArrayInstruction
+-dontwarn org.apache.bcel.generic.ArrayType
+-dontwarn org.apache.bcel.generic.BasicType
+-dontwarn org.apache.bcel.generic.BranchHandle
+-dontwarn org.apache.bcel.generic.BranchInstruction
+-dontwarn org.apache.bcel.generic.ClassGen
+-dontwarn org.apache.bcel.generic.CompoundInstruction
+-dontwarn org.apache.bcel.generic.ConstantPoolGen
+-dontwarn org.apache.bcel.generic.FieldGen
+-dontwarn org.apache.bcel.generic.FieldInstruction
+-dontwarn org.apache.bcel.generic.GETSTATIC
+-dontwarn org.apache.bcel.generic.GOTO
+-dontwarn org.apache.bcel.generic.IFEQ
+-dontwarn org.apache.bcel.generic.IFNE
+-dontwarn org.apache.bcel.generic.Instruction
+-dontwarn org.apache.bcel.generic.InstructionConstants
+-dontwarn org.apache.bcel.generic.InstructionFactory
+-dontwarn org.apache.bcel.generic.InstructionHandle
+-dontwarn org.apache.bcel.generic.InstructionList
+-dontwarn org.apache.bcel.generic.InvokeInstruction
+-dontwarn org.apache.bcel.generic.LineNumberGen
+-dontwarn org.apache.bcel.generic.LocalVariableGen
+-dontwarn org.apache.bcel.generic.LocalVariableInstruction
+-dontwarn org.apache.bcel.generic.MethodGen
+-dontwarn org.apache.bcel.generic.NEW
+-dontwarn org.apache.bcel.generic.ObjectType
+-dontwarn org.apache.bcel.generic.PUSH
+-dontwarn org.apache.bcel.generic.PUTSTATIC
+-dontwarn org.apache.bcel.generic.ReturnInstruction
+-dontwarn org.apache.bcel.generic.StackInstruction
+-dontwarn org.apache.bcel.generic.Type
