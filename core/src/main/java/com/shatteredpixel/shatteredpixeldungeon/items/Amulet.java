@@ -60,7 +60,7 @@ public class Amulet extends Item {
 		super.execute( hero, action );
 
 		if (action.equals(AC_END)) {
-			showAmuletScene( false );
+			showAmuletScene( false, Amulet.this );
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class Amulet extends Item {
 					@Override
 					protected boolean act() {
 						Actor.remove(this);
-						showAmuletScene( true );
+						showAmuletScene( true, Amulet.this );
 						return false;
 					}
 				});
@@ -94,8 +94,9 @@ public class Amulet extends Item {
 		}
 	}
 	
-	public static void showAmuletScene( boolean showText ) {
+	public static void showAmuletScene( boolean showText, Object winCondition ) {
 		AmuletScene.noText = !showText;
+		AmuletScene.winCondition = winCondition;
 		Game.switchScene( AmuletScene.class, new Game.SceneChangeCallback() {
 			@Override
 			public void beforeCreate() {

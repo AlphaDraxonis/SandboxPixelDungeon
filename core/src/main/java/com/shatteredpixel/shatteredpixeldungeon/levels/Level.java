@@ -61,6 +61,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfYendor;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Chasm;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.Door;
@@ -73,6 +74,7 @@ import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.AmuletScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.SurfaceScene;
@@ -914,7 +916,9 @@ public abstract class Level implements Bundlable {
 		}
 
 		if (transition.type == LevelTransition.Type.SURFACE){
-			if (hero.belongings.getItem( Amulet.class ) == null) {
+			Object winCondition = hero.belongings.getItem( WandOfYendor.class );
+			if (winCondition == null) winCondition = hero.belongings.getItem( Amulet.class );
+			if (winCondition == null) {
 				Game.runOnRenderThread(new Callback() {
 					@Override
 					public void call() {
@@ -925,8 +929,9 @@ public abstract class Level implements Bundlable {
 			} else {
 				Statistics.ascended = true;
 				Badges.silentValidateHappyEnd();
-				Dungeon.win( Amulet.class );
+				Dungeon.win( winCondition );
 				Dungeon.deleteGame( GamesInProgress.curSlot, true );
+				AmuletScene.winCondition = winCondition;
 				Game.switchScene( SurfaceScene.class );
 				return true;
 			}

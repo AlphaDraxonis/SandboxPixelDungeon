@@ -91,7 +91,7 @@ public class WandOfYendor extends Wand {
 		super.execute( hero, action );
 
 		if (action.equals(AC_END)) {
-			Amulet.showAmuletScene(true);
+			Amulet.showAmuletScene(true, WandOfYendor.this);
 		}
 	}
 

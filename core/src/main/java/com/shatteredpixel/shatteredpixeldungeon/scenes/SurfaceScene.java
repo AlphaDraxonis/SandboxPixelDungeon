@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.overview.dungeon.WndSelectDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.remains.RemainsItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLivingEarth;
@@ -262,7 +261,7 @@ public class SurfaceScene extends PixelScene {
 		add( gameOver );
 
 		Badges.validateHappyEnd();
-		Dungeon.win( Amulet.class );
+		Dungeon.win( AmuletScene.winCondition );
 		Dungeon.deleteGame( GamesInProgress.curSlot, true );
 		Badges.saveGlobal();
 
