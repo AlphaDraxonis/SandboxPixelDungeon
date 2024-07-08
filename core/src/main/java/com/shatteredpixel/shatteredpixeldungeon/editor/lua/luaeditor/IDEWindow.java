@@ -475,7 +475,7 @@ public class IDEWindow extends Component {
 
 		@Override
 		protected void createChildren(Object... params) {
-			btnCompile = new RedButton(Messages.get(IDEWindow.class, "compile")) {
+			btnCompile = new RedButton(Messages.get(IDEWindow.class, "compile"), PixelScene.landscape() ? 8 : 6) {
 				@Override
 				protected void onClick() {
 					compile();
@@ -486,6 +486,7 @@ public class IDEWindow extends Component {
 					return Messages.get(IDEWindow.class, "compile");
 				}
 			};
+			btnCompile.multiline = true;
 			add(btnCompile);
 
 //			btnSave = new RedButton(Messages.get(IDEWindow.class, "save")){
