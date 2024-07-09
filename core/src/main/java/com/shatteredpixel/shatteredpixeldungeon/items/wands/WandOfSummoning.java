@@ -26,12 +26,14 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.mage.WildMagic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
+import com.shatteredpixel.shatteredpixeldungeon.editor.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
@@ -83,10 +85,23 @@ public class WandOfSummoning extends Wand {
 
 		removeDeadSummons();
 
-		Char ch = Actor.findChar(target);
+		final Ballistica wandShot = new Ballistica(owner.pos, target, collisionProperties(target), null);
+
+		int cell = wandShot.collisionPos;
+
+		Char ch = Actor.findChar(cell);
 		if (ch != null && !currentSummons.contains(ch)){
-			GLog.w(Messages.get(this, "bad_location"));
+			if (owner == Dungeon.hero) GLog.w(Messages.get(this, "bad_location"));
 			return false;
+		}
+
+		if (owner != Dungeon.hero) {
+			if (nextSummon == null) chooseNextSummonMob();
+			if (nextSummon == null
+					|| !Barrier.canEnterCell(cell, nextSummon, nextSummon.isFlying() || nextSummon.buff(Amok.class) != null, true)
+					|| Char.hasProp(nextSummon, Char.Property.LARGE) && !Dungeon.level.openSpace[cell]) {
+				return false;
+			}
 		}
 
 		return super.tryToZap(owner, target);
@@ -111,10 +126,7 @@ public class WandOfSummoning extends Wand {
 
 		int chargesPerCast = chargesPerCast();
 
-		if (!Dungeon.level.isPassableAlly(target)){
-			GLog.w( Messages.get(this, "bad_location"));
-			
-		} else if (ch != null){
+		if (ch != null) {
 			if (currentSummons.contains(ch)) {
 
 				float healingPerCharge = healingPerCharge(buffedLvl());
@@ -127,31 +139,38 @@ public class WandOfSummoning extends Wand {
 					ch.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(ch.HP - before), FloatingText.HEALING);
 				}
 			} else {
-				GLog.w( Messages.get(this, "bad_location"));
+				GLog.w(Messages.get(this, "bad_location"));
 			}
-			
+
 		} else {
 			if (nextSummon == null) chooseNextSummonMob();
-			if (!(nextSummon instanceof Wraith)) currentSummons.add(nextSummon);
+			if (nextSummon == null
+				|| !Barrier.canEnterCell(target, nextSummon, nextSummon.isFlying() || nextSummon.buff(Amok.class) != null, true)
+				|| Char.hasProp(nextSummon, Char.Property.LARGE) && !Dungeon.level.openSpace[target]){
+				GLog.w(Messages.get(this, "bad_location"));
+			} else {
 
-			Buff.affect(nextSummon, Corruption.class);
+				if (!(nextSummon instanceof Wraith)) currentSummons.add(nextSummon);
 
-			if (!(nextSummon instanceof Wraith)) {
-				nextSummon.HP = (int) Math.min(nextSummon.HT, nextSummon.HP * healingPerCharge(buffedLvl()) * chargesPerCast);
+				Buff.affect(nextSummon, Corruption.class);
+
+				if (!(nextSummon instanceof Wraith)) {
+					nextSummon.HP = (int) Math.min(nextSummon.HT, nextSummon.HP * healingPerCharge(buffedLvl()) * chargesPerCast);
+				}
+
+				nextSummon.pos = target;
+				nextSummon.EXP = 0;
+				nextSummon.loot = null;
+
+				GameScene.add(nextSummon, 1f);
+
+				Dungeon.level.occupyCell(nextSummon);
+
+				Wraith.showSpawnParticle(nextSummon);
+
+				chooseNextSummonMob();
+
 			}
-
-			nextSummon.pos = target;
-			nextSummon.EXP = 0;
-			nextSummon.loot = null;
-
-			GameScene.add(nextSummon, 1f);
-
-			Dungeon.level.occupyCell(nextSummon);
-
-			Wraith.showSpawnParticle(nextSummon);
-
-			chooseNextSummonMob();
-
 		}
 	}
 

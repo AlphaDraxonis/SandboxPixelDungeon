@@ -164,7 +164,7 @@ public abstract class Char extends Actor {
 	}
 
 	public boolean isFlying() {
-		return flying;
+		return flying || Char.hasProp(this, Property.FLYING);
 	}
 
 	public void setFlying(boolean flying) {
@@ -1276,11 +1276,13 @@ public abstract class Char extends Actor {
 				new HashSet<Class>( Arrays.asList(AllyBuff.class, Dread.class, Terror.class, Amok.class, Charm.class, Sleep.class,Paralysis.class, Frost.class, Chill.class, Slow.class, Speed.class) )),
 
 		AQUATIC ( new HashSet<Class>(),
-				new HashSet<Class>( Arrays.asList(Burning.class)));
+				new HashSet<Class>( Arrays.asList(Burning.class))),
+		FLYING ( new HashSet<Class>(),
+				new HashSet<Class>());
 
 		static {
 			//WARNING keeping the same ordinal order is very important for bundling
-			if (AQUATIC.ordinal() != 14) throw new RuntimeException("Char.Property: PLEASE MAKE SURE THAT THE ORDINALS ARE ALWAYS IN THE CORRECT ORDER!!!");
+			if (FLYING.ordinal() != 15) throw new RuntimeException("Char.Property: PLEASE MAKE SURE THAT THE ORDINALS ARE ALWAYS IN THE CORRECT ORDER!!!");
 		}
 
 		private HashSet<Class> resistances;

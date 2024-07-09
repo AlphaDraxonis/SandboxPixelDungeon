@@ -74,7 +74,7 @@ public class WandOfWarding extends Wand {
 		
 		int maxWardEnergy = 0;
 		boolean hasWandOfInstability = false;
-		for (Buff buff : curUser.buffs()){
+		for (Buff buff : owner.buffs()){
 			if (buff instanceof Wand.Charger){
 				if (((Charger) buff).wand() instanceof WandOfWarding){
 					maxWardEnergy += 2 + ((Charger) buff).wand().level();
@@ -92,12 +92,19 @@ public class WandOfWarding extends Wand {
 		Char ch = Actor.findChar(target);
 		if (ch instanceof Ward){
 			if (!wardAvailable && ((Ward) ch).tier <= 3){
-				GLog.w( Messages.get(this, "no_more_wards"));
+				if (owner == Dungeon.hero) GLog.w( Messages.get(this, "no_more_wards"));
 				return false;
 			}
 		} else {
 			if ((currentWardEnergy + 1) > maxWardEnergy){
-				GLog.w( Messages.get(this, "no_more_wards"));
+				if (owner == Dungeon.hero) GLog.w( Messages.get(this, "no_more_wards"));
+				return false;
+			}
+		}
+
+		if (owner != Dungeon.hero) {
+			if (!Dungeon.level.isPassableAlly(target) && owner.alignment == Char.Alignment.ALLY
+					|| !Dungeon.level.isPassableMob(target) && owner.alignment == Char.Alignment.ENEMY) {
 				return false;
 			}
 		}
@@ -121,7 +128,8 @@ public class WandOfWarding extends Wand {
 			}
 		}
 
-		if (!Dungeon.level.isPassableAlly(target)){
+		if (!Dungeon.level.isPassableAlly(target) && curUser.alignment == Char.Alignment.ALLY
+			|| !Dungeon.level.isPassableMob(target) && curUser.alignment == Char.Alignment.ENEMY){
 			GLog.w( Messages.get(this, "bad_location"));
 			Dungeon.level.pressCell(target);
 			
@@ -142,6 +150,7 @@ public class WandOfWarding extends Wand {
 			Ward ward = new Ward();
 			ward.pos = target;
 			ward.wandLevel = buffedLvl();
+			ward.alignment = curUser.alignment;
 			GameScene.add(ward, 1f);
 			Dungeon.level.occupyCell(ward);
 			ward.sprite.emitter().burst(MagicMissile.WardParticle.UP, ward.tier);

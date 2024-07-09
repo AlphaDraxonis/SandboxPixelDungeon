@@ -409,9 +409,16 @@ public abstract class DungeonScene extends PixelScene {
 
 	protected void addCheckpointSprite(Checkpoint cp) {
 		Checkpoint.CheckpointSprite sprite = cp.getSprite();
-		checkpoints.add(sprite);sprite.visible = true;
+		checkpoints.add(sprite);
+		sprite.visible = true;
 
 		sprite.link(cp);
+	}
+
+	public static void updateAllCheckpointSprites() {
+		for (Checkpoint cp : Dungeon.level.checkpoints.values()) {
+			if (cp.sprite != null) cp.sprite.updateSprite(cp);
+		}
 	}
 
 	protected void showBanner( Banner banner ) {

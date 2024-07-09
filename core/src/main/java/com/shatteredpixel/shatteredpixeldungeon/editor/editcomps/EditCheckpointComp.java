@@ -42,11 +42,17 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             public float getInputFieldWidth(float height) {
                 return StyledSpinner.FILL;
             }
-        }, "saves");
+
+            @Override
+            public void afterClick() {
+                updateObj();
+            }
+        }, Messages.get(this, "saves"));
         saves.icon(new ItemSprite(ItemSpriteSheet.ANKH, new ItemSprite.Glowing( 0xFFFFCC )));
         saves.addChangeListener(() -> {
             obj.totalSaves = (int) saves.getValue();
-            updateObj();
+            if (obj.totalSaves % 20 == 0)
+                updateObj();//pretty expensive call for longer texts, so it is better to call this less
         });
         add(saves);
 
@@ -55,7 +61,7 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             public float getInputFieldWidth(float height) {
                 return StyledSpinner.FILL;
             }
-        }, "heals");
+        }, Messages.get(this, "heals"));
         RectF r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.POTION_HEALING);
         if (r != null) {
             Image icon = new Image(Assets.Sprites.ITEM_ICONS);
@@ -74,7 +80,7 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             public float getInputFieldWidth(float height) {
                 return StyledSpinner.FILL;
             }
-        }, "satiates");
+        }, Messages.get(this, "satiates"));
         satiates.icon(new ItemSprite(ItemSpriteSheet.RATION));
         satiates.addChangeListener(() -> {
             obj.totalSatiates = (int) satiates.getValue();
@@ -87,7 +93,7 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             public float getInputFieldWidth(float height) {
                 return StyledSpinner.FILL;
             }
-        }, "debuffs");
+        }, Messages.get(this, "debuffs"));
         r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.POTION_CLEANSE);
         if (r != null) {
             Image icon = new Image(Assets.Sprites.ITEM_ICONS);
@@ -106,7 +112,7 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             public float getInputFieldWidth(float height) {
                 return StyledSpinner.FILL;
             }
-        }, "uncurses");
+        }, Messages.get(this, "uncurses"));
         r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_REMCURSE);
         if (r != null) {
             Image icon = new Image(Assets.Sprites.ITEM_ICONS);

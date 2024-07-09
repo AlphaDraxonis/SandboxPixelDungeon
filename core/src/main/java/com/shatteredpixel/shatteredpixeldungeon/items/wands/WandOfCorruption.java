@@ -26,44 +26,9 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corrosion;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Daze;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSleep;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Ooze;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Poison;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Roots;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Slow;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SoulMark;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vertigo;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Bee;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Piranha;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Swarm;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -128,12 +93,8 @@ public class WandOfCorruption extends Wand {
 		Char ch = Actor.findChar(bolt.collisionPos);
 
 		if (ch != null){
-			
-			if (!(ch instanceof Mob)){
-				return;
-			}
 
-			Mob enemy = (Mob) ch;
+			Char enemy = ch;
 
 			if (enemy instanceof DwarfKing){
 				Statistics.qualifiedForBossChallengesBadge[3] = false;
@@ -143,7 +104,9 @@ public class WandOfCorruption extends Wand {
 			
 			//base enemy resistance is usually based on their exp, but in special cases it is based on other criteria
 			float enemyResist;
-			if (ch instanceof Mimic || ch instanceof Statue){
+			if (ch instanceof Hero){
+				enemyResist = ((Hero) ch).lvl * 2;
+			} else if (ch instanceof Mimic || ch instanceof Statue){
 				enemyResist = 1 + Dungeon.depth;
 			} else if (ch instanceof Piranha || ch instanceof Bee) {
 				enemyResist = 1 + Dungeon.depth/2f;
@@ -152,10 +115,10 @@ public class WandOfCorruption extends Wand {
 				enemyResist = (1f + Dungeon.scalingDepth()/4f) / 5f;
 			} else if (ch instanceof Swarm){
 				//child swarms don't give exp, so we force this here.
-				enemyResist = 1 + AscensionChallenge.AscensionCorruptResist(enemy);
+				enemyResist = 1 + AscensionChallenge.AscensionCorruptResist((Mob) enemy);
 				if (enemyResist == 1) enemyResist = 1 + 3;
 			} else {
-				enemyResist = 1 + AscensionChallenge.AscensionCorruptResist(enemy);
+				enemyResist = 1 + AscensionChallenge.AscensionCorruptResist((Mob) enemy);
 			}
 			
 			//100% health: 5x resist   75%: 3.25x resist   50%: 2x resist   25%: 1.25x resist
@@ -192,7 +155,7 @@ public class WandOfCorruption extends Wand {
 		}
 	}
 	
-	private void debuffEnemy( Mob enemy, HashMap<Class<? extends Buff>, Float> category ){
+	private void debuffEnemy( Char enemy, HashMap<Class<? extends Buff>, Float> category ){
 		
 		//do not consider buffs which are already assigned, or that the enemy is immune to.
 		HashMap<Class<? extends Buff>, Float> debuffs = new HashMap<>(category);
@@ -205,6 +168,9 @@ public class WandOfCorruption extends Wand {
 			 if (debuffs.get(toAssign) > 0 && enemy.isImmune(toAssign)){
 			 	debuffs.put(toAssign, 0f);
 			 }
+		}
+		if (enemy instanceof Hero) {
+			debuffs.put(Paralysis.class, 0f);
 		}
 		
 		//all buffs with a > 0 chance are flavor buffs
@@ -219,17 +185,17 @@ public class WandOfCorruption extends Wand {
 		}
 	}
 	
-	private void corruptEnemy( Mob enemy ){
+	private void corruptEnemy( Char enemy ){
 		//cannot re-corrupt or doom an enemy, so give them a major debuff instead
 		if(enemy.buff(Corruption.class) != null || enemy.buff(Doom.class) != null){
-			GLog.w( Messages.get(this, "already_corrupted") );
+			if (curUser == Dungeon.hero) GLog.w( Messages.get(this, "already_corrupted") );
 			return;
 		}
 		
-		if (!enemy.isImmune(Corruption.class)){
+		if (!enemy.isImmune(Corruption.class) && enemy instanceof Mob){
 			Corruption.corruptionHeal(enemy);
 
-			AllyBuff.affectAndLoot(enemy, curUser, Corruption.class);
+			AllyBuff.affectAndLoot((Mob) enemy, curUser, Corruption.class);
 		} else {
 			Buff.affect(enemy, Doom.class);
 		}

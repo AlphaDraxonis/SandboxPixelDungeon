@@ -180,7 +180,7 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 
 
 	public static boolean canSurviveOnCell(Char ch, int cell) {
-		return Dungeon.level.water[cell] || (Terrain.flags[Dungeon.level.map[cell]] & Terrain.WATER) != 0 || !Char.hasProp(ch, Property.AQUATIC)
+		return Dungeon.level.water[cell] || ((Terrain.flags[Dungeon.level.map[cell]] & Terrain.WATER) == Terrain.flags[Terrain.WATER]) || !Char.hasProp(ch, Property.AQUATIC)
 				|| (ch instanceof Hero && (TileItem.isEntranceTerrainCell(Dungeon.level.map[cell]) || TileItem.isExitTerrainCell(Dungeon.level.map[cell])));
 	}
 

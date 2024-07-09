@@ -29,8 +29,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
@@ -81,14 +81,14 @@ public class WandOfTransfusion extends DamageWand {
 
 		Char ch = Actor.findChar(cell);
 
-		if (ch instanceof Mob){
+		if (ch != curUser && (!(ch instanceof HeroMob) || ((HeroMob) ch).hero() != curUser )){
 			
 			wandProc(ch, chargesPerCast());
 			
 			//this wand does different things depending on the target.
 			
 			//heals/shields an ally or a charmed enemy while damaging self
-			if (ch.alignment == Char.Alignment.ALLY || ch.buff(Charm.class) != null){
+			if (ch.alignment == curUser.alignment && ch.alignment != Char.Alignment.NEUTRAL || ch.buff(Charm.class) != null){
 				
 				// 5% of max hp
 				int selfDmg = Math.round(curUser.HT*0.05f);
@@ -120,7 +120,7 @@ public class WandOfTransfusion extends DamageWand {
 
 			//for enemies...
 			//(or for mimics which are hiding, special case)
-			} else if (ch.alignment == Char.Alignment.ENEMY || ch instanceof Mimic) {
+			} else if ((ch.alignment != curUser.alignment && ch.alignment != Char.Alignment.NEUTRAL) || ch instanceof Mimic) {
 
 				//grant a self-shield, and...
 				Buff.affect(curUser, Barrier.class).setShield((5 + buffedLvl()));
@@ -151,7 +151,7 @@ public class WandOfTransfusion extends DamageWand {
 		
 		curUser.damage(damage, this);
 
-		if (!curUser.isAlive()){
+		if (curUser == Dungeon.hero && !curUser.isAlive()){
 			Badges.validateDeathFromFriendlyMagic();
 			Dungeon.fail( this );
 			GLog.n( Messages.get(this, "ondeath") );

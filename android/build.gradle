@@ -26,6 +26,10 @@ android {
             applicationIdSuffix ".indev"
             versionNameSuffix '-INDEV'
 
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
             dependencies {
                 debugImplementation project(':services:updates:debugUpdates')
                 debugImplementation project(':services:news:debugNews')

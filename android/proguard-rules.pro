@@ -11,8 +11,10 @@
 # mapping file can be found in core/build/outputs/mapping after running a release build
 -keepattributes SourceFile,LineNumberTable
 
-# Keep all classes from LuaJ library
+# Lua stuff
 -keep class org.luaj.vm2.** { *; }
+-keep class com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs.** { *; }
+-keep class com.shatteredpixel.shatteredpixeldungeon.levels.lualevels.** { *; }
 
 # libGDX stuff
 -dontwarn android.support.**

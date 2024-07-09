@@ -39,9 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
@@ -65,6 +63,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Function;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -131,6 +130,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         }
 
         if (!hpSet) {
+            if (!CustomDungeon.isEditing()) hero().updateHT(false);
             HP = HT = internalHero.HP = internalHero.HT = (int) (internalHero.HT * statsScale);
             hpSet = !CustomDungeon.isEditing();
         }
@@ -287,7 +287,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
         if (hero().belongings.weapon == null) {
             for (Item item : internalHero.wands()) {
-                if (!(item instanceof WandOfLightning) && useWandForAttack((Wand) item)) return item;
+                if (!(item instanceof WandOfLightning) && useWandForAttack((Wand) item) != -1) return item;
             }
         }
 
@@ -375,7 +375,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
         if (wandCD <= 0) {
             for (Item item : internalHero.wands()) {
-                if (useWandForAttack((Wand) item)) return item;
+                if (useWandForAttack((Wand) item) != -1) return item;
             }
         }
 
@@ -386,27 +386,55 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         return null;
     }
 
-    private boolean useWandForAttack(Wand wand) {
+    private int useWandForAttack(Wand wand) {
         if (wand.curCharges > 0) {
-            final Ballistica wandShot = new Ballistica(pos, target, wand.collisionProperties(target), null);
-            if (target == pos || wandShot.collisionPos == pos) {
-                if (target != pos || !hero().hasTalent(Talent.SHIELD_BATTERY)) {
-                    return false;
-                }
-                if (buff(MagicImmune.class) != null) {
-                    return false;
-                }
-				return enemy == null || !enemy.isImmune(wand.getClass());
-            } else {
-                int distance = wand instanceof WandOfDisintegration ? ((WandOfDisintegration) wand).distance() : Integer.MAX_VALUE;
-                int indexTarget = wandShot.path.indexOf(target);
-                if (indexTarget >= 0 && indexTarget <= distance) {
-					return enemy == null || !enemy.isImmune(wand.getClass());
+
+            List<Integer> candidates = new ArrayList<>();
+            if (target == pos || !(wand instanceof WandOfSummoning || wand instanceof WandOfWarding)) candidates.add(target);
+            else {
+                for (int i : PathFinder.NEIGHBOURS8) {
+                    candidates.add(i + target);
                 }
             }
 
+            int targetForSelfTarget = -1;
+            List<Integer> targets = new ArrayList<>();
+
+            while (!candidates.isEmpty()) {
+                int aimingTarget = candidates.remove(Random.Int(candidates.size()));
+
+                if (aimingTarget == pos) continue;
+
+                final Ballistica wandShot = new Ballistica(pos, aimingTarget, wand.collisionProperties(aimingTarget), null);
+                if (wandShot.collisionPos == pos) {
+                    if (aimingTarget != pos || !hero().hasTalent(Talent.SHIELD_BATTERY)) {
+                        continue;
+                    }
+                    if (buff(MagicImmune.class) != null) {
+                        continue;
+                    }
+                    if (enemy != null && enemy.isImmune(wand.getClass())) {
+                        continue;
+                    }
+                    targetForSelfTarget = aimingTarget;
+                } else {
+                    int distance = wand instanceof WandOfDisintegration ? ((WandOfDisintegration) wand).distance() : Integer.MAX_VALUE;
+                    int indexTarget = wandShot.path.indexOf(aimingTarget);
+                    if (indexTarget >= 0 && indexTarget <= distance) {
+                        if (enemy != null && enemy.isImmune(wand.getClass())) {
+                            continue;
+                        }
+                        if (wand.tryToZap(hero(), wandShot.collisionPos))
+                            targets.add(aimingTarget);
+                    }
+                }
+            }
+
+            if (targets.isEmpty()) return targetForSelfTarget;
+            return Random.element(targets);
+
         }
-        return false;
+        return -1;
     }
 
     @Override
@@ -522,7 +550,8 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         }
 
         if (item instanceof Wand) {
-            ((Wand) item).performZap(target, hero());
+            int aimTarget = useWandForAttack((Wand) item);
+            ((Wand) item).performZap(aimTarget, hero());
 
             if (internalHero.belongings.weapon == null) wandCD = 0;
             else wandCD += Random.Float(1.2f, 1.7f);
@@ -708,6 +737,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         dest.viewDistance = src.viewDistance;
         dest.baseSpeed = src.baseSpeed;
         dest.pos = src.pos;
+        dest.alignment = src.alignment;
     }
 
     public void setInternalHero(InternalHero hero) {
@@ -805,6 +835,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         public InternalHero() {
             super();
             belongings = new InternalHeroBelongings(this);
+            alignment = Alignment.ENEMY;
         }
 
         private HeroMob owner;
@@ -890,6 +921,19 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         public HashSet<Property> properties() {
             if (owner == null) return super.properties();
             return owner.properties();
+        }
+
+        @Override
+        public int id() {
+            if (owner != null) return owner.id();
+            return super.id();
+        }
+
+        @Override
+        public void updateHT(boolean boostHP) {
+            if (owner != null) owner.updateInternalStats();
+            super.updateHT(boostHP);
+            if (owner != null) owner.updateStats();
         }
 
         public List<Item> wands() {

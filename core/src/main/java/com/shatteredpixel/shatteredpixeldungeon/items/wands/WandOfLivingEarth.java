@@ -30,6 +30,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Amok;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HeroMob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
@@ -80,7 +81,7 @@ public class WandOfLivingEarth extends DamageWand {
 		RockArmor buff = curUser.buff(RockArmor.class);
 		//only grant armor if we are shooting at an enemy, a hiding mimic, or the guardian
 		if ((guardian == null || ch != guardian) && (ch == null
-				|| ch.alignment == Char.Alignment.ALLY
+				|| (ch.alignment == curUser.alignment)
 				|| ch.alignment == Char.Alignment.NEUTRAL && !(ch instanceof Mimic))){
 			armorToAdd = 0;
 		} else {
@@ -320,8 +321,11 @@ public class WandOfLivingEarth extends DamageWand {
 		}
 
 		private int wandLevel = -1;
+		private Hero summonedBy;
+		private int summonedByID = -1;
 
 		public void setInfo(Hero hero, int wandLevel, int healthToAdd){
+			summonedBy = hero;
 			if (wandLevel > this.wandLevel) {
 				this.wandLevel = wandLevel;
 				HT = 16 + 8 * wandLevel;
@@ -332,6 +336,8 @@ public class WandOfLivingEarth extends DamageWand {
 			HP = Math.min(HT, HP + healthToAdd);
 			//half of hero's evasion
 			defenseSkill = (hero.lvl + 4)/2;
+
+			alignment = hero.alignment;
 		}
 
 		@Override
@@ -374,12 +380,14 @@ public class WandOfLivingEarth extends DamageWand {
 
 		private static final String DEFENSE = "defense";
 		private static final String WAND_LEVEL = "wand_level";
+		private static final String SUMMONED_BY = "summoned_by";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put(DEFENSE, defenseSkill);
 			bundle.put(WAND_LEVEL, wandLevel);
+			bundle.put(SUMMONED_BY, summonedBy == null ? summonedByID : summonedBy.id());
 		}
 
 		@Override
@@ -387,6 +395,18 @@ public class WandOfLivingEarth extends DamageWand {
 			super.restoreFromBundle(bundle);
 			defenseSkill = bundle.getInt(DEFENSE);
 			wandLevel = bundle.getInt(WAND_LEVEL);
+			summonedByID = bundle.getInt(SUMMONED_BY);
+		}
+
+		@Override
+		public void restoreEnemy() {
+			super.restoreEnemy();
+			Char ch = (Char) Actor.findById(summonedByID);
+			if (ch != null) {
+				alignment = ch.alignment;
+				if (ch instanceof HeroMob) summonedBy = ((HeroMob) ch).hero();
+				else if (ch instanceof Hero) summonedBy = (Hero) ch;
+			}
 		}
 
 		private class Wandering extends Mob.Wandering{
@@ -394,8 +414,8 @@ public class WandOfLivingEarth extends DamageWand {
 			@Override
 			public boolean act(boolean enemyInFOV, boolean justAlerted) {
 				if (!enemyInFOV){
-					Buff.affect(Dungeon.hero, RockArmor.class).addArmor(wandLevel, HP);
-					Dungeon.hero.sprite.centerEmitter().burst(MagicMissile.EarthParticle.ATTRACT, 8 + wandLevel/2);
+					Buff.affect(summonedBy, RockArmor.class).addArmor(wandLevel, HP);
+					summonedBy.sprite.centerEmitter().burst(MagicMissile.EarthParticle.ATTRACT, 8 + wandLevel/2);
 					destroy();
 					sprite.die();
 					return true;

@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.effects;
 
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
 import com.watabou.noosa.Gizmo;
 
 public class DarkBlock extends Gizmo{
@@ -38,7 +39,7 @@ public class DarkBlock extends Gizmo{
 	public void update() {
 		super.update();
 
-		target.brightness(0.4f);
+		target.brightness(target instanceof HeroSprite ? 0.2f : 0.4f);
 
 	}
 

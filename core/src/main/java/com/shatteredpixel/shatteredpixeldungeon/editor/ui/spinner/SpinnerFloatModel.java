@@ -47,6 +47,12 @@ public class SpinnerFloatModel extends SpinnerIntegerModel {
     }
 
     @Override
+    public void setValue(Object value) {
+        if (value instanceof Float) value = convertToInt((Integer) value, precision);
+        super.setValue(value);
+    }
+
+    @Override
     public void setAbsoluteMinimum(float absoluteMinimum) {
         super.setAbsoluteMinimum(convertToInt(absoluteMinimum, precision));
     }

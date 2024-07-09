@@ -37,6 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCleansing;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
@@ -129,6 +130,8 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 
 		timesUsed++;
 
+		DungeonScene.updateAllCheckpointSprites();
+
 		if (usesAvailable() <= 0) {
 			FileUtils.getFileHandle(GamesInProgress.checkpointFolder(GamesInProgress.curSlot)).deleteDirectory();
 			Dungeon.reachedCheckpoint = null;
@@ -137,19 +140,24 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 		}
 	}
 
+	public boolean isReached() {
+		return Dungeon.reachedCheckpoint != null
+				&& pos == Dungeon.reachedCheckpoint.cell
+				&& Dungeon.branch == Dungeon.reachedCheckpoint.branch
+				&& Dungeon.reachedCheckpoint.level.equals(Dungeon.levelName);
+	}
+
 	public void reachCheckpoint() {
-		if (usesAvailable() <= 0
-				|| Dungeon.reachedCheckpoint != null
-					&& pos == Dungeon.reachedCheckpoint.cell
-					&& Dungeon.branch == Dungeon.reachedCheckpoint.branch
-					&& Dungeon.reachedCheckpoint.level.equals(Dungeon.levelName)) {
+		if (usesAvailable() <= 0 || isReached()) {
 			return;
 		}
 
-		Sample.INSTANCE.play(Assets.Sounds.DEWDROP, 1.5f);
+		Sample.INSTANCE.play(Assets.Sounds.DEWDROP, 1.6f);
 
 		Dungeon.reachedCheckpoint = new ReachedCheckpoint();
 		Dungeon.reachedCheckpoint.set(pos);
+
+		DungeonScene.updateAllCheckpointSprites();
 
 		doSave();
 	}
@@ -296,9 +304,15 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 				play(active);
 
 				if (cp.pos != -1) {
-					if (save != null) save.on = false;
-					save = emitter();
-					save.pour(ShaftParticle.FACTORY, 1f * (cp.usesAvailable() > 1 ? 1.5f : 1f));
+
+					if (cp.isReached()) {
+						if (save != null) save.on = false;
+						save = emitter();
+						save.pour(ShaftParticle.FACTORY, 1f * (cp.usesAvailable() > 1 ? 1.5f : 1f));
+					} else if (save != null) {
+						save.on = false;
+						save = null;
+					}
 
 					if (cp.healingsAvailable() > 0) {
 						if (heal != null) heal.on = false;

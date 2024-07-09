@@ -30,15 +30,19 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.watabou.utils.Bundle;
 
 //generic class for buffs which convert an enemy into an ally
 // There is a decent amount of logic that ties into this, which is why it has its own abstract class
 public abstract class AllyBuff extends Buff{
 
+	private boolean wasAlly;
+
 	@Override
 	public boolean attachTo(Char target) {
 		if (super.attachTo(target)){
-			target.alignment = Char.Alignment.ALLY;
+			wasAlly = target.alignment == Char.Alignment.ALLY;
+			target.alignment = wasAlly ? Char.Alignment.ENEMY : Char.Alignment.ALLY;
 			if (target.buff(PinCushion.class) != null){
 				target.buff(PinCushion.class).detach();
 			}
@@ -83,4 +87,17 @@ public abstract class AllyBuff extends Buff{
 		}
 	}
 
+	private static final String WAS_ALLY = "was_ally";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put(WAS_ALLY, wasAlly);
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		wasAlly = bundle.getBoolean(WAS_ALLY);
+	}
 }
