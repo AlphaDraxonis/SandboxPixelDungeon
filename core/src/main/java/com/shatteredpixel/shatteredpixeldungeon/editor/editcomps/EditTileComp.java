@@ -86,9 +86,6 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
             } else if (TileItem.isSignTerrainCell(item.terrainType())) {
 
                 Sign sign = Dungeon.level.signs.get(cell);
-                final Sign oldSign;
-                if (sign != null) oldSign = sign.getCopy();
-                else oldSign = null;
 
                 if (sign != null) {
                     signBurnOnRead = new StyledCheckBox(Messages.get(EditTileComp.class, "burn_sign_on_read"));
@@ -99,6 +96,13 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                 }
 
                 editSignText = new RedButton(Messages.get(EditTileComp.class, "edit_sign_title"), 9) {
+
+                    private Sign oldSign;
+
+                    {
+                        if (sign != null) oldSign = sign.getCopy();
+                        else oldSign = null;
+                    }
 
                     @Override
                     protected void onClick() {
@@ -125,6 +129,7 @@ public class EditTileComp extends DefaultEditComp<TileItem> {
                                         actionPart.redo();
                                         updateObj();
                                     }
+                                    oldSign = newSign.getCopy();
                                 }
                             }
                         });
