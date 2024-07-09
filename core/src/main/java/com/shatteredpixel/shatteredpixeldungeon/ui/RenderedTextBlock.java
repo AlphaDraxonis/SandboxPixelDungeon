@@ -49,7 +49,22 @@ public class RenderedTextBlock extends Component {
 	
 	private int hightlightColor = Window.TITLE_COLOR;
 	private boolean highlightingEnabled = true;
-	public static final String MARKER = " ";
+	public static final String MARKER = " ";//specifically yellow
+	public static final String COLOR_MARKERS = "           ";//U+2000 to U+200A
+	private int currentMarkingColor = -1;
+	private static final int[] COLORS = {
+			0xFF0000,//red  
+			0x00FF00,//green  
+			0xFFFF44,//yellow  
+			0xFF8800,//orange  
+			0x3399FF,//blue  
+			0x661F66,//purple  
+			0xFFCCDD,//pink  
+			0xBB0000,//dark red  
+			0xB3B3B3,//light gray  
+			0x000000,//black  
+			0x884306 //brown  
+	};
 
 	public static final int LEFT_ALIGN = 1;
 	public static final int CENTER_ALIGN = 2;
@@ -116,10 +131,14 @@ public class RenderedTextBlock extends Component {
 		clear();
 		words = new ArrayList<>();
 		boolean highlighting = false;
+		currentMarkingColor = -1;
 		for (String str : tokens){
-			
-			if (str.equals("_") && highlightingEnabled || str.equals(MARKER)){
+
+			int forceColorChange = COLOR_MARKERS.indexOf(str.charAt(0));
+			if (str.equals("_") && highlightingEnabled) {
 				highlighting = !highlighting;
+			} else if (forceColorChange != -1) {
+				currentMarkingColor = COLORS[forceColorChange] == currentMarkingColor ? -1 : COLORS[forceColorChange];
 			} else if (str.equals("\n")){
 				words.add(NEWLINE);
 			} else if (str.equals(" ")){
@@ -128,6 +147,7 @@ public class RenderedTextBlock extends Component {
 				RenderedText word = new RenderedText(str, size);
 				
 				if (highlighting) word.hardlight(hightlightColor);
+				else if (currentMarkingColor != -1) word.hardlight(currentMarkingColor);
 				else if (color != -1) word.hardlight(color);
 				word.scale.set(zoom);
 				

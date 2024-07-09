@@ -130,10 +130,17 @@ public class DesktopPlatformSupport extends PlatformSupport {
 			return basicFontGenerator;
 		}
 	}
-	
+
+	private static final String HIGHLIGHT_COLORS =
+			"(?<= )|(?= )|"  + "(?<= )|(?= )|"  + "(?<= )|(?= )|"
+					+ "(?<= )|(?= )|"  + "(?<= )|(?= )|"  + "(?<= )|(?= )|"
+					+ "(?<= )|(?= )|"  + "(?<= )|(?= )|"  + "(?<= )|(?= )|"
+					+ "(?<= )|(?= )|"  + "(?<= )|(?= )|";
+
 	//splits on newlines, underscores, and chinese/japaneses characters
 	private Pattern regularsplitter = Pattern.compile(
-			"(?<=\n)|(?=\n)|(?<=_)|(?=_)|(?<= )|(?= )|" +
+			"(?<=\n)|(?=\n)|(?<=_)|(?=_)|" +
+					HIGHLIGHT_COLORS +
 					"(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" +
 					"(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" +
 					"(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|" +
@@ -141,7 +148,8 @@ public class DesktopPlatformSupport extends PlatformSupport {
 	
 	//additionally splits on words, so that each word can be arranged individually
 	private Pattern regularsplitterMultiline = Pattern.compile(
-			"(?<= )|(?= )|(?<=\n)|(?=\n)|(?<=_)|(?=_)|(?<= )|(?= )|" +
+			"(?<= )|(?= )|(?<=\n)|(?=\n)|(?<=_)|(?=_)|" +
+					HIGHLIGHT_COLORS +
 					"(?<=\\\\)|(?=\\\\)|(?<=/)|(?=/)|" +
 					"(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" +
 					"(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" +
