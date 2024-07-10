@@ -419,53 +419,53 @@ public final class LuaClassGenerator {
             else if (returnType.isPrimitive()) returnTypeString = ".to" + returnType + "()";
             else returnTypeString = ".touserdata()";
 
-            boolean useInvoke = paramTypes.length >= 1;
+            boolean useInvoke = paramTypes.length >= 2;
 
             overrideMethods.append(") {\n");
             overrideMethods.append("        LuaValue luaScript = " + accessScript + ";\n");
             overrideMethods.append("        if (luaScript != null && !luaScript.get(\"").append(m.getName()).append("\").isnil()) {\n");
 
             overrideMethods.append("            try {\n");
-            overrideMethods.append("                MethodOverride");
-            if (paramTypes.length <= 10) overrideMethods.append('.');
-            if (returnType == void.class) overrideMethods.append("Void");
-            if (paramTypes.length <= 10) overrideMethods.append('A').append(paramTypes.length);
-            if (returnType != void.class) {
-                overrideMethods.append('<');
-                if (returnType.isPrimitive()) {
-                    if (returnType == int.class) overrideMethods.append("Integer");
-                    else if (returnType == char.class) overrideMethods.append("Character");
-                    else overrideMethods.append(Messages.capitalize(returnTypeName));
-                } else overrideMethods.append(returnTypeName);
-                overrideMethods.append('>');
-            }
+//            overrideMethods.append("                MethodOverride");
+//            if (paramTypes.length <= 10) overrideMethods.append('.');
+//            if (returnType == void.class) overrideMethods.append("Void");
+//            if (paramTypes.length <= 10) overrideMethods.append('A').append(paramTypes.length);
+//            if (returnType != void.class) {
+//                overrideMethods.append('<');
+//                if (returnType.isPrimitive()) {
+//                    if (returnType == int.class) overrideMethods.append("Integer");
+//                    else if (returnType == char.class) overrideMethods.append("Character");
+//                    else overrideMethods.append(Messages.capitalize(returnTypeName));
+//                } else overrideMethods.append(returnTypeName);
+//                overrideMethods.append('>');
+//            }
+//
+//            overrideMethods.append(" superMethod = (");
+//            for (int i = 0; i < paramTypes.length; i++) {
+//                overrideMethods.append('a').append(i);
+//                if (i + 1 < paramTypes.length) overrideMethods.append(", ");
+//            }
+//            overrideMethods.append(") -> super.");
+//            overrideMethods.append(m.getName()).append('(');
+//            for (int i = 0; i < paramTypes.length; i++) {
+//                if (paramTypes[i] != Object.class) {
+//                    overrideMethods.append('(');
+//                    overrideMethods.append(className(paramTypes[i]));
+//                    overrideMethods.append(')');
+//                    overrideMethods.append(' ');
+//                }
+//                overrideMethods.append('a').append(i);
+//                if (i + 1 < paramTypes.length) overrideMethods.append(", ");
+//            }
+//            overrideMethods.append(");\n");
 
-            overrideMethods.append(" superMethod = (");
-            for (int i = 0; i < paramTypes.length; i++) {
-                overrideMethods.append('a').append(i);
-                if (i + 1 < paramTypes.length) overrideMethods.append(", ");
-            }
-            overrideMethods.append(") -> super.");
-            overrideMethods.append(m.getName()).append('(');
-            for (int i = 0; i < paramTypes.length; i++) {
-                if (paramTypes[i] != Object.class) {
-                    overrideMethods.append('(');
-                    overrideMethods.append(className(paramTypes[i]));
-                    overrideMethods.append(')');
-                    overrideMethods.append(' ');
-                }
-                overrideMethods.append('a').append(i);
-                if (i + 1 < paramTypes.length) overrideMethods.append(", ");
-            }
-            overrideMethods.append(");\n");
-
-            overrideMethods.append("               ").append(returnString).append("luaScript.get(\"")
+            overrideMethods.append("                ").append(returnString).append("luaScript.get(\"")
                     .append(m.getName()).append("\").").append(useInvoke ? "invoke" : "call").append('(');
 
             if (useInvoke) overrideMethods.append("new LuaValue[]{");
             overrideMethods.append("CoerceJavaToLua.coerce(this), ");
-            overrideMethods.append("vars, ");
-            overrideMethods.append("CoerceJavaToLua.coerce(superMethod)");
+            overrideMethods.append("vars");
+//            overrideMethods.append(", CoerceJavaToLua.coerce(superMethod)");
             if (paramTypes.length > 0) overrideMethods.append(", ");
 
             for (int i = 0; i < paramTypes.length; i++) {
@@ -486,6 +486,7 @@ public final class LuaClassGenerator {
             overrideMethods.append(returnTypeString).append(";\n");
             if (!returnString.isEmpty())
                 overrideMethods.append("                return ret;\n");
+            else overrideMethods.append("                return;\n");
             overrideMethods.append("            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }\n");
             overrideMethods.append("        }\n");
 
@@ -501,6 +502,29 @@ public final class LuaClassGenerator {
             }
             overrideMethods.append(");\n");
 
+            overrideMethods.append("    }\n");
+
+
+            //for calling super
+            overrideMethods.append("\n    ").append("public").append(" ");
+            overrideMethods.append(returnTypeName).append(" ");
+            overrideMethods.append("super_").append(m.getName()).append("(");
+            for (int i = 0; i < paramTypes.length; i++) {
+                overrideMethods.append(className(paramTypes[i]));
+                overrideMethods.append(" arg").append(i);
+                if (i < paramTypes.length - 1)
+                    overrideMethods.append(", ");
+            }
+            overrideMethods.append(") {\n        ");
+
+            if (returnType != void.class) overrideMethods.append("return ");
+            overrideMethods.append("super.").append(m.getName()).append("(");
+            for (int i = 0; i < paramTypes.length; i++) {
+                overrideMethods.append("arg").append(i);
+                if (i < paramTypes.length - 1)
+                    overrideMethods.append(", ");
+            }
+            overrideMethods.append(");\n");
             overrideMethods.append("    }\n");
 
         }

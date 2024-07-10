@@ -128,7 +128,10 @@ public class LuaGlobals extends Globals {
 						}
 					}
 					String fullName = searchFullyQualifiedName(arg.checkjstring());
-					if (fullName != null) return newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2));
+					if (fullName != null) {
+						return CoerceJavaToLua.coerce(Reflection.newInstance(Reflection.forName(fullName)));
+//						return newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2));
+					}
 				}
 				return LuaValue.NIL;
 			}

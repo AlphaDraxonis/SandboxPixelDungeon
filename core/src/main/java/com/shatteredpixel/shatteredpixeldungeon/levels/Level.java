@@ -39,6 +39,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.other.CustomParticle;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.KeepProguard;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.BlacksmithQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.quests.WandmakerQuest;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomTileLoader;
@@ -1698,6 +1699,7 @@ public abstract class Level implements Bundlable {
 		discoverable[cell] = d;
 	}
 
+	@KeepProguard
 	public void setTerrain( int cell, int terrain ){//used for Lua
 		set( cell, terrain, this );
 	}

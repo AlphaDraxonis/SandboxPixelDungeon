@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.KeepProguard;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.Predicate;
 import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -250,6 +251,7 @@ public class Belongings implements Iterable<Item> {
 		return null;
 	}
 
+	@KeepProguard
 	@SuppressWarnings("unchecked")
 	public<T extends Item> T getExactItem( Class<T> itemClass ) {
 

@@ -1,31 +1,30 @@
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.GameObject;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DirectableAlly;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollTrickster;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
-import com.shatteredpixel.shatteredpixeldungeon.editor.util.BiPredicate;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SentryRoom;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.watabou.noosa.Game;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Function;
-import com.watabou.utils.IntFunction;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
+import com.watabou.utils.*;
+import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
 
@@ -90,11 +89,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("canAttack").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.canAttack((Char) a0);
-               boolean ret = luaScript.get("canAttack").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("canAttack").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.canAttack(arg0);
+    }
+
+    public boolean super_canAttack(Char arg0) {
         return super.canAttack(arg0);
     }
 
@@ -103,11 +105,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("heroShouldInteract").isnil()) {
             try {
-                MethodOverride.A0<Boolean> superMethod = () -> super.heroShouldInteract();
-               boolean ret = luaScript.get("heroShouldInteract").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                boolean ret = luaScript.get("heroShouldInteract").call(CoerceJavaToLua.coerce(this), vars).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.heroShouldInteract();
+    }
+
+    public boolean super_heroShouldInteract() {
         return super.heroShouldInteract();
     }
 
@@ -116,10 +121,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("throwItems").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.throwItems();
-               luaScript.get("throwItems").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("throwItems").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.throwItems();
+    }
+
+    public void super_throwItems() {
         super.throwItems();
     }
 
@@ -128,11 +137,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isTargeting").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.isTargeting((Char) a0);
-               boolean ret = luaScript.get("isTargeting").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("isTargeting").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.isTargeting(arg0);
+    }
+
+    public boolean super_isTargeting(Char arg0) {
         return super.isTargeting(arg0);
     }
 
@@ -141,10 +153,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onAdd").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.onAdd();
-               luaScript.get("onAdd").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("onAdd").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.onAdd();
+    }
+
+    public void super_onAdd() {
         super.onAdd();
     }
 
@@ -153,10 +169,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onOperateComplete").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.onOperateComplete();
-               luaScript.get("onOperateComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("onOperateComplete").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.onOperateComplete();
+    }
+
+    public void super_onOperateComplete() {
         super.onOperateComplete();
     }
 
@@ -165,11 +185,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("spawningWeight").isnil()) {
             try {
-                MethodOverride.A0<Float> superMethod = () -> super.spawningWeight();
-               float ret = luaScript.get("spawningWeight").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
+                float ret = luaScript.get("spawningWeight").call(CoerceJavaToLua.coerce(this), vars).tofloat();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.spawningWeight();
+    }
+
+    public float super_spawningWeight() {
         return super.spawningWeight();
     }
 
@@ -178,24 +201,15 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("setFlying").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.setFlying((boolean) a0);
-               luaScript.get("setFlying").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+                luaScript.get("setFlying").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.setFlying(arg0);
     }
 
-    @Override
-    public float stealth() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("stealth").isnil()) {
-            try {
-                MethodOverride.A0<Float> superMethod = () -> super.stealth();
-               float ret = luaScript.get("stealth").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.stealth();
+    public void super_setFlying(boolean arg0) {
+        super.setFlying(arg0);
     }
 
     @Override
@@ -203,12 +217,31 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("initRandoms").isnil()) {
             try {
-                MethodOverride.A0<GameObject.ModifyResult> superMethod = () -> super.initRandoms();
-               GameObject.ModifyResult ret = (GameObject.ModifyResult) luaScript.get("initRandoms").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                GameObject.ModifyResult ret = (GameObject.ModifyResult) luaScript.get("initRandoms").call(CoerceJavaToLua.coerce(this), vars).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.initRandoms();
+    }
+
+    public GameObject.ModifyResult super_initRandoms() {
+        return super.initRandoms();
+    }
+
+    @Override
+    public float stealth() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("stealth").isnil()) {
+            try {
+                float ret = luaScript.get("stealth").call(CoerceJavaToLua.coerce(this), vars).tofloat();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.stealth();
+    }
+
+    public float super_stealth() {
+        return super.stealth();
     }
 
     @Override
@@ -216,25 +249,31 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("cooldown").isnil()) {
             try {
-                MethodOverride.A0<Float> superMethod = () -> super.cooldown();
-               float ret = luaScript.get("cooldown").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
+                float ret = luaScript.get("cooldown").call(CoerceJavaToLua.coerce(this), vars).tofloat();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.cooldown();
     }
 
+    public float super_cooldown() {
+        return super.cooldown();
+    }
+
     @Override
-    public synchronized HashSet buffs(Class arg0) {
+    public synchronized LinkedHashSet buffs() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("buffs").isnil()) {
             try {
-                MethodOverride.A1<HashSet> superMethod = (a0) -> super.buffs((Class) a0);
-               HashSet ret = (HashSet) luaScript.get("buffs").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().touserdata();
+                LinkedHashSet ret = (LinkedHashSet) luaScript.get("buffs").call(CoerceJavaToLua.coerce(this), vars).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
-        return super.buffs(arg0);
+        return super.buffs();
+    }
+
+    public LinkedHashSet super_buffs() {
+        return super.buffs();
     }
 
     @Override
@@ -242,11 +281,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("id").isnil()) {
             try {
-                MethodOverride.A0<Integer> superMethod = () -> super.id();
-               int ret = luaScript.get("id").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                int ret = luaScript.get("id").call(CoerceJavaToLua.coerce(this), vars).toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.id();
+    }
+
+    public int super_id() {
         return super.id();
     }
 
@@ -255,10 +297,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onAttackComplete").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.onAttackComplete();
-               luaScript.get("onAttackComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("onAttackComplete").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.onAttackComplete();
+    }
+
+    public void super_onAttackComplete() {
         super.onAttackComplete();
     }
 
@@ -267,11 +313,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("shouldSpriteBeVisible").isnil()) {
             try {
-                MethodOverride.A0<Boolean> superMethod = () -> super.shouldSpriteBeVisible();
-               boolean ret = luaScript.get("shouldSpriteBeVisible").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                boolean ret = luaScript.get("shouldSpriteBeVisible").call(CoerceJavaToLua.coerce(this), vars).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.shouldSpriteBeVisible();
+    }
+
+    public boolean super_shouldSpriteBeVisible() {
         return super.shouldSpriteBeVisible();
     }
 
@@ -280,10 +329,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("timeToNow").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.timeToNow();
-               luaScript.get("timeToNow").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("timeToNow").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.timeToNow();
+    }
+
+    public void super_timeToNow() {
         super.timeToNow();
     }
 
@@ -292,10 +345,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("playZapAnim").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.playZapAnim((int) a0);
-               luaScript.get("playZapAnim").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+                luaScript.get("playZapAnim").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.playZapAnim(arg0);
+    }
+
+    public void super_playZapAnim(int arg0) {
         super.playZapAnim(arg0);
     }
 
@@ -304,11 +361,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("chooseEnemyImpl").isnil()) {
             try {
-                MethodOverride.A0<Char> superMethod = () -> super.chooseEnemyImpl();
-               Char ret = (Char) luaScript.get("chooseEnemyImpl").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                Char ret = (Char) luaScript.get("chooseEnemyImpl").call(CoerceJavaToLua.coerce(this), vars).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.chooseEnemyImpl();
+    }
+
+    public Char super_chooseEnemyImpl() {
         return super.chooseEnemyImpl();
     }
 
@@ -317,11 +377,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("lootChance").isnil()) {
             try {
-                MethodOverride.A0<Float> superMethod = () -> super.lootChance();
-               float ret = luaScript.get("lootChance").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
+                float ret = luaScript.get("lootChance").call(CoerceJavaToLua.coerce(this), vars).tofloat();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.lootChance();
+    }
+
+    public float super_lootChance() {
         return super.lootChance();
     }
 
@@ -330,10 +393,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("zap").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.zap();
-               luaScript.get("zap").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("zap").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.zap();
+    }
+
+    public void super_zap() {
         super.zap();
     }
 
@@ -342,10 +409,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("destroy").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.destroy();
-               luaScript.get("destroy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("destroy").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.destroy();
+    }
+
+    public void super_destroy() {
         super.destroy();
     }
 
@@ -354,11 +425,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("defenseVerb").isnil()) {
             try {
-                MethodOverride.A0<String> superMethod = () -> super.defenseVerb();
-               String ret = luaScript.get("defenseVerb").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                String ret = luaScript.get("defenseVerb").call(CoerceJavaToLua.coerce(this), vars).tojstring();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.defenseVerb();
+    }
+
+    public String super_defenseVerb() {
         return super.defenseVerb();
     }
 
@@ -367,11 +441,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("doOnAllGameObjects").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.doOnAllGameObjects((Function) a0);
-               boolean ret = luaScript.get("doOnAllGameObjects").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("doOnAllGameObjects").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.doOnAllGameObjects(arg0);
+    }
+
+    public boolean super_doOnAllGameObjects(Function arg0) {
         return super.doOnAllGameObjects(arg0);
     }
 
@@ -380,11 +457,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("reset").isnil()) {
             try {
-                MethodOverride.A0<Boolean> superMethod = () -> super.reset();
-               boolean ret = luaScript.get("reset").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                boolean ret = luaScript.get("reset").call(CoerceJavaToLua.coerce(this), vars).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.reset();
+    }
+
+    public boolean super_reset() {
         return super.reset();
     }
 
@@ -393,10 +473,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("spendConstant").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.spendConstant((float) a0);
-               luaScript.get("spendConstant").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+                luaScript.get("spendConstant").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.spendConstant(arg0);
+    }
+
+    public void super_spendConstant(float arg0) {
         super.spendConstant(arg0);
     }
 
@@ -405,24 +489,15 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("drRoll").isnil()) {
             try {
-                MethodOverride.A0<Integer> superMethod = () -> super.drRoll();
-               int ret = luaScript.get("drRoll").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                int ret = luaScript.get("drRoll").call(CoerceJavaToLua.coerce(this), vars).toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.drRoll();
     }
 
-    @Override
-    protected void tellDialog() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("tellDialog").isnil()) {
-            try {
-                MethodOverride.VoidA0 superMethod = () -> super.tellDialog();
-               luaScript.get("tellDialog").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.tellDialog();
+    public int super_drRoll() {
+        return super.drRoll();
     }
 
     @Override
@@ -430,12 +505,31 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("randomDestination").isnil()) {
             try {
-                MethodOverride.A0<Integer> superMethod = () -> super.randomDestination();
-               int ret = luaScript.get("randomDestination").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                int ret = luaScript.get("randomDestination").call(CoerceJavaToLua.coerce(this), vars).toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.randomDestination();
+    }
+
+    public int super_randomDestination() {
+        return super.randomDestination();
+    }
+
+    @Override
+    protected void tellDialog() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("tellDialog").isnil()) {
+            try {
+                luaScript.get("tellDialog").call(CoerceJavaToLua.coerce(this), vars);
+                return;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.tellDialog();
+    }
+
+    public void super_tellDialog() {
+        super.tellDialog();
     }
 
     @Override
@@ -443,11 +537,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isFlying").isnil()) {
             try {
-                MethodOverride.A0<Boolean> superMethod = () -> super.isFlying();
-               boolean ret = luaScript.get("isFlying").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                boolean ret = luaScript.get("isFlying").call(CoerceJavaToLua.coerce(this), vars).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.isFlying();
+    }
+
+    public boolean super_isFlying() {
         return super.isFlying();
     }
 
@@ -456,11 +553,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("modPassable").isnil()) {
             try {
-                MethodOverride.A1<boolean[]> superMethod = (a0) -> super.modPassable((boolean[]) a0);
-               boolean[] ret = (boolean[]) luaScript.get("modPassable").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().touserdata();
+                boolean[] ret = (boolean[]) luaScript.get("modPassable").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.modPassable(arg0);
+    }
+
+    public boolean[] super_modPassable(boolean[] arg0) {
         return super.modPassable(arg0);
     }
 
@@ -469,24 +569,15 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("damage").isnil()) {
             try {
-                MethodOverride.VoidA2 superMethod = (a0, a1) -> super.damage((int) a0, a1);
-               luaScript.get("damage").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
+                luaScript.get("damage").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.damage(arg0, arg1);
     }
 
-    @Override
-    protected boolean getFurther(int arg0) {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("getFurther").isnil()) {
-            try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.getFurther((int) a0);
-               boolean ret = luaScript.get("getFurther").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.getFurther(arg0);
+    public void super_damage(int arg0, Object arg1) {
+        super.damage(arg0, arg1);
     }
 
     @Override
@@ -494,11 +585,31 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("restoreEnemy").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.restoreEnemy();
-               luaScript.get("restoreEnemy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("restoreEnemy").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.restoreEnemy();
+    }
+
+    public void super_restoreEnemy() {
+        super.restoreEnemy();
+    }
+
+    @Override
+    protected boolean getFurther(int arg0) {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("getFurther").isnil()) {
+            try {
+                boolean ret = luaScript.get("getFurther").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0)).toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.getFurther(arg0);
+    }
+
+    public boolean super_getFurther(int arg0) {
+        return super.getFurther(arg0);
     }
 
     @Override
@@ -506,10 +617,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onZapComplete").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.onZapComplete();
-               luaScript.get("onZapComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("onZapComplete").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.onZapComplete();
+    }
+
+    public void super_onZapComplete() {
         super.onZapComplete();
     }
 
@@ -518,11 +633,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("cellIsPathable").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.cellIsPathable((int) a0);
-               boolean ret = luaScript.get("cellIsPathable").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("cellIsPathable").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.cellIsPathable(arg0);
+    }
+
+    public boolean super_cellIsPathable(int arg0) {
         return super.cellIsPathable(arg0);
     }
 
@@ -531,11 +649,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("convertLootToRandomItemData").isnil()) {
             try {
-                MethodOverride.A0<ItemsWithChanceDistrComp.RandomItemData> superMethod = () -> super.convertLootToRandomItemData();
-               ItemsWithChanceDistrComp.RandomItemData ret = (ItemsWithChanceDistrComp.RandomItemData) luaScript.get("convertLootToRandomItemData").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                ItemsWithChanceDistrComp.RandomItemData ret = (ItemsWithChanceDistrComp.RandomItemData) luaScript.get("convertLootToRandomItemData").call(CoerceJavaToLua.coerce(this), vars).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.convertLootToRandomItemData();
+    }
+
+    public ItemsWithChanceDistrComp.RandomItemData super_convertLootToRandomItemData() {
         return super.convertLootToRandomItemData();
     }
 
@@ -544,11 +665,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("attackSkill").isnil()) {
             try {
-                MethodOverride.A1<Integer> superMethod = (a0) -> super.attackSkill((Char) a0);
-               int ret = luaScript.get("attackSkill").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toint();
+                int ret = luaScript.get("attackSkill").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.attackSkill(arg0);
+    }
+
+    public int super_attackSkill(Char arg0) {
         return super.attackSkill(arg0);
     }
 
@@ -557,11 +681,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("attack").isnil()) {
             try {
-                MethodOverride.A4<Boolean> superMethod = (a0, a1, a2, a3) -> super.attack((Char) a0, (float) a1, (float) a2, (float) a3);
-               boolean ret = luaScript.get("attack").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1), LuaValue.valueOf(arg2), LuaValue.valueOf(arg3)}).arg1().toboolean();
+                boolean ret = luaScript.get("attack").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1), LuaValue.valueOf(arg2), LuaValue.valueOf(arg3)}).arg1().toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.attack(arg0, arg1, arg2, arg3);
+    }
+
+    public boolean super_attack(Char arg0, float arg1, float arg2, float arg3) {
         return super.attack(arg0, arg1, arg2, arg3);
     }
 
@@ -570,11 +697,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("sprite").isnil()) {
             try {
-                MethodOverride.A0<CharSprite> superMethod = () -> super.sprite();
-               CharSprite ret = (CharSprite) luaScript.get("sprite").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                CharSprite ret = (CharSprite) luaScript.get("sprite").call(CoerceJavaToLua.coerce(this), vars).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.sprite();
+    }
+
+    public CharSprite super_sprite() {
         return super.sprite();
     }
 
@@ -583,11 +713,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("createLoot").isnil()) {
             try {
-                MethodOverride.A0<Item> superMethod = () -> super.createLoot();
-               Item ret = (Item) luaScript.get("createLoot").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                Item ret = (Item) luaScript.get("createLoot").call(CoerceJavaToLua.coerce(this), vars).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.createLoot();
+    }
+
+    public Item super_createLoot() {
         return super.createLoot();
     }
 
@@ -596,10 +729,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("updateSpriteVisibility").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.updateSpriteVisibility();
-               luaScript.get("updateSpriteVisibility").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("updateSpriteVisibility").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.updateSpriteVisibility();
+    }
+
+    public void super_updateSpriteVisibility() {
         super.updateSpriteVisibility();
     }
 
@@ -608,12 +745,31 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("getCloser").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.getCloser((int) a0);
-               boolean ret = luaScript.get("getCloser").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("getCloser").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.getCloser(arg0);
+    }
+
+    public boolean super_getCloser(int arg0) {
+        return super.getCloser(arg0);
+    }
+
+    @Override
+    public String getCustomName() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("getCustomName").isnil()) {
+            try {
+                String ret = luaScript.get("getCustomName").call(CoerceJavaToLua.coerce(this), vars).tojstring();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.getCustomName();
+    }
+
+    public String super_getCustomName() {
+        return super.getCustomName();
     }
 
     @Override
@@ -621,10 +777,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("setPlayerAlignment").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.setPlayerAlignment((int) a0);
-               luaScript.get("setPlayerAlignment").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+                luaScript.get("setPlayerAlignment").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.setPlayerAlignment(arg0);
+    }
+
+    public void super_setPlayerAlignment(int arg0) {
         super.setPlayerAlignment(arg0);
     }
 
@@ -633,25 +793,15 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("moveSprite").isnil()) {
             try {
-                MethodOverride.A2<Boolean> superMethod = (a0, a1) -> super.moveSprite((int) a0, (int) a1);
-               boolean ret = luaScript.get("moveSprite").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0), LuaValue.valueOf(arg1)}).arg1().toboolean();
+                boolean ret = luaScript.get("moveSprite").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0), LuaValue.valueOf(arg1)}).arg1().toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.moveSprite(arg0, arg1);
     }
 
-    @Override
-    public String getCustomName() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("getCustomName").isnil()) {
-            try {
-                MethodOverride.A0<String> superMethod = () -> super.getCustomName();
-               String ret = luaScript.get("getCustomName").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.getCustomName();
+    public boolean super_moveSprite(int arg0, int arg1) {
+        return super.moveSprite(arg0, arg1);
     }
 
     @Override
@@ -659,11 +809,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("sparseArrayKey").isnil()) {
             try {
-                MethodOverride.A0<Integer> superMethod = () -> super.sparseArrayKey();
-               int ret = luaScript.get("sparseArrayKey").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                int ret = luaScript.get("sparseArrayKey").call(CoerceJavaToLua.coerce(this), vars).toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.sparseArrayKey();
+    }
+
+    public int super_sparseArrayKey() {
         return super.sparseArrayKey();
     }
 
@@ -672,11 +825,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("getCustomDesc").isnil()) {
             try {
-                MethodOverride.A0<String> superMethod = () -> super.getCustomDesc();
-               String ret = luaScript.get("getCustomDesc").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                String ret = luaScript.get("getCustomDesc").call(CoerceJavaToLua.coerce(this), vars).tojstring();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.getCustomDesc();
+    }
+
+    public String super_getCustomDesc() {
         return super.getCustomDesc();
     }
 
@@ -685,11 +841,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("getDirectableAlly").isnil()) {
             try {
-                MethodOverride.A0<DirectableAlly> superMethod = () -> super.getDirectableAlly();
-               DirectableAlly ret = (DirectableAlly) luaScript.get("getDirectableAlly").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                DirectableAlly ret = (DirectableAlly) luaScript.get("getDirectableAlly").call(CoerceJavaToLua.coerce(this), vars).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.getDirectableAlly();
+    }
+
+    public DirectableAlly super_getDirectableAlly() {
         return super.getDirectableAlly();
     }
 
@@ -698,10 +857,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("diactivate").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.diactivate();
-               luaScript.get("diactivate").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("diactivate").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.diactivate();
+    }
+
+    public void super_diactivate() {
         super.diactivate();
     }
 
@@ -710,10 +873,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("aggro").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.aggro((Char) a0);
-               luaScript.get("aggro").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+                luaScript.get("aggro").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.aggro(arg0);
+    }
+
+    public void super_aggro(Char arg0) {
         super.aggro(arg0);
     }
 
@@ -722,10 +889,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onMotionComplete").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.onMotionComplete();
-               luaScript.get("onMotionComplete").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("onMotionComplete").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.onMotionComplete();
+    }
+
+    public void super_onMotionComplete() {
         super.onMotionComplete();
     }
 
@@ -734,10 +905,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("updateSpriteState").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.updateSpriteState();
-               luaScript.get("updateSpriteState").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("updateSpriteState").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.updateSpriteState();
+    }
+
+    public void super_updateSpriteState() {
         super.updateSpriteState();
     }
 
@@ -746,10 +921,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onRemove").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.onRemove();
-               luaScript.get("onRemove").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("onRemove").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.onRemove();
+    }
+
+    public void super_onRemove() {
         super.onRemove();
     }
 
@@ -758,11 +937,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("buff").isnil()) {
             try {
-                MethodOverride.A1<Buff> superMethod = (a0) -> super.buff((Class) a0);
-               Buff ret = (Buff) luaScript.get("buff").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().touserdata();
+                Buff ret = (Buff) luaScript.get("buff").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.buff(arg0);
+    }
+
+    public Buff super_buff(Class arg0) {
         return super.buff(arg0);
     }
 
@@ -771,10 +953,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("die").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.die(a0);
-               luaScript.get("die").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+                luaScript.get("die").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.die(arg0);
+    }
+
+    public void super_die(Object arg0) {
         super.die(arg0);
     }
 
@@ -783,11 +969,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("blockSound").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.blockSound((float) a0);
-               boolean ret = luaScript.get("blockSound").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("blockSound").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.blockSound(arg0);
+    }
+
+    public boolean super_blockSound(float arg0) {
         return super.blockSound(arg0);
     }
 
@@ -796,25 +985,15 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isCharmedBy").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.isCharmedBy((Char) a0);
-               boolean ret = luaScript.get("isCharmedBy").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("isCharmedBy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         return super.isCharmedBy(arg0);
     }
 
-    @Override
-    public List createActualLoot() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("createActualLoot").isnil()) {
-            try {
-                MethodOverride.A0<List> superMethod = () -> super.createActualLoot();
-               List ret = (List) luaScript.get("createActualLoot").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.createActualLoot();
+    public boolean super_isCharmedBy(Char arg0) {
+        return super.isCharmedBy(arg0);
     }
 
     @Override
@@ -822,11 +1001,31 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("setCustomName").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.setCustomName((String) a0);
-               luaScript.get("setCustomName").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+                luaScript.get("setCustomName").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
         super.setCustomName(arg0);
+    }
+
+    public void super_setCustomName(String arg0) {
+        super.setCustomName(arg0);
+    }
+
+    @Override
+    public List createActualLoot() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("createActualLoot").isnil()) {
+            try {
+                List ret = (List) luaScript.get("createActualLoot").call(CoerceJavaToLua.coerce(this), vars).touserdata();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.createActualLoot();
+    }
+
+    public List super_createActualLoot() {
+        return super.createActualLoot();
     }
 
     @Override
@@ -834,10 +1033,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("clearTime").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.clearTime();
-               luaScript.get("clearTime").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("clearTime").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.clearTime();
+    }
+
+    public void super_clearTime() {
         super.clearTime();
     }
 
@@ -846,10 +1049,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("doDropLoot").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.doDropLoot((Item) a0);
-               luaScript.get("doDropLoot").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+                luaScript.get("doDropLoot").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.doDropLoot(arg0);
+    }
+
+    public void super_doDropLoot(Item arg0) {
         super.doDropLoot(arg0);
     }
 
@@ -858,11 +1065,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isActive").isnil()) {
             try {
-                MethodOverride.A0<Boolean> superMethod = () -> super.isActive();
-               boolean ret = luaScript.get("isActive").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                boolean ret = luaScript.get("isActive").call(CoerceJavaToLua.coerce(this), vars).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.isActive();
+    }
+
+    public boolean super_isActive() {
         return super.isActive();
     }
 
@@ -871,11 +1081,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("act").isnil()) {
             try {
-                MethodOverride.A0<Boolean> superMethod = () -> super.act();
-               boolean ret = luaScript.get("act").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                boolean ret = luaScript.get("act").call(CoerceJavaToLua.coerce(this), vars).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.act();
+    }
+
+    public boolean super_act() {
         return super.act();
     }
 
@@ -884,10 +1097,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("onMapSizeChange").isnil()) {
             try {
-                MethodOverride.VoidA2 superMethod = (a0, a1) -> super.onMapSizeChange((IntFunction) a0, (BiPredicate) a1);
-               luaScript.get("onMapSizeChange").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
+                luaScript.get("onMapSizeChange").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.onMapSizeChange(arg0, arg1);
+    }
+
+    public void super_onMapSizeChange(IntFunction arg0, BiPredicate arg1) {
         super.onMapSizeChange(arg0, arg1);
     }
 
@@ -896,10 +1113,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("hitSound").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.hitSound((float) a0);
-               luaScript.get("hitSound").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+                luaScript.get("hitSound").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.hitSound(arg0);
+    }
+
+    public void super_hitSound(float arg0) {
         super.hitSound(arg0);
     }
 
@@ -908,10 +1129,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("spendToWhole").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.spendToWhole();
-               luaScript.get("spendToWhole").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("spendToWhole").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.spendToWhole();
+    }
+
+    public void super_spendToWhole() {
         super.spendToWhole();
     }
 
@@ -920,10 +1145,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("restoreCurrentZone").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.restoreCurrentZone((Level) a0);
-               luaScript.get("restoreCurrentZone").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+                luaScript.get("restoreCurrentZone").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.restoreCurrentZone(arg0);
+    }
+
+    public void super_restoreCurrentZone(Level arg0) {
         super.restoreCurrentZone(arg0);
     }
 
@@ -932,11 +1161,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("info").isnil()) {
             try {
-                MethodOverride.A0<String> superMethod = () -> super.info();
-               String ret = luaScript.get("info").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                String ret = luaScript.get("info").call(CoerceJavaToLua.coerce(this), vars).tojstring();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.info();
+    }
+
+    public String super_info() {
         return super.info();
     }
 
@@ -945,11 +1177,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("add").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.add((Buff) a0);
-               boolean ret = luaScript.get("add").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("add").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.add(arg0);
+    }
+
+    public boolean super_add(Buff arg0) {
         return super.add(arg0);
     }
 
@@ -958,11 +1193,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("canInteract").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.canInteract((Char) a0);
-               boolean ret = luaScript.get("canInteract").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("canInteract").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.canInteract(arg0);
+    }
+
+    public boolean super_canInteract(Char arg0) {
         return super.canInteract(arg0);
     }
 
@@ -971,10 +1209,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("increaseLimitedDropCount").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.increaseLimitedDropCount((Item) a0);
-               luaScript.get("increaseLimitedDropCount").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+                luaScript.get("increaseLimitedDropCount").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.increaseLimitedDropCount(arg0);
+    }
+
+    public void super_increaseLimitedDropCount(Item arg0) {
         super.increaseLimitedDropCount(arg0);
     }
 
@@ -983,11 +1225,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("resist").isnil()) {
             try {
-                MethodOverride.A1<Float> superMethod = (a0) -> super.resist((Class) a0);
-               float ret = luaScript.get("resist").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().tofloat();
+                float ret = luaScript.get("resist").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).tofloat();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.resist(arg0);
+    }
+
+    public float super_resist(Class arg0) {
         return super.resist(arg0);
     }
 
@@ -996,11 +1241,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("attackProc").isnil()) {
             try {
-                MethodOverride.A2<Integer> superMethod = (a0, a1) -> super.attackProc((Char) a0, (int) a1);
-               int ret = luaScript.get("attackProc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
+                int ret = luaScript.get("attackProc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.attackProc(arg0, arg1);
+    }
+
+    public int super_attackProc(Char arg0, int arg1) {
         return super.attackProc(arg0, arg1);
     }
 
@@ -1009,11 +1257,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isAlive").isnil()) {
             try {
-                MethodOverride.A0<Boolean> superMethod = () -> super.isAlive();
-               boolean ret = luaScript.get("isAlive").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                boolean ret = luaScript.get("isAlive").call(CoerceJavaToLua.coerce(this), vars).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.isAlive();
+    }
+
+    public boolean super_isAlive() {
         return super.isAlive();
     }
 
@@ -1022,10 +1273,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("setCustomDesc").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.setCustomDesc((String) a0);
-               luaScript.get("setCustomDesc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+                luaScript.get("setCustomDesc").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.setCustomDesc(arg0);
+    }
+
+    public void super_setCustomDesc(String arg0) {
         super.setCustomDesc(arg0);
     }
 
@@ -1034,10 +1289,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("yell").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.yell((String) a0);
-               luaScript.get("yell").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+                luaScript.get("yell").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.yell(arg0);
+    }
+
+    public void super_yell(String arg0) {
         super.yell(arg0);
     }
 
@@ -1046,11 +1305,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("name").isnil()) {
             try {
-                MethodOverride.A0<String> superMethod = () -> super.name();
-               String ret = luaScript.get("name").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                String ret = luaScript.get("name").call(CoerceJavaToLua.coerce(this), vars).tojstring();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.name();
+    }
+
+    public String super_name() {
         return super.name();
     }
 
@@ -1059,11 +1321,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("damageRoll").isnil()) {
             try {
-                MethodOverride.A0<Integer> superMethod = () -> super.damageRoll();
-               int ret = luaScript.get("damageRoll").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                int ret = luaScript.get("damageRoll").call(CoerceJavaToLua.coerce(this), vars).toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.damageRoll();
+    }
+
+    public int super_damageRoll() {
         return super.damageRoll();
     }
 
@@ -1072,10 +1337,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("postpone").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.postpone((float) a0);
-               luaScript.get("postpone").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+                luaScript.get("postpone").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.postpone(arg0);
+    }
+
+    public void super_postpone(float arg0) {
         super.postpone(arg0);
     }
 
@@ -1084,11 +1353,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isImmune").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.isImmune((Class) a0);
-               boolean ret = luaScript.get("isImmune").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("isImmune").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.isImmune(arg0);
+    }
+
+    public boolean super_isImmune(Class arg0) {
         return super.isImmune(arg0);
     }
 
@@ -1097,10 +1369,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("next").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.next();
-               luaScript.get("next").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("next").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.next();
+    }
+
+    public void super_next() {
         super.next();
     }
 
@@ -1109,10 +1385,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("setDurationForFlavourBuff").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.setDurationForFlavourBuff((int) a0);
-               luaScript.get("setDurationForFlavourBuff").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+                luaScript.get("setDurationForFlavourBuff").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.setDurationForFlavourBuff(arg0);
+    }
+
+    public void super_setDurationForFlavourBuff(int arg0) {
         super.setDurationForFlavourBuff(arg0);
     }
 
@@ -1121,11 +1401,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("distance").isnil()) {
             try {
-                MethodOverride.A1<Integer> superMethod = (a0) -> super.distance((Char) a0);
-               int ret = luaScript.get("distance").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toint();
+                int ret = luaScript.get("distance").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.distance(arg0);
+    }
+
+    public int super_distance(Char arg0) {
         return super.distance(arg0);
     }
 
@@ -1134,11 +1417,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("description").isnil()) {
             try {
-                MethodOverride.A0<String> superMethod = () -> super.description();
-               String ret = luaScript.get("description").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tojstring();
+                String ret = luaScript.get("description").call(CoerceJavaToLua.coerce(this), vars).tojstring();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.description();
+    }
+
+    public String super_description() {
         return super.description();
     }
 
@@ -1147,11 +1433,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("interact").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.interact((Char) a0);
-               boolean ret = luaScript.get("interact").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("interact").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.interact(arg0);
+    }
+
+    public boolean super_interact(Char arg0) {
         return super.interact(arg0);
     }
 
@@ -1160,11 +1449,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("attackDelay").isnil()) {
             try {
-                MethodOverride.A0<Float> superMethod = () -> super.attackDelay();
-               float ret = luaScript.get("attackDelay").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
+                float ret = luaScript.get("attackDelay").call(CoerceJavaToLua.coerce(this), vars).tofloat();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.attackDelay();
+    }
+
+    public float super_attackDelay() {
         return super.attackDelay();
     }
 
@@ -1173,11 +1465,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("remove").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.remove((Buff) a0);
-               boolean ret = luaScript.get("remove").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("remove").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.remove(arg0);
+    }
+
+    public boolean super_remove(Buff arg0) {
         return super.remove(arg0);
     }
 
@@ -1186,11 +1481,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("speed").isnil()) {
             try {
-                MethodOverride.A0<Float> superMethod = () -> super.speed();
-               float ret = luaScript.get("speed").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).tofloat();
+                float ret = luaScript.get("speed").call(CoerceJavaToLua.coerce(this), vars).tofloat();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.speed();
+    }
+
+    public float super_speed() {
         return super.speed();
     }
 
@@ -1199,11 +1497,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("surprisedBy").isnil()) {
             try {
-                MethodOverride.A2<Boolean> superMethod = (a0, a1) -> super.surprisedBy((Char) a0, (boolean) a1);
-               boolean ret = luaScript.get("surprisedBy").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toboolean();
+                boolean ret = luaScript.get("surprisedBy").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.surprisedBy(arg0, arg1);
+    }
+
+    public boolean super_surprisedBy(Char arg0, boolean arg1) {
         return super.surprisedBy(arg0, arg1);
     }
 
@@ -1212,10 +1513,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("spend").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.spend((float) a0);
-               luaScript.get("spend").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+                luaScript.get("spend").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.spend(arg0);
+    }
+
+    public void super_spend(float arg0) {
         super.spend(arg0);
     }
 
@@ -1224,10 +1529,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("clearEnemy").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.clearEnemy();
-               luaScript.get("clearEnemy").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("clearEnemy").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.clearEnemy();
+    }
+
+    public void super_clearEnemy() {
         super.clearEnemy();
     }
 
@@ -1236,11 +1545,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("defenseSkill").isnil()) {
             try {
-                MethodOverride.A1<Integer> superMethod = (a0) -> super.defenseSkill((Char) a0);
-               int ret = luaScript.get("defenseSkill").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toint();
+                int ret = luaScript.get("defenseSkill").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.defenseSkill(arg0);
+    }
+
+    public int super_defenseSkill(Char arg0) {
         return super.defenseSkill(arg0);
     }
 
@@ -1249,10 +1561,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("notice").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.notice();
-               luaScript.get("notice").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("notice").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.notice();
+    }
+
+    public void super_notice() {
         super.notice();
     }
 
@@ -1261,10 +1577,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("move").isnil()) {
             try {
-                MethodOverride.VoidA2 superMethod = (a0, a1) -> super.move((int) a0, (boolean) a1);
-               luaScript.get("move").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0), LuaValue.valueOf(arg1)}).arg1();
+                luaScript.get("move").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0), LuaValue.valueOf(arg1)}).arg1();
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.move(arg0, arg1);
+    }
+
+    public void super_move(int arg0, boolean arg1) {
         super.move(arg0, arg1);
     }
 
@@ -1273,10 +1593,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("playBossMusic").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.playBossMusic((String) a0);
-               luaScript.get("playBossMusic").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1();
+                luaScript.get("playBossMusic").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.playBossMusic(arg0);
+    }
+
+    public void super_playBossMusic(String arg0) {
         super.playBossMusic(arg0);
     }
 
@@ -1285,10 +1609,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("dieOnLand").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.dieOnLand();
-               luaScript.get("dieOnLand").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("dieOnLand").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.dieOnLand();
+    }
+
+    public void super_dieOnLand() {
         super.dieOnLand();
     }
 
@@ -1297,11 +1625,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("isInvulnerable").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.isInvulnerable((Class) a0);
-               boolean ret = luaScript.get("isInvulnerable").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("isInvulnerable").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.isInvulnerable(arg0);
+    }
+
+    public boolean super_isInvulnerable(Class arg0) {
         return super.isInvulnerable(arg0);
     }
 
@@ -1310,10 +1641,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("addBossProperty").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.addBossProperty();
-               luaScript.get("addBossProperty").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("addBossProperty").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.addBossProperty();
+    }
+
+    public void super_addBossProperty() {
         super.addBossProperty();
     }
 
@@ -1322,10 +1657,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("beckon").isnil()) {
             try {
-                MethodOverride.VoidA1 superMethod = (a0) -> super.beckon((int) a0);
-               luaScript.get("beckon").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), LuaValue.valueOf(arg0)}).arg1();
+                luaScript.get("beckon").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.beckon(arg0);
+    }
+
+    public void super_beckon(int arg0) {
         super.beckon(arg0);
     }
 
@@ -1334,11 +1673,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("areStatsEqual").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.areStatsEqual((Mob) a0);
-               boolean ret = luaScript.get("areStatsEqual").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("areStatsEqual").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.areStatsEqual(arg0);
+    }
+
+    public boolean super_areStatsEqual(Mob arg0) {
         return super.areStatsEqual(arg0);
     }
 
@@ -1347,11 +1689,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("shielding").isnil()) {
             try {
-                MethodOverride.A0<Integer> superMethod = () -> super.shielding();
-               int ret = luaScript.get("shielding").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toint();
+                int ret = luaScript.get("shielding").call(CoerceJavaToLua.coerce(this), vars).toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.shielding();
+    }
+
+    public int super_shielding() {
         return super.shielding();
     }
 
@@ -1360,11 +1705,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("canSurpriseAttack").isnil()) {
             try {
-                MethodOverride.A0<Boolean> superMethod = () -> super.canSurpriseAttack();
-               boolean ret = luaScript.get("canSurpriseAttack").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                boolean ret = luaScript.get("canSurpriseAttack").call(CoerceJavaToLua.coerce(this), vars).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.canSurpriseAttack();
+    }
+
+    public boolean super_canSurpriseAttack() {
         return super.canSurpriseAttack();
     }
 
@@ -1373,10 +1721,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("rollToDropLoot").isnil()) {
             try {
-                MethodOverride.VoidA0 superMethod = () -> super.rollToDropLoot();
-               luaScript.get("rollToDropLoot").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod));
+                luaScript.get("rollToDropLoot").call(CoerceJavaToLua.coerce(this), vars);
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        super.rollToDropLoot();
+    }
+
+    public void super_rollToDropLoot() {
         super.rollToDropLoot();
     }
 
@@ -1385,11 +1737,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("defenseProc").isnil()) {
             try {
-                MethodOverride.A2<Integer> superMethod = (a0, a1) -> super.defenseProc((Char) a0, (int) a1);
-               int ret = luaScript.get("defenseProc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
+                int ret = luaScript.get("defenseProc").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.defenseProc(arg0, arg1);
+    }
+
+    public int super_defenseProc(Char arg0, int arg1) {
         return super.defenseProc(arg0, arg1);
     }
 
@@ -1398,11 +1753,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("avoidsHazards").isnil()) {
             try {
-                MethodOverride.A0<Boolean> superMethod = () -> super.avoidsHazards();
-               boolean ret = luaScript.get("avoidsHazards").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).toboolean();
+                boolean ret = luaScript.get("avoidsHazards").call(CoerceJavaToLua.coerce(this), vars).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.avoidsHazards();
+    }
+
+    public boolean super_avoidsHazards() {
         return super.avoidsHazards();
     }
 
@@ -1411,11 +1769,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("doAttack").isnil()) {
             try {
-                MethodOverride.A1<Boolean> superMethod = (a0) -> super.doAttack((Char) a0);
-               boolean ret = luaScript.get("doAttack").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod), CoerceJavaToLua.coerce(arg0)}).arg1().toboolean();
+                boolean ret = luaScript.get("doAttack").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toboolean();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.doAttack(arg0);
+    }
+
+    public boolean super_doAttack(Char arg0) {
         return super.doAttack(arg0);
     }
 
@@ -1424,11 +1785,14 @@ public class GnollTrickster_lua extends GnollTrickster implements LuaMob {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("properties").isnil()) {
             try {
-                MethodOverride.A0<HashSet> superMethod = () -> super.properties();
-               HashSet ret = (HashSet) luaScript.get("properties").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(superMethod)).touserdata();
+                HashSet ret = (HashSet) luaScript.get("properties").call(CoerceJavaToLua.coerce(this), vars).touserdata();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
+        return super.properties();
+    }
+
+    public HashSet super_properties() {
         return super.properties();
     }
 }

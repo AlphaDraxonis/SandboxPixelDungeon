@@ -46,11 +46,11 @@ public class LuaTemplates {
 
 	static {
 		KILL_HERO_ON_DIE = new LuaScript(Mob.class, "When this mob dies, the hero also dies.", "");
-		KILL_HERO_ON_DIE.code = "vars = {} static = {} function die(this, vars, super, cause) hero:die(this);\nsuper:call(cause); end" +
+		KILL_HERO_ON_DIE.code = "vars = {} static = {} function die(this, vars, cause) hero:die(this);\nthis:super_die(cause); end" +
 				"\n\nreturn {vars = vars; static = static; die = die}";
 
 		SPAWN_MOB_ON_DIE = new LuaScript(Mob.class, "When this mob dies, a wraith (or another mob) is spawned in its place.", "");
-		SPAWN_MOB_ON_DIE.code = "vars = {} static = {} function die(this, vars, super, cause) super:call(cause);\n" +
+		SPAWN_MOB_ON_DIE.code = "vars = {} static = {} function die(this, vars, cause) this:super_die(cause);\n" +
 				"\n" +
 				"local mob = new(\"Wraith\");\n" +
 				"\n" +
@@ -67,17 +67,17 @@ public class LuaTemplates {
 				"recovering = false, gainHpPerTurn = 1\n" +
 				"}\n" +
 				"\n" +
-				"function defenseSkill(this, vars, super, enemy)\n" +
+				"function defenseSkill(this, vars, enemy)\n" +
 				"if vars.recovering then return 0; end\n" +
-				"return super:call(enemy);\n" +
+				"return this:super_defenseSkill(enemy);\n" +
 				"end\n" +
 				"\n" +
-				"function surprisedBy(this, vars, super, enemy, attacking)\n" +
+				"function surprisedBy(this, vars, enemy, attacking)\n" +
 				"if vars.recovering then return true; end\n" +
-				"return super:call(enemy, attacking);\n" +
+				"return this:super_surprisedBy(enemy, attacking);\n" +
 				"end\n" +
 				"\n" +
-				"function act(this, vars, super)\n" +
+				"function act(this, vars)\n" +
 				"if vars.recovering then\n" +
 				"\n" +
 				"    this.HP = this.HP + vars.gainHpPerTurn;\n" +
@@ -98,14 +98,14 @@ public class LuaTemplates {
 				"this:spend(1);\n" +
 				"return true;\n" +
 				"\n" +
-				"else return super:call();\n" +
+				"else return this:super_act();\n" +
 				"\n" +
 				"\n" +
 				"end\n" +
 				"end\n" +
 				"\n" +
 				"\n" +
-				"function isAlive(this, vars, super) \n" +
+				"function isAlive(this, vars) \n" +
 				"\n" +
 				"if this.HP <= 0 then\n" +
 				"this.HP = 1;\n" +
@@ -119,16 +119,16 @@ public class LuaTemplates {
 				"}";
 
 		RANGED_ATTACK = new LuaScript(Mob.class, "Adds a ranged attack to (melee) mobs.\nSee Additional code to change the animation.", "");
-		RANGED_ATTACK.code = "function canAttack(this, vars, super, enemy)\n" +
-				"return super:call(enemy)\n" +
+		RANGED_ATTACK.code = "function canAttack(this, vars, enemy)\n" +
+				"return this:super_canAttack(enemy)\n" +
 				"or ballistica(this.pos, enemy.pos, Ballistica.REAL_MAGIC_BOLT, nil).collisionPos == enemy.pos;\n" +
 				"end\n" +
 				"\n" +
-				"function doAttack(this, vars, super, enemy)\n" +
+				"function doAttack(this, vars, enemy)\n" +
 				"if level:adjacent( this.pos, enemy.pos )\n" +
 				"or ballistica(this.pos, enemy.pos, Ballistica.REAL_MAGIC_BOLT, nil).collisionPos ~= enemy.pos\n" +
 				"then\n" +
-				"    return super:call(enemy);\n" +
+				"    return this:super_doAttack(enemy);\n" +
 				"end\n" +
 				"\n" +
 				"if this.sprite ~= null\n" +
@@ -141,7 +141,7 @@ public class LuaTemplates {
 				"end;\n" +
 				"end\n" +
 				"\n" +
-				"function playZapAnim(this, vars, super, target)\n" +
+				"function playZapAnim(this, vars, target)\n" +
 				"    Zaps.warlock(this.sprite.parent, this.sprite, target, this); --change attack animation here (mob class name in camelCase)\n" +
 				"end\n" +
 				"\n" +
@@ -153,7 +153,7 @@ public class LuaTemplates {
 
 
 		REPLACES_WALLS_WITH_EMBERS = new LuaScript(Level.class, "When first entering, 50% of all walls are replaced with embers.", "");
-		REPLACES_WALLS_WITH_EMBERS.code = "vars = {} static = {} function initForPlay(this, vars, super) super:call();\n" +
+		REPLACES_WALLS_WITH_EMBERS.code = "vars = {} static = {} function initForPlay(this, vars) this:super_initForPlay();\n" +
 				"\n" +
 				"-- btw, it is very important that you don't try accessing this using 'level', instead use 'this'\n" +
 				"Random.pushGenerator(Random.levelSeed());\n" +

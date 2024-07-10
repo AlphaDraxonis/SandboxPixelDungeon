@@ -79,7 +79,7 @@ public class MethodPanel extends CodeInputPanel {
 
 		b.append("function ");
 		b.append(method.getName());
-		b.append("(this, vars, super");
+		b.append("(this, vars");
 		for (String p : paramNames) {
 			b.append(", ");
 			b.append(p);
@@ -139,7 +139,7 @@ public class MethodPanel extends CodeInputPanel {
 			StringBuilder b = new StringBuilder();
 			if (method.getReturnType() != void.class)
 				b.append("return ");
-			b.append("super:call(");
+			b.append("this:super_").append(method.getName()).append("(");
 			for (int i = 0; i < paramNames.length; i++) {
 				b.append(paramNames[i]);
 				if (i < paramNames.length - 1)

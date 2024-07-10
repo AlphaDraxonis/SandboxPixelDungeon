@@ -13,8 +13,24 @@
 
 # Lua stuff
 -keep class org.luaj.vm2.** { *; }
--keep class com.shatteredpixel.shatteredpixeldungeon.actors.mobs.luamobs.** { *; }
--keep class com.shatteredpixel.shatteredpixeldungeon.levels.lualevels.** { *; }
+
+#-keep class com.shatteredpixel.shatteredpixeldungeon.editor.lua.MethodOverride$* { *; }
+
+-keep class * extends com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite {
+    public <fields>;
+    public <methods>;
+}
+-keep class * implements com.watabou.utils.Bundlable {
+    public <fields>;
+    public <methods>;
+}
+-keep enum com.shatteredpixel.shatteredpixeldungeon.** {
+    public <fields>;
+    public <methods>;
+}
+-keepclassmembers class * {
+    @com.shatteredpixel.shatteredpixeldungeon.editor.lua.KeepProguard *;
+}
 
 # libGDX stuff
 -dontwarn android.support.**
