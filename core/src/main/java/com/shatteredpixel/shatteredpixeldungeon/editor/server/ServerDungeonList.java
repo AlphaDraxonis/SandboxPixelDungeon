@@ -99,6 +99,11 @@ public class ServerDungeonList extends MultiWindowTabComp {
 			public float getInputFieldWidth(float height) {
 				return Spinner.FILL;
 			}
+
+			@Override
+			public int getClicksPerSecondWhileHolding() {
+				return 0;
+			}
 		}, "", 10) {
 			@Override
 			protected void layout() {

@@ -44,6 +44,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -666,6 +667,7 @@ public class IDEWindow extends Component {
 				while (LuaClass.class.isAssignableFrom(clazz) || LuaLevel.class.isAssignableFrom(clazz)) clazz = clazz.getSuperclass();
 				String clName = clazz.getSimpleName();
 				if (clName.equals("Barrier")) clName = clazz.getName();
+				if (obj instanceof Plant.Seed) clName = obj.getClass().getEnclosingClass().getSimpleName() + "$" + clName;
 				whatToDo.accept(clName, obj);
 			}
 

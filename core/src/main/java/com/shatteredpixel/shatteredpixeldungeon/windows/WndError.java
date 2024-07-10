@@ -50,6 +50,7 @@ public class WndError extends WndTitledMessage {
 	public WndError ( Throwable throwable ) {
 		super(Icons.WARNING.get(),  Messages.get(WndError.class, "title"), Messages.get(WndError.class, "error_msg", Game.version) + createStackTrace(throwable, false) );
 		Game.reportException(throwable);
+		setHighligtingEnabled(false);
 	}
 
 	public static String createStackTrace(Throwable throwable, boolean limitLength ) {

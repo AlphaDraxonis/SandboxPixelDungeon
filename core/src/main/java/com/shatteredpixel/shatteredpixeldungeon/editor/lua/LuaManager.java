@@ -87,7 +87,7 @@ public class LuaManager {
 			globals.load(code).call();
 			return null;
 		} catch (LuaError e) {
-//			"[string \"function die(this, vars, super, source)\n" +
+//			"[string \"function die(this, vars, source)\n" +
 //					"return source-m-.hashcode(...\"]:2: unexpected symbol 46 (.)";
 			return e.getMessage();
 		}

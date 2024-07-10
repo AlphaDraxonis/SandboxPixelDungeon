@@ -15,6 +15,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scrollofdebug.references.Standar
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.utils.SparseArray;
 
@@ -52,8 +53,9 @@ public class FieldComp extends ObjInspectorTabComp {
 			add(setToNull);
 		}
 
-		modifiersTxt.text(WndScrollOfDebug.modifiersToString(field.getModifiers()));
-		typeTxt.text("_" + field.getType().getSimpleName() + "_");
+		modifiersTxt.text(WndScrollOfDebug.modifiersToString(field.getModifiers()) + " ");
+		typeTxt.text(field.getType().getSimpleName());
+		typeTxt.hardlight(Window.TITLE_COLOR);
 		nameTxt.text(" " + field.getName());
 
 		updateValueText();
@@ -156,7 +158,7 @@ public class FieldComp extends ObjInspectorTabComp {
 			widthForButtons += setToNull.width() + 1;
 		}
 
-		float valueFieldWidth = Math.min(100, Math.max(20, x + width - 2 - nameTxt.right()));
+		float valueFieldWidth = Math.min(100, Math.max(20, x + width - 2 - Math.max(nameTxt.right(), typeTxt.right())));
 		value.setRect(x + width - valueFieldWidth, y, valueFieldWidth, height);
 
 		if (inspectType != null) {

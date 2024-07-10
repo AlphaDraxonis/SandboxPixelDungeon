@@ -162,7 +162,8 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 		doSave();
 	}
 
-	private void doSave() {
+	public static void doSave() {
+
 		FileHandle gameFolder = FileUtils.getFileHandle(GamesInProgress.gameFolder(GamesInProgress.curSlot));
 		FileHandle checkpointFolder = FileUtils.getFileHandle(GamesInProgress.checkpointFolder(GamesInProgress.curSlot));
 

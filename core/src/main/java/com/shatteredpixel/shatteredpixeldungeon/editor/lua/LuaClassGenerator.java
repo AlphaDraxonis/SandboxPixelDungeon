@@ -47,27 +47,6 @@ public final class LuaClassGenerator {
         int i = 0;
     }
 
-    private static final String funAttackSkill =
-            "function attackSkill(this) " +
-                    "    return 999999" +
-                    " end  ";
-    private static final String funAttackProc =
-            "function attackProc(this, enemy, damage) " +
-                    "    this:die()" +
-                    "    return damage" +
-                    " end  ";
-    private static final String funAttackProc2 =
-            "function attackProc(this, enemy, damage) " +
-                    "    test = test + 1" +
-                    "    return test" +
-                    " end  ";
-    private static final String funDie =
-            "function die(this, vars, super, cause) " +
-                    "local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +
-                    "level:drop(item, this.pos + level:width()).sprite:drop()" +
-                    "super:call({cause})" +
-                    " end  ";
-
     private static final String vars =
             "vars = { " +
 //                    "local item = luajava.newInstance(\"com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost\")" +

@@ -1029,6 +1029,9 @@ public class LuaGlobals extends Globals {
 			case "Barrier": return Barrier.class.getName();
 			case "Ballistica": return Ballistica.class.getName();
 		}
+		if (simpleName.endsWith("$Seed")) {
+			return Messages.MAIN_PACKAGE_NAME + "plants." + simpleName;
+		}
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Items.values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Mobs.values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Plants.values()));
@@ -1080,6 +1083,9 @@ public class LuaGlobals extends Globals {
 			case "DMMob": return DMMob.class.getName();
 			case "SpawnerMob": return SpawnerMob.class.getName();
 			case "ChampionEnemy": return ChampionEnemy.class.getName();
+		}
+		if (simpleName.endsWith("$Seed")) {
+			return Messages.MAIN_PACKAGE_NAME + "plants." + simpleName;
 		}
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Mobs.values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Items.values()));

@@ -895,7 +895,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
 
         if (CustomDungeon.isEditing() && mob instanceof LuaMob && !((LuaMob) mob).isOriginal()) {
-            inheritsStats = new CheckBox("Inherits stats") {
+            inheritsStats = new CheckBox(label("inherit_stats")) {
                 boolean initializing;
                 {
                     initializing = true;

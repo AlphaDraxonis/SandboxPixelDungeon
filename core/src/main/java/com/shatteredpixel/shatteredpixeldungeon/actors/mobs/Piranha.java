@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.PiranhaSprite;
 import com.watabou.utils.PathFinder;
@@ -179,9 +180,9 @@ public class Piranha extends Mob implements MobBasedOnDepth {
 	}
 
 
-	public static boolean canSurviveOnCell(Char ch, int cell) {
-		return Dungeon.level.water[cell] || ((Terrain.flags[Dungeon.level.map[cell]] & Terrain.WATER) == Terrain.flags[Terrain.WATER]) || !Char.hasProp(ch, Property.AQUATIC)
-				|| (ch instanceof Hero && (TileItem.isEntranceTerrainCell(Dungeon.level.map[cell]) || TileItem.isExitTerrainCell(Dungeon.level.map[cell])));
+	public static boolean canSurviveOnCell(Char ch, int cell, Level level) {
+		return level.water[cell] || ((Terrain.flags[level.map[cell]] & Terrain.WATER) == Terrain.flags[Terrain.WATER]) || !Char.hasProp(ch, Property.AQUATIC)
+				|| (ch instanceof Hero && (TileItem.isEntranceTerrainCell(level.map[cell]) || TileItem.isExitTerrainCell(level.map[cell])));
 	}
 
 }

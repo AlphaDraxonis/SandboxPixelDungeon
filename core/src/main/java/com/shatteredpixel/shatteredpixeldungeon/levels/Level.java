@@ -1419,7 +1419,7 @@ public abstract class Level implements Bundlable {
 				|| !isPassable(cell, ch)
 				|| (Char.hasProp(ch, Char.Property.LARGE) && !openSpace[cell])
 				|| Actor.findChar( cell ) != null
-				|| !Piranha.canSurviveOnCell(ch, cell)
+				|| !Piranha.canSurviveOnCell(ch, cell, this)
 				|| (ch instanceof SentryRoom.Sentry && map[cell] != Terrain.PEDESTAL)
 				|| findMob(cell) != null
 				|| (!Zone.canSpawnMobs(this, cell) && !(ch == null || ch instanceof Hero || ch instanceof NPC)) );
@@ -1948,7 +1948,7 @@ public abstract class Level implements Bundlable {
 			applyZoneBuffs(ch);
 			if (zone[ch.pos] != null) zone[ch.pos].onZoneEntered(ch);
 
-			if (checkpoints.get(ch.pos) != null)
+			if (ch == Dungeon.hero && checkpoints.get(ch.pos) != null)
 				checkpoints.get(ch.pos).reachCheckpoint();
 		}
 
@@ -1996,7 +1996,7 @@ public abstract class Level implements Bundlable {
 			if (!CustomDungeon.isEditing()) Door.enter( ch.pos );
 		}
 
-		if (ch.isAlive() && !Piranha.canSurviveOnCell(ch, ch.pos) && !CustomDungeon.isEditing()){
+		if (ch.isAlive() && !Piranha.canSurviveOnCell(ch, ch.pos, this) && !CustomDungeon.isEditing()){
 			ch.dieOnLand();
 		}
 

@@ -61,6 +61,11 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             public float getInputFieldWidth(float height) {
                 return StyledSpinner.FILL;
             }
+
+            @Override
+            public void afterClick() {
+                updateObj();
+            }
         }, Messages.get(this, "heals"));
         RectF r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.POTION_HEALING);
         if (r != null) {
@@ -71,7 +76,8 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
         }
         heals.addChangeListener(() -> {
             obj.totalHeals = (int) heals.getValue();
-            updateObj();
+            if (obj.totalHeals % 20 == 0)
+                updateObj();
         });
         add(heals);
 
@@ -80,11 +86,17 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             public float getInputFieldWidth(float height) {
                 return StyledSpinner.FILL;
             }
+
+            @Override
+            public void afterClick() {
+                updateObj();
+            }
         }, Messages.get(this, "satiates"));
         satiates.icon(new ItemSprite(ItemSpriteSheet.RATION));
         satiates.addChangeListener(() -> {
             obj.totalSatiates = (int) satiates.getValue();
-            updateObj();
+            if (obj.totalSatiates % 20 == 0)
+                updateObj();
         });
         add(satiates);
 
@@ -92,6 +104,11 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             @Override
             public float getInputFieldWidth(float height) {
                 return StyledSpinner.FILL;
+            }
+
+            @Override
+            public void afterClick() {
+                updateObj();
             }
         }, Messages.get(this, "debuffs"));
         r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.POTION_CLEANSE);
@@ -103,7 +120,8 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
         }
         debuffs.addChangeListener(() -> {
             obj.totalDebuffCuring = (int) debuffs.getValue();
-            updateObj();
+            if (obj.totalDebuffCuring % 20 == 0)
+                updateObj();
         });
         add(debuffs);
 
@@ -111,6 +129,11 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
             @Override
             public float getInputFieldWidth(float height) {
                 return StyledSpinner.FILL;
+            }
+
+            @Override
+            public void afterClick() {
+                updateObj();
             }
         }, Messages.get(this, "uncurses"));
         r = ItemSpriteSheet.Icons.film.get(ItemSpriteSheet.Icons.SCROLL_REMCURSE);
@@ -122,7 +145,8 @@ public class EditCheckpointComp extends DefaultEditComp<Checkpoint> {
         }
         uncurses.addChangeListener(() -> {
             obj.totalUncurse = (int) uncurses.getValue();
-            updateObj();
+            if (obj.totalUncurse % 20 == 0)
+                updateObj();
         });
         add(uncurses);
 

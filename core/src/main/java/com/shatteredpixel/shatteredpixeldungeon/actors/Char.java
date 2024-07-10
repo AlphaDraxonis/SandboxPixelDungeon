@@ -125,7 +125,7 @@ public abstract class Char extends Actor {
 	@Override
 	protected boolean act() {
 
-		if (!Piranha.canSurviveOnCell(this, pos)) {
+		if (!Piranha.canSurviveOnCell(this, pos, Dungeon.level)) {
 			dieOnLand();
 			return true;
 		}
