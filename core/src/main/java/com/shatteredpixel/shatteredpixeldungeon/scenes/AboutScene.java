@@ -229,16 +229,16 @@ public class AboutScene extends PixelScene {
 
 		//*** *** ***
 
-		CreditsBlock community = new CreditsBlock(true,
-				Window.TITLE_COLOR,
-				null,
-				null,
-				"Some items ideas and graphics: Tzardonic","",""
-		);
-		community.setRect((Camera.main.width - colWidth)/2f,  myTranslation.bottom()+10, colWidth, -1);
-		content.add(community);
-
-		addLine(community.bottom(), content);
+//		CreditsBlock community = new CreditsBlock(true,
+//				Window.TITLE_COLOR,
+//				null,
+//				null,
+//				"Save crystal sprite and idea: Arachnentoma\n","",""
+//		);
+//		community.setRect((Camera.main.width - colWidth)/2f,  myTranslation.bottom()+10, colWidth, -1);
+//		content.add(community);
+//
+//		addLine(community.bottom(), content);
 
 		//*** Freesound Credits ***
 
@@ -271,7 +271,7 @@ public class AboutScene extends PixelScene {
 				"_Phone vibration.wav_ by _Breviceps_",
 				"www.freesound.org",
 				"https://www.freesound.org");
-		freesound.setRect(myTranslation.left()-10, community.bottom() + 4, colWidth+20, -1);
+		freesound.setRect(myTranslation.left()-10, myTranslation.bottom() + 4, colWidth+20, -1);
 		content.add(freesound);
 
 		content.setSize( fullWidth, freesound.bottom()+10 );

@@ -23,20 +23,23 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.MirrorImage;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.PointF;
+import com.watabou.utils.Reflection;
 
 public class MirrorSprite extends MobSprite {
 	
 	private static final int FRAME_WIDTH	= 12;
 	private static final int FRAME_HEIGHT	= 15;
+
+	private static final int RUN_FRAMERATE	= 20;
 	
 	public MirrorSprite() {
 		super();
-		
-		texture( Dungeon.hero.heroClass.spritesheet() );
-		updateArmor( 0 );
+
+		updateArmor(Dungeon.hero);
 		idle();
 	}
 	
@@ -52,23 +55,52 @@ public class MirrorSprite extends MobSprite {
 	}
 
 	public void updateArmor(){
-		updateArmor( ((MirrorImage)ch).armTier );
+		updateArmor( ((MirrorImage)ch).hero );
 	}
 	
-	public void updateArmor( int tier ) {
-		TextureFilm film = new TextureFilm( HeroSprite.tiers(), tier, FRAME_WIDTH, FRAME_HEIGHT );
-		
-		idle = new Animation( 1, true );
-		idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
-		
-		run = new Animation( 20, true );
-		run.frames( film, 2, 3, 4, 5, 6, 7 );
-		
-		die = new Animation( 20, false );
-		die.frames( film, 0 );
-		
-		attack = new Animation( 15, false );
-		attack.frames( film, 13, 14, 15, 0 );
+	public void updateArmor( Hero hero ) {
+
+		if (hero.internalSpriteClass != null) {
+
+			CharSprite anims = Reflection.newInstance(hero.internalSpriteClass);
+
+			if (anims instanceof StatueSprite) ((StatueSprite) anims).setArmor(hero.tier());
+
+			texture(anims.texture);
+
+			idle = anims.idle.clone();
+			run = anims.run.clone();
+			die = anims.die.clone();
+			attack = anims.attack.clone();
+
+			if (anims.zap != null) zap = anims.zap.clone();
+			else {
+				zap = attack.clone();
+			}
+
+			anims.destroy();
+
+		} else {
+
+			texture( hero.heroClass.spritesheet() );
+
+			TextureFilm film = new TextureFilm( HeroSprite.tiers(), hero.tier(), FRAME_WIDTH, FRAME_HEIGHT );
+
+			idle = new Animation( 1, true );
+			idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
+
+			run = new Animation( RUN_FRAMERATE, true );
+			run.frames( film, 2, 3, 4, 5, 6, 7 );
+
+			die = new Animation( 20, false );
+			die.frames( film, 0 );
+
+			attack = new Animation( 15, false );
+			attack.frames( film, 13, 14, 15, 0 );
+
+			zap = attack.clone();
+
+		}
 		
 		idle();
 	}

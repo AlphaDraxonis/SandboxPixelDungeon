@@ -107,7 +107,7 @@ public class WndReward extends SimpleWindow {
 				itemButtons[i] = new ItemButton(){
 					@Override
 					protected void onClick() {
-						if ((payItem == null || Dungeon.hero.belongings.contains(payItem)) && item() != null) {
+						if (item() != null) {
 							GameScene.show(new WndConfirmReward(item(), SingleItemRewardsBody.this::selectReward));
 						} else {
 							hide();
@@ -151,8 +151,11 @@ public class WndReward extends SimpleWindow {
 
 			hide();
 
-			if (payItem != null)
-				payItem.detach( Dungeon.hero.belongings.backpack );
+			if (payItem != null && Dungeon.hero.belongings.contains(payItem)) {
+				for (int i = 0; i < payItem.quantity(); i++) {
+					payItem.detachAll(Dungeon.hero.belongings.backpack);
+				}
+			}
 
 			onSelectReward(reward);
 

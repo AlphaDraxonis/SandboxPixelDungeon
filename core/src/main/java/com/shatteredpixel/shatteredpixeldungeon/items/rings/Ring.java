@@ -122,7 +122,7 @@ public class Ring extends KindofMisc {
 			buff = null;
 		}
 		buff = buff();
-		buff.attachTo( ch );
+		if (buff != null) buff.attachTo( ch );
 	}
 
 	@Override

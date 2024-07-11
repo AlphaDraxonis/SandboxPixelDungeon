@@ -57,21 +57,32 @@ public class Gold extends Item {
 	
 	@Override
 	public boolean doPickUp(Hero hero, int pos) {
+
+		instantPickupGold(hero, pos);
+		hero.spendAndNext( TIME_TO_PICK_UP );
+
+		Sample.INSTANCE.play( Assets.Sounds.GOLD, 1, 1, Random.Float( 0.9f, 1.1f ) );
 		
+		return true;
+	}
+
+	@Override
+	public boolean collect() {
+		instantPickupGold(Dungeon.hero, Dungeon.hero.pos);
+		return true;
+	}
+
+	public void instantPickupGold(Hero hero, int pos) {
 		Dungeon.gold += quantity;
 		Statistics.goldCollected += quantity;
 		Badges.validateGoldCollected();
 
 		GameScene.pickUp( this, pos );
-		hero.sprite.showStatusWithIcon( CharSprite.NEUTRAL, Integer.toString(quantity), FloatingText.GOLD );
-		hero.spendAndNext( TIME_TO_PICK_UP );
-		
-		Sample.INSTANCE.play( Assets.Sounds.GOLD, 1, 1, Random.Float( 0.9f, 1.1f ) );
+		if (hero.sprite != null) hero.sprite.showStatusWithIcon( CharSprite.NEUTRAL, Integer.toString(quantity), FloatingText.GOLD );
+
 		updateQuickslot();
-		
-		return true;
 	}
-	
+
 	@Override
 	public boolean isUpgradable() {
 		return false;

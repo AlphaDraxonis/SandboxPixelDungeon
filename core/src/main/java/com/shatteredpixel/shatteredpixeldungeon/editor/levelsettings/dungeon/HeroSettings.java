@@ -253,6 +253,8 @@ public class HeroSettings extends Component {
                 MobSpriteItem currentSprite = curentSprite;
                 {
                     selector.preferredBag = MobSprites.bag.getClass();
+                    setShowWhenNull(511);
+                    setSelectedItem(currentSprite);
                 }
                 @Override
                 public void change() {
@@ -274,7 +276,6 @@ public class HeroSettings extends Component {
 
                 }
             };
-            sprite.setShowWhenNull(ItemSpriteSheet.SOMETHING);
             itemSelectorParent.add(sprite);
 
 

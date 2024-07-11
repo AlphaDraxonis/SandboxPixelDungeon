@@ -62,7 +62,7 @@ public class PrismaticImage extends NPC {
 		actPriority = MOB_PRIO + 1;
 	}
 	
-	private Hero hero;
+	public Hero hero;
 	private int heroID;
 	public int armTier;
 	
@@ -101,7 +101,7 @@ public class PrismaticImage extends NPC {
 		
 		if (hero.tier() != armTier){
 			armTier = hero.tier();
-			((PrismaticSprite)sprite).updateArmor( armTier );
+			((PrismaticSprite)sprite).updateArmor( hero );
 		}
 		
 		return super.act();
@@ -240,8 +240,8 @@ public class PrismaticImage extends NPC {
 		hero = (Hero)Actor.findById(heroID);
 		if (hero != null) {
 			armTier = hero.tier();
+			((PrismaticSprite)s).updateArmor( hero );
 		}
-		((PrismaticSprite)s).updateArmor( armTier );
 		return s;
 	}
 	

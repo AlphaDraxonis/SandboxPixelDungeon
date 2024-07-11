@@ -434,6 +434,12 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
     public Level initLevel() {
         int oldHeroPos = Dungeon.hero.pos;
         Dungeon.hero.pos = -1;
+
+        if (luaScript != null) {
+            if (luaScript.getScript() == null) luaScript.loadScript();
+            if (luaScript.getScript() == null) luaScript = null;
+        }
+
         if (type != CustomLevel.class) {
             Random.pushGenerator(seed);
             level = luaScript == null ? Reflection.newInstance(type)
@@ -442,9 +448,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             level.levelScheme = this;
 
             if (luaScript != null) {
-                if (luaScript.getScript() == null) luaScript.loadScript();
-                if (luaScript.getScript() == null) luaScript = null;
-                else if (luaScript.getScript().get("vars").istable()) {
+                if (luaScript.getScript().get("vars").istable()) {
                     ((LuaLevel) level).setVars(LuaManager.deepCopyLuaValue(luaScript.getScript().get("vars")).checktable());
                 }
             }
@@ -468,9 +472,7 @@ public class LevelScheme implements Bundlable, Comparable<LevelScheme>, LevelSch
             level.levelScheme = this;
 
             if (luaScript != null) {
-                if (luaScript.getScript() == null) luaScript.loadScript();
-                if (luaScript.getScript() == null) luaScript = null;
-                else if (luaScript.getScript().get("vars").istable()) {
+                if (luaScript.getScript().get("vars").istable()) {
                     ((LuaLevel) level).setVars(LuaManager.deepCopyLuaValue(luaScript.getScript().get("vars")).checktable());
                 }
             }

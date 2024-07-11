@@ -111,26 +111,7 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 
 	public void use() {
 
-		if (healingsAvailable() > 0) {
-			Buff.affect(Dungeon.hero, Healing.class).setHeal((int) (0.8f * Dungeon.hero.HT + 14), 0.25f, 0);
-			GLog.p( Messages.get(PotionOfHealing.class, "heal") );
-		}
-
-		if (satiationsAvailable() > 0) {
-			Buff.affect(Dungeon.hero, Hunger.class).satisfy(10000);
-		}
-
-		if (debuffCuringAvailable() > 0) {
-			PotionOfCleansing.cleanse(Dungeon.hero, 0);
-		}
-
-		if (uncursesAvailable() > 0) {
-			Dungeon.hero.belongings.uncurseEquipped();
-		}
-
 		timesUsed++;
-
-		DungeonScene.updateAllCheckpointSprites();
 
 		if (usesAvailable() <= 0) {
 			FileUtils.getFileHandle(GamesInProgress.checkpointFolder(GamesInProgress.curSlot)).deleteDirectory();
@@ -138,6 +119,26 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 		} else {
 			doSave();
 		}
+
+
+		if (healingsAvailable() >= 0) {
+			Buff.affect(Dungeon.hero, Healing.class).setHeal((int) (0.8f * Dungeon.hero.HT + 14), 0.25f, 0);
+			GLog.p( Messages.get(PotionOfHealing.class, "heal") );
+		}
+
+		if (satiationsAvailable() >= 0) {
+			Buff.affect(Dungeon.hero, Hunger.class).satisfy(10000);
+		}
+
+		if (debuffCuringAvailable() >= 0) {
+			PotionOfCleansing.cleanse(Dungeon.hero, 0);
+		}
+
+		if (uncursesAvailable() >= 0) {
+			Dungeon.hero.belongings.uncurseEquipped();
+		}
+
+		DungeonScene.updateAllCheckpointSprites();
 	}
 
 	public boolean isReached() {
@@ -355,30 +356,34 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 			} else {
 				play(inactive);
 
-				if (save != null) {
-					save.on = false;
-					save = null;
-				}
-				if (heal != null) {
-					heal.on = false;
-					heal = null;
-				}
-				if (satiate != null) {
-					satiate.on = false;
-					satiate = null;
-				}
-				if (cleanse != null) {
-					cleanse.on = false;
-					cleanse = null;
-				}
-				if (uncurse != null) {
-					uncurse.on = false;
-					uncurse = null;
-				}
+				disableAllEmitters();
 
 			}
 
 
+		}
+
+		private void disableAllEmitters() {
+			if (save != null) {
+				save.on = false;
+				save = null;
+			}
+			if (heal != null) {
+				heal.on = false;
+				heal = null;
+			}
+			if (satiate != null) {
+				satiate.on = false;
+				satiate = null;
+			}
+			if (cleanse != null) {
+				cleanse.on = false;
+				cleanse = null;
+			}
+			if (uncurse != null) {
+				uncurse.on = false;
+				uncurse = null;
+			}
 		}
 
 		public Emitter emitter() {
@@ -399,6 +404,12 @@ public class Checkpoint implements Bundlable, Copyable<Checkpoint> {
 
 		public void place( int cell ) {
 			point( worldToCamera( cell ) );
+		}
+
+		@Override
+		public void destroy() {
+			super.destroy();
+			disableAllEmitters();
 		}
 	}
 

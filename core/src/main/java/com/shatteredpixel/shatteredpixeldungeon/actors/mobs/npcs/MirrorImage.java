@@ -56,7 +56,7 @@ public class MirrorImage extends NPC {
 		actPriority = MOB_PRIO + 1;
 	}
 	
-	private Hero hero;
+	public Hero hero;
 	private int heroID;
 	public int armTier;
 	
@@ -74,7 +74,7 @@ public class MirrorImage extends NPC {
 		
 		if (hero.tier() != armTier){
 			armTier = hero.tier();
-			((MirrorSprite)sprite).updateArmor( armTier );
+			((MirrorSprite)sprite).updateArmor( hero );
 		}
 		
 		return super.act();
@@ -187,9 +187,14 @@ public class MirrorImage extends NPC {
 		hero = (Hero)Actor.findById(heroID);
 		if (hero != null) {
 			armTier = hero.tier();
+			((MirrorSprite)s).updateArmor( hero );
 		}
-		((MirrorSprite)s).updateArmor( armTier );
 		return s;
+	}
+
+	@Override
+	public boolean shouldSpriteBeVisible() {
+		return Dungeon.level.heroFOV[pos];
 	}
 	
 	{
@@ -208,6 +213,12 @@ public class MirrorImage extends NPC {
 		@Override
 		public int icon() {
 			return BuffIndicator.NONE;
+		}
+
+		@Override
+		public void fx(boolean on) {
+			if (on) target.sprite.add( CharSprite.State.HALF_INVISIBLE );
+			else if (target.invisible == 0) target.sprite.remove( CharSprite.State.HALF_INVISIBLE );
 		}
 	}
 }

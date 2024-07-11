@@ -171,7 +171,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
             HeroMob.InternalHero hero = ((HeroMob) mob).hero();
 
             mobRing = new StyledItemSelector(Messages.get(HeroSettings.class, "ring"),
-                    Ring.class, hero.belongings.ring, ItemSelector.NullTypeSelector.DISABLED) {
+                    Ring.class, hero.belongings.ring, ItemSelector.NullTypeSelector.NOTHING) {
                 @Override
                 public void setSelectedItem(Item selectedItem) {
                     super.setSelectedItem(selectedItem);
@@ -779,7 +779,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                         buffsToIgnore.add(Foresight.class);
                         buffsToIgnore.add(Light.class);
                         buffsToIgnore.add(Blindness.class);
-                        buffsToIgnore.add(Recharging.class);
+                        if (!(mob instanceof HeroMob)) buffsToIgnore.add(Recharging.class);
                         return buffsToIgnore;
                     }
 

@@ -90,7 +90,7 @@ public class ItemSelector extends Component {
 
             @Override
             protected void viewSprite(Item item) {
-                if (!EditorItem.class.isAssignableFrom(item.getClass())) {
+                if (!(item instanceof EditorItem)) {
                     super.viewSprite(item);
                     return;
                 }
@@ -98,7 +98,7 @@ public class ItemSelector extends Component {
                     remove(sprite);
                     sprite.destroy();
                 }
-                sprite = ((EditorItem) item).getSprite();
+                sprite = ((EditorItem<?>) item).getSprite();
                 if (sprite != null) addToBack(sprite);
                 sendToBack(bg);
             }

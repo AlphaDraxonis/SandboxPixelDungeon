@@ -63,7 +63,7 @@ public class ScrollPaneWithScrollbar extends ScrollPane {
 			h = (height - (horVisible ? ScrollbarThumb.TOTAL_THICKNESS : 0));
 			content.setRect(0, 0, w, h);
 			newVerVisible = h < content.height();
-			newHorVisible = w < content.width();
+			newHorVisible = w + 1 < content.width();
 		} while (verVisible != newVerVisible || horVisible != newHorVisible);
 
 		scrollbarVer.visible = scrollbarVer.active = newVerVisible;

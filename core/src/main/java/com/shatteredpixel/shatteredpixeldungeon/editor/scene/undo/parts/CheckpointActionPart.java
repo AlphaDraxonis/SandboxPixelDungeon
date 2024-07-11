@@ -41,9 +41,11 @@ public /*sealed*/ abstract class CheckpointActionPart implements ActionPart {
 
     private static void remove(int pos) {
         Checkpoint cp = Dungeon.level.checkpoints.remove(pos);
-        cp.sprite.remove();
-        cp.sprite.destroy();
-        cp.sprite.killAndErase();
+        if (cp != null) {
+            cp.sprite.remove();
+            cp.sprite.destroy();
+            cp.sprite.killAndErase();
+        }
         EditorScene.updateMap(pos);
     }
 

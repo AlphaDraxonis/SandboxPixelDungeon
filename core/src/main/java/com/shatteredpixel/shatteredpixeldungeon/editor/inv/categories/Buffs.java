@@ -2,6 +2,10 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.inv.categories;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BuffItem;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfFeatherFall;
+import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCleansing;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Wayward;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
@@ -35,6 +39,7 @@ public enum Buffs implements EditorInvCategory<Buff> {
                 Paralysis.class,
                 Roots.class,
                 Vertigo.class,//Confusion
+                StoneOfAggression.Aggression.class,
                 Amok.class,
                 Terror.class,
                 Dread.class,
@@ -51,6 +56,7 @@ public enum Buffs implements EditorInvCategory<Buff> {
                 Hex.class,
                 Daze.class,
                 Vulnerable.class,
+                Wayward.WaywardBuff.class,
                 Doom.class,
                 Corruption.class,
                 Poison.class,
@@ -75,7 +81,9 @@ public enum Buffs implements EditorInvCategory<Buff> {
                 ToxicImbue.class,
 
                 Levitation.class,
+                ElixirOfFeatherFall.FeatherBuff.class,
                 BlobImmunity.class,
+                PotionOfCleansing.Cleanse.class,
                 MagicImmune.class,
                 Drowsy.class,
                 MagicalSleep.class,

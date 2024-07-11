@@ -456,6 +456,11 @@ public interface RandomItem<T extends GameObject> {
             return RandomItem.getDesc();
         }
 
+        @Override
+        public String info() {
+            return RandomItem.getDesc();
+        }
+
     }
 
 

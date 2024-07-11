@@ -266,7 +266,6 @@ public class EditZoneComp extends DefaultEditComp<Zone> {
                 buffsToIgnore.add(Foresight.class);
                 buffsToIgnore.add(Light.class);
                 buffsToIgnore.add(Blindness.class);
-                buffsToIgnore.add(Recharging.class);
                 return buffsToIgnore;
             }
 

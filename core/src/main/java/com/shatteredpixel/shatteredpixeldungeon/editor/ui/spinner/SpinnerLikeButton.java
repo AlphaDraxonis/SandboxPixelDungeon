@@ -113,8 +113,8 @@ public class SpinnerLikeButton extends StyledButtonWithIconAndText {
 			text.maxWidth((int) width - bg.marginHor());
 			value.maxWidth((int) width - bg.marginHor());
 		}
-		if (icon == null) return text.height() + 4 + value.height() + bg.marginVer();
-		return icon.height() + text.height() + 4 + value.height() + 3 + bg.marginVer();
+		if (icon == null) return text.height() + 4 + value.height() + bg.marginVer() + 4;
+		return icon.height() + text.height() + 4 + value.height() + 3 + bg.marginVer() + 4;
 	}
 
 	public void setValue(Wand.RechargeRule rechargeRule) {

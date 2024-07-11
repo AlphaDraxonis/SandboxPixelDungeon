@@ -127,6 +127,9 @@ public class Messages {
 			if (c != null && c.getSuperclass() != null){
 				return get(c.getSuperclass(), k, args);
 			} else {
+//				if (DeviceCompat.isDebug()) {
+//					Game.reportException(new Throwable(NO_TEXT_FOUND + " for " + key));
+//				}
 //				if(true) throw new RuntimeException(NO_TEXT_FOUND);
 				return NO_TEXT_FOUND;
 			}

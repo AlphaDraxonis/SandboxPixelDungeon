@@ -75,7 +75,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	protected float shadowOffset    = 0.25f;
 
 	public enum State {
-		BURNING, LEVITATING, INVISIBLE, PARALYSED, FROZEN, ILLUMINATED, CHILLED, DARKENED, MARKED, HEALING, SHIELDED, HEARTS
+		BURNING, LEVITATING, INVISIBLE, HALF_INVISIBLE, PARALYSED, FROZEN, ILLUMINATED, CHILLED, DARKENED, MARKED, HEALING, SHIELDED, HEARTS
 	}
 	private int stunStates = 0;
 	
@@ -416,6 +416,14 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 					alpha( 0.4f );
 				visible = !(this instanceof MobSprite) || CustomDungeon.isEditing();
 				break;
+			case HALF_INVISIBLE:
+				if (invisible != null) {
+					invisible.killAndErase();
+				}
+				invisible = new AlphaTweener( this, 0.4f, 0.4f );
+				if (parent != null) parent.add(invisible);
+				else alpha( 0.4f );
+				break;
 			case PARALYSED:
 				paused = true;
 				break;
@@ -475,6 +483,13 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 				}
 				alpha( 1f );
 				visible = true;
+				break;
+			case HALF_INVISIBLE:
+				if (invisible != null) {
+					invisible.killAndErase();
+					invisible = null;
+				}
+				alpha( 1f );
 				break;
 			case PARALYSED:
 				paused = false;

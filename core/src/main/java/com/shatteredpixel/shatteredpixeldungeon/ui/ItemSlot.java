@@ -238,6 +238,11 @@ public class ItemSlot extends Button {
     }
 
     protected void viewSprite(Item item) {
+        if (!(sprite instanceof ItemSprite)) {
+            remove(sprite);
+            sprite.destroy();
+            sprite = new ItemSprite();
+        }
         ((ItemSprite) sprite).view(item);
     }
 

@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.CustomTileItem;
+import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.TileItem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.effects.TargetedCell;
@@ -203,6 +204,12 @@ public class CrystalSpire extends Mob {
 		return true;
 	}
 
+	private static boolean canTargetCell(int cell) {
+		return (!Dungeon.level.solid[cell] || Dungeon.level.map[cell] == Terrain.MINE_CRYSTAL)
+				&& !TileItem.isEntranceTerrainCell(Dungeon.level.map[cell])
+				&& !TileItem.isExitTerrainCell(Dungeon.level.map[cell]);
+	}
+
 	public static class SpireSpike{}
 
 	private void diamondAOEAttack(){
@@ -227,8 +234,7 @@ public class CrystalSpire extends Mob {
 		ArrayList<Integer> spreadCells = new ArrayList<>();
 		for (int i : currentCells){
 			for (int j : PathFinder.NEIGHBOURS4){
-				if ((!Dungeon.level.solid[i+j] || Dungeon.level.map[i+j] == Terrain.MINE_CRYSTAL)
-						&& !spreadCells.contains(i+j) && !currentCells.contains(i+j)){
+				if (canTargetCell(i+j) && !spreadCells.contains(i+j) && !currentCells.contains(i+j)){
 					spreadCells.add(i+j);
 				}
 			}
@@ -242,7 +248,7 @@ public class CrystalSpire extends Mob {
 		ArrayList<Integer> lineCells = new ArrayList<>();
 		Ballistica aim = new Ballistica(pos, Dungeon.hero.pos, Ballistica.WONT_STOP, null);
 		for (int i : aim.subPath(1, 7)){
-			if (!Dungeon.level.solid[i] || Dungeon.level.map[i] == Terrain.MINE_CRYSTAL){
+			if (canTargetCell(i)){
 				lineCells.add(i);
 			} else {
 				break;
@@ -264,8 +270,7 @@ public class CrystalSpire extends Mob {
 		ArrayList<Integer> spreadCells = new ArrayList<>();
 		for (int i : currentCells){
 			for (int j : PathFinder.NEIGHBOURS8){
-				if ((!Dungeon.level.solid[i+j] || Dungeon.level.map[i+j] == Terrain.MINE_CRYSTAL)
-						&& !spreadCells.contains(i+j) && !currentCells.contains(i+j)){
+				if (canTargetCell(i+j) && !spreadCells.contains(i+j) && !currentCells.contains(i+j)){
 					spreadCells.add(i+j);
 				}
 			}

@@ -68,6 +68,13 @@ public abstract class Key extends Item {
 	public boolean doPickUp(Hero hero, int pos) {
 		instantPickupKey(pos);
 		hero.spendAndNext( TIME_TO_PICK_UP );
+		Sample.INSTANCE.play( Assets.Sounds.ITEM );
+		return true;
+	}
+
+	@Override
+	public boolean collect() {
+		instantPickupKey(Dungeon.hero.pos);
 		return true;
 	}
 
@@ -75,7 +82,6 @@ public abstract class Key extends Item {
 		GameScene.pickUpJournal(this, pos);
 		WndJournal.last_index = 2;
 		Notes.add(this);
-		Sample.INSTANCE.play( Assets.Sounds.ITEM );
 		GameScene.updateKeyDisplay();
 	}
 
