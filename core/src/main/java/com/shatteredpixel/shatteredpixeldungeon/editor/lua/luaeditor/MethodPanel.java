@@ -24,8 +24,9 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.idewindowactions.CodeInputPanelInterface;
+import com.watabou.idewindowactions.LuaScript;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -67,45 +68,20 @@ public class MethodPanel extends CodeInputPanel {
 
 	@Override
 	protected String createDescription() {
-		return Messages.get(this, "method_" + method.getName());
+		return Messages.get(MethodPanel.class, "method_" + method.getName());
 	}
 
 	@Override
-	protected String convertToLuaCode() {
-
-		if (textInput == null && (textInputText == null || textInputText.isEmpty())) return null;
-
-		StringBuilder b = new StringBuilder();
-
-		b.append("function ");
-		b.append(method.getName());
-		b.append("(this, vars");
-		for (String p : paramNames) {
-			b.append(", ");
-			b.append(p);
-		}
-		b.append(")\n");
-
-		b.append(textInput == null ? textInputText : textInput.getText());
-
-		b.append("\nend");
-
-		return b.toString();
+	public String convertToLuaCode() {
+		return CodeInputPanelInterface.methodPanelToLuaCode(method,
+				textInput == null && (textInputText == null || textInputText.isEmpty()) ? null
+						: textInput == null ? textInputText : textInput.getText(),
+				paramNames);
 	}
 
 	@Override
-	String getLabel() {
-		StringBuilder b = new StringBuilder(method.getName());
-		b.append(" (");
-		Class<?>[] paramTypes = method.getParameterTypes();
-		for (int i = 0; i < paramTypes.length; i++) {
-			b.append(paramTypes[i].getSimpleName()).append(' ');
-			b.append(paramNames[i]);
-			if (i < paramTypes.length - 1)
-				b.append(", ");
-		}
-		b.append(')');
-		return b.toString();
+	public String getLabel() {
+		return CodeInputPanelInterface.methodPanelGetLabel(method, paramNames);
 	}
 
 //	@Override
@@ -136,17 +112,7 @@ public class MethodPanel extends CodeInputPanel {
 	protected void onAddClick() {
 		super.onAddClick();
 		if (textInputText == null || textInputText.isEmpty()) {
-			StringBuilder b = new StringBuilder();
-			if (method.getReturnType() != void.class)
-				b.append("return ");
-			b.append("this:super_").append(method.getName()).append("(");
-			for (int i = 0; i < paramNames.length; i++) {
-				b.append(paramNames[i]);
-				if (i < paramNames.length - 1)
-					b.append(", ");
-			}
-			b.append(");\n");
-			textInput.setText(textInputText = b.toString());
+			textInput.setText(textInputText = CodeInputPanelInterface.defaultMethodCode(method, paramNames));
 		}
 	}
 }

@@ -26,15 +26,14 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
+import com.watabou.idewindowactions.AbstractLuaCodeHolder;
+import com.watabou.idewindowactions.LuaScript;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import org.luaj.vm2.LuaValue;
 
-public class LuaCodeHolder implements Bundlable {
+public class LuaCodeHolder extends AbstractLuaCodeHolder implements Bundlable {
 
-	public Class<?> clazz;
-
-	public String pathToScript;
 
 	LuaValue script;
 	private LuaValue staticVarsTemp;
@@ -42,8 +41,7 @@ public class LuaCodeHolder implements Bundlable {
 	public LuaCodeHolder() {}
 
 	public LuaCodeHolder(LuaScript fromScript) {
-		clazz = fromScript.type;
-		pathToScript = fromScript.pathFromRoot;
+		super(fromScript);
 	}
 
 	public void loadScript() {

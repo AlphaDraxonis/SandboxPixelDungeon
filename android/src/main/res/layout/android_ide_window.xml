@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#3E4039"
+            android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/comp_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical">
+
+<!--        check syntax, new instance, insert script, view help-->
+
+<!--        Toolbar (at top to be accessible even with visible OnScreenKeyboard)-->
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_compile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Check Syntax"
+                app:layout_constraintEnd_toStartOf="@id/btn_new_instance"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btn_new_instance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Instance"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_compile"
+                app:layout_constraintEnd_toEndOf="@id/btn_insert_full" />
+
+            <Button
+                android:id="@+id/btn_insert_full"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Insert full"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_new_instance"
+                app:layout_constraintEnd_toEndOf="@id/btn_documentation" />
+
+            <Button
+                android:id="@+id/btn_documentation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Docu"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_insert_full"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+
+
+        <!--    Path, with text line, switch button tzz und exit button nicht vergessen-->
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/path_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <EditText
+                android:id="@+id/path_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="10dp"
+                android:inputType="text"
+                android:textSize="15sp"
+                app:layout_constraintStart_toEndOf="@id/path_label"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+
+            <ImageButton
+                android:id="@+id/btn_change"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:src="@drawable/btn_add"
+                android:scaleType="fitXY"
+                android:background="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+        <!--    Toolbar with buttons "Syntax". "Copy", "Paste", "Menu"-->
+
+    </LinearLayout>
+
+</ScrollView>

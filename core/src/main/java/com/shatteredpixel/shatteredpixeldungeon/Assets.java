@@ -166,7 +166,7 @@ public class Assets {
 	}
 
 	public static class Sounds {
-		public static final String CLICK    = "sounds/click.mp3";
+		public static final String CLICK    = "sounds/click.mp3";//Warning: also used in ImageButtonTouchFeedback.java with no reference!
 		public static final String BADGE    = "sounds/badge.mp3";
 		public static final String GOLD     = "sounds/gold.mp3";
 

@@ -26,11 +26,12 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ChooseOneInCategoriesBody;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.WndChooseOneInCategories;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.idewindowactions.LuaScript;
 import com.watabou.utils.Consumer;
 
 import java.util.ArrayList;
@@ -201,7 +202,7 @@ public class LuaTemplates {
 				ChooseOneInCategoriesBody.BtnRow[] ret = new ChooseOneInCategoriesBody.BtnRow[category.length];
 				for (int i = 0; i < ret.length; i++) {
 					LuaScript script = (LuaScript) category[i];
-					ret[i] = new ChooseOneInCategoriesBody.BtnRow(name(script), desc(script), script.sprite()) {
+					ret[i] = new ChooseOneInCategoriesBody.BtnRow(name(script), desc(script), LuaManager.scriptSprite(script)) {
 						@Override
 						protected void onClick() {
 							finish();
@@ -211,6 +212,12 @@ public class LuaTemplates {
 					ret[i].setLeftJustify(true);
 				}
 				return ret;
+			}
+
+			@Override
+			public void hide() {
+				super.hide();
+				onSelect.accept(null);
 			}
 		});
 	}

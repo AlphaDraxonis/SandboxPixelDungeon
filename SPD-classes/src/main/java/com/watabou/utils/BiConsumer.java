@@ -1,4 +1,4 @@
-package com.shatteredpixel.shatteredpixeldungeon.editor.util;
+package com.watabou.utils;
 
 public interface BiConsumer<T, U> {
     void accept(T t, U u);

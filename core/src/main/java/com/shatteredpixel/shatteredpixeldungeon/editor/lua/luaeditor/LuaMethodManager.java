@@ -46,8 +46,8 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 	}
 
 	private final int sortingRank;
-	final Method method;
-	final String[] paramNames;
+	public final Method method;
+	public final String[] paramNames;
 
 	@Override
 	public int compareTo(LuaMethodManager o) {

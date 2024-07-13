@@ -46,6 +46,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.android.ideactivity.AndroidIDEWindow;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.CustomDungeonSaves;
 import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
 import com.shatteredpixel.shatteredpixeldungeon.services.news.NewsImpl;
@@ -61,11 +62,13 @@ public class AndroidLauncher extends AndroidApplication {
 	public static final boolean FILE_ACCESS_ENABLED_ON_ANDROID_11 = false;//GPlay doesn't like apps that want to do this
 
 	static final int REQUEST_DIRECTORY = 123, REQUEST_READ_EXTERNAL_STORAGE = 124;
+	public static final int REQUEST_CODE_ANDROID_IDE_WINDOW = 1;
+	public static final int REQUEST_CODE_RETURN_TO_LIBGDX = 2;
 	static Consumer<FileHandle> selectFileCallback;
 	
 	public static AndroidApplication instance;
 	
-	private static AndroidPlatformSupport support;
+	public static AndroidPlatformSupport support;
 	
 	@SuppressLint("SetTextI18n")
 	@Override
@@ -235,6 +238,10 @@ public class AndroidLauncher extends AndroidApplication {
 				Toast.makeText(this, "Invalid file: Only " + CustomDungeonSaves.EXPORT_FILE_EXTENSION + " files are permitted!", Toast.LENGTH_SHORT).show();
 //			selectFileCallback.accept(convertUriToFileHandle(data.getData()));
         }
+		else if (requestCode == REQUEST_CODE_ANDROID_IDE_WINDOW) {
+		}
+		else if (requestCode == REQUEST_CODE_RETURN_TO_LIBGDX) {
+		}
     }
 
     public boolean hasPermissionReadExternalStorage() {
@@ -278,5 +285,17 @@ public class AndroidLauncher extends AndroidApplication {
 		if (indexStart == -1) path = "storage/emulated/0/" + path;
 		else path = path.substring(indexStart);//cut everything in front of storage/emulated
 		return Gdx.files.absolute(path);
+	}
+
+
+
+	public static void launchIDEWindowActivity() {
+		Intent intent = new Intent(instance, AndroidIDEWindow.class);
+//		instance.startActivityForResult(intent, REQUEST_CODE_ANDROID_IDE_WINDOW);
+		instance.startActivity(intent);
+	}
+	public static void launchLibGDXActivity() {
+		Intent intent = new Intent(instance, AndroidLauncher.class);
+		instance.startActivityForResult(intent, REQUEST_CODE_RETURN_TO_LIBGDX);
 	}
 }

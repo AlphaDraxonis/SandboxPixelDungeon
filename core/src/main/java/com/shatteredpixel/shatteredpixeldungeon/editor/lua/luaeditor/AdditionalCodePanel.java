@@ -1,7 +1,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.watabou.idewindowactions.LuaScript;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class AdditionalCodePanel extends CodeInputPanel {
 	}
 
 	@Override
-	protected String convertToLuaCode() {
+	public String convertToLuaCode() {
 		return textInput == null ? textInputText == null ? "" : textInputText : textInput.getText();
 	}
 

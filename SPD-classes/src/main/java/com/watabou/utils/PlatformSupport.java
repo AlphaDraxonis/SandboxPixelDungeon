@@ -90,6 +90,10 @@ public abstract class PlatformSupport {
 		return null;
 	}
 
+	public boolean openNativeIDEWindow(Object luaCodeHolder, Object luaScript) {
+		return false;
+	}
+
 	public void setOnscreenKeyboardVisible(boolean value){
 		Gdx.input.setOnscreenKeyboardVisible(value);
 	}

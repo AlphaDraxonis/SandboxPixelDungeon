@@ -128,6 +128,12 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		requestPage(lastPage, true);
 	}
 
+	@Override
+	public void layout() {
+		super.layout();
+		upload.givePointerPriority();
+	}
+
 	public static void setNumPreviews(int numPreviews) {
 		numPages = (int) Math.ceil((float) numPreviews / PREVIEWS_PER_PAGE);
 		if (dungeons == null) {
@@ -142,14 +148,18 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		}
 	}
 
+	private void killMainWindowComp(int i) {
+		if (mainWindowComps[i] != null) {
+			mainWindowComps[i].remove();
+			mainWindowComps[i].killAndErase();
+			mainWindowComps[i].destroy();
+			mainWindowComps[i] = null;
+		}
+	}
+
 	private void hidePage(int page) {
 		for (int i = 0; i < mainWindowComps.length; i++) {
-			if (mainWindowComps[i] != null) {
-				mainWindowComps[i].remove();
-				mainWindowComps[i].killAndErase();
-				mainWindowComps[i].destroy();
-				mainWindowComps[i] = null;
-			}
+			killMainWindowComp(i);
 		}
 	}
 
@@ -157,6 +167,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		msgWaitingForData.setVisible(false);
 		this.page = page;
 		for (int i = 0; i < dungeons[page].length; i++) {
+			killMainWindowComp(i);
 			mainWindowComps[i] = createListItem(dungeons[page][i]);
 			content.add(mainWindowComps[i]);
 		}
@@ -186,7 +197,7 @@ public class ServerDungeonList extends MultiWindowTabComp {
 		}
 	}
 
-	private void loadPageFromServer(final int page, boolean startMoreProcesses) {
+	private synchronized void loadPageFromServer(final int page, boolean startMoreProcesses) {
 		if (pagesLoading.contains(page)) return;
 		pagesLoading.add(page);
 		ServerCommunication.dungeonList(new ServerCommunication.OnPreviewReceive() {

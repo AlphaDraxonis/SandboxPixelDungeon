@@ -22,8 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
+package com.shatteredpixel.shatteredpixeldungeon.android.ideactivity;
 
+import android.content.Context;
+import android.util.AttributeSet;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.watabou.idewindowactions.CodeInputPanelInterface;
@@ -34,58 +36,52 @@ import org.luaj.vm2.LuaValue;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VariablesPanel extends CodeInputPanel {
+public class AndroidVariablesPanel extends AndroidCodeInputPanel {
+
+	{
+		btnAdd.setVisibility(GONE);
+		btnExpand.setVisibility(VISIBLE);
+	}
 
 	private final String tableName;
+	private final String label;
 
-	public VariablesPanel(String label, String tableName) {
-		title.text(label);
+	public AndroidVariablesPanel(Context context) {
+		super(context);
+		this.tableName = "unnamedTable";
+		this.label = "no-label";
+		super.label.setText(AndroidIDEWindow.createSpannableStringWithColorsFromText((getLabel())));
+	}
+
+	public AndroidVariablesPanel(Context context, String tableName, String label) {
+		super(context);
 		this.tableName = tableName;
+		this.label = label;
+		super.label.setText(getLabel());
 	}
 
-
-	@Override
-	public void expand() {
-		onAdd(null, true);
-		remover.setVisible(false);
-
-		layoutParent();
+	public AndroidVariablesPanel(Context context, AttributeSet attrs, String tableName, String label) {
+		super(context, attrs);
+		this.tableName = tableName;
+		this.label = label;
+		super.label.setText(AndroidIDEWindow.createSpannableStringWithColorsFromText((getLabel())));
 	}
 
-	@Override
-	public void fold() {
-		textInputText = textInput.getText();
-
-		if (body != null) {
-			body.destroy();
-			remove(body);
-			body = null;
-		}
-		textInput = null;
-
-		adder.setVisible(false);
-		remover.setVisible(false);
-
-		fold.setVisible(false);
-		expand.setVisible(true);
-
-		layoutParent();
+	public AndroidVariablesPanel(Context context, AttributeSet attrs, int defStyleAttr, String tableName, String label) {
+		super(context, attrs, defStyleAttr);
+		this.tableName = tableName;
+		this.label = label;
+		super.label.setText(AndroidIDEWindow.createSpannableStringWithColorsFromText((getLabel())));
 	}
 
 	@Override
-	protected void onRemove() {
-		if (textInput != null) textInput.setText("");
+	public String getLabel() {
+		return label;
 	}
-
 
 	@Override
 	public String convertToLuaCode() {
-
-		if (textInput == null && (textInputText == null || textInputText.isEmpty())) return null;
-
-		return tableName + " = {\n" +
-				(textInput == null ? textInputText : textInput.getText()) +
-				"\n}";
+		return tableName + " = {\n" + textInput.getText() + "\n}";
 	}
 
 	@Override
@@ -106,14 +102,14 @@ public class VariablesPanel extends CodeInputPanel {
 	public void applyScript(boolean forceChange, LuaScript fullScript, String cleanedCode) {
 		String newCode = LuaScript.extractTableFromScript(cleanedCode, fullScript.code, tableName, true);
 
-		if (!forceChange && newCode != null && textInput != null && !textInput.getText().isEmpty()) {
+		if (!forceChange && newCode != null && !textInput.getText().toString().isEmpty()) {
 			//smart insert code
 			StringBuilder writeCode = new StringBuilder();
 
-			LuaTable oldTable = LuaManager.load("return {" + textInput.getText().replaceAll("\\bnil\\b", "\"_\"") + "}").call().checktable();
+			LuaTable oldTable = LuaManager.load("return {" + textInput.getText().toString().replaceAll("\\bnil\\b", "\"_\"") + "}").call().checktable();
 			LuaTable newTable = LuaManager.load("return {" +       newCode      .replaceAll("\\bnil\\b", "\"_\"") + "}").call().checktable();
 			String cleanedNewCode = LuaScript.cleanLuaCode(newCode);
-			String oldCode = textInput.getText();
+			String oldCode = textInput.getText().toString();
 			String cleanedOldCode = LuaScript.cleanLuaCode(oldCode);
 			LuaValue[] oldKeys = oldTable.keys();
 			List<String> oldKeysString = new ArrayList<>(oldKeys.length + 1);
@@ -137,7 +133,7 @@ public class VariablesPanel extends CodeInputPanel {
 //					//comments are not supported
 //					if (oldValue != null && !oldValue.equals(value)) writeCode.append("--[[").append(oldValue).append("]]\n     ").append(value);
 //					else
-						writeCode.append(value);
+					writeCode.append(value);
 
 				} else {
 					writeCode.append(value);
@@ -157,18 +153,6 @@ public class VariablesPanel extends CodeInputPanel {
 
 		} else {
 			setCode(forceChange, newCode);
-		}
-	}
-
-	@Override
-	public void setCode(boolean forceChange, String code) {
-		super.setCode(forceChange, code);
-		if (textInputText != null) {
-			expand.setVisible(body == null);
-			fold.setVisible(body != null);
-
-			adder.setVisible(false);
-			remover.setVisible(false);
 		}
 	}
 }

@@ -43,22 +43,29 @@ public abstract class NewInstanceButton extends RedButton {
 	protected void onClick() {
 		IDEWindow.chooseClassName((clName, obj) -> {
 			popupMenu.hideImmediately();
-			String text;
-			if (obj instanceof LuaClass) {
-				boolean useID = false;
-				CustomObject selected = CustomObject.customObjects.get(((LuaClass) obj).getIdentifier());
-				for (CustomObject cusObj : CustomObject.customObjects.values()) {
-					if (cusObj != selected && cusObj.name.equals(selected.name)) {
-						useID = true;
-					}
-				}
-				text = "newCus(" + (useID ? ((LuaClass) obj).getIdentifier() : "\"" + selected.name + "\"") +")";
-			}
-			else text = "new(\"" + clName + "\")";
-			onSelect(text);
+
+			if (obj == null) return;
+
+			onSelect(generateCodeForNewInstance(clName, obj));
 		});
 	}
 
 	protected abstract void onSelect(String insertText);
 
+	public static String generateCodeForNewInstance(String clName, Object obj) {
+
+		if (obj == null || clName == null) return null;
+
+		if (obj instanceof LuaClass) {
+			boolean useID = false;
+			CustomObject selected = CustomObject.customObjects.get(((LuaClass) obj).getIdentifier());
+			for (CustomObject cusObj : CustomObject.customObjects.values()) {
+				if (cusObj != selected && cusObj.name.equals(selected.name)) {
+					useID = true;
+				}
+			}
+			return "newCus(" + (useID ? ((LuaClass) obj).getIdentifier() : "\"" + selected.name + "\"") +")";
+		}
+		return  "new(\"" + clName + "\")";
+	}
 }

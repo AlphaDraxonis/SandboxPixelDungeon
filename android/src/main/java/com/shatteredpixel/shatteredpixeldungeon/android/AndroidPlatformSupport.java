@@ -40,7 +40,10 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.android.ideactivity.AndroidIDEWindow;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaCodeHolder;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.watabou.idewindowactions.LuaScript;
 import com.watabou.input.ControllerHandler;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Consumer;
@@ -367,5 +370,14 @@ public class AndroidPlatformSupport extends PlatformSupport {
 	@Override
 	public FileHandle getDownloadDirectory(String fileName) {
 		return new FileHandle(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + fileName);
+	}
+
+
+	@Override
+	public boolean openNativeIDEWindow(Object luaCodeHolder, Object luaScript) {
+		AndroidIDEWindow.luaCodeHolder = (LuaCodeHolder) luaCodeHolder;
+		AndroidIDEWindow.script = (LuaScript) luaScript;
+		AndroidLauncher.launchIDEWindowActivity();
+		return true;
 	}
 }

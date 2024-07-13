@@ -24,17 +24,31 @@
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.watabou.idewindowactions.LuaScript;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Reflection;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
+import java.lang.reflect.Modifier;
+
 public class LuaManager {
+
+	public static Image scriptSprite(LuaScript script) {
+		boolean abstrct = Modifier.isAbstract(script.type.getModifiers());
+		if (Mob.class.isAssignableFrom(script.type)) return abstrct ? new SkeletonSprite() : ((Mob) Reflection.newInstance(script.type)).sprite();
+		return new ItemSprite();
+	}
 
 	public static void callStaticInitializers() {
 	}

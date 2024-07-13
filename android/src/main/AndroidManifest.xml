@@ -58,6 +58,9 @@
 		<activity
 			android:name=".AndroidMissingNativesHandler">
 		</activity>
+		<activity
+			android:name=".ideactivity.AndroidIDEWindow">
+		</activity>
 	</application>
 
 </manifest>

@@ -29,7 +29,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.shatteredpixel.shatteredpixeldungeon.Chrome;
 import com.shatteredpixel.shatteredpixeldungeon.editor.EditorScene;
 import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaScript;
 import com.shatteredpixel.shatteredpixeldungeon.editor.ui.FoldableCompWithAdd;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -38,10 +37,11 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptionsCondensed;
+import com.watabou.idewindowactions.CodeInputPanelInterface;
 import com.watabou.noosa.TextInput;
 import com.watabou.noosa.ui.Component;
 
-public abstract class CodeInputPanel extends FoldableCompWithAdd {
+public abstract class CodeInputPanel extends FoldableCompWithAdd implements CodeInputPanelInterface {
 
 	protected String textInputText;
 
@@ -141,11 +141,8 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 		return null;
 	}
 
-	protected abstract String convertToLuaCode();
-
-	public abstract void applyScript(boolean forceChange, LuaScript fullScript, String cleanedCode);
-
-	protected void setCode(boolean forceChange, String code) {
+	@Override
+	public void setCode(boolean forceChange, String code) {
 		if (code == null) {
 			if (forceChange && textInput != null) onRemove();//TODO tzz add a warning!
 			return;
@@ -166,12 +163,14 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 		}
 	}
 
-	String getLabel() {
+	@Override
+	public String getLabel() {
 		return title.text();
 	}
 
 	//can only check for syntax errors, not for undeclared variables
-	protected String compile() {
+	@Override
+	public String compile() {
 		String code = convertToLuaCode();
 		return code == null ? null : LuaManager.compile(code);
 	}
@@ -194,7 +193,7 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd {
 					onTextChange();
 				}
 
-				//				@Override
+//				@Override
 //				public void setText(String text) {
 //					super.setText(text);
 //					if (info != null) {

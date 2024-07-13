@@ -22,23 +22,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
+package com.watabou.idewindowactions;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.Copyable;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.SkeletonSprite;
-import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LuaScript implements Comparable<LuaScript>, Copyable<LuaScript> {
+public class LuaScript implements Comparable<LuaScript> {
 
 	public Class<?> type;
 	public String desc;
@@ -239,16 +233,9 @@ public class LuaScript implements Comparable<LuaScript>, Copyable<LuaScript> {
 		return s.toString();
 	}
 
-	@Override
 	public LuaScript getCopy() {
 		LuaScript copy = new LuaScript(type, desc, pathFromRoot);
 		copy.code = code;
 		return copy;
-	}
-
-	public Image sprite() {
-		boolean abstrct = Modifier.isAbstract(type.getModifiers());
-		if (Mob.class.isAssignableFrom(type)) return abstrct ? new SkeletonSprite() : ((Mob) Reflection.newInstance(type)).sprite();
-		return new ItemSprite();
 	}
 }
