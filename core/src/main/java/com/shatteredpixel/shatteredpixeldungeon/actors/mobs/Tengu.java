@@ -292,12 +292,6 @@ public class Tengu extends Mob implements MobBasedOnDepth {
 	}
 
 	@Override
-	public void onZapComplete() {
-		if (!(sprite instanceof TenguSprite)) super.onAttackComplete();
-		else super.onZapComplete();
-	}
-
-	@Override
 	public void playZapAnim(int target) {
 		TenguSprite.playZap(sprite.parent, sprite, target, this);
 	}

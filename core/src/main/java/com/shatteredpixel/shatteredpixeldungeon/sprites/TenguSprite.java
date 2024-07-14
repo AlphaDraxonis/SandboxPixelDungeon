@@ -114,15 +114,26 @@ public class TenguSprite extends MobSprite {
 	}
 
 	public static void playZap(Group parent, Visual sprite, int cell, Char ch) {
-		//normal Zap/Throwing animations are handled in Tengu.java
-		if (!(ch instanceof Tengu)) {
-			((MissileSprite)parent.recycle( MissileSprite.class )).
-					reset( sprite, cell, new TenguShuriken(), new Callback() {
+		if (ch instanceof Tengu) {
+			//abilities have their own zap animation in Tengu.java
+			if (!((Tengu) ch).zapForAbility) {
+				((MissileSprite) parent.recycle(MissileSprite.class)).
+						reset(sprite, cell, new TenguShuriken(), new Callback() {
+							@Override
+							public void call() {
+								ch.onAttackComplete();
+							}
+						});
+			}
+		}
+		else {
+			((MissileSprite) parent.recycle(MissileSprite.class)).
+					reset(sprite, cell, new TenguShuriken(), new Callback() {
 						@Override
 						public void call() {
 							ch.onZapComplete();
 						}
-					} );
+					});
 			Sample.INSTANCE.play(Assets.Sounds.HIT);
 		}
 	}

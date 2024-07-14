@@ -566,7 +566,7 @@ public class PrisonBossLevel extends Level {
 	@Override
 	protected void createMobs() {
 		tengu = new Tengu(); //We want to keep track of tengu independently of other mobs, he's not always in the level.
-		tengu.setLevel(Dungeon.depth);
+		//tengu.setLevel(Dungeon.depth); level WILL BE SET WHEN ADDING IT!
 	}
 	
 	public Actor addRespawner() {
