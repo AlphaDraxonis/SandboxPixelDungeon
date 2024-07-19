@@ -29,7 +29,9 @@ package com.shatteredpixel.shatteredpixeldungeon.editor.lua.luaeditor;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
 import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
@@ -117,6 +119,9 @@ public final class LuaMethodManager implements Comparable<LuaMethodManager> {
 			//Level.class
 //			addMethod(1401, Level.class.getMethod("create"));
 			addMethod(1402, Level.class.getMethod("initForPlay"));
+
+			addMethod(1407, Level.class.getMethod("onExecuteItem", Item.class, Hero.class, String.class), "item", "user", "action");
+			addMethod(1407, Level.class.getMethod("onItemCollected", Item.class), "item");
 
 			addMethod(1411, Level.class.getMethod("randomRespawnCell", Char.class, boolean.class), "ch", "guarantee");
 			addMethod(1412, Level.class.getDeclaredMethod("isValidSpawnCell", Char.class, int.class), "ch", "cell");

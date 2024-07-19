@@ -81,7 +81,7 @@ public class WandOfTransfusion extends DamageWand {
 
 		Char ch = Actor.findChar(cell);
 
-		if (ch != curUser && (!(ch instanceof HeroMob) || ((HeroMob) ch).hero() != curUser )){
+		if (ch != null && ch != curUser && (!(ch instanceof HeroMob) || ((HeroMob) ch).hero() != curUser )){
 			
 			wandProc(ch, chargesPerCast());
 			

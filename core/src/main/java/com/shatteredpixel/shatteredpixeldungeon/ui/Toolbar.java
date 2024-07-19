@@ -169,9 +169,11 @@ public class Toolbar extends Component {
 								});
 							} else {
 
-								item.execute(Dungeon.hero);
-								if (item.usesTargeting) {
-									QuickSlotButton.useTargeting(idx);
+								if (Dungeon.level.onExecuteItem(item, Dungeon.hero)) {
+									item.execute(Dungeon.hero);
+									if (item.usesTargeting) {
+										QuickSlotButton.useTargeting(idx);
+									}
 								}
 							}
 							super.onSelect(idx, alt);
@@ -453,7 +455,9 @@ public class Toolbar extends Component {
 									super.onSelect(idx, alt);
 									Item item = items.get(idx);
 									if (alt && item.defaultAction() != null) {
-										item.execute(Dungeon.hero);
+										if (Dungeon.level.onExecuteItem(item, Dungeon.hero)) {
+											item.execute(Dungeon.hero);
+										}
 									} else {
 										InventoryPane.clearTargetingSlot();
 										Game.scene().addToFront(new WndUseItem(null, item));

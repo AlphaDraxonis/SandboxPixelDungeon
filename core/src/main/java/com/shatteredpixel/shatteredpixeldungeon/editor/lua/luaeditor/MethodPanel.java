@@ -72,6 +72,16 @@ public class MethodPanel extends CodeInputPanel {
 	}
 
 	@Override
+	protected void onRemove() {
+		String currentText = textInput != null ? textInput.getText() : textInputText;
+		if (currentText != null && currentText.equals(CodeInputPanelInterface.defaultMethodCode(method, paramNames))) {
+			textInputText = null;
+			if (textInput != null) textInput.setText("");
+		}
+		super.onRemove();
+	}
+
+	@Override
 	public String convertToLuaCode() {
 		return CodeInputPanelInterface.methodPanelToLuaCode(method,
 				textInput == null && (textInputText == null || textInputText.isEmpty()) ? null

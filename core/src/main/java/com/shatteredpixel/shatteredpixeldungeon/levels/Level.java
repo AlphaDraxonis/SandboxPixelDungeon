@@ -2585,4 +2585,23 @@ public abstract class Level implements Bundlable {
 		return fullKey;
 
 	}
+
+
+	@KeepProguard
+	public boolean onExecuteItem(Item item, Hero hero) {
+		if (item.defaultAction() != null) return onExecuteItem(item, hero, item.defaultAction());
+		return true;//false = cancel execution
+	}
+
+	//Only for Lua
+	@KeepProguard
+	public boolean onExecuteItem(Item item, Hero hero, String action) {
+		return true;//false = cancel execution
+	}
+
+	//Only for Lua
+	@KeepProguard
+	public void onItemCollected(Item item) {
+	}
+
 }

@@ -52,7 +52,7 @@ public class ArcaneResin extends Item {
 		bones = true;
 	}
 
-	private static final String AC_APPLY = "APPLY";
+	public static final String AC_APPLY = "APPLY";
 
 	@Override
 	public ArrayList<String> actions(Hero hero ) {

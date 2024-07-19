@@ -90,6 +90,15 @@ public abstract class CodeInputPanel extends FoldableCompWithAdd implements Code
 	@Override
 	protected void onRemove() {
 		Runnable superCall = super::onRemove;
+
+		String currentText = textInput != null ? textInput.getText() : textInputText;
+		if (currentText == null || currentText.isEmpty()) {
+			superCall.run();
+			textInput = null;
+			textInputText = null;
+			return;
+		}
+
 		EditorScene.show(new WndOptionsCondensed(Icons.WARNING.get(),
 				Messages.get(CodeInputPanel.class, "remove_title"),
 				Messages.get(CodeInputPanel.class, "remove_body"),

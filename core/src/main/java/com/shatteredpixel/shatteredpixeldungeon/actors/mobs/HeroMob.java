@@ -604,7 +604,7 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
         }
 
         updateInternalStats();
-        internalHero.damage(dmg, src);
+        internalHero.superDamage(dmg, src);
         updateStats();
 
         if (isBossMob) {
@@ -695,7 +695,9 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
     public void die(Object cause) {
         super.die(cause);
         if (directableAlly != null && !bindEquipment) {
-            for (Item i : internalHero.belongings) Dungeon.level.drop(i, pos);
+            for (Item i : internalHero.belongings) {//also includes UnlimitedCapacityBags
+                if (!(i instanceof Bag)) Dungeon.level.drop(i, pos).sprite.drop();
+            }
         }
     }
 
@@ -859,8 +861,12 @@ public class HeroMob extends Mob implements ItemSelectables.WeaponSelectable, It
 
         @Override
         public void damage(int dmg, Object src) {
+            if (owner != null) owner.damage(dmg, src);
+            else super.damage(dmg, src);
+        }
+
+        protected void superDamage(int dmg, Object src) {
             super.damage(dmg, src);
-            owner.updateStats();
         }
 
         @Override

@@ -42,8 +42,6 @@ import java.util.Set;
 
 public class WandOfYendor extends Wand {
 
-	private static final String AC_END = "END";
-
 	{
 		image = ItemSpriteSheet.WAND_YENDOR;
 
@@ -80,7 +78,7 @@ public class WandOfYendor extends Wand {
 		if (hero.buff(AscensionChallenge.class) != null){
 			actions.clear();
 		} else {
-			actions.add(AC_END);
+			actions.add(Amulet.AC_END);
 		}
 		return actions;
 	}
@@ -90,14 +88,14 @@ public class WandOfYendor extends Wand {
 
 		super.execute( hero, action );
 
-		if (action.equals(AC_END)) {
+		if (action.equals(Amulet.AC_END)) {
 			Amulet.showAmuletScene(true, WandOfYendor.this);
 		}
 	}
 
 	@Override
 	public String actionName(String action, Hero hero) {
-		if (action.equals(AC_END)) {
+		if (action.equals(Amulet.AC_END)) {
 			return Messages.get(Amulet.class, "ac_" + action);
 		}
 		return super.actionName(action, hero);

@@ -28,11 +28,13 @@ import com.shatteredpixel.shatteredpixeldungeon.GameObject;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
@@ -56,6 +58,7 @@ import com.watabou.utils.Function;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MagesStaff extends MeleeWeapon {
 
@@ -146,9 +149,10 @@ public class MagesStaff extends MeleeWeapon {
 				return;
 			}
 
-			if (cursed || hasCurseEnchant()) wand.cursed = true;
-			else                             wand.cursed = false;
-			wand.execute(hero, AC_ZAP);
+			wand.cursed = cursed || hasCurseEnchant();
+
+			if (!Dungeon.level.onExecuteItem(wand, hero, action)) return;
+			wand.execute(hero, action);
 		}
 	}
 
@@ -220,7 +224,19 @@ public class MagesStaff extends MeleeWeapon {
 	public Item imbueWand(Wand wand, Char owner){
 
 		if (wand instanceof WandOfYendor) {
-			owner.die(wand);
+			if (owner instanceof Hero) {
+				//Ankhs don't work here
+				Belongings belongings = ((Hero) owner).belongings;
+				List<Ankh> ankhs = belongings.getAllItems(Ankh.class);
+				for (Ankh ankh : ankhs) {
+					ankh.detach(belongings.backpack);
+				}
+				owner.die(wand);
+				for (Ankh ankh : ankhs) {
+					ankh.collect(belongings.backpack);
+				}
+			}
+			else owner.die(wand);
 			if (owner == Dungeon.hero) {
 				Dungeon.fail(wand.getClass());
 				GLog.n(Messages.get(wand.getClass(), "imbue"));

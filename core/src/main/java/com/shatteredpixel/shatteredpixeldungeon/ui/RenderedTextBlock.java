@@ -52,7 +52,7 @@ public class RenderedTextBlock extends Component {
 	public static final String MARKER = " ";//specifically yellow
 	public static final String COLOR_MARKERS = "           ";//U+2000 to U+200A
 	private int currentMarkingColor = -1;
-	private static final int[] COLORS = {
+	public static final int[] COLORS = {
 			0xFF0000,//red  
 			0x00FF00,//green  
 			0xFFFF44,//yellow  
@@ -133,6 +133,8 @@ public class RenderedTextBlock extends Component {
 		boolean highlighting = false;
 		currentMarkingColor = -1;
 		for (String str : tokens){
+
+			if (str.isEmpty()) continue;
 
 			int forceColorChange = COLOR_MARKERS.indexOf(str.charAt(0));
 			if (str.equals("_") && highlightingEnabled) {

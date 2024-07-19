@@ -102,10 +102,13 @@ public class RightClickMenu extends Component {
 				protected void onClick() {
 					super.onClick();
 					if (item != null){
-						item.execute(Dungeon.hero, options[finalI]);
+						if (Dungeon.level.onExecuteItem(item, Dungeon.hero, options[finalI])) {
+							item.execute(Dungeon.hero, options[finalI]);
 
-						if (options[finalI].equals(item.defaultAction()) && item.usesTargeting){
-							InventoryPane.useTargeting();
+							if (options[finalI].equals(item.defaultAction()) && item.usesTargeting){
+								InventoryPane.useTargeting();
+							}
+
 						}
 					}
 					onSelect(finalI);

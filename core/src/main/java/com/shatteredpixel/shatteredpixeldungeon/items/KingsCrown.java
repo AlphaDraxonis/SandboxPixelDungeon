@@ -42,7 +42,7 @@ import java.util.ArrayList;
 
 public class KingsCrown extends Item {
 	
-	private static final String AC_WEAR = "WEAR";
+	public static final String AC_WEAR = "WEAR";
 	
 	{
 		image = ItemSpriteSheet.CROWN;

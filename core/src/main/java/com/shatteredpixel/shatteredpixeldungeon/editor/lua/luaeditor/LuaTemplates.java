@@ -142,8 +142,17 @@ public class LuaTemplates {
 				"end;\n" +
 				"end\n" +
 				"\n" +
+				"function zap(this, vars)\n" +
+				"    --Zaps.attack(this, this.enemy, damage); -- specific amount of damage\n" +
+				"    --Zaps.attack(this, this.enemy, damageMin, damageMax); -- parameters for damage roll\n" +
+				"    --Zaps.attack(this, this.enemy, isMagicAttack); -- if it is a magic attack\n" +
+				"    Zaps.attack(this, this.enemy); -- combine these up to 3 parameters in any order or just don't use any\n" +
+				"end\n" +
+				"\n" +
+				"\n" +
 				"function playZapAnim(this, vars, target)\n" +
-				"    Zaps.warlock(this.sprite.parent, this.sprite, target, this); --change attack animation here (mob class name in camelCase)\n" +
+				"     -- change attack animation here (mob class name in camelCase)\n" +
+				"    Zaps.warlock(this.sprite.parent, this.sprite, target, this);\n" +
 				"end\n" +
 				"\n" +
 				"\n" +
@@ -177,12 +186,18 @@ public class LuaTemplates {
 
 	private static String name(LuaScript script) {
 		if (script == KILL_HERO_ON_DIE) return Messages.get(LuaTemplates.class, "kill_hero_death_name");
+		if (script == SPAWN_MOB_ON_DIE) return Messages.get(LuaTemplates.class, "spawn_mob_on_die_name");
+		if (script == CRYSTAL_GUARDIAN_RECOVERY) return Messages.get(LuaTemplates.class, "crystal_guardian_recovery_name");
+		if (script == RANGED_ATTACK) return Messages.get(LuaTemplates.class, "ranged_attack_name");
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_name");
 		return Messages.NO_TEXT_FOUND;
 	}
 
 	private static String desc(LuaScript script) {
 		if (script == KILL_HERO_ON_DIE) return Messages.get(LuaTemplates.class, "kill_hero_death_desc");
+		if (script == SPAWN_MOB_ON_DIE) return Messages.get(LuaTemplates.class, "spawn_mob_on_die_desc");
+		if (script == CRYSTAL_GUARDIAN_RECOVERY) return Messages.get(LuaTemplates.class, "crystal_guardian_recovery_desc");
+		if (script == RANGED_ATTACK) return Messages.get(LuaTemplates.class, "ranged_attack_desc");
 		if (script == REPLACES_WALLS_WITH_EMBERS) return Messages.get(LuaTemplates.class, "replaces_walls_with_embers_desc");
 		return Messages.NO_TEXT_FOUND;
 	}

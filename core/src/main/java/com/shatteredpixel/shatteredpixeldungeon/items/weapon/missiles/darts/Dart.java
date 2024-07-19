@@ -58,7 +58,7 @@ public class Dart extends MissileWeapon {
 		baseUses = 1000;
 	}
 	
-	protected static final String AC_TIP = "TIP";
+	public static final String AC_TIP = "TIP";
 	
 	@Override
 	public ArrayList<String> actions(Hero hero) {

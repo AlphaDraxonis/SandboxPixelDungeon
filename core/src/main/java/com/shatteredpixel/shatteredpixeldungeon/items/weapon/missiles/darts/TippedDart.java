@@ -50,7 +50,7 @@ public abstract class TippedDart extends Dart {
 		baseUses = 1f;
 	}
 	
-	private static final String AC_CLEAN = "CLEAN";
+	public static final String AC_CLEAN = "CLEAN";
 	
 	@Override
 	public ArrayList<String> actions(Hero hero) {

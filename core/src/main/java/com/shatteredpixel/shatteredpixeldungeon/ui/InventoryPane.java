@@ -581,10 +581,12 @@ public class InventoryPane extends Component {
 			}
 
 			if (selector == null && item.defaultAction() != null){
-				item.execute(Dungeon.hero);
-				if (item != null && item.usesTargeting) {
-					targetingSlot = this;
-					InventoryPane.useTargeting();
+				if (Dungeon.level.onExecuteItem(item, Dungeon.hero)) {
+					item.execute(Dungeon.hero);
+					if (item != null && item.usesTargeting) {
+						targetingSlot = this;
+						InventoryPane.useTargeting();
+					}
 				}
 			} else {
 				onClick();

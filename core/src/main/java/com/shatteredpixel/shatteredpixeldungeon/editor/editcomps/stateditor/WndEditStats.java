@@ -169,7 +169,7 @@ public class WndEditStats extends MultiWindowTabComp {
 			}
 
 			maxLvl = new IntegerSpinner(Messages.get(Mob.class, "max_lvl"),
-					0, 30, current.maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL);
+					0, 30, current.maxLvl + Mob.DROP_LOOT_IF_ABOVE_MAX_LVL, false);
 			maxLvl.addChangeListener(() -> current.maxLvl = maxLvl.castToInt() - Mob.DROP_LOOT_IF_ABOVE_MAX_LVL);
 			content.add(maxLvl);
 
@@ -233,7 +233,7 @@ public class WndEditStats extends MultiWindowTabComp {
 				statsScale == null ? viewDistance : statsScale, PixelScene.landscape() ? null : viewDistance, speed, attackSpeed, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
 				hp, attackSkill, defenseSkill,
 				armor, dmgMin, dmgMax, specialDmgMin, specialDmgMax, EditorUtilies.PARAGRAPH_INDICATOR_INSTANCE,
-				viewDistance.parent == null ? viewDistance : null, tilesBeforeWakingUp, xp, maxLvl, loot, enchantmentLevel
+				statsScale != null && PixelScene.landscape() ? viewDistance : null, tilesBeforeWakingUp, xp, maxLvl, loot, enchantmentLevel
 		};
 
 		if (editStats instanceof NPC && !(editStats instanceof SentryRoom.Sentry)) {
@@ -433,7 +433,7 @@ public class WndEditStats extends MultiWindowTabComp {
 
 		@Override
 		protected String displayString(Object value) {
-			if (castToInt(value) == inifity) return INFINITY;
+			if (castToInt(value) >= 2000000000) return INFINITY;
 			return Integer.toString(castToInt(value));
 		}
 

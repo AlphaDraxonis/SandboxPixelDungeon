@@ -1,29 +1,29 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.lualevels;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.levels.CustomLevel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaLevel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
-import com.shatteredpixel.shatteredpixeldungeon.editor.ui.ItemsWithChanceDistrComp;
-import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.*;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.painters.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class CustomLevel_lua extends CustomLevel implements LuaLevel {
 
@@ -400,6 +400,22 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
 
     public void super_occupyCell(Char arg0) {
         super.occupyCell(arg0);
+    }
+
+    @Override
+    public void onItemCollected(Item arg0) {
+        LuaValue luaScript = levelScheme.luaScript.getScript();
+        if (luaScript != null && !luaScript.get("onItemCollected").isnil()) {
+            try {
+                luaScript.get("onItemCollected").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.onItemCollected(arg0);
+    }
+
+    public void super_onItemCollected(Item arg0) {
+        super.onItemCollected(arg0);
     }
 
     @Override
@@ -867,19 +883,19 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
     }
 
     @Override
-    public int randomRespawnCell(Char arg0, boolean arg1) {
+    public int randomRespawnCell(Char arg0) {
         LuaValue luaScript = levelScheme.luaScript.getScript();
         if (luaScript != null && !luaScript.get("randomRespawnCell").isnil()) {
             try {
-                int ret = luaScript.get("randomRespawnCell").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), LuaValue.valueOf(arg1)}).arg1().toint();
+                int ret = luaScript.get("randomRespawnCell").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0)).toint();
                 return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
-        return super.randomRespawnCell(arg0, arg1);
+        return super.randomRespawnCell(arg0);
     }
 
-    public int super_randomRespawnCell(Char arg0, boolean arg1) {
-        return super.randomRespawnCell(arg0, arg1);
+    public int super_randomRespawnCell(Char arg0) {
+        return super.randomRespawnCell(arg0);
     }
 
     @Override
@@ -947,6 +963,22 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
     }
 
     @Override
+    public boolean onExecuteItem(Item arg0, Hero arg1, String arg2) {
+        LuaValue luaScript = levelScheme.luaScript.getScript();
+        if (luaScript != null && !luaScript.get("onExecuteItem").isnil()) {
+            try {
+                boolean ret = luaScript.get("onExecuteItem").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1), CoerceJavaToLua.coerce(arg2)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.onExecuteItem(arg0, arg1, arg2);
+    }
+
+    public boolean super_onExecuteItem(Item arg0, Hero arg1, String arg2) {
+        return super.onExecuteItem(arg0, arg1, arg2);
+    }
+
+    @Override
     protected boolean build() {
         LuaValue luaScript = levelScheme.luaScript.getScript();
         if (luaScript != null && !luaScript.get("build").isnil()) {
@@ -979,19 +1011,19 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
     }
 
     @Override
-    public void respawnCooldown(float arg0) {
+    public float respawnCooldown() {
         LuaValue luaScript = levelScheme.luaScript.getScript();
         if (luaScript != null && !luaScript.get("respawnCooldown").isnil()) {
             try {
-                luaScript.get("respawnCooldown").call(CoerceJavaToLua.coerce(this), vars, LuaValue.valueOf(arg0));
-                return;
+                float ret = luaScript.get("respawnCooldown").call(CoerceJavaToLua.coerce(this), vars).tofloat();
+                return ret;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
-        super.respawnCooldown(arg0);
+        return super.respawnCooldown();
     }
 
-    public void super_respawnCooldown(float arg0) {
-        super.respawnCooldown(arg0);
+    public float super_respawnCooldown() {
+        return super.respawnCooldown();
     }
 
     @Override
@@ -1027,22 +1059,6 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
     }
 
     @Override
-    public void updateFieldOfView(Char arg0, boolean[] arg1) {
-        LuaValue luaScript = levelScheme.luaScript.getScript();
-        if (luaScript != null && !luaScript.get("updateFieldOfView").isnil()) {
-            try {
-                luaScript.get("updateFieldOfView").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
-                return;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.updateFieldOfView(arg0, arg1);
-    }
-
-    public void super_updateFieldOfView(Char arg0, boolean[] arg1) {
-        super.updateFieldOfView(arg0, arg1);
-    }
-
-    @Override
     public Trap setTrap(Trap arg0, int arg1) {
         LuaValue luaScript = levelScheme.luaScript.getScript();
         if (luaScript != null && !luaScript.get("setTrap").isnil()) {
@@ -1056,5 +1072,21 @@ public class CustomLevel_lua extends CustomLevel implements LuaLevel {
 
     public Trap super_setTrap(Trap arg0, int arg1) {
         return super.setTrap(arg0, arg1);
+    }
+
+    @Override
+    public void updateFieldOfView(Char arg0, boolean[] arg1) {
+        LuaValue luaScript = levelScheme.luaScript.getScript();
+        if (luaScript != null && !luaScript.get("updateFieldOfView").isnil()) {
+            try {
+                luaScript.get("updateFieldOfView").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
+                return;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.updateFieldOfView(arg0, arg1);
+    }
+
+    public void super_updateFieldOfView(Char arg0, boolean[] arg1) {
+        super.updateFieldOfView(arg0, arg1);
     }
 }

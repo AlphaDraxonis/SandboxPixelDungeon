@@ -1749,22 +1749,6 @@ public class NewbornFireElemental_lua extends Elemental.NewbornFireElemental imp
     }
 
     @Override
-    public int shielding() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("shielding").isnil()) {
-            try {
-                int ret = luaScript.get("shielding").call(CoerceJavaToLua.coerce(this), vars).toint();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.shielding();
-    }
-
-    public int super_shielding() {
-        return super.shielding();
-    }
-
-    @Override
     public boolean canSurpriseAttack() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("canSurpriseAttack").isnil()) {
@@ -1778,6 +1762,22 @@ public class NewbornFireElemental_lua extends Elemental.NewbornFireElemental imp
 
     public boolean super_canSurpriseAttack() {
         return super.canSurpriseAttack();
+    }
+
+    @Override
+    public int shielding() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("shielding").isnil()) {
+            try {
+                int ret = luaScript.get("shielding").call(CoerceJavaToLua.coerce(this), vars).toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.shielding();
+    }
+
+    public int super_shielding() {
+        return super.shielding();
     }
 
     @Override

@@ -24,13 +24,12 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.editor.lua;
 
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SandboxPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ChampionEnemy;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
@@ -47,24 +46,32 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.quests.QuestNPC;
 import com.shatteredpixel.shatteredpixeldungeon.editor.util.EditorUtilies;
 import com.shatteredpixel.shatteredpixeldungeon.items.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.*;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
 import com.shatteredpixel.shatteredpixeldungeon.items.journal.DocumentPage;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.Brew;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.Elixir;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.remains.RemainsItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Spell;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.SummonElemental;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.TippedDart;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -840,6 +847,68 @@ public class LuaGlobals extends Globals {
 
 		LuaTable zaps = new LuaTable();
 
+		zaps.set("attack", new VarArgFunction() {//tzz add documentation
+			@Override
+			public Varargs invoke(Varargs varargs) {
+				LuaValue attackerLua = varargs.arg(1);
+				LuaValue defenderLua = varargs.arg(2);
+
+				//up to 2 are int (-> damage) and one may be boolean (-> magicAttack)
+				LuaValue arg3 = varargs.arg(3);
+				LuaValue arg4 = varargs.arg(4);
+				LuaValue arg5 = varargs.arg(5);
+
+				Char attacker = (Char) attackerLua.touserdata();
+				Char defender = (Char) defenderLua.touserdata();
+
+				int damage;
+				if (arg3.isint()) {
+					if (arg4.isint()) damage = Char.combatRoll( arg3.checkint(), arg4.checkint() );
+					else {
+						if (arg5.isint()) damage = Char.combatRoll( arg3.checkint(), arg5.checkint() );
+						else damage = arg3.checkint();
+					}
+				}
+				else if (arg4.isint()) {
+					if (arg5.isint()) damage = Char.combatRoll( arg4.checkint(), arg5.checkint() );
+					else damage = arg4.checkint();
+				}
+				else if (arg5.isint()) damage = arg5.checkint();
+				else {
+					if (attacker instanceof Mob) damage = Char.combatRoll( ((Mob) attacker).damageRollMin, ((Mob) attacker).damageRollMin );
+					else damage = 0;
+				}
+
+				damage = Math.round(damage * AscensionChallenge.statModifier(attacker));
+
+				boolean magicAttack;
+				if (arg3.isboolean()) magicAttack = arg3.checkboolean();
+				else if (arg4.isboolean()) magicAttack = arg4.checkboolean();
+				else if (arg5.isboolean()) magicAttack = arg5.checkboolean();
+				else magicAttack = false;
+
+				attacker.spend_DO_NOT_CALL_UNLESS_ABSOLUTELY_NECESSARY(1f);
+
+				Invisibility.dispel(attacker);
+
+				if (Char.hit( attacker, defender, magicAttack )) {
+
+					defender.damage( damage, new Object() );
+
+					if (defender == Dungeon.hero && !defender.isAlive()) {
+						if (magicAttack) Badges.validateDeathFromEnemyMagic();
+						Dungeon.fail( this );
+						GLog.n( Messages.get(this, "bolt_kill") );
+					}
+					return LuaValue.TRUE;
+				} else {
+					defender.sprite.showStatus( CharSprite.NEUTRAL,  defender.defenseVerb() );
+					return LuaValue.FALSE;
+				}
+
+			}
+		});
+
 		abstract class ZapHandler extends VarArgFunction {
 			@Override
 			public Varargs invoke(Varargs varargs) {
@@ -1019,10 +1088,64 @@ public class LuaGlobals extends Globals {
 		});
 
 		set("Zaps", zaps);
+
+
+		set("AC_THROW", Item.AC_THROW);
+		set("AC_DROP", Item.AC_DROP);
+		set("AC_END", Amulet.AC_END);
+		set("AC_BLESS", Ankh.AC_BLESS);
+		set("AC_APPLY", ArcaneResin.AC_APPLY);//LiquidMetal.AC_APPLY
+		set("AC_AFFIX", BrokenSeal.AC_AFFIX);
+		set("AC_INFO", BrokenSeal.AC_INFO);
+		set("AC_EQUIP", EquipableItem.AC_EQUIP);
+		set("AC_UNEQUIP", EquipableItem.AC_UNEQUIP);
+		set("AC_WEAR", KingsCrown.AC_WEAR);//TengusMask.AC_WEAR
+		set("AC_USE", RemainsItem.AC_USE);//MerchantsBeacon.AC_USE, InventoryStone.AC_USE
+		set("AC_INSCRIBE", Stylus.AC_INSCRIBE);
+		set("AC_LIGHT", Torch.AC_LIGHT);
+		set("AC_DRINK", Waterskin.AC_DRINK);
+		set("AC_DETACH", Armor.AC_DETACH);
+		set("AC_ABILITY", ClassArmor.AC_ABILITY);
+		set("AC_TRANSFER", ClassArmor.AC_TRANSFER);
+		set("AC_BREW", AlchemistsToolkit.AC_BREW);
+		set("AC_ENERGIZE", AlchemistsToolkit.AC_ENERGIZE);
+		set("AC_PRICK", ChaliceOfBlood.AC_PRICK);
+		set("AC_STEALTH", CloakOfShadows.AC_STEALTH);
+		set("AC_DIRECT", DriedRose.AC_DIRECT);
+		set("AC_OUTFIT", DriedRose.AC_OUTFIT);
+		set("AC_SUMMON", DriedRose.AC_SUMMON);
+		set("AC_CAST", EtherealChains.AC_CAST);
+		set("AC_EAT", HornOfPlenty.AC_EAT);
+		set("AC_SNACK", HornOfPlenty.AC_SNACK);
+		set("AC_STORE", HornOfPlenty.AC_STORE);
+		set("AC_RETURN", LloydsBeacon.AC_RETURN);
+		set("AC_SET", LloydsBeacon.AC_SET);
+		set("AC_ZAP", LloydsBeacon.AC_ZAP);
+		set("AC_STEAL", MasterThievesArmband.AC_STEAL);
+		set("AC_FEED", SandalsOfNature.AC_FEED);
+		set("AC_ROOT", SandalsOfNature.AC_ROOT);
+		set("AC_SCRY", TalismanOfForesight.AC_SCRY);
+		set("AC_ACTIVATE", TimekeepersHourglass.AC_ACTIVATE);
+		set("AC_ADD", UnstableSpellbook.AC_ADD);
+		set("AC_READ", UnstableSpellbook.AC_READ);
+		set("AC_OPEN", Bag.AC_OPEN);
+		set("AC_LIGHTTHROW", Bomb.AC_LIGHTTHROW);
+		set("AC_EAT", Food.AC_EAT);
+		set("AC_DRINK", Potion.AC_DRINK);
+		set("AC_READ", Scroll.AC_READ);
+		set("AC_CAST", Spell.AC_CAST);
+		set("AC_IMBUE", SummonElemental.AC_IMBUE);//MagesStaff.AC_IMBUE
+		set("AC_MINE", Pickaxe.AC_MINE);
+		set("AC_ABILITY", RingOfForce.AC_ABILITY);
+		set("AC_ZAP", Wand.AC_ZAP);//MagesStaff.AC_ZAP
+		set("AC_SHOOT", SpiritBow.AC_SHOOT);
+		set("AC_TIP", Dart.AC_TIP);
+		set("AC_CLEAN", TippedDart.AC_CLEAN);
+		set("AC_PLANT", Plant.Seed.AC_PLANT);
+
 	}
 
 	private static String searchFullyQualifiedName(String simpleName) {
-		String result = null;
 		switch (simpleName) {
 			case "Checkpoint": return Checkpoint.class.getName();
 			case "ArrowCell": return ArrowCell.class.getName();
@@ -1032,6 +1155,7 @@ public class LuaGlobals extends Globals {
 		if (simpleName.endsWith("$Seed")) {
 			return Messages.MAIN_PACKAGE_NAME + "plants." + simpleName;
 		}
+		String result = null;
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Items.values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Mobs.values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Plants.values()));
@@ -1042,7 +1166,6 @@ public class LuaGlobals extends Globals {
 	}
 
 	private static String searchFullyQualifiedNameForInstanceof(String simpleName) {
-		String result = null;
 		switch (simpleName) {
 			case "Mob": return Mob.class.getName();
 			case "QuestNPC": return QuestNPC.class.getName();
@@ -1087,6 +1210,7 @@ public class LuaGlobals extends Globals {
 		if (simpleName.endsWith("$Seed")) {
 			return Messages.MAIN_PACKAGE_NAME + "plants." + simpleName;
 		}
+		String result = null;
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Mobs.values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Items.values()));
 		if (result == null) result = searchFullyQualifiedNameInArrays(simpleName, EditorInvCategory.getAll(Buffs.values()));

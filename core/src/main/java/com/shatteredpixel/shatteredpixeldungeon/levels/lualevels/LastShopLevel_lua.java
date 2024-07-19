@@ -1,30 +1,29 @@
 package com.shatteredpixel.shatteredpixeldungeon.levels.lualevels;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.shatteredpixel.shatteredpixeldungeon.actors.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.*;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.*;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaClass;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaLevel;
-import com.shatteredpixel.shatteredpixeldungeon.editor.lua.LuaManager;
-import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.levels.LastShopLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
-import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.editor.levels.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.lua.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.ui.*;
+import com.shatteredpixel.shatteredpixeldungeon.editor.util.*;
+import com.shatteredpixel.shatteredpixeldungeon.items.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.*;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndError;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.DungeonScene;
+import com.shatteredpixel.shatteredpixeldungeon.levels.builders.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.painters.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.features.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.*;
+import com.shatteredpixel.shatteredpixeldungeon.levels.traps.*;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundle;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-
-import java.util.ArrayList;
+import java.util.*;
 
 public class LastShopLevel_lua extends LastShopLevel implements LuaLevel {
 
@@ -385,6 +384,22 @@ public class LastShopLevel_lua extends LastShopLevel implements LuaLevel {
 
     public void super_occupyCell(Char arg0) {
         super.occupyCell(arg0);
+    }
+
+    @Override
+    public void onItemCollected(Item arg0) {
+        LuaValue luaScript = levelScheme.luaScript.getScript();
+        if (luaScript != null && !luaScript.get("onItemCollected").isnil()) {
+            try {
+                luaScript.get("onItemCollected").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.onItemCollected(arg0);
+    }
+
+    public void super_onItemCollected(Item arg0) {
+        super.onItemCollected(arg0);
     }
 
     @Override
@@ -1028,6 +1043,22 @@ public class LastShopLevel_lua extends LastShopLevel implements LuaLevel {
     }
 
     @Override
+    public boolean onExecuteItem(Item arg0, Hero arg1, String arg2) {
+        LuaValue luaScript = levelScheme.luaScript.getScript();
+        if (luaScript != null && !luaScript.get("onExecuteItem").isnil()) {
+            try {
+                boolean ret = luaScript.get("onExecuteItem").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1), CoerceJavaToLua.coerce(arg2)}).arg1().toboolean();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.onExecuteItem(arg0, arg1, arg2);
+    }
+
+    public boolean super_onExecuteItem(Item arg0, Hero arg1, String arg2) {
+        return super.onExecuteItem(arg0, arg1, arg2);
+    }
+
+    @Override
     protected boolean build() {
         LuaValue luaScript = levelScheme.luaScript.getScript();
         if (luaScript != null && !luaScript.get("build").isnil()) {
@@ -1108,22 +1139,6 @@ public class LastShopLevel_lua extends LastShopLevel implements LuaLevel {
     }
 
     @Override
-    public void updateFieldOfView(Char arg0, boolean[] arg1) {
-        LuaValue luaScript = levelScheme.luaScript.getScript();
-        if (luaScript != null && !luaScript.get("updateFieldOfView").isnil()) {
-            try {
-                luaScript.get("updateFieldOfView").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
-                return;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        super.updateFieldOfView(arg0, arg1);
-    }
-
-    public void super_updateFieldOfView(Char arg0, boolean[] arg1) {
-        super.updateFieldOfView(arg0, arg1);
-    }
-
-    @Override
     public Trap setTrap(Trap arg0, int arg1) {
         LuaValue luaScript = levelScheme.luaScript.getScript();
         if (luaScript != null && !luaScript.get("setTrap").isnil()) {
@@ -1137,5 +1152,21 @@ public class LastShopLevel_lua extends LastShopLevel implements LuaLevel {
 
     public Trap super_setTrap(Trap arg0, int arg1) {
         return super.setTrap(arg0, arg1);
+    }
+
+    @Override
+    public void updateFieldOfView(Char arg0, boolean[] arg1) {
+        LuaValue luaScript = levelScheme.luaScript.getScript();
+        if (luaScript != null && !luaScript.get("updateFieldOfView").isnil()) {
+            try {
+                luaScript.get("updateFieldOfView").invoke(new LuaValue[]{CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0), CoerceJavaToLua.coerce(arg1)}).arg1();
+                return;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        super.updateFieldOfView(arg0, arg1);
+    }
+
+    public void super_updateFieldOfView(Char arg0, boolean[] arg1) {
+        super.updateFieldOfView(arg0, arg1);
     }
 }

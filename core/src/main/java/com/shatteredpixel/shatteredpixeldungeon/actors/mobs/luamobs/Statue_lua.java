@@ -1541,19 +1541,19 @@ public class Statue_lua extends Statue implements LuaMob {
     }
 
     @Override
-    public Weapon weapon() {
+    public void weapon(Weapon arg0) {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("weapon").isnil()) {
             try {
-                Weapon ret = (Weapon) luaScript.get("weapon").call(CoerceJavaToLua.coerce(this), vars).touserdata();
-                return ret;
+                luaScript.get("weapon").call(CoerceJavaToLua.coerce(this), vars, CoerceJavaToLua.coerce(arg0));
+                return;
             } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
         }
-        return super.weapon();
+        super.weapon(arg0);
     }
 
-    public Weapon super_weapon() {
-        return super.weapon();
+    public void super_weapon(Weapon arg0) {
+        super.weapon(arg0);
     }
 
     @Override
@@ -1749,22 +1749,6 @@ public class Statue_lua extends Statue implements LuaMob {
     }
 
     @Override
-    public int shielding() {
-        LuaValue luaScript = CustomObject.getScript(identifier);
-        if (luaScript != null && !luaScript.get("shielding").isnil()) {
-            try {
-                int ret = luaScript.get("shielding").call(CoerceJavaToLua.coerce(this), vars).toint();
-                return ret;
-            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
-        }
-        return super.shielding();
-    }
-
-    public int super_shielding() {
-        return super.shielding();
-    }
-
-    @Override
     public boolean canSurpriseAttack() {
         LuaValue luaScript = CustomObject.getScript(identifier);
         if (luaScript != null && !luaScript.get("canSurpriseAttack").isnil()) {
@@ -1778,6 +1762,22 @@ public class Statue_lua extends Statue implements LuaMob {
 
     public boolean super_canSurpriseAttack() {
         return super.canSurpriseAttack();
+    }
+
+    @Override
+    public int shielding() {
+        LuaValue luaScript = CustomObject.getScript(identifier);
+        if (luaScript != null && !luaScript.get("shielding").isnil()) {
+            try {
+                int ret = luaScript.get("shielding").call(CoerceJavaToLua.coerce(this), vars).toint();
+                return ret;
+            } catch (LuaError error) { Game.runOnRenderThread(() -> DungeonScene.show(new WndError(error))); }
+        }
+        return super.shielding();
+    }
+
+    public int super_shielding() {
+        return super.shielding();
     }
 
     @Override

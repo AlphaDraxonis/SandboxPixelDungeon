@@ -271,6 +271,8 @@ public class Item extends GameObject implements Customizable, Copyable<Item> {
 		if (!container.canHold(this)){
 			return false;
 		}
+
+		if (Dungeon.level != null) Dungeon.level.onItemCollected(this);
 		
 		if (stackable) {
 			for (Item item:items) {

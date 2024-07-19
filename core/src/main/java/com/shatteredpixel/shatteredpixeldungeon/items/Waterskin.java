@@ -38,7 +38,7 @@ public class Waterskin extends Item {
 
 	private static final int MAX_VOLUME	= 20;
 
-	private static final String AC_DRINK	= "DRINK";
+	public static final String AC_DRINK	= "DRINK";
 
 	private static final float TIME_TO_DRINK = 1f;
 

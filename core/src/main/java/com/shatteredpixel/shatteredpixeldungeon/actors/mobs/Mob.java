@@ -400,7 +400,7 @@ public abstract class Mob extends Char implements Customizable {
 //            ((GooSprite)sprite).spray(false);
 		}
 
-		super.act();
+		if (super.act()) return true;
 		
 		boolean justAlerted = alerted;
 		alerted = false;
