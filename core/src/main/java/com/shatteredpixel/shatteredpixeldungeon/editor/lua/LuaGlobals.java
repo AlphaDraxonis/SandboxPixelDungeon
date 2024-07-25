@@ -139,8 +139,9 @@ public class LuaGlobals extends Globals {
 						return CoerceJavaToLua.coerce(Reflection.newInstance(Reflection.forName(fullName)));
 //						return newInstance.invoke(LuaValue.valueOf(fullName), varargs.subargs(2));
 					}
+					throw new LuaError("Class not found: " + arg.checkstring());
 				}
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: use new(String className)");
 			}
 		});
 
@@ -154,14 +155,15 @@ public class LuaGlobals extends Globals {
 					for (CustomObject obj : CustomObject.customObjects.values()) {
 						if (obj.name.equals(s)) return CoerceJavaToLua.coerce(obj.luaClass.newInstance());
 					}
+					throw new LuaError("No custom object with name \"" + s + "\" was found!");
 				}
-				if (arg.isint()) {
+				else if (arg.isint()) {
 					LuaClass original = CustomObject.getLuaClass(arg.checkint());
-					return original == null
-							? LuaValue.NIL
-							: CoerceJavaToLua.coerce(original.newInstance());
+					if (original == null)
+						throw new LuaError("No custom object with id \"" + arg.checkint() + "\" was found!");
+					return CoerceJavaToLua.coerce(original.newInstance());
 				}
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: use newCus(String name) or newCus(int id)");
 			}
 		});
 
@@ -177,8 +179,9 @@ public class LuaGlobals extends Globals {
 					}
 					String fullName = searchFullyQualifiedName(arg.checkjstring());
 					if (fullName != null) return CoerceJavaToLua.coerce(Reflection.forName(fullName));
+					throw new LuaError("Class not found: " + arg.checkstring());
 				}
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: use class(String className)");
 			}
 		});
 
@@ -193,7 +196,7 @@ public class LuaGlobals extends Globals {
 					Ballistica ballistica = new Ballistica(from.toint(), to.toint(), params.toint(), (Char) usePassable.touserdata());
 					return CoerceJavaToLua.coerce(ballistica);
 				}
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: use ballistica(int from, int to, int params) or ballistica(int from, int to, int params, Char usePassableFromChar)");
 			}
 		});
 
@@ -222,6 +225,9 @@ public class LuaGlobals extends Globals {
 		arrayUtils.set("iterate", new TwoArgFunction() {
 			@Override
 			public LuaValue call(LuaValue array, LuaValue consumer) {
+
+				if (consumer.isnil()) throw new LuaError("Illegal arguments: consumer must not be null: use something like >>  function(obj) print(obj) end  << as second parameter ");
+
 				Object java = CoerceLuaToJava.coerce(array, Object.class);
 				LuaFunction function = consumer.checkfunction();
 				if (java instanceof SparseArray) {
@@ -247,6 +253,8 @@ public class LuaGlobals extends Globals {
 					for (int i = 0; i < length; i++) {
 						function.call(CoerceJavaToLua.coerce(Array.get(java, i)));
 					}
+				} else {
+					throw new LuaError("Illegal arguments: collection must be a java array or a SparseArray or implement Iterable or Map<?,?>");
 				}
 				return LuaValue.NIL;
 			}
@@ -256,7 +264,8 @@ public class LuaGlobals extends Globals {
 		set("getActor", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue ID) {
-				return ID.isint() ? new LuaUserdata(Actor.findById(ID.checkint())) : LuaValue.NIL;
+				if (!ID.isint()) throw new LuaError("Illegal arguments: use getActor(int id)");
+				return new LuaUserdata(Actor.findById(ID.checkint()));
 			}
 		});
 
@@ -264,33 +273,29 @@ public class LuaGlobals extends Globals {
 		messages.set("get", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue key) {
-				return key.isstring()
-						? LuaValue.valueOf(Messages.get(key.checkjstring()))
-						: LuaValue.NIL;
+				if (!key.isstring()) throw new LuaError("Illegal arguments: use Messages.get(String key)");
+				return LuaValue.valueOf(Messages.get(key.checkjstring()));
 			}
 		});
 		messages.set("titleCase", new OneArgFunction() {
 			@Override
-			public LuaValue call(LuaValue key) {
-				return key.isstring()
-						? LuaValue.valueOf(Messages.titleCase(key.checkjstring()))
-						: LuaValue.NIL;
+			public LuaValue call(LuaValue s) {
+				if (!s.isstring()) throw new LuaError("Illegal arguments: use Messages.titleCase(String text)");
+				return LuaValue.valueOf(Messages.titleCase(s.checkjstring()));
 			}
 		});
 		messages.set("capitalize", new OneArgFunction() {
 			@Override
-			public LuaValue call(LuaValue key) {
-				return key.isstring()
-						? LuaValue.valueOf(Messages.capitalize(key.checkjstring()))
-						: LuaValue.NIL;
+			public LuaValue call(LuaValue s) {
+				if (!s.isstring()) throw new LuaError("Illegal arguments: use Messages.capitalize(String text)");
+				return LuaValue.valueOf(Messages.capitalize(s.checkjstring()));
 			}
 		});
 		messages.set("upperCase", new OneArgFunction() {
 			@Override
-			public LuaValue call(LuaValue key) {
-				return key.isstring()
-						? LuaValue.valueOf(Messages.upperCase(key.checkjstring()))
-						: LuaValue.NIL;
+			public LuaValue call(LuaValue s) {
+				if (!s.isstring()) throw new LuaError("Illegal arguments: use Messages.upperCase(String text)");
+				return LuaValue.valueOf(Messages.upperCase(s.checkjstring()));
 			}
 		});
 		set("Messages", messages);
@@ -300,26 +305,22 @@ public class LuaGlobals extends Globals {
 			@Override
 			public LuaValue call(LuaValue min, LuaValue max) {
 				if (max.isnil()) {
-					return min.isint()
-							? LuaValue.valueOf(Random.Int(min.checkint()))
-							: LuaValue.NIL;
+					if (!min.isint()) throw new LuaError("Illegal arguments: use Random.int(int max)");
+					return LuaValue.valueOf(Random.Int(min.checkint()));
 				}
-				return min.isint() && max.isint()
-						? LuaValue.valueOf(Random.Int(min.checkint(), max.checkint()))
-						: LuaValue.NIL;
+				if (!min.isint() || !max.isint()) throw new LuaError("Illegal arguments: use Random.int(int min, int max)");
+				return LuaValue.valueOf(Random.Int(min.checkint(), max.checkint()));
 			}
 		});
 		randomUtils.set("combatRoll", new TwoArgFunction() {
 			@Override
 			public LuaValue call(LuaValue min, LuaValue max) {
 				if (max.isnil()) {
-					return min.isint()
-							? LuaValue.valueOf(Char.combatRoll(0, min.checkint()))
-							: LuaValue.NIL;
+					if (!min.isint()) throw new LuaError("Illegal arguments: use Random.combatRoll(int max)");
+					return LuaValue.valueOf(Char.combatRoll(0, min.checkint()));
 				}
-				return min.isint() && max.isint()
-						? LuaValue.valueOf(Char.combatRoll(min.checkint(), max.checkint()))
-						: LuaValue.NIL;
+				if (!min.isint() || !max.isint()) throw new LuaError("Illegal arguments: use Random.combatRoll(int min, int max)");
+				return LuaValue.valueOf(Char.combatRoll(min.checkint(), max.checkint()));
 			}
 		});
 		randomUtils.set("element", new OneArgFunction() {
@@ -332,17 +333,20 @@ public class LuaGlobals extends Globals {
 				else if (java instanceof Collection<?>) {
 					return CoerceJavaToLua.coerce(Random.element(((Collection<?>) java)));
 				}
+				else if (java instanceof Map<?, ?>) {
+					return CoerceJavaToLua.coerce(Random.element(((Map<?, ?>) java).values()));
+				}
 				else if (java.getClass().isArray()) {
 					return CoerceJavaToLua.coerce(Array.get(java, Random.Int(Array.getLength(java))));
 				}
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: collection must be a java array or a SparseArray or implement Collection<?> or Map<?,?>");
 			}
 		});
 		randomUtils.set("pushGenerator", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue seed) {
 				if (seed.islong()) Random.pushGenerator(seed.checklong());
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: use Random.pushGenerator(long seed)");
 			}
 		});
 		randomUtils.set("popGenerator", new ZeroArgFunction() {
@@ -566,7 +570,8 @@ public class LuaGlobals extends Globals {
 		set("cellToString", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue cell) {
-				return cell.isint() ? LuaValue.valueOf(EditorUtilies.cellToString(cell.checkint())) : LuaValue.NIL;
+				if (!cell.isint()) throw new LuaError("Illegal arguments: use cellToString(int cell)");
+				return LuaValue.valueOf(EditorUtilies.cellToString(cell.checkint()));
 			}
 		});
 
@@ -580,7 +585,7 @@ public class LuaGlobals extends Globals {
 						return LuaValue.valueOf(Dungeon.level.spawnMob(((Mob) obj), 12, null));
 					}
 				}
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: use spawnMob(Mob mob)");
 			}
 		});
 		set("placeMob", new TwoArgFunction() {//no valid placement check is made
@@ -593,7 +598,7 @@ public class LuaGlobals extends Globals {
 						Level.placeMob((Mob) obj);
 					}
 				}
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: use placeMob(Mob mob, int pos)");
 			}
 		});
 
@@ -618,7 +623,7 @@ public class LuaGlobals extends Globals {
 
 					}
 				}
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: use affectBuff(Char target, Buff buff) or affectBuff(Char target, Class<? extends Buff> buff) or affectBuff(Char target, Buff buff, float duration) or affectBuff(Char target, Class<? extends Buff> buff, float duration)");
 			}
 		});
 
@@ -632,7 +637,7 @@ public class LuaGlobals extends Globals {
 						else Dungeon.level.drop((Item) obj, pos.toint()).sprite.drop(from.checkint());
 					}
 				}
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: use drop(Item item, int pos) or drop(Item item, int pos, int from)");
 			}
 		});
 
@@ -647,15 +652,15 @@ public class LuaGlobals extends Globals {
 						}
 					}
 				}
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: use giveItem(Item item)");
 			}
 		});
 		set("collectKey", new TwoArgFunction() {
 			@Override
 			public LuaValue call(LuaValue itemKey, LuaValue pos) {
-				if (!itemKey.isuserdata()) return LuaValue.NIL;
+				if (!itemKey.isuserdata()) throw new LuaError("Illegal arguments: use collectKey(Key key) or collectKey(Key key, int fromCell)");
 				Object obj = itemKey.checkuserdata();
-				if (!(obj instanceof Key)) return LuaValue.NIL;
+				if (!(obj instanceof Key)) throw new LuaError("Illegal arguments: use collectKey(Key key) or collectKey(Key key, int fromCell)");
 				int cell = pos.isint() ? pos.checkint() : Dungeon.hero.pos;
 				((Key) obj).instantPickupKey(cell);
 				return LuaValue.TRUE;
@@ -677,7 +682,7 @@ public class LuaGlobals extends Globals {
 					DungeonScene.updateMap(cell.checkint());
 					Dungeon.level.cleanWallCell(cell.checkint());
 				}
-				return LuaValue.NIL;
+				throw new LuaError("Illegal arguments: use updateCell(int cell)");
 			}
 		});
 
@@ -702,7 +707,7 @@ public class LuaGlobals extends Globals {
 					}
 					return LuaValue.valueOf(clazz.isInstance(obj.checkuserdata()));
 				}
-				return LuaValue.FALSE;
+				throw new LuaError("Illegal arguments: use instanceof(Object obj, String className)");
 			}
 		});
 
@@ -725,8 +730,9 @@ public class LuaGlobals extends Globals {
 					if (objA instanceof Room)    return LuaValue.valueOf(EditRoomComp.areEqual(((Room) objA), (Room) objB));
 					if (objA instanceof Checkpoint)    return LuaValue.valueOf(EditCheckpointComp.areEqual(((Checkpoint) objA), (Checkpoint) objB));
 
+					return LuaValue.FALSE;
 				}
-				return LuaValue.FALSE;
+				throw new LuaError("Illegal arguments: use areEqual(Object a, Object b)");
 			}
 		});
 
@@ -739,7 +745,7 @@ public class LuaGlobals extends Globals {
 		set("setGold", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue gold) {
-				if (!gold.isint()) return LuaValue.NIL;
+				if (!gold.isint()) throw new LuaError("Illegal arguments: use setGold(int gold)");
 				Dungeon.gold = gold.checkint();
 				return LuaValue.valueOf(Dungeon.gold);
 			}
@@ -753,7 +759,7 @@ public class LuaGlobals extends Globals {
 		set("setEnergy", new OneArgFunction() {
 			@Override
 			public LuaValue call(LuaValue energy) {
-				if (!energy.isint()) return LuaValue.NIL;
+				if (!energy.isint()) throw new LuaError("Illegal arguments: use setEnergy(int energy)");
 				Dungeon.energy = energy.checkint();
 				return LuaValue.valueOf(Dungeon.energy);
 			}
