@@ -5,7 +5,6 @@ import com.shatteredpixel.shatteredpixeldungeon.editor.inv.items.BuffItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfFeatherFall;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.PotionOfCleansing;
 import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Wayward;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
@@ -56,7 +55,6 @@ public enum Buffs implements EditorInvCategory<Buff> {
                 Hex.class,
                 Daze.class,
                 Vulnerable.class,
-                Wayward.WaywardBuff.class,
                 Doom.class,
                 Corruption.class,
                 Poison.class,

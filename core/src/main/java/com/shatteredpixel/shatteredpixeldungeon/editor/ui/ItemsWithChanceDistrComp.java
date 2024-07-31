@@ -17,7 +17,6 @@ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.ui.*;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.*;
@@ -299,9 +298,7 @@ public abstract class ItemsWithChanceDistrComp extends Component {
         @Override
         public void onClick() {
             if (item.items.contains(EditorItem.NULL_ITEM)) {
-                Window w = new EditCompWindow(EditorItem.NULL_ITEM);
-                if (Game.scene() instanceof EditorScene) EditorScene.show(w);
-                else Game.scene().addToFront(w);
+                EditorScene.show(new EditCompWindow(EditorItem.NULL_ITEM));
             }
         }
 

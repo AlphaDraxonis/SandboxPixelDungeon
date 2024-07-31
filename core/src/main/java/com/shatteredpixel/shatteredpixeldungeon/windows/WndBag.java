@@ -502,7 +502,6 @@ public class WndBag extends WndTabbed {
 
     public abstract static class ItemSelector implements ItemSelectorInterface {
 
-
         public Class<? extends Bag> preferredBag() {
             return null; //defaults to last bag opened
         }

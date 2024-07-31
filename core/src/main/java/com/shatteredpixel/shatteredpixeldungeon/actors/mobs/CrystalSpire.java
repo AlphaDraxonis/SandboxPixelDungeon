@@ -207,7 +207,8 @@ public class CrystalSpire extends Mob {
 	private static boolean canTargetCell(int cell) {
 		return (!Dungeon.level.solid[cell] || Dungeon.level.map[cell] == Terrain.MINE_CRYSTAL)
 				&& !TileItem.isEntranceTerrainCell(Dungeon.level.map[cell])
-				&& !TileItem.isExitTerrainCell(Dungeon.level.map[cell]);
+				&& !TileItem.isExitTerrainCell(Dungeon.level.map[cell])
+				&& !TileItem.isDoor(Dungeon.level.map[cell]);
 	}
 
 	public static class SpireSpike{}

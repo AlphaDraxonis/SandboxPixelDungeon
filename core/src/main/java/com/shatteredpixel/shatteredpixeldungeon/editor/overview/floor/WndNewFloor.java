@@ -127,13 +127,17 @@ public class WndNewFloor extends WndTabbed {
 
             // Wait for 10 seconds for the level generation to complete
             Boolean generated;
+            Exception exception;
             try {
                 generated = generator.get(10, TimeUnit.SECONDS);
+                exception = null;
             } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                generated = null;//Set breakpoint here if an exception occurred that is no timeout exception; and read ex stack trace
+                generated = null;
+                Game.reportException(ex);
                 ex.printStackTrace();
+                exception = ex;
             }
-            if (generated == null) {
+            if (exception != null) {
                 Level curLevel = EditorScene.getCustomLevel();
                 if (curLevel != null) {
                     Dungeon.levelName = curLevel.name;
@@ -151,8 +155,8 @@ public class WndNewFloor extends WndTabbed {
                 }
 
                 executor.shutdownNow();
-                if (Game.scene() instanceof EditorScene)
-                    EditorScene.show(new WndError(Messages.get(InterlevelScene.class, "could_not_generate", Dungeon.seed)){
+                if (exception instanceof TimeoutException) {
+                    EditorScene.show(new WndError(Messages.get(InterlevelScene.class, "could_not_generate", Dungeon.seed)) {
                         @Override
                         public void onBackPressed() {
                             super.onBackPressed();
@@ -162,8 +166,9 @@ public class WndNewFloor extends WndTabbed {
                             }
                         }
                     });
-                else
-                    Game.scene().addToFront(new WndError(Messages.get(InterlevelScene.class, "could_not_generate", Dungeon.seed)));
+                } else {
+                    EditorScene.show(new WndError(exception));
+                }
                 return;
             }
 

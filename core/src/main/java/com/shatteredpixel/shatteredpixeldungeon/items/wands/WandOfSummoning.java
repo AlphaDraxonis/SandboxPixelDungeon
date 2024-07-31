@@ -79,6 +79,8 @@ public class WandOfSummoning extends Wand {
 		summonTemplate.clear();
 		summonTemplate.add(summon);
 	}
+
+	private Char targetCharToHeal;
 	
 	@Override
 	public boolean tryToZap(Hero owner, int target) {
@@ -88,14 +90,18 @@ public class WandOfSummoning extends Wand {
 		final Ballistica wandShot = new Ballistica(owner.pos, target, collisionProperties(target), null);
 
 		int cell = wandShot.collisionPos;
+		targetCharToHeal = null;
 
 		Char ch = Actor.findChar(cell);
-		if (ch != null && !currentSummons.contains(ch)){
-			if (owner == Dungeon.hero) GLog.w(Messages.get(this, "bad_location"));
-			return false;
+		if (ch != null) {
+			if (!currentSummons.contains(ch)) {
+				if (owner == Dungeon.hero) GLog.w(Messages.get(this, "bad_location"));
+				return false;
+			}
+			targetCharToHeal = ch;
 		}
 
-		if (owner != Dungeon.hero) {
+		else if (owner != Dungeon.hero) {
 			if (nextSummon == null) chooseNextSummonMob();
 			if (nextSummon == null
 					|| !Barrier.canEnterCell(cell, nextSummon, nextSummon.isFlying() || nextSummon.buff(Amok.class) != null, true)
@@ -111,6 +117,7 @@ public class WandOfSummoning extends Wand {
 	public void onZap(Ballistica bolt) {
 
 		removeDeadSummons();
+		targetCharToHeal = null;
 
 		int target = bolt.collisionPos;
 		Char ch = Actor.findChar(target);
@@ -155,7 +162,8 @@ public class WandOfSummoning extends Wand {
 				Buff.affect(nextSummon, Corruption.class);
 
 				if (!(nextSummon instanceof Wraith)) {
-					nextSummon.HP = (int) Math.min(nextSummon.HT, nextSummon.HP * healingPerCharge(buffedLvl()) * chargesPerCast);
+					float healingPerCharge = healingPerCharge(buffedLvl()) * nextSummon.HP / nextSummon.HT;
+					nextSummon.HP = Math.min(nextSummon.HT, (int) (nextSummon.HP  * healingPerCharge * chargesPerCast));
 				}
 
 				nextSummon.pos = target;
@@ -222,24 +230,26 @@ public class WandOfSummoning extends Wand {
 
 	@Override
 	public String statsDesc() {
+		Char tempTargetCharToHeal = targetCharToHeal;
+		int useCharges = chargesPerCast();
+		targetCharToHeal = tempTargetCharToHeal;
+
 		if (levelKnown()) {
-			int useCharges = chargesPerCast();
-			float healPercent = healingPerCharge(level());
-			float totalHealPercent = useCharges * healPercent;
 			if (nextSummon == null) chooseNextSummonMob();
 			if (nextSummon instanceof Wraith) {
 				return Messages.get(this, "stats_desc_wraith", nextSummon.name());
 			}
-			else return Messages.get(this, "stats_desc", nextSummon.name(), ((int) (totalHealPercent * 100)) + "%", useCharges);
+			float healPercent = healingPerCharge(level()) * nextSummon.HP / nextSummon.HT;
+			float totalHealPercent = Math.min(1, useCharges * healPercent);
+			return Messages.get(this, "stats_desc", nextSummon.name(), ((int) (totalHealPercent * 100)) + "%", useCharges);
 		} else {
-			int useCharges = chargesPerCast();
-			float healPercent = healingPerCharge(0);
-			float totalHealPercent = useCharges * healPercent;
 			if (nextSummon == null) chooseNextSummonMob();
 			if (nextSummon instanceof Wraith) {
 				return Messages.get(this, "stats_desc_wraith", nextSummon.name());
 			}
-			else return Messages.get(this, "stats_desc", nextSummon.name(), totalHealPercent, useCharges);
+			float healPercent = healingPerCharge(0) * nextSummon.HP / nextSummon.HT;
+			float totalHealPercent = Math.min(1, useCharges * healPercent);
+			return Messages.get(this, "stats_desc", nextSummon.name(), ((int) (totalHealPercent * 100)) + "%", useCharges);
 
 		}
 	}
@@ -250,13 +260,19 @@ public class WandOfSummoning extends Wand {
 			return 1;
 		}
 
+		if (targetCharToHeal != null) {
+			return Math.max(1, Math.min(curCharges, maxCharges));
+		}
+
 		if (nextSummon == null) chooseNextSummonMob();
 		if (nextSummon instanceof Wraith) {
 			return 1;
 		}
 
-		//consumes up to 10 charges at once (unused charges are later readded)
-		return Math.min(curCharges, 10);
+		float healingPerCharge = healingPerCharge(buffedLvl()) * nextSummon.HP / nextSummon.HT;
+		int chargesForFullHeal = (int) Math.ceil(1 / healingPerCharge);
+
+		return Math.max(1, Math.min(curCharges, chargesForFullHeal));
 	}
 
 

@@ -848,7 +848,9 @@ public class EditMobComp extends DefaultEditComp<Mob> {
                     if (CustomDungeon.isEditing()) {
                         IDEWindow.showWindow(luaCodeHolder);
                     } else {
-                        GameScene.show(new WndTitledMessage(Icons.INFO.get(), luaCodeHolder.pathToScript, CustomDungeonSaves.readLuaFile(luaCodeHolder.pathToScript).code));
+                        GameScene.show(new WndTitledMessage(Icons.INFO.get(), luaCodeHolder.pathToScript, CustomDungeonSaves.readLuaFile(luaCodeHolder.pathToScript).code){{
+                            setHighlightingEnabled(false);
+                        }});
                     }
                 }
             };
@@ -1070,7 +1072,7 @@ public class EditMobComp extends DefaultEditComp<Mob> {
 
         if (a.spriteClass != b.spriteClass) return false;
 
-        if (!EditBuffComp.isBuffListEqual(a.buffs(), b.buffs())) return false;//only very simple, does not compare any values, just the types!!
+        if (!EditBuffComp.isBuffListEqual(a.buffs(), b.buffs())) return false;
 
         if (a.loot instanceof ItemsWithChanceDistrComp.RandomItemData) {
             if (!a.loot.equals(b.loot)) return false;

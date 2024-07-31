@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfSummoning;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Corrupting;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
@@ -371,7 +372,7 @@ public class EditItemComp extends DefaultEditComp<Item> {
                 summonMobs = new ItemContainerWithLabel<MobItem>(asMobItems, this, label("summon_mob"), false, 1, Integer.MAX_VALUE) {
                     @Override
                     public boolean itemSelectable(Item item) {
-                        return item instanceof MobItem;
+                        return item instanceof MobItem && !((MobItem) item).getObject().isImmune(Corrupting.class);
                     }
 
                     @Override

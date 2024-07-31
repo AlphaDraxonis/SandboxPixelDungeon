@@ -212,6 +212,7 @@ public class EditBuffComp extends DefaultEditComp<Buff> {
         if (a.getClass() != b.getClass()) return false;
 
         if (a.permanent != b.permanent) return false;
+        if (a.alwaysHidesFx != b.alwaysHidesFx) return false;
 
         if (a instanceof BuffWithDuration) {
             if (((BuffWithDuration) a).left != ((BuffWithDuration) b).left) return false;
