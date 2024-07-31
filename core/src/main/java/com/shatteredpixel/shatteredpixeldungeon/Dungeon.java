@@ -384,12 +384,14 @@ public class Dungeon {
         Level level;
         if (branch == QuestLevels.MINING.ID) {
 //            if (MiningLevel.generateWithThisQuest == null) MiningLevel.generateWithThisQuest = new Blacksmith(new BlacksmithQuest());
-            level = new MiningLevel();
+            Dungeon.level = level = new MiningLevel();
             level.levelScheme = customDungeon.getFloor(levelName);
             level.name = levelName;
             ((MiningLevel) level).destCell = Dungeon.hero.pos;
             level.create();
         } else level = customDungeon.getFloor(levelName).initLevel();
+
+		Dungeon.level = null;
 
 
         if (depth > Statistics.deepestFloor && branch == 0) {
